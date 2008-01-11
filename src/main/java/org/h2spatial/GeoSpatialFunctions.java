@@ -201,11 +201,11 @@ public class GeoSpatialFunctions {
 	}
 
 	public static String GeoVersion() {
-		return "1.0";
+		return "0.9";
 	}
 
 	public static String LastGeoVersion() {
-		return "1.1";
+		return "1.0beta";
 	}
 
 	public static byte[] setWKBGeometry(Geometry arg0, int arg1)
