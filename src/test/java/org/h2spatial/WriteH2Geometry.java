@@ -23,6 +23,7 @@ public class WriteH2Geometry {
 		WKBWriter writer = new WKBWriter(3, 2);
 		byte wkb[] = writer.write(geom);
 		Statement st = con.createStatement();
+		
 		st.execute("CREATE TABLE polygon1 (gid int , the_geom blob)");
 		PreparedStatement prep = con
 				.prepareStatement("INSERT INTO polygon1 (gid, the_geom) VALUES(?, ?)");
