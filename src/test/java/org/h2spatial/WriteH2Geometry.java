@@ -12,8 +12,15 @@ import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jts.io.WKTReader;
 
 public class WriteH2Geometry {
-	public static void main(String args[]) throws ClassNotFoundException,
-			SQLException, ParseException {
+	public static void main(String args[]) throws ClassNotFoundException, SQLException, ParseException  {
+			
+		write2Geometry();
+		
+	}
+	
+	
+	public static void write2Geometry() throws ClassNotFoundException, SQLException, ParseException{
+		
 		Class.forName("org.h2.Driver");
 		Connection con = DriverManager.getConnection("jdbc:h2:/tmp/h2/test7",
 				"sa", "");
@@ -31,5 +38,23 @@ public class WriteH2Geometry {
 		prep.setBytes(2, wkb);
 		prep.executeUpdate();
 		System.out.println("Fin");
+		
+	}
+	
+	
+	public void writeWithGeomFromText() throws ClassNotFoundException, SQLException{
+		
+		Class.forName("org.h2.Driver");
+		Connection con = DriverManager.getConnection("jdbc:h2:/tmp/h2/test7",
+				"sa", "");
+		String data = "MULTILINESTRING ((185372.453125 2427922.5, 185390.609375 2427946.75, 185404.84375 2427963, 185423.359375 2427983.75, 185440.4375 2427999.25, 185459.3125 2428016.5, 185463.578125 2428018.25))";
+		
+		
+		Statement st = con.createStatement();
+		
+		SQLCodegenerator.addSpatialFunctions(st);
+		
+		
+		
 	}
 }
