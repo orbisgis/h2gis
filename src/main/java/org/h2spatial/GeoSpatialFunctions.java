@@ -212,7 +212,7 @@ public class GeoSpatialFunctions {
 			throws IOException {
 		Geometry geom = arg0;
 		geom.setSRID(arg1);
-		WKBWriter wkbWriter = new WKBWriter(2, 2);
+		WKBWriter wkbWriter = new WKBWriter(3, 2);
 		return wkbWriter.write(geom);
 	}
 

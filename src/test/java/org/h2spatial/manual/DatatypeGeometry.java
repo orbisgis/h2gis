@@ -1,4 +1,4 @@
-package org.h2spatial;
+package org.h2spatial.manual;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
