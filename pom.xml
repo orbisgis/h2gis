@@ -5,13 +5,13 @@
 	<parent>
 		<artifactId>platform</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>1.0.0</version>
+		<version>1.1.0</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>h2spatial</groupId>
 	<artifactId>h2spatial</artifactId>
 	<name>h2spatial</name>
-	<version>1.0.0</version>
+	<version>1.0.1</version>
 	<url>http://maven.apache.org</url>
 	<dependencies>
 		<dependency>
