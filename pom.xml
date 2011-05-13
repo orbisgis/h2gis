@@ -12,6 +12,13 @@
 	<name>h2spatial</name>
 	<version>1.0.1</version>
 	<url>http://maven.apache.org</url>
+        <repositories>
+                <repository>
+                        <id>IRSTV</id>
+                        <name>IRSTV repository</name>
+                        <url>http://repo.orbisgis.org</url>
+                </repository>
+        </repositories>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
