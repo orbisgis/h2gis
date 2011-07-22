@@ -29,7 +29,7 @@
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
-			<version>1.11</version>
+			<version>1.12</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
