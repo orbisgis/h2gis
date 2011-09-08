@@ -4,7 +4,7 @@
 	<parent>
 		<artifactId>orbisgis</artifactId>
 		<groupId>org.orbisgis</groupId>
-		<version>4.0</version>
+		<version>4.0-SNAPSHOT</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>h2spatial</groupId>
