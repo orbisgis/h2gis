@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
         <modelVersion>4.0.0</modelVersion>
         <groupId>h2spatial</groupId>
         <artifactId>h2spatial</artifactId>
@@ -38,7 +38,7 @@
                 <repository>
                         <id>IRSTV</id>
                         <name>IRSTV repository</name>
-                        <url>sftp://irstv@www.orbisgis.org:/var/www/repo.orbisgis.org/htdocs</url>
+                        <url>scp://ateliersig@repo.orbisgis.org:/var/www/repo.orbisgis.org/</url>
                 </repository>
         </distributionManagement>
         <build>
@@ -52,5 +52,12 @@
                                 </configuration>
                         </plugin>
                 </plugins>
+                <extensions>
+                        <extension>
+                                <groupId>org.apache.maven.wagon</groupId> 
+                                <artifactId>wagon-ssh</artifactId> 
+                                <version>2.2</version> 
+                        </extension> 
+                </extensions>
         </build>
 </project>
