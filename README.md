@@ -12,6 +12,7 @@ develop.
 H2GIS is the main project for the new [OrbisGIS](http://www.orbisgis.org/) data
 management library and is divided into 2 subprojects:
 * H2Spatial
+
 H2Spatial is a set of functions that permit to extend H2 with spatial storage and analysis capabilities. 
 It includes  :
 
