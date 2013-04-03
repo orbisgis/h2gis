@@ -27,6 +27,6 @@ H2Spatial is licensed under the GPL 3 license terms.
 * H2Drivers
 
 H2Drivers is a collection of drivers to read and write new formats with H2. 
-H2Drivers take advantage of the TableEngine API to wrapp in the H2 table model file format as shapefile, csv, ascii...
+H2Drivers takes advantage of the TableEngine API to wrapp in the H2 table model file format as shapefile, csv, ascii...
 With the H2Drivers a user can execute SQL queries on another disk file format than H2.
 H2Drivers is licensed under the GPL 3 license terms.
