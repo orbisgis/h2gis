@@ -1,19 +1,15 @@
 H2GIS
 =====
 
-H2GIS is the main project for the new OrbisGIS data management library. 
+H2GIS is a spatial extension of the [H2](http://www.h2database.com/) database
+engine in the spirit of [PostGIS](http://postgis.net/). It adds support for
+managing spatial features and operations including a `Geometry` type, the [Open
+Geospatial Consortium](http://www.opengeospatial.org/) (OGC) [Simple Features
+for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL) functions and
+additional spatial functions that we (the [Atelier SIG](http://www.irstv.fr/))
+develop. 
 
-It's based on the H2 database and proposes to extend it to manage of spatial features and operations. 
-Our goal is to include spatial capabilities: a geometry type, spatial OGC functions (http://www.opengeospatial.org/standards/sfs) and thematic functions developed by the Atelier SIG team (http://www.irstv.fr/). 
-
-We plan to offer a spatial extension to H2 in the spirit of POSTGIS.
-
-H2GIS projet is divided in 2 sub-projects.
-
-
-H2Spatial
-
-
-
-
-H2Drivers
+H2GIS is the main project for the new [OrbisGIS](http://www.orbisgis.org/) data
+management library and is divided into 2 subprojects:
+* H2Spatial
+* H2Drivers
