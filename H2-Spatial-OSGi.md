@@ -1,0 +1,1 @@
+H2 spatial OSGi service could be registered through the [ScriptEngine](http://docs.oracle.com/javase/6/docs/api/javax/script/ScriptEngine.html) interface. The data stored in the [Bundle cache](http://www.osgi.org/javadoc/r4v43/core/org/osgi/framework/Bundle.html#getDataFile%28java.lang.String%29).
