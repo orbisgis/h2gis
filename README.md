@@ -24,10 +24,8 @@ including
 - R-Tree indexing
 
 ### H2Drivers
-H2Drivers is a collection of drivers to read and write new formats with H2.
-H2Drivers takes advantage of the TableEngine API to wrap in the H2 table model
-file format as shapefile, csv, ascii...  With the H2Drivers a user can execute
-SQL queries on another disk file format than H2.
-
+H2Drivers makes use of the TableEngine API to add H2 read/write support for file
+formats such as .shp and .csv. With H2Drivers, the user can execute SQL queries
+on file formats other than pure H2.
 
 Both H2Spatial and H2Drivers are licensed under the GPL 3 license terms.
