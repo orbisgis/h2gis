@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2spatial;
+package org.h2spatial.internal;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -110,7 +110,7 @@ import com.vividsolutions.jts.io.WKTReader;
  * Holmes.
  * 
  * Technical architecture (Java for spatial DB) JAVA Spatial Algorthims (JTS) | |
- * GeoSpatialFunctions (java) | | SQLCodegenerator : auto-Generated spatial DB
+ * GeoSpatialFunctions (java) | | CreateSpatialExtension : auto-Generated spatial DB
  * Bindings and SQL CREATE FUNCTION Bindings (java) | | JAVA DB
  * 
  * 
@@ -221,7 +221,7 @@ import com.vividsolutions.jts.io.WKTReader;
 
 public class GeoSpatialFunctions {
 
-	public GeoSpatialFunctions() {
+	private GeoSpatialFunctions() {
 	}
 
 	public static String GeoVersion() {
