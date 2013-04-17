@@ -9,7 +9,7 @@ for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL) functions and
 additional spatial functions that we (the [Atelier SIG](http://www.irstv.fr/))
 develop. 
 
-H2GIS is the main project for the new [OrbisGIS](http://www.orbisgis.org/) data
+H2GIS is the root project for the new [OrbisGIS](http://www.orbisgis.org/) data
 management library and is divided into two subprojects: H2Spatial and
 H2Drivers.
 
