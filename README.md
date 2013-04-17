@@ -15,6 +15,7 @@ management library and is divided into 2 subprojects:
 1. H2Spatial
 2. H2Drivers
 
+### H2Spatial
 H2Spatial extends H2 by adding spatial storage and analysis capabilities,
 including
 
@@ -24,6 +25,7 @@ including
 - spatial predicates (`ST_Intersects`, `ST_Contains`, etc.)
 - R-Tree indexing
 
+### H2Drivers
 H2Drivers is a collection of drivers to read and write new formats with H2.
 H2Drivers takes advantage of the TableEngine API to wrap in the H2 table model
 file format as shapefile, csv, ascii...  With the H2Drivers a user can execute
