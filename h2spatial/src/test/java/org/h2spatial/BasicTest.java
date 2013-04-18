@@ -137,8 +137,8 @@ public class BasicTest {
                     ResultSet rs = stat.executeQuery("SELECT * from POINT3D;");
                     ResultSetMetaData rsmd2 = rs.getMetaData();
                     WKBReader wkbReader = new WKBReader();
-                    byte valObj[] = (byte[]) null;
-                    Geometry geom = null;
+                    byte valObj[];
+                    Geometry geom;
                     boolean hasGeometryColumn = false;
                     for (; rs.next();) {
                             String columnTypeName = rsmd2.getColumnTypeName(2);

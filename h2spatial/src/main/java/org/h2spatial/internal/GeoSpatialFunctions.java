@@ -25,18 +25,7 @@
 package org.h2spatial.internal;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.h2.engine.Session;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
@@ -259,29 +248,6 @@ public class GeoSpatialFunctions {
 		return setWKBGeometry(geom, arg1);
 	}
 
-	public static void AddGeometryColumn(Session session, String schemaName,
-			String tableName, String columnName, int srid, String geomType,
-			int geomDimension) throws SQLException {
-		Connection conn = session.createConnection(false);
-		Statement stat = conn.createStatement();
-		stat.execute((new StringBuilder("ALTER TABLE ")).append(tableName)
-				.append(" ADD ").append(columnName).append(" geometry;")
-				.toString());
-		String insertIntoGeometry_columns = "INSERT INTO geometry_columns  VALUES(?,?,?,?,?,?,?);";
-		PreparedStatement prep = conn
-				.prepareStatement(insertIntoGeometry_columns);
-		prep.setString(1, "");
-		prep.setString(2, "");
-		prep.setString(3, tableName);
-		prep.setString(4, columnName);
-		prep.setInt(5, srid);
-		prep.setString(6, geomType);
-		prep.setInt(7, geomDimension);
-		prep.execute();
-		prep.close();
-		stat.close();
-	}
-
 	public static String ToString(byte arg0[]) throws IOException,
 			ParseException, ClassNotFoundException {
 		Geometry geom = getGeometry(arg0);
@@ -500,31 +466,6 @@ public class GeoSpatialFunctions {
 			ParseException, ClassNotFoundException {
 		Geometry geom = getGeometry(arg0);
 		return geom.isValid();
-	}
-
-	public static String getSpatialTables(Session session) throws SQLException {
-		Connection con = session.createConnection(false);
-		DatabaseMetaData databaseMeta = con.getMetaData();
-		String type[] = { "TABLE", "VIEW" };
-		ResultSet tables = databaseMeta.getTables(con.getCatalog(), null, "%",
-				type);
-		List spatialTableName = new ArrayList();
-		while (tables.next()) {
-			String tableName = tables.getString("TABLE_NAME");
-			String query = (new StringBuilder("select * from ")).append(
-					tableName).toString();
-			Statement stmt = con.createStatement();
-			ResultSet rs = stmt.executeQuery(query);
-			ResultSetMetaData rsmd = rs.getMetaData();
-			int nbCols = rsmd.getColumnCount();
-			for (int i = 1; i <= nbCols; i++) {
-				String typeSQL = rsmd.getColumnTypeName(i);
-				if (typeSQL.equals("GEOMETRY"))
-					spatialTableName.add(tableName);
-			}
-
-		}
-		return spatialTableName.toString();
 	}
 
 	static WKBReader wkbreader = new WKBReader();

@@ -25,30 +25,14 @@
 
 package org.h2spatial.osgi;
 
-import org.h2.util.OsgiDataSourceFactory;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
-import org.osgi.service.jdbc.DataSourceFactory;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
 
 /**
- * Publish H2Spatial service on OSGi
+ * {@see http://felix.apache.org/site/apache-felix-ipojo-junit4osgi-tutorial.html}
  * @author Nicolas Fortin
  */
-public class Activator implements BundleActivator {
-    @Override
-    public void start(BundleContext bundleContext) throws Exception {
-        Driver driver = Driver.loadSpatial();
-        Dictionary<String,String> properties = new Hashtable<String, String>();
-        properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, Driver.class.getName());
-        properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, "H2Spatial");
-        properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION, "1.0.0");
-        bundleContext.registerService(DataSourceFactory.class, new OsgiDataSourceFactory(driver), properties);
-    }
+public class BundleTest extends OSGiTestCase {
+    public void testH2SpatialService() throws Exception {
 
-    @Override
-    public void stop(BundleContext bundleContext) throws Exception {
-        Driver.unloadSpatial();
     }
 }

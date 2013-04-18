@@ -3,14 +3,15 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.h2</groupId>
+		<groupId>org.h2spatial</groupId>
 		<artifactId>h2gis</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>h2spatial</groupId>
+	<groupId>org.h2spatial</groupId>
 	<artifactId>h2spatial</artifactId>
 	<name>h2spatial</name>
 	<version>1.0.1</version>
+    <packaging>bundle</packaging>
 	<url>http://www.orbisgis.org</url>
 	<repositories>
 		<repository>
@@ -26,12 +27,6 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
-        <dependency>
-            <groupId>org.ops4j.pax.tinybundles</groupId>
-            <artifactId>tinybundles</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>
@@ -64,6 +59,20 @@
 	</distributionManagement>
 	<build>
 		<plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Private-Package>org.h2spatial.internal.*</Private-Package>
+                        <Bundle-Activator>org.h2spatial.osgi.Activator</Bundle-Activator>
+                        <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
+                        <Bundle-Category>JDBC</Bundle-Category>
+                    </instructions>
+                </configuration>
+            </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

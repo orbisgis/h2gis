@@ -25,9 +25,7 @@
 
 package org.h2spatial.osgi;
 
-import org.h2.message.TraceSystem;
 import org.h2spatial.CreateSpatialExtension;
-
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.DriverPropertyInfo;
@@ -70,7 +68,7 @@ public class Driver  extends org.h2.Driver {
                 DriverManager.deregisterDriver(org.h2.Driver.load());
             }
         } catch (SQLException e) {
-            TraceSystem.traceThrowable(e);
+            e.printStackTrace();
         }
         return INSTANCE;
     }
@@ -84,7 +82,7 @@ public class Driver  extends org.h2.Driver {
                 DriverManager.deregisterDriver(INSTANCE);
             }
         } catch (SQLException e) {
-            TraceSystem.traceThrowable(e);
+            e.printStackTrace();
         }
     }
     @Override
