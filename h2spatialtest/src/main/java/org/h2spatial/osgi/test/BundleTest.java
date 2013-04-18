@@ -23,9 +23,11 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.osgi;
+package org.h2spatial.osgi.test;
 
 import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
+import org.osgi.framework.ServiceReference;
+import org.osgi.service.jdbc.DataSourceFactory;
 
 /**
  * {@see http://felix.apache.org/site/apache-felix-ipojo-junit4osgi-tutorial.html}
@@ -33,6 +35,7 @@ import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
  */
 public class BundleTest extends OSGiTestCase {
     public void testH2SpatialService() throws Exception {
-
+        ServiceReference ref = getServiceReference(DataSourceFactory.class.getName(),"(&("+DataSourceFactory.OSGI_JDBC_DRIVER_NAME+"=H2Spatial))");
+        assertNotNull(ref);
     }
 }
