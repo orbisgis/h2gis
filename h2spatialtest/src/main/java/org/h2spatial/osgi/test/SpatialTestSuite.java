@@ -30,14 +30,16 @@
 package org.h2spatial.osgi.test;
 
 import junit.framework.Test;
-import junit.framework.TestSuite;
+import org.apache.felix.ipojo.junit4osgi.OSGiTestSuite;
+import org.osgi.framework.BundleContext;
 
 /**
+ * Collect all Unit test
  * @author Nicolas Fortin
  */
 public class SpatialTestSuite {
-    public static Test suite() {
-        TestSuite suite = new TestSuite("H2 Spatial Test Suite");
+    public static Test suite(BundleContext bc) {
+        OSGiTestSuite suite = new OSGiTestSuite("H2 Spatial Test Suite", bc);
         suite.addTestSuite(BundleTest.class);
         return suite;
     }

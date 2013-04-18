@@ -46,12 +46,12 @@ public class Driver  extends org.h2.Driver {
     public Connection connect(String url, Properties info) throws SQLException {
         Connection h2Connection = super.connect(url, info);
         if(h2Connection!=null) {
-            try {
+            //try {
                 CreateSpatialExtension.InitSpatialExtension(h2Connection);
-            } catch (SQLException ex) {
-                // Maybe user right is insufficient, log only the error
-                System.err.println("User right is insufficient to register spatial extension.\n"+ex.toString());
-            }
+            //} catch (SQLException ex) {
+            //    // Maybe user right is insufficient, log only the error
+            //    System.err.println("User right is insufficient to register spatial extension.\n"+ex.toString());
+            //}
         }
         return h2Connection;
     }

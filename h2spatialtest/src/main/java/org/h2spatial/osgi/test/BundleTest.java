@@ -50,12 +50,18 @@ public class BundleTest extends OSGiTestCase {
         return driver.connect(DATABASE_PATH,properties);
     }
     public void testH2SpatialService() throws Exception {
-        ServiceReference ref = getServiceReference(DataSourceFactory.class.getName(),"(&("+DataSourceFactory.OSGI_JDBC_DRIVER_NAME+"=H2Spatial))");
-        assertNotNull(ref);
-        Connection connection = getConnection((DataSourceFactory)getServiceObject(ref));
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS POINT2D");
-        stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
-        System.out.println("Geometry is OK !");
+        ServiceReference[] refs =  getContext().getServiceReferences(DataSourceFactory.class.getName(),
+                "(&(" + DataSourceFactory.OSGI_JDBC_DRIVER_NAME + "=H2Spatial))");
+            assertNotNull(refs);
+            assertEquals(refs.length,1); // h2spatial service
+            ServiceReference ref = refs[0];
+        try {
+            Connection connection = getConnection((DataSourceFactory)getServiceObject(ref));
+            Statement stat = connection.createStatement();
+            stat.execute("DROP TABLE IF EXISTS POINT2D");
+            stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
+        } finally {
+            getContext().ungetService(ref);
+        }
     }
 }

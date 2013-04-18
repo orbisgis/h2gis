@@ -8,6 +8,7 @@
     </parent>
     <artifactId>h2spatialtest</artifactId>
     <name>h2spatialtest</name>
+    <description>Integration Test and Unit test of H2Spatial in an OSGi environment</description>
     <version>1</version>
     <packaging>bundle</packaging>
     <properties>
