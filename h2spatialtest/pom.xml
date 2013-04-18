@@ -51,7 +51,7 @@
                             ${project.artifactId}
                         </Bundle-SymbolicName>
                         <Test-Suite>
-                            org.h2spatial.osgi.test.BundleTest
+                            org.h2spatial.osgi.test.SpatialTestSuite
                         </Test-Suite>
                     </instructions>
                 </configuration>

@@ -29,13 +29,33 @@ import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 
+import java.sql.Connection;
+import java.sql.Driver;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Properties;
+
 /**
  * {@see http://felix.apache.org/site/apache-felix-ipojo-junit4osgi-tutorial.html}
  * @author Nicolas Fortin
  */
 public class BundleTest extends OSGiTestCase {
+    private static final String DB_FILE_PATH = "target/test-resources/dbH2";
+    private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
+    private Connection getConnection(DataSourceFactory dataSourceFactory) throws SQLException{
+        Driver driver = dataSourceFactory.createDriver(null);
+        Properties properties = new Properties();
+        properties.put("user","sa");
+        properties.put("password","");
+        return driver.connect(DATABASE_PATH,properties);
+    }
     public void testH2SpatialService() throws Exception {
         ServiceReference ref = getServiceReference(DataSourceFactory.class.getName(),"(&("+DataSourceFactory.OSGI_JDBC_DRIVER_NAME+"=H2Spatial))");
         assertNotNull(ref);
+        Connection connection = getConnection((DataSourceFactory)getServiceObject(ref));
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS POINT2D");
+        stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
+        System.out.println("Geometry is OK !");
     }
 }

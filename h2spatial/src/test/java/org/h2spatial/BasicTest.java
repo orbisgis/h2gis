@@ -48,8 +48,8 @@ import static org.junit.Assert.*;
  * @author Erwan Bocher
  */
 public class BasicTest {
-        private static final String DB_FILE_PATH = "test-resources/dbH2";
-        private static final String DATABASE_PATH = "jdbc:h2:target/"+DB_FILE_PATH;
+        private static final String DB_FILE_PATH = "target/test-resources/dbH2";
+        private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
         @Before
         public void init() throws ClassNotFoundException {
             Class.forName("org.h2.Driver");
