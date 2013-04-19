@@ -44,22 +44,40 @@ public class CreateSpatialExtension {
     /**
      * Register GEOMETRY type and register spatial functions
      * @param connection Active H2 connection
+     * @param BundleSymbolicName OSGi Bundle symbolic name
+     * @param BundleVersion OSGi Bundle version
+     */
+    public static void InitSpatialExtension(Connection connection,String BundleSymbolicName,String BundleVersion) throws SQLException {
+        registerGeometryType(connection);
+        addSpatialFunctions(connection,BundleSymbolicName+":"+BundleVersion+":");
+    }
+
+    /**
+     * Register GEOMETRY type and register spatial functions
+     * @param connection Active H2 connection
      */
     public static void InitSpatialExtension(Connection connection) throws SQLException {
         registerGeometryType(connection);
-        addSpatialFunctions(connection);
+        addSpatialFunctions(connection,"");
     }
 
     private static void registerGeometryType(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         st.execute("CREATE DOMAIN IF NOT EXISTS GEOMETRY AS VARBINARY;");
     }
+
 	/*
 	 * Create java code to add function copy paste into
 	 * GeoSpatialFunctionsAddRemove to upload it
 	 */
 
-	private static void addSpatialFunctions(Connection connection) throws SQLException {
+    /**
+     *
+     * @param connection JDBC Connection
+     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version
+     * @throws SQLException
+     */
+	private static void addSpatialFunctions(Connection connection,String packagePrepend) throws SQLException {
 
 		ResultSet result = connection.createStatement()
 				.executeQuery("SELECT * FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_NAME='GEOVERSION';");
@@ -77,7 +95,7 @@ public class CreateSpatialExtension {
 				String functionClass = method.getDeclaringClass().getName();
                 st.execute("DROP ALIAS IF EXISTS " + functionName);
                 // Create alias, H2 does not support prepare statement on create alias
-                st.execute("CREATE ALIAS " + functionName + " FOR \"" + functionClass + "." + functionName + "\"");
+                st.execute("CREATE ALIAS " + functionName + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
 			}
 		}
 	}

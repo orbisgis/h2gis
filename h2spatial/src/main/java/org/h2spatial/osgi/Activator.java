@@ -40,6 +40,8 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         Driver driver = Driver.loadSpatial();
+        Driver.setBundleSymbolicName(bundleContext.getBundle().getSymbolicName());
+        Driver.setBundleVersion(bundleContext.getBundle().getVersion().toString());
         Dictionary<String,String> properties = new Hashtable<String, String>();
         properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, Driver.class.getName());
         properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, "H2Spatial");

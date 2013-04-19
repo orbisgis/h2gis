@@ -57,9 +57,13 @@ public class BundleTest extends OSGiTestCase {
             ServiceReference ref = refs[0];
         try {
             Connection connection = getConnection((DataSourceFactory)getServiceObject(ref));
-            Statement stat = connection.createStatement();
-            stat.execute("DROP TABLE IF EXISTS POINT2D");
-            stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
+            try {
+                Statement stat = connection.createStatement();
+                stat.execute("DROP TABLE IF EXISTS POINT2D");
+                stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
+            } finally {
+                connection.close();
+            }
         } finally {
             getContext().ungetService(ref);
         }

@@ -41,19 +41,39 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class Driver  extends org.h2.Driver {
     private final static AtomicBoolean REGISTERED = new AtomicBoolean(false);
     private static final Driver INSTANCE = new Driver();
+    private static String bundleSymbolicName = "";
+    private static String bundleVersion = "";
 
     @Override
     public Connection connect(String url, Properties info) throws SQLException {
         Connection h2Connection = super.connect(url, info);
         if(h2Connection!=null) {
-            //try {
-                CreateSpatialExtension.InitSpatialExtension(h2Connection);
-            //} catch (SQLException ex) {
-            //    // Maybe user right is insufficient, log only the error
-            //    System.err.println("User right is insufficient to register spatial extension.\n"+ex.toString());
-            //}
+            try {
+                if(bundleSymbolicName.isEmpty()) {
+                    CreateSpatialExtension.InitSpatialExtension(h2Connection);
+                } else {
+                    CreateSpatialExtension.InitSpatialExtension(h2Connection,bundleSymbolicName,bundleVersion);
+                }
+            } catch (SQLException ex) {
+                // Maybe user right is insufficient, log only the error
+                System.err.println("Spatial features cannot be installed due to the following error :\n"+ex.toString());
+            }
         }
         return h2Connection;
+    }
+
+    /**
+     * @param bundleSymbolicName The new bundle symbolic name value
+     */
+    public static void setBundleSymbolicName(String bundleSymbolicName) {
+        Driver.bundleSymbolicName = bundleSymbolicName;
+    }
+
+    /**
+     * @param bundleVersion The new bundle version value
+     */
+    public static void setBundleVersion(String bundleVersion) {
+        Driver.bundleVersion = bundleVersion;
     }
 
     /**
