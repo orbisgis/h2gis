@@ -50,6 +50,7 @@ public class CreateSpatialExtension {
     public static void InitSpatialExtension(Connection connection,String BundleSymbolicName,String BundleVersion) throws SQLException {
         registerGeometryType(connection);
         addSpatialFunctions(connection,BundleSymbolicName+":"+BundleVersion+":");
+        connection.commit();
     }
 
     /**
@@ -103,7 +104,7 @@ public class CreateSpatialExtension {
 	/*
 	 * Remove spatial type and functions from the current connection.
 	 */
-	public static void DisposeSpatialExtension(Connection connection) throws SQLException {
+	public static void disposeSpatialExtension(Connection connection) throws SQLException {
 		for (Method method : GeoSpatialFunctions.class.getDeclaredMethods()) {
 			String functionName = method.getName();
             connection.createStatement().execute("DROP ALIAS IF EXISTS " + functionName);

@@ -33,8 +33,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.Driver;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -48,32 +48,27 @@ import java.util.Properties;
 public class BundleTest extends OSGiTestCase {
     private static final String DB_FILE_PATH = "target/test-resources/dbH2";
     private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
-    private Connection getConnection(DataSourceFactory dataSourceFactory) throws SQLException{
-        Driver driver = dataSourceFactory.createDriver(null);
-        Properties properties = new Properties();
-        properties.put("user","sa");
-        properties.put("password","");
-        Connection connection = driver.connect(DATABASE_PATH,properties);
-        connection.setAutoCommit(true);
-        return connection;
-    }
+    private DataSource dataSource;
+    ServiceReference ref;
 
     /**
-     * Fetch the spatial service and open a connection
-     * @throws Exception
+     * Create data source
      */
-    public void testH2SpatialService() throws Exception {
-        ServiceReference[] refs =  getContext().getServiceReferences(DataSourceFactory.class.getName(),
-                "(&(" + DataSourceFactory.OSGI_JDBC_DRIVER_NAME + "=H2Spatial))");
-        assertNotNull(refs);
-        assertEquals(refs.length,1); // h2spatial service
-        ServiceReference ref = refs[0];
-        try {
-            Connection connection = getConnection((DataSourceFactory)getServiceObject(ref));
-            connection.close();
-        } finally {
-            getContext().ungetService(ref);
-        }
+    public void setUp() throws SQLException {
+        ref =  getContext().getServiceReference(DataSourceFactory.class.getName());
+        Properties properties = new Properties();
+        properties.put(DataSourceFactory.JDBC_URL,DATABASE_PATH);
+        properties.put(DataSourceFactory.JDBC_USER,"sa");
+        properties.put(DataSourceFactory.JDBC_PASSWORD,"");
+        dataSource = ((DataSourceFactory)getServiceObject(ref)).createDataSource(properties);
+        getBundleContext().registerService(DataSource.class.getName(),dataSource,null);
+    }
+
+    public void tearDown() {
+        getContext().ungetService(ref);
+    }
+    private Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
     /**
@@ -81,63 +76,51 @@ public class BundleTest extends OSGiTestCase {
      * @throws Exception
      */
     public void testCreateGeometryTable() throws Exception  {
-        ServiceReference[] refs =  getContext().getServiceReferences(DataSourceFactory.class.getName(),
-                "(&(" + DataSourceFactory.OSGI_JDBC_DRIVER_NAME + "=H2Spatial))");
-        assertNotNull(refs);
-        assertEquals(refs.length,1); // h2spatial service
-        ServiceReference ref = refs[0];
+        Connection connection = getConnection();
         try {
-            Connection connection = getConnection((DataSourceFactory)getServiceObject(ref));
-            try {
-                Statement stat = connection.createStatement();
-                stat.execute("DROP TABLE IF EXISTS POINT2D");
-                stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
-                PreparedStatement insert = connection.prepareStatement("INSERT INTO POINT2D VALUES (?,?)");
-                insert.setInt(1,0);
-                GeometryFactory f = new GeometryFactory();
-                WKBWriter wkbWriter = new WKBWriter();
-                insert.setBytes(2, wkbWriter.write(f.createPoint(new Coordinate(5, 8, 15))));
-                insert.execute();
-            } finally {
-                connection.close();
-            }
-            System.out.println("Table POINT2D created..");
+            Statement stat = connection.createStatement();
+            stat.execute("DROP TABLE IF EXISTS POINT2D");
+            stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
+            PreparedStatement insert = connection.prepareStatement("INSERT INTO POINT2D VALUES (?,?)");
+            insert.setInt(1,0);
+            GeometryFactory f = new GeometryFactory();
+            WKBWriter wkbWriter = new WKBWriter();
+            insert.setBytes(2, wkbWriter.write(f.createPoint(new Coordinate(5, 8, 15))));
+            insert.execute();
         } finally {
-            getContext().ungetService(ref);
+            connection.close();
+        }
+        System.out.println("Table POINT2D created..");
+    }
+
+    /**
+     * Test alias creation with local method through SQL request
+     * @throws Exception
+     */
+    public void testCustomCreateAlias() throws Exception {
+        Connection connection = getConnection();
+        try {
+            Statement stat = connection.createStatement();
+            Bundle bundle = getBundleContext().getBundle();
+            String bundleLocation = bundle.getSymbolicName()+":"+bundle.getVersion().toString();
+            stat.execute("DROP ALIAS IF EXISTS StringCapitalize");
+            stat.execute("CREATE ALIAS StringCapitalize FOR \""+bundleLocation+":"+BundleTest.class.getName()+".StringCapitalize\"");
+            stat.execute("DROP TABLE IF EXISTS TEST");
+            stat.execute("CREATE TABLE TEST (fld VARCHAR)");
+            stat.execute("INSERT INTO TEST VALUES ('didier')");
+            ResultSet source = stat.executeQuery("select StringCapitalize(fld) as fld from test");
+            assertTrue(source.next());
+            assertEquals(source.getString("fld"), "DIDIER");
+        } finally {
+            connection.close();
         }
     }
 
     /**
-     * Test alias creation with local method
-     * @throws Exception
+     * used by {@link #testCustomCreateAlias}
+     * @param inputString A string
+     * @return Upper case version of parameter
      */
-    public void testCustomCreateAlias() throws Exception {
-        ServiceReference[] refs =  getContext().getServiceReferences(DataSourceFactory.class.getName(),
-                "(&(" + DataSourceFactory.OSGI_JDBC_DRIVER_NAME + "=H2Spatial))");
-        assertNotNull(refs);
-        assertEquals(refs.length,1); // h2spatial service
-        ServiceReference ref = refs[0];
-        try {
-            Connection connection = getConnection((DataSourceFactory)getServiceObject(ref));
-            try {
-                Statement stat = connection.createStatement();
-                Bundle bundle = getBundleContext().getBundle();
-                String bundleLocation = bundle.getSymbolicName()+":"+bundle.getVersion().toString();
-                stat.execute("DROP ALIAS IF EXISTS StringCapitalize");
-                stat.execute("CREATE ALIAS StringCapitalize FOR \""+bundleLocation+":"+BundleTest.class.getName()+".StringCapitalize\"");
-                stat.execute("DROP TABLE IF EXISTS TEST");
-                stat.execute("CREATE TABLE TEST (fld VARCHAR)");
-                stat.execute("INSERT INTO TEST VALUES ('didier')");
-                ResultSet source = stat.executeQuery("select StringCapitalize(fld) as fld from test");
-                assertTrue(source.next());
-                assertEquals(source.getString("fld"), "DIDIER");
-            } finally {
-                connection.close();
-            }
-        } finally {
-            getContext().ungetService(ref);
-        }
-    }
     public static String StringCapitalize(String inputString) {
         return inputString.toUpperCase();
     }

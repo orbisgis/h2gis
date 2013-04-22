@@ -25,32 +25,29 @@
 
 package org.h2spatial.osgi;
 
-import org.h2.util.OsgiDataSourceFactory;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.jdbc.DataSourceFactory;
-import java.util.Dictionary;
-import java.util.Hashtable;
+import org.osgi.util.tracker.ServiceTracker;
+
+import javax.sql.DataSource;
 
 /**
- * Publish H2Spatial service on OSGi
+ * Publish H2Spatial service on OSGi. Track for DataSource service, register spatial features into it.
  * @author Nicolas Fortin
  */
 public class Activator implements BundleActivator {
+    private ServiceTracker<DataSource,DataSource> databaseTracker;
+
     @Override
     public void start(BundleContext bundleContext) throws Exception {
-        Driver driver = Driver.loadSpatial();
-        Driver.setBundleSymbolicName(bundleContext.getBundle().getSymbolicName());
-        Driver.setBundleVersion(bundleContext.getBundle().getVersion().toString());
-        Dictionary<String,String> properties = new Hashtable<String, String>();
-        properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_CLASS, Driver.class.getName());
-        properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, "H2Spatial");
-        properties.put(DataSourceFactory.OSGI_JDBC_DRIVER_VERSION, "1.0.0");
-        bundleContext.registerService(DataSourceFactory.class, new OsgiDataSourceFactory(driver), properties);
+        DataSourceTracker dataSourceTracker = new DataSourceTracker(bundleContext);
+        databaseTracker = new ServiceTracker<DataSource, DataSource>(bundleContext,DataSource.class,dataSourceTracker);
+        databaseTracker.open();
     }
 
     @Override
     public void stop(BundleContext bundleContext) throws Exception {
-        Driver.unloadSpatial();
+        databaseTracker.close();
     }
 }
