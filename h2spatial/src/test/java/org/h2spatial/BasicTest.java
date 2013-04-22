@@ -84,10 +84,15 @@ public class BasicTest {
                     stat.execute("DROP TABLE IF EXISTS POINT2D");
 
                     stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
-                    stat.execute("INSERT INTO POINT2D (gid, the_geom) VALUES(1, GeomFromText('POINT(0 12)', 27582))");
+                    stat.execute("INSERT INTO POINT2D (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12)', 27582))");
 
 
                     ResultSet rs = stat.executeQuery("SELECT * from POINT2D;");
+                    ResultSetMetaData rsmd2 = rs.getMetaData();
+
+                    assertEquals(CreateSpatialExtension.GEOMETRY_BASE_TYPE,rsmd2.getColumnTypeName(2));
+
+                    /*
                     ResultSetMetaData rsmd2 = rs.getMetaData();
                     WKBReader wkbReader = new WKBReader();
                     byte valObj[];
@@ -108,7 +113,7 @@ public class BasicTest {
 
                     }
                     assertTrue(hasGeometryColumn);
-
+                    */
 
                     stat.close();
                 } finally {
@@ -130,11 +135,16 @@ public class BasicTest {
                     stat.execute("DROP TABLE IF EXISTS POINT3D");
 
                     stat.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
-                    stat.execute("INSERT INTO POINT3D (gid, the_geom) VALUES(1, GeomFromText('POINT(0 12 3)', 27582))");
+                    stat.execute("INSERT INTO POINT3D (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12 3)', 27582))");
 
 
 
                     ResultSet rs = stat.executeQuery("SELECT * from POINT3D;");
+                    ResultSetMetaData rsmd2 = rs.getMetaData();
+
+                    assertEquals(CreateSpatialExtension.GEOMETRY_BASE_TYPE,rsmd2.getColumnTypeName(2));
+
+                    /*
                     ResultSetMetaData rsmd2 = rs.getMetaData();
                     WKBReader wkbReader = new WKBReader();
                     byte valObj[];
@@ -154,6 +164,7 @@ public class BasicTest {
 
                     }
                     assertTrue(hasGeometryColumn);
+                    */
                     stat.close();
                 } finally {
                     con.close();
@@ -187,7 +198,7 @@ public class BasicTest {
                     stat.execute("DROP TABLE IF EXISTS POINT3D");
 
                     stat.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
-                    stat.execute("INSERT INTO POINT3D (gid, the_geom) VALUES(1, GeomFromText('POINT(0 12)', 27582))");
+                    stat.execute("INSERT INTO POINT3D (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12)', 27582))");
 
                     ResultSet rs = stat.executeQuery("SELECT * from POINT3D;");
                     ResultSetMetaData rsmd2 = rs.getMetaData();

@@ -36,9 +36,11 @@ package org.h2spatialapi;
  * Registering this interface as an OSGi service will add this function in h2spatial linked with a DataSource service.
  * @author Nicolas Fortin
  */
-public interface ScalarFunction {
+public interface ScalarFunction extends Function {
     /**
-     * @return The Java name of the function
+     * Returns Java name of static methods in this class to expose in database,
+     * theses methods are under the same alias but with different number of arguments.
+     * @return The Java name of static methods
      */
-    String getJavaFunctionName();
+    String getJavaStaticMethod();
 }

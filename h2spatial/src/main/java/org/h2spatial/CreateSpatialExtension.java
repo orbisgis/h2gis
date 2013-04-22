@@ -25,10 +25,11 @@
 package org.h2spatial;
 
 import org.h2spatial.internal.GeoSpatialFunctions;
-
+import org.h2spatial.internal.ST_GeomFromText;
+import org.h2spatialapi.Function;
+import org.h2spatialapi.ScalarFunction;
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -39,8 +40,14 @@ import java.sql.Statement;
  */
 public class CreateSpatialExtension {
     /** H2 base type for geometry column {@link java.sql.ResultSetMetaData#getColumnTypeName(int)} */
-    public static final String GEOMETRY_BASE_TYPE = "VARBINARY";
+    public static final String GEOMETRY_BASE_TYPE = "OTHER";
 
+    /**
+     * @return instance of all built-ins functions
+     */
+    public static Function[] getBuiltInsFunctions() {
+        return new Function[] {new ST_GeomFromText()};
+    }
     /**
      * Register GEOMETRY type and register spatial functions
      * @param connection Active H2 connection
@@ -64,41 +71,48 @@ public class CreateSpatialExtension {
 
     private static void registerGeometryType(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("CREATE DOMAIN IF NOT EXISTS GEOMETRY AS VARBINARY;");
+        st.execute("CREATE DOMAIN IF NOT EXISTS GEOMETRY AS "+GEOMETRY_BASE_TYPE+";");
     }
-
-	/*
+    private static String getStringProperty(Function function, String propertyKey) {
+        Object value = function.getProperty(propertyKey);
+        return value instanceof String ? (String)value : "";
+    }
+	/**
 	 * Create java code to add function copy paste into
 	 * GeoSpatialFunctionsAddRemove to upload it
+	 * @param st SQL Statement
+	 * @param function Function instance
+     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version
 	 */
+    public static void registerFunction(Statement st,Function function,String packagePrepend) throws SQLException {
+        String functionClass = function.getClass().getName();
+        String functionAlias = getStringProperty(function,Function.PROP_NAME);
+        if(functionAlias.isEmpty()) {
+            functionAlias = function.getClass().getSimpleName();
+        }
+        String functionName=null;
+        if(function instanceof ScalarFunction) {
+            ScalarFunction scalarFunction = (ScalarFunction)function;
+            functionName = scalarFunction.getJavaStaticMethod();
+        }
+        if(functionName!=null) {
+            st.execute("DROP ALIAS IF EXISTS " + functionAlias);
+            // Create alias, H2 does not support prepare statement on create alias
+            st.execute("CREATE ALIAS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
+        }
+    }
 
     /**
-     *
+     * Register all built-ins function
      * @param connection JDBC Connection
      * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version
      * @throws SQLException
      */
 	private static void addSpatialFunctions(Connection connection,String packagePrepend) throws SQLException {
-
-		ResultSet result = connection.createStatement()
-				.executeQuery("SELECT * FROM INFORMATION_SCHEMA.FUNCTION_ALIASES WHERE ALIAS_NAME='GEOVERSION';");
-
-		// we need to test if the geospatial functions exist
-
-		if (!result.next()) {
-
-			// This method is used to limit the number of blob files.
-			// The data access is increased.
-            Statement st = connection.createStatement();
-			for (Method method : GeoSpatialFunctions.class.getDeclaredMethods()) {
-                // Drop alias if exists
-				String functionName = method.getName();
-				String functionClass = method.getDeclaringClass().getName();
-                st.execute("DROP ALIAS IF EXISTS " + functionName);
-                // Create alias, H2 does not support prepare statement on create alias
-                st.execute("CREATE ALIAS " + functionName + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
-			}
-		}
+        Statement st = connection.createStatement();
+        for(Function function : getBuiltInsFunctions()) {
+            registerFunction(st,function,packagePrepend);
+        }
 	}
 
 	/*

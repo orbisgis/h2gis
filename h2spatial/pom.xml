@@ -55,6 +55,11 @@
             <version>4.3.1</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial-api</artifactId>
+            <version>1.0.1</version>
+        </dependency>
 	</dependencies>
 	<distributionManagement>
 		<repository>

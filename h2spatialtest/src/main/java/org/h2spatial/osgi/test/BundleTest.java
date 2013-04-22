@@ -26,6 +26,7 @@
 package org.h2spatial.osgi.test;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKBWriter;
 import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
@@ -101,10 +102,7 @@ public class BundleTest extends OSGiTestCase {
         Connection connection = getConnection();
         try {
             Statement stat = connection.createStatement();
-            Bundle bundle = getBundleContext().getBundle();
-            String bundleLocation = bundle.getSymbolicName()+":"+bundle.getVersion().toString();
-            stat.execute("DROP ALIAS IF EXISTS StringCapitalize");
-            stat.execute("CREATE ALIAS StringCapitalize FOR \""+bundleLocation+":"+BundleTest.class.getName()+".StringCapitalize\"");
+            createAlias(stat, "StringCapitalize");
             stat.execute("DROP TABLE IF EXISTS TEST");
             stat.execute("CREATE TABLE TEST (fld VARCHAR)");
             stat.execute("INSERT INTO TEST VALUES ('didier')");
@@ -114,6 +112,40 @@ public class BundleTest extends OSGiTestCase {
         } finally {
             connection.close();
         }
+    }
+
+    /**
+     * Test alias creation with local method through SQL request
+     * @throws Exception
+     */
+    public void testCustomCreateGeometryFunctionAlias() throws Exception {
+        Connection connection = getConnection();
+        try {
+            Statement stat = connection.createStatement();
+            createAlias(stat,"UT_AREA");
+            stat.execute("DROP TABLE IF EXISTS TEST");
+            stat.execute("CREATE TABLE TEST (the_geom GEOMETRY)");
+            PreparedStatement pStat = connection.prepareStatement("INSERT INTO TEST VALUES (GeomFromText(?, ?))");
+            pStat.setString(1,"POINT(0 12)"); //    POLYGON(0 12, 0 14, 5 14, 5 12, 0 12)
+            pStat.setInt(2,27582);
+            pStat.execute();
+            ResultSet source = stat.executeQuery("select UT_AREA(the_geom) as area from test");
+            assertTrue(source.next());
+            assertEquals(source.getString("area"), 55.54);
+        } finally {
+            connection.close();
+        }
+    }
+
+    private void createAlias(Statement stat, String functionName) throws SQLException {
+        Bundle bundle = getBundleContext().getBundle();
+        String bundleLocation = bundle.getSymbolicName()+":"+bundle.getVersion().toString();
+        stat.execute("DROP ALIAS IF EXISTS "+functionName);
+        stat.execute("CREATE ALIAS "+functionName+" FOR \""+bundleLocation+":"+BundleTest.class.getName()+"."+functionName+"\"");
+    }
+
+    public static double UT_AREA(Geometry geometry) {
+        return geometry.getArea();
     }
 
     /**
