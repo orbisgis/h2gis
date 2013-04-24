@@ -52,7 +52,7 @@ import com.vividsolutions.jts.io.WKTReader;
  * @version 1.0
  * @date 13/11/2006
  * @licence CeCILL
- * @see http://www.cecill.info/
+ * @see <a href="http://www.cecill.info">http://www.cecill.info</a>
  * 
  * Introduction
  * 
@@ -213,6 +213,22 @@ public class GeoSpatialFunctions {
 	private GeoSpatialFunctions() {
 	}
 
+    /**
+     * @param bytes Byte array or null
+     * @return True if bytes is Geometry or if bytes is null
+     */
+    public static Boolean IsGeometryOrNull(byte[] bytes) {
+        if(bytes==null) {
+            return true;
+        }
+        WKBReader wkbReader = new WKBReader();
+        try {
+            wkbReader.read(bytes);
+            return true;
+        } catch (ParseException ex) {
+            return false;
+        }
+    }
 	public static String GeoVersion() {
 		return "0.9";
 	}

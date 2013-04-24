@@ -34,9 +34,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * This class can be used to build a sql script for H2 spatial functions.
- * 
+ * Add spatial features to an H2 database
+ *
+ * Execute the following sql to init spatial features :
+ * <pre>
+ * CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR
+ *      &quot;org.h2spatial.CreateSpatialExtension.initSpatialExtension&quot;;
+ * CALL SPATIAL_INIT();
+ * </pre>
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class CreateSpatialExtension {
     /** H2 base type for geometry column {@link java.sql.ResultSetMetaData#getColumnTypeName(int)} */
@@ -54,9 +61,10 @@ public class CreateSpatialExtension {
      * @param BundleSymbolicName OSGi Bundle symbolic name
      * @param BundleVersion OSGi Bundle version
      */
-    public static void InitSpatialExtension(Connection connection,String BundleSymbolicName,String BundleVersion) throws SQLException {
-        registerGeometryType(connection);
-        addSpatialFunctions(connection,BundleSymbolicName+":"+BundleVersion+":");
+    public static void initSpatialExtension(Connection connection, String BundleSymbolicName, String BundleVersion) throws SQLException {
+        String packagePrepend = BundleSymbolicName+":"+BundleVersion+":";
+        registerGeometryType(connection,packagePrepend);
+        addSpatialFunctions(connection,packagePrepend);
         connection.commit();
     }
 
@@ -64,14 +72,15 @@ public class CreateSpatialExtension {
      * Register GEOMETRY type and register spatial functions
      * @param connection Active H2 connection
      */
-    public static void InitSpatialExtension(Connection connection) throws SQLException {
-        registerGeometryType(connection);
+    public static void initSpatialExtension(Connection connection) throws SQLException {
+        registerGeometryType(connection,"");
         addSpatialFunctions(connection,"");
     }
 
-    private static void registerGeometryType(Connection connection) throws SQLException {
+    private static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("CREATE DOMAIN IF NOT EXISTS GEOMETRY AS "+GEOMETRY_BASE_TYPE+";");
+        st.execute("CREATE ALIAS IF NOT EXISTS IS_GEOMETRY_OR_NULL FOR \""+packagePrepend+GeoSpatialFunctions.class.getName()+".IsGeometryOrNull"+"\";");
+        st.execute("CREATE DOMAIN IF NOT EXISTS GEOMETRY AS "+GEOMETRY_BASE_TYPE+" CHECK IS_GEOMETRY_OR_NULL(VALUE);");
     }
     private static String getStringProperty(Function function, String propertyKey) {
         Object value = function.getProperty(propertyKey);

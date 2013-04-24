@@ -78,7 +78,7 @@ public class BasicTest {
                 Connection con = DriverManager.getConnection(DATABASE_PATH,
                         "sa", "");
                 try {
-                    CreateSpatialExtension.InitSpatialExtension(con);
+                    CreateSpatialExtension.initSpatialExtension(con);
                     final Statement stat = con.createStatement();
 
                     stat.execute("DROP TABLE IF EXISTS POINT2D");
@@ -128,7 +128,7 @@ public class BasicTest {
                 Connection con = DriverManager.getConnection(DATABASE_PATH,
                         "sa", "");
                 try {
-                    CreateSpatialExtension.InitSpatialExtension(con);
+                    CreateSpatialExtension.initSpatialExtension(con);
 
                     final Statement stat = con.createStatement();
 
@@ -176,7 +176,7 @@ public class BasicTest {
             Connection con = DriverManager.getConnection(DATABASE_PATH,
                     "sa", "");
             try {
-                CreateSpatialExtension.InitSpatialExtension(con);
+                CreateSpatialExtension.initSpatialExtension(con);
 
                 final Statement stat = con.createStatement();
                 stat.execute("DROP TABLE IF EXISTS GEOMTABLE;");
@@ -191,7 +191,7 @@ public class BasicTest {
                 Connection con = DriverManager.getConnection(DATABASE_PATH,
                         "sa", "");
                 try {
-                    CreateSpatialExtension.InitSpatialExtension(con);
+                    CreateSpatialExtension.initSpatialExtension(con);
 
                     final Statement stat = con.createStatement();
 

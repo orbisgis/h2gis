@@ -53,8 +53,8 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Da
         DataSource dataSource = bundleContext.getService(dataSourceServiceReference);
         try {
             Connection connection = dataSource.getConnection();
-            CreateSpatialExtension.InitSpatialExtension(connection,
-                    bundleContext.getBundle().getSymbolicName(),bundleContext.getBundle().getVersion().toString());
+            CreateSpatialExtension.initSpatialExtension(connection,
+                    bundleContext.getBundle().getSymbolicName(), bundleContext.getBundle().getVersion().toString());
             connection.close();
         } catch (SQLException ex) {
             System.err.print(ex.toString());
