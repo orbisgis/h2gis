@@ -31,6 +31,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKBWriter;
+import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.io.WKTWriter;
 import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
@@ -134,6 +136,31 @@ public class BundleTest extends OSGiTestCase {
             ResultSet source = stat.executeQuery("select UT_AREA(the_geom) as area from test");
             assertTrue(source.next());
             assertEquals(100.0,Double.valueOf(source.getString("area")),1e-8);
+        } finally {
+            connection.close();
+        }
+    }
+
+    /**
+     * Test read geometry as string
+     * @throws Exception
+     */
+    public void testGeometryString() throws Exception {
+        Connection connection = getConnection();
+        try {
+            String geoString = "POLYGON((0 0,10 0,10 10,0 10,0 0))";
+            String wktGeo = (new WKTWriter().write(new WKTReader().read(geoString)));
+            Statement stat = connection.createStatement();
+            createAlias(stat,"UT_AREA");
+            stat.execute("DROP TABLE IF EXISTS TEST");
+            stat.execute("CREATE TABLE TEST (the_geom GEOMETRY)");
+            PreparedStatement pStat = connection.prepareStatement("INSERT INTO TEST VALUES (ST_GeomFromText(?, ?))");
+            pStat.setString(1, geoString);
+            pStat.setInt(2, 27582);
+            pStat.execute();
+            ResultSet source = stat.executeQuery("select the_geom from test");
+            assertTrue(source.next());
+            assertEquals(wktGeo,source.getString("the_geom"));
         } finally {
             connection.close();
         }
