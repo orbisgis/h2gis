@@ -125,13 +125,13 @@ public class BundleTest extends OSGiTestCase {
             createAlias(stat,"UT_AREA");
             stat.execute("DROP TABLE IF EXISTS TEST");
             stat.execute("CREATE TABLE TEST (the_geom GEOMETRY)");
-            PreparedStatement pStat = connection.prepareStatement("INSERT INTO TEST VALUES (GeomFromText(?, ?))");
-            pStat.setString(1,"POINT(0 12)"); //    POLYGON(0 12, 0 14, 5 14, 5 12, 0 12)
+            PreparedStatement pStat = connection.prepareStatement("INSERT INTO TEST VALUES (ST_GeomFromText(?, ?))");
+            pStat.setString(1,"POLYGON((0 0,10 0,10 10,0 10,0 0))"); //    POLYGON(0 12, 0 14, 5 14, 5 12, 0 12)
             pStat.setInt(2,27582);
             pStat.execute();
             ResultSet source = stat.executeQuery("select UT_AREA(the_geom) as area from test");
             assertTrue(source.next());
-            assertEquals(source.getString("area"), 55.54);
+            assertEquals(100.0,Double.valueOf(source.getString("area")),1e-8);
         } finally {
             connection.close();
         }
