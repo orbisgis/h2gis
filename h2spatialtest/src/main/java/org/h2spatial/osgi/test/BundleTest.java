@@ -28,6 +28,8 @@ package org.h2spatial.osgi.test;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKBWriter;
 import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
 import org.osgi.framework.Bundle;
@@ -155,5 +157,40 @@ public class BundleTest extends OSGiTestCase {
      */
     public static String StringCapitalize(String inputString) {
         return inputString.toUpperCase();
+    }
+
+
+    public static Boolean IsValidGeometry(byte[] bytes) {
+        WKBReader wkbReader = new WKBReader();
+        try {
+            Geometry geom = wkbReader.read(bytes);
+            return geom.isValid();
+        } catch (ParseException ex) {
+            return false;
+        }
+    }
+
+
+    /**
+     * Test bytes of generated geometry
+     * @throws Exception
+     */
+    public void testGeometryBytes() throws Exception {
+        Connection connection = getConnection();
+        try {
+            Statement stat = connection.createStatement();
+            createAlias(stat,"IsValidGeometry");
+            stat.execute("DROP TABLE IF EXISTS TEST");
+            stat.execute("CREATE TABLE TEST (the_geom GEOMETRY)");
+            PreparedStatement pStat = connection.prepareStatement("INSERT INTO TEST VALUES (ST_GeomFromText(?, ?))");
+            pStat.setString(1,"POLYGON((0 0,10 0,10 10,0 10,0 0))"); //    POLYGON(0 12, 0 14, 5 14, 5 12, 0 12)
+            pStat.setInt(2,27572);
+            pStat.execute();
+            ResultSet source = stat.executeQuery("select IsValidGeometry(the_geom) as valid from test");
+            assertTrue(source.next());
+            assertTrue(source.getBoolean("valid"));
+        } finally {
+            connection.close();
+        }
     }
 }
