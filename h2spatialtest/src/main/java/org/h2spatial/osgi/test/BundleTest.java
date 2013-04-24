@@ -34,11 +34,13 @@ import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
+import org.h2spatial.ValueGeometry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
+import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -54,19 +56,30 @@ public class BundleTest extends OSGiTestCase {
     private static final String DB_FILE_PATH = "target/test-resources/dbH2";
     private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
     private DataSource dataSource;
-    ServiceReference ref;
+    private ServiceReference ref;
 
     /**
      * Create data source
      */
     public void setUp() throws SQLException {
+        // Find if DataSource service is already online
+
+
         ref =  getContext().getServiceReference(DataSourceFactory.class.getName());
         Properties properties = new Properties();
         properties.put(DataSourceFactory.JDBC_URL,DATABASE_PATH);
         properties.put(DataSourceFactory.JDBC_USER,"sa");
         properties.put(DataSourceFactory.JDBC_PASSWORD,"");
         dataSource = ((DataSourceFactory)getServiceObject(ref)).createDataSource(properties);
-        getBundleContext().registerService(DataSource.class.getName(),dataSource,null);
+        if(getContext().getServiceReference(DataSource.class.getName())==null) {
+            // First UnitTest
+            // Delete database
+            File dbFile = new File(DB_FILE_PATH+".h2.db");
+            if(dbFile.exists()) {
+                assertTrue(dbFile.delete());
+            }
+            getBundleContext().registerService(DataSource.class.getName(),dataSource,null);
+        }
     }
 
     public void tearDown() {
@@ -85,17 +98,19 @@ public class BundleTest extends OSGiTestCase {
         try {
             Statement stat = connection.createStatement();
             stat.execute("DROP TABLE IF EXISTS POINT2D");
-            stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
-            PreparedStatement insert = connection.prepareStatement("INSERT INTO POINT2D VALUES (?,?)");
-            insert.setInt(1,0);
+            stat.execute("CREATE TABLE POINT2D (gid int PRIMARY KEY AUTO_INCREMENT , the_geom GEOMETRY)");
+            PreparedStatement insert = connection.prepareStatement("INSERT INTO POINT2D (the_geom) VALUES (?)");
             GeometryFactory f = new GeometryFactory();
-            WKBWriter wkbWriter = new WKBWriter();
-            insert.setBytes(2, wkbWriter.write(f.createPoint(new Coordinate(5, 8, 15))));
+            insert.setObject(1, new ValueGeometry(f.createPoint(new Coordinate(5, 8, 15))));
             insert.execute();
+            // Read the value
+            ResultSet rs = stat.executeQuery("select the_geom from POINT2D");
+            assertTrue(rs.next());
+            assertEquals(ValueGeometry.class, rs.getObject(1).getClass());
+            assertEquals(f.createPoint(new Coordinate(5, 8, 15)),((ValueGeometry)rs.getObject(1)).getValue());
         } finally {
             connection.close();
         }
-        System.out.println("Table POINT2D created..");
     }
 
     /**

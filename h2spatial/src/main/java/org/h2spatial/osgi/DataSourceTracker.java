@@ -27,6 +27,7 @@ package org.h2spatial.osgi;
 
 import org.h2spatial.CreateSpatialExtension;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 
@@ -37,7 +38,7 @@ import java.sql.SQLException;
 /**
  * @author Nicolas Fortin
  */
-public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,DataSource> {
+public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,FunctionTracker> {
     private BundleContext bundleContext;
 
     /**
@@ -49,7 +50,7 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Da
     }
 
     @Override
-    public DataSource addingService(ServiceReference<DataSource> dataSourceServiceReference) {
+    public FunctionTracker addingService(ServiceReference<DataSource> dataSourceServiceReference) {
         DataSource dataSource = bundleContext.getService(dataSourceServiceReference);
         try {
             Connection connection = dataSource.getConnection();
@@ -59,20 +60,26 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Da
         } catch (SQLException ex) {
             System.err.print(ex.toString());
         }
-        return dataSource;
-    }
-
-    @Override
-    public void modifiedService(ServiceReference<DataSource> dataSourceServiceReference, DataSource dataSource) {
-
-    }
-
-    @Override
-    public void removedService(ServiceReference<DataSource> dataSourceServiceReference, DataSource dataSource) {
         try {
-            Connection connection = dataSource.getConnection();
+            FunctionTracker functionTracker = new FunctionTracker(dataSource,bundleContext);
+            functionTracker.open();
+            return functionTracker;
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    @Override
+    public void modifiedService(ServiceReference<DataSource> dataSourceServiceReference, FunctionTracker functionTracker) {
+
+    }
+
+    @Override
+    public void removedService(ServiceReference<DataSource> dataSourceServiceReference, FunctionTracker functionTracker) {
+        try {
+            Connection connection = functionTracker.getConnection();
             CreateSpatialExtension.disposeSpatialExtension(connection);
-            connection.close();
+            functionTracker.close();
         } catch (SQLException ex) {
             System.err.print(ex.toString());
         }

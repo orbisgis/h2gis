@@ -33,6 +33,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKBWriter;
+import com.vividsolutions.jts.io.WKTWriter;
 import org.h2.value.CompareMode;
 import org.h2.value.Value;
 import java.io.Serializable;
@@ -45,6 +46,7 @@ import java.sql.SQLException;
 public class ValueGeometry extends Value implements Serializable {
     private static final long serialVersionUID = 3710022674420076702L;
     private static final WKBWriter WKB_WRITER = new WKBWriter();
+    private static final WKTWriter WKT_WRITER = new WKTWriter();
     /** Keep null until the method getValue is called */
     private Geometry value;
 
@@ -54,12 +56,6 @@ public class ValueGeometry extends Value implements Serializable {
      */
     public ValueGeometry(Geometry value) {
         this.value = value;
-    }
-
-    /**
-     * Default constructor, used by de-serialization
-     */
-    public ValueGeometry() {
     }
 
     /**
@@ -81,7 +77,7 @@ public class ValueGeometry extends Value implements Serializable {
 
     @Override
     public String getSQL() {
-        return "ST_GeomFromText('"+getString()+"')";
+        return getString();
     }
 
     @Override
@@ -101,7 +97,7 @@ public class ValueGeometry extends Value implements Serializable {
 
     @Override
     public String getString() {
-        return getValue().toString();
+        return WKT_WRITER.write(getValue());
     }
 
     @Override

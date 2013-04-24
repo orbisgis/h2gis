@@ -24,6 +24,9 @@
  */
 package org.h2spatial;
 
+import com.vividsolutions.jts.io.WKBReader;
+import org.h2.api.JavaObjectSerializer;
+import org.h2.util.Utils;
 import org.h2spatial.internal.GeoSpatialFunctions;
 import org.h2spatial.internal.ST_GeomFromText;
 import org.h2spatialapi.Function;
@@ -78,8 +81,11 @@ public class CreateSpatialExtension {
     }
 
     private static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
+        // Set specific de-serialisation of h2 driver
+        Utils.serializer = new GeometrySerialisation();
         Statement st = connection.createStatement();
-        st.execute("CREATE ALIAS IF NOT EXISTS IS_GEOMETRY_OR_NULL FOR \""+packagePrepend+GeoSpatialFunctions.class.getName()+".IsGeometryOrNull"+"\";");
+        st.execute("DROP ALIAS IF EXISTS IS_GEOMETRY_OR_NULL");
+        st.execute("CREATE ALIAS IS_GEOMETRY_OR_NULL FOR \""+packagePrepend+GeoSpatialFunctions.class.getName()+".IsGeometryOrNull"+"\";");
         st.execute("CREATE DOMAIN IF NOT EXISTS GEOMETRY AS "+GEOMETRY_BASE_TYPE+" CHECK IS_GEOMETRY_OR_NULL(VALUE);");
     }
     private static String getStringProperty(Function function, String propertyKey) {
@@ -112,6 +118,19 @@ public class CreateSpatialExtension {
     }
 
     /**
+     * Remove the specified function from the provided DataBase connection
+     * @param st Active statement
+     * @param function function to remove
+     * @throws SQLException
+     */
+    public static void unRegisterFunction(Statement st, Function function) throws SQLException {
+        String functionAlias = getStringProperty(function,Function.PROP_NAME);
+        if(functionAlias.isEmpty()) {
+            functionAlias = function.getClass().getSimpleName();
+        }
+        st.execute("DROP ALIAS IF EXISTS " + functionAlias);
+    }
+    /**
      * Register all built-ins function
      * @param connection JDBC Connection
      * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version
@@ -133,4 +152,22 @@ public class CreateSpatialExtension {
             connection.createStatement().execute("DROP ALIAS IF EXISTS " + functionName);
 		}
 	}
+
+    private static class GeometrySerialisation implements JavaObjectSerializer {
+        private static final WKBReader WKB_READER = new WKBReader();
+
+        @Override
+        public byte[] serialize(Object obj) throws Exception {
+            if(obj instanceof ValueGeometry) {
+                return ((ValueGeometry) obj).getBytesNoCopy();
+            } else {
+                throw new IllegalArgumentException("Only geometric object is handled by this JavaObjectSerializer");
+            }
+        }
+
+        @Override
+        public Object deserialize(byte[] bytes) throws Exception {
+            return new ValueGeometry(WKB_READER.read(bytes));
+        }
+    }
 }

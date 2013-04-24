@@ -53,7 +53,7 @@ public class BasicTest {
         @Before
         public void init() throws ClassNotFoundException {
             Class.forName("org.h2.Driver");
-            File dbFile = new File(DB_FILE_PATH);
+            File dbFile = new File(DB_FILE_PATH+".h2.db");
             if(dbFile.exists()) {
                 dbFile.delete();
             }
@@ -202,15 +202,12 @@ public class BasicTest {
 
                     ResultSet rs = stat.executeQuery("SELECT * from POINT3D;");
                     ResultSetMetaData rsmd2 = rs.getMetaData();
-                    WKBReader wkbReader = new WKBReader();
-                    byte valObj[];
                     Geometry geom;
                     boolean hasGeometryColumn = false;
-                    for (; rs.next();) {
+                    while(rs.next()) {
                             String columnTypeName = rsmd2.getColumnTypeName(2);
                             if (columnTypeName.equalsIgnoreCase(CreateSpatialExtension.GEOMETRY_BASE_TYPE)) {
-                                    valObj = rs.getBytes(2);
-                                    geom = wkbReader.read(valObj);
+                                    geom = ((ValueGeometry)rs.getObject("the_geom")).getValue();
                                     Coordinate coord = geom.getCoordinates()[0];
                                     assertTrue(coord.x == 0);
                                     assertTrue(coord.y == 12);
