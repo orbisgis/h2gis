@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal;
+package org.h2spatial.internal.function.spatial.convert;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;

@@ -26,7 +26,7 @@ package org.h2spatial;
 
 import org.h2.constant.SysProperties;
 import org.h2spatial.internal.GeoSpatialFunctions;
-import org.h2spatial.internal.ST_GeomFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
 import org.h2spatialapi.Function;
 import org.h2spatialapi.ScalarFunction;
 import java.sql.Connection;
