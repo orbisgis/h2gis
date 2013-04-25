@@ -27,15 +27,14 @@ package org.h2spatial.osgi;
 
 import org.h2spatial.CreateSpatialExtension;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * When a new data source is registered this tracker add spatial features to the linked database.
  * @author Nicolas Fortin
  */
 public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,FunctionTracker> {
@@ -54,8 +53,7 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
         DataSource dataSource = bundleContext.getService(dataSourceServiceReference);
         try {
             Connection connection = dataSource.getConnection();
-            CreateSpatialExtension.initSpatialExtension(connection,
-                    bundleContext.getBundle().getSymbolicName(), bundleContext.getBundle().getVersion().toString());
+            CreateSpatialExtension.registerGeometryType(connection,bundleContext.getBundle().getSymbolicName()+":"+bundleContext.getBundle().getVersion().toString()+":");
             connection.close();
         } catch (SQLException ex) {
             System.err.print(ex.toString());
@@ -76,12 +74,6 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
 
     @Override
     public void removedService(ServiceReference<DataSource> dataSourceServiceReference, FunctionTracker functionTracker) {
-        try {
-            Connection connection = functionTracker.getConnection();
-            CreateSpatialExtension.disposeSpatialExtension(connection);
-            functionTracker.close();
-        } catch (SQLException ex) {
-            System.err.print(ex.toString());
-        }
+        functionTracker.close();
     }
 }

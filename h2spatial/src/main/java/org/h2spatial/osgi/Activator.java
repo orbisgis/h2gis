@@ -26,6 +26,8 @@
 package org.h2spatial.osgi;
 
 
+import org.h2spatial.CreateSpatialExtension;
+import org.h2spatialapi.Function;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -41,6 +43,9 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext bundleContext) throws Exception {
+        for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
+            bundleContext.registerService(Function.class,function,null);
+        }
         DataSourceTracker dataSourceTracker = new DataSourceTracker(bundleContext);
         databaseTracker = new ServiceTracker<DataSource, FunctionTracker>(bundleContext,DataSource.class,dataSourceTracker);
         databaseTracker.open();

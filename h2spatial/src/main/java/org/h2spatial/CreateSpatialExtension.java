@@ -24,15 +24,11 @@
  */
 package org.h2spatial;
 
-import com.vividsolutions.jts.io.WKBReader;
-import org.h2.api.JavaObjectSerializer;
 import org.h2.constant.SysProperties;
-import org.h2.util.Utils;
 import org.h2spatial.internal.GeoSpatialFunctions;
 import org.h2spatial.internal.ST_GeomFromText;
 import org.h2spatialapi.Function;
 import org.h2spatialapi.ScalarFunction;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -81,15 +77,24 @@ public class CreateSpatialExtension {
         addSpatialFunctions(connection,"");
     }
 
-    private static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
-        // Set specific de-serialisation of h2 driver
-        //Utils.serializer = new GeometrySerialisation();
+    public static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
         SysProperties.serializeJavaObject = false;
         Statement st = connection.createStatement();
-        st.execute("DROP ALIAS IF EXISTS IS_GEOMETRY_OR_NULL");
-        st.execute("CREATE ALIAS IS_GEOMETRY_OR_NULL FOR \""+packagePrepend+GeoSpatialFunctions.class.getName()+".IsGeometryOrNull"+"\";");
+
+        st.execute("CREATE ALIAS IF NOT EXISTS IS_GEOMETRY_OR_NULL FOR \""+packagePrepend+GeoSpatialFunctions.class.getName()+".IsGeometryOrNull"+"\";");
         st.execute("CREATE DOMAIN IF NOT EXISTS GEOMETRY AS "+GEOMETRY_BASE_TYPE+" CHECK IS_GEOMETRY_OR_NULL(VALUE);");
     }
+
+    /**
+     * Release geometry type
+     * @param connection Active h2 connection with DROP DOMAIN and DROP ALIAS rights
+     */
+    public static void unRegisterGeometryType(Connection connection) throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP DOMAIN IF EXISTS GEOMETRY");
+        st.execute("DROP ALIAS IF EXISTS IS_GEOMETRY_OR_NULL");
+    }
+
     private static String getStringProperty(Function function, String propertyKey) {
         Object value = function.getProperty(propertyKey);
         return value instanceof String ? (String)value : "";
@@ -147,29 +152,13 @@ public class CreateSpatialExtension {
 
 	/*
 	 * Remove spatial type and functions from the current connection.
+	 * @param connection Active H2 connection with DROP ALIAS rights
 	 */
 	public static void disposeSpatialExtension(Connection connection) throws SQLException {
-		for (Method method : GeoSpatialFunctions.class.getDeclaredMethods()) {
-			String functionName = method.getName();
-            connection.createStatement().execute("DROP ALIAS IF EXISTS " + functionName);
-		}
+        Statement st = connection.createStatement();
+        for(Function function : getBuiltInsFunctions()) {
+            unRegisterFunction(st,function);
+        }
+        unRegisterGeometryType(connection);
 	}
-
-    private static class GeometrySerialisation implements JavaObjectSerializer {
-        private static final WKBReader WKB_READER = new WKBReader();
-
-        @Override
-        public byte[] serialize(Object obj) throws Exception {
-            if(obj instanceof ValueGeometry) {
-                return ((ValueGeometry) obj).getBytesNoCopy();
-            } else {
-                throw new IllegalArgumentException("Only geometric object is handled by this JavaObjectSerializer");
-            }
-        }
-
-        @Override
-        public Object deserialize(byte[] bytes) throws Exception {
-            return new ValueGeometry(WKB_READER.read(bytes));
-        }
-    }
 }
