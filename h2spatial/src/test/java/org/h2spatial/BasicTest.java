@@ -24,7 +24,9 @@
  */
 package org.h2spatial;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
@@ -49,14 +51,23 @@ import static org.junit.Assert.*;
  */
 public class BasicTest {
         private static final String DB_FILE_PATH = "target/test-resources/dbH2";
+        private static final File DB_FILE = new File(DB_FILE_PATH+".h2.db");
         private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
-        @Before
-        public void init() throws ClassNotFoundException {
+        private static Connection connection;
+
+        @BeforeClass
+        public static void tearUp() throws Exception {
             Class.forName("org.h2.Driver");
-            File dbFile = new File(DB_FILE_PATH+".h2.db");
-            if(dbFile.exists()) {
-                dbFile.delete();
+            if(DB_FILE.exists()) {
+                DB_FILE.delete();
             }
+            // Keep a connection alive to not close the DataBase on each unit test
+            connection = DriverManager.getConnection(DATABASE_PATH,
+                    "sa", "");
+        }
+        @AfterClass
+        public static void tearDown() throws Exception {
+            connection.close();
         }
         @Test
         public void testPoints3D() throws Exception {
