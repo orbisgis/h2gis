@@ -37,12 +37,12 @@ import javax.sql.DataSource;
  * @author Nicolas Fortin
  */
 public class Activator implements BundleActivator {
-    private ServiceTracker<DataSource,DataSource> databaseTracker;
+    private ServiceTracker<DataSource,FunctionTracker> databaseTracker;
 
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         DataSourceTracker dataSourceTracker = new DataSourceTracker(bundleContext);
-        databaseTracker = new ServiceTracker<DataSource, DataSource>(bundleContext,DataSource.class,dataSourceTracker);
+        databaseTracker = new ServiceTracker<DataSource, FunctionTracker>(bundleContext,DataSource.class,dataSourceTracker);
         databaseTracker.open();
     }
 

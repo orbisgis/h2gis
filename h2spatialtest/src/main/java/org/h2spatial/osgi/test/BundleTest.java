@@ -106,8 +106,8 @@ public class BundleTest extends OSGiTestCase {
             // Read the value
             ResultSet rs = stat.executeQuery("select the_geom from POINT2D");
             assertTrue(rs.next());
-            assertEquals(ValueGeometry.class, rs.getObject(1).getClass());
-            assertEquals(f.createPoint(new Coordinate(5, 8, 15)),((ValueGeometry)rs.getObject(1)).getValue());
+            assertTrue(rs.getObject(1) instanceof Geometry);
+            assertEquals(f.createPoint(new Coordinate(5, 8, 15)),rs.getObject(1));
         } finally {
             connection.close();
         }

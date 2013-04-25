@@ -26,6 +26,7 @@ package org.h2spatial;
 
 import com.vividsolutions.jts.io.WKBReader;
 import org.h2.api.JavaObjectSerializer;
+import org.h2.constant.SysProperties;
 import org.h2.util.Utils;
 import org.h2spatial.internal.GeoSpatialFunctions;
 import org.h2spatial.internal.ST_GeomFromText;
@@ -82,7 +83,8 @@ public class CreateSpatialExtension {
 
     private static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
         // Set specific de-serialisation of h2 driver
-        Utils.serializer = new GeometrySerialisation();
+        //Utils.serializer = new GeometrySerialisation();
+        SysProperties.serializeJavaObject = false;
         Statement st = connection.createStatement();
         st.execute("DROP ALIAS IF EXISTS IS_GEOMETRY_OR_NULL");
         st.execute("CREATE ALIAS IS_GEOMETRY_OR_NULL FOR \""+packagePrepend+GeoSpatialFunctions.class.getName()+".IsGeometryOrNull"+"\";");

@@ -207,7 +207,7 @@ public class BasicTest {
                     while(rs.next()) {
                             String columnTypeName = rsmd2.getColumnTypeName(2);
                             if (columnTypeName.equalsIgnoreCase(CreateSpatialExtension.GEOMETRY_BASE_TYPE)) {
-                                    geom = ((ValueGeometry)rs.getObject("the_geom")).getValue();
+                                    geom = (Geometry)rs.getObject("the_geom");
                                     Coordinate coord = geom.getCoordinates()[0];
                                     assertTrue(coord.x == 0);
                                     assertTrue(coord.y == 12);
