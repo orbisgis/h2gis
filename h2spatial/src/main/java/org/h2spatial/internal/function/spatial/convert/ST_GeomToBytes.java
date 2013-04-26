@@ -27,20 +27,29 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatialapi;
+package org.h2spatial.internal.function.spatial.convert;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKBWriter;
+import org.h2spatialapi.ScalarFunction;
 
 /**
- * Scalar function interface.
- * Scalar function in H2 can be defined through CREATE ALIAS, but in an OSGi context the class java name is not sufficient.
- * The full declaration of java name in H2 through osgi is BundleSymbolicName:BundleVersion:BinaryJavaName
- * Registering this interface as an OSGi service will add this function in h2spatial linked with a DataSource service.
  * @author Nicolas Fortin
  */
-public interface ScalarFunction extends Function {
-    /**
-     * Returns Java name of static methods in this class to expose in database,
-     * theses methods are under the same alias but with different number of arguments.
-     * @return The Java name of static methods or null if it has not be loaded
-     */
-    String getJavaStaticMethod();
+public class ST_GeomToBytes implements ScalarFunction {
+    private final static WKBWriter WKB_WRITER = new WKBWriter();
+
+    @Override
+    public String getJavaStaticMethod() {
+        return "toBytes";
+    }
+
+    @Override
+    public Object getProperty(String propertyName) {
+        return null;
+    }
+
+    public static byte[] toBytes(Geometry geometry) {
+        return WKB_WRITER.write(geometry);
+    }
 }

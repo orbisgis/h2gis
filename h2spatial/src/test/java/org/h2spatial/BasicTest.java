@@ -64,6 +64,12 @@ public class BasicTest {
             // Keep a connection alive to not close the DataBase on each unit test
             connection = DriverManager.getConnection(DATABASE_PATH,
                     "sa", "");
+            Statement st = connection.createStatement();
+            //Create one row table for tests
+            st.execute("CREATE TABLE dummy(id INTEGER);");
+            st.execute("INSERT INTO dummy values (1)");
+            // Init spatial ext
+            CreateSpatialExtension.initSpatialExtension(connection);
         }
         @AfterClass
         public static void tearDown() throws Exception {
@@ -89,7 +95,6 @@ public class BasicTest {
                 Connection con = DriverManager.getConnection(DATABASE_PATH,
                         "sa", "");
                 try {
-                    CreateSpatialExtension.initSpatialExtension(con);
                     final Statement stat = con.createStatement();
 
                     stat.execute("DROP TABLE IF EXISTS POINT2D");
@@ -139,7 +144,6 @@ public class BasicTest {
                 Connection con = DriverManager.getConnection(DATABASE_PATH,
                         "sa", "");
                 try {
-                    CreateSpatialExtension.initSpatialExtension(con);
 
                     final Statement stat = con.createStatement();
 
@@ -187,7 +191,6 @@ public class BasicTest {
             Connection con = DriverManager.getConnection(DATABASE_PATH,
                     "sa", "");
             try {
-                CreateSpatialExtension.initSpatialExtension(con);
 
                 final Statement stat = con.createStatement();
                 stat.execute("DROP TABLE IF EXISTS GEOMTABLE;");
@@ -202,7 +205,6 @@ public class BasicTest {
                 Connection con = DriverManager.getConnection(DATABASE_PATH,
                         "sa", "");
                 try {
-                    CreateSpatialExtension.initSpatialExtension(con);
 
                     final Statement stat = con.createStatement();
 
@@ -232,5 +234,23 @@ public class BasicTest {
                 } finally {
                     con.close();
                 }
+        }
+
+        @Test
+        public void testST_Area() throws Exception {
+            Connection con = DriverManager.getConnection(DATABASE_PATH,
+                    "sa", "");
+            try {
+
+                final Statement stat = con.createStatement();
+
+                ResultSet rs = stat.executeQuery("select ST_Area(ST_GeomFromText('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))', 27572)) as area from dummy");
+                assertTrue(rs.next());
+                assertEquals(100.0,rs.getDouble("area"),1e-12);
+                stat.close();
+            } finally {
+                con.close();
+            }
+
         }
 }

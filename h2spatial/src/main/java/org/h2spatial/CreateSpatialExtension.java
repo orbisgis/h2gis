@@ -27,6 +27,9 @@ package org.h2spatial;
 import org.h2.constant.SysProperties;
 import org.h2spatial.internal.GeoSpatialFunctions;
 import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_GeomToBytes;
+import org.h2spatial.internal.function.spatial.interoperability.PGtoValueGeometry;
+import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatialapi.Function;
 import org.h2spatialapi.ScalarFunction;
 import java.sql.Connection;
@@ -53,7 +56,11 @@ public class CreateSpatialExtension {
      * @return instance of all built-ins functions
      */
     public static Function[] getBuiltInsFunctions() {
-        return new Function[] {new ST_GeomFromText()};
+        return new Function[] {
+                new ST_GeomFromText(),
+                new ST_Area(),
+                new ST_GeomToBytes(),
+                new PGtoValueGeometry()};
     }
     /**
      * Register GEOMETRY type and register spatial functions
@@ -131,7 +138,7 @@ public class CreateSpatialExtension {
      * @throws SQLException
      */
     public static void unRegisterFunction(Statement st, Function function) throws SQLException {
-        String functionAlias = getStringProperty(function,Function.PROP_NAME);
+        String functionAlias = getStringProperty(function, Function.PROP_NAME);
         if(functionAlias.isEmpty()) {
             functionAlias = function.getClass().getSimpleName();
         }
@@ -146,7 +153,12 @@ public class CreateSpatialExtension {
 	private static void addSpatialFunctions(Connection connection,String packagePrepend) throws SQLException {
         Statement st = connection.createStatement();
         for(Function function : getBuiltInsFunctions()) {
-            registerFunction(st,function,packagePrepend);
+            try {
+                registerFunction(st,function,packagePrepend);
+            } catch (SQLException ex) {
+                // Catch to register other functions
+                ex.printStackTrace(System.err);
+            }
         }
 	}
 

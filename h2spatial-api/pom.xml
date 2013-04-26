@@ -11,6 +11,12 @@
     <version>1.0.1</version>
     <packaging>bundle</packaging>
     <description>H2 Spatial API define extension point of h2 spatial</description>
+    <licenses>
+        <license>
+            <name>GPL V3</name>
+            <url>https://github.com/irstv/orbisgis/blob/master/Licenses/license-GPL.txt</url>
+        </license>
+    </licenses>
     <build>
         <plugins>
             <plugin>
