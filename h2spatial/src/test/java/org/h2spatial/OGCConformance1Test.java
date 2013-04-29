@@ -1,26 +1,22 @@
-/*
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
+/**
+ * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
- * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * h2spatial is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License along with
- * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * h2spatial. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
@@ -94,9 +90,9 @@ public class OGCConformance1Test {
     }
 
     /**
-     *  For this test, we will check to see that all of the feature tables are
-     *  represented by entries in the GEOMETRY_COLUMNS table/view.
-     *  @throws Exception
+     * For this test, we will check to see that all of the geometry tables are
+     * represented by entries in the GEOMETRY_COLUMNS table/view.
+     * @throws Exception
      */
     @Test
     public void N2() throws Exception {
@@ -118,70 +114,91 @@ public class OGCConformance1Test {
         assertTrue(tablesWithGeometry.contains("named_place_geom"));
         assertTrue(tablesWithGeometry.contains("map_neatline_geom"));
     }
+
+    /**
+     * For this test, we will check to see that the correct storage type for
+     * the streams table is represented in the GEOMETRY_COLUMNS table/view.
+     * @throws Exception
+     */
+    @Test
+    public void N3() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT storage_type FROM geometry_columns WHERE f_table_name = 'streams';");
+        assertTrue(rs.next());
+        assertEquals(0, rs.getInt(1));
+    }
+
+    /**
+     * For this test, we will check to see that the correct geometry type for
+     * the streams table is represented in the GEOMETRY_COLUMNS table/view.
+     * @throws Exception
+     */
+    @Test
+    public void N4() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT geometry_type FROM geometry_columns WHERE f_table_name = 'streams';");
+        assertTrue(rs.next());
+        assertEquals(3, rs.getInt(1));
+    }
+
+    /**
+     * For this test, we will check to see that the correct coordinate dimension for
+     * the streams table is represented in the GEOMETRY_COLUMNS table/view.
+     * @throws Exception
+     */
+    @Test
+    public void N5() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT coord_dimension FROM geometry_columns WHERE f_table_name = 'streams';");
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt(1));
+    }
+
+    /**
+     * For this test, we will check to see that the correct value of max_ppr
+     * for the streams table is represented in the GEOMETRY_COLUMNS table/view.
+     * @throws Exception
+     */
+    @Test
+    public void N6() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT max_ppr FROM geometry_columns WHERE f_table_name = 'streams';");
+        assertTrue(rs.next());
+        assertEquals(3, rs.getInt(1));
+    }
+
+    /**
+     * For this test, we will check to see that the correct value of srid for
+     * the streams table is represented in the GEOMETRY_COLUMNS table/view.
+     * @throws Exception
+     */
+    @Test
+    public void N7() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT srid FROM geometry_columns WHERE f_table_name = 'streams';");
+        assertTrue(rs.next());
+        assertEquals(101, rs.getInt(1));
+    }
+
+    /**
+     * For this test, we will check to see that the correct value of srtext is
+     * represented in the SPATIAL_REF_SYS table/view.
+     * @throws Exception
+     */
+    @Test
+    public void N8() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT srtext FROM SPATIAL_REF_SYS WHERE SRID = 101;");
+        assertTrue(rs.next());
+        assertEquals("PROJCS[\"UTM_ZONE_14N\", GEOGCS[\"World Geodetic System\n\n72\",DATUM[\"WGS_72\", " +
+                "ELLIPSOID[\"NWL_10D\", 6378135,\n\n298.26]],PRIMEM[\"Greenwich\",\n\n0],UNIT[\"Meter\",1.0]]," +
+                "PROJECTION[\"Transverse_Mercator\"],\n\nPARAMETER[\"False_Easting\", 500000.0]," +
+                "PARAMETER[\"False_Northing\",\n\n0.0],PARAMETER[\"Central_Meridian\", -99.0],PARAMETER[\"Scale_Factor\"" +
+                ",\n\n0.9996],PARAMETER[\"Latitude_of_origin\", 0.0],UNIT[\"Meter\", 1.0]]", rs.getString(1));
+    }
+
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
     }
-
-    /*
-
--- Conformance Item N1
-
-SELECT f_table_name
-
-FROM geometry_columns;
-
--- Conformance Item N2
-
-SELECT g_table_name FROM geometry_columns;
-
--- Conformance Item N3
-
-SELECT storage_type
-
-FROM geometry_columns
-
-WHERE f_table_name = 'streams';
-
--- Conformance Item N4
-
-SELECT geometry_type
-
-FROM geometry_columns
-
-WHERE f_table_name = 'streams';
-
--- Conformance Item N5
-
-SELECT coord_dimension
-
-FROM geometry_columns
-
-WHERE f_table_name = 'streams';
-
--- Conformance Item N6
-
-SELECT max_ppr
-
-FROM geometry_columns
-
-WHERE f_table_name = 'streams';
-
--- Conformance Item N7
-
-SELECT srid
-
-FROM geometry_columns
-
-WHERE f_table_name = 'streams';
-
--- Conformance Item N8
-
-SELECT srtext
-
-FROM SPATIAL_REF_SYS
-
-WHERE SRID = 101;
-
-     */
 }
