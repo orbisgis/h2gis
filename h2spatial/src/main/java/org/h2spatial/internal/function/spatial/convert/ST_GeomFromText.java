@@ -31,6 +31,8 @@ import com.vividsolutions.jts.io.WKTReader;
 import org.h2spatial.ValueGeometry;
 import org.h2spatialapi.ScalarFunction;
 
+import java.sql.SQLException;
+
 /**
  * Convert a Well Known Text geometry string into a geometry instance.
  * TODO Read SRID in table constraint
@@ -52,11 +54,18 @@ public class ST_GeomFromText implements ScalarFunction {
     /**
      * Convert well known text parameter into a Geometry
      * @param wkt Well known text
-     * @return Geometry instance
+     * @return Geometry instance or null if parameter is null
      * @throws ParseException If wkt is invalid
      */
-    public static ValueGeometry toGeometry(String wkt) throws ParseException {
-        return new ValueGeometry(wktReader.read(wkt));
+    public static ValueGeometry toGeometry(String wkt) throws SQLException {
+        if(wkt == null) {
+            return null;
+        }
+        try {
+            return new ValueGeometry(wktReader.read(wkt));
+        } catch (ParseException ex) {
+            throw new SQLException("Cannot parse the WKT.",ex);
+        }
     }
 
     /**
@@ -67,6 +76,9 @@ public class ST_GeomFromText implements ScalarFunction {
      * @throws ParseException If wkt is invalid
      */
     public static ValueGeometry toGeometry(String wkt, int srid) throws ParseException {
+        if(wkt == null) {
+            return null;
+        }
         Geometry geometry = wktReader.read(wkt);
         geometry.setSRID(srid);
         return new ValueGeometry(geometry);

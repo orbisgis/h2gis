@@ -27,29 +27,10 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function.spatial.convert;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKBWriter;
-import org.h2spatialapi.ScalarFunction;
+package org.h2spatial;
 
 /**
  * @author Nicolas Fortin
  */
-public class ST_GeomToBytes implements ScalarFunction {
-    private final static WKBWriter WKB_WRITER = new WKBWriter();
-
-    @Override
-    public String getJavaStaticMethod() {
-        return "toBytes";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        return null;
-    }
-
-    public static byte[] toBytes(Geometry geometry) {
-        return WKB_WRITER.write(geometry);
-    }
+public class OGCConformanceTest3 {
 }

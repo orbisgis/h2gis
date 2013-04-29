@@ -26,9 +26,8 @@ package org.h2spatial;
 
 import org.h2.constant.SysProperties;
 import org.h2spatial.internal.GeoSpatialFunctions;
+import org.h2spatial.internal.function.spatial.convert.ST_AsBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
-import org.h2spatial.internal.function.spatial.convert.ST_GeomToBytes;
-import org.h2spatial.internal.function.spatial.interoperability.PGtoValueGeometry;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatialapi.Function;
 import org.h2spatialapi.ScalarFunction;
@@ -59,8 +58,7 @@ public class CreateSpatialExtension {
         return new Function[] {
                 new ST_GeomFromText(),
                 new ST_Area(),
-                new ST_GeomToBytes(),
-                new PGtoValueGeometry()};
+                new ST_AsBinary()};
     }
     /**
      * Register GEOMETRY type and register spatial functions
