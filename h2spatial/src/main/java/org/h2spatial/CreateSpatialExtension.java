@@ -26,6 +26,7 @@ package org.h2spatial;
 
 import org.h2.constant.SysProperties;
 import org.h2spatial.internal.GeoSpatialFunctions;
+import org.h2spatial.internal.function.HexToVarBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_AsBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
@@ -58,7 +59,8 @@ public class CreateSpatialExtension {
         return new Function[] {
                 new ST_GeomFromText(),
                 new ST_Area(),
-                new ST_AsBinary()};
+                new ST_AsBinary(),
+                new HexToVarBinary()};
     }
     /**
      * Register GEOMETRY type and register spatial functions

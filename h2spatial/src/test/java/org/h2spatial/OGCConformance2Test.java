@@ -59,6 +59,8 @@ public class OGCConformance2Test {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = DriverManager.getConnection(DATABASE_PATH,
                 "sa", "");
+        // Init spatial ext
+        CreateSpatialExtension.initSpatialExtension(connection);
         // Set up test data
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test2.sql");
         Statement st = connection.createStatement();
@@ -72,7 +74,7 @@ public class OGCConformance2Test {
      *  @throws Exception
      */
     @Test
-    public void N1() throws Exception {
+    public void B1() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT f_table_name FROM geometry_columns;");
         Set<String> tablesWithGeometry = new HashSet<String>(11);
@@ -97,7 +99,7 @@ public class OGCConformance2Test {
      * @throws Exception
      */
     @Test
-    public void N2() throws Exception {
+    public void B2() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT g_table_name FROM geometry_columns;");
         Set<String> tablesWithGeometry = new HashSet<String>(11);
@@ -123,7 +125,7 @@ public class OGCConformance2Test {
      * @throws Exception
      */
     @Test
-    public void N3() throws Exception {
+    public void B3() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT storage_type FROM geometry_columns WHERE f_table_name = 'streams';");
         assertTrue(rs.next());
@@ -136,7 +138,7 @@ public class OGCConformance2Test {
      * @throws Exception
      */
     @Test
-    public void N4() throws Exception {
+    public void B4() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT geometry_type FROM geometry_columns WHERE f_table_name = 'streams';");
         assertTrue(rs.next());
@@ -149,7 +151,7 @@ public class OGCConformance2Test {
      * @throws Exception
      */
     @Test
-    public void N5() throws Exception {
+    public void B5() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT coord_dimension FROM geometry_columns WHERE f_table_name = 'streams';");
         assertTrue(rs.next());
@@ -162,7 +164,7 @@ public class OGCConformance2Test {
      * @throws Exception
      */
     @Test
-    public void N6() throws Exception {
+    public void B6() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT srid FROM geometry_columns WHERE f_table_name = 'streams';");
         assertTrue(rs.next());
@@ -175,7 +177,7 @@ public class OGCConformance2Test {
      * @throws Exception
      */
     @Test
-    public void N7() throws Exception {
+    public void B7() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT srtext FROM SPATIAL_REF_SYS WHERE SRID = 101;");
         assertTrue(rs.next());
