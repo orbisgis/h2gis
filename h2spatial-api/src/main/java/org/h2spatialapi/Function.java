@@ -30,6 +30,7 @@
 package org.h2spatialapi;
 
 /**
+ * Main interface for SQL Functions services.
  * @author Nicolas Fortin
  */
 public interface Function {

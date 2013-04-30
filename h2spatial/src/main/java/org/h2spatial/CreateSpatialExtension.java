@@ -25,11 +25,25 @@
 package org.h2spatial;
 
 import org.h2.constant.SysProperties;
-import org.h2spatial.internal.GeoSpatialFunctions;
 import org.h2spatial.internal.function.HexToVarBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_AsBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_LineFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_MLineFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_MPointFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_MPolyFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_PointFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_PolyFromText;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
+import org.h2spatial.internal.function.spatial.properties.ST_GeometryType;
+import org.h2spatial.internal.type.DomainInfo;
+import org.h2spatial.internal.type.SC_Geometry;
+import org.h2spatial.internal.type.SC_LineString;
+import org.h2spatial.internal.type.SC_MultiLineString;
+import org.h2spatial.internal.type.SC_MultiPoint;
+import org.h2spatial.internal.type.SC_MultiPolygon;
+import org.h2spatial.internal.type.SC_Point;
+import org.h2spatial.internal.type.SC_Polygon;
 import org.h2spatialapi.Function;
 import org.h2spatialapi.ScalarFunction;
 import java.sql.Connection;
@@ -60,7 +74,29 @@ public class CreateSpatialExtension {
                 new ST_GeomFromText(),
                 new ST_Area(),
                 new ST_AsBinary(),
+                new ST_GeometryType(),
+                new ST_PointFromText(),
+                new ST_MPointFromText(),
+                new ST_LineFromText(),
+                new ST_MLineFromText(),
+                new ST_PolyFromText(),
+                new ST_MPolyFromText(),
                 new HexToVarBinary()};
+    }
+
+    /**
+     * @return instance of all spatial built-ins field type
+     */
+    public static DomainInfo[] getBuildInsType() {
+        return new DomainInfo[] {
+                new DomainInfo("GEOMETRY", new SC_Geometry()),
+                new DomainInfo("POINT", new SC_Point()),
+                new DomainInfo("LINESTRING", new SC_LineString()),
+                new DomainInfo("POLYGON", new SC_Polygon()),
+                new DomainInfo("MULTIPOINT", new SC_MultiPoint()),
+                new DomainInfo("MULTILINESTRING", new SC_MultiLineString()),
+                new DomainInfo("MULTIPOLYGON", new SC_MultiPolygon())
+        };
     }
     /**
      * Register GEOMETRY type and register spatial functions
@@ -84,12 +120,20 @@ public class CreateSpatialExtension {
         addSpatialFunctions(connection,"");
     }
 
+    /**
+     * Register geometry type in an OSGi environment
+     * @param connection Active H2 connection
+     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version:
+     * @throws SQLException
+     */
     public static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
         SysProperties.serializeJavaObject = false;
         Statement st = connection.createStatement();
-
-        st.execute("CREATE ALIAS IF NOT EXISTS IS_GEOMETRY_OR_NULL FOR \""+packagePrepend+GeoSpatialFunctions.class.getName()+".IsGeometryOrNull"+"\";");
-        st.execute("CREATE DOMAIN IF NOT EXISTS GEOMETRY AS "+GEOMETRY_BASE_TYPE+" CHECK IS_GEOMETRY_OR_NULL(VALUE);");
+        for(DomainInfo domainInfo : getBuildInsType()) {
+            // Do not drop constraint function as some table may use this constraint in CHECK statement
+            registerFunction(st,domainInfo.getDomainConstraint(),packagePrepend,false);
+            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+" CHECK (SC_GEOMETRY(VALUE) AND "+getAlias(domainInfo.getDomainConstraint())+"(VALUE));");
+        }
     }
 
     /**
@@ -98,39 +142,64 @@ public class CreateSpatialExtension {
      */
     public static void unRegisterGeometryType(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("DROP DOMAIN IF EXISTS GEOMETRY");
-        st.execute("DROP ALIAS IF EXISTS IS_GEOMETRY_OR_NULL");
+        DomainInfo[] domainInfos = getBuildInsType();
+        for(DomainInfo domainInfo : domainInfos) {
+            st.execute("DROP DOMAIN IF EXISTS "+domainInfo.getDomainName());
+        }
+        // Same constraint may be used by multiple domains
+        // Removal must be done in another loop
+        for(DomainInfo domainInfo : domainInfos) {
+            unRegisterFunction(st,domainInfo.getDomainConstraint());
+        }
     }
 
     private static String getStringProperty(Function function, String propertyKey) {
         Object value = function.getProperty(propertyKey);
         return value instanceof String ? (String)value : "";
     }
+
 	/**
 	 * Create java code to add function copy paste into
 	 * GeoSpatialFunctionsAddRemove to upload it
 	 * @param st SQL Statement
 	 * @param function Function instance
-     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version
+     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version:
 	 */
     public static void registerFunction(Statement st,Function function,String packagePrepend) throws SQLException {
+        registerFunction(st,function,packagePrepend,true);
+    }
+
+    /**
+     * Create java code to add function copy paste into
+     * GeoSpatialFunctionsAddRemove to upload it
+     * @param st SQL Statement
+     * @param function Function instance
+     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version:
+     * @param dropAlias Drop alias if exists before define it.
+     */
+    public static void registerFunction(Statement st,Function function,String packagePrepend,boolean dropAlias) throws SQLException {
         String functionClass = function.getClass().getName();
-        String functionAlias = getStringProperty(function,Function.PROP_NAME);
-        if(functionAlias.isEmpty()) {
-            functionAlias = function.getClass().getSimpleName();
-        }
+        String functionAlias = getAlias(function);
         String functionName=null;
         if(function instanceof ScalarFunction) {
             ScalarFunction scalarFunction = (ScalarFunction)function;
             functionName = scalarFunction.getJavaStaticMethod();
         }
         if(functionName!=null) {
-            st.execute("DROP ALIAS IF EXISTS " + functionAlias);
+            if(dropAlias) {
+                st.execute("DROP ALIAS IF EXISTS " + functionAlias);
+            }
             // Create alias, H2 does not support prepare statement on create alias
-            st.execute("CREATE ALIAS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
+            st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
         }
     }
-
+    private static String getAlias(Function function) {
+        String functionAlias = getStringProperty(function,Function.PROP_NAME);
+        if(!functionAlias.isEmpty()) {
+            return functionAlias;
+        }
+        return function.getClass().getSimpleName();
+    }
     /**
      * Remove the specified function from the provided DataBase connection
      * @param st Active statement
@@ -147,7 +216,7 @@ public class CreateSpatialExtension {
     /**
      * Register all built-ins function
      * @param connection JDBC Connection
-     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version
+     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version:
      * @throws SQLException
      */
 	private static void addSpatialFunctions(Connection connection,String packagePrepend) throws SQLException {
@@ -162,7 +231,7 @@ public class CreateSpatialExtension {
         }
 	}
 
-	/*
+	/**
 	 * Remove spatial type and functions from the current connection.
 	 * @param connection Active H2 connection with DROP ALIAS rights
 	 */

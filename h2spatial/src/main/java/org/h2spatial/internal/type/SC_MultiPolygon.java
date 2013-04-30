@@ -23,20 +23,20 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function;
+package org.h2spatial.internal.type;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2spatialapi.ScalarFunction;
 
-import javax.xml.bind.DatatypeConverter;
-
 /**
- * Convert Hexadecimal string into an array of byte.
+ * Constraint for MultiPolygon field type.
  * @author Nicolas Fortin
  */
-public class HexToVarBinary implements ScalarFunction {
+public class SC_MultiPolygon implements ScalarFunction {
+
     @Override
     public String getJavaStaticMethod() {
-        return "toVarBinary";
+        return "isMultiPolygon";
     }
 
     @Override
@@ -44,7 +44,11 @@ public class HexToVarBinary implements ScalarFunction {
         return null;
     }
 
-    public static byte[] toVarBinary(String hex) {
-        return DatatypeConverter.parseHexBinary(hex.replace("\n",""));
+    /**
+     * @param geometry Geometry instance or NULL
+     * @return True if null or if the field type fit with the constraint.
+     */
+    public static boolean isMultiPolygon(Geometry geometry) {
+        return geometry==null || geometry.getGeometryType().equals("MultiPolygon");
     }
 }

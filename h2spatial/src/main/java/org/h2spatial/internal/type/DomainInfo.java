@@ -23,28 +23,28 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function;
+package org.h2spatial.internal.type;
 
 import org.h2spatialapi.ScalarFunction;
 
-import javax.xml.bind.DatatypeConverter;
-
 /**
- * Convert Hexadecimal string into an array of byte.
+ * Class helper to define domain.
  * @author Nicolas Fortin
  */
-public class HexToVarBinary implements ScalarFunction {
-    @Override
-    public String getJavaStaticMethod() {
-        return "toVarBinary";
+public class DomainInfo {
+    private String domainName;
+    private ScalarFunction domainConstraint;
+
+    public DomainInfo(String domainName, ScalarFunction domainConstraint) {
+        this.domainName = domainName;
+        this.domainConstraint = domainConstraint;
     }
 
-    @Override
-    public Object getProperty(String propertyName) {
-        return null;
+    public String getDomainName() {
+        return domainName;
     }
 
-    public static byte[] toVarBinary(String hex) {
-        return DatatypeConverter.parseHexBinary(hex.replace("\n",""));
+    public ScalarFunction getDomainConstraint() {
+        return domainConstraint;
     }
 }

@@ -23,20 +23,23 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function;
+package org.h2spatial.internal.function.spatial.convert;
 
+import org.h2spatial.ValueGeometry;
+import org.h2spatial.internal.type.SC_LineString;
 import org.h2spatialapi.ScalarFunction;
 
-import javax.xml.bind.DatatypeConverter;
+import java.sql.SQLException;
 
 /**
- * Convert Hexadecimal string into an array of byte.
+ * Convert String into a Line type.
  * @author Nicolas Fortin
  */
-public class HexToVarBinary implements ScalarFunction {
+public class ST_LineFromText implements ScalarFunction {
+
     @Override
     public String getJavaStaticMethod() {
-        return "toVarBinary";
+        return "toGeometry";
     }
 
     @Override
@@ -44,7 +47,17 @@ public class HexToVarBinary implements ScalarFunction {
         return null;
     }
 
-    public static byte[] toVarBinary(String hex) {
-        return DatatypeConverter.parseHexBinary(hex.replace("\n",""));
+    /**
+     * @param wKT WellKnown text value
+     * @param srid Valid SRID
+     * @return Geometry
+     * @throws java.sql.SQLException Invalid argument or the geometry type is wrong.
+     */
+    public static ValueGeometry toGeometry(String wKT, int srid) throws SQLException {
+        ValueGeometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
+        if(!SC_LineString.isLineString(geometry.getValue())) {
+            throw new SQLException("Provided Well Known Text geometry is not a line string");
+        }
+        return geometry;
     }
 }

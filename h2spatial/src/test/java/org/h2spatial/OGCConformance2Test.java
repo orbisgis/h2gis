@@ -42,6 +42,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
+ * Second unit test group, use advanced SQL features like foreign key constraint.
+ * But no Spatial features.
  * @author Nicolas Fortin
  */
 public class OGCConformance2Test {

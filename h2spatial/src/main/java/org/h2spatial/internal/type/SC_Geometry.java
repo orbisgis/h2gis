@@ -23,20 +23,20 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function;
+package org.h2spatial.internal.type;
 
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
 import org.h2spatialapi.ScalarFunction;
 
-import javax.xml.bind.DatatypeConverter;
-
 /**
- * Convert Hexadecimal string into an array of byte.
+ * Space Constraint on Geometry field.
  * @author Nicolas Fortin
  */
-public class HexToVarBinary implements ScalarFunction {
+public class SC_Geometry implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "toVarBinary";
+        return "IsGeometryOrNull";
     }
 
     @Override
@@ -44,7 +44,20 @@ public class HexToVarBinary implements ScalarFunction {
         return null;
     }
 
-    public static byte[] toVarBinary(String hex) {
-        return DatatypeConverter.parseHexBinary(hex.replace("\n",""));
+    /**
+     * @param bytes Byte array or null
+     * @return True if bytes is Geometry or if bytes is null
+     */
+    public static Boolean IsGeometryOrNull(byte[] bytes) {
+        if(bytes==null) {
+            return true;
+        }
+        WKBReader wkbReader = new WKBReader();
+        try {
+            wkbReader.read(bytes);
+            return true;
+        } catch (ParseException ex) {
+            return false;
+        }
     }
 }

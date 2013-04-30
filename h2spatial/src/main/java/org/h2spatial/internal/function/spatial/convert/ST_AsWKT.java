@@ -29,10 +29,32 @@
 
 package org.h2spatial.internal.function.spatial.convert;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTWriter;
+import org.h2spatialapi.ScalarFunction;
+
 /**
+ * Convert a Geometry value into a Well Known Text value.
  * @author Nicolas Fortin
  */
-public class ST_AsWKT {
+public class ST_AsWKT implements ScalarFunction {
+    @Override
+    public String getJavaStaticMethod() {
+        return "asWKT";
+    }
 
+    @Override
+    public Object getProperty(String propertyName) {
+        return null;
+    }
 
+    /**
+     * Convert a Geometry value into a Well Known Text value.
+     * @param geometry Geometry instance
+     * @return The String representation
+     */
+    public static String asWKT(Geometry geometry) {
+        WKTWriter wktWriter = new WKTWriter();
+        return wktWriter.write(geometry);
+    }
 }
