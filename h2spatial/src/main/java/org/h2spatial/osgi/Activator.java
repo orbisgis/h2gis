@@ -44,7 +44,7 @@ public class Activator implements BundleActivator {
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
-            bundleContext.registerService(Function.class,function,null);
+            bundleContext.registerService(function.getClass().getName(),function,null);
         }
         DataSourceTracker dataSourceTracker = new DataSourceTracker(bundleContext);
         databaseTracker = new ServiceTracker<DataSource, FunctionTracker>(bundleContext,DataSource.class,dataSourceTracker);

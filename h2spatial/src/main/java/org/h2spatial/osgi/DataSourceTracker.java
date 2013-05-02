@@ -26,6 +26,7 @@
 package org.h2spatial.osgi;
 
 import org.h2spatial.CreateSpatialExtension;
+import org.h2spatialapi.Function;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -54,6 +55,11 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
         try {
             Connection connection = dataSource.getConnection();
             CreateSpatialExtension.registerGeometryType(connection,bundleContext.getBundle().getSymbolicName()+":"+bundleContext.getBundle().getVersion().toString()+":");
+            // Register built-ins functions
+            for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
+                CreateSpatialExtension.registerFunction(connection.createStatement(),function,"OSGI=",false);
+            }
+            CreateSpatialExtension.registerViewTable(connection);
             connection.close();
         } catch (SQLException ex) {
             System.err.print(ex.toString());

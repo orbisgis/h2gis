@@ -49,6 +49,8 @@ import org.h2spatialapi.ScalarFunction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Add spatial features to an H2 database
@@ -65,7 +67,10 @@ import java.sql.Statement;
 public class CreateSpatialExtension {
     /** H2 base type for geometry column {@link java.sql.ResultSetMetaData#getColumnTypeName(int)} */
     public static final String GEOMETRY_BASE_TYPE = "OTHER";
-
+    // This HashMap is used by the INFORMATION_SCHEMA.COLUMNS Trigger
+    // in order to update geometry_columns table only when necessary
+    // Key is Connection hash and value is geometry_columns hash
+    private static final Map<Integer,Integer> GEOMETRY_COLUMNS_HASH = new HashMap<Integer, Integer>();
     /**
      * @return instance of all built-ins functions
      */
@@ -118,6 +123,7 @@ public class CreateSpatialExtension {
     public static void initSpatialExtension(Connection connection) throws SQLException {
         registerGeometryType(connection,"");
         addSpatialFunctions(connection,"");
+        registerViewTable(connection);
     }
 
     /**
@@ -132,8 +138,25 @@ public class CreateSpatialExtension {
         for(DomainInfo domainInfo : getBuildInsType()) {
             // Do not drop constraint function as some table may use this constraint in CHECK statement
             registerFunction(st,domainInfo.getDomainConstraint(),packagePrepend,false);
-            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+" CHECK (SC_GEOMETRY(VALUE) AND "+getAlias(domainInfo.getDomainConstraint())+"(VALUE));");
+            // Check for byte array first, to not throw an enigmatic error CastException
+            String check = "SC_GEOMETRY(VALUE) AND ";
+            if(domainInfo.getDomainName().equalsIgnoreCase("GEOMETRY")) {
+                check = "";
+            }
+            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+" CHECK ("+check+getAlias(domainInfo.getDomainConstraint())+"(VALUE));");
         }
+    }
+
+    /**
+     * Register view in order to create GEOMETRY_COLUMNS standard table.
+     * @param connection
+     */
+    public static void registerViewTable(Connection connection) throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop view if exists geometry_columns");
+        st.execute("create view geometry_columns as select TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
+                "COLUMN_NAME f_geometry_column,1 storage_type,3 geometry_type,2 coord_dimension,101 srid" +
+                " from INFORMATION_SCHEMA.COLUMNS WHERE CHECK_CONSTRAINT LIKE '%SC_GEOMETRY%'");
     }
 
     /**
@@ -156,6 +179,11 @@ public class CreateSpatialExtension {
     private static String getStringProperty(Function function, String propertyKey) {
         Object value = function.getProperty(propertyKey);
         return value instanceof String ? (String)value : "";
+    }
+
+    private static boolean getBooleanProperty(Function function, String propertyKey, boolean defaultValue) {
+        Object value = function.getProperty(propertyKey);
+        return value instanceof Boolean ? (Boolean)value : defaultValue;
     }
 
 	/**
@@ -189,8 +217,12 @@ public class CreateSpatialExtension {
             if(dropAlias) {
                 st.execute("DROP ALIAS IF EXISTS " + functionAlias);
             }
+            String deterministic = "";
+            if(getBooleanProperty(function,ScalarFunction.PROP_DETERMINISTIC,false)) {
+                deterministic = " DETERMINISTIC";
+            }
             // Create alias, H2 does not support prepare statement on create alias
-            st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
+            st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + deterministic + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
         }
     }
     private static String getAlias(Function function) {

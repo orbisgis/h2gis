@@ -66,6 +66,8 @@ public class OGCConformance2Test {
         // Set up test data
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test2.sql");
         Statement st = connection.createStatement();
+        //Remove view to not be in conflict with this script that does not remove any existing table
+        st.execute("drop view if exists geometry_columns");
         st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
     }
 

@@ -37,6 +37,10 @@ package org.h2spatialapi;
  * @author Nicolas Fortin
  */
 public interface ScalarFunction extends Function {
+    /** Boolean, Deterministic functions must always return the same value for the same parameters.
+     *  The result of such functions is cached if possible. */
+    static final String PROP_DETERMINISTIC = "deterministic";
+
     /**
      * Returns Java name of static methods in this class to expose in database,
      * theses methods are under the same alias but with different number of arguments.

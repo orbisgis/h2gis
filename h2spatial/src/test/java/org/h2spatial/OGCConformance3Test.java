@@ -84,7 +84,7 @@ public class OGCConformance3Test {
         ResultSet rs = st.executeQuery("SELECT f_table_name FROM geometry_columns;");
         Set<String> tablesWithGeometry = new HashSet<String>(11);
         while(rs.next()) {
-            tablesWithGeometry.add(rs.getString("f_table_name"));
+            tablesWithGeometry.add(rs.getString("f_table_name").toLowerCase());
         }
         assertTrue(tablesWithGeometry.contains("lakes"));
         assertTrue(tablesWithGeometry.contains("road_segments"));
@@ -106,9 +106,9 @@ public class OGCConformance3Test {
     @Test
     public void T2() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT f_geometry_column FROM geometry_columns WHERE f_table_name = 'streams';");
+        ResultSet rs = st.executeQuery("SELECT f_geometry_column FROM geometry_columns WHERE f_table_name = 'STREAMS';");
         assertTrue(rs.next());
-        assertEquals("Centerline",rs.getString("f_geometry_column"));
+        assertEquals("centerline",rs.getString("f_geometry_column").toLowerCase());
     }
 
     /**
@@ -119,7 +119,7 @@ public class OGCConformance3Test {
     @Test
     public void T3() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT storage_type FROM geometry_columns WHERE f_table_name = 'streams';");
+        ResultSet rs = st.executeQuery("SELECT storage_type FROM geometry_columns WHERE f_table_name = 'STREAMS';");
         assertTrue(rs.next());
         assertEquals(1, rs.getInt(1));
     }
@@ -132,7 +132,7 @@ public class OGCConformance3Test {
     @Test
     public void T4() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT geometry_type FROM geometry_columns WHERE f_table_name = 'streams';");
+        ResultSet rs = st.executeQuery("SELECT geometry_type FROM geometry_columns WHERE f_table_name = 'STREAMS';");
         assertTrue(rs.next());
         assertEquals(3, rs.getInt(1));
     }
@@ -145,7 +145,7 @@ public class OGCConformance3Test {
     @Test
     public void T5() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT coord_dimension FROM geometry_columns WHERE f_table_name = 'streams';");
+        ResultSet rs = st.executeQuery("SELECT coord_dimension FROM geometry_columns WHERE f_table_name = 'STREAMS';");
         assertTrue(rs.next());
         assertEquals(2, rs.getInt(1));
     }
@@ -158,7 +158,7 @@ public class OGCConformance3Test {
     @Test
     public void T6() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT srid FROM geometry_columns WHERE f_table_name = 'streams';");
+        ResultSet rs = st.executeQuery("SELECT srid FROM geometry_columns WHERE f_table_name = 'STREAMS';");
         assertTrue(rs.next());
         assertEquals(101, rs.getInt(1));
     }

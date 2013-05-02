@@ -35,7 +35,7 @@ package org.h2spatialapi;
  */
 public interface Function {
     /** SQL function name, take class name by default */
-    String PROP_NAME = "PROP_NAME";
+    String PROP_NAME = "name";
 
     /**
      * Optional function properties
