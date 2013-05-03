@@ -51,6 +51,9 @@ public class ST_IsSimple implements ScalarFunction {
      * @return True if the provided geometry is empty
      */
     public static Boolean isSimple(Geometry geometry) {
+        if(geometry==null) {
+            return null;
+        }
         return geometry.isSimple();
     }
 }

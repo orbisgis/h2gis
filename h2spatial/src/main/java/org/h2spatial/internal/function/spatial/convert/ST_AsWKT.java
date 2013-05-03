@@ -57,6 +57,9 @@ public class ST_AsWKT implements ScalarFunction {
      * @return The String representation
      */
     public static String asWKT(Geometry geometry) {
+        if(geometry==null) {
+            return null;
+        }
         WKTWriter wktWriter = new WKTWriter();
         return wktWriter.write(geometry);
     }

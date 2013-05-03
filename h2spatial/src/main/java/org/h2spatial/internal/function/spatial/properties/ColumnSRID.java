@@ -25,36 +25,44 @@
 
 package org.h2spatial.internal.function.spatial.properties;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.h2spatialapi.ScalarFunction;
 
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 /**
- * Get dimension of a geometry 2 or 3
+ * Get the column SRID from constraints and data.
  * @author Nicolas Fortin
  */
-public class ST_Dimension implements ScalarFunction {
-
+public class ColumnSRID implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "getDimension";
+        return "getSRID";
     }
 
     @Override
     public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
         return null;
     }
 
-    /**
-     * @param geometry Geometry instance
-     * @return Geometry dimension
-     */
-    public static Integer getDimension(Geometry geometry) {
-        if(geometry==null) {
-            return null;
+    public static int getSRID(Connection connection, String tableName, String columnName) throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("select ST_SRID("+columnName+") from "+tableName+" where ST_SRID("+columnName+")!=0 LIMIT 1;");
+        if(rs.next()) {
+            return rs.getInt(1);
+        } else {
+            // TODO read constraint
+
+            // Use first SRID from SPATIAL_REF_SYS
+            rs.close();
+            rs = st.executeQuery("select srid from SPATIAL_REF_SYS LIMIT 1;");
+            if(rs.next()) {
+                return rs.getInt(1);
+            }
+            // Unable to find a valid SRID
+            return 0;
         }
-        return geometry.getDimension();
     }
 }

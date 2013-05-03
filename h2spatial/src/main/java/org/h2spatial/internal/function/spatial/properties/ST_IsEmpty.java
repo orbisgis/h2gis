@@ -51,6 +51,9 @@ public class ST_IsEmpty implements ScalarFunction {
      * @return True if the provided geometry is empty
      */
     public static Boolean isEmpty(Geometry geometry) {
+        if(geometry==null) {
+            return null;
+        }
         return geometry.isEmpty();
     }
 }

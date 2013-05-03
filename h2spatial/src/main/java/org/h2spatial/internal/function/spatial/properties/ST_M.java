@@ -25,36 +25,9 @@
 
 package org.h2spatial.internal.function.spatial.properties;
 
-import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.ScalarFunction;
-
 /**
- * Get dimension of a geometry 2 or 3
+ * Get the first X coordinate
  * @author Nicolas Fortin
  */
-public class ST_Dimension implements ScalarFunction {
-
-    @Override
-    public String getJavaStaticMethod() {
-        return "getDimension";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
-    }
-
-    /**
-     * @param geometry Geometry instance
-     * @return Geometry dimension
-     */
-    public static Integer getDimension(Geometry geometry) {
-        if(geometry==null) {
-            return null;
-        }
-        return geometry.getDimension();
-    }
+public class ST_M extends ST_Z {
 }

@@ -53,6 +53,9 @@ public class ST_Boundary implements ScalarFunction {
      * @return Geometry envelope
      */
     public static ValueGeometry getBoundary(Geometry geometry, int srid) {
+        if(geometry==null) {
+            return null;
+        }
         Geometry geometryEnvelope = geometry.getBoundary();
         geometryEnvelope.setSRID(srid);
         return new ValueGeometry(geometryEnvelope);

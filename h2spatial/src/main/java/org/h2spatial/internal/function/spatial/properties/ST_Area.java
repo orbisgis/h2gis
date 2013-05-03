@@ -47,6 +47,9 @@ public class ST_Area implements ScalarFunction {
     }
 
     public static Double getArea(Geometry geometry) {
+        if(geometry==null) {
+            return null;
+        }
         return geometry.getArea();
     }
 }

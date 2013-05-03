@@ -51,6 +51,9 @@ public class ST_GeometryType implements ScalarFunction {
      * @return Geometry type equivalent to {@link com.vividsolutions.jts.geom.Geometry#getGeometryType()}
      */
     public static String getGeometryType(Geometry geometry) {
+        if(geometry==null) {
+            return null;
+        }
         return geometry.getGeometryType();
     }
 }

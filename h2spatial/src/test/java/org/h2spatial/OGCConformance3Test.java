@@ -263,32 +263,45 @@ public class OGCConformance3Test {
         assertEquals("POLYGON ((59 13, 59 18, 67 18, 67 13, 59 13))", rs.getString(1));
     }
 
+    /**
+     * For this test we will determine the X coordinate of Cam Bridge.
+     * @throws Exception
+     */
+    @Test
+    public void T15() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_X(position) FROM bridges WHERE name = 'Cam Bridge'");
+        assertTrue(rs.next());
+        assertEquals(44.0, rs.getDouble(1),1e-12);
+    }
+
+    /**
+     * For this test we will determine the Y coordinate of Cam Bridge.
+     * @throws Exception
+     */
+    @Test
+    public void T16() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Y(position) FROM bridges WHERE name = 'Cam Bridge'");
+        assertTrue(rs.next());
+        assertEquals(31.0, rs.getDouble(1),1e-12);
+    }
+
+
+    /**
+     * For this test, we will determine the start point of road segment 102.
+     * @throws Exception
+     */
+    @Test
+    public void T17() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_StartPoint(centerline)) FROM road_segments WHERE fid = 102");
+        assertTrue(rs.next());
+        assertEquals("POINT (0 18)", rs.getString(1));
+    }
 
     /*
-       POLYGON ((59 13, 59 18, 67 18, 67 13, 59 13))'
 
-
-     'LINESTRING( 67 13, 67 18, 59 18, 59 13, 67 13 )'
-
--- Conformance Item T12
-
-SELECT IsSimple(shore) FROM lakes WHERE name = 'Blue Lake';
-
--- Conformance Item T13
-
-SELECT AsText(Boundary((boundary),101) FROM named_places WHERE name = 'Goose Island';
-
--- Conformance Item T14
-
-SELECT AsText(Envelope((boundary),101) FROM named_places WHERE name = 'Goose Island';
-
--- Conformance Item T15
-
-SELECT X(position)
-
-FROM bridges
-
-WHERE name = ‘Cam Bridge’;
 
 -- Conformance Item T16
 
@@ -300,11 +313,7 @@ WHERE name = 'Cam Bridge';
 
 -- Conformance Item T17
 
-SELECT AsText(StartPoint(centerline))
-
-FROM road_segments
-
-WHERE fid = 102;
+SELECT AsText(StartPoint(centerline)) FROM road_segments WHERE fid = 102;
 
 -- Conformance Item T18
 

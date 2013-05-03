@@ -57,6 +57,9 @@ public class ST_LineFromText implements ScalarFunction {
      * @throws java.sql.SQLException Invalid argument or the geometry type is wrong.
      */
     public static ValueGeometry toGeometry(String wKT, int srid) throws SQLException {
+        if(wKT==null) {
+            return null;
+        }
         ValueGeometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
         if(!SC_LineString.isLineString(geometry.getValue())) {
             throw new SQLException("Provided Well Known Text geometry is not a line string");

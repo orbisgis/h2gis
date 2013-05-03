@@ -51,6 +51,9 @@ public class ST_PolyFromWKB implements ScalarFunction {
     }
 
     public static ValueGeometry toPolygon(byte[] bytes, int srid) throws SQLException {
+        if(bytes==null) {
+            return null;
+        }
         WKBReader wkbReader = new WKBReader();
         try {
             Geometry geometry = wkbReader.read(bytes);

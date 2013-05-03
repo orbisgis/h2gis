@@ -26,17 +26,20 @@
 package org.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import org.h2spatial.ValueGeometry;
 import org.h2spatialapi.ScalarFunction;
 
 /**
- * Get dimension of a geometry 2 or 3
+ * Returns the first point of a LINESTRING geometry as a POINT or NULL if the
+ * input parameter is not a LINESTRING.
  * @author Nicolas Fortin
  */
-public class ST_Dimension implements ScalarFunction {
-
+public class ST_StartPoint implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "getDimension";
+        return "getStartPoint";
     }
 
     @Override
@@ -47,14 +50,17 @@ public class ST_Dimension implements ScalarFunction {
         return null;
     }
 
-    /**
-     * @param geometry Geometry instance
-     * @return Geometry dimension
-     */
-    public static Integer getDimension(Geometry geometry) {
-        if(geometry==null) {
-            return null;
+    public static ValueGeometry getStartPoint(Geometry geometry) {
+        if (geometry instanceof MultiLineString) {
+            if (geometry.getNumGeometries() == 1) {
+                LineString line = (LineString) geometry.getGeometryN(0);
+                return new ValueGeometry(line.getStartPoint());
+            }
+        } else if (geometry instanceof LineString) {
+            LineString line = (LineString) geometry;
+            return  new ValueGeometry(line.getStartPoint());
+
         }
-        return geometry.getDimension();
+        return null;
     }
 }

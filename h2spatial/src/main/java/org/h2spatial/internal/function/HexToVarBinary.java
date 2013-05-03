@@ -48,6 +48,9 @@ public class HexToVarBinary implements ScalarFunction {
     }
 
     public static byte[] toVarBinary(String hex) {
+        if(hex==null) {
+            return null;
+        }
         return DatatypeConverter.parseHexBinary(hex.replace("\n",""));
     }
 }

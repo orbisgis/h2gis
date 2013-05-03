@@ -46,7 +46,14 @@ public class ST_SRID implements ScalarFunction {
         return null;
     }
 
-    public static int getSRID(Geometry geometry) {
+    /**
+     * @param geometry Geometry instance or null
+     * @return SRID value or 0 if input geometry does not have one.
+     */
+    public static Integer getSRID(Geometry geometry) {
+        if(geometry==null) {
+            return 0;
+        }
         return geometry.getSRID();
     }
 }

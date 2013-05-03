@@ -36,6 +36,7 @@ import org.h2spatial.internal.function.spatial.convert.ST_MPolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PointFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromWKB;
+import org.h2spatial.internal.function.spatial.properties.ColumnSRID;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatial.internal.function.spatial.properties.ST_Boundary;
 import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
@@ -44,6 +45,10 @@ import org.h2spatial.internal.function.spatial.properties.ST_GeometryType;
 import org.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
 import org.h2spatial.internal.function.spatial.properties.ST_IsSimple;
 import org.h2spatial.internal.function.spatial.properties.ST_SRID;
+import org.h2spatial.internal.function.spatial.properties.ST_StartPoint;
+import org.h2spatial.internal.function.spatial.properties.ST_X;
+import org.h2spatial.internal.function.spatial.properties.ST_Y;
+import org.h2spatial.internal.function.spatial.properties.ST_Z;
 import org.h2spatial.internal.type.DomainInfo;
 import org.h2spatial.internal.type.GeometryTypeFromConstraint;
 import org.h2spatial.internal.type.SC_Geometry;
@@ -101,6 +106,11 @@ public class CreateSpatialExtension {
                 new ST_IsSimple(),
                 new ST_Boundary(),
                 new ST_Envelope(),
+                new ST_X(),
+                new ST_Y(),
+                new ST_Z(),
+                new ColumnSRID(),
+                new ST_StartPoint(),
                 new ST_SRID()};
     }
 
@@ -170,7 +180,7 @@ public class CreateSpatialExtension {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
         st.execute("create view geometry_columns as select TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
-                "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT) geometry_type,2 coord_dimension,101 srid" +
+                "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT) geometry_type,2 coord_dimension,ColumnSRID(TABLE_NAME,COLUMN_NAME) srid" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE CHECK_CONSTRAINT LIKE '%SC_GEOMETRY%'");
     }
 
