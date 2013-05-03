@@ -325,7 +325,7 @@ public class OGCConformance3Test {
     }
 
     /**
-     * For this test, we will determine the boundary close state of Goose Island.
+     * For this test, we will determine the boundary close and simple state of Goose Island.
      * @throws Exception
      */
     @Test
@@ -336,35 +336,38 @@ public class OGCConformance3Test {
         assertEquals(true, rs.getBoolean(1));
     }
 
+    /**
+     * For this test, we will determine the length of road segment 106.
+     * @throws Exception
+     */
+    @Test
+    public void T21() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Length(centerline) FROM road_segments WHERE fid = 106");
+        assertTrue(rs.next());
+        assertEquals(26, rs.getDouble(1),1e-12);
+    }
+
+    /**
+     * For this test, we will determine the number of points in road segment 102.
+     * @throws Exception
+     */
+    @Test
+    public void T22() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_NumPoints(centerline) FROM road_segments WHERE fid = 102");
+        assertTrue(rs.next());
+        assertEquals(5, rs.getInt(1));
+    }
+
     /*
-
--- Conformance Item T19
-
-SELECT IsClosed(LineFromWKB(AsBinary(Boundary(boundary)),SRID(boundary))) FROM named_places WHERE name = 'Goose Island';
-
--- Conformance Item T20
-
-SELECT IsRing(LineFromWKB(AsBinary(Boundary(boundary)),SRID(boundary)))
-
-FROM named_places
-
-WHERE name = 'Goose Island';
-
 -- Conformance Item T21
 
-SELECT Length(centerline)
-
-FROM road_segments
-
-WHERE fid = 106;
+SELECT Length(centerline) FROM road_segments WHERE fid = 106;
 
 -- Conformance Item T22
 
-SELECT NumPoints(centerline)
-
-FROM road_segments
-
-WHERE fid = 102;
+SELECT NumPoints(centerline) FROM road_segments WHERE fid = 102;
 
 -- Conformance Item T23
 

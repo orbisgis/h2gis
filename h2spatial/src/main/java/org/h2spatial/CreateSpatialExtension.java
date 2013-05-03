@@ -48,6 +48,8 @@ import org.h2spatial.internal.function.spatial.properties.ST_IsClosed;
 import org.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
 import org.h2spatial.internal.function.spatial.properties.ST_IsRing;
 import org.h2spatial.internal.function.spatial.properties.ST_IsSimple;
+import org.h2spatial.internal.function.spatial.properties.ST_Length;
+import org.h2spatial.internal.function.spatial.properties.ST_NumPoints;
 import org.h2spatial.internal.function.spatial.properties.ST_SRID;
 import org.h2spatial.internal.function.spatial.properties.ST_StartPoint;
 import org.h2spatial.internal.function.spatial.properties.ST_X;
@@ -119,6 +121,8 @@ public class CreateSpatialExtension {
                 new ST_IsClosed(),
                 new ST_IsRing(),
                 new ST_LineFromWKB(),
+                new ST_Length(),
+                new ST_NumPoints(),
                 new ST_SRID()};
     }
 
