@@ -239,8 +239,36 @@ public class OGCConformance3Test {
         assertEquals(true, rs.getBoolean(1));
     }
 
+    /**
+     * For this test, we will determine the boundary of Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T13() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Boundary(boundary,101)) FROM named_places WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals("LINEARRING (67 13, 67 18, 59 18, 59 13, 67 13)", rs.getString(1));
+    }
+
+    /**
+     * For this test, we will determine the envelope of Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T14() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Envelope(boundary,101)) FROM named_places WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals("POLYGON ((59 13, 59 18, 67 18, 67 13, 59 13))", rs.getString(1));
+    }
+
 
     /*
+       POLYGON ((59 13, 59 18, 67 18, 67 13, 59 13))'
+
+
+     'LINESTRING( 67 13, 67 18, 59 18, 59 13, 67 13 )'
 
 -- Conformance Item T12
 
@@ -248,19 +276,11 @@ SELECT IsSimple(shore) FROM lakes WHERE name = 'Blue Lake';
 
 -- Conformance Item T13
 
-SELECT AsText(Boundary((boundary),101)
-
-FROM named_places
-
-WHERE name = 'Goose Island';
+SELECT AsText(Boundary((boundary),101) FROM named_places WHERE name = 'Goose Island';
 
 -- Conformance Item T14
 
-SELECT AsText(Envelope((boundary),101)
-
-FROM named_places
-
-WHERE name = 'Goose Island';
+SELECT AsText(Envelope((boundary),101) FROM named_places WHERE name = 'Goose Island';
 
 -- Conformance Item T15
 

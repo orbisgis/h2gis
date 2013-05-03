@@ -37,7 +37,9 @@ import org.h2spatial.internal.function.spatial.convert.ST_PointFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromWKB;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
+import org.h2spatial.internal.function.spatial.properties.ST_Boundary;
 import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
+import org.h2spatial.internal.function.spatial.properties.ST_Envelope;
 import org.h2spatial.internal.function.spatial.properties.ST_GeometryType;
 import org.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
 import org.h2spatial.internal.function.spatial.properties.ST_IsSimple;
@@ -74,10 +76,7 @@ import java.util.Map;
 public class CreateSpatialExtension {
     /** H2 base type for geometry column {@link java.sql.ResultSetMetaData#getColumnTypeName(int)} */
     public static final String GEOMETRY_BASE_TYPE = "OTHER";
-    // This HashMap is used by the INFORMATION_SCHEMA.COLUMNS Trigger
-    // in order to update geometry_columns table only when necessary
-    // Key is Connection hash and value is geometry_columns hash
-    private static final Map<Integer,Integer> GEOMETRY_COLUMNS_HASH = new HashMap<Integer, Integer>();
+
     /**
      * @return instance of all built-ins functions
      */
@@ -100,6 +99,8 @@ public class CreateSpatialExtension {
                 new ST_PolyFromWKB(),
                 new ST_IsEmpty(),
                 new ST_IsSimple(),
+                new ST_Boundary(),
+                new ST_Envelope(),
                 new ST_SRID()};
     }
 
