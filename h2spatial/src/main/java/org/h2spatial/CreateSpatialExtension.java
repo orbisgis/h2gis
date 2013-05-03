@@ -45,6 +45,7 @@ import org.h2spatial.internal.function.spatial.properties.ST_Centroid;
 import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
 import org.h2spatial.internal.function.spatial.properties.ST_EndPoint;
 import org.h2spatial.internal.function.spatial.properties.ST_Envelope;
+import org.h2spatial.internal.function.spatial.properties.ST_ExteriorRing;
 import org.h2spatial.internal.function.spatial.properties.ST_GeometryType;
 import org.h2spatial.internal.function.spatial.properties.ST_IsClosed;
 import org.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
@@ -73,8 +74,6 @@ import org.h2spatialapi.ScalarFunction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Add spatial features to an H2 database
@@ -131,6 +130,7 @@ public class CreateSpatialExtension {
                 new ST_Centroid(),
                 new ST_PointOnSurface(),
                 new ST_Contains(),
+                new ST_ExteriorRing(),
                 new ST_SRID()};
     }
 
@@ -148,6 +148,7 @@ public class CreateSpatialExtension {
                 new DomainInfo("MULTIPOLYGON", new SC_MultiPolygon())
         };
     }
+
     /**
      * Register GEOMETRY type and register spatial functions
      * @param connection Active H2 connection
@@ -194,7 +195,7 @@ public class CreateSpatialExtension {
 
     /**
      * Register view in order to create GEOMETRY_COLUMNS standard table.
-     * @param connection
+     * @param connection Open connection
      */
     public static void registerViewTable(Connection connection) throws SQLException {
         Statement st = connection.createStatement();

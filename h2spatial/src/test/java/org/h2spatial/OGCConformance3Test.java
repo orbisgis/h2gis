@@ -401,7 +401,34 @@ public class OGCConformance3Test {
         assertEquals(true, rs.getBoolean(1));
     }
 
+    /**
+     * For this test, we will determine the area of Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T26() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Area(boundary) FROM named_places WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals(40.0, rs.getDouble(1),1e-12);
+    }
+
+    /**
+     * For this test, we will determine the exterior ring of Blue Lake.
+     * @throws Exception
+     */
+    @Test
+    public void T27() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_ExteriorRing(shore)) FROM lakes WHERE name = 'BLUE LAKE'");
+        assertTrue(rs.next());
+        // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
+        // Real OGC expected result "LINESTRING (52 18, 66 23, 73 9, 48 6, 52 18)"
+        assertEquals("LINEARRING (52 18, 66 23, 73 9, 48 6, 52 18)", rs.getString(1));
+    }
+
     /*
+      'LINESTRING(52 18, 66 23, 73 9, 48 6, 52 18)'
 
 -- Conformance Item T25
 
@@ -409,19 +436,11 @@ SELECT Contains(boundary, PointOnSurface(boundary)) FROM named_places WHERE name
 
 -- Conformance Item T26
 
-SELECT Area(boundary)
-
-FROM named_places
-
-WHERE name = 'Goose Island';
+SELECT ST_Area(boundary) FROM named_places WHERE name = 'Goose Island';
 
 -- Conformance Item T27
 
-SELECT AsText(ExteriorRing(shore))
-
-FROM lakes
-
-WHERE name = 'Blue Lake';
+SELECT AsText(ExteriorRing(shore)) FROM lakes WHERE name = 'Blue Lake';
 
 -- Conformance Item T28
 
