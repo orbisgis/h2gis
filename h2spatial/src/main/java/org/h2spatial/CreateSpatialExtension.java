@@ -37,9 +37,11 @@ import org.h2spatial.internal.function.spatial.convert.ST_MPolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PointFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromWKB;
+import org.h2spatial.internal.function.spatial.predicates.ST_Contains;
 import org.h2spatial.internal.function.spatial.properties.ColumnSRID;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatial.internal.function.spatial.properties.ST_Boundary;
+import org.h2spatial.internal.function.spatial.properties.ST_Centroid;
 import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
 import org.h2spatial.internal.function.spatial.properties.ST_EndPoint;
 import org.h2spatial.internal.function.spatial.properties.ST_Envelope;
@@ -50,6 +52,8 @@ import org.h2spatial.internal.function.spatial.properties.ST_IsRing;
 import org.h2spatial.internal.function.spatial.properties.ST_IsSimple;
 import org.h2spatial.internal.function.spatial.properties.ST_Length;
 import org.h2spatial.internal.function.spatial.properties.ST_NumPoints;
+import org.h2spatial.internal.function.spatial.properties.ST_PointN;
+import org.h2spatial.internal.function.spatial.properties.ST_PointOnSurface;
 import org.h2spatial.internal.function.spatial.properties.ST_SRID;
 import org.h2spatial.internal.function.spatial.properties.ST_StartPoint;
 import org.h2spatial.internal.function.spatial.properties.ST_X;
@@ -123,6 +127,10 @@ public class CreateSpatialExtension {
                 new ST_LineFromWKB(),
                 new ST_Length(),
                 new ST_NumPoints(),
+                new ST_PointN(),
+                new ST_Centroid(),
+                new ST_PointOnSurface(),
+                new ST_Contains(),
                 new ST_SRID()};
     }
 

@@ -26,20 +26,18 @@
 package org.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
 import org.h2spatial.ValueGeometry;
 import org.h2spatialapi.ScalarFunction;
 
 /**
- * Get geometry boundary as geometry.
+ * Get a Point that lie on the surface of a Surface Geometry.
+ * The returned point is always the same for the same geometry.
  * @author Nicolas Fortin
  */
-public class ST_Boundary implements ScalarFunction {
-
+public class ST_PointOnSurface implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "getBoundary";
+        return "getInteriorPoint";
     }
 
     @Override
@@ -51,26 +49,13 @@ public class ST_Boundary implements ScalarFunction {
     }
 
     /**
-     * @param geometry Geometry instance
-     * @return Geometry envelope
+     * @param geometry Valid Geometry instance
+     * @return A Point that lie on the surface or null if input geometry is not a surface.
      */
-    public static ValueGeometry getBoundary(Geometry geometry, int srid) {
+    public static ValueGeometry getInteriorPoint(Geometry geometry) {
         if(geometry==null) {
             return null;
         }
-        Geometry geometryEnvelope = geometry.getBoundary();
-        geometryEnvelope.setSRID(srid);
-        return new ValueGeometry(geometryEnvelope);
-    }
-
-    /**
-     * @param geometry Geometry instance
-     * @return Geometry envelope
-     */
-    public static ValueGeometry getBoundary(Geometry geometry) {
-        if(geometry==null) {
-            return null;
-        }
-        return new ValueGeometry(geometry.getBoundary());
+        return new ValueGeometry(geometry.getInteriorPoint());
     }
 }

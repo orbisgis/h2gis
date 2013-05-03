@@ -248,6 +248,8 @@ public class OGCConformance3Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Boundary(boundary,101)) FROM named_places WHERE name = 'Goose Island'");
         assertTrue(rs.next());
+        // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
+        // Real OGC expected result "LINESTRING (67 13, 67 18, 59 18, 59 13, 67 13)"
         assertEquals("LINEARRING (67 13, 67 18, 59 18, 59 13, 67 13)", rs.getString(1));
     }
 
@@ -360,38 +362,50 @@ public class OGCConformance3Test {
         assertEquals(5, rs.getInt(1));
     }
 
+    /**
+     * For this test, we will determine the 1st point in road segment 102.
+     * @throws Exception
+     */
+    @Test
+    public void T23() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_PointN(centerline, 1)) FROM road_segments WHERE fid = 102");
+        assertTrue(rs.next());
+        assertEquals("POINT (0 18)", rs.getString(1));
+    }
+
+    /**
+     * For this test, we will determine the centroid of Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T24() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Centroid(boundary)) FROM named_places WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        // Real OGC unit test value "POINT (53 15.5)"
+        // OGC quote "No specific algorithm is specified for the Centroid function; answers may vary with implementation."
+        assertEquals("POINT (63 15.5)", rs.getString(1));
+    }
+
+    /**
+     * For this test, we will determine a point on Goose Island.
+     * For this test we will have to uses the Contains function (which we don't test until later).
+     * @throws Exception
+     */
+    @Test
+    public void T25() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Contains(boundary, ST_PointOnSurface(boundary)) FROM named_places WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+    }
+
     /*
--- Conformance Item T21
-
-SELECT Length(centerline) FROM road_segments WHERE fid = 106;
-
--- Conformance Item T22
-
-SELECT NumPoints(centerline) FROM road_segments WHERE fid = 102;
-
--- Conformance Item T23
-
-SELECT AsText(PointN(centerline, 1))
-
-FROM road_segments
-
-WHERE fid = 102;
-
--- Conformance Item T24
-
-SELECT AsText(Centroid(boundary))
-
-FROM named_places
-
-WHERE name = 'Goose Island';
 
 -- Conformance Item T25
 
-SELECT Contains(boundary, PointOnSurface(boundary))
-
-FROM named_places
-
-WHERE name = 'Goose Island';
+SELECT Contains(boundary, PointOnSurface(boundary)) FROM named_places WHERE name = 'Goose Island';
 
 -- Conformance Item T26
 
