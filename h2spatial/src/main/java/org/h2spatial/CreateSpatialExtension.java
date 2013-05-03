@@ -27,6 +27,7 @@ package org.h2spatial;
 import org.h2.constant.SysProperties;
 import org.h2spatial.internal.function.HexToVarBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_AsBinary;
+import org.h2spatial.internal.function.spatial.convert.ST_AsText;
 import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_LineFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_MLineFromText;
@@ -34,6 +35,7 @@ import org.h2spatial.internal.function.spatial.convert.ST_MPointFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_MPolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PointFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_PolyFromWKB;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
 import org.h2spatial.internal.function.spatial.properties.ST_GeometryType;
@@ -92,13 +94,15 @@ public class CreateSpatialExtension {
                 new HexToVarBinary(),
                 new ST_Dimension(),
                 new GeometryTypeFromConstraint(),
+                new ST_AsText(),
+                new ST_PolyFromWKB(),
                 new ST_SRID()};
     }
 
     /**
      * @return instance of all spatial built-ins field type
      */
-    public static DomainInfo[] getBuildInsType() {
+    public static DomainInfo[] getBuiltInsType() {
         return new DomainInfo[] {
                 new DomainInfo("GEOMETRY", new SC_Geometry()),
                 new DomainInfo("POINT", new SC_Point()),
@@ -141,7 +145,7 @@ public class CreateSpatialExtension {
     public static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
         SysProperties.serializeJavaObject = false;
         Statement st = connection.createStatement();
-        for(DomainInfo domainInfo : getBuildInsType()) {
+        for(DomainInfo domainInfo : getBuiltInsType()) {
             // Do not drop constraint function as some table may use this constraint in CHECK statement
             registerFunction(st,domainInfo.getDomainConstraint(),packagePrepend,false);
             // Check for byte array first, to not throw an enigmatic error CastException
@@ -171,7 +175,7 @@ public class CreateSpatialExtension {
      */
     public static void unRegisterGeometryType(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
-        DomainInfo[] domainInfos = getBuildInsType();
+        DomainInfo[] domainInfos = getBuiltInsType();
         for(DomainInfo domainInfo : domainInfos) {
             st.execute("DROP DOMAIN IF EXISTS "+domainInfo.getDomainName());
         }

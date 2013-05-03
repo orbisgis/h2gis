@@ -55,7 +55,7 @@ public class OGCConformance3Test {
     public static void tearUp() throws Exception {
         Class.forName("org.h2.Driver");
         if(DB_FILE.exists()) {
-            DB_FILE.delete();
+            assertTrue(DB_FILE.delete());
         }
         // Keep a connection alive to not close the DataBase on each unit test
         connection = DriverManager.getConnection(DATABASE_PATH,
@@ -178,6 +178,30 @@ public class OGCConformance3Test {
         assertEquals("MULTILINESTRING", rs.getString(1).toUpperCase());
     }
 
+    /**
+     * For this test, we will determine the WKT representation of Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T8() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM named_places WHERE name = 'Goose Island';");
+        assertTrue(rs.next());
+        assertEquals("POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))", rs.getString(1));
+    }
+    /**
+     * For this test, we will determine the WKB representation of Goose Island. We will test by
+     * applying AsText to the result of PolyFromText to the result of AsBinary.
+     * @throws Exception
+     */
+    @Test
+    public void T9() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_PolyFromWKB(ST_AsBinary(boundary),101)) FROM named_places WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals("POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))", rs.getString(1));
+    }
+
     /*
     -- Conformance Item T1
 
@@ -235,19 +259,11 @@ WHERE name = 'Route 75';
 
 -- Conformance Item T8
 
-SELECT AsText(boundary)
-
-FROM named_places
-
-WHERE name = 'Goose Island';
+SELECT AsText(boundary) FROM named_places WHERE name = 'Goose Island';
 
 -- Conformance Item T9
 
-SELECT AsText(PolyFromWKB(AsBinary(boundary),101))
-
-FROM named_places
-
-WHERE name = 'Goose Island';
+SELECT AsText(PolyFromWKB(AsBinary(boundary),101)) FROM named_places WHERE name = 'Goose Island';
 
 -- Conformance Item T10
 

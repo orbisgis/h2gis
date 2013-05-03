@@ -23,35 +23,41 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.type;
+package org.h2spatial.internal.function.spatial.convert;
 
-import org.h2spatial.CreateSpatialExtension;
-import org.h2spatialapi.GeometryTypeCodes;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
+import org.h2spatial.ValueGeometry;
 import org.h2spatialapi.ScalarFunction;
 
+import java.sql.SQLException;
+
 /**
- * Convert H2 constraint string into a OGC geometry type index.
  * @author Nicolas Fortin
  */
-public class GeometryTypeFromConstraint implements ScalarFunction {
+public class ST_PolyFromWKB implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "GeometryTypeFromConstraint";
+        return "toPolygon";
     }
 
     @Override
     public Object getProperty(String propertyName) {
+        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
+            return true;
+        }
         return null;
     }
 
-    public static int GeometryTypeFromConstraint(String constraint) {
-        for(DomainInfo domainsInfo : CreateSpatialExtension.getBuiltInsType()) {
-            // Like SC_Point(
-            String constraintFunction = CreateSpatialExtension.getAlias(domainsInfo.getDomainConstraint())+"(";
-            if(domainsInfo.getDomainConstraint() instanceof GeometryConstraint && constraint.contains(constraintFunction)) {
-                return ((GeometryConstraint) domainsInfo.getDomainConstraint()).getGeometryTypeCode();
-            }
+    public static ValueGeometry toPolygon(byte[] bytes, int srid) throws SQLException {
+        WKBReader wkbReader = new WKBReader();
+        try {
+            Geometry geometry = wkbReader.read(bytes);
+            geometry.setSRID(srid);
+            return new ValueGeometry(geometry);
+        } catch (ParseException ex) {
+            throw new SQLException(ex);
         }
-        return GeometryTypeCodes.GEOMETRY;
     }
 }
