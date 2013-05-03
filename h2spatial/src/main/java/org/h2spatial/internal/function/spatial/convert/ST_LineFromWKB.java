@@ -23,21 +23,25 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function.spatial.properties;
+package org.h2spatial.internal.function.spatial.convert;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKBReader;
 import org.h2spatial.ValueGeometry;
+import org.h2spatial.internal.type.SC_LineString;
 import org.h2spatialapi.ScalarFunction;
 
+import java.sql.SQLException;
+
 /**
- * Get geometry boundary as geometry.
+ * Convert WKT into a LinearRing
  * @author Nicolas Fortin
  */
-public class ST_Boundary implements ScalarFunction {
-
+public class ST_LineFromWKB implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "getBoundary";
+        return "toPolygon";
     }
 
     @Override
@@ -48,27 +52,20 @@ public class ST_Boundary implements ScalarFunction {
         return null;
     }
 
-    /**
-     * @param geometry Geometry instance
-     * @return Geometry envelope
-     */
-    public static ValueGeometry getBoundary(Geometry geometry, int srid) {
-        if(geometry==null) {
+    public static ValueGeometry toPolygon(byte[] bytes, int srid) throws SQLException {
+        if(bytes==null) {
             return null;
         }
-        Geometry geometryEnvelope = geometry.getBoundary();
-        geometryEnvelope.setSRID(srid);
-        return new ValueGeometry(geometryEnvelope);
-    }
-
-    /**
-     * @param geometry Geometry instance
-     * @return Geometry envelope
-     */
-    public static ValueGeometry getBoundary(Geometry geometry) {
-        if(geometry==null) {
-            return null;
+        WKBReader wkbReader = new WKBReader();
+        try {
+            Geometry geometry = wkbReader.read(bytes);
+            if(!SC_LineString.isLineString(geometry)) {
+                throw new SQLException("Provided WKT is not a LinearString.");
+            }
+            geometry.setSRID(srid);
+            return new ValueGeometry(geometry);
+        } catch (ParseException ex) {
+            throw new SQLException(ex);
         }
-        return new ValueGeometry(geometry.getBoundary());
     }
 }

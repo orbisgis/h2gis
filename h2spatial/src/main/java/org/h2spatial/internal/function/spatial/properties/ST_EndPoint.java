@@ -26,18 +26,20 @@
 package org.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2spatial.ValueGeometry;
 import org.h2spatialapi.ScalarFunction;
 
 /**
- * Get geometry boundary as geometry.
+ * Returns the last point of a LINESTRING geometry as a POINT or NULL if the
+ * input parameter is not a LINESTRING.
  * @author Nicolas Fortin
  */
-public class ST_Boundary implements ScalarFunction {
-
+public class ST_EndPoint implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "getBoundary";
+        return "getEndPoint";
     }
 
     @Override
@@ -48,27 +50,16 @@ public class ST_Boundary implements ScalarFunction {
         return null;
     }
 
-    /**
-     * @param geometry Geometry instance
-     * @return Geometry envelope
-     */
-    public static ValueGeometry getBoundary(Geometry geometry, int srid) {
-        if(geometry==null) {
-            return null;
+    public static ValueGeometry getEndPoint(Geometry geometry) {
+        if (geometry instanceof MultiLineString) {
+            if (geometry.getNumGeometries() == 1) {
+                LineString line = (LineString) geometry.getGeometryN(0);
+                return new ValueGeometry(line.getEndPoint());
+            }
+        } else if (geometry instanceof LineString) {
+            LineString line = (LineString) geometry;
+            return  new ValueGeometry(line.getEndPoint());
         }
-        Geometry geometryEnvelope = geometry.getBoundary();
-        geometryEnvelope.setSRID(srid);
-        return new ValueGeometry(geometryEnvelope);
-    }
-
-    /**
-     * @param geometry Geometry instance
-     * @return Geometry envelope
-     */
-    public static ValueGeometry getBoundary(Geometry geometry) {
-        if(geometry==null) {
-            return null;
-        }
-        return new ValueGeometry(geometry.getBoundary());
+        return null;
     }
 }

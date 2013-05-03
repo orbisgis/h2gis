@@ -29,6 +29,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
 import org.h2spatial.ValueGeometry;
+import org.h2spatial.internal.type.SC_LineString;
+import org.h2spatial.internal.type.SC_Polygon;
 import org.h2spatialapi.ScalarFunction;
 
 import java.sql.SQLException;
@@ -57,6 +59,9 @@ public class ST_PolyFromWKB implements ScalarFunction {
         WKBReader wkbReader = new WKBReader();
         try {
             Geometry geometry = wkbReader.read(bytes);
+            if(!SC_Polygon.isPolygon(geometry)) {
+                throw new SQLException("Provided WKT is not a Polygon.");
+            }
             geometry.setSRID(srid);
             return new ValueGeometry(geometry);
         } catch (ParseException ex) {

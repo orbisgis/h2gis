@@ -30,6 +30,7 @@ import org.h2spatial.internal.function.spatial.convert.ST_AsBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_AsText;
 import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_LineFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_LineFromWKB;
 import org.h2spatial.internal.function.spatial.convert.ST_MLineFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_MPointFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_MPolyFromText;
@@ -40,9 +41,12 @@ import org.h2spatial.internal.function.spatial.properties.ColumnSRID;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatial.internal.function.spatial.properties.ST_Boundary;
 import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
+import org.h2spatial.internal.function.spatial.properties.ST_EndPoint;
 import org.h2spatial.internal.function.spatial.properties.ST_Envelope;
 import org.h2spatial.internal.function.spatial.properties.ST_GeometryType;
+import org.h2spatial.internal.function.spatial.properties.ST_IsClosed;
 import org.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
+import org.h2spatial.internal.function.spatial.properties.ST_IsRing;
 import org.h2spatial.internal.function.spatial.properties.ST_IsSimple;
 import org.h2spatial.internal.function.spatial.properties.ST_SRID;
 import org.h2spatial.internal.function.spatial.properties.ST_StartPoint;
@@ -111,6 +115,10 @@ public class CreateSpatialExtension {
                 new ST_Z(),
                 new ColumnSRID(),
                 new ST_StartPoint(),
+                new ST_EndPoint(),
+                new ST_IsClosed(),
+                new ST_IsRing(),
+                new ST_LineFromWKB(),
                 new ST_SRID()};
     }
 

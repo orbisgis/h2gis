@@ -300,36 +300,47 @@ public class OGCConformance3Test {
         assertEquals("POINT (0 18)", rs.getString(1));
     }
 
+    /**
+     * For this test, we will determine the end point of road segment 102.
+     * @throws Exception
+     */
+    @Test
+    public void T18() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_EndPoint(centerline)) FROM road_segments WHERE fid = 102");
+        assertTrue(rs.next());
+        assertEquals("POINT (44 31)", rs.getString(1));
+    }
+
+    /**
+     * For this test, we will determine the boundary close state of Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T19() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_IsClosed(ST_LineFromWKB(ST_AsBinary(ST_Boundary(boundary)),ST_SRID(boundary))) FROM named_places WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine the boundary close state of Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T20() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_IsRing(ST_LineFromWKB(ST_AsBinary(ST_Boundary(boundary)),ST_SRID(boundary))) FROM named_places WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+    }
+
     /*
-
-
--- Conformance Item T16
-
-SELECT Y(position)
-
-FROM bridges
-
-WHERE name = 'Cam Bridge';
-
--- Conformance Item T17
-
-SELECT AsText(StartPoint(centerline)) FROM road_segments WHERE fid = 102;
-
--- Conformance Item T18
-
-SELECT AsText(EndPoint(centerline))
-
-FROM road_segments
-
-WHERE fid = 102;
 
 -- Conformance Item T19
 
-SELECT IsClosed(LineFromWKB(AsBinary(Boundary(boundary)),SRID(boundary)))
-
-FROM named_places
-
-WHERE name = 'Goose Island';
+SELECT IsClosed(LineFromWKB(AsBinary(Boundary(boundary)),SRID(boundary))) FROM named_places WHERE name = 'Goose Island';
 
 -- Conformance Item T20
 

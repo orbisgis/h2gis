@@ -26,18 +26,18 @@
 package org.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatial.ValueGeometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2spatialapi.ScalarFunction;
 
 /**
- * Get geometry boundary as geometry.
+ * Test if the provided geometry is closed and simple.
  * @author Nicolas Fortin
  */
-public class ST_Boundary implements ScalarFunction {
-
+public class ST_IsRing implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "getBoundary";
+        return "isRing";
     }
 
     @Override
@@ -50,25 +50,16 @@ public class ST_Boundary implements ScalarFunction {
 
     /**
      * @param geometry Geometry instance
-     * @return Geometry envelope
+     * @return True if the provided geometry is ring
      */
-    public static ValueGeometry getBoundary(Geometry geometry, int srid) {
-        if(geometry==null) {
-            return null;
+    public static Boolean isRing(Geometry geometry) {
+        if (geometry instanceof MultiLineString) {
+            MultiLineString mString = ((MultiLineString) geometry);
+            return mString.isClosed() && mString.isSimple();
+        } else if (geometry instanceof LineString) {
+            LineString line = (LineString) geometry;
+            return line.isClosed() && geometry.isSimple();
         }
-        Geometry geometryEnvelope = geometry.getBoundary();
-        geometryEnvelope.setSRID(srid);
-        return new ValueGeometry(geometryEnvelope);
-    }
-
-    /**
-     * @param geometry Geometry instance
-     * @return Geometry envelope
-     */
-    public static ValueGeometry getBoundary(Geometry geometry) {
-        if(geometry==null) {
-            return null;
-        }
-        return new ValueGeometry(geometry.getBoundary());
+        return null;
     }
 }
