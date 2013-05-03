@@ -44,6 +44,9 @@ public class ST_MPolyFromText implements ScalarFunction {
 
     @Override
     public Object getProperty(String propertyName) {
+        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
+            return true;
+        }
         return null;
     }
 

@@ -26,13 +26,19 @@
 package org.h2spatial.internal.type;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.h2spatialapi.GeometryTypeCodes;
 import org.h2spatialapi.ScalarFunction;
 
 /**
  * Constraint for ListString field type.
  * @author Nicolas Fortin
  */
-public class SC_LineString implements ScalarFunction {
+public class SC_LineString implements ScalarFunction, GeometryConstraint {
+
+    @Override
+    public int getGeometryTypeCode() {
+        return GeometryTypeCodes.LINESTRING;
+    }
 
     @Override
     public String getJavaStaticMethod() {
@@ -51,4 +57,5 @@ public class SC_LineString implements ScalarFunction {
     public static boolean isLineString(Geometry geometry) {
         return geometry==null || geometry.getGeometryType().equals("LineString");
     }
+
 }

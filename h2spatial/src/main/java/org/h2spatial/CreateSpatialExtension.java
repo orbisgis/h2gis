@@ -35,8 +35,11 @@ import org.h2spatial.internal.function.spatial.convert.ST_MPolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PointFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromText;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
+import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
 import org.h2spatial.internal.function.spatial.properties.ST_GeometryType;
+import org.h2spatial.internal.function.spatial.properties.ST_SRID;
 import org.h2spatial.internal.type.DomainInfo;
+import org.h2spatial.internal.type.GeometryTypeFromConstraint;
 import org.h2spatial.internal.type.SC_Geometry;
 import org.h2spatial.internal.type.SC_LineString;
 import org.h2spatial.internal.type.SC_MultiLineString;
@@ -86,7 +89,10 @@ public class CreateSpatialExtension {
                 new ST_MLineFromText(),
                 new ST_PolyFromText(),
                 new ST_MPolyFromText(),
-                new HexToVarBinary()};
+                new HexToVarBinary(),
+                new ST_Dimension(),
+                new GeometryTypeFromConstraint(),
+                new ST_SRID()};
     }
 
     /**
@@ -155,7 +161,7 @@ public class CreateSpatialExtension {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
         st.execute("create view geometry_columns as select TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
-                "COLUMN_NAME f_geometry_column,1 storage_type,3 geometry_type,2 coord_dimension,101 srid" +
+                "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT) geometry_type,2 coord_dimension,101 srid" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE CHECK_CONSTRAINT LIKE '%SC_GEOMETRY%'");
     }
 
@@ -225,7 +231,12 @@ public class CreateSpatialExtension {
             st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + deterministic + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
         }
     }
-    private static String getAlias(Function function) {
+
+    /**
+     * @param function Function instance
+     * @return the function ALIAS, name of the function in SQL engine
+     */
+    public static String getAlias(Function function) {
         String functionAlias = getStringProperty(function,Function.PROP_NAME);
         if(!functionAlias.isEmpty()) {
             return functionAlias;

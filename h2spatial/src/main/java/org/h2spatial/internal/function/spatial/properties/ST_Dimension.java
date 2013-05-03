@@ -23,20 +23,20 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function;
+package org.h2spatial.internal.function.spatial.properties;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2spatialapi.ScalarFunction;
 
-import javax.xml.bind.DatatypeConverter;
-
 /**
- * Convert Hexadecimal string into an array of byte.
+ * Get dimension of a geometry 2 or 3
  * @author Nicolas Fortin
  */
-public class HexToVarBinary implements ScalarFunction {
+public class ST_Dimension implements ScalarFunction {
+
     @Override
     public String getJavaStaticMethod() {
-        return "toVarBinary";
+        return "getDimension";
     }
 
     @Override
@@ -47,7 +47,11 @@ public class HexToVarBinary implements ScalarFunction {
         return null;
     }
 
-    public static byte[] toVarBinary(String hex) {
-        return DatatypeConverter.parseHexBinary(hex.replace("\n",""));
+    /**
+     * @param geometry Geometry instance
+     * @return Geometry dimension
+     */
+    public static int getDimension(Geometry geometry) {
+        return geometry.getDimension();
     }
 }

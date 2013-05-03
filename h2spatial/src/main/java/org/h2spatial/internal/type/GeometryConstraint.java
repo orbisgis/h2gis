@@ -23,31 +23,14 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function;
-
-import org.h2spatialapi.ScalarFunction;
-
-import javax.xml.bind.DatatypeConverter;
+package org.h2spatial.internal.type;
 
 /**
- * Convert Hexadecimal string into an array of byte.
  * @author Nicolas Fortin
  */
-public class HexToVarBinary implements ScalarFunction {
-    @Override
-    public String getJavaStaticMethod() {
-        return "toVarBinary";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
-    }
-
-    public static byte[] toVarBinary(String hex) {
-        return DatatypeConverter.parseHexBinary(hex.replace("\n",""));
-    }
+public interface GeometryConstraint {
+    /**
+     * @return The OGC SFS Corresponding Geometry code
+     */
+    int getGeometryTypeCode();
 }

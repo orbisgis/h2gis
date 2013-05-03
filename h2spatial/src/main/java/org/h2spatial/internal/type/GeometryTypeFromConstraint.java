@@ -23,31 +23,35 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function;
+package org.h2spatial.internal.type;
 
+import org.h2spatial.CreateSpatialExtension;
+import org.h2spatialapi.GeometryTypeCodes;
 import org.h2spatialapi.ScalarFunction;
 
-import javax.xml.bind.DatatypeConverter;
-
 /**
- * Convert Hexadecimal string into an array of byte.
+ * Convert H2 constraint string into a OGC geometry type index.
  * @author Nicolas Fortin
  */
-public class HexToVarBinary implements ScalarFunction {
+public class GeometryTypeFromConstraint implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "toVarBinary";
+        return "GeometryTypeFromConstraint";
     }
 
     @Override
     public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
         return null;
     }
 
-    public static byte[] toVarBinary(String hex) {
-        return DatatypeConverter.parseHexBinary(hex.replace("\n",""));
+    public static int GeometryTypeFromConstraint(String constraint) {
+        for(DomainInfo domainsInfo : CreateSpatialExtension.getBuildInsType()) {
+            // Like SC_Point(
+            String constraintFunction = CreateSpatialExtension.getAlias(domainsInfo.getDomainConstraint())+"(";
+            if(domainsInfo.getDomainConstraint() instanceof GeometryConstraint && constraint.contains(constraintFunction)) {
+                return ((GeometryConstraint) domainsInfo.getDomainConstraint()).getGeometryTypeCode();
+            }
+        }
+        return GeometryTypeCodes.GEOMETRY;
     }
 }

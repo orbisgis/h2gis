@@ -26,13 +26,19 @@
 package org.h2spatial.internal.type;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.h2spatialapi.GeometryTypeCodes;
 import org.h2spatialapi.ScalarFunction;
 
 /**
  * Constraint for MultiPoint field type.
  * @author Nicolas Fortin
  */
-public class SC_MultiPoint implements ScalarFunction {
+public class SC_MultiPoint implements ScalarFunction , GeometryConstraint {
+
+    @Override
+    public int getGeometryTypeCode() {
+        return GeometryTypeCodes.MULTIPOINT;
+    }
 
     @Override
     public String getJavaStaticMethod() {

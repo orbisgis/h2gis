@@ -112,38 +112,12 @@ public class OGCConformance3Test {
     }
 
     /**
-     * For this test, we will check to see that the correct storage type for
-     * the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
-     */
-    @Test
-    public void T3() throws Exception {
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT storage_type FROM geometry_columns WHERE f_table_name = 'STREAMS';");
-        assertTrue(rs.next());
-        assertEquals(1, rs.getInt(1));
-    }
-
-    /**
-     * For this test, we will check to see that the correct geometry type for
-     * the streams table is represented in the GEOMETRY_COLUMNS table/view.
-     * @throws Exception
-     */
-    @Test
-    public void T4() throws Exception {
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT geometry_type FROM geometry_columns WHERE f_table_name = 'STREAMS';");
-        assertTrue(rs.next());
-        assertEquals(3, rs.getInt(1));
-    }
-
-    /**
      * For this test, we will check to see that the correct coordinate dimension for
      * the streams table is represented in the GEOMETRY_COLUMNS table/view.
      * @throws Exception
      */
     @Test
-    public void T5() throws Exception {
+    public void T3() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT coord_dimension FROM geometry_columns WHERE f_table_name = 'STREAMS';");
         assertTrue(rs.next());
@@ -156,7 +130,7 @@ public class OGCConformance3Test {
      * @throws Exception
      */
     @Test
-    public void T6() throws Exception {
+    public void T4() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT srid FROM geometry_columns WHERE f_table_name = 'STREAMS';");
         assertTrue(rs.next());
@@ -169,7 +143,7 @@ public class OGCConformance3Test {
      * @throws Exception
      */
     @Test
-    public void T7() throws Exception {
+    public void T5() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT srtext FROM SPATIAL_REF_SYS WHERE SRID = 101;");
         assertTrue(rs.next());
@@ -178,6 +152,30 @@ public class OGCConformance3Test {
                 "PROJECTION[\"Transverse_Mercator\"],\n\nPARAMETER[\"False_Easting\", 500000.0]," +
                 "PARAMETER[\"False_Northing\",\n\n0.0],PARAMETER[\"Central_Meridian\", -99.0],PARAMETER[\"Scale_Factor\"" +
                 ",\n\n0.9996],PARAMETER[\"Latitude_of_origin\", 0.0],UNIT[\"Meter\", 1.0]]", rs.getString(1));
+    }
+
+    /**
+     * For this test, we will determine the dimension of Blue Lake.
+     * @throws Exception
+     */
+    @Test
+    public void T6() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Dimension(shore) FROM lakes WHERE name = 'BLUE LAKE'");
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt(1));
+    }
+
+    /**
+     * For this test, we will determine  the type of Route 75.
+     * @throws Exception
+     */
+    @Test
+    public void T7() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryType(centerlines) FROM divided_routes WHERE name = 'Route 75';");
+        assertTrue(rs.next());
+        assertEquals("MULTILINESTRING", rs.getString(1).toUpperCase());
     }
 
     /*
