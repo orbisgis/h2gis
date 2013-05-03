@@ -39,6 +39,8 @@ import org.h2spatial.internal.function.spatial.convert.ST_PolyFromWKB;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
 import org.h2spatial.internal.function.spatial.properties.ST_GeometryType;
+import org.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
+import org.h2spatial.internal.function.spatial.properties.ST_IsSimple;
 import org.h2spatial.internal.function.spatial.properties.ST_SRID;
 import org.h2spatial.internal.type.DomainInfo;
 import org.h2spatial.internal.type.GeometryTypeFromConstraint;
@@ -96,6 +98,8 @@ public class CreateSpatialExtension {
                 new GeometryTypeFromConstraint(),
                 new ST_AsText(),
                 new ST_PolyFromWKB(),
+                new ST_IsEmpty(),
+                new ST_IsSimple(),
                 new ST_SRID()};
     }
 

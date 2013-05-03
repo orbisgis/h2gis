@@ -189,6 +189,7 @@ public class OGCConformance3Test {
         assertTrue(rs.next());
         assertEquals("POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))", rs.getString(1));
     }
+
     /**
      * For this test, we will determine the WKB representation of Goose Island. We will test by
      * applying AsText to the result of PolyFromText to the result of AsBinary.
@@ -202,96 +203,48 @@ public class OGCConformance3Test {
         assertEquals("POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))", rs.getString(1));
     }
 
+    /**
+     * For this test, we will determine the SRID of Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T10() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_SRID(boundary) FROM named_places WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals(101, rs.getInt(1));
+    }
+
+    /**
+     * For this test, we will determine whether the geometry of a segment of Route 5 is empty.
+     * @throws Exception
+     */
+    @Test
+    public void T11() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_IsEmpty(centerline) FROM road_segments WHERE name = 'Route 5' AND aliases = 'Main Street'");
+        assertTrue(rs.next());
+        assertEquals(false, rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine whether the geometry of a segment of Blue Lake is simple.
+     * @throws Exception
+     */
+    @Test
+    public void T12() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_IsSimple(shore) FROM lakes WHERE name = 'BLUE LAKE'");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+    }
+
+
     /*
-    -- Conformance Item T1
-
-SELECT f_table_name
-
-FROM geometry_columns;
-
--- Conformance Item T2
-
-SELECT f_geometry_column
-
-FROM geometry_columns
-
-WHERE f_table_name = 'streams';
-
--- Conformance Item T3
-
-SELECT coord_dimension
-
-FROM geometry_columns
-
-WHERE f_table_name = 'streams';
-
--- Conformance Item T4
-
-SELECT srid
-
-FROM geometry_columns
-
-WHERE f_table_name = 'streams';
-
--- Conformance Item T5
-
-SELECT srtext
-
-FROM SPATIAL_REF_SYS
-
-WHERE SRID = 101;
-
--- Conformance Item T6
-
-SELECT Dimension(shore)
-
-FROM lakes
-
-WHERE name = 'Blue Lake';
-
--- Conformance Item T7
-
-SELECT GeometryType(centerlines)
-
-FROM lakes
-
-WHERE name = 'Route 75';
-
--- Conformance Item T8
-
-SELECT AsText(boundary) FROM named_places WHERE name = 'Goose Island';
-
--- Conformance Item T9
-
-SELECT AsText(PolyFromWKB(AsBinary(boundary),101)) FROM named_places WHERE name = 'Goose Island';
-
--- Conformance Item T10
-
-SELECT SRID(boundary)
-
-FROM named_places
-
-WHERE name = 'Goose Island';
-
--- Conformance Item T11
-
-SELECT IsEmpty(centerline)
-
-FROM road_segments
-
-WHERE name = 'Route 5'
-
-
-
-AND aliases = 'Main Street';
 
 -- Conformance Item T12
 
-SELECT IsSimple(shore)
-
-FROM lakes
-
-WHERE name = 'Blue Lake';
+SELECT IsSimple(shore) FROM lakes WHERE name = 'Blue Lake';
 
 -- Conformance Item T13
 
