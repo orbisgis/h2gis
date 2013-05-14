@@ -663,35 +663,38 @@ public class OGCConformance3Test {
         assertEquals(12.0, rs.getDouble(1),1e-12);
     }
 
+    /**
+     * For this test, we will determine the intersection between Cam Stream and Blue Lake.
+     * @throws Exception
+     */
+    @Test
+    public void T47() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Intersection(centerline, shore)) " +
+                "FROM streams, lakes WHERE streams.name = 'Cam Stream'");
+        assertTrue(rs.next());
+        assertEquals("POINT (52 18)", rs.getString(1));
+    }
+
+    /**
+     * For this test, we will determine the difference between Ashton and Green Forest.
+     * @throws Exception
+     */
+    @Test
+    public void T48() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Difference(named_places.boundary, forests.boundary)) " +
+                "FROM named_places, forests WHERE named_places.name = 'Ashton'");
+        assertTrue(rs.next());
+        // OGC original: POLYGON ((56 34, 62 48, 84 48, 84 42, 56 34))
+        // Here the polygon is the same but with a different points order
+        assertEquals("POLYGON ((62 48, 84 48, 84 42, 56 34, 62 48))", rs.getString(1));
+    }
     /*
-
--- Conformance Item T45
-
-SELECT Relate(forests.boundary, named_places.boundary, 'TTTTTTTTT') FROM forests, named_places WHERE forests.name = 'Green Forest' AND named_places.name = 'Ashton';
-
--- Conformance Item T46
-
-SELECT Distance(position, boundary) FROM bridges, named_places WHERE bridges.name = 'Cam Bridge' AND named_places.name = 'Ashton';
-
--- Conformance Item T47
-
-SELECT AsText(Intersection(centerline, shore))
-
-FROM streams, lakes
-
-WHERE streams.name = 'Cam Stream'
-
-
-
-AND lakes.name = 'Blue Lake';
 
 -- Conformance Item T48
 
-SELECT AsText(Difference(named_places.boundary, forests.boundary))
-
-FROM named_places, forests
-
-WHERE named_places.name = 'Ashton'
+SELECT AsText(Difference(named_places.boundary, forests.boundary)) FROM named_places, forests WHERE named_places.name = 'Ashton'
 
 
 
