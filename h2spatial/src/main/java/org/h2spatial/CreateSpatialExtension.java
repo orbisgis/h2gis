@@ -38,6 +38,12 @@ import org.h2spatial.internal.function.spatial.convert.ST_PointFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromWKB;
 import org.h2spatial.internal.function.spatial.predicates.ST_Contains;
+import org.h2spatial.internal.function.spatial.predicates.ST_Crosses;
+import org.h2spatial.internal.function.spatial.predicates.ST_Disjoint;
+import org.h2spatial.internal.function.spatial.predicates.ST_Equals;
+import org.h2spatial.internal.function.spatial.predicates.ST_Overlaps;
+import org.h2spatial.internal.function.spatial.predicates.ST_Touches;
+import org.h2spatial.internal.function.spatial.predicates.ST_Within;
 import org.h2spatial.internal.function.spatial.properties.ColumnSRID;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatial.internal.function.spatial.properties.ST_Boundary;
@@ -142,6 +148,12 @@ public class CreateSpatialExtension {
                 new ST_InteriorRingN(),
                 new ST_NumGeometries(),
                 new ST_GeometryN(),
+                new ST_Equals(),
+                new ST_Disjoint(),
+                new ST_Touches(),
+                new ST_Within(),
+                new ST_Overlaps(),
+                new ST_Crosses(),
                 new ST_SRID()};
     }
 

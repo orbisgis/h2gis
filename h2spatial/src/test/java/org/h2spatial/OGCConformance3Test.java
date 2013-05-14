@@ -502,98 +502,126 @@ public class OGCConformance3Test {
         assertEquals("POINT (25 42)", rs.getString(1));
     }
 
+    /**
+     * For this test, we will determine a point on the ponds.
+     * @throws Exception
+     */
+    @Test
+    public void T35() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Contains(shores, ST_PointOnSurface(shores)) FROM ponds WHERE fid = 120");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine the area of the ponds.
+     * @throws Exception
+     */
+    @Test
+    public void T36() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Area(shores) FROM ponds WHERE fid = 120");
+        assertTrue(rs.next());
+        assertEquals(8.0, rs.getDouble(1),1e-12);
+    }
+
+    /**
+     * For this test, we will determine if the geometry of Goose Island is equal to the same geometry as
+     * constructed from it's WKT representation.
+     * @throws Exception
+     */
+    @Test
+    public void T37() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Equals(boundary, " +
+                "ST_PolyFromText('POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))',1)) FROM named_places" +
+                " WHERE name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine if the geometry of Goose Island is equal to the same geometry as
+     * constructed from it's WKT representation.
+     * @throws Exception
+     */
+    @Test
+    public void T38() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Disjoint(centerlines, boundary) FROM divided_routes, named_places" +
+                " WHERE divided_routes.name = 'Route 75' AND named_places.name = 'Ashton'");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine if the geometry of Cam Stream touches the geometry of Blue Lake.
+     * @throws Exception
+     */
+    @Test
+    public void T39() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Touches(centerline, shore) FROM streams, lakes " +
+                "WHERE streams.name = 'Cam Stream' AND lakes.name = 'BLUE LAKE'");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine if the geometry of the house at 215 Main Street is within Ashton.
+     * @throws Exception
+     */
+    @Test
+    public void T40() throws Exception {
+        Statement st = connection.createStatement();
+        // Fix OGC original request inversion of footprint and boundary
+        ResultSet rs = st.executeQuery("SELECT ST_Within(footprint,boundary) FROM named_places, buildings " +
+                "WHERE named_places.name = 'Ashton' AND buildings.address = '215 Main Street'");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine if the geometry of Green Forest overlaps the geometry of Ashton.
+     * @throws Exception
+     */
+    @Test
+    public void T41() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Overlaps(forests.boundary, named_places.boundary) " +
+                "FROM forests, named_places WHERE forests.name = 'Green Forest' AND named_places.name = 'Ashton'");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine if the geometry of road segment 101 crosses the geometry of Route 75.
+     * @throws Exception
+     */
+    @Test
+    public void T42() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Crosses(road_segments.centerline, divided_routes.centerlines) " +
+                "FROM road_segments, divided_routes WHERE road_segments.fid = 102 AND divided_routes.name = 'Route 75'");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+    }
+
     /*
 
 
--- Conformance Item T34
-
-SELECT ST_AsText(ST_Centroid(shores)) FROM ponds WHERE fid = 120;
-
--- Conformance Item T35
-
-SELECT Contains(shores, PointOnSurface(shores))
-
-FROM ponds
-
-WHERE fid = 120;
-
--- Conformance Item T36
-
-SELECT Area(shores)
-
-FROM ponds
-
-WHERE fid = 120;
-
--- Conformance Item T37
-
-SELECT Equals(boundary,
-
-PolyFromText('POLYGON( ( 67 13, 67 18, 59 18, 59 13, 67 13) )',1))
-
-FROM named_places
-
-WHERE name = 'Goose Island';
-
--- Conformance Item T38
-
-SELECT Disjoint(centerlines, boundary)
-
-FROM divided_routes, named_places
-
-WHERE divided_routes.name = 'Route 75'
-
-
-
-AND named_places.name = 'Ashton';
-
--- Conformance Item T39
-
-SELECT Touches(centerline, shore)
-
-FROM streams, lakes
-
-WHERE streams.name = 'Cam Stream'
-
-
-
-AND lakes.name = 'Blue Lake';
-
 -- Conformance Item T40
 
-SELECT Within(boundary, footprint)
-
-FROM named_places, buildings
-
-WHERE named_places.name = 'Ashton'
-
-
-
-AND buildings.address = '215 Main Street';
+SELECT Within(boundary, footprint) FROM named_places, buildings WHERE named_places.name = 'Ashton' AND buildings.address = '215 Main Street';
 
 -- Conformance Item T41
 
-SELECT Overlaps(forests.boundary, named_places.boundary)
-
-FROM forests, named_places
-
-WHERE forests.name = 'Green Forest'
-
-
-
-AND named_places.name = 'Ashton';
+SELECT Overlaps(forests.boundary, named_places.boundary) FROM forests, named_places WHERE forests.name = 'Green Forest' AND named_places.name = 'Ashton';
 
 -- Conformance Item T42
 
-SELECT Crosses(road_segments.centerline, divided_routes.centerlines)
-
-FROM road_segments, divided_routes
-
-WHERE road_segment.fid = 102
-
-
-
-AND divided_routes.name = 'Route 75';
+SELECT Crosses(road_segments.centerline, divided_routes.centerlines) FROM road_segments, divided_routes WHERE road_segment.fid = 102 AND divided_routes.name = 'Route 75';
 
 -- Conformance Item T43
 
