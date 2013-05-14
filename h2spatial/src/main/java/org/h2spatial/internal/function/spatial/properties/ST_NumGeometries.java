@@ -23,35 +23,37 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial;
+package org.h2spatial.internal.function.spatial.properties;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import com.vividsolutions.jts.geom.Geometry;
+import org.h2spatialapi.ScalarFunction;
 
-import java.net.URL;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 /**
- * Test constraints on geometry type.
+ * Get the number of geometries inside a geometry collection
  * @author Nicolas Fortin
  */
-public class GeometryTypeConstraintTest {
-    private static Connection connection;
-
-
-    @BeforeClass
-    public static void tearUp() throws Exception {
-        // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase("GeometryTypeConstraintTest");
+public class ST_NumGeometries implements ScalarFunction {
+    @Override
+    public String getJavaStaticMethod() {
+        return "getNumGeometries";
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
-        connection.close();
+    @Override
+    public Object getProperty(String propertyName) {
+        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
+            return true;
+        }
+        return null;
+    }
+
+    /**
+     * @param geometry Geometry instance or null
+     * @return Number of points or null if Geometry is null.
+     */
+    public static Integer getNumGeometries(Geometry geometry) {
+        if(geometry==null) {
+            return null;
+        }
+        return geometry.getNumGeometries();
     }
 }

@@ -29,16 +29,15 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -429,59 +428,86 @@ public class OGCConformance3Test {
         assertEquals(1, rs.getInt(1));
     }
 
+    /**
+     * For this test, we will determine the first interior ring of Blue Lake.
+     * @throws Exception
+     */
+    @Test
+    public void T29() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_InteriorRingN(shore, 1)) FROM lakes WHERE name = 'BLUE LAKE'");
+        assertTrue(rs.next());
+        // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
+        // Real OGC expected result "LINESTRING (59 18, 67 18, 67 13, 59 13, 59 18)"
+        assertEquals("LINEARRING (59 18, 67 18, 67 13, 59 13, 59 18)", rs.getString(1));
+    }
+
+    /**
+     * For this test, we will determine the number of geometries in Route 75.
+     * @throws Exception
+     */
+    @Test
+    public void T30() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_NumGeometries(centerlines) FROM divided_routes WHERE name = 'Route 75'");
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt(1));
+    }
+
+    /**
+     * For this test, we will determine the second geometry in Route 75.
+     * @throws Exception
+     */
+    @Test
+    public void T31() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_GeometryN(centerlines, 2)) FROM divided_routes WHERE name = 'Route 75'");
+        assertTrue(rs.next());
+        assertEquals("LINESTRING (16 0, 16 23, 16 48)", rs.getString(1));
+    }
+
+    /**
+     * For this test, we will determine if the geometry of Route 75 is closed.
+     * @throws Exception
+     */
+    @Test
+    public void T32() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_IsClosed(centerlines) FROM divided_routes WHERE name = 'Route 75'");
+        assertTrue(rs.next());
+        assertFalse(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine the length of Route 75.
+     * @throws Exception
+     */
+    @Test
+    public void T33() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Length(centerlines) FROM divided_routes WHERE name = 'Route 75'");
+        assertTrue(rs.next());
+        assertEquals(96.0, rs.getDouble(1),1e-12);
+    }
+
+    /**
+     * For this test, we will determine the centroid of the ponds.
+     * @throws Exception
+     */
+    @Test
+    public void T34() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Centroid(shores)) FROM ponds WHERE fid = 120");
+        assertTrue(rs.next());
+        assertEquals("POINT (25 42)", rs.getString(1));
+    }
+
     /*
 
--- Conformance Item T28
-
-SELECT ST_NumInteriorRings(shore) FROM lakes WHERE name = 'Blue Lake';
-
--- Conformance Item T29
-
-SELECT AsText(InteriorRingN(shore, 1))
-
-FROM lakes
-
-WHERE name = 'Blue Lake';
-
--- Conformance Item T30
-
-SELECT NumGeometries(centerlines)
-
-FROM divided_routes
-
-WHERE name = 'Route 75';
-
--- Conformance Item T31
-
-SELECT AsText(GeometryN(centerlines, 2))
-
-FROM divided_routes
-
-WHERE name = 'Route 75';
-
--- Conformance Item T32
-
-SELECT IsClosed(centerlines)
-
-FROM divided_routes
-
-WHERE name = 'Route 75';
-
--- Conformance Item T33
-
-SELECT Length(centerlines)
-
-FROM divided_routes
-
-WHERE name = 'Route 75';
 
 -- Conformance Item T34
 
-SELECT AsText(Centroid(shores))
-
-FROM ponds
-
-WHERE fid = 120;
+SELECT ST_AsText(ST_Centroid(shores)) FROM ponds WHERE fid = 120;
 
 -- Conformance Item T35
 

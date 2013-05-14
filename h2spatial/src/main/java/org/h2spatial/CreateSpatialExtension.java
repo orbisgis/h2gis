@@ -46,12 +46,15 @@ import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
 import org.h2spatial.internal.function.spatial.properties.ST_EndPoint;
 import org.h2spatial.internal.function.spatial.properties.ST_Envelope;
 import org.h2spatial.internal.function.spatial.properties.ST_ExteriorRing;
+import org.h2spatial.internal.function.spatial.properties.ST_GeometryN;
 import org.h2spatial.internal.function.spatial.properties.ST_GeometryType;
+import org.h2spatial.internal.function.spatial.properties.ST_InteriorRingN;
 import org.h2spatial.internal.function.spatial.properties.ST_IsClosed;
 import org.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
 import org.h2spatial.internal.function.spatial.properties.ST_IsRing;
 import org.h2spatial.internal.function.spatial.properties.ST_IsSimple;
 import org.h2spatial.internal.function.spatial.properties.ST_Length;
+import org.h2spatial.internal.function.spatial.properties.ST_NumGeometries;
 import org.h2spatial.internal.function.spatial.properties.ST_NumInteriorRing;
 import org.h2spatial.internal.function.spatial.properties.ST_NumInteriorRings;
 import org.h2spatial.internal.function.spatial.properties.ST_NumPoints;
@@ -136,6 +139,9 @@ public class CreateSpatialExtension {
                 new ST_ExteriorRing(),
                 new ST_NumInteriorRings(),
                 new ST_NumInteriorRing(),
+                new ST_InteriorRingN(),
+                new ST_NumGeometries(),
+                new ST_GeometryN(),
                 new ST_SRID()};
     }
 
