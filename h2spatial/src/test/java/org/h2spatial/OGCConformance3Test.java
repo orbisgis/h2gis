@@ -46,22 +46,12 @@ import static org.junit.Assert.assertTrue;
  * @author Nicolas Fortin
  */
 public class OGCConformance3Test {
-    private static final String DB_FILE_PATH = "target/test-resources/dbH2_OGC_Conf3";
-    private static final File DB_FILE = new File(DB_FILE_PATH+".h2.db");
-    private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
     private static Connection connection;
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        Class.forName("org.h2.Driver");
-        if(DB_FILE.exists()) {
-            assertTrue(DB_FILE.delete());
-        }
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = DriverManager.getConnection(DATABASE_PATH,
-                "sa", "");
-        // Init spatial ext
-        CreateSpatialExtension.initSpatialExtension(connection);
+        connection = SpatialH2UT.createSpatialDataBase("OGCConformance3Test");
         // Set up test data
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test3.sql");
         Statement st = connection.createStatement();
@@ -427,28 +417,23 @@ public class OGCConformance3Test {
         assertEquals("LINEARRING (52 18, 66 23, 73 9, 48 6, 52 18)", rs.getString(1));
     }
 
+    /**
+     * For this test, we will determine the number of interior rings of Blue Lake.
+     * @throws Exception
+     */
+    @Test
+    public void T28() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_NumInteriorRing(shore) FROM lakes WHERE name = 'BLUE LAKE'");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(1));
+    }
+
     /*
-      'LINESTRING(52 18, 66 23, 73 9, 48 6, 52 18)'
-
--- Conformance Item T25
-
-SELECT Contains(boundary, PointOnSurface(boundary)) FROM named_places WHERE name = 'Goose Island';
-
--- Conformance Item T26
-
-SELECT ST_Area(boundary) FROM named_places WHERE name = 'Goose Island';
-
--- Conformance Item T27
-
-SELECT AsText(ExteriorRing(shore)) FROM lakes WHERE name = 'Blue Lake';
 
 -- Conformance Item T28
 
-SELECT NumInteriorRing(shore)
-
-FROM lakes
-
-WHERE name = 'Blue Lake';
+SELECT ST_NumInteriorRings(shore) FROM lakes WHERE name = 'Blue Lake';
 
 -- Conformance Item T29
 

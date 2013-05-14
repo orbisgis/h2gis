@@ -29,10 +29,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.io.File;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashSet;
@@ -44,20 +42,12 @@ import static org.junit.Assert.*;
  * @author Nicolas Fortin
  */
 public class OGCConformance1Test {
-    private static final String DB_FILE_PATH = "target/test-resources/dbH2_OGC_Conf1";
-    private static final File DB_FILE = new File(DB_FILE_PATH+".h2.db");
-    private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
     private static Connection connection;
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        Class.forName("org.h2.Driver");
-        if(DB_FILE.exists()) {
-            DB_FILE.delete();
-        }
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = DriverManager.getConnection(DATABASE_PATH,
-                "sa", "");
+        connection = SpatialH2UT.createSpatialDataBase("OGCConformance1Test",false);
         // Set up test data
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test.sql");
         Statement st = connection.createStatement();

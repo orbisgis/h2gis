@@ -52,6 +52,8 @@ import org.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
 import org.h2spatial.internal.function.spatial.properties.ST_IsRing;
 import org.h2spatial.internal.function.spatial.properties.ST_IsSimple;
 import org.h2spatial.internal.function.spatial.properties.ST_Length;
+import org.h2spatial.internal.function.spatial.properties.ST_NumInteriorRing;
+import org.h2spatial.internal.function.spatial.properties.ST_NumInteriorRings;
 import org.h2spatial.internal.function.spatial.properties.ST_NumPoints;
 import org.h2spatial.internal.function.spatial.properties.ST_PointN;
 import org.h2spatial.internal.function.spatial.properties.ST_PointOnSurface;
@@ -62,6 +64,7 @@ import org.h2spatial.internal.function.spatial.properties.ST_Y;
 import org.h2spatial.internal.function.spatial.properties.ST_Z;
 import org.h2spatial.internal.type.DomainInfo;
 import org.h2spatial.internal.type.GeometryTypeFromConstraint;
+import org.h2spatial.internal.type.SC_GeomCollection;
 import org.h2spatial.internal.type.SC_Geometry;
 import org.h2spatial.internal.type.SC_LineString;
 import org.h2spatial.internal.type.SC_MultiLineString;
@@ -131,6 +134,8 @@ public class CreateSpatialExtension {
                 new ST_PointOnSurface(),
                 new ST_Contains(),
                 new ST_ExteriorRing(),
+                new ST_NumInteriorRings(),
+                new ST_NumInteriorRing(),
                 new ST_SRID()};
     }
 
@@ -140,6 +145,7 @@ public class CreateSpatialExtension {
     public static DomainInfo[] getBuiltInsType() {
         return new DomainInfo[] {
                 new DomainInfo("GEOMETRY", new SC_Geometry()),
+                new DomainInfo("GEOMCOLLECTION", new SC_GeomCollection()),
                 new DomainInfo("POINT", new SC_Point()),
                 new DomainInfo("LINESTRING", new SC_LineString()),
                 new DomainInfo("POLYGON", new SC_Polygon()),
