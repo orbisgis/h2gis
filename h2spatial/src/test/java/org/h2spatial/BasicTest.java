@@ -25,13 +25,11 @@
 package org.h2spatial;
 
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -41,7 +39,6 @@ import java.sql.Statement;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKTReader;
 
 import static org.junit.Assert.*;
@@ -50,9 +47,6 @@ import static org.junit.Assert.*;
  * @author Erwan Bocher
  */
 public class BasicTest {
-        private static final String DB_FILE_PATH = "target/test-resources/dbH2";
-        private static final File DB_FILE = new File(DB_FILE_PATH+".h2.db");
-        private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
         private static Connection connection;
 
         @BeforeClass

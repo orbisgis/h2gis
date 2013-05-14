@@ -608,68 +608,70 @@ public class OGCConformance3Test {
         assertTrue(rs.getBoolean(1));
     }
 
+    /**
+     * For this test, we will determine if the geometry of road segment 101 intersects the
+     * geometry of Route 75.
+     * @throws Exception
+     */
+    @Test
+    public void T43() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Intersects(road_segments.centerline, divided_routes.centerlines) " +
+                "FROM road_segments, divided_routes WHERE road_segments.fid = 102 AND divided_routes.name = 'Route 75'");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine if the geometry of Green Forest
+     * contains the geometry of Ashton.
+     * @throws Exception
+     */
+    @Test
+    public void T44() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Contains(forests.boundary, named_places.boundary) " +
+                "FROM forests, named_places WHERE forests.name = 'Green Forest' AND named_places.name = 'Ashton'");
+        assertTrue(rs.next());
+        assertFalse(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine if the geometry of Green Forest
+     * relates to the geometry of Ashton using the pattern "TTTTTTTTT".
+     * @throws Exception
+     */
+    @Test
+    public void T45() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Relate(forests.boundary, named_places.boundary, 'TTTTTTTTT') " +
+                "FROM forests, named_places WHERE forests.name = 'Green Forest' AND named_places.name = 'Ashton'");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+    }
+
+    /**
+     * For this test, we will determine the distance between Cam Bridge and Ashton.
+     * @throws Exception
+     */
+    @Test
+    public void T46() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Distance(position, boundary) FROM bridges, named_places " +
+                "WHERE bridges.name = 'Cam Bridge' AND named_places.name = 'Ashton'");
+        assertTrue(rs.next());
+        assertEquals(12.0, rs.getDouble(1),1e-12);
+    }
+
     /*
-
-
--- Conformance Item T40
-
-SELECT Within(boundary, footprint) FROM named_places, buildings WHERE named_places.name = 'Ashton' AND buildings.address = '215 Main Street';
-
--- Conformance Item T41
-
-SELECT Overlaps(forests.boundary, named_places.boundary) FROM forests, named_places WHERE forests.name = 'Green Forest' AND named_places.name = 'Ashton';
-
--- Conformance Item T42
-
-SELECT Crosses(road_segments.centerline, divided_routes.centerlines) FROM road_segments, divided_routes WHERE road_segment.fid = 102 AND divided_routes.name = 'Route 75';
-
--- Conformance Item T43
-
-SELECT Intersects(road_segments.centerline, divided_routes.centerlines)
-
-FROM road_segments, divided_routes
-
-WHERE road_segments.fid = 102
-
-
-
-AND divided_routes.name = 'Route 75';
-
--- Conformance Item T44
-
-SELECT Contains(forests.boundary, named_places.boundary)
-
-FROM forests, named_places
-
-WHERE forests.name = 'Green Forest'
-
-
-
-AND named_places.name = 'Ashton';
 
 -- Conformance Item T45
 
-SELECT Relate(forests.boundary, named_places.boundary, 'TTTTTTTTT')
-
-FROM forests, named_places
-
-WHERE forests.name = 'Green Forest'
-
-
-
-AND named_places.name = 'Ashton';
+SELECT Relate(forests.boundary, named_places.boundary, 'TTTTTTTTT') FROM forests, named_places WHERE forests.name = 'Green Forest' AND named_places.name = 'Ashton';
 
 -- Conformance Item T46
 
-SELECT Distance(position, boundary)
-
-FROM bridges, named_places
-
-WHERE bridges.name = 'Cam Bridge'
-
-
-
-AND named_places.name = 'Ashton';
+SELECT Distance(position, boundary) FROM bridges, named_places WHERE bridges.name = 'Cam Bridge' AND named_places.name = 'Ashton';
 
 -- Conformance Item T47
 

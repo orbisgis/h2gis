@@ -41,7 +41,9 @@ import org.h2spatial.internal.function.spatial.predicates.ST_Contains;
 import org.h2spatial.internal.function.spatial.predicates.ST_Crosses;
 import org.h2spatial.internal.function.spatial.predicates.ST_Disjoint;
 import org.h2spatial.internal.function.spatial.predicates.ST_Equals;
+import org.h2spatial.internal.function.spatial.predicates.ST_Intersects;
 import org.h2spatial.internal.function.spatial.predicates.ST_Overlaps;
+import org.h2spatial.internal.function.spatial.predicates.ST_Relate;
 import org.h2spatial.internal.function.spatial.predicates.ST_Touches;
 import org.h2spatial.internal.function.spatial.predicates.ST_Within;
 import org.h2spatial.internal.function.spatial.properties.ColumnSRID;
@@ -49,6 +51,7 @@ import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatial.internal.function.spatial.properties.ST_Boundary;
 import org.h2spatial.internal.function.spatial.properties.ST_Centroid;
 import org.h2spatial.internal.function.spatial.properties.ST_Dimension;
+import org.h2spatial.internal.function.spatial.properties.ST_Distance;
 import org.h2spatial.internal.function.spatial.properties.ST_EndPoint;
 import org.h2spatial.internal.function.spatial.properties.ST_Envelope;
 import org.h2spatial.internal.function.spatial.properties.ST_ExteriorRing;
@@ -154,6 +157,9 @@ public class CreateSpatialExtension {
                 new ST_Within(),
                 new ST_Overlaps(),
                 new ST_Crosses(),
+                new ST_Intersects(),
+                new ST_Relate(),
+                new ST_Distance(),
                 new ST_SRID()};
     }
 
@@ -163,10 +169,10 @@ public class CreateSpatialExtension {
     public static DomainInfo[] getBuiltInsType() {
         return new DomainInfo[] {
                 new DomainInfo("GEOMETRY", new SC_Geometry()),
-                new DomainInfo("GEOMCOLLECTION", new SC_GeomCollection()),
                 new DomainInfo("POINT", new SC_Point()),
                 new DomainInfo("LINESTRING", new SC_LineString()),
                 new DomainInfo("POLYGON", new SC_Polygon()),
+                new DomainInfo("GEOMCOLLECTION", new SC_GeomCollection()),
                 new DomainInfo("MULTIPOINT", new SC_MultiPoint()),
                 new DomainInfo("MULTILINESTRING", new SC_MultiLineString()),
                 new DomainInfo("MULTIPOLYGON", new SC_MultiPolygon())
