@@ -28,6 +28,7 @@ package org.h2spatial;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -39,15 +40,34 @@ public class SpatialH2UT {
     }
 
     /**
+     * Open the connection to an existing database
+     * @param dbName
+     * @return
+     * @throws SQLException
+     * @throws ClassNotFoundException
+     */
+    public static Connection openSpatialDataBase(String dbName) throws SQLException, ClassNotFoundException {
+        String dbFilePath = getDataBasePath(dbName);
+        File dbFile = new File(dbFilePath +".h2.db");
+        String databasePath = "jdbc:h2:"+ dbFilePath;
+        Class.forName("org.h2.Driver");
+        // Keep a connection alive to not close the DataBase on each unit test
+        Connection connection = DriverManager.getConnection(databasePath,
+                "sa", "");
+        return connection;
+    }
+    /**
      * Create a spatial database
      * @param dbName filename
      * @return Connection
      * @throws Exception
      */
-    public static Connection createSpatialDataBase(String dbName) throws Exception {
+    public static Connection createSpatialDataBase(String dbName)throws SQLException, ClassNotFoundException {
         return createSpatialDataBase(dbName,true);
     }
-
+    private static String getDataBasePath(String dbName) {
+        return "target/test-resources/dbH2"+dbName;
+    }
     /**
      * Create a spatial database
      * @param dbName filename
@@ -55,8 +75,8 @@ public class SpatialH2UT {
      * @return Connection
      * @throws Exception
      */
-    public static Connection createSpatialDataBase(String dbName,boolean initSpatial) throws Exception {
-        String dbFilePath = "target/test-resources/dbH2"+dbName;
+    public static Connection createSpatialDataBase(String dbName,boolean initSpatial)throws SQLException, ClassNotFoundException {
+        String dbFilePath = getDataBasePath(dbName);
         File dbFile = new File(dbFilePath +".h2.db");
         String databasePath = "jdbc:h2:"+ dbFilePath;
 

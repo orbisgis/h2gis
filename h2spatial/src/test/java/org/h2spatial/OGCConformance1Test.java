@@ -43,15 +43,19 @@ import static org.junit.Assert.*;
  */
 public class OGCConformance1Test {
     private static Connection connection;
+    private static final String DB_NAME = "OGCConformance1Test";
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase("OGCConformance1Test",false);
+        connection = SpatialH2UT.createSpatialDataBase(DB_NAME,false);
         // Set up test data
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test.sql");
         Statement st = connection.createStatement();
         st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
+        // Close the DataBase then reopen it
+        connection.close();
+        connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
     }
 
     /**

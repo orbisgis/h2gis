@@ -47,18 +47,22 @@ import static org.junit.Assert.assertTrue;
  * @author Nicolas Fortin
  */
 public class OGCConformance2Test {
+    private static final String DB_NAME = "OGCConformance2Test";
     private static Connection connection;
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase("OGCConformance2Test");
+        connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         // Set up test data
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test2.sql");
         Statement st = connection.createStatement();
         //Remove view to not be in conflict with this script that does not remove any existing table
         st.execute("drop view if exists geometry_columns");
         st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
+        // Close the DataBase then reopen it
+        connection.close();
+        connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
     }
 
 

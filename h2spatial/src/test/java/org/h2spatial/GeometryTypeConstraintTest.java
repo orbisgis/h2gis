@@ -32,6 +32,7 @@ import org.junit.Test;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
@@ -53,5 +54,48 @@ public class GeometryTypeConstraintTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+
+
+    /**
+     * LineString into Geometry column
+     * @throws Exception
+     */
+    @Test
+    public void LineStringInGeometry() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("drop table test IF EXISTS");
+        st.execute("create table test (the_geom GEOMETRY)");
+        st.execute("insert into test values (ST_LineFromText('LINESTRING( 0 18, 10 21, 16 23, 28 26, 44 31 )' ,101))");
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM test");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(1));
+    }
+
+    /**
+     * LineString into LineString column
+     * @throws Exception
+     */
+    @Test
+    public void LineStringInLineString() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("drop table test IF EXISTS");
+        st.execute("create table test (the_geom LINESTRING)");
+        st.execute("insert into test values (ST_LineFromText('LINESTRING( 0 18, 10 21, 16 23, 28 26, 44 31 )' ,101))");
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM test");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(1));
+    }
+
+    /**
+     * LineString into Point column
+     * @throws Exception
+     */
+    @Test(expected = SQLException.class)
+    public void LineStringInPoint() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("drop table test IF EXISTS");
+        st.execute("create table test (the_geom POINT)");
+        st.execute("insert into test values (ST_LineFromText('LINESTRING( 0 18, 10 21, 16 23, 28 26, 44 31 )' ,101))");
     }
 }
