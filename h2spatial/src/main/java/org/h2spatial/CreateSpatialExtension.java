@@ -37,6 +37,8 @@ import org.h2spatial.internal.function.spatial.convert.ST_MPolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PointFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_PolyFromWKB;
+import org.h2spatial.internal.function.spatial.operators.ST_Buffer;
+import org.h2spatial.internal.function.spatial.operators.ST_ConvexHull;
 import org.h2spatial.internal.function.spatial.operators.ST_Difference;
 import org.h2spatial.internal.function.spatial.operators.ST_Intersection;
 import org.h2spatial.internal.function.spatial.operators.ST_SymDifference;
@@ -168,6 +170,8 @@ public class CreateSpatialExtension {
                 new ST_Difference(),
                 new ST_Union(),
                 new ST_SymDifference(),
+                new ST_Buffer(),
+                new ST_ConvexHull(),
                 new ST_SRID()};
     }
 

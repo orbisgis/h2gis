@@ -719,29 +719,34 @@ public class OGCConformance3Test {
         assertEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
     }
 
+    /**
+     *  For this test, we will make a 15 m buffer about Cam Bridge.
+     * @throws Exception
+     */
+    @Test
+    public void T51() throws Exception {
+        Statement st = connection.createStatement();
+        // OGC Original
+        // SELECT count(*) FROM buildings, bridges WHERE Contains(Buffer(bridges.position, 15.0), buildings.footprint) = 1;
+        // Function return Boolean value, then it does not require any comparison
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM buildings, bridges " +
+                "WHERE ST_Contains(ST_Buffer(bridges.position, 15.0), buildings.footprint)");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(1));
+    }
 
+    /**
+     * For this test, we will determine the convex hull of Blue Lake.
+     * @throws Exception
+     */
+    @Test
+    public void T52() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_ConvexHull(shore)) FROM lakes WHERE lakes.name = 'Blue Lake'");
+        assertTrue(rs.next());
+        // OGC original: POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))
+        // Here the polygon is the same but with a different points order
+        assertEquals("POLYGON ((48 6, 52 18, 66 23, 73 9, 48 6))", rs.getString(1));
+    }
 
-    /*
--- Conformance Item T50
-
-SELECT AsText(SymDifference(shore, boundary)) FROM lakes, named_places WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Ashton';
-
--- Conformance Item T51
-
-SELECT count(*)
-
-FROM buildings, bridges
-
-WHERE Contains(Buffer(bridges.position, 15.0), buildings.footprint)
-
-= 1;
-
--- Conformance Item T52
-
-SELECT AsText(ConvexHull(shore))
-
-FROM lakes
-
-WHERE lakes.name = 'Blue Lake';
-    */
 }
