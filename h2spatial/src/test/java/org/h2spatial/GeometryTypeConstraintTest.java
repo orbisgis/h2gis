@@ -25,6 +25,9 @@
 
 package org.h2spatial;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKBReader;
+import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -56,6 +59,19 @@ public class GeometryTypeConstraintTest {
         connection.close();
     }
 
+
+    /**
+     * LineString into Geometry column
+     * @throws Exception
+     */
+    @Test
+    public void EWKBTest() throws Exception {
+        ValueGeometry valueGeometry = ST_GeomFromText.toGeometry("POLYGON( ( 62 48, 84 48, 84 30, 56 30, 56 34, 62 48) )",101);
+        byte[] bytes = valueGeometry.getBytesNoCopy();
+        WKBReader wkbReader = new WKBReader();
+        Geometry geometry = wkbReader.read(bytes);
+        assertEquals(101,geometry.getSRID());
+    }
 
     /**
      * LineString into Geometry column

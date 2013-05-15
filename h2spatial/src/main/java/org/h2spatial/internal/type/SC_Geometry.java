@@ -25,15 +25,31 @@
 
 package org.h2spatial.internal.type;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
+import org.h2.api.JavaObjectSerializer;
+import org.h2.constant.SysProperties;
+import org.h2.util.Utils;
+import org.h2spatial.ValueGeometry;
 import org.h2spatialapi.ScalarFunction;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamClass;
 
 /**
  * Space Constraint on Geometry field.
  * @author Nicolas Fortin
  */
 public class SC_Geometry implements ScalarFunction {
+    static {
+        // Initialise H2 Object serialisation
+        Utils.serializer = new GeometrySerializer();
+    }
     @Override
     public String getJavaStaticMethod() {
         return "IsGeometryOrNull";
@@ -58,6 +74,51 @@ public class SC_Geometry implements ScalarFunction {
             return true;
         } catch (ParseException ex) {
             return false;
+        }
+    }
+
+    /**
+     * H2 extension to (de)serialize OTHER binary data.
+     */
+    private static final class GeometrySerializer implements JavaObjectSerializer {
+        @Override
+        public byte[] serialize(Object obj) throws Exception {
+            if(obj instanceof ValueGeometry) {
+                return ((ValueGeometry) obj).getBytesNoCopy();
+            } else if(obj instanceof Geometry) {
+                return new ValueGeometry((Geometry)obj).getBytesNoCopy();
+            } else {
+                ByteArrayOutputStream out = new ByteArrayOutputStream();
+                ObjectOutputStream os = new ObjectOutputStream(out);
+                os.writeObject(obj);
+                return out.toByteArray();
+            }
+        }
+
+        @Override
+        public Object deserialize(byte[] bytes) throws Exception {
+            WKBReader wkbReader = new WKBReader();
+            try {
+                return wkbReader.read(bytes);
+            } catch (ParseException ex) {
+                ByteArrayInputStream in = new ByteArrayInputStream(bytes);
+                ObjectInputStream is;
+                if (SysProperties.USE_THREAD_CONTEXT_CLASS_LOADER) {
+                    final ClassLoader loader = Thread.currentThread().getContextClassLoader();
+                    is = new ObjectInputStream(in) {
+                        protected Class<?> resolveClass(ObjectStreamClass desc) throws IOException, ClassNotFoundException {
+                            try {
+                                return Class.forName(desc.getName(), true, loader);
+                            } catch (ClassNotFoundException e) {
+                                return super.resolveClass(desc);
+                            }
+                        }
+                    };
+                } else {
+                    is = new ObjectInputStream(in);
+                }
+                return is.readObject();
+            }
         }
     }
 }

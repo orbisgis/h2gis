@@ -26,6 +26,8 @@
 package org.h2spatial.internal.function.spatial.convert;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import org.h2spatial.ValueGeometry;
@@ -83,8 +85,8 @@ public class ST_GeomFromText implements ScalarFunction {
             return null;
         }
         try {
-            Geometry geometry = wktReader.read(wkt);
-            geometry.setSRID(srid);
+            WKTReader wktReaderSRID = new WKTReader(new GeometryFactory(new PrecisionModel(),srid));
+            Geometry geometry = wktReaderSRID.read(wkt);
             return new ValueGeometry(geometry);
         } catch (ParseException ex) {
             throw new SQLException(ex);

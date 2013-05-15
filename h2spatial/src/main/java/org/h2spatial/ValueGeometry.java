@@ -45,7 +45,7 @@ import java.sql.SQLException;
  */
 public class ValueGeometry extends Value implements Serializable {
     private static final long serialVersionUID = 3710022674420076702L;
-    private static final WKBWriter WKB_WRITER = new WKBWriter();
+    private static final WKBWriter WKB_WRITER = new WKBWriter(3,true);
     private static final WKTWriter WKT_WRITER = new WKTWriter();
     /** Keep null until the method getValue is called */
     private Geometry value;
