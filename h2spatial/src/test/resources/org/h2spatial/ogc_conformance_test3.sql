@@ -1,4 +1,49 @@
--- Copyright © 2007 Open Geospatial Consortium, Inc. All Rights Reserved.  
+--//////////////////////////////////////////////////////////////////////////////
+--
+-- Copyright © 2010 Open Geospatial Consortium, Inc.
+-- To obtain additional rights of use, visit http://www.opengeospatial.org/legal/
+--
+--//////////////////////////////////////////////////////////////////////////////
+--
+-- OpenGIS Simple Features for SQL (Types and Functions) Test Suite Software
+--
+-- NOTE CONCERNING INFORMATION ON CONFORMANCE TESTING AND THIS TEST SUITE
+-- ----------------------------------------------------------------------
+--
+-- Organizations wishing to submit product for conformance testing should
+-- access the above WWW site to discover the proper procedure for obtaining
+-- a license to use the OpenGIS(R) certification mark associated with this
+-- test suite.
+--
+--
+-- NOTE CONCERNING TEST SUITE ADAPTATION
+-- -------------------------------------
+--
+-- OGC recognizes that many products will have to adapt this test suite to
+-- make it work properly. OGC has documented the allowable adaptations within
+-- this test suite where possible. Other information about adaptations may be
+-- discovered in the Test Suite Guidelines document for this test suite.
+--
+-- PLEASE NOTE THE OGC REQUIRES THAT ADAPTATIONS ARE FULLY DOCUMENTED USING
+-- LIBERAL COMMENT BLOCKS CONFORMING TO THE FOLLOWING FORMAT:
+--
+-- -- !#@ ADAPTATION BEGIN
+-- explanatory text goes here
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- original sql goes here
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
+-- adated sql goes here
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
+
 CREATE TABLE spatial_ref_sys (
 
 srid INTEGER NOT NULL PRIMARY KEY,
@@ -135,10 +180,27 @@ PARAMETER["False_Easting", 500000.0],PARAMETER["False_Northing",
 0.9996],PARAMETER["Latitude_of_origin", 0.0],UNIT["Meter", 1.0]]');
 
 -- Lakes
-
+-- -- !#@ ADAPTATION BEGIN
+-- The lake name is inserted in capital letters however tests use another case.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- INSERT INTO lakes VALUES (
+--   101, 'BLUE LAKE',
+--   ST_PolyFromText(
+--   'POLYGON(
+--   (52 18,66 23,73 9,48 6,52 18),
+--   (59 18,67 18,67 13,59 13,59 18)
+--   )',
+--   101));
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 INSERT INTO lakes VALUES (
 
-101, 'BLUE LAKE',
+101, 'Blue Lake',
 
 ST_PolyFromText(
 
@@ -151,6 +213,11 @@ ST_PolyFromText(
 )',
 
 101));
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
+
 
 -- Road segments
 

@@ -150,7 +150,7 @@ public class OGCConformance3Test {
     @Test
     public void T6() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_Dimension(shore) FROM lakes WHERE name = 'BLUE LAKE'");
+        ResultSet rs = st.executeQuery("SELECT ST_Dimension(shore) FROM lakes WHERE name = 'Blue Lake'");
         assertTrue(rs.next());
         assertEquals(2, rs.getInt(1));
     }
@@ -223,7 +223,7 @@ public class OGCConformance3Test {
     @Test
     public void T12() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_IsSimple(shore) FROM lakes WHERE name = 'BLUE LAKE'");
+        ResultSet rs = st.executeQuery("SELECT ST_IsSimple(shore) FROM lakes WHERE name = 'Blue Lake'");
         assertTrue(rs.next());
         assertEquals(true, rs.getBoolean(1));
     }
@@ -409,7 +409,7 @@ public class OGCConformance3Test {
     @Test
     public void T27() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_ExteriorRing(shore)) FROM lakes WHERE name = 'BLUE LAKE'");
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_ExteriorRing(shore)) FROM lakes WHERE name = 'Blue Lake'");
         assertTrue(rs.next());
         // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
         // Real OGC expected result "LINESTRING (52 18, 66 23, 73 9, 48 6, 52 18)"
@@ -423,7 +423,7 @@ public class OGCConformance3Test {
     @Test
     public void T28() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_NumInteriorRing(shore) FROM lakes WHERE name = 'BLUE LAKE'");
+        ResultSet rs = st.executeQuery("SELECT ST_NumInteriorRing(shore) FROM lakes WHERE name = 'Blue Lake'");
         assertTrue(rs.next());
         assertEquals(1, rs.getInt(1));
     }
@@ -435,7 +435,7 @@ public class OGCConformance3Test {
     @Test
     public void T29() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_InteriorRingN(shore, 1)) FROM lakes WHERE name = 'BLUE LAKE'");
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_InteriorRingN(shore, 1)) FROM lakes WHERE name = 'Blue Lake'");
         assertTrue(rs.next());
         // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
         // Real OGC expected result "LINESTRING (59 18, 67 18, 67 13, 59 13, 59 18)"
@@ -563,7 +563,7 @@ public class OGCConformance3Test {
     public void T39() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Touches(centerline, shore) FROM streams, lakes " +
-                "WHERE streams.name = 'Cam Stream' AND lakes.name = 'BLUE LAKE'");
+                "WHERE streams.name = 'Cam Stream' AND lakes.name = 'Blue Lake'");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
     }
@@ -690,39 +690,41 @@ public class OGCConformance3Test {
         // Here the polygon is the same but with a different points order
         assertEquals("POLYGON ((62 48, 84 48, 84 42, 56 34, 62 48))", rs.getString(1));
     }
+
+    /**
+     *  For this test, we will determine the union of Blue Lake and Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T49() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Union(shore, boundary)) FROM lakes, named_places " +
+                "WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
+    }
+
+    /**
+     * For this test, we will determine the symmetric difference of Blue Lake and Goose Island.
+     * @throws Exception
+     */
+    @Test
+    public void T50() throws Exception {
+        Statement st = connection.createStatement();
+        // Test script uses 'Ashton' as the place name where it means
+        // to use 'Goose Island'.
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_SymDifference(shore, boundary)) FROM lakes, named_places " +
+                "WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Goose Island'");
+        assertTrue(rs.next());
+        assertEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
+    }
+
+
+
     /*
-
--- Conformance Item T48
-
-SELECT AsText(Difference(named_places.boundary, forests.boundary)) FROM named_places, forests WHERE named_places.name = 'Ashton'
-
-
-
-AND forests.name = 'Green Forest';
-
--- Conformance Item T49
-
-SELECT AsText(Union(shore, boundary))
-
-FROM lakes, named_places
-
-WHERE lakes.name = 'Blue Lake'
-
-
-
-AND named_places.name = ‘Goose Island’;
-
 -- Conformance Item T50
 
-SELECT AsText(SymDifference(shore, boundary))
-
-FROM lakes, named_places
-
-WHERE lakes.name = 'Blue Lake'
-
-
-
-AND named_places.name = 'Ashton';
+SELECT AsText(SymDifference(shore, boundary)) FROM lakes, named_places WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Ashton';
 
 -- Conformance Item T51
 
