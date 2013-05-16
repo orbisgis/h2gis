@@ -60,9 +60,6 @@ public class OGCConformance2Test {
         //Remove view to not be in conflict with this script that does not remove any existing table
         st.execute("drop view if exists geometry_columns");
         st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
-        // Close the DataBase then reopen it
-        connection.close();
-        connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
     }
 
 

@@ -56,9 +56,6 @@ public class OGCConformance3Test {
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test3.sql");
         Statement st = connection.createStatement();
         st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
-        // Close the DataBase then reopen it
-        connection.close();
-        connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
     }
 
     @AfterClass

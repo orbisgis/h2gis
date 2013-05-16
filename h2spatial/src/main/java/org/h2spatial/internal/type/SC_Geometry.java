@@ -89,8 +89,8 @@ public class SC_Geometry implements ScalarFunction {
                 return new ValueGeometry((Geometry)obj).getBytesNoCopy();
             } else {
                 ByteArrayOutputStream out = new ByteArrayOutputStream();
-                ObjectOutputStream os = new ObjectOutputStream(out);
-                os.writeObject(obj);
+                ObjectOutputStream outputStream = new ObjectOutputStream(out);
+                outputStream.writeObject(obj);
                 return out.toByteArray();
             }
         }
@@ -99,8 +99,19 @@ public class SC_Geometry implements ScalarFunction {
         public Object deserialize(byte[] bytes) throws Exception {
             WKBReader wkbReader = new WKBReader();
             try {
-                return wkbReader.read(bytes);
-            } catch (ParseException ex) {
+                try {
+                    return wkbReader.read(bytes);
+                } catch (ParseException ex) {
+                    //Maybe the bytes are in UTF8
+                    return wkbReader.read((new String(bytes, "UTF8")).getBytes());
+                }
+            } catch (Exception ex) {
+                 /*
+                 * Copyright 2004-2013 H2 Group. Multiple-Licensed under the H2 License,
+                 * Version 1.0, and under the Eclipse Public License, Version 1.0
+                 * (http://h2database.com/html/license.html).
+                 * Initial Developer: H2 Group
+                 */
                 ByteArrayInputStream in = new ByteArrayInputStream(bytes);
                 ObjectInputStream is;
                 if (SysProperties.USE_THREAD_CONTEXT_CLASS_LOADER) {
@@ -118,6 +129,7 @@ public class SC_Geometry implements ScalarFunction {
                     is = new ObjectInputStream(in);
                 }
                 return is.readObject();
+                // end H2 Group Licensed
             }
         }
     }
