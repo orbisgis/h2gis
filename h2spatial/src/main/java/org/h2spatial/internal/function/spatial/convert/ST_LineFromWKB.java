@@ -52,7 +52,7 @@ public class ST_LineFromWKB implements ScalarFunction {
         return null;
     }
 
-    public static ValueGeometry toPolygon(byte[] bytes, int srid) throws SQLException {
+    public static Geometry toPolygon(byte[] bytes, int srid) throws SQLException {
         if(bytes==null) {
             return null;
         }
@@ -63,7 +63,7 @@ public class ST_LineFromWKB implements ScalarFunction {
                 throw new SQLException("Provided WKT is not a LinearString.");
             }
             geometry.setSRID(srid);
-            return new ValueGeometry(geometry);
+            return geometry;
         } catch (ParseException ex) {
             throw new SQLException(ex);
         }

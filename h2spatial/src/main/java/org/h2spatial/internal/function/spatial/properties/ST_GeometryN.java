@@ -58,12 +58,12 @@ public class ST_GeometryN implements ScalarFunction {
      * @param i Index of Interior ring [1-N]
      * @return LinearRing instance or Null if parameter is not a Geometry.
      */
-    public static ValueGeometry getGeometryN(Geometry geometry,Integer i) throws SQLException {
+    public static Geometry getGeometryN(Geometry geometry,Integer i) throws SQLException {
         if(geometry==null) {
             return null;
         }
         if(i>=1 && i<=geometry.getNumGeometries()) {
-            return new ValueGeometry(geometry.getGeometryN(i-1));
+            return geometry.getGeometryN(i-1);
         } else {
             throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
         }

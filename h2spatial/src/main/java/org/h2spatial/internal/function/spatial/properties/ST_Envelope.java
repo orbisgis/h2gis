@@ -52,12 +52,12 @@ public class ST_Envelope implements ScalarFunction {
      * @param geometry Geometry instance
      * @return Geometry envelope
      */
-    public static ValueGeometry getEnvelope(Geometry geometry, int srid) {
+    public static Geometry getEnvelope(Geometry geometry, int srid) {
         if(geometry==null) {
             return null;
         }
         Geometry geometryEnvelope = geometry.getEnvelope();
         geometryEnvelope.setSRID(srid);
-        return new ValueGeometry(geometryEnvelope);
+        return geometryEnvelope;
     }
 }

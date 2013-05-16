@@ -52,9 +52,9 @@ public class ST_ExteriorRing implements ScalarFunction {
      * @param geometry Instance of Polygon
      * @return LinearRing instance or Null if parameter is not a Geometry.
      */
-    public static ValueGeometry getExteriorRing(Geometry geometry) {
+    public static Geometry getExteriorRing(Geometry geometry) {
         if(geometry instanceof Polygon) {
-            return new ValueGeometry (((Polygon) geometry).getExteriorRing());
+            return ((Polygon) geometry).getExteriorRing();
         } else {
             return null;
         }

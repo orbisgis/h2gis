@@ -61,12 +61,12 @@ public class ST_PointN implements ScalarFunction {
      * @return Point geometry or null if geometry is null
      * @throws SQLException if index is out of bound.
      */
-    public static ValueGeometry getPointN(Geometry geometry,int pointIndex) throws SQLException {
+    public static Geometry getPointN(Geometry geometry,int pointIndex) throws SQLException {
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {
                 LineString line = (LineString) geometry.getGeometryN(0);
                 if(pointIndex<=0 || pointIndex <= line.getNumPoints()) {
-                    return new ValueGeometry(line.getPointN(pointIndex-1));
+                    return line.getPointN(pointIndex-1);
                 } else {
                     throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
                 }
@@ -74,7 +74,7 @@ public class ST_PointN implements ScalarFunction {
         } else if (geometry instanceof LineString) {
             LineString line = (LineString) geometry;
             if(pointIndex<=0 || pointIndex <= line.getNumPoints()) {
-                return  new ValueGeometry(line.getPointN(pointIndex-1));
+                return line.getPointN(pointIndex-1);
             }else {
                 throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
             }

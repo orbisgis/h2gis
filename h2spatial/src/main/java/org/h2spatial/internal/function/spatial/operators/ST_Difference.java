@@ -52,10 +52,10 @@ public class ST_Difference implements ScalarFunction {
      * @param b Geometry instance
      * @return the difference between two geometries
      */
-    public static ValueGeometry difference(Geometry a,Geometry b) {
+    public static Geometry difference(Geometry a,Geometry b) {
         if(a==null || b==null) {
             return null;
         }
-        return new ValueGeometry(a.difference(b));
+        return a.difference(b);
     }
 }

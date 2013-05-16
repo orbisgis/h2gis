@@ -46,10 +46,10 @@ public class ST_Centroid implements ScalarFunction {
         return null;
     }
 
-    public static ValueGeometry getCentroid(Geometry geometry) {
+    public static Geometry getCentroid(Geometry geometry) {
         if(geometry==null) {
             return null;
         }
-        return new ValueGeometry(geometry.getCentroid());
+        return geometry.getCentroid();
     }
 }

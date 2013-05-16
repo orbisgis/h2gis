@@ -54,23 +54,23 @@ public class ST_Boundary implements ScalarFunction {
      * @param geometry Geometry instance
      * @return Geometry envelope
      */
-    public static ValueGeometry getBoundary(Geometry geometry, int srid) {
+    public static Geometry getBoundary(Geometry geometry, int srid) {
         if(geometry==null) {
             return null;
         }
         Geometry geometryEnvelope = geometry.getBoundary();
         geometryEnvelope.setSRID(srid);
-        return new ValueGeometry(geometryEnvelope);
+        return geometryEnvelope;
     }
 
     /**
      * @param geometry Geometry instance
      * @return Geometry envelope
      */
-    public static ValueGeometry getBoundary(Geometry geometry) {
+    public static Geometry getBoundary(Geometry geometry) {
         if(geometry==null) {
             return null;
         }
-        return new ValueGeometry(geometry.getBoundary());
+        return geometry.getBoundary();
     }
 }

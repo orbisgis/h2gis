@@ -52,10 +52,10 @@ public class ST_Intersection implements ScalarFunction {
      * @param b Geometry instance
      * @return the intersection between two geometries
      */
-    public static ValueGeometry intersection(Geometry a,Geometry b) {
+    public static Geometry intersection(Geometry a,Geometry b) {
         if(a==null || b==null) {
             return null;
         }
-        return new ValueGeometry(a.intersection(b));
+        return a.intersection(b);
     }
 }

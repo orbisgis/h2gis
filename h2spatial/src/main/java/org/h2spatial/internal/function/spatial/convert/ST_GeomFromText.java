@@ -62,12 +62,12 @@ public class ST_GeomFromText implements ScalarFunction {
      * @return Geometry instance or null if parameter is null
      * @throws ParseException If wkt is invalid
      */
-    public static ValueGeometry toGeometry(String wkt) throws SQLException {
+    public static Geometry toGeometry(String wkt) throws SQLException {
         if(wkt == null) {
             return null;
         }
         try {
-            return new ValueGeometry(wktReader.read(wkt));
+            return wktReader.read(wkt);
         } catch (ParseException ex) {
             throw new SQLException("Cannot parse the WKT.",ex);
         }
@@ -80,14 +80,14 @@ public class ST_GeomFromText implements ScalarFunction {
      * @return Geometry instance
      * @throws ParseException If wkt is invalid
      */
-    public static ValueGeometry toGeometry(String wkt, int srid) throws SQLException {
+    public static Geometry toGeometry(String wkt, int srid) throws SQLException {
         if(wkt == null) {
             return null;
         }
         try {
             WKTReader wktReaderSRID = new WKTReader(new GeometryFactory(new PrecisionModel(),srid));
             Geometry geometry = wktReaderSRID.read(wkt);
-            return new ValueGeometry(geometry);
+            return geometry;
         } catch (ParseException ex) {
             throw new SQLException(ex);
         }

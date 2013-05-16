@@ -50,15 +50,15 @@ public class ST_StartPoint implements ScalarFunction {
         return null;
     }
 
-    public static ValueGeometry getStartPoint(Geometry geometry) {
+    public static Geometry getStartPoint(Geometry geometry) {
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {
                 LineString line = (LineString) geometry.getGeometryN(0);
-                return new ValueGeometry(line.getStartPoint());
+                return line.getStartPoint();
             }
         } else if (geometry instanceof LineString) {
             LineString line = (LineString) geometry;
-            return  new ValueGeometry(line.getStartPoint());
+            return line.getStartPoint();
 
         }
         return null;

@@ -52,10 +52,10 @@ public class ST_SymDifference implements ScalarFunction {
      * @param b Geometry instance
      * @return the symmetric difference between two geometries
      */
-    public static ValueGeometry symDifference(Geometry a,Geometry b) {
+    public static Geometry symDifference(Geometry a,Geometry b) {
         if(a==null || b==null) {
             return null;
         }
-        return new ValueGeometry(a.symDifference(b));
+        return a.symDifference(b);
     }
 }

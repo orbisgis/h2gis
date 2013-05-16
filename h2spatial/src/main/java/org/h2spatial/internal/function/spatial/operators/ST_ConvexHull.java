@@ -52,10 +52,10 @@ public class ST_ConvexHull implements ScalarFunction {
      * @param b Geometry instance
      * @return smallest convex Polygon that contains all the points in the Geometry
      */
-    public static ValueGeometry convexHull(Geometry geometry) {
+    public static Geometry convexHull(Geometry geometry) {
         if(geometry==null) {
             return null;
         }
-        return new ValueGeometry(geometry.convexHull());
+        return geometry.convexHull();
     }
 }

@@ -52,10 +52,10 @@ public class ST_Buffer implements ScalarFunction {
      * @param distance Buffer width in projection unit
      * @return a buffer around a geometry.
      */
-    public static ValueGeometry buffer(Geometry a,Double distance) {
+    public static Geometry buffer(Geometry a,Double distance) {
         if(a==null || distance==null) {
             return null;
         }
-        return new ValueGeometry(a.buffer(distance));
+        return a.buffer(distance);
     }
 }

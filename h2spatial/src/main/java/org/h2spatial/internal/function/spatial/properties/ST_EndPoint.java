@@ -50,15 +50,15 @@ public class ST_EndPoint implements ScalarFunction {
         return null;
     }
 
-    public static ValueGeometry getEndPoint(Geometry geometry) {
+    public static Geometry getEndPoint(Geometry geometry) {
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {
                 LineString line = (LineString) geometry.getGeometryN(0);
-                return new ValueGeometry(line.getEndPoint());
+                return line.getEndPoint();
             }
         } else if (geometry instanceof LineString) {
             LineString line = (LineString) geometry;
-            return  new ValueGeometry(line.getEndPoint());
+            return line.getEndPoint();
         }
         return null;
     }

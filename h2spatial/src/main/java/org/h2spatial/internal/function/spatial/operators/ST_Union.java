@@ -52,10 +52,10 @@ public class ST_Union implements ScalarFunction {
      * @param b Geometry instance
      * @return union of the function geometry parameters
      */
-    public static ValueGeometry union(Geometry a,Geometry b) {
+    public static Geometry union(Geometry a,Geometry b) {
         if(a==null || b==null) {
             return null;
         }
-        return new ValueGeometry(a.union(b));
+        return a.union(b);
     }
 }

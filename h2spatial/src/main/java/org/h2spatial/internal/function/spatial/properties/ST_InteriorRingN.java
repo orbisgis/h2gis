@@ -57,11 +57,11 @@ public class ST_InteriorRingN implements ScalarFunction {
      * @param i Index of Interior ring [1-N]
      * @return LinearRing instance or Null if parameter is not a Geometry.
      */
-    public static ValueGeometry getInteriorRing(Geometry geometry,Integer i) throws SQLException {
+    public static Geometry getInteriorRing(Geometry geometry,Integer i) throws SQLException {
         if(geometry instanceof Polygon) {
             Polygon polygon = (Polygon) geometry;
             if(i>=1 && i<=polygon.getNumInteriorRing()) {
-                return new ValueGeometry (polygon.getInteriorRingN(i-1));
+                return polygon.getInteriorRingN(i-1);
             } else {
                 throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
             }

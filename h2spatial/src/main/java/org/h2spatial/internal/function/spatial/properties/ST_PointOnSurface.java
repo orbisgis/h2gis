@@ -52,10 +52,10 @@ public class ST_PointOnSurface implements ScalarFunction {
      * @param geometry Valid Geometry instance
      * @return A Point that lie on the surface or null if input geometry is not a surface.
      */
-    public static ValueGeometry getInteriorPoint(Geometry geometry) {
+    public static Geometry getInteriorPoint(Geometry geometry) {
         if(geometry==null) {
             return null;
         }
-        return new ValueGeometry(geometry.getInteriorPoint());
+        return geometry.getInteriorPoint();
     }
 }

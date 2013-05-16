@@ -25,6 +25,7 @@
 
 package org.h2spatial.internal.function.spatial.convert;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2spatial.ValueGeometry;
 import org.h2spatial.internal.type.SC_Point;
 import org.h2spatialapi.ScalarFunction;
@@ -56,9 +57,9 @@ public class ST_PointFromText implements ScalarFunction {
      * @return Geometry
      * @throws SQLException Invalid argument or the geometry type is wrong.
      */
-    public static ValueGeometry toGeometry(String wKT, int srid) throws SQLException {
-        ValueGeometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
-        if(!SC_Point.isPoint(geometry.getValue())) {
+    public static Geometry toGeometry(String wKT, int srid) throws SQLException {
+        Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
+        if(!SC_Point.isPoint(geometry)) {
             throw new SQLException("Provided Well Known Text geometry is not a point");
         }
         return geometry;
