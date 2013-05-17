@@ -25,23 +25,17 @@
 
 package org.h2spatial.internal.function.spatial.convert;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
-import org.h2spatial.ValueGeometry;
-import org.h2spatial.internal.type.SC_LineString;
+import org.h2.util.Utils;
 import org.h2spatialapi.ScalarFunction;
 
-import java.sql.SQLException;
-
 /**
- * Convert WKT into a LinearRing
+ * Used when creating a view with a postgre linked table
  * @author Nicolas Fortin
  */
-public class ST_LineFromWKB implements ScalarFunction {
+public class ST_GeomFromWKB implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "toPolygon";
+        return "toGeometry";
     }
 
     @Override
@@ -52,20 +46,16 @@ public class ST_LineFromWKB implements ScalarFunction {
         return null;
     }
 
-    public static Geometry toPolygon(byte[] bytes, int srid) throws SQLException {
+    /**
+     * Used when creating a view with a PostGIS linked table
+     * @param bytes Bytes array
+     * @return ValueGeometry instance
+     * @throws Exception
+     */
+    public static Object toGeometry(byte[] bytes) throws Exception {
         if(bytes==null) {
             return null;
         }
-        WKBReader wkbReader = new WKBReader();
-        try {
-            Geometry geometry = wkbReader.read(bytes);
-            if(!SC_LineString.isLineString(geometry)) {
-                throw new SQLException("Provided WKB is not a LinearString.");
-            }
-            geometry.setSRID(srid);
-            return geometry;
-        } catch (ParseException ex) {
-            throw new SQLException(ex);
-        }
+        return Utils.serializer.deserialize(bytes);
     }
 }

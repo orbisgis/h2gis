@@ -60,7 +60,7 @@ public class ST_PolyFromWKB implements ScalarFunction {
         try {
             Geometry geometry = wkbReader.read(bytes);
             if(!SC_Polygon.isPolygon(geometry)) {
-                throw new SQLException("Provided WKT is not a Polygon.");
+                throw new SQLException("Provided WKB is not a Polygon.");
             }
             geometry.setSRID(srid);
             return geometry;

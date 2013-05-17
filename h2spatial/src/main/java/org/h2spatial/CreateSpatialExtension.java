@@ -29,6 +29,7 @@ import org.h2spatial.internal.function.HexToVarBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_AsBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_AsText;
 import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
+import org.h2spatial.internal.function.spatial.convert.ST_GeomFromWKB;
 import org.h2spatial.internal.function.spatial.convert.ST_LineFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_LineFromWKB;
 import org.h2spatial.internal.function.spatial.convert.ST_MLineFromText;
@@ -172,6 +173,7 @@ public class CreateSpatialExtension {
                 new ST_SymDifference(),
                 new ST_Buffer(),
                 new ST_ConvexHull(),
+                new ST_GeomFromWKB(),
                 new ST_SRID()};
     }
 
