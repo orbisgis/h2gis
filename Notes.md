@@ -1,0 +1,1 @@
+PostGIS has a jdbc:postgres_jts: Driver that let the user the choice to switch between OrbisGIS embedded H2 database or Remote/Local postgres database.
