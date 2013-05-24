@@ -31,7 +31,7 @@ H2Drivers takes advantage of the TableEngine API to wrap in the H2 table model f
 With the H2Drivers a user can execute SQL queries on another disk file format than H2.
 H2Drivers is licensed under the GPL 3 license terms.
 
-* How to Use
+# How to Use
 
 Follow [H2](http://www.h2database.com/) tutorial to download and install H2. Add h2spatial jar and [JTS](http://sourceforge.net/projects/jts-topo-suite/) 1.12 jar in the application Class Path.
 

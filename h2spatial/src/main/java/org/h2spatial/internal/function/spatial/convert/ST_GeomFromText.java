@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import org.h2spatial.ValueGeometry;
+
 import org.h2spatialapi.ScalarFunction;
 
 import java.sql.SQLException;

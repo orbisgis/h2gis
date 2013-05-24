@@ -26,7 +26,6 @@
 package org.h2spatial;
 
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -76,7 +75,6 @@ public class SpatialIndexTest {
     public void T1() throws Exception {
 
         Statement st = connection.createStatement();
-        st.execute("CREATE INDEX SINDEX ON DEP(THE_GEOM)");
         long deb = System.currentTimeMillis();
         ResultSet rs = st.executeQuery("select b.id from DEP a,DEP b where a.id = 59 and " +
                 "ST_Intersects(a.the_geom,b.the_geom) and a.ID!=b.ID ORDER BY id ASC");

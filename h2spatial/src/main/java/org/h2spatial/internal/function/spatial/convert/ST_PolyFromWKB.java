@@ -28,7 +28,7 @@ package org.h2spatial.internal.function.spatial.convert;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
-import org.h2spatial.ValueGeometry;
+
 import org.h2spatial.internal.type.SC_LineString;
 import org.h2spatial.internal.type.SC_Polygon;
 import org.h2spatialapi.ScalarFunction;

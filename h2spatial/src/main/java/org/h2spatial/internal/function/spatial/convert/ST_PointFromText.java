@@ -26,7 +26,7 @@
 package org.h2spatial.internal.function.spatial.convert;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatial.ValueGeometry;
+
 import org.h2spatial.internal.type.SC_Point;
 import org.h2spatialapi.ScalarFunction;
 

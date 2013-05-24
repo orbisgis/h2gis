@@ -35,6 +35,9 @@ import java.sql.Statement;
  * @author Nicolas Fortin
  */
 public class SpatialH2UT {
+
+    private static final String H2_PARAMETERS = ";LOCK_MODE=0;LOG=0"; //;DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
+    //private static final String H2_PARAMETERS = ";DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
     private SpatialH2UT() {
         // utility
     }
@@ -49,7 +52,7 @@ public class SpatialH2UT {
     public static Connection openSpatialDataBase(String dbName) throws SQLException, ClassNotFoundException {
         String dbFilePath = getDataBasePath(dbName);
         File dbFile = new File(dbFilePath +".h2.db");
-        String databasePath = "jdbc:h2:"+ dbFilePath;
+        String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
         Class.forName("org.h2.Driver");
         // Keep a connection alive to not close the DataBase on each unit test
         Connection connection = DriverManager.getConnection(databasePath,
@@ -78,7 +81,7 @@ public class SpatialH2UT {
     public static Connection createSpatialDataBase(String dbName,boolean initSpatial)throws SQLException, ClassNotFoundException {
         String dbFilePath = getDataBasePath(dbName);
         File dbFile = new File(dbFilePath +".h2.db");
-        String databasePath = "jdbc:h2:"+ dbFilePath;
+        String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
 
         Class.forName("org.h2.Driver");
         if(dbFile.exists()) {
