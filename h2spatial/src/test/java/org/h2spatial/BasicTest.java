@@ -24,9 +24,12 @@
  */
 package org.h2spatial;
 
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
@@ -36,7 +39,6 @@ import java.sql.Statement;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKTReader;
 
 import static org.junit.Assert.*;
@@ -45,9 +47,17 @@ import static org.junit.Assert.*;
  * @author Erwan Bocher
  */
 public class BasicTest {
+        private static Connection connection;
 
-        String DATABASEPATH = "jdbc:h2:src/test/resources/backup/dbH2";
-
+        @BeforeClass
+        public static void tearUp() throws Exception {
+            // Keep a connection alive to not close the DataBase on each unit test
+            connection = SpatialH2UT.createSpatialDataBase("BasicTest");
+        }
+        @AfterClass
+        public static void tearDown() throws Exception {
+            connection.close();
+        }
         @Test
         public void testPoints3D() throws Exception {
 
@@ -64,138 +74,130 @@ public class BasicTest {
         @Test
         public void testWriteRead2DGeometry() throws ClassNotFoundException,
                 SQLException, ParseException {
-
-                Class.forName("org.h2.Driver");
-                Connection con = DriverManager.getConnection(DATABASEPATH,
-                        "sa", "");
-
-                final Statement stat = con.createStatement();
-                SQLCodegenerator.addSpatialFunctions(stat);
+                final Statement stat = connection.createStatement();
 
                 stat.execute("DROP TABLE IF EXISTS POINT2D");
 
-                stat.execute("CREATE TABLE POINT2D (gid int , the_geom blob)");
-                stat.execute("INSERT INTO POINT2D (gid, the_geom) VALUES(1, GeomFromText('POINT(0 12)', 27582))");
+                stat.execute("CREATE TABLE POINT2D (gid int , the_geom GEOMETRY)");
+                stat.execute("INSERT INTO POINT2D (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12)', 27582))");
 
 
                 ResultSet rs = stat.executeQuery("SELECT * from POINT2D;");
                 ResultSetMetaData rsmd2 = rs.getMetaData();
+
+                assertEquals(CreateSpatialExtension.GEOMETRY_BASE_TYPE,rsmd2.getColumnTypeName(2));
+
+                /*
+                ResultSetMetaData rsmd2 = rs.getMetaData();
                 WKBReader wkbReader = new WKBReader();
-                byte valObj[] = (byte[]) null;
-                Geometry geom = null;
+                byte valObj[];
+                Geometry geom;
+                boolean hasGeometryColumn = false;
 
                 for (; rs.next();) {
-
-
                         String columnTypeName = rsmd2.getColumnTypeName(2);
 
-                        if (columnTypeName.equals("BLOB")) {
+                        if (columnTypeName.equals(CreateSpatialExtension.GEOMETRY_BASE_TYPE)) {
                                 valObj = rs.getBytes(2);
                                 geom = wkbReader.read(valObj);
                                 Coordinate coord = geom.getCoordinates()[0];
-
                                 assertTrue(coord.x == 0);
                                 assertTrue(coord.y == 12);
-
+                                hasGeometryColumn = true;
                         }
 
                 }
-
+                assertTrue(hasGeometryColumn);
+                */
 
                 stat.close();
-
-                con.close();
-
         }
 
         @Test
         public void testWriteRead3DGeometry() throws ClassNotFoundException,
                 SQLException, ParseException {
 
-                Class.forName("org.h2.Driver");
-                Connection con = DriverManager.getConnection(DATABASEPATH,
-                        "sa", "");
-
-                final Statement stat = con.createStatement();
-                SQLCodegenerator.addSpatialFunctions(stat);
+                final Statement stat = connection.createStatement();
 
                 stat.execute("DROP TABLE IF EXISTS POINT3D");
 
-                stat.execute("CREATE TABLE POINT3D (gid int , the_geom blob)");
-                stat.execute("INSERT INTO POINT3D (gid, the_geom) VALUES(1, GeomFromText('POINT(0 12 3)', 27582))");
+                stat.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
+                stat.execute("INSERT INTO POINT3D (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12 3)', 27582))");
 
 
 
                 ResultSet rs = stat.executeQuery("SELECT * from POINT3D;");
                 ResultSetMetaData rsmd2 = rs.getMetaData();
+
+                assertEquals(CreateSpatialExtension.GEOMETRY_BASE_TYPE,rsmd2.getColumnTypeName(2));
+
+                /*
+                ResultSetMetaData rsmd2 = rs.getMetaData();
                 WKBReader wkbReader = new WKBReader();
-                byte valObj[] = (byte[]) null;
-                Geometry geom = null;
-
+                byte valObj[];
+                Geometry geom;
+                boolean hasGeometryColumn = false;
                 for (; rs.next();) {
-
-
                         String columnTypeName = rsmd2.getColumnTypeName(2);
-
-                        if (columnTypeName.equals("BLOB")) {
+                        if (columnTypeName.equalsIgnoreCase(CreateSpatialExtension.GEOMETRY_BASE_TYPE)) {
                                 valObj = rs.getBytes(2);
                                 geom = wkbReader.read(valObj);
                                 Coordinate coord = geom.getCoordinates()[0];
-
                                 assertTrue(coord.x == 0);
                                 assertTrue(coord.y == 12);
                                 assertTrue(coord.z == 3);
-
+                                hasGeometryColumn = true;
                         }
 
                 }
-
+                assertTrue(hasGeometryColumn);
+                */
                 stat.close();
 
-                con.close();
-
         }
-
+        @Test
+        public void testGeometryType() throws Exception {
+            final Statement stat = connection.createStatement();
+            stat.execute("DROP TABLE IF EXISTS GEOMTABLE;");
+            stat.execute("CREATE TABLE GEOMTABLE (gid INTEGER AUTO_INCREMENT PRIMARY KEY, the_geom GEOMETRY);");
+        }
         @Test
         public void testWriteRead3DGeometryWithNaNZ() throws ClassNotFoundException, SQLException, ParseException {
 
-                Class.forName("org.h2.Driver");
-                Connection con = DriverManager.getConnection(DATABASEPATH,
-                        "sa", "");
-
-                final Statement stat = con.createStatement();
-                SQLCodegenerator.addSpatialFunctions(stat);
+                final Statement stat = connection.createStatement();
 
                 stat.execute("DROP TABLE IF EXISTS POINT3D");
 
-                stat.execute("CREATE TABLE POINT3D (gid int , the_geom blob)");
-                stat.execute("INSERT INTO POINT3D (gid, the_geom) VALUES(1, GeomFromText('POINT(0 12)', 27582))");
+                stat.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
+                stat.execute("INSERT INTO POINT3D (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12)', 27582))");
 
                 ResultSet rs = stat.executeQuery("SELECT * from POINT3D;");
                 ResultSetMetaData rsmd2 = rs.getMetaData();
-                WKBReader wkbReader = new WKBReader();
-                byte valObj[] = (byte[]) null;
-                Geometry geom = null;
-
-                for (; rs.next();) {
-
-
+                Geometry geom;
+                boolean hasGeometryColumn = false;
+                while(rs.next()) {
                         String columnTypeName = rsmd2.getColumnTypeName(2);
-
-                        if (columnTypeName.equals("BLOB")) {
-                                valObj = rs.getBytes(2);
-                                geom = wkbReader.read(valObj);
+                        if (columnTypeName.equalsIgnoreCase(CreateSpatialExtension.GEOMETRY_BASE_TYPE)) {
+                                geom = (Geometry)rs.getObject("the_geom");
                                 Coordinate coord = geom.getCoordinates()[0];
-
                                 assertTrue(coord.x == 0);
                                 assertTrue(coord.y == 12);
                                 assertTrue(Double.isNaN(coord.z));
-
+                                hasGeometryColumn = true;
                         }
 
                 }
+                assertTrue(hasGeometryColumn);
                 stat.close();
-                con.close();
+        }
+
+        @Test
+        public void testST_Area() throws Exception {
+            final Statement stat = connection.createStatement();
+            ResultSet rs = stat.executeQuery("select ST_Area(ST_GeomFromText('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))', 27572)) as area from dummy");
+            assertTrue(rs.next());
+            assertEquals(100.0,rs.getDouble("area"),1e-12);
+            stat.close();
 
         }
 }
