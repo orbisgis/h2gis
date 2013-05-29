@@ -53,6 +53,7 @@ public class SpatialIndexTest {
         URL sqlURL = OGCConformance1Test.class.getResource("spatial_index_test_data.sql");
         Statement st = connection.createStatement();
         st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
+        reopen();
     }
     @AfterClass
     public static void tearDown() throws Exception {
@@ -73,13 +74,33 @@ public class SpatialIndexTest {
      */
     @Test
     public void T1() throws Exception {
-
-        Statement st = connection.createStatement();
         long deb = System.currentTimeMillis();
+        intersectsPredicate();
+        long end = System.currentTimeMillis() - deb;
+        System.out.println("Done in "+end+" ms");
+    }
+
+    private void intersectsPredicate() throws SQLException  {
+        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("select b.id from DEP a,DEP b where a.id = 59 and " +
                 "ST_Intersects(a.the_geom,b.the_geom) and a.ID!=b.ID ORDER BY id ASC");
         assertEqualsRS(rs,1,45,49,61,62,63,66);
-        long end = System.currentTimeMillis() - deb;
-        System.out.println("Done in "+end+" ms");
+    }
+
+    private static void reopen()  throws Exception   {
+        // Close and reopen database
+        connection.close();
+        Thread.sleep(500); // let h2 close the database
+        connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
+    }
+    /**
+     *  For this test, we will check to see that all of the feature tables are
+     *  represented by entries in the GEOMETRY_COLUMNS table/view.
+     *  @throws Exception
+     */
+    @Test
+    public void createIndexTest() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CALL CreateSpatialIndex('DEP','THE_GEOM')");
     }
 }
