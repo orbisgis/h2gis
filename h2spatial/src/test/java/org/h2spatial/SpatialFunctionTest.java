@@ -77,4 +77,12 @@ public class SpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals(16,rs.getDouble(1),1e-8);
     }
+
+    @Test
+    public void test_ST_Explode() throws Exception  {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(centerlines) FROM ST_Explode('divided_routes','centerlines') WHERE name = 'Route 75' and explod_id=2");
+        assertTrue(rs.next());
+        assertEquals("LINESTRING (16 0, 16 23, 16 48)", rs.getString(1));
+    }
 }
