@@ -27,7 +27,10 @@ package org.h2spatial.internal.function.spatial.operators;
 
 import com.vividsolutions.jts.geom.Geometry;
 
+import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import org.h2spatialapi.ScalarFunction;
+
+import java.util.Collection;
 
 /**
  * Compute the union of the function geometry parameters
@@ -57,5 +60,13 @@ public class ST_Union implements ScalarFunction {
             return null;
         }
         return a.union(b);
+    }
+
+    /**
+     * @param geomList Geometry list
+     * @return union of the function geometry parameters
+     */
+    public static Geometry union(Collection<Geometry> geomList) {
+        return UnaryUnionOp.union(geomList);
     }
 }

@@ -27,6 +27,7 @@ package org.h2spatial;
 import org.h2.api.AggregateFunction;
 import org.h2.constant.SysProperties;
 import org.h2spatial.internal.function.HexToVarBinary;
+import org.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2spatial.internal.function.spatial.convert.ST_AsBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_AsText;
 import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
@@ -169,7 +170,7 @@ public class CreateSpatialExtension {
                 new ST_SRID(),
                 new ST_EnvelopesIntersect(),
                 new CreateSpatialIndex(),
-                new org.h2spatial.internal.function.spatial.aggregate.ST_Union()};
+                new ST_Accum()};
     }
 
     /**

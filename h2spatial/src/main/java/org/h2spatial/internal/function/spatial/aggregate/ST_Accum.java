@@ -26,10 +26,6 @@
 package org.h2spatial.internal.function.spatial.aggregate;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
-import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import org.h2.api.AggregateFunction;
 import org.h2spatialapi.Function;
 
@@ -40,11 +36,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Aggregate function
- *  Compute the union of current and all previous geometries
+ * Construct an array of Geometry.
  * @author Nicolas Fortin
  */
-public class ST_Union implements AggregateFunction, Function {
+public class ST_Accum implements AggregateFunction, Function {
     private List<Geometry> toUnite = new LinkedList<Geometry>();
     private int srid=0;
 
@@ -56,10 +51,10 @@ public class ST_Union implements AggregateFunction, Function {
     @Override
     public int getType(int[] inputTypes) throws SQLException {
         if(inputTypes.length!=1) {
-            throw new SQLException(ST_Union.class.getSimpleName()+" expect 1 argument.");
+            throw new SQLException(ST_Accum.class.getSimpleName()+" expect 1 argument.");
         }
         if(inputTypes[0]!=Types.OTHER && inputTypes[0]!=Types.JAVA_OBJECT) {
-            throw new SQLException(ST_Union.class.getSimpleName()+" expect a geometry argument");
+            throw new SQLException(ST_Accum.class.getSimpleName()+" expect a geometry argument");
         }
         return Types.OTHER;
     }
@@ -78,12 +73,6 @@ public class ST_Union implements AggregateFunction, Function {
     public void add(Object o) throws SQLException {
         if(o instanceof Geometry) {
             Geometry geom = (Geometry)o;
-            if(srid==0) {
-                int geomSRID = geom.getSRID();
-                if(geomSRID>=1) {
-                    srid = geomSRID;
-                }
-            }
             addGeometry(geom);
         } else {
             throw new SQLException();
@@ -92,13 +81,7 @@ public class ST_Union implements AggregateFunction, Function {
 
     @Override
     public Object getResult() throws SQLException {
-        if(srid!=0) {
-            PrecisionModel precisionModel = new PrecisionModel();
-            GeometryFactory geometryFactory = new GeometryFactory(precisionModel,srid);
-            return UnaryUnionOp.union(toUnite, geometryFactory);
-        } else {
-            return UnaryUnionOp.union(toUnite);
-        }
+        return toUnite;
     }
 
     @Override

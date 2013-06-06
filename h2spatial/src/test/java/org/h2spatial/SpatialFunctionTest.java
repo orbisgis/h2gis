@@ -73,8 +73,8 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_UnionAggregate() throws Exception  {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_Area(ST_Union(the_geom)) FROM buildings GROUP BY adress");
+        ResultSet rs = st.executeQuery("SELECT ST_Area(ST_Union(ST_Accum(footprint))) FROM buildings GROUP BY SUBSTRING(address,4)");
         assertTrue(rs.next());
-        assertEquals(5000,rs.getDouble(1),1e-8);
+        assertEquals(16,rs.getDouble(1),1e-8);
     }
 }
