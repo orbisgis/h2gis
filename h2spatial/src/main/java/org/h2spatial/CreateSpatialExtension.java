@@ -24,12 +24,12 @@
  */
 package org.h2spatial;
 
+import org.h2.api.AggregateFunction;
 import org.h2.constant.SysProperties;
 import org.h2spatial.internal.function.HexToVarBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_AsBinary;
 import org.h2spatial.internal.function.spatial.convert.ST_AsText;
 import org.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
-import org.h2spatial.internal.function.spatial.convert.ST_GeomFromWKB;
 import org.h2spatial.internal.function.spatial.convert.ST_LineFromText;
 import org.h2spatial.internal.function.spatial.convert.ST_LineFromWKB;
 import org.h2spatial.internal.function.spatial.convert.ST_MLineFromText;
@@ -44,15 +44,7 @@ import org.h2spatial.internal.function.spatial.operators.ST_Difference;
 import org.h2spatial.internal.function.spatial.operators.ST_Intersection;
 import org.h2spatial.internal.function.spatial.operators.ST_SymDifference;
 import org.h2spatial.internal.function.spatial.operators.ST_Union;
-import org.h2spatial.internal.function.spatial.predicates.ST_Contains;
-import org.h2spatial.internal.function.spatial.predicates.ST_Crosses;
-import org.h2spatial.internal.function.spatial.predicates.ST_Disjoint;
-import org.h2spatial.internal.function.spatial.predicates.ST_Equals;
-import org.h2spatial.internal.function.spatial.predicates.ST_Intersects;
-import org.h2spatial.internal.function.spatial.predicates.ST_Overlaps;
-import org.h2spatial.internal.function.spatial.predicates.ST_Relate;
-import org.h2spatial.internal.function.spatial.predicates.ST_Touches;
-import org.h2spatial.internal.function.spatial.predicates.ST_Within;
+import org.h2spatial.internal.function.spatial.predicates.*;
 import org.h2spatial.internal.function.spatial.properties.ColumnSRID;
 import org.h2spatial.internal.function.spatial.properties.ST_Area;
 import org.h2spatial.internal.function.spatial.properties.ST_Boundary;
@@ -174,9 +166,10 @@ public class CreateSpatialExtension {
                 new ST_SymDifference(),
                 new ST_Buffer(),
                 new ST_ConvexHull(),
-                new ST_GeomFromWKB(),
                 new ST_SRID(),
-                new CreateSpatialIndex()};
+                new ST_EnvelopesIntersect(),
+                new CreateSpatialIndex(),
+                new org.h2spatial.internal.function.spatial.aggregate.ST_Union()};
     }
 
     /**
@@ -300,12 +293,10 @@ public class CreateSpatialExtension {
     public static void registerFunction(Statement st,Function function,String packagePrepend,boolean dropAlias) throws SQLException {
         String functionClass = function.getClass().getName();
         String functionAlias = getAlias(function);
-        String functionName=null;
+
         if(function instanceof ScalarFunction) {
             ScalarFunction scalarFunction = (ScalarFunction)function;
-            functionName = scalarFunction.getJavaStaticMethod();
-        }
-        if(functionName!=null) {
+            String functionName = scalarFunction.getJavaStaticMethod();
             if(dropAlias) {
                 st.execute("DROP ALIAS IF EXISTS " + functionAlias);
             }
@@ -314,7 +305,13 @@ public class CreateSpatialExtension {
                 deterministic = " DETERMINISTIC";
             }
             // Create alias, H2 does not support prepare statement on create alias
-            st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + deterministic + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
+            st.execute(new StringBuilder("CREATE ALIAS IF NOT EXISTS ").append(functionAlias).append(deterministic)
+                    .append(" FOR \"").append(packagePrepend).append(functionClass).append(".").append(functionName)
+                    .append("\"").toString());
+        } else if(function instanceof AggregateFunction) {
+                st.execute(new StringBuilder("CREATE AGGREGATE IF NOT EXISTS ").append(functionAlias).append(" FOR \"").append(functionClass).append("\"").toString());
+        } else {
+                throw new SQLException("Unsupported function "+functionClass);
         }
     }
 

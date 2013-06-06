@@ -23,19 +23,19 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function.spatial.convert;
+package org.h2spatial.internal.function.spatial.predicates;
 
-import org.h2.util.Utils;
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2spatialapi.ScalarFunction;
 
 /**
- * Used when creating a view with a postgre linked table
+ * Return true if the envelope of geometry A intersects the envelope of geometry B
  * @author Nicolas Fortin
  */
-public class ST_GeomFromWKB implements ScalarFunction {
+public class ST_EnvelopesIntersect implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
-        return "toGeometry";
+        return "isIntersects";
     }
 
     @Override
@@ -47,15 +47,14 @@ public class ST_GeomFromWKB implements ScalarFunction {
     }
 
     /**
-     * Used when creating a view with a PostGIS linked table
-     * @param bytes Bytes array
-     * @return ValueGeometry instance
-     * @throws Exception
+     * @param surface Surface Geometry.
+     * @param testGeometry Geometry instance
+     * @return true if the envelope of geometry A intersects the envelope of geometry B
      */
-    public static Object toGeometry(byte[] bytes) throws Exception {
-        if(bytes==null) {
+    public static Boolean isIntersects(Geometry surface,Geometry testGeometry) {
+        if(surface==null && testGeometry==null) {
             return null;
         }
-        return Utils.serializer.deserialize(bytes);
+        return !(testGeometry == null || surface == null) && surface.getEnvelopeInternal().intersects(testGeometry.getEnvelopeInternal());
     }
 }

@@ -47,9 +47,17 @@ public class ColumnSRID implements ScalarFunction {
         return null;
     }
 
+    /**
+     * @param connection Active connection
+     * @param tableName Target table name
+     * @param columnName Spatial field name
+     * @return Tthe column SRID from constraints and data.
+     * @throws SQLException
+     */
     public static int getSRID(Connection connection, String tableName, String columnName) throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("select ST_SRID("+columnName+") from "+tableName+" where ST_SRID("+columnName+")!=0 LIMIT 1;");
+        ResultSet rs = st.executeQuery(new StringBuilder("select ST_SRID(").append(columnName).append(") from ")
+                .append(tableName).append(" where ST_SRID(").append(columnName).append(")!=0 LIMIT 1;").toString());
         if(rs.next()) {
             return rs.getInt(1);
         } else {

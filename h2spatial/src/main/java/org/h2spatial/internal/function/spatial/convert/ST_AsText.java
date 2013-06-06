@@ -26,7 +26,7 @@
 package org.h2spatial.internal.function.spatial.convert;
 
 /**
- * Same f {@link ST_AsWKT}
+ * Same function that {@link ST_AsWKT}
  * @author Nicolas Fortin
  */
 public class ST_AsText extends ST_AsWKT {
