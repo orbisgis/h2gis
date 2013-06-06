@@ -54,9 +54,6 @@ public class ST_Explode implements ScalarFunction {
 
     @Override
     public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
         return null;
     }
 
