@@ -44,12 +44,12 @@ public class SFSUtilities {
      * @return Java beans for table location
      */
     public static TableLocation splitCatalogSchemaTableName(String concatenatedTableLocation) {
-        String[] values = concatenatedTableLocation.split(".");
+        String[] values = concatenatedTableLocation.split("\\.");
         String catalog,schema,table;
         catalog = schema = table = "";
         switch (values.length) {
-            case 0:
-                table = concatenatedTableLocation;
+            case 1:
+                table = values[0];
                 break;
             case 2:
                 schema = values[0];

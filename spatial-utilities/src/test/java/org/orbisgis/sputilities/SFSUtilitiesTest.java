@@ -23,26 +23,26 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.sputilities
+package org.orbisgis.sputilities;
 
-import org.junit.Test
-import static junit.framework.Assert.assertEquals
+import org.junit.Test;
+import static junit.framework.Assert.assertEquals;
 
 /**
  * Test SFSUtilitiesTest
  * @author Nicolas Fortin
  */
-class SFSUtilitiesTest {
+public class SFSUtilitiesTest {
     @Test
-    void testSplitCatalogSchemaTableName() {
+    public void testSplitCatalogSchemaTableName() {
         SFSUtilities.TableLocation location = SFSUtilities.splitCatalogSchemaTableName("mytable");
-        assertEquals(location.getTable(),"mytable");
+        assertEquals("mytable",location.getTable());
         location = SFSUtilities.splitCatalogSchemaTableName("myschema.mytable");
-        assertEquals(location.getSchema(),"myschema");
-        assertEquals(location.getTable(),"mytable");
+        assertEquals("myschema",location.getSchema());
+        assertEquals("mytable",location.getTable());
         location = SFSUtilities.splitCatalogSchemaTableName("mydb.myschema.mytable");
-        assertEquals(location.getCatalog(),"mydb");
-        assertEquals(location.getSchema(),"myschema");
-        assertEquals(location.getTable(),"mytable");
+        assertEquals("mydb",location.getCatalog());
+        assertEquals("myschema",location.getSchema());
+        assertEquals("mytable",location.getTable());
     }
 }
