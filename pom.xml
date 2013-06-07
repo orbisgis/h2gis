@@ -16,6 +16,7 @@
         <module>h2spatial-api</module>
         <module>h2spatial</module>
         <module>h2spatialtest</module>
+    <module>h2drivers</module>
   </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
