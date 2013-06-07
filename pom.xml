@@ -12,10 +12,11 @@
     </organization>
     <url>http://github.com/irstv/H2GIS</url>
     <modules>
+        <module>spatial-utilities</module>
         <module>h2spatial-api</module>
         <module>h2spatial</module>
         <module>h2spatialtest</module>
-    </modules>
+  </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>

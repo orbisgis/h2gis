@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.GeometryCollection;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2spatialapi.ScalarFunction;
-
+import org.orbisgis.sputilities.SFSUtilities;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -38,6 +38,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
@@ -151,9 +152,13 @@ public class ST_Explode implements ScalarFunction {
         private void parseRow() throws SQLException {
             sourceRowGeometries.clear();
             explodeId = 1;
-            if(tableQuery.next()) {
+            while(tableQuery.next()) {
                 Geometry geometry = (Geometry) tableQuery.getObject(spatialFieldIndex);
                 explode(geometry);
+                // If the geometry is not empty, proceed
+                if(!sourceRowGeometries.isEmpty()) {
+                    break;
+                }
             }
         }
 
@@ -167,13 +172,23 @@ public class ST_Explode implements ScalarFunction {
             firstRow = false;
             ResultSetMetaData meta = tableQuery.getMetaData();
             columnCount = meta.getColumnCount();
+            if(spatialFieldName==null) {
+                // Find first geometry column
+                List<String> geomFields = SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(tableName));
+                if(!geomFields.isEmpty()) {
+                    spatialFieldName = geomFields.get(0);
+                } else {
+                    throw new SQLException("The table "+tableName+" does not contain a geometry field");
+                }
+            }
             for(int i=1;i<=columnCount;i++) {
                 if(meta.getColumnName(i).equalsIgnoreCase(spatialFieldName)) {
                     spatialFieldIndex = i;
+                    break;
                 }
             }
             if(spatialFieldIndex == null) {
-                throw new SQLException("Geometry field "+spatialFieldName+" not found");
+                throw new SQLException("Geometry field "+spatialFieldName+" of table "+tableName+" not found");
             }
         }
 

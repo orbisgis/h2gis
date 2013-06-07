@@ -85,4 +85,12 @@ public class SpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals("LINESTRING (16 0, 16 23, 16 48)", rs.getString(1));
     }
+
+    @Test
+    public void test_ST_ExplodeWithoutGeometryField() throws Exception  {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('forests') WHERE name = 'Green Forest' and explod_id=2");
+        assertTrue(rs.next());
+        assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
+    }
 }
