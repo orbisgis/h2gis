@@ -46,6 +46,7 @@ import java.util.Queue;
  * @author Nicolas Fortin
  */
 public class ST_Explode implements ScalarFunction {
+    /** The default field name for explode count, value is [1-n] */
     public static final String EXPLODE_FIELD = "EXPLOD_ID";
 
     @Override

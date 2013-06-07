@@ -142,14 +142,23 @@ public class SFSUtilities {
             return sb.toString();
         }
 
+        /**
+         * @return Table catalog name (database)
+         */
         public String getCatalog() {
             return catalog;
         }
 
+        /**
+         * @return Table schema name
+         */
         public String getSchema() {
             return schema;
         }
 
+        /**
+         * @return Table name
+         */
         public String getTable() {
             return table;
         }
