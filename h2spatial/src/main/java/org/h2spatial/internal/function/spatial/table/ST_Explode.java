@@ -25,8 +25,13 @@
 
 package org.h2spatial.internal.function.spatial.table;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2spatialapi.ScalarFunction;
@@ -153,12 +158,24 @@ public class ST_Explode implements ScalarFunction {
         private void parseRow() throws SQLException {
             sourceRowGeometries.clear();
             explodeId = 1;
-            while(tableQuery.next()) {
+            if(tableQuery.next()) {
                 Geometry geometry = (Geometry) tableQuery.getObject(spatialFieldIndex);
                 explode(geometry);
-                // If the geometry is not empty, proceed
-                if(!sourceRowGeometries.isEmpty()) {
-                    break;
+                // If the geometry is empty, set empty field or null if generic geometry collection
+                if(sourceRowGeometries.isEmpty()) {
+                    GeometryFactory factory = geometry.getFactory();
+                    if(factory==null) {
+                        factory = new GeometryFactory();
+                    }
+                    if(geometry instanceof MultiLineString) {
+                        sourceRowGeometries.add(factory.createLineString(new Coordinate[0]));
+                    } else if(geometry instanceof MultiPolygon) {
+                        sourceRowGeometries.add((factory.createPolygon(null,null)));
+                    } else if(geometry instanceof MultiPoint) {
+                        sourceRowGeometries.add((factory.createPoint((Coordinate)null)));
+                    } else {
+                        sourceRowGeometries.add(null);
+                    }
                 }
             }
         }

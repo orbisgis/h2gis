@@ -93,4 +93,29 @@ public class SpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
     }
+
+    @Test
+    public void test_ST_ExplodeEmptyGeometryCollection() throws Exception  {
+        Statement st = connection.createStatement();
+        st.execute("create table test(the_geom GEOMETRY, value Integer)");
+        st.execute("insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108)");
+        st.execute("insert into test VALUES (ST_GeomFromText('MULTIPOINT EMPTY'),109)");
+        st.execute("insert into test VALUES (ST_GeomFromText('MULTIPOLYGON EMPTY'),110)");
+        st.execute("insert into test VALUES (ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'),111)");
+        ResultSet rs = st.executeQuery("SELECT the_geom , value FROM ST_Explode('test') ORDER BY value");
+        assertTrue(rs.next());
+        assertEquals(108,rs.getInt(2));
+        assertEquals("LINESTRING EMPTY", rs.getString(1));
+        assertTrue(rs.next());
+        assertEquals(109,rs.getInt(2));
+        assertEquals("POINT EMPTY", rs.getString(1));
+        assertTrue(rs.next());
+        assertEquals(110,rs.getInt(2));
+        assertEquals("POLYGON EMPTY", rs.getString(1));
+        assertTrue(rs.next());
+        assertEquals(111,rs.getInt(2));
+        assertEquals(null, rs.getObject(1));
+        rs.close();
+        st.execute("drop table test");
+    }
 }
