@@ -3,11 +3,10 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>org.h2spatial</groupId>
+		<groupId>org.h2gis</groupId>
 		<artifactId>h2gis</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
-	<groupId>org.h2spatial</groupId>
 	<artifactId>h2spatial</artifactId>
 	<name>h2spatial</name>
 	<version>1.0.1</version>
@@ -89,7 +88,7 @@
                 <configuration>
                     <instructions>
                         <Private-Package>org.h2spatial.internal.*</Private-Package>
-                        <Bundle-Activator>org.h2spatial.osgi.Activator</Bundle-Activator>
+                        <Bundle-Activator>org.h2gis.h2spatial.osgi.Activator</Bundle-Activator>
                         <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
                         <Bundle-Category>JDBC</Bundle-Category>
                     </instructions>

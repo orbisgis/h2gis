@@ -2,10 +2,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>h2gis</artifactId>
-    <groupId>org.h2spatial</groupId>
-    <version>0.1-SNAPSHOT</version>
-  </parent>
+        <artifactId>h2gis</artifactId>
+        <groupId>org.h2gis</groupId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
     <groupId>org.h2spatial</groupId>
     <artifactId>h2drivers</artifactId>
     <name>h2drivers</name>
@@ -22,7 +22,7 @@
                 <configuration>
                     <instructions>
                         <Private-Package>org.h2spatial.drivers.*</Private-Package>
-                        <Bundle-Activator>org.h2spatial.drivers.Activator</Bundle-Activator>
+                        <Bundle-Activator>org.h2gis.h2spatial.drivers.Activator</Bundle-Activator>
                     </instructions>
                 </configuration>
             </plugin>

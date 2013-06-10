@@ -3,10 +3,9 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
     <artifactId>h2gis</artifactId>
-    <groupId>org.h2spatial</groupId>
+    <groupId>org.h2gis</groupId>
     <version>0.1-SNAPSHOT</version>
   </parent>
-    <groupId>org.h2gis</groupId>
     <artifactId>h2spatial-ext</artifactId>
     <name>h2spatial-ext</name>
     <version>1.0-SNAPSHOT</version>
@@ -58,6 +57,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-api</artifactId>
             <version>${spatial-api-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial</artifactId>
+            <version>1.0.1</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>

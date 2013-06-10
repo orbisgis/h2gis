@@ -36,6 +36,6 @@ Follow [H2](http://www.h2database.com/) tutorial to download and install H2. Add
 [Create a DataBase](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features:
 
 ```sql
-CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2spatial.CreateSpatialExtension.initSpatialExtension";
+CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "CreateSpatialExtension.initSpatialExtension";
 CALL SPATIAL_INIT();
 ```

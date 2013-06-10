@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
     <artifactId>h2gis</artifactId>
-    <groupId>org.h2spatial</groupId>
+    <groupId>org.h2gis</groupId>
     <version>0.1-SNAPSHOT</version>
   </parent>
     <groupId>org.orbisgis</groupId>
