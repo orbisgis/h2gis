@@ -67,12 +67,6 @@
             <version>1.0.1</version>
         </dependency>
         <dependency>
-            <groupId>org.postgis</groupId>
-            <artifactId>postgis-jdbc</artifactId>
-            <version>1.3.3</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>spatial-utilities</artifactId>
             <version>1.0-SNAPSHOT</version>

@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatial.internal.function.spatial.table;
+package org.h2gis.h2spatialext.function.spatial.table;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
