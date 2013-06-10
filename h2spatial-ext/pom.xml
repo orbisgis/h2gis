@@ -62,7 +62,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
             <version>1.0.1</version>
-            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>

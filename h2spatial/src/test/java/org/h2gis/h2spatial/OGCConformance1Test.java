@@ -25,6 +25,7 @@
 
 package org.h2gis.h2spatial;
 
+import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -48,7 +49,7 @@ public class OGCConformance1Test {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase(DB_NAME,false);
+        connection = SpatialH2UT.createSpatialDataBase(DB_NAME, false);
         // Set up test data
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test.sql");
         Statement st = connection.createStatement();

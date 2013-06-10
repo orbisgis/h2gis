@@ -65,9 +65,13 @@ public class ColumnSRID implements ScalarFunction {
 
             // Use first SRID from SPATIAL_REF_SYS
             rs.close();
-            rs = st.executeQuery("select srid from SPATIAL_REF_SYS LIMIT 1;");
-            if(rs.next()) {
-                return rs.getInt(1);
+            try {
+                rs = st.executeQuery("select srid from SPATIAL_REF_SYS LIMIT 1;");
+                if(rs.next()) {
+                    return rs.getInt(1);
+                }
+            } catch (SQLException ex) {
+                //Table not found
             }
             // Unable to find a valid SRID
             return 0;

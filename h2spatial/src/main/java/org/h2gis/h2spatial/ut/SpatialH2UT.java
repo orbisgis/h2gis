@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatial;
+package org.h2gis.h2spatial.ut;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
 
@@ -34,6 +34,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
+ * Used to create quickly a database on unit tests.
  * @author Nicolas Fortin
  */
 public class SpatialH2UT {

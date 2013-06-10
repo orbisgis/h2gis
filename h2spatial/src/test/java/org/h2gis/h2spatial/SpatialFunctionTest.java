@@ -24,6 +24,7 @@
  */
 package org.h2gis.h2spatial;
 
+import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -76,46 +77,5 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Area(ST_Union(ST_Accum(footprint))) FROM buildings GROUP BY SUBSTRING(address,4)");
         assertTrue(rs.next());
         assertEquals(16,rs.getDouble(1),1e-8);
-    }
-
-    @Test
-    public void test_ST_Explode() throws Exception  {
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_AsText(centerlines) FROM ST_Explode('divided_routes','centerlines') WHERE name = 'Route 75' and explod_id=2");
-        assertTrue(rs.next());
-        assertEquals("LINESTRING (16 0, 16 23, 16 48)", rs.getString(1));
-    }
-
-    @Test
-    public void test_ST_ExplodeWithoutGeometryField() throws Exception  {
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('forests') WHERE name = 'Green Forest' and explod_id=2");
-        assertTrue(rs.next());
-        assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
-    }
-
-    @Test
-    public void test_ST_ExplodeEmptyGeometryCollection() throws Exception  {
-        Statement st = connection.createStatement();
-        st.execute("create table test(the_geom GEOMETRY, value Integer)");
-        st.execute("insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108)");
-        st.execute("insert into test VALUES (ST_GeomFromText('MULTIPOINT EMPTY'),109)");
-        st.execute("insert into test VALUES (ST_GeomFromText('MULTIPOLYGON EMPTY'),110)");
-        st.execute("insert into test VALUES (ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'),111)");
-        ResultSet rs = st.executeQuery("SELECT the_geom , value FROM ST_Explode('test') ORDER BY value");
-        assertTrue(rs.next());
-        assertEquals(108,rs.getInt(2));
-        assertEquals("LINESTRING EMPTY", rs.getString(1));
-        assertTrue(rs.next());
-        assertEquals(109,rs.getInt(2));
-        assertEquals("POINT EMPTY", rs.getString(1));
-        assertTrue(rs.next());
-        assertEquals(110,rs.getInt(2));
-        assertEquals("POLYGON EMPTY", rs.getString(1));
-        assertTrue(rs.next());
-        assertEquals(111,rs.getInt(2));
-        assertEquals(null, rs.getObject(1));
-        rs.close();
-        st.execute("drop table test");
     }
 }
