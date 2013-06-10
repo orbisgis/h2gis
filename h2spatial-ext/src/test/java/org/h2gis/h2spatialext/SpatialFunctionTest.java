@@ -47,9 +47,8 @@ public class SpatialFunctionTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
-        CreateSpatialExtension.addSpatialFunctions(connection);
-        Statement st = connection.createStatement();
+        connection = SpatialH2UT.createSpatialDataBase(DB_NAME,false);
+        CreateSpatialExtension.initSpatialExtension(connection);
     }
 
     @AfterClass

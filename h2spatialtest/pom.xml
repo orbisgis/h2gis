@@ -37,7 +37,7 @@
             <version>1.12</version>
         </dependency>
         <dependency>
-            <groupId>org.h2spatial</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
             <version>1.0.1</version>
         </dependency>

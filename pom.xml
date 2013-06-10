@@ -17,7 +17,7 @@
         <module>h2spatial</module>
         <module>h2spatial-ext</module>
         <module>h2drivers</module>
-        <module>h2spatialtest</module>
+        <!--<module>h2spatialtest</module>-->
   </modules>
     <properties>
         <!-- Dependency versions -->

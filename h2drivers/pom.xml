@@ -6,7 +6,6 @@
         <groupId>org.h2gis</groupId>
         <version>0.1-SNAPSHOT</version>
     </parent>
-    <groupId>org.h2spatial</groupId>
     <artifactId>h2drivers</artifactId>
     <name>h2drivers</name>
     <version>1.0-SNAPSHOT</version>
@@ -39,7 +38,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.h2spatial</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
             <version>1.0.1</version>
         </dependency>

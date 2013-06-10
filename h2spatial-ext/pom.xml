@@ -59,7 +59,7 @@
             <version>${spatial-api-version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.h2gis</groupId>
             <artifactId>h2spatial</artifactId>
             <version>1.0.1</version>
         </dependency>
