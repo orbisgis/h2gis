@@ -28,8 +28,29 @@
  */
 package org.h2spatial.drivers;
 
+import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.ScalarFunction;
+
+import java.sql.ResultSet;
+
 /**
+ * One easy way to read shape files. A real driver could be written by extending org.h2.table.RegularTable
  * @author Nicolas Fortin
  */
-public class SHPRead {
+public class SHPRead extends AbstractFunction implements ScalarFunction {
+    public static final String DEFAULT_GEOMETRY_COLUMN_NAME = "THE_GEOM";
+    @Override
+    public String getJavaStaticMethod() {
+        return "getShapeResultSet";
+    }
+
+    /**
+     * TODO if .cpg file exists then encoding should be available
+     * @param filePath
+     * @param encoding
+     * @return
+     */
+    public static ResultSet getShapeResultSet(String filePath, String encoding) {
+        return null;
+    }
 }
