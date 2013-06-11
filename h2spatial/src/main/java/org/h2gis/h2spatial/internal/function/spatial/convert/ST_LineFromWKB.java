@@ -42,6 +42,13 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
         return "toPolygon";
     }
 
+    /**
+     * Convert WKT into a LinearRing
+     * @param bytes Byte array
+     * @param srid SRID
+     * @return LineString instance of null if bytes null
+     * @throws SQLException WKB Parse error
+     */
     public static Geometry toPolygon(byte[] bytes, int srid) throws SQLException {
         if(bytes==null) {
             return null;
@@ -55,7 +62,7 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
             geometry.setSRID(srid);
             return geometry;
         } catch (ParseException ex) {
-            throw new SQLException(ex);
+            throw new SQLException("ParseException while evaluating ST_LineFromWKB",ex);
         }
     }
 }

@@ -34,6 +34,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
+ * Convert WKB into Geometry then check that it is a Polygon
  * @author Nicolas Fortin
  */
 public class ST_PolyFromWKB extends DeterministicScalarFunction {
@@ -42,6 +43,12 @@ public class ST_PolyFromWKB extends DeterministicScalarFunction {
         return "toPolygon";
     }
 
+    /**
+     * @param bytes WKB
+     * @param srid SRID
+     * @return Geometry instance of null if bytes are null
+     * @throws SQLException Wkb parse exception
+     */
     public static Geometry toPolygon(byte[] bytes, int srid) throws SQLException {
         if(bytes==null) {
             return null;
@@ -55,7 +62,7 @@ public class ST_PolyFromWKB extends DeterministicScalarFunction {
             geometry.setSRID(srid);
             return geometry;
         } catch (ParseException ex) {
-            throw new SQLException(ex);
+            throw new SQLException("ParseException while evaluating ST_PolyFromWKB",ex);
         }
     }
 }
