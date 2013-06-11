@@ -1,6 +1,5 @@
 package org.h2gis.h2spatialext;
 
-import org.h2gis.h2spatialext.function.spatial.table.ST_Explode;
 import org.h2gis.h2spatialapi.Function;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -16,9 +15,11 @@ public class Activator implements BundleActivator {
          */
         @Override
         public void start(BundleContext bc) throws Exception {
-                bc.registerService(Function.class,
-                        new ST_Explode(),
-                        null);
+                for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
+                    bc.registerService(Function.class,
+                            function,
+                            null);
+                }
         }
 
         /**

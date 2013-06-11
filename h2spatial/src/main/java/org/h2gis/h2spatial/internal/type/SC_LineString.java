@@ -31,7 +31,7 @@ import org.h2gis.h2spatialapi.GeometryTypeCodes;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
- * Constraint for ListString field type.
+ * Constraint for LineString field type.
  * @author Nicolas Fortin
  */
 public class SC_LineString extends AbstractFunction implements ScalarFunction, GeometryConstraint {

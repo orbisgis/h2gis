@@ -28,18 +28,27 @@ package org.h2gis.h2spatial.internal.type;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
- * Class helper to define domain.
+ * Class helper to define domain. Use defined type
  * @author Nicolas Fortin
  */
 public class DomainInfo {
+    /** Type alias name */
     private String domainName;
+    /** Constraint function associated with this type */
     private ScalarFunction domainConstraint;
 
+    /**
+     * @param domainName Type alias name
+     * @param domainConstraint Constraint function associated with this type
+     */
     public DomainInfo(String domainName, ScalarFunction domainConstraint) {
         this.domainName = domainName;
         this.domainConstraint = domainConstraint;
     }
 
+    /**
+     * @return Type alias
+     */
     public String getDomainName() {
         return domainName;
     }

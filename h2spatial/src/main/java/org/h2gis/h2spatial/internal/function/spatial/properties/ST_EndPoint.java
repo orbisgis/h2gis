@@ -41,6 +41,12 @@ public class ST_EndPoint extends DeterministicScalarFunction {
         return "getEndPoint";
     }
 
+    /**
+     * Returns the last point of a LINESTRING geometry as a POINT or NULL if the
+     * input parameter is not a LINESTRING.
+     * @param geometry Geometry
+     * @return Point instance or NULL if geometry is not a linestring instance
+     */
     public static Geometry getEndPoint(Geometry geometry) {
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {

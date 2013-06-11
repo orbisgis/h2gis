@@ -30,24 +30,29 @@
 package org.h2gis.h2spatial.internal.function.spatial.convert;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKBWriter;
+import org.h2gis.h2spatial.ValueGeometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
+ * Convert a geometry into binary value.
  * @author Nicolas Fortin
  */
 public class ST_AsBinary extends DeterministicScalarFunction {
-    private final static WKBWriter WKB_WRITER = new WKBWriter();
 
     @Override
     public String getJavaStaticMethod() {
         return "toBytes";
     }
 
+    /**
+     * Convert a geometry into binary value.
+     * @param geometry Geometry instance
+     * @return WKB
+     */
     public static byte[] toBytes(Geometry geometry) {
         if(geometry==null) {
             return null;
         }
-        return WKB_WRITER.write(geometry);
+        return new ValueGeometry(geometry).getBytesNoCopy();
     }
 }

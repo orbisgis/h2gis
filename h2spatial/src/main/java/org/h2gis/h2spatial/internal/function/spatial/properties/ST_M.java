@@ -26,7 +26,7 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 /**
- * Get the first X coordinate
+ * Get the first M(easure) coordinate
  * @author Nicolas Fortin
  */
 public class ST_M extends ST_Z {

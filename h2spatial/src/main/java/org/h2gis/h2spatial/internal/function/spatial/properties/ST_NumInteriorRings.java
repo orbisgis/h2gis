@@ -42,6 +42,8 @@ public class ST_NumInteriorRings extends DeterministicScalarFunction {
 
     /**
      * Return the number of holes in a geometry
+     * @param g Geometry instance
+     * @return Number of hole or null if geometry is null
      */
     public static Integer getHoles(Geometry g) {
         if(g == null) {

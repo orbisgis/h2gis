@@ -42,6 +42,10 @@ public class ST_StartPoint extends DeterministicScalarFunction {
         return "getStartPoint";
     }
 
+    /**
+     * @param geometry LineString instance
+     * @return The first point of the linestring or null if geometry is not a linestring
+     */
     public static Geometry getStartPoint(Geometry geometry) {
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {

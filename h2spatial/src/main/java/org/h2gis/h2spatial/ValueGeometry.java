@@ -41,6 +41,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
 /**
+ * Storage type of H2 for Geometry field.
+ * This class enable the cast to String in the following way "select the_geom::text from mytable;"
  * @author Nicolas Fortin
  */
 public class ValueGeometry extends Value implements Serializable {
