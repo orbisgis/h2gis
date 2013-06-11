@@ -18,6 +18,7 @@
         <module>h2spatial-ext</module>
         <module>h2drivers</module>
         <!--<module>h2spatialtest</module>-->
+    <module>h2-table-listener</module>
   </modules>
     <properties>
         <!-- Dependency versions -->
