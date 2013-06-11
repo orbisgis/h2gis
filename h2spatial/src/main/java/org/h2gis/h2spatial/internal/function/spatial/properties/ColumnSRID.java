@@ -25,7 +25,8 @@
 
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.ScalarFunction;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -36,15 +37,10 @@ import java.sql.Statement;
  * Get the column SRID from constraints and data.
  * @author Nicolas Fortin
  */
-public class ColumnSRID implements ScalarFunction {
+public class ColumnSRID extends AbstractFunction implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "getSRID";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        return null;
     }
 
     /**

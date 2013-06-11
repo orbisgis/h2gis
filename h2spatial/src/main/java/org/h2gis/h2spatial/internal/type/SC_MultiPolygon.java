@@ -26,14 +26,15 @@
 package org.h2gis.h2spatial.internal.type;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.GeometryTypeCodes;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.GeometryTypeCodes;
+import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
  * Constraint for MultiPolygon field type.
  * @author Nicolas Fortin
  */
-public class SC_MultiPolygon implements ScalarFunction , GeometryConstraint {
+public class SC_MultiPolygon extends AbstractFunction implements ScalarFunction , GeometryConstraint {
 
     @Override
     public int getGeometryTypeCode() {
@@ -43,11 +44,6 @@ public class SC_MultiPolygon implements ScalarFunction , GeometryConstraint {
     @Override
     public String getJavaStaticMethod() {
         return "isMultiPolygon";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        return null;
     }
 
     /**

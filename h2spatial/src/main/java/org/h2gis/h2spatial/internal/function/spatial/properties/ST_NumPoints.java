@@ -26,24 +26,16 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Get the number of points inside a geometry
  * @author Nicolas Fortin
  */
-public class ST_NumPoints implements ScalarFunction {
+public class ST_NumPoints extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "getNumPoints";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

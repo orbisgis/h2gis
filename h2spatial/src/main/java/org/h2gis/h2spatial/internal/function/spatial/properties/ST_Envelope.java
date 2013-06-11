@@ -27,25 +27,17 @@ package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Get geometry envelope as geometry.
  * @author Nicolas Fortin
  */
-public class ST_Envelope implements ScalarFunction {
+public class ST_Envelope extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
         return "getEnvelope";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

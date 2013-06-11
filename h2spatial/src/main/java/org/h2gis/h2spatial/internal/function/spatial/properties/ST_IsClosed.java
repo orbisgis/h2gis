@@ -28,24 +28,16 @@ package org.h2gis.h2spatial.internal.function.spatial.properties;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Test if the provided geometry is closed.
  * @author Nicolas Fortin
  */
-public class ST_IsClosed implements ScalarFunction {
+public class ST_IsClosed extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "isClosed";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

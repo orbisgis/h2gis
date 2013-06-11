@@ -26,25 +26,18 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
  * For geometry type returns the 2-dimensional minimum Cartesian
  * distance between two geometries in projected units (spatial ref units)
  * @author Nicolas Fortin
  */
-public class ST_Distance implements ScalarFunction {
+public class ST_Distance extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "distance";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

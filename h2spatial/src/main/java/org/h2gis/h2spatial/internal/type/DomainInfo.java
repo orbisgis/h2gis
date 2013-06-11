@@ -25,7 +25,7 @@
 
 package org.h2gis.h2spatial.internal.type;
 
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
  * Class helper to define domain.

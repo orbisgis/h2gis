@@ -26,24 +26,16 @@
 package org.h2gis.h2spatial.internal.function.spatial.predicates;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Return true if the geometry A crosses the geometry B
  * @author Nicolas Fortin
  */
-public class ST_Crosses implements ScalarFunction {
+public class ST_Crosses extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "geomCrosses";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

@@ -26,25 +26,16 @@
 package org.h2gis.h2spatial.internal.function.spatial.operators;
 
 import com.vividsolutions.jts.geom.Geometry;
-
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Computes the smallest convex Polygon that contains all the points in the Geometry
  * @author Nicolas Fortin
  */
-public class ST_ConvexHull implements ScalarFunction {
+public class ST_ConvexHull extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "convexHull";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

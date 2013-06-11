@@ -27,7 +27,7 @@ package org.h2gis.h2spatial.osgi;
 
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
-import org.h2spatialapi.Function;
+import org.h2gis.h2spatialapi.Function;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;

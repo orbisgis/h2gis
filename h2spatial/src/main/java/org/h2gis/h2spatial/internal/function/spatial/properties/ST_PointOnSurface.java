@@ -26,26 +26,17 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Get a Point that lie on the surface of a Surface Geometry.
  * The returned point is always the same for the same geometry.
  * @author Nicolas Fortin
  */
-public class ST_PointOnSurface implements ScalarFunction {
+public class ST_PointOnSurface extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "getInteriorPoint";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

@@ -30,25 +30,16 @@ import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
 
 import org.h2gis.h2spatial.internal.type.SC_Polygon;
-import org.h2spatialapi.ScalarFunction;
-
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
  * @author Nicolas Fortin
  */
-public class ST_PolyFromWKB implements ScalarFunction {
+public class ST_PolyFromWKB extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "toPolygon";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     public static Geometry toPolygon(byte[] bytes, int srid) throws SQLException {

@@ -30,8 +30,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.SQLException;
 
@@ -40,16 +39,8 @@ import java.sql.SQLException;
  * TODO Read SRID in table constraint
  * @author Nicolas Fortin
  */
-public class ST_GeomFromText implements ScalarFunction {
+public class ST_GeomFromText extends DeterministicScalarFunction {
     private static WKTReader wktReader = new WKTReader();
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
-    }
 
     @Override
     public String getJavaStaticMethod() {

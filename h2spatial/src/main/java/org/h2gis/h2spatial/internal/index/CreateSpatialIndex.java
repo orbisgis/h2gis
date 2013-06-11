@@ -27,7 +27,8 @@ package org.h2gis.h2spatial.internal.index;
 
 import org.h2.engine.SessionInterface;
 import org.h2.jdbc.JdbcConnection;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.ScalarFunction;
 
 import java.sql.Connection;
 
@@ -35,15 +36,11 @@ import java.sql.Connection;
  * Create a MVStore table that embed a MVStore RTRee.
  * @author Nicolas Fortin
  */
-public class CreateSpatialIndex implements ScalarFunction {
+public class CreateSpatialIndex extends AbstractFunction implements ScalarFunction {
+
     @Override
     public String getJavaStaticMethod() {
         return "createIndex";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        return null;
     }
 
     /**

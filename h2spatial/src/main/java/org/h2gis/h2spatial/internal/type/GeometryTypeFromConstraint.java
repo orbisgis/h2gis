@@ -26,22 +26,18 @@
 package org.h2gis.h2spatial.internal.type;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
-import org.h2spatialapi.GeometryTypeCodes;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.GeometryTypeCodes;
+import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
  * Convert H2 constraint string into a OGC geometry type index.
  * @author Nicolas Fortin
  */
-public class GeometryTypeFromConstraint implements ScalarFunction {
+public class GeometryTypeFromConstraint extends AbstractFunction implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "GeometryTypeFromConstraint";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        return null;
     }
 
     public static int GeometryTypeFromConstraint(String constraint) {

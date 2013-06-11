@@ -1,7 +1,7 @@
 package org.h2gis.h2spatialext;
 
 import org.h2gis.h2spatialext.function.spatial.table.ST_Explode;
-import org.h2spatialapi.Function;
+import org.h2gis.h2spatialapi.Function;
 
 import java.sql.Connection;
 import java.sql.SQLException;

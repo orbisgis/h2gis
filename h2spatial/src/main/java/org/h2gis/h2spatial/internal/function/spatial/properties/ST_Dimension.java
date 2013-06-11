@@ -26,25 +26,17 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Get dimension of a geometry 2 or 3
  * @author Nicolas Fortin
  */
-public class ST_Dimension implements ScalarFunction {
+public class ST_Dimension extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
         return "getDimension";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

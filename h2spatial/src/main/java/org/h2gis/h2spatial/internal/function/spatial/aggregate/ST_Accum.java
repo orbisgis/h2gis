@@ -27,8 +27,7 @@ package org.h2gis.h2spatial.internal.function.spatial.aggregate;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2.api.AggregateFunction;
-import org.h2spatialapi.Function;
-
+import org.h2gis.h2spatialapi.AbstractFunction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -39,7 +38,7 @@ import java.util.List;
  * Construct an array of Geometry.
  * @author Nicolas Fortin
  */
-public class ST_Accum implements AggregateFunction, Function {
+public class ST_Accum extends AbstractFunction implements AggregateFunction {
     private List<Geometry> toUnite = new LinkedList<Geometry>();
     private int srid=0;
 
@@ -82,10 +81,5 @@ public class ST_Accum implements AggregateFunction, Function {
     @Override
     public Object getResult() throws SQLException {
         return toUnite;
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        return null;
     }
 }

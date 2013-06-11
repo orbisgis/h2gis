@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2spatialapi;
+package org.h2gis.h2spatialapi;
 
 /**
  * Geometry type codes as defined in OGC SFS 1.2.1

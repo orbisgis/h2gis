@@ -26,24 +26,16 @@
 package org.h2gis.h2spatial.internal.function.spatial.predicates;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Return true if the envelope of geometry A intersects the envelope of geometry B
  * @author Nicolas Fortin
  */
-public class ST_EnvelopesIntersect implements ScalarFunction {
+public class ST_EnvelopesIntersect extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "isIntersects";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

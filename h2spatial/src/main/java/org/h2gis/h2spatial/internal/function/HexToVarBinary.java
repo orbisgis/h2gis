@@ -25,26 +25,17 @@
 
 package org.h2gis.h2spatial.internal.function;
 
-import org.h2spatialapi.ScalarFunction;
-
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import javax.xml.bind.DatatypeConverter;
 
 /**
  * Convert Hexadecimal string into an array of byte.
  * @author Nicolas Fortin
  */
-public class HexToVarBinary implements ScalarFunction {
+public class HexToVarBinary extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "toVarBinary";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     public static byte[] toVarBinary(String hex) {

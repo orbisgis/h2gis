@@ -26,24 +26,16 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Compute the geometry length.
  * @author Nicolas Fortin
  */
-public class ST_Length implements ScalarFunction {
+public class ST_Length extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "getLength";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

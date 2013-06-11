@@ -26,24 +26,16 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Get the number of geometries inside a geometry collection
  * @author Nicolas Fortin
  */
-public class ST_NumGeometries implements ScalarFunction {
+public class ST_NumGeometries extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "getNumGeometries";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

@@ -26,7 +26,8 @@
 package org.h2gis.h2spatial.internal.function.spatial.predicates;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+
 
 /**
  * This function is used to compute the relation between two geometries, as
@@ -36,18 +37,10 @@ import org.h2spatialapi.ScalarFunction;
  * the given one, false otherwise.
  * @author Nicolas Fortin
  */
-public class ST_Relate implements ScalarFunction {
+public class ST_Relate extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "relate";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

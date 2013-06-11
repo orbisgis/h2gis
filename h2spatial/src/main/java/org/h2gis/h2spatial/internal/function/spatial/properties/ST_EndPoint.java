@@ -28,26 +28,17 @@ package org.h2gis.h2spatial.internal.function.spatial.properties;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
-
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Returns the last point of a LINESTRING geometry as a POINT or NULL if the
  * input parameter is not a LINESTRING.
  * @author Nicolas Fortin
  */
-public class ST_EndPoint implements ScalarFunction {
+public class ST_EndPoint extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "getEndPoint";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     public static Geometry getEndPoint(Geometry geometry) {

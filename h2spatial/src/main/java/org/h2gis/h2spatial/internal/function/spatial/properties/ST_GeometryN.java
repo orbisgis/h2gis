@@ -26,31 +26,19 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.Polygon;
-
-import org.h2spatialapi.ScalarFunction;
-
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
  * Returns a Geometry instance or Null if parameter is not a GeometryCollection.
  * @author Nicolas Fortin
  */
-public class ST_GeometryN implements ScalarFunction {
+public class ST_GeometryN extends DeterministicScalarFunction {
     private static final String OUT_OF_BOUNDS_ERR_MESSAGE = "ST_GeometryN index > ST_NumGeometries or index <= 0, Geometry index must be in the range [1-NbGeometry]";
 
     @Override
     public String getJavaStaticMethod() {
         return "getGeometryN";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

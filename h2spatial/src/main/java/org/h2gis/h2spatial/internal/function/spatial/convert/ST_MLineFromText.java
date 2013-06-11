@@ -24,10 +24,9 @@
  */
 
 package org.h2gis.h2spatial.internal.function.spatial.convert;
-
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatial.internal.type.SC_MultiLineString;
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.SQLException;
 
@@ -35,19 +34,11 @@ import java.sql.SQLException;
  * Convert String into a MultiLineString type.
  * @author Nicolas Fortin
  */
-public class ST_MLineFromText implements ScalarFunction {
+public class ST_MLineFromText extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
         return "toGeometry";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

@@ -27,24 +27,16 @@ package org.h2gis.h2spatial.internal.function.spatial.operators;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Compute a buffer around a geometry.
  * @author Nicolas Fortin
  */
-public class ST_Buffer implements ScalarFunction {
+public class ST_Buffer extends DeterministicScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "buffer";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**

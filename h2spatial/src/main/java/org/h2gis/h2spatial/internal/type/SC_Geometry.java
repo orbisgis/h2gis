@@ -32,8 +32,8 @@ import org.h2.api.JavaObjectSerializer;
 import org.h2.constant.SysProperties;
 import org.h2.util.Utils;
 import org.h2gis.h2spatial.ValueGeometry;
-import org.h2spatialapi.ScalarFunction;
-
+import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.ScalarFunction;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,7 +45,7 @@ import java.io.ObjectStreamClass;
  * Space Constraint on Geometry field.
  * @author Nicolas Fortin
  */
-public class SC_Geometry implements ScalarFunction {
+public class SC_Geometry extends AbstractFunction implements ScalarFunction {
     static {
         // Initialise H2 Object serialisation
         Utils.serializer = new GeometrySerializer();
@@ -53,11 +53,6 @@ public class SC_Geometry implements ScalarFunction {
     @Override
     public String getJavaStaticMethod() {
         return "IsGeometryOrNull";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        return null;
     }
 
     /**

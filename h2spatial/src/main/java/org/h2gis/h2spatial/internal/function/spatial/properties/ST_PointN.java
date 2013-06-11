@@ -29,7 +29,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 
-import org.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.SQLException;
 
@@ -39,20 +39,12 @@ import java.sql.SQLException;
  * As the OGC specs ST_PointN is 1-N based.
  * @author Nicolas Fortin
  */
-public class ST_PointN implements ScalarFunction {
+public class ST_PointN extends DeterministicScalarFunction {
     private static final String OUT_OF_BOUNDS_ERR_MESSAGE = "ST_PointN index > ST_NumPoints or index <= 0, Point index must be in the range [1-NbPoints]";
 
     @Override
     public String getJavaStaticMethod() {
         return "getPointN";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        if(propertyName.equals(ScalarFunction.PROP_DETERMINISTIC)) {
-            return true;
-        }
-        return null;
     }
 
     /**
