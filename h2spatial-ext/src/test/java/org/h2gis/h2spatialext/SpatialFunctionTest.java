@@ -60,9 +60,9 @@ public class SpatialFunctionTest {
     public void test_ST_ExplodeWithoutGeometryField() throws Exception  {
         Statement st = connection.createStatement();
         st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64)," +
-                " boundary MULTIPOLYGON);");
-        st.execute("INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0," +
-                "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101))");
+                " boundary MULTIPOLYGON);" +
+                "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0," +
+                "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
         ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('forests') WHERE name = 'Green Forest' and explod_id=2");
         assertTrue(rs.next());
         assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
@@ -72,11 +72,11 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_ExplodeEmptyGeometryCollection() throws Exception  {
         Statement st = connection.createStatement();
-        st.execute("create table test(the_geom GEOMETRY, value Integer)");
-        st.execute("insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108)");
-        st.execute("insert into test VALUES (ST_GeomFromText('MULTIPOINT EMPTY'),109)");
-        st.execute("insert into test VALUES (ST_GeomFromText('MULTIPOLYGON EMPTY'),110)");
-        st.execute("insert into test VALUES (ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'),111)");
+        st.execute("create table test(the_geom GEOMETRY, value Integer);" +
+                "insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108)," +
+                " (ST_GeomFromText('MULTIPOINT EMPTY'),109)," +
+                " (ST_GeomFromText('MULTIPOLYGON EMPTY'),110)," +
+                " (ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'),111);");
         ResultSet rs = st.executeQuery("SELECT the_geom , value FROM ST_Explode('test') ORDER BY value");
         assertTrue(rs.next());
         assertEquals(108,rs.getInt(2));

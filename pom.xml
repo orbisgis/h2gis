@@ -15,15 +15,16 @@
         <module>spatial-utilities</module>
         <module>h2spatial-api</module>
         <module>h2spatial</module>
+        <module>h2-table-listener</module>
         <module>h2spatial-ext</module>
         <module>h2drivers</module>
         <!--<module>h2spatialtest</module>-->
-    <module>h2-table-listener</module>
   </modules>
     <properties>
         <!-- Dependency versions -->
         <maven-bundle-plugin-version>2.3.7</maven-bundle-plugin-version>
         <osgi-core-version>4.3.1</osgi-core-version>
+        <h2-version>1.3.172</h2-version>
         <!-- Project versions -->
         <spatial-api-version>1.0.1</spatial-api-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
