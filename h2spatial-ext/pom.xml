@@ -61,7 +61,7 @@
         <dependency>
             <groupId>org.h2gis</groupId>
             <artifactId>h2spatial</artifactId>
-            <version>1.0.1</version>
+            <version>${h2spatial-version}</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>

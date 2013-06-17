@@ -25,16 +25,6 @@
 
 package org.h2gis.h2spatial.internal.index;
 
-import org.h2.engine.Database;
-import org.h2.engine.Session;
-import org.h2.engine.SessionInterface;
-import org.h2.jdbc.JdbcConnection;
-import org.h2.mvstore.db.MVTable;
-import org.h2.mvstore.rtree.MVRTreeMap;
-import org.h2.table.Table;
-
-import java.sql.Connection;
-
 /**
  * Spatial Index utility.
  * @author Nicolas Fortin

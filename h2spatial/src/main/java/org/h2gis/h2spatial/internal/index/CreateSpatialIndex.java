@@ -25,8 +25,6 @@
 
 package org.h2gis.h2spatial.internal.index;
 
-import org.h2.engine.SessionInterface;
-import org.h2.jdbc.JdbcConnection;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
@@ -57,8 +55,8 @@ public class CreateSpatialIndex extends AbstractFunction implements ScalarFuncti
         if(!schema.isEmpty()) {
             schema=schema+".";
         }
-        if(connection instanceof JdbcConnection) {
-            SessionInterface sess = ((JdbcConnection) connection).getSession();
-        }
+//        if(connection instanceof JdbcConnection) {
+//            SessionInterface sess = ((JdbcConnection) connection).getSession();
+//        }
     }
 }

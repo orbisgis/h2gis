@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>h2spatial</artifactId>
 	<name>h2spatial</name>
-	<version>1.0.1</version>
+	<version>${h2spatial-version}</version>
     <packaging>bundle</packaging>
 	<url>http://www.orbisgis.org</url>
     <licenses>

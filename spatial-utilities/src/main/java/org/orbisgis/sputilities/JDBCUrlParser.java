@@ -49,7 +49,7 @@ public class JDBCUrlParser {
      */
     public static Properties parse(String jdbcUrl) throws IllegalArgumentException {
         if(!jdbcUrl.startsWith(URL_STARTS)) {
-            throw new IllegalArgumentException("JDBC Url must start with JDBC");
+            throw new IllegalArgumentException("JDBC Url must start with "+URL_STARTS);
         }
         String driverAndURI = jdbcUrl.substring(URL_STARTS.length());
         String driver = driverAndURI.substring(0,driverAndURI.indexOf(':'));

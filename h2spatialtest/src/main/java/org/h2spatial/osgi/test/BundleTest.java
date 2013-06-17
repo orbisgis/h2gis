@@ -30,11 +30,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
-import com.vividsolutions.jts.io.WKBWriter;
 import com.vividsolutions.jts.io.WKTReader;
 import com.vividsolutions.jts.io.WKTWriter;
 import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
-import org.h2spatial.ValueGeometry;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -101,7 +99,7 @@ public class BundleTest extends OSGiTestCase {
             stat.execute("CREATE TABLE POINT2D (gid int PRIMARY KEY AUTO_INCREMENT , the_geom GEOMETRY)");
             PreparedStatement insert = connection.prepareStatement("INSERT INTO POINT2D (the_geom) VALUES (?)");
             GeometryFactory f = new GeometryFactory();
-            insert.setObject(1, new ValueGeometry(f.createPoint(new Coordinate(5, 8, 15))));
+            insert.setObject(1, f.createPoint(new Coordinate(5, 8, 15)));
             insert.execute();
             // Read the value
             ResultSet rs = stat.executeQuery("select the_geom from POINT2D");
