@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>h2gis</artifactId>
+        <groupId>org.h2gis</groupId>
+        <version>0.1-SNAPSHOT</version>
+    </parent>
+    <artifactId>h2spatial-api</artifactId>
+    <name>h2spatial-api</name>
+    <version>${spatial-api-version}</version>
+    <packaging>bundle</packaging>
+    <description>H2 Spatial API define extension point of h2 spatial</description>
+    <licenses>
+        <license>
+            <name>GPL V3</name>
+            <url>https://github.com/irstv/orbisgis/blob/master/Licenses/license-GPL.txt</url>
+        </license>
+    </licenses>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${maven-bundle-plugin-version}</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Public-Package>org.h2gis.h2spatialapi.*</Public-Package>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${osgi-core-version}</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+</project>

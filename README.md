@@ -29,3 +29,13 @@ formats such as .shp and .csv. With H2Drivers, the user can execute SQL queries
 on file formats other than pure H2.
 
 Both H2Spatial and H2Drivers are licensed under the GPL 3 license terms.
+           
+# How to Use
+Follow [H2](http://www.h2database.com/) tutorial to download and install H2. Add h2spatial jar and [JTS](http://sourceforge.net/projects/jts-topo-suite/) 1.12 jar in the application Class Path.
+
+[Create a DataBase](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features:
+
+```sql
+CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "CreateSpatialExtension.initSpatialExtension";
+CALL SPATIAL_INIT();
+```

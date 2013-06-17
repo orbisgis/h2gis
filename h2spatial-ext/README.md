@@ -1,12 +1,12 @@
-h2spatial
+h2spatial-ext
 =====
 
-A library that brings spatial capabilities to the H2 database.
+A library that brings extra spatial capabilities to the H2 database.
 
 In a non-OSGi environment you have to register spacial features by running the following SQL request :
 
 ```sql
-CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.h2spatial.CreateSpatialExtension.initSpatialExtension";
+CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.h2spatialext.CreateSpatialExtension.initSpatialExtension";
 CALL SPATIAL_INIT();
 ```
 
