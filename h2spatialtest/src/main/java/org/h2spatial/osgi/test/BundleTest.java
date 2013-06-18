@@ -54,7 +54,7 @@ public class BundleTest extends OSGiTestCase {
     private static final String DB_FILE_PATH = "target/test-resources/dbH2";
     private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
     private DataSource dataSource;
-    private ServiceReference ref;
+    private ServiceReference<DataSourceFactory> ref;
 
     /**
      * Create data source
@@ -63,7 +63,7 @@ public class BundleTest extends OSGiTestCase {
         // Find if DataSource service is already online
 
 
-        ref =  getContext().getServiceReference(DataSourceFactory.class.getName());
+        ref =  getContext().getServiceReference(DataSourceFactory.class);
         Properties properties = new Properties();
         properties.put(DataSourceFactory.JDBC_URL,DATABASE_PATH);
         properties.put(DataSourceFactory.JDBC_USER,"sa");
@@ -106,6 +106,7 @@ public class BundleTest extends OSGiTestCase {
             assertTrue(rs.next());
             assertTrue(rs.getObject(1) instanceof Geometry);
             assertEquals(f.createPoint(new Coordinate(5, 8, 15)),rs.getObject(1));
+            System.out.println("testCreateGeometryTable OK");
         } finally {
             connection.close();
         }
@@ -126,6 +127,7 @@ public class BundleTest extends OSGiTestCase {
             ResultSet source = stat.executeQuery("select StringCapitalize(fld) as fld from test");
             assertTrue(source.next());
             assertEquals(source.getString("fld"), "DIDIER");
+            System.out.println("testCustomCreateAlias OK");
         } finally {
             connection.close();
         }
@@ -149,6 +151,7 @@ public class BundleTest extends OSGiTestCase {
             ResultSet source = stat.executeQuery("select UT_AREA(the_geom) as area from test");
             assertTrue(source.next());
             assertEquals(100.0,Double.valueOf(source.getString("area")),1e-8);
+            System.out.println("testCustomCreateGeometryFunctionAlias OK");
         } finally {
             connection.close();
         }
@@ -174,6 +177,7 @@ public class BundleTest extends OSGiTestCase {
             ResultSet source = stat.executeQuery("select the_geom from test");
             assertTrue(source.next());
             assertEquals(wktGeo,source.getString("the_geom"));
+            System.out.println("testGeometryString OK");
         } finally {
             connection.close();
         }
@@ -229,6 +233,7 @@ public class BundleTest extends OSGiTestCase {
             ResultSet source = stat.executeQuery("select IsValidGeometry(the_geom) as valid from test");
             assertTrue(source.next());
             assertTrue(source.getBoolean("valid"));
+            System.out.println("testGeometryBytes OK");
         } finally {
             connection.close();
         }

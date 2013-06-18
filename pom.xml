@@ -29,7 +29,7 @@
         <!-- Project versions -->
         <spatial-api-version>1.0.1</spatial-api-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <h2spatial-version>1.0.1</h2spatial-version>
+        <h2spatial-version>1.0.2-SNAPSHOT</h2spatial-version>
     </properties>
     <scm>
         <connection>scm:git:https://github.com/irstv/H2GIS.git</connection>

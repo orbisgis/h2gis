@@ -23,8 +23,13 @@
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.enterprise</artifactId>
-            <version>4.2.0</version>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -39,17 +44,17 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
-            <version>1.0.1</version>
+            <version>${h2spatial-version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${h2-version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-api</artifactId>
-            <version>1.0.1</version>
+            <version>${spatial-api-version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -68,7 +73,7 @@
                             ${project.artifactId}
                         </Bundle-SymbolicName>
                         <Test-Suite>
-                            org.h2gis.h2spatial.osgi.test.BundleTest
+                            org.h2spatial.osgi.test.BundleTest
                         </Test-Suite>
                     </instructions>
                 </configuration>

@@ -40,6 +40,7 @@ import java.sql.SQLException;
  */
 public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,FunctionTracker> {
     private BundleContext bundleContext;
+    public static final String PREFIX = "H2SPATIAL#";
 
     /**
      * Constructor
@@ -54,10 +55,10 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
         DataSource dataSource = bundleContext.getService(dataSourceServiceReference);
         try {
             Connection connection = dataSource.getConnection();
-            CreateSpatialExtension.registerGeometryType(connection, bundleContext.getBundle().getSymbolicName() + ":" + bundleContext.getBundle().getVersion().toString() + ":");
+            CreateSpatialExtension.registerGeometryType(connection, PREFIX);
             // Register built-ins functions
             for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
-                CreateSpatialExtension.registerFunction(connection.createStatement(),function,"OSGI=",false);
+                CreateSpatialExtension.registerFunction(connection.createStatement(),function,PREFIX,false);
             }
             CreateSpatialExtension.registerViewTable(connection);
             connection.close();

@@ -26,8 +26,8 @@
 package org.h2gis.h2spatial.osgi;
 
 
-import org.h2gis.h2spatial.CreateSpatialExtension;
-import org.h2gis.h2spatialapi.Function;
+import org.h2.util.Utils;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -40,12 +40,14 @@ import javax.sql.DataSource;
  */
 public class Activator implements BundleActivator {
     private ServiceTracker<DataSource,FunctionTracker> databaseTracker;
+    private Bundle bundle;
+    private PermanentFunctionClassLoader classLoader;
 
     @Override
     public void start(BundleContext bundleContext) throws Exception {
-        for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
-            bundleContext.registerService(function.getClass().getName(),function,null);
-        }
+        bundle = bundleContext.getBundle();
+        classLoader =new PermanentFunctionClassLoader();
+        Utils.addClassFactory(classLoader);
         DataSourceTracker dataSourceTracker = new DataSourceTracker(bundleContext);
         databaseTracker = new ServiceTracker<DataSource, FunctionTracker>(bundleContext,DataSource.class,dataSourceTracker);
         databaseTracker.open();
@@ -54,5 +56,22 @@ public class Activator implements BundleActivator {
     @Override
     public void stop(BundleContext bundleContext) throws Exception {
         databaseTracker.close();
+        Utils.removeClassFactory(classLoader);
+    }
+
+    /**
+     * Use this bundle class loader instead of H2 one.
+     */
+    private class PermanentFunctionClassLoader implements Utils.ClassFactory
+    {
+        @Override
+        public boolean match(String name) {
+            return name.startsWith(DataSourceTracker.PREFIX);
+        }
+
+        @Override
+        public Class<?> loadClass(String name) throws ClassNotFoundException {
+            return bundle.loadClass(name.substring(DataSourceTracker.PREFIX.length()));
+        }
     }
 }
