@@ -53,6 +53,7 @@ public class SpatialFunctionTest {
         URL sqlURL = SpatialFunctionTest.class.getResource("ogc_conformance_test3.sql");
         URL sqlURL2 = SpatialFunctionTest.class.getResource("spatial_index_test_data.sql");
         Statement st = connection.createStatement();
+        st.execute("drop table if exists spatial_ref_sys;");
         st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
         st.execute("RUNSCRIPT FROM '"+sqlURL2+"'");
     }

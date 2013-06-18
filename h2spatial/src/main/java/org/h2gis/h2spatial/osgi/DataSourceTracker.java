@@ -59,7 +59,7 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
             for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
                 CreateSpatialExtension.registerFunction(connection.createStatement(),function,"OSGI=",false);
             }
-            CreateSpatialExtension.registerViewTable(connection);
+            CreateSpatialExtension.registerSpatialTables(connection);
             connection.close();
         } catch (SQLException ex) {
             System.err.print(ex.toString());

@@ -58,6 +58,7 @@ public class SerializationTest {
         // Set up test data
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test3.sql");
         Statement st = connection.createStatement();
+        st.execute("drop table if exists spatial_ref_sys;");
         st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
         // Close the DataBase then reopen it
         connection.close();
