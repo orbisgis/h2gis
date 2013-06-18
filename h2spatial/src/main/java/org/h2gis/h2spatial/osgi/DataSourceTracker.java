@@ -69,7 +69,7 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
                 for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
                     CreateSpatialExtension.registerFunction(connection.createStatement(),function,PREFIX,false);
                 }
-                CreateSpatialExtension.registerViewTable(connection);
+                CreateSpatialExtension.registerSpatialTables(connection);
             } finally {
                 connection.close();
             }
