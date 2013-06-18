@@ -59,7 +59,8 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
             Connection connection = dataSource.getConnection();
             try {
                 DatabaseMetaData meta = connection.getMetaData();
-                if(!H2_JDBC_DRIVER_NAME.equals(meta.getDriverName())) {
+                // If not H2 or in client mode, does not register H2 spatial functions.
+                if(!H2_JDBC_DRIVER_NAME.equals(meta.getDriverName()) && meta.usesLocalFiles()) {
                     connection.close();
                     return null;
                 }
