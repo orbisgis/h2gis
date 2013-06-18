@@ -29,9 +29,11 @@ import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatialapi.Function;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
 
 /**
@@ -41,7 +43,7 @@ import java.sql.SQLException;
 public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,FunctionTracker> {
     private BundleContext bundleContext;
     public static final String PREFIX = "H2SPATIAL#";
-
+    private static String H2_JDBC_DRIVER_NAME = "H2 JDBC Driver";
     /**
      * Constructor
      * @param bundleContext BundleContext instance
@@ -55,13 +57,21 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
         DataSource dataSource = bundleContext.getService(dataSourceServiceReference);
         try {
             Connection connection = dataSource.getConnection();
-            CreateSpatialExtension.registerGeometryType(connection, PREFIX);
-            // Register built-ins functions
-            for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
-                CreateSpatialExtension.registerFunction(connection.createStatement(),function,PREFIX,false);
+            try {
+                DatabaseMetaData meta = connection.getMetaData();
+                if(!H2_JDBC_DRIVER_NAME.equals(meta.getDriverName())) {
+                    connection.close();
+                    return null;
+                }
+                CreateSpatialExtension.registerGeometryType(connection, PREFIX);
+                // Register built-ins functions
+                for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
+                    CreateSpatialExtension.registerFunction(connection.createStatement(),function,PREFIX,false);
+                }
+                CreateSpatialExtension.registerViewTable(connection);
+            } finally {
+                connection.close();
             }
-            CreateSpatialExtension.registerViewTable(connection);
-            connection.close();
         } catch (SQLException ex) {
             System.err.print(ex.toString());
         }
@@ -81,6 +91,8 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
 
     @Override
     public void removedService(ServiceReference<DataSource> dataSourceServiceReference, FunctionTracker functionTracker) {
-        functionTracker.close();
+        if(functionTracker!=null) {
+            functionTracker.close();
+        }
     }
 }
