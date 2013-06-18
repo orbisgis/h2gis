@@ -96,7 +96,11 @@ import org.h2gis.h2spatial.internal.type.SC_Point;
 import org.h2gis.h2spatial.internal.type.SC_Polygon;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialapi.ScalarFunction;
+
+import java.io.StringReader;
+import java.net.URL;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -218,7 +222,7 @@ public class CreateSpatialExtension {
     public static void initSpatialExtension(Connection connection) throws SQLException {
         registerGeometryType(connection,"");
         addSpatialFunctions(connection,"");
-        registerViewTable(connection);
+        registerSpatialTables(connection);
     }
 
     /**
@@ -246,12 +250,17 @@ public class CreateSpatialExtension {
      * Register view in order to create GEOMETRY_COLUMNS standard table.
      * @param connection Open connection
      */
-    public static void registerViewTable(Connection connection) throws SQLException {
+    public static void registerSpatialTables(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
         st.execute("create view geometry_columns as select TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
                 "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT) geometry_type,2 coord_dimension,ColumnSRID(TABLE_NAME,COLUMN_NAME) srid" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE CHECK_CONSTRAINT LIKE '%SC_GEOMETRY%'");
+        ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
+        if(!rs.next()) {
+            URL resource = CreateSpatialExtension.class.getResource("spatial_ref_sys.sql");
+            st.execute(String.format("RUNSCRIPT FROM '%s'",resource));
+        }
     }
 
     /**
