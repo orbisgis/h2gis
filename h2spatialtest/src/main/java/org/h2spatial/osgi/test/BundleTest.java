@@ -36,7 +36,7 @@ import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
-
+import junit.framework.Test;
 import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
@@ -181,6 +181,24 @@ public class BundleTest extends OSGiTestCase {
         } finally {
             connection.close();
         }
+    }
+
+    /**
+     * This function would throw an error because class loader is somewhere else than h2 in OSGi environment
+     * @throws SQLException
+     */
+    public void testCreateAliasError() throws SQLException {
+        Connection connection = getConnection();
+        Statement stat = connection.createStatement();
+        stat.execute("DROP ALIAS IF EXISTS UT_AREA");
+        boolean catchException;
+        try {
+            stat.execute("CREATE ALIAS UT_AREA FOR \""+BundleTest.class.getName()+".UT_AREA\"");
+            catchException = false;
+        } catch (SQLException ex) {
+            catchException = true;
+        }
+        assertTrue(catchException);
     }
 
     private void createAlias(Statement stat, String functionName) throws SQLException {

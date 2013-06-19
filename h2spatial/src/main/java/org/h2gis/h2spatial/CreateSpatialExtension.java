@@ -328,7 +328,7 @@ public class CreateSpatialExtension {
                     .append(" FOR \"").append(packagePrepend).append(functionClass).append(".").append(functionName)
                     .append("\"").toString());
         } else if(function instanceof AggregateFunction) {
-                st.execute(new StringBuilder("CREATE AGGREGATE IF NOT EXISTS ").append(functionAlias).append(" FOR \"").append(functionClass).append("\"").toString());
+                st.execute(new StringBuilder("CREATE AGGREGATE IF NOT EXISTS ").append(functionAlias).append(" FOR \"").append(packagePrepend).append(functionClass).append("\"").toString());
         } else {
                 throw new SQLException("Unsupported function "+functionClass);
         }
