@@ -1,5 +1,6 @@
 package org.h2gis.h2spatialext;
 
+import org.h2gis.h2spatialext.function.spatial.aggregate.ST_Extent;
 import org.h2gis.h2spatialext.function.spatial.table.ST_Explode;
 import org.h2gis.h2spatialapi.Function;
 
@@ -15,7 +16,9 @@ public class CreateSpatialExtension {
      * @return instance of all built-ins functions
      */
     public static Function[] getBuiltInsFunctions() {
-        return new Function[] {new ST_Explode()};
+        return new Function[] {
+                new ST_Extent(),
+                new ST_Explode()};
     }
 
     /**
