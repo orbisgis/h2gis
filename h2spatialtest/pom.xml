@@ -56,6 +56,22 @@
             <artifactId>h2spatial-api</artifactId>
             <version>${spatial-api-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>spatial-utilities</artifactId>
+            <version>h2spatial-utilities-version</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.jdbc</groupId>
+            <artifactId>pax-jdbc-postgresql</artifactId>
+            <version>0.2.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql-osgi</artifactId>
+            <version>9.1-901-1.jdbc4</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -73,7 +89,8 @@
                             ${project.artifactId}
                         </Bundle-SymbolicName>
                         <Test-Suite>
-                            org.h2spatial.osgi.test.BundleTest
+                            org.h2spatial.osgi.test.BundleTest,
+                            org.h2spatial.osgi.test.PostGISBundleTest
                         </Test-Suite>
                     </instructions>
                 </configuration>

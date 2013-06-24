@@ -36,7 +36,6 @@ import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
-import junit.framework.Test;
 import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;

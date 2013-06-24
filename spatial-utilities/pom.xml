@@ -6,12 +6,14 @@
     <groupId>org.h2gis</groupId>
     <version>0.1-SNAPSHOT</version>
   </parent>
+    <name>spatial-utilities</name>
     <groupId>org.orbisgis</groupId>
     <artifactId>spatial-utilities</artifactId>
-    <name>spatial-utilities</name>
-    <version>1.0-SNAPSHOT</version>
+    <version>h2spatial-utilities-version</version>
     <packaging>bundle</packaging>
-    <description>Collection of methods to fetch spatial metadata in SFS database like PostGIS or H2Spatial</description>
+    <description>Collection of methods to fetch spatial metadata in SFS database like PostGIS or H2Spatial.
+        Theses functions can be commonly used either in PostGIS or in H2.
+    Spatial utilities publish also a DataSourceFactory wrapper that provide JDBC Wrapper for spatial functionality.</description>
     <build>
         <plugins>
             <plugin>
@@ -36,6 +38,11 @@
             <artifactId>junit</artifactId>
             <version>4.8.2</version>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>${jts-version}</version>
         </dependency>
         <dependency>
                 <groupId>org.osgi</groupId>
