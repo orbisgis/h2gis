@@ -1,5 +1,7 @@
 package org.orbisgis.sputilities.wrapper;
 
+import org.orbisgis.sputilities.SpatialResultSet;
+
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -971,11 +973,20 @@ public class ResultSetWrapper implements ResultSet {
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return resultSet.unwrap(iface);
+        if(iface.isAssignableFrom(SpatialResultSetImpl.class)) {
+            try {
+                return iface.cast(new SpatialResultSetImpl(resultSet,statement));
+            } catch (ClassCastException ex) {
+                // Should never throw this as it is checked before.
+                throw new SQLException("Cannot cast "+SpatialResultSetImpl.class.getName()+" into "+iface.getName(),ex);
+            }
+        } else {
+            return resultSet.unwrap(iface);
+        }
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return resultSet.isWrapperFor(iface);
+        return iface.isAssignableFrom(SpatialResultSetImpl.class) || resultSet.isWrapperFor(iface);
     }
 }

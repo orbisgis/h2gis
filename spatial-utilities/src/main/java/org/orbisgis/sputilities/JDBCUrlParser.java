@@ -41,6 +41,10 @@ import java.util.Properties;
 public class JDBCUrlParser {
     private JDBCUrlParser() {}
     private static final String URL_STARTS = "jdbc:";
+    /** If the property value of {@link DataSourceFactory#OSGI_JDBC_DRIVER_NAME} ends with SPATIAL_DATASOURCE_ENDSWITH
+     *  then it is the wrapped spatial version of a DataSourceFactory  */
+    public static final String SPATIAL_DATASOURCE_ENDSWITH = "_spatial";
+
     /**
      * Convert JDBC URL into JDBC Connection properties
      * @param jdbcUrl JDBC connection path
