@@ -25,7 +25,6 @@
 package org.h2gis.h2spatial;
 
 import org.h2.api.AggregateFunction;
-import org.h2.constant.SysProperties;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Contains;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Crosses;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Disjoint;
@@ -88,7 +87,6 @@ import org.h2gis.h2spatial.internal.index.CreateSpatialIndex;
 import org.h2gis.h2spatial.internal.type.DomainInfo;
 import org.h2gis.h2spatial.internal.type.GeometryTypeFromConstraint;
 import org.h2gis.h2spatial.internal.type.SC_GeomCollection;
-import org.h2gis.h2spatial.internal.type.SC_Geometry;
 import org.h2gis.h2spatial.internal.type.SC_LineString;
 import org.h2gis.h2spatial.internal.type.SC_MultiLineString;
 import org.h2gis.h2spatial.internal.type.SC_MultiPoint;
@@ -96,8 +94,6 @@ import org.h2gis.h2spatial.internal.type.SC_Point;
 import org.h2gis.h2spatial.internal.type.SC_Polygon;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialapi.ScalarFunction;
-
-import java.io.StringReader;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -118,7 +114,7 @@ import java.sql.Statement;
  */
 public class CreateSpatialExtension {
     /** H2 base type for geometry column {@link java.sql.ResultSetMetaData#getColumnTypeName(int)} */
-    public static final String GEOMETRY_BASE_TYPE = "OTHER";
+    public static final String GEOMETRY_BASE_TYPE = "GEOMETRY";
 
     /**
      * @return instance of all built-ins functions
@@ -191,7 +187,6 @@ public class CreateSpatialExtension {
      */
     public static DomainInfo[] getBuiltInsType() {
         return new DomainInfo[] {
-                new DomainInfo("GEOMETRY", new SC_Geometry()),
                 new DomainInfo("POINT", new SC_Point()),
                 new DomainInfo("LINESTRING", new SC_LineString()),
                 new DomainInfo("POLYGON", new SC_Polygon()),
@@ -232,17 +227,12 @@ public class CreateSpatialExtension {
      * @throws SQLException
      */
     public static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
-        SysProperties.serializeJavaObject = false;
         Statement st = connection.createStatement();
         for(DomainInfo domainInfo : getBuiltInsType()) {
             // Do not drop constraint function as some table may use this constraint in CHECK statement
             registerFunction(st,domainInfo.getDomainConstraint(),packagePrepend,false);
             // Check for byte array first, to not throw an enigmatic error CastException
-            String check = "SC_GEOMETRY(VALUE) AND ";
-            if(domainInfo.getDomainName().equalsIgnoreCase("GEOMETRY")) {
-                check = "";
-            }
-            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+" CHECK ("+check+getAlias(domainInfo.getDomainConstraint())+"(VALUE));");
+            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+" CHECK ("+getAlias(domainInfo.getDomainConstraint())+"(VALUE));");
         }
     }
 
@@ -255,7 +245,7 @@ public class CreateSpatialExtension {
         st.execute("drop view if exists geometry_columns");
         st.execute("create view geometry_columns as select TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
                 "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS) geometry_type,2 coord_dimension,ColumnSRID(TABLE_NAME,COLUMN_NAME) srid" +
-                " from INFORMATION_SCHEMA.COLUMNS WHERE CHECK_CONSTRAINT LIKE '%SC_GEOMETRY%' OR REMARKS LIKE '%SC_GEOMETRY%'");
+                " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {
             URL resource = CreateSpatialExtension.class.getResource("spatial_ref_sys.sql");
@@ -324,11 +314,9 @@ public class CreateSpatialExtension {
                 deterministic = " DETERMINISTIC";
             }
             // Create alias, H2 does not support prepare statement on create alias
-            st.execute(new StringBuilder("CREATE ALIAS IF NOT EXISTS ").append(functionAlias).append(deterministic)
-                    .append(" FOR \"").append(packagePrepend).append(functionClass).append(".").append(functionName)
-                    .append("\"").toString());
+            st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + deterministic + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
         } else if(function instanceof AggregateFunction) {
-                st.execute(new StringBuilder("CREATE AGGREGATE IF NOT EXISTS ").append(functionAlias).append(" FOR \"").append(packagePrepend).append(functionClass).append("\"").toString());
+                st.execute("CREATE AGGREGATE IF NOT EXISTS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "\"");
         } else {
                 throw new SQLException("Unsupported function "+functionClass);
         }

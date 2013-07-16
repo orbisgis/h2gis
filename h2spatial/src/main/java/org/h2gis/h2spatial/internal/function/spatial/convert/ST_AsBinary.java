@@ -29,8 +29,7 @@
 
 package org.h2gis.h2spatial.internal.function.spatial.convert;
 
-import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatial.ValueGeometry;
+import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
@@ -49,10 +48,10 @@ public class ST_AsBinary extends DeterministicScalarFunction {
      * @param geometry Geometry instance
      * @return WKB
      */
-    public static byte[] toBytes(Geometry geometry) {
+    public static byte[] toBytes(ValueGeometry geometry) {
         if(geometry==null) {
             return null;
         }
-        return new ValueGeometry(geometry).getBytesNoCopy();
+        return geometry.getBytes();
     }
 }

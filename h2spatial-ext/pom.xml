@@ -8,7 +8,6 @@
   </parent>
     <artifactId>h2spatial-ext</artifactId>
     <name>h2spatial-ext</name>
-    <version>1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>Extends h2spatial with non-SFS functions</description>
     <build>
@@ -40,7 +39,7 @@
         <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts</artifactId>
-            <version>1.12</version>
+            <version>${jts-version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
@@ -56,17 +55,17 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-api</artifactId>
-            <version>${spatial-api-version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.h2gis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
-            <version>${h2spatial-version}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>spatial-utilities</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

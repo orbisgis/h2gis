@@ -25,8 +25,6 @@
 
 package org.h2gis.h2spatial.osgi;
 
-
-import org.h2.util.Utils;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -41,13 +39,13 @@ import javax.sql.DataSource;
 public class Activator implements BundleActivator {
     private ServiceTracker<DataSource,FunctionTracker> databaseTracker;
     private Bundle bundle;
-    private PermanentFunctionClassLoader classLoader;
+    //private PermanentFunctionClassLoader classLoader;
 
     @Override
     public void start(BundleContext bundleContext) throws Exception {
         bundle = bundleContext.getBundle();
-        classLoader =new PermanentFunctionClassLoader();
-        Utils.addClassFactory(classLoader);
+        //classLoader =new PermanentFunctionClassLoader();
+        //Utils.addClassFactory(classLoader);
         DataSourceTracker dataSourceTracker = new DataSourceTracker(bundleContext);
         databaseTracker = new ServiceTracker<DataSource, FunctionTracker>(bundleContext,DataSource.class,dataSourceTracker);
         databaseTracker.open();
@@ -56,12 +54,13 @@ public class Activator implements BundleActivator {
     @Override
     public void stop(BundleContext bundleContext) throws Exception {
         databaseTracker.close();
-        Utils.removeClassFactory(classLoader);
+        //Utils.removeClassFactory(classLoader);
     }
 
     /**
      * Use this bundle class loader instead of H2 one.
      */
+    /*
     private class PermanentFunctionClassLoader implements Utils.ClassFactory
     {
         @Override
@@ -74,4 +73,5 @@ public class Activator implements BundleActivator {
             return bundle.loadClass(name.substring(DataSourceTracker.PREFIX.length()));
         }
     }
+    */
 }

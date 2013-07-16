@@ -7,9 +7,7 @@
     <version>0.1-SNAPSHOT</version>
   </parent>
     <name>spatial-utilities</name>
-    <groupId>org.orbisgis</groupId>
     <artifactId>spatial-utilities</artifactId>
-    <version>h2spatial-utilities-version</version>
     <packaging>bundle</packaging>
     <description>Collection of methods to fetch spatial metadata in SFS database like PostGIS or H2Spatial.
         Theses functions can be commonly used either in PostGIS or in H2.

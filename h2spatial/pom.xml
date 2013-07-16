@@ -9,7 +9,6 @@
 	</parent>
 	<artifactId>h2spatial</artifactId>
 	<name>h2spatial</name>
-	<version>${h2spatial-version}</version>
     <packaging>bundle</packaging>
 	<url>http://www.orbisgis.org</url>
     <licenses>
@@ -18,13 +17,6 @@
             <url>https://github.com/irstv/orbisgis/blob/master/Licenses/license-GPL.txt</url>
         </license>
     </licenses>
-	<repositories>
-		<repository>
-			<id>repo2.maven.org</id>
-			<name>Maven2 repository 2</name>
-			<url>http://repo2.maven.org/maven2</url>
-		</repository>
-	</repositories>
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -63,12 +55,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-api</artifactId>
-            <version>1.0.1</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>spatial-utilities</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 	</dependencies>
 	<distributionManagement>

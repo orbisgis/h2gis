@@ -8,7 +8,6 @@
     </parent>
     <artifactId>h2drivers</artifactId>
     <name>h2drivers</name>
-    <version>1.0-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>Add H2 read/write support for file formats such as ESRI shape file</description>
     <build>
@@ -40,7 +39,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
-            <version>1.0.1</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
