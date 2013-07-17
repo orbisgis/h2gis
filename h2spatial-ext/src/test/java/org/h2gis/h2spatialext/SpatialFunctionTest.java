@@ -25,6 +25,7 @@
 package org.h2gis.h2spatialext;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -36,6 +37,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -79,19 +81,19 @@ public class SpatialFunctionTest {
                 " (ST_GeomFromText('MULTIPOINT EMPTY'),109)," +
                 " (ST_GeomFromText('MULTIPOLYGON EMPTY'),110)," +
                 " (ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'),111);");
-        ResultSet rs = st.executeQuery("SELECT the_geom , value FROM ST_Explode('test') ORDER BY value");
+        ResultSet rs = st.executeQuery("SELECT the_geom::Geometry , value FROM ST_Explode('test') ORDER BY value");
         assertTrue(rs.next());
         assertEquals(108,rs.getInt(2));
-        assertEquals("LINESTRING EMPTY", rs.getString(1));
+        assertEquals("LINESTRING EMPTY", ((Geometry)rs.getObject(1)).toText());
         assertTrue(rs.next());
         assertEquals(109,rs.getInt(2));
-        assertEquals("POINT EMPTY", rs.getString(1));
+        assertEquals("POINT EMPTY", ((Geometry)rs.getObject(1)).toText());
         assertTrue(rs.next());
         assertEquals(110,rs.getInt(2));
-        assertEquals("POLYGON EMPTY", rs.getString(1));
+        assertEquals("POLYGON EMPTY", ((Geometry)rs.getObject(1)).toText());
         assertTrue(rs.next());
         assertEquals(111,rs.getInt(2));
-        assertEquals(null, rs.getObject(1));
+        assertNull(rs.getObject(1));
         rs.close();
         st.execute("drop table test");
     }

@@ -44,6 +44,7 @@
                         <manifest>
                             <mainClass>org.h2.tools.Server</mainClass>
                             <addClasspath>true</addClasspath>
+                            <classpathPrefix>bin/</classpathPrefix>
                         </manifest>
                     </archive>
                 </configuration>
@@ -68,6 +69,11 @@
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <version>${h2-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial-ext</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>
