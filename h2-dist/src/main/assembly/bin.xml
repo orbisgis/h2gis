@@ -14,6 +14,13 @@
                         </includes>
                 </fileSet>
                 <fileSet>
+                    <directory>${project.parent.basedir}/h2spatial-ext/</directory>
+                    <outputDirectory>/</outputDirectory>
+                    <includes>
+                        <include>README.md</include>
+                    </includes>
+                </fileSet>
+                <fileSet>
                         <directory>${project.basedir}/src/bin/zip/</directory>
                         <outputDirectory>/</outputDirectory>
                         <includes>
