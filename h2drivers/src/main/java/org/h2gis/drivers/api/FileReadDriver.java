@@ -23,33 +23,11 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.drivers.shp;
-
-import org.h2.api.TableEngine;
-import org.h2.command.ddl.CreateTableData;
-import org.h2.constant.ErrorCode;
-import org.h2.message.DbException;
-import org.h2.table.TableBase;
-import java.io.File;
+package org.h2gis.drivers.api;
 
 /**
- * SHP Table factory.
+ *
  * @author Nicolas Fortin
  */
-public class SHPEngine implements TableEngine {
-    /**
-     * @param data tableEngineParams must contains file path.
-     * @return A Table instance connected to the provided file path. First column is geometry field.
-     */
-    @Override
-    public TableBase createTable(CreateTableData data) {
-        if(data.tableEngineParams.isEmpty()) {
-            throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
-        }
-        File filePath = new File(data.tableEngineParams.get(0));
-        if(!filePath.exists()) {
-            throw DbException.get(ErrorCode.FILE_NOT_FOUND_1,filePath.getAbsolutePath());
-        }
-        return new SHPTable(data, filePath);
-    }
+public interface FileReadDriver {
 }

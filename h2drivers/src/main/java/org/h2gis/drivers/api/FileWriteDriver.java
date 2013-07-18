@@ -23,33 +23,21 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.drivers.shp;
+package org.h2gis.drivers.api;
 
-import org.h2.api.TableEngine;
-import org.h2.command.ddl.CreateTableData;
-import org.h2.constant.ErrorCode;
-import org.h2.message.DbException;
-import org.h2.table.TableBase;
 import java.io.File;
+import java.io.IOException;
+import java.sql.ResultSet;
 
 /**
- * SHP Table factory.
  * @author Nicolas Fortin
  */
-public class SHPEngine implements TableEngine {
+public interface FileWriteDriver {
     /**
-     * @param data tableEngineParams must contains file path.
-     * @return A Table instance connected to the provided file path. First column is geometry field.
+     * Write the content of the resultSet into a file.
+     * @param destination
+     * @param resultSet
+     * @throws IOException
      */
-    @Override
-    public TableBase createTable(CreateTableData data) {
-        if(data.tableEngineParams.isEmpty()) {
-            throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
-        }
-        File filePath = new File(data.tableEngineParams.get(0));
-        if(!filePath.exists()) {
-            throw DbException.get(ErrorCode.FILE_NOT_FOUND_1,filePath.getAbsolutePath());
-        }
-        return new SHPTable(data, filePath);
-    }
+    void writeFile(File destination, ResultSet resultSet) throws IOException;
 }

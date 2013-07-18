@@ -25,8 +25,37 @@
 
 package org.h2gis.drivers.shp;
 
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 /**
  * @author Nicolas Fortin
  */
 public class SHPEngineTest {
+    private static Connection connection;
+    private static final String DB_NAME = "SHPTest";
+
+    @BeforeClass
+    public static void tearUp() throws Exception {
+        // Keep a connection alive to not close the DataBase on each unit test
+        connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        connection.close();
+    }
+
+    @Test
+    public void readTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("create table shptable() ENGINE \""+SHPEngine.class.getName()+"\" WITH \""+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"\";");
+        st.execute("drop table shptable");
+    }
 }
