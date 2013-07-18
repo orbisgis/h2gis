@@ -83,14 +83,14 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.h2spatial.osgi.test
+                            org.h2gis.osgi.test
                         </Export-Package>
                         <Bundle-SymbolicName>
                             ${project.artifactId}
                         </Bundle-SymbolicName>
                         <Test-Suite>
-                            org.h2spatial.osgi.test.BundleTest,
-                            org.h2spatial.osgi.test.PostGISBundleTest
+                            org.h2gis.osgi.test.BundleTest,
+                            org.h2gis.osgi.test.PostGISBundleTest
                         </Test-Suite>
                     </instructions>
                 </configuration>

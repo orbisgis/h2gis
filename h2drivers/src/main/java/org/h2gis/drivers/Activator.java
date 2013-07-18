@@ -26,31 +26,35 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2spatial.drivers;
+package org.h2gis.drivers;
 
-import org.h2gis.h2spatialapi.AbstractFunction;
-import org.h2gis.h2spatialapi.ScalarFunction;
-
-import java.sql.ResultSet;
+import org.h2.api.TableEngine;
+import org.h2gis.drivers.shp.SHPEngine;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 /**
- * One easy way to read shape files. A real driver could be written by extending org.h2.table.RegularTable
- * @author Nicolas Fortin
+ * Registers services provided by this plugin bundle.
  */
-public class SHPRead extends AbstractFunction implements ScalarFunction {
-    public static final String DEFAULT_GEOMETRY_COLUMN_NAME = "THE_GEOM";
-    @Override
-    public String getJavaStaticMethod() {
-        return "getShapeResultSet";
-    }
+public class Activator implements BundleActivator {
+        /**
+         * Starting bundle, register services.
+         * @param bc
+         * @throws Exception
+         */
+        @Override
+        public void start(BundleContext bc) throws Exception {
+            // Register Driver functions
+            bc.registerService(TableEngine.class, new SHPEngine(), null);
+        }
 
-    /**
-     * TODO if .cpg file exists then encoding should be available
-     * @param filePath
-     * @param encoding
-     * @return
-     */
-    public static ResultSet getShapeResultSet(String filePath, String encoding) {
-        return null;
-    }
+        /**
+         * Called before the bundle is unloaded.
+         * @param bc
+         * @throws Exception
+         */
+        @Override
+        public void stop(BundleContext bc) throws Exception {
+
+        }
 }

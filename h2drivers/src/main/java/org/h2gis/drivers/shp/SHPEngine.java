@@ -1,4 +1,4 @@
-/**
+/*
  * h2spatial is a library that brings spatial support to the H2 Java database.
  *
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
@@ -23,40 +23,23 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatial.internal.index;
+package org.h2gis.drivers.shp;
 
-import org.h2gis.h2spatialapi.AbstractFunction;
-import org.h2gis.h2spatialapi.ScalarFunction;
-
-import java.sql.Connection;
+import org.h2.api.TableEngine;
+import org.h2.command.ddl.CreateTableData;
+import org.h2.table.TableBase;
 
 /**
- * Create a MVStore table that embed a MVStore RTRee.
+ * SHP Table factory.
  * @author Nicolas Fortin
  */
-public class CreateSpatialIndex extends AbstractFunction implements ScalarFunction {
-
-    @Override
-    public String getJavaStaticMethod() {
-        return "createIndex";
-    }
-
+public class SHPEngine implements TableEngine {
     /**
-     * CALL CreateSpatialIndex
-     * @param connection
-     * @param table
-     * @param column
+     * @param data tableEngineParams must contains file path.
+     * @return A Table instance connected to the provided file path. First column is geometry field.
      */
-    public static void createIndex(Connection connection, String table, String column) {
-        createIndex(connection, "", table, column);
-    }
-    public static void createIndex(Connection connection, String schema, String table, String column) {
-        // Register a Trigger on Table to update the related index
-        if(!schema.isEmpty()) {
-            schema=schema+".";
-        }
-//        if(connection instanceof JdbcConnection) {
-//            SessionInterface sess = ((JdbcConnection) connection).getSession();
-//        }
+    @Override
+    public TableBase createTable(CreateTableData data) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }
