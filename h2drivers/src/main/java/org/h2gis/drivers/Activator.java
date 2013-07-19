@@ -28,8 +28,7 @@
  */
 package org.h2gis.drivers;
 
-import org.h2.api.TableEngine;
-import org.h2gis.drivers.shp.SHPEngine;
+import org.h2gis.h2spatialapi.Function;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -45,7 +44,7 @@ public class Activator implements BundleActivator {
         @Override
         public void start(BundleContext bc) throws Exception {
             // Register Driver functions
-            bc.registerService(TableEngine.class, new SHPEngine(), null);
+            bc.registerService(Function.class, new DriverManager(), null);
         }
 
         /**

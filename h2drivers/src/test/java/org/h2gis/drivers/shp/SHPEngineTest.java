@@ -25,6 +25,8 @@
 
 package org.h2gis.drivers.shp;
 
+import org.h2gis.drivers.DriverManager;
+import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -49,6 +51,7 @@ public class SHPEngineTest {
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new DriverManager(), "");
     }
 
     @AfterClass
@@ -59,7 +62,7 @@ public class SHPEngineTest {
     @Test
     public void readSHPMetaTest() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("create table shptable() ENGINE \""+SHPEngine.class.getName()+"\" WITH \""+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"\";");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'");
         assertTrue(rs.next());
@@ -81,11 +84,11 @@ public class SHPEngineTest {
     @Test
     public void readSHPDataTest() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("create table shptable() ENGINE \""+SHPEngine.class.getName()+"\" WITH \""+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"\";");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM shptable");
         assertTrue(rs.next());
-        assertEquals(1,rs.getInt("gid"));
+        assertEquals(1, rs.getInt("gid"));
         assertEquals("river",rs.getString("type_axe"));
         rs.close();
         st.execute("drop table shptable");

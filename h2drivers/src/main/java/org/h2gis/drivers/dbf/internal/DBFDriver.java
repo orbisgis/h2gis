@@ -23,10 +23,8 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.drivers.shp.internal;
+package org.h2gis.drivers.dbf.internal;
 
-import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
-import org.h2gis.drivers.dbf.internal.DbaseFileReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -35,18 +33,13 @@ import java.io.IOException;
  * Merge ShapeFileReader and DBFReader
  * @author Nicolas Fortin
  */
-public class SHPDriver {
-    private File shpFile;
-    private File shxFile;
+public class DBFDriver {
     private File dbfFile;
     private DbaseFileReader dbaseFileReader;
 
-
-    public void initDriverFromFile(File shpFile) throws IOException {             // Read columns from files metadata
-        String path = shpFile.getAbsolutePath();
-        this.shpFile = shpFile;
-        shxFile = new File(path.substring(0,path.lastIndexOf('.'))+".shx");
-        dbfFile = new File(path.substring(0,path.lastIndexOf('.'))+".dbf");
+    public void initDriverFromFile(File dbfFile) throws IOException {
+        // Read columns from files metadata
+        this.dbfFile = dbfFile;
         FileInputStream fis = new FileInputStream(dbfFile);
         dbaseFileReader = new DbaseFileReader(fis.getChannel());
     }
@@ -71,7 +64,7 @@ public class SHPDriver {
     /**
      * @param rowId Row index
      * @return The row content
-     * @throws IOException
+     * @throws java.io.IOException
      */
     public Object[] getRow(long rowId) throws IOException {
         final int fieldCount = dbaseFileReader.getFieldCount();

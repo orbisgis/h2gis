@@ -41,7 +41,7 @@
  *    This file is based on an origional contained in the GISToolkit project:
  *    http://gistoolkit.sourceforge.net/
  */
-package org.h2gis.drivers.dbf;
+package org.h2gis.drivers.dbf.internal;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

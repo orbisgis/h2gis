@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.drivers.shp;
+package org.h2gis.drivers.dbf;
 
 import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
@@ -40,9 +40,8 @@ import org.h2.table.IndexColumn;
 import org.h2.table.Table;
 import org.h2.value.DataType;
 import org.h2.value.Value;
-import org.h2gis.drivers.dbf.DBFTableIndex;
+import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
-import org.h2gis.drivers.shp.internal.SHPDriver;
 
 import java.io.IOException;
 
@@ -50,10 +49,10 @@ import java.io.IOException;
  * ScanIndex of SHPTable, the key is the row index.
  * @author Nicolas Fortin
  */
-public class SHPTableIndex extends BaseIndex {
-    SHPDriver driver;
+public class DBFTableIndex extends BaseIndex {
+    DBFDriver driver;
 
-    public SHPTableIndex(SHPDriver driver, Table table,int id) {
+    public DBFTableIndex(DBFDriver driver, Table table, int id) {
         this.driver = driver;
         IndexColumn indexColumn = new IndexColumn();
         indexColumn.columnName = "key";
@@ -151,17 +150,63 @@ public class SHPTableIndex extends BaseIndex {
      * @param data Data to initialise
      * @throws java.io.IOException
      */
-    public static void feedCreateTableData(SHPDriver driver,CreateTableData data) throws IOException {
-        //TODO add Geometry field
-        DBFTableIndex.feedCreateTableData(driver.getDbaseFileHeader(), data);
+    public static void feedCreateTableData(DbaseFileHeader header,CreateTableData data) throws IOException {
+        for (int i = 0; i < header.getNumFields(); i++) {
+            String fieldsName = header.getFieldName(i);
+            final int type = dbfTypeToH2Type(header,i);
+            Column column = new Column(fieldsName, type);
+            column.setPrecision(header.getFieldLength(i)); // set string length
+            data.columns.add(column);
+        }
     }
 
+    /**
+     * @see "http://www.clicketyclick.dk/databases/xbase/format/data_types.html"
+     * @param header DBF File Header
+     * @param i DBF Type identifier
+     * @return H2 {@see Value}
+     * @throws java.io.IOException
+     */
+    private static int dbfTypeToH2Type(DbaseFileHeader header, int i) throws IOException {
+        switch (header.getFieldType(i)) {
+            // (L)logical (T,t,F,f,Y,y,N,n)
+            case 'l':
+            case 'L':
+                return Value.BOOLEAN;
+            // (C)character (String)
+            case 'c':
+            case 'C':
+                return Value.STRING_FIXED;
+            // (D)date (Date)
+            case 'd':
+            case 'D':
+                return Value.DATE;
+            // (F)floating (Double)
+            case 'n':
+            case 'N':
+                if ((header.getFieldDecimalCount(i) == 0)) {
+                    if ((header.getFieldLength(i) >= 0)
+                            && (header.getFieldLength(i) < 10)) {
+                        return Value.INT;
+                    } else {
+                        return Value.LONG;
+                    }
+                }
+            case 'f':
+            case 'F': // floating point number
+            case 'o':
+            case 'O': // floating point number
+                return Value.DOUBLE;
+            default:
+                throw new IOException("Unknown DBF field type "+header.getFieldType(i));
+        }
+    }
     private static class SHPCursor implements Cursor {
-        private SHPTableIndex tIndex;
+        private DBFTableIndex tIndex;
         private long rowIndex;
         private Session session;
 
-        private SHPCursor(SHPTableIndex tIndex, long rowIndex, Session session) {
+        private SHPCursor(DBFTableIndex tIndex, long rowIndex, Session session) {
             this.tIndex = tIndex;
             this.rowIndex = rowIndex - 1;
             this.session = session;

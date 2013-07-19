@@ -41,7 +41,7 @@
  *    This file is based on an origional contained in the GISToolkit project:
  *    http://gistoolkit.sourceforge.net/
  */
-package org.h2gis.drivers.dbf;
+package org.h2gis.drivers.dbf.internal;
 
 import org.h2gis.drivers.utility.ReadBufferManager;
 import org.slf4j.Logger;
