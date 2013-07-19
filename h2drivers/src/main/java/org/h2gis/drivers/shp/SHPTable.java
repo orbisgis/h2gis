@@ -30,10 +30,16 @@ import org.h2.engine.Session;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.result.Row;
+import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
+import org.h2.value.Value;
+import org.h2gis.drivers.dbf.DbaseFileHeader;
+import org.h2gis.drivers.dbf.DbaseFileReader;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -45,7 +51,7 @@ public class SHPTable extends TableBase {
     private File shxFile;
     private File dbfFile;
 
-    public SHPTable(CreateTableData data, File shpFile) {
+    public SHPTable(CreateTableData data, File shpFile) throws IOException {
         super(parseFileIfExists(data, shpFile));
         this.shpFile = shpFile;
         String path = shpFile.getAbsolutePath();
@@ -55,15 +61,67 @@ public class SHPTable extends TableBase {
     }
 
     /**
+     * @see "http://www.clicketyclick.dk/databases/xbase/format/data_types.html"
+     * @param header
+     * @param i
+     * @return
+     * @throws IOException
+     */
+    private static int dbfTypeToH2Type(DbaseFileHeader header, int i) throws IOException {
+        switch (header.getFieldType(i)) {
+            // (L)logical (T,t,F,f,Y,y,N,n)
+            case 'l':
+            case 'L':
+                return Value.BOOLEAN;
+            // (C)character (String)
+            case 'c':
+            case 'C':
+                return Value.STRING_FIXED;
+            // (D)date (Date)
+            case 'd':
+            case 'D':
+                return Value.DATE;
+            // (F)floating (Double)
+            case 'n':
+            case 'N':
+                if ((header.getFieldDecimalCount(i) == 0)) {
+                    if ((header.getFieldLength(i) >= 0)
+                            && (header.getFieldLength(i) < 10)) {
+                        return Value.INT;
+                    } else {
+                        return Value.LONG;
+                    }
+                }
+            case 'f':
+            case 'F': // floating point number
+            case 'o':
+            case 'O': // floating point number
+                return Value.DOUBLE;
+            default:
+                throw new IOException("Unknown DBF field type "+header.getFieldType(i));
+        }
+    }
+    /**
      * Parse shp and dbf file to init CreateTableData
      * @param data User defined columns
      * @param shpFile ShapeFile path
      * @return a create table data related to shp and dbf files
      */
-    private static CreateTableData parseFileIfExists(CreateTableData data, File shpFile) {
+    private static CreateTableData parseFileIfExists(CreateTableData data, File shpFile) throws IOException {
         if(data.columns.isEmpty()) {
             // Read columns from files metadata
-
+            String path = shpFile.getAbsolutePath();
+            File dbfFile = new File(path.substring(0,path.lastIndexOf('.'))+".dbf");
+            FileInputStream fis = new FileInputStream(dbfFile);
+            DbaseFileReader dbaseFileReader = new DbaseFileReader(fis.getChannel());
+            DbaseFileHeader header = dbaseFileReader.getHeader();
+            for (int i = 0; i < header.getNumFields(); i++) {
+                String fieldsName = header.getFieldName(i);
+                final int type = dbfTypeToH2Type(header,i);
+                Column column = new Column(fieldsName, type);
+                column.setPrecision(header.getFieldLength(i)); // set string length
+                data.columns.add(column);
+            }
         }
         return data;
     }

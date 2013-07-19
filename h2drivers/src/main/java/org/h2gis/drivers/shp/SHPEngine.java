@@ -31,6 +31,7 @@ import org.h2.constant.ErrorCode;
 import org.h2.message.DbException;
 import org.h2.table.TableBase;
 import java.io.File;
+import java.io.IOException;
 
 /**
  * SHP Table factory.
@@ -50,6 +51,10 @@ public class SHPEngine implements TableEngine {
         if(!filePath.exists()) {
             throw DbException.get(ErrorCode.FILE_NOT_FOUND_1,filePath.getAbsolutePath());
         }
-        return new SHPTable(data, filePath);
+        try {
+            return new SHPTable(data, filePath);
+        } catch (IOException ex) {
+            throw DbException.get(ErrorCode.TABLE_OR_VIEW_NOT_FOUND_1,filePath.getAbsolutePath());
+        }
     }
 }
