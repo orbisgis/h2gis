@@ -42,12 +42,31 @@ import java.util.ArrayList;
  */
 public class SHPTable extends TableBase {
     private File shpFile;
+    private File shxFile;
+    private File dbfFile;
 
     public SHPTable(CreateTableData data, File shpFile) {
-        super(data);
+        super(parseFileIfExists(data, shpFile));
         this.shpFile = shpFile;
+        String path = shpFile.getAbsolutePath();
+        shxFile = new File(path.substring(0,path.lastIndexOf('.'))+".shx");
+        dbfFile = new File(path.substring(0,path.lastIndexOf('.'))+".dbf");
+
     }
 
+    /**
+     * Parse shp and dbf file to init CreateTableData
+     * @param data User defined columns
+     * @param shpFile ShapeFile path
+     * @return a create table data related to shp and dbf files
+     */
+    private static CreateTableData parseFileIfExists(CreateTableData data, File shpFile) {
+        if(data.columns.isEmpty()) {
+            // Read columns from files metadata
+
+        }
+        return data;
+    }
     @Override
     public void lock(Session session, boolean exclusive, boolean force) {
         //To change body of implemented methods use File | Settings | File Templates.

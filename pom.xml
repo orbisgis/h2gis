@@ -29,6 +29,7 @@
         <h2-version>1.0-SNAPSHOT</h2-version>
         <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
         <jts-version>1.13</jts-version>
+        <sl4j-version>1.6.0</sl4j-version>
     </properties>
     <scm>
         <connection>scm:git:https://github.com/irstv/H2GIS.git</connection>
