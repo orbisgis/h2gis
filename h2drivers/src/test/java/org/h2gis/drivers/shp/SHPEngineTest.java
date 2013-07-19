@@ -57,7 +57,7 @@ public class SHPEngineTest {
     }
 
     @Test
-    public void readTest() throws SQLException {
+    public void readSHPMetaTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("create table shptable() ENGINE \""+SHPEngine.class.getName()+"\" WITH \""+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"\";");
         // Query declared Table columns
@@ -74,6 +74,20 @@ public class SHPEngineTest {
         assertEquals("length",rs.getString("COLUMN_NAME"));
         assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
         assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+        rs.close();
+        st.execute("drop table shptable");
+    }
+
+    @Test
+    public void readSHPDataTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("create table shptable() ENGINE \""+SHPEngine.class.getName()+"\" WITH \""+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"\";");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM shptable");
+        assertTrue(rs.next());
+        assertEquals(1,rs.getInt("gid"));
+        assertEquals("river",rs.getString("type_axe"));
+        rs.close();
         st.execute("drop table shptable");
     }
 }

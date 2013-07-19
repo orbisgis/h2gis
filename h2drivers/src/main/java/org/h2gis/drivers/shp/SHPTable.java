@@ -26,19 +26,18 @@
 package org.h2gis.drivers.shp;
 
 import org.h2.command.ddl.CreateTableData;
+import org.h2.constant.ErrorCode;
 import org.h2.engine.Session;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
+import org.h2.message.DbException;
 import org.h2.result.Row;
-import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
-import org.h2.value.Value;
-import org.h2gis.drivers.dbf.DbaseFileHeader;
-import org.h2gis.drivers.dbf.DbaseFileReader;
+import org.h2gis.drivers.shp.internal.SHPDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -47,83 +46,16 @@ import java.util.ArrayList;
  * @author Nicolas Fortin
  */
 public class SHPTable extends TableBase {
-    private File shpFile;
-    private File shxFile;
-    private File dbfFile;
+    private SHPDriver shpDriver;
+    private Logger log = LoggerFactory.getLogger(SHPTable.class);
+    private SHPTableIndex baseIndex;
 
-    public SHPTable(CreateTableData data, File shpFile) throws IOException {
-        super(parseFileIfExists(data, shpFile));
-        this.shpFile = shpFile;
-        String path = shpFile.getAbsolutePath();
-        shxFile = new File(path.substring(0,path.lastIndexOf('.'))+".shx");
-        dbfFile = new File(path.substring(0,path.lastIndexOf('.'))+".dbf");
-
+    public SHPTable(SHPDriver driver, CreateTableData data) throws IOException {
+        super(data);
+        this.shpDriver = driver;
     }
-
-    /**
-     * @see "http://www.clicketyclick.dk/databases/xbase/format/data_types.html"
-     * @param header
-     * @param i
-     * @return
-     * @throws IOException
-     */
-    private static int dbfTypeToH2Type(DbaseFileHeader header, int i) throws IOException {
-        switch (header.getFieldType(i)) {
-            // (L)logical (T,t,F,f,Y,y,N,n)
-            case 'l':
-            case 'L':
-                return Value.BOOLEAN;
-            // (C)character (String)
-            case 'c':
-            case 'C':
-                return Value.STRING_FIXED;
-            // (D)date (Date)
-            case 'd':
-            case 'D':
-                return Value.DATE;
-            // (F)floating (Double)
-            case 'n':
-            case 'N':
-                if ((header.getFieldDecimalCount(i) == 0)) {
-                    if ((header.getFieldLength(i) >= 0)
-                            && (header.getFieldLength(i) < 10)) {
-                        return Value.INT;
-                    } else {
-                        return Value.LONG;
-                    }
-                }
-            case 'f':
-            case 'F': // floating point number
-            case 'o':
-            case 'O': // floating point number
-                return Value.DOUBLE;
-            default:
-                throw new IOException("Unknown DBF field type "+header.getFieldType(i));
-        }
-    }
-    /**
-     * Parse shp and dbf file to init CreateTableData
-     * @param data User defined columns
-     * @param shpFile ShapeFile path
-     * @return a create table data related to shp and dbf files
-     */
-    private static CreateTableData parseFileIfExists(CreateTableData data, File shpFile) throws IOException {
-        if(data.columns.isEmpty()) {
-            // Read columns from files metadata
-            String path = shpFile.getAbsolutePath();
-            File dbfFile = new File(path.substring(0,path.lastIndexOf('.'))+".dbf");
-            FileInputStream fis = new FileInputStream(dbfFile);
-            DbaseFileReader dbaseFileReader = new DbaseFileReader(fis.getChannel());
-            DbaseFileHeader header = dbaseFileReader.getHeader();
-            for (int i = 0; i < header.getNumFields(); i++) {
-                String fieldsName = header.getFieldName(i);
-                final int type = dbfTypeToH2Type(header,i);
-                Column column = new Column(fieldsName, type);
-                column.setPrecision(header.getFieldLength(i)); // set string length
-                data.columns.add(column);
-            }
-        }
-        return data;
+    public void init(Session session) {
+        baseIndex = new SHPTableIndex(shpDriver,this,this.getId());
     }
     @Override
     public void lock(Session session, boolean exclusive, boolean force) {
@@ -132,7 +64,11 @@ public class SHPTable extends TableBase {
 
     @Override
     public void close(Session session) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        try {
+            shpDriver.close();
+        } catch (IOException ex) {
+            log.error("Error while closing the SHP driver",ex);
+        }
     }
 
     @Override
@@ -142,67 +78,68 @@ public class SHPTable extends TableBase {
 
     @Override
     public Index addIndex(Session session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        // Index not managed
+        return null;
     }
 
     @Override
     public void removeRow(Session session, Row row) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"removeRow in Shape files");
     }
 
     @Override
     public void truncate(Session session) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        baseIndex.truncate(session);
     }
 
     @Override
     public void addRow(Session session, Row row) {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"addRow in Shape files");
     }
 
     @Override
     public void checkSupportAlter() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"addRow in Shape files");
     }
 
     @Override
     public String getTableType() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return TableBase.EXTERNAL_TABLE_ENGINE;
     }
 
     @Override
     public Index getScanIndex(Session session) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return baseIndex;
     }
 
     @Override
     public Index getUniqueIndex() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null;
     }
 
     @Override
     public ArrayList<Index> getIndexes() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return new ArrayList<Index>();
     }
 
     @Override
     public boolean isLockedExclusively() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return false;
     }
 
     @Override
     public long getMaxDataModificationId() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     @Override
     public boolean isDeterministic() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
     @Override
     public boolean canGetRowCount() {
-        return false;  //To change body of implemented methods use File | Settings | File Templates.
+        return true;
     }
 
     @Override
@@ -212,21 +149,21 @@ public class SHPTable extends TableBase {
 
     @Override
     public long getRowCount(Session session) {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return shpDriver.getRowCount();
     }
 
     @Override
     public long getRowCountApproximation() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return shpDriver.getRowCount();
     }
 
     @Override
     public long getDiskSpaceUsed() {
-        return 0;  //To change body of implemented methods use File | Settings | File Templates.
+        return 0;
     }
 
     @Override
     public void checkRename() {
-        //To change body of implemented methods use File | Settings | File Templates.
+        //Nothing to check
     }
 }

@@ -30,6 +30,8 @@ import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
 import org.h2.message.DbException;
 import org.h2.table.TableBase;
+import org.h2gis.drivers.shp.internal.SHPDriver;
+
 import java.io.File;
 import java.io.IOException;
 
@@ -52,9 +54,14 @@ public class SHPEngine implements TableEngine {
             throw DbException.get(ErrorCode.FILE_NOT_FOUND_1,filePath.getAbsolutePath());
         }
         try {
-            return new SHPTable(data, filePath);
+            SHPDriver driver = new SHPDriver();
+            driver.initDriverFromFile(filePath);
+            SHPTableIndex.feedCreateTableData(driver, data);
+            SHPTable shpTable = new SHPTable(driver, data);
+            shpTable.init(data.session);
+            return shpTable;
         } catch (IOException ex) {
-            throw DbException.get(ErrorCode.TABLE_OR_VIEW_NOT_FOUND_1,filePath.getAbsolutePath());
+            throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
         }
     }
 }
