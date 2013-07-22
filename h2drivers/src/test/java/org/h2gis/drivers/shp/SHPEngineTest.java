@@ -25,6 +25,7 @@
 
 package org.h2gis.drivers.shp;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -112,6 +113,21 @@ public class SHPEngineTest {
         rs = st.executeQuery("SELECT COUNT(*) FROM shptable");
         assertTrue(rs.next());
         assertEquals(382, rs.getInt(1));
+        st.execute("drop table shptable");
+    }
+
+    @Test
+    public void readSHPDataTest2() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT the_geom FROM shptable");
+        double sumLength = 0;
+        while(rs.next()) {
+            sumLength+=((Geometry)rs.getObject("the_geom")).getLength();
+        }
+        assertEquals(28469.778049948833,sumLength,1e-12);
+        rs.close();
         st.execute("drop table shptable");
     }
 }

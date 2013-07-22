@@ -1,5 +1,6 @@
 package org.h2gis.h2spatialext;
 
+import org.h2gis.drivers.DriverManager;
 import org.h2gis.h2spatialext.function.spatial.aggregate.ST_Extent;
 import org.h2gis.h2spatialext.function.spatial.table.ST_Explode;
 import org.h2gis.h2spatialapi.Function;
@@ -47,5 +48,7 @@ public class CreateSpatialExtension {
                 ex.printStackTrace(System.err);
             }
         }
+        // Add h2 drivers
+        org.h2gis.h2spatial.CreateSpatialExtension.registerFunction(st,new DriverManager(),"");
     }
 }

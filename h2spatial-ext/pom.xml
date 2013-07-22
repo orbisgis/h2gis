@@ -64,6 +64,11 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>h2drivers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>spatial-utilities</artifactId>
             <version>${project.version}</version>
         </dependency>

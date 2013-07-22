@@ -19,8 +19,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>org.h2gis.drivers.*</Private-Package>
-                        <Bundle-Activator>org.h2gis.drivers.Activator</Bundle-Activator>
+                        <Public-Package>org.h2gis.drivers.*</Public-Package>
+                        <Fragment-Host>org.h2.util;bundle-version=1.3.172</Fragment-Host>
                     </instructions>
                 </configuration>
             </plugin>
