@@ -83,7 +83,6 @@ import org.h2gis.h2spatial.internal.function.spatial.properties.ST_StartPoint;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_X;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Y;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Z;
-import org.h2gis.h2spatial.internal.index.CreateSpatialIndex;
 import org.h2gis.h2spatial.internal.type.DomainInfo;
 import org.h2gis.h2spatial.internal.type.GeometryTypeFromConstraint;
 import org.h2gis.h2spatial.internal.type.SC_GeomCollection;
@@ -178,7 +177,6 @@ public class CreateSpatialExtension {
                 new ST_ConvexHull(),
                 new ST_SRID(),
                 new ST_EnvelopesIntersect(),
-                new CreateSpatialIndex(),
                 new ST_Accum()};
     }
 

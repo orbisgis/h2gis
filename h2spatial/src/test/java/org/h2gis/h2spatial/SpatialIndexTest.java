@@ -97,17 +97,7 @@ public class SpatialIndexTest {
     private static void reopen()  throws Exception   {
         // Close and reopen database
         connection.close();
-        Thread.sleep(500); // let h2 close the database
         connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
     }
-    /**
-     *  For this test, we will check to see that all of the feature tables are
-     *  represented by entries in the GEOMETRY_COLUMNS table/view.
-     *  @throws Exception
-     */
-    @Test
-    public void createIndexTest() throws Exception {
-        Statement st = connection.createStatement();
-        st.execute("CALL CreateSpatialIndex('DEP','THE_GEOM')");
-    }
+
 }
