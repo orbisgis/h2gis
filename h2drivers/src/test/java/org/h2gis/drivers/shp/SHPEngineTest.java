@@ -107,10 +107,11 @@ public class SHPEngineTest {
         assertEquals(382, rs.getInt(1));
         connection.close();
         Thread.sleep(50);
-        SpatialH2UT.openSpatialDataBase(DB_NAME);
+        connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
+        st = connection.createStatement();
         rs = st.executeQuery("SELECT COUNT(*) FROM shptable");
         assertTrue(rs.next());
         assertEquals(382, rs.getInt(1));
-
+        st.execute("drop table shptable");
     }
 }

@@ -152,9 +152,11 @@ public class SHPTableIndex extends BaseIndex {
      * @throws java.io.IOException
      */
     public static void feedCreateTableData(SHPDriver driver,CreateTableData data) throws IOException {
-        Column geometryColumn = new Column("THE_GEOM",Value.GEOMETRY);
-        data.columns.add(geometryColumn);
-        DBFTableIndex.feedCreateTableData(driver.getDbaseFileHeader(), data);
+        if(data.columns.isEmpty()) {
+            Column geometryColumn = new Column("THE_GEOM",Value.GEOMETRY);
+            data.columns.add(geometryColumn);
+            DBFTableIndex.feedCreateTableData(driver.getDbaseFileHeader(), data);
+        }
     }
 
     private static class SHPCursor implements Cursor {
