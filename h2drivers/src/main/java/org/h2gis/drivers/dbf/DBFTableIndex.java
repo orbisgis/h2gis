@@ -154,7 +154,7 @@ public class DBFTableIndex extends BaseIndex {
         for (int i = 0; i < header.getNumFields(); i++) {
             String fieldsName = header.getFieldName(i);
             final int type = dbfTypeToH2Type(header,i);
-            Column column = new Column(fieldsName, type);
+            Column column = new Column(fieldsName.toUpperCase(), type);
             column.setPrecision(header.getFieldLength(i)); // set string length
             data.columns.add(column);
         }

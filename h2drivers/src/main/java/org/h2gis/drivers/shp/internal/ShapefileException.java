@@ -41,12 +41,14 @@
 package org.h2gis.drivers.shp.internal;
 
 
+import java.io.IOException;
+
 /**
  * Thrown when an error relating to the shapefile
  * occures
  * @source $URL: http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileException.java $
  */
-public class ShapefileException extends Exception {
+public class ShapefileException extends IOException {
 
 	private static final long serialVersionUID = -6523799964553991364L;
 

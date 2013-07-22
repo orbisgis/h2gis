@@ -23,9 +23,10 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.drivers.shp;
+package org.h2gis.drivers.dbf;
 
 import org.h2gis.drivers.DriverManager;
+import org.h2gis.drivers.shp.SHPEngineTest;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
@@ -43,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Nicolas Fortin
  */
-public class SHPEngineTest {
+public class DBFEngineTest {
     private static Connection connection;
     private static final String DB_NAME = "SHPTest";
 
@@ -62,12 +63,9 @@ public class SHPEngineTest {
     @Test
     public void readSHPMetaTest() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.dbf").getPath()+"', 'DBFTABLE');");
         // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'");
-        assertTrue(rs.next());
-        assertEquals("THE_GEOM",rs.getString("COLUMN_NAME"));
-        assertEquals("GEOMETRY",rs.getString("TYPE_NAME"));
+        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
         assertEquals("CHAR",rs.getString("TYPE_NAME"));
@@ -81,36 +79,21 @@ public class SHPEngineTest {
         assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
         assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         rs.close();
-        st.execute("drop table shptable");
+        st.execute("drop table dbftable");
     }
 
     @Test
     public void readSHPDataTest() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.dbf").getPath()+"', 'DBFTABLE');");
         // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM shptable");
+        ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
         assertTrue(rs.next());
         assertEquals(1, rs.getInt("gid"));
         assertEquals("river",rs.getString("type_axe"));
-        assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))",rs.getObject("the_geom").toString());
         rs.close();
-        st.execute("drop table shptable");
+        st.execute("drop table dbftable");
     }
 
-    @Test
-    public void persistenceTest() throws Exception {
-        Statement st = connection.createStatement();
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
-        ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM shptable");
-        assertTrue(rs.next());
-        assertEquals(382, rs.getInt(1));
-        connection.close();
-        Thread.sleep(50);
-        SpatialH2UT.openSpatialDataBase(DB_NAME);
-        rs = st.executeQuery("SELECT COUNT(*) FROM shptable");
-        assertTrue(rs.next());
-        assertEquals(382, rs.getInt(1));
 
-    }
 }

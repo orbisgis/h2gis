@@ -40,6 +40,9 @@ public class SHPDriver {
     private File shxFile;
     private File dbfFile;
     private DbaseFileReader dbaseFileReader;
+    private ShapefileReader shapefileReader;
+    private IndexFile shxFileReader;
+    private int geometryFieldIndex = 0;
 
 
     public void initDriverFromFile(File shpFile) throws IOException {             // Read columns from files metadata
@@ -49,6 +52,10 @@ public class SHPDriver {
         dbfFile = new File(path.substring(0,path.lastIndexOf('.'))+".dbf");
         FileInputStream fis = new FileInputStream(dbfFile);
         dbaseFileReader = new DbaseFileReader(fis.getChannel());
+        FileInputStream shpFis = new FileInputStream(shpFile);
+        shapefileReader = new ShapefileReader(shpFis.getChannel());
+        FileInputStream shxFis = new FileInputStream(shxFile);
+        shxFileReader = new IndexFile(shxFis.getChannel());
     }
 
     /**
@@ -60,6 +67,8 @@ public class SHPDriver {
 
     public void close() throws IOException {
         dbaseFileReader.close();
+        shapefileReader.close();
+        shxFileReader.close();
     }
     /**
      * @return Row count
@@ -67,17 +76,24 @@ public class SHPDriver {
     public long getRowCount() {
         return dbaseFileReader.getRecordCount();
     }
-
+    public int getFieldCount() {
+        return dbaseFileReader.getFieldCount() + 1;
+    }
     /**
      * @param rowId Row index
      * @return The row content
      * @throws IOException
      */
     public Object[] getRow(long rowId) throws IOException {
-        final int fieldCount = dbaseFileReader.getFieldCount();
+        final int fieldCount = getFieldCount();
         Object[] values = new Object[fieldCount];
-        for(int fieldId=0;fieldId<fieldCount;fieldId++) {
+        // Copy dbf values
+        for(int fieldId=0;fieldId<geometryFieldIndex;fieldId++) {
             values[fieldId] = dbaseFileReader.getFieldValue((int)rowId, fieldId);
+        }
+        values[geometryFieldIndex] = shapefileReader.geomAt(shxFileReader.getOffset((int)rowId));
+        for(int fieldId=geometryFieldIndex;fieldId<fieldCount - 1;fieldId++) {
+            values[fieldId + 1] = dbaseFileReader.getFieldValue((int)rowId, fieldId);
         }
         return values;
     }
