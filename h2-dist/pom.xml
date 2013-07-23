@@ -66,11 +66,6 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2-version}</version>
-        </dependency>
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-ext</artifactId>
             <version>${project.version}</version>
