@@ -1,6 +1,7 @@
-package org.h2gis.h2spatialext;
+package org.h2gis.h2spatialext.osgi;
 
 import org.h2gis.h2spatialapi.Function;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

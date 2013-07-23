@@ -29,7 +29,6 @@ import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatialapi.Function;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
-import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -42,7 +41,6 @@ import java.sql.SQLException;
  */
 public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,FunctionTracker> {
     private BundleContext bundleContext;
-    public static final String PREFIX = "H2SPATIAL#";
     private static String H2_JDBC_DRIVER_NAME = "H2 JDBC Driver";
     /**
      * Constructor
@@ -64,10 +62,10 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
                     connection.close();
                     return null;
                 }
-                CreateSpatialExtension.registerGeometryType(connection, PREFIX);
+                CreateSpatialExtension.registerGeometryType(connection, "");
                 // Register built-ins functions
                 for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
-                    CreateSpatialExtension.registerFunction(connection.createStatement(),function,PREFIX,false);
+                    CreateSpatialExtension.registerFunction(connection.createStatement(),function,"",false);
                 }
                 CreateSpatialExtension.registerSpatialTables(connection);
             } finally {

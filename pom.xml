@@ -15,10 +15,12 @@
         <module>spatial-utilities</module>
         <module>h2spatial-api</module>
         <module>h2spatial</module>
+        <module>h2spatial-osgi</module>
         <module>h2-table-listener</module>
         <module>h2spatial-ext</module>
+        <module>h2spatial-ext-osgi</module>
         <module>h2drivers</module>
-        <!-- <module>h2spatialtest</module> -->
+        <module>h2spatialtest</module>
         <module>h2-dist</module>
   </modules>
     <properties>

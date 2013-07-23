@@ -7,8 +7,9 @@
 		<artifactId>h2gis</artifactId>
 		<version>0.1-SNAPSHOT</version>
 	</parent>
-	<artifactId>h2spatial</artifactId>
-	<name>h2spatial</name>
+	<artifactId>h2spatial-osgi</artifactId>
+	<name>h2spatial-osgi</name>
+    <description>Register H2 Spatial functions when a DataSource is declared as OSGi services</description>
     <packaging>bundle</packaging>
 	<url>http://www.orbisgis.org</url>
     <licenses>
@@ -18,22 +19,11 @@
         </license>
     </licenses>
 	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.8.2</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.vividsolutions</groupId>
-			<artifactId>jts</artifactId>
-			<version>${jts-version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>${h2-version}</version>
-		</dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.enterprise</artifactId>
@@ -52,16 +42,6 @@
             <version>${org.osgi.compendium-version}</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>spatial-utilities</artifactId>
-            <version>${project.version}</version>
-        </dependency>
 	</dependencies>
 	<distributionManagement>
 		<repository>
@@ -79,7 +59,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Fragment-Host>org.h2</Fragment-Host>    <!-- ;bundle-version=${h2-osgi-version} -->
+                        <Private-Package>org.h2gis.h2spatial.osgi</Private-Package>
+                        <Bundle-Activator>org.h2gis.h2spatial.osgi.Activator</Bundle-Activator>
                         <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
                         <Bundle-Category>JDBC</Bundle-Category>
                     </instructions>

@@ -81,8 +81,9 @@ public class SpatialIndexTest {
         System.out.println("Done in "+end+" ms");
         deb = System.currentTimeMillis();
         Statement st = connection.createStatement();
-        st.execute("create spatial index on DEP(the_geom)");
+        st.execute("create spatial index idx1 on DEP(the_geom)");
         intersectsPredicate();
+        st.execute("drop index idx1");
         end = System.currentTimeMillis() - deb;
         System.out.println("With index Done in "+end+" ms");
     }

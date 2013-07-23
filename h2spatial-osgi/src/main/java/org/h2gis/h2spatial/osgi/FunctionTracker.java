@@ -68,7 +68,7 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
         Function function = super.addingService(reference);
         Bundle bundle = reference.getBundle();
         try {
-            CreateSpatialExtension.registerFunction(connection.createStatement(), function, bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":");
+            CreateSpatialExtension.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
