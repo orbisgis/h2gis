@@ -61,7 +61,7 @@ public class DBFEngineTest {
     }
 
     @Test
-    public void readSHPMetaTest() throws SQLException {
+    public void readDBFMetaTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.dbf").getPath()+"', 'DBFTABLE');");
         // Query declared Table columns
@@ -83,7 +83,7 @@ public class DBFEngineTest {
     }
 
     @Test
-    public void readSHPDataTest() throws SQLException {
+    public void readDBFDataTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.dbf").getPath()+"', 'DBFTABLE');");
         // Query declared Table columns
@@ -91,6 +91,21 @@ public class DBFEngineTest {
         assertTrue(rs.next());
         assertEquals(1, rs.getInt("gid"));
         assertEquals("river",rs.getString("type_axe"));
+        rs.close();
+        st.execute("drop table dbftable");
+    }
+
+    @Test
+    public void readDBFEncodingTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("CALL FILE_TABLE('"+DBFEngineTest.class.getResource("encoding_test.dbf").getPath()+"', 'DBFTABLE');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt("RIVERTYPE"));
+        assertEquals("챁촧",rs.getString("RIVERNAME"));
+        assertTrue(rs.next());
+        assertEquals("퍬쇗댔",rs.getString("RIVERNAME"));
         rs.close();
         st.execute("drop table dbftable");
     }

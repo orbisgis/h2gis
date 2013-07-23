@@ -55,7 +55,9 @@ import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class to represent the header of a Dbase III file. Creation date: (5/15/2001
@@ -68,7 +70,11 @@ public class DbaseFileHeader {
     private static final String FIELD_LENGTH_FOR = "Field Length for ";
 	// Constant for the size of a record
 	private static final int FILE_DESCRIPTOR_SIZE = 32;
-
+    private static Map<Byte,String> CODE_PAGE_ENCODING = new HashMap<Byte, String>();
+    static {
+        // Korean windows
+        CODE_PAGE_ENCODING.put((byte) 79,"MS949");
+    }
 	// type of the file, must be 03h
 	private static final byte MAGIC = 0x03;
 
@@ -91,6 +97,8 @@ public class DbaseFileHeader {
 	private int headerLength = -1;
 
 	private int largestFieldSize = 0;
+    /** Encoding of String, found in Language Code Page DBF Header, use ISO-8859-1 as default value*/
+    private String fileEncoding = "ISO-8859-1";
 
 	/**
 	 * Class for holding the information assicated with a record.
@@ -316,7 +324,13 @@ public class DbaseFileHeader {
 		return fields[inIndex].fieldLength;
 	}
 
-	// Retrieve the location of the decimal point within the field.
+    /**
+     * @return File Encoding, ISO-8859-1 if the file encoding is not recognized
+     */
+    public String getFileEncoding() {
+        return fileEncoding;
+    }
+// Retrieve the location of the decimal point within the field.
 	/**
 	 * Get the decimal count of this field.
 	 *
@@ -404,7 +418,6 @@ public class DbaseFileHeader {
 	 *            A readable byte channel. If you have an InputStream you need
 	 *            to use, you can call java.nio.Channels.getChannel(InputStream
 	 *            in).
-         * @param listener
          * @throws java.io.IOException
 	 *             If errors occur while reading.
 	 */
@@ -451,7 +464,15 @@ public class DbaseFileHeader {
 		recordLength = (in.get() & 0xff) | ((in.get() & 0xff) << 8);
 
 		// skip / skip thesreserved bytes in the header.
-		in.skip(20);
+		in.skip(17);
+        // read Language driver
+        byte lngDriver = in.get();
+        String encoding = CODE_PAGE_ENCODING.get(lngDriver);
+        if(encoding!=null) {
+            this.fileEncoding = encoding;
+        }
+        // skip reserved
+        in.skip(2);
 
 		// calculate the number of Fields in the header
 		fieldCnt = (headerLength - FILE_DESCRIPTOR_SIZE - 1)

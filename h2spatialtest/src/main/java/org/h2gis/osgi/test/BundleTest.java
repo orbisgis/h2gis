@@ -83,7 +83,7 @@ public class BundleTest extends OSGiTestCase {
             return;
         }
         System.out.println("Built-In bundle list :");
-        System.out.println("ID\tState\tBundle name");
+        System.out.println("ID\t\tState\tBundle name");
         for (Bundle bundle : getBundleContext().getBundles()) {
             System.out.println(
                     "[" + String.format("%02d",bundle.getBundleId()) + "]\t"
