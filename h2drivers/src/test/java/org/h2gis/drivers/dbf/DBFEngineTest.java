@@ -103,9 +103,22 @@ public class DBFEngineTest {
         ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
         assertTrue(rs.next());
         assertEquals(2, rs.getInt("RIVERTYPE"));
-        assertEquals("챁촧",rs.getString("RIVERNAME"));
+        assertEquals("松柏坑溪",rs.getString("RIVERNAME"));
         assertTrue(rs.next());
-        assertEquals("퍬쇗댔",rs.getString("RIVERNAME"));
+        assertEquals(1, rs.getInt("RIVERTYPE"));
+        assertEquals("劍潭湖",rs.getString("RIVERNAME"));
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt("RIVERTYPE"));
+        assertEquals("竹篙水溪",rs.getString("RIVERNAME"));
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt("RIVERTYPE"));
+        assertEquals("霞苞蓮幹線",rs.getString("RIVERNAME"));
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt("RIVERTYPE"));
+        assertEquals("延潭大排水溝",rs.getString("RIVERNAME"));
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt("RIVERTYPE"));
+        assertEquals("林內圳幹線",rs.getString("RIVERNAME"));
         rs.close();
         st.execute("drop table dbftable");
     }
