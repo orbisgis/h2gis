@@ -56,7 +56,9 @@ public class DBFEngine implements TableEngine {
         try {
             DBFDriver driver = new DBFDriver();
             driver.initDriverFromFile(filePath);
-            DBFTableIndex.feedCreateTableData(driver.getDbaseFileHeader(), data);
+            if(data.columns.isEmpty()) {
+                DBFTableIndex.feedCreateTableData(driver.getDbaseFileHeader(), data);
+            }
             DBFTable shpTable = new DBFTable(driver, data);
             shpTable.init(data.session);
             return shpTable;
