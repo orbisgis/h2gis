@@ -9,7 +9,6 @@
     <artifactId>h2spatialtest</artifactId>
     <name>h2spatialtest</name>
     <description>Integration Test and Unit test of H2Spatial in an OSGi environment</description>
-    <version>1</version>
     <packaging>bundle</packaging>
     <licenses>
         <license>
@@ -23,8 +22,13 @@
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.enterprise</artifactId>
-            <version>4.2.0</version>
+            <artifactId>org.osgi.core</artifactId>
+            <version>${osgi-core-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>${org.osgi.compendium-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.felix</groupId>
@@ -34,22 +38,68 @@
         <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts-osgi</artifactId>
-            <version>1.12</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial</artifactId>
-            <version>1.0.1</version>
+            <version>${jts-version}</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${h2-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial</artifactId>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-api</artifactId>
-            <version>1.0.1</version>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2drivers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial-ext</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial-osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial-ext-osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>spatial-utilities</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.ops4j.pax.jdbc</groupId>
+            <artifactId>pax-jdbc-postgresql</artifactId>
+            <version>0.2.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql-osgi</artifactId>
+            <version>9.1-901-1.jdbc4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${sl4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${sl4j-version}</version>
         </dependency>
     </dependencies>
     <build>
@@ -62,13 +112,13 @@
                 <configuration>
                     <instructions>
                         <Export-Package>
-                            org.h2spatial.osgi.test
+                            org.h2gis.osgi.test
                         </Export-Package>
                         <Bundle-SymbolicName>
                             ${project.artifactId}
                         </Bundle-SymbolicName>
                         <Test-Suite>
-                            org.h2gis.h2spatial.osgi.test.BundleTest
+                            org.h2gis.osgi.test.BundleTest
                         </Test-Suite>
                     </instructions>
                 </configuration>
@@ -76,7 +126,7 @@
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-junit4osgi-plugin</artifactId>
-                <version>1.1.0-SNAPSHOT</version>
+                <version>1.1.1-SNAPSHOT</version>
                 <executions>
                     <execution>
                         <goals>
