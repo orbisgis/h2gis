@@ -30,3 +30,21 @@ You can then show the content:
 ```sql
 select * from tablename;
 ```
+
+## Spatial Index
+On regular table (not shapes) you can add a spatial index (stored on disk):
+```sql
+create table area(idarea int primary key, the_geom geometry);
+create spatial index myspatialindex on area(the_geom);
+insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))');
+insert into area values(2, 'POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))');
+create table roads(idroad int primary key, the_geom geometry);
+create spatial index on roads(the_geom);
+insert into roads values(1, 'LINESTRING (27.65595463138 -16.728733459357244, 47.61814744801515 40.435727788279806)');
+insert into roads values(2, 'LINESTRING (17.674858223062415 55.861058601134246, 55.78449905482046 76.73062381852554)');
+```
+
+The spatial predicate operator `&&` for bounding box overlap use this index:
+```sql
+select idarea, COUNT(idroad) roadscount from area,roads where area.the_geom && roads.the_geom AND ST_Intersects(area.the_geom,roads.the_geom) GROUP BY idarea ORDER BY idarea
+```
