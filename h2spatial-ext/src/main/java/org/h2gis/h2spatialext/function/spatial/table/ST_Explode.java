@@ -34,6 +34,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
+import org.h2.value.Value;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.orbisgis.sputilities.SFSUtilities;
 import java.sql.Connection;

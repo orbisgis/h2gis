@@ -79,29 +79,26 @@ public class SpatialIndexTest {
         intersectsPredicate();
         long end = System.currentTimeMillis() - deb;
         System.out.println("Done in "+end+" ms");
+        deb = System.currentTimeMillis();
+        Statement st = connection.createStatement();
+        st.execute("create spatial index idx1 on DEP(the_geom)");
+        intersectsPredicate();
+        st.execute("drop index idx1");
+        end = System.currentTimeMillis() - deb;
+        System.out.println("With index Done in "+end+" ms");
     }
 
     private void intersectsPredicate() throws SQLException  {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("select b.id from DEP a,DEP b where a.id = 59 and " +
-                "ST_Intersects(a.the_geom,b.the_geom) and a.ID!=b.ID ORDER BY id ASC");
+                "a.the_geom && b.the_geom AND ST_Intersects(a.the_geom,b.the_geom) and a.ID!=b.ID ORDER BY id ASC");
         assertEqualsRS(rs,1,45,49,61,62,63,66);
     }
 
     private static void reopen()  throws Exception   {
         // Close and reopen database
         connection.close();
-        Thread.sleep(500); // let h2 close the database
         connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
     }
-    /**
-     *  For this test, we will check to see that all of the feature tables are
-     *  represented by entries in the GEOMETRY_COLUMNS table/view.
-     *  @throws Exception
-     */
-    @Test
-    public void createIndexTest() throws Exception {
-        Statement st = connection.createStatement();
-        st.execute("CALL CreateSpatialIndex('DEP','THE_GEOM')");
-    }
+
 }

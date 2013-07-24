@@ -24,6 +24,9 @@
  */
 package org.h2gis.h2spatial;
 
+import com.vividsolutions.jts.geom.GeometryFactory;
+import org.h2.value.DataType;
+import org.h2.value.Value;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -42,6 +45,8 @@ import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+
 /**
  * 
  * @author Erwan Bocher
@@ -69,6 +74,19 @@ public class BasicTest {
 
                 assertTrue(3 == coord.z);
 
+        }
+
+
+        /**
+         * Test if H2 recognize the Geometry class used by h2spatial
+         */
+        @Test
+        public void testSameClass() {
+            GeometryFactory geometryFactory = new GeometryFactory();
+            Geometry geometry = geometryFactory.createPoint(new Coordinate(0,0));
+            assertEquals("H2 does not use the same JTS ! Expected:\n"+Geometry.class.getName()+"\n but got:\n"
+                    +DataType.getTypeClassName(DataType.getTypeFromClass(geometry.getClass()))+"\n",Value.GEOMETRY,
+                    DataType.getTypeFromClass(geometry.getClass()));
         }
 
         @Test

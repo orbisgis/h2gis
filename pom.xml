@@ -15,17 +15,23 @@
         <module>spatial-utilities</module>
         <module>h2spatial-api</module>
         <module>h2spatial</module>
+        <module>h2spatial-osgi</module>
+        <module>h2-table-listener</module>
         <module>h2spatial-ext</module>
+        <module>h2spatial-ext-osgi</module>
         <module>h2drivers</module>
-        <!--<module>h2spatialtest</module>-->
+        <module>h2spatialtest</module>
+        <module>h2-dist</module>
   </modules>
     <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- Dependency versions -->
         <maven-bundle-plugin-version>2.3.7</maven-bundle-plugin-version>
         <osgi-core-version>4.3.1</osgi-core-version>
-        <!-- Project versions -->
-        <spatial-api-version>1.0.1</spatial-api-version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <h2-version>1.0-SNAPSHOT</h2-version>
+        <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
+        <jts-version>1.13</jts-version>
+        <sl4j-version>1.6.0</sl4j-version>
     </properties>
     <scm>
         <connection>scm:git:https://github.com/irstv/H2GIS.git</connection>

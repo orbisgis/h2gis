@@ -95,20 +95,6 @@ public class SerializationTest {
         assertTrue(tablesWithGeometry.contains("map_neatlines"));
     }
 
-
-    /**
-     * LineString into Geometry column
-     * @throws Exception
-     */
-    @Test
-    public void eWKBTest() throws Exception {
-        ValueGeometry valueGeometry = new ValueGeometry(ST_GeomFromText.toGeometry("POLYGON( ( 62 48, 84 48, 84 30, 56 30, 56 34, 62 48) )", 101));
-        byte[] bytes = valueGeometry.getBytesNoCopy();
-        WKBReader wkbReader = new WKBReader();
-        Geometry geometry = wkbReader.read(bytes);
-        assertEquals(101, geometry.getSRID());
-    }
-
     /**
      * For this test, we will determine the SRID of Goose Island.
      * @throws Exception

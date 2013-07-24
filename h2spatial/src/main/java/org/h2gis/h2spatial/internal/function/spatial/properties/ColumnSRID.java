@@ -52,25 +52,29 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
      */
     public static int getSRID(Connection connection, String tableName, String columnName) throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery(new StringBuilder("select ST_SRID(").append(columnName).append(") from ")
-                .append(tableName).append(" where ST_SRID(").append(columnName).append(")!=0 LIMIT 1;").toString());
+        // Fetch the first geometry to find a stored SRID
+        ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",columnName,tableName));
+        int srid = 0;
         if(rs.next()) {
-            return rs.getInt(1);
-        } else {
-            // TODO read constraint
-
-            // Use first SRID from SPATIAL_REF_SYS
-            rs.close();
-            try {
-                rs = st.executeQuery("select srid from SPATIAL_REF_SYS LIMIT 1;");
-                if(rs.next()) {
-                    return rs.getInt(1);
-                }
-            } catch (SQLException ex) {
-                //Table not found
+            srid = rs.getInt(1);
+            if(srid > 0) {
+                return srid;
             }
-            // Unable to find a valid SRID
-            return 0;
         }
+        rs.close();
+        // TODO read constraint
+
+        // Use first SRID from SPATIAL_REF_SYS
+        try {
+            rs = st.executeQuery("select srid from SPATIAL_REF_SYS LIMIT 1;");
+            if(rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException ex) {
+            //Table not found
+        }
+        // Unable to find a valid SRID
+        return 0;
+
     }
 }

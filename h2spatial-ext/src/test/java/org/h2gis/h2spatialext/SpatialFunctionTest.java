@@ -24,6 +24,8 @@
  */
 package org.h2gis.h2spatialext;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -34,6 +36,8 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -60,9 +64,9 @@ public class SpatialFunctionTest {
     public void test_ST_ExplodeWithoutGeometryField() throws Exception  {
         Statement st = connection.createStatement();
         st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64)," +
-                " boundary MULTIPOLYGON);");
-        st.execute("INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0," +
-                "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101))");
+                " boundary MULTIPOLYGON);" +
+                "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0," +
+                "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
         ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('forests') WHERE name = 'Green Forest' and explod_id=2");
         assertTrue(rs.next());
         assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
@@ -72,25 +76,48 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_ExplodeEmptyGeometryCollection() throws Exception  {
         Statement st = connection.createStatement();
-        st.execute("create table test(the_geom GEOMETRY, value Integer)");
-        st.execute("insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108)");
-        st.execute("insert into test VALUES (ST_GeomFromText('MULTIPOINT EMPTY'),109)");
-        st.execute("insert into test VALUES (ST_GeomFromText('MULTIPOLYGON EMPTY'),110)");
-        st.execute("insert into test VALUES (ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'),111)");
-        ResultSet rs = st.executeQuery("SELECT the_geom , value FROM ST_Explode('test') ORDER BY value");
+        st.execute("create table test(the_geom GEOMETRY, value Integer);" +
+                "insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108)," +
+                " (ST_GeomFromText('MULTIPOINT EMPTY'),109)," +
+                " (ST_GeomFromText('MULTIPOLYGON EMPTY'),110)," +
+                " (ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'),111);");
+        ResultSet rs = st.executeQuery("SELECT the_geom::Geometry , value FROM ST_Explode('test') ORDER BY value");
         assertTrue(rs.next());
         assertEquals(108,rs.getInt(2));
-        assertEquals("LINESTRING EMPTY", rs.getString(1));
+        assertEquals("LINESTRING EMPTY", ((Geometry)rs.getObject(1)).toText());
         assertTrue(rs.next());
         assertEquals(109,rs.getInt(2));
-        assertEquals("POINT EMPTY", rs.getString(1));
+        assertEquals("POINT EMPTY", ((Geometry)rs.getObject(1)).toText());
         assertTrue(rs.next());
         assertEquals(110,rs.getInt(2));
-        assertEquals("POLYGON EMPTY", rs.getString(1));
+        assertEquals("POLYGON EMPTY", ((Geometry)rs.getObject(1)).toText());
         assertTrue(rs.next());
         assertEquals(111,rs.getInt(2));
-        assertEquals(null, rs.getObject(1));
+        assertNull(rs.getObject(1));
         rs.close();
         st.execute("drop table test");
+    }
+
+
+    @Test
+    public void test_ST_Extent() throws Exception  {
+        Statement st = connection.createStatement();
+        st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);" +
+        "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154))," +
+                "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154))," +
+                "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
+        ResultSet rs = st.executeQuery("select ST_Extent(the_geom) tableEnv from ptClouds;");
+        assertTrue(rs.next());
+        Object resultObj = rs.getObject("tableEnv");
+        assertTrue(resultObj instanceof Envelope);
+        Envelope result = (Envelope)resultObj;
+        Envelope expected = new Envelope(-5, 99, -21, 124);
+        assertEquals(expected.getMinX(),result.getMinX(),1e-12);
+        assertEquals(expected.getMaxX(),result.getMaxX(),1e-12);
+        assertEquals(expected.getMinY(),result.getMinY(),1e-12);
+        assertEquals(expected.getMaxY(),result.getMaxY(),1e-12);
+        assertFalse(rs.next());
+        st.execute("drop table ptClouds");
+        st.close();
     }
 }

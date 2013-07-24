@@ -8,7 +8,6 @@
     </parent>
     <artifactId>h2spatial-api</artifactId>
     <name>h2spatial-api</name>
-    <version>${spatial-api-version}</version>
     <packaging>bundle</packaging>
     <description>H2 Spatial API define extension point of h2 spatial</description>
     <licenses>
