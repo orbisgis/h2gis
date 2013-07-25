@@ -44,7 +44,8 @@ public class SFSUtilities {
      * @param connection Active connection
      * @param location Catalog, schema and table name
      * @param fieldName Geometry field name or empty (take the first one)
-     * @return The geometry type identifier {@see org.h2gis.h2spatialapi.GeometryTypeCodes}
+     * @return The geometry type identifier
+     * @see org.h2gis.h2spatialapi.GeometryTypeCodes
      * @throws SQLException
      */
     public static int getGeometryType(Connection connection,TableLocation location, String fieldName) throws SQLException {
@@ -132,7 +133,6 @@ public class SFSUtilities {
      */
     public static List<String> getGeometryFields(Connection connection,String catalog, String schema, String table) throws SQLException {
         List<String> fieldsName = new LinkedList<String>();
-        sb.append(additionalWhereCondition);
         ResultSet geomResultSet = getGeometryColumnsView(connection,catalog,schema,table);
         while (geomResultSet.next()) {
             fieldsName.add(geomResultSet.getString("f_geometry_column"));
@@ -151,6 +151,14 @@ public class SFSUtilities {
             this.schema = schema;
             this.table = table;
         }
+        public TableLocation(String schema, String table) {
+            this("",schema,table);
+        }
+
+        public TableLocation(String table) {
+            this("", table);
+        }
+
 
         @Override
         public String toString() {

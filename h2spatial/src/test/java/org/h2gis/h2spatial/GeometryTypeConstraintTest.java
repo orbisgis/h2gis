@@ -30,6 +30,7 @@ import org.h2gis.h2spatialapi.GeometryTypeCodes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.sputilities.SFSUtilities;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -145,6 +146,47 @@ public class GeometryTypeConstraintTest {
         assertEquals("T_POLYGON",rs.getString("F_TABLE_NAME"));
         assertEquals(GeometryTypeCodes.POLYGON,rs.getInt("geometry_type"));
         assertFalse(rs.next());
+        st.execute("drop table T_GEOMETRY, T_POINT,  T_LINE, T_POLYGON");
+        st.execute("drop table T_MPOINT,  T_MLINE, T_MPOLYGON");
+    }
+
+    /**
+     * LineString into LineString column
+     * @throws Exception
+     */
+    @Test
+    public void testGeometryColumnsViewUtility() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("drop table T_GEOMETRY IF EXISTS");
+        st.execute("create table T_GEOMETRY (the_geom GEOMETRY)");
+        st.execute("drop table T_POINT IF EXISTS");
+        st.execute("create table T_POINT (the_geom POINT)");
+        st.execute("drop table T_LINE IF EXISTS");
+        st.execute("create table T_LINE (the_geom LINESTRING)");
+        st.execute("drop table T_POLYGON IF EXISTS");
+        st.execute("create table T_POLYGON (the_geom POLYGON)");
+        st.execute("drop table T_MPOINT IF EXISTS");
+        st.execute("create table T_MPOINT (the_geom MULTIPOINT)");
+        st.execute("drop table T_MLINE IF EXISTS");
+        st.execute("create table T_MLINE (the_geom MULTILINESTRING)");
+        st.execute("drop table T_MPOLYGON IF EXISTS");
+        st.execute("create table T_MPOLYGON (the_geom MULTIPOLYGON)");
+
+        assertEquals(GeometryTypeCodes.GEOMETRY,
+                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_GEOMETRY"),""));
+        assertEquals(GeometryTypeCodes.LINESTRING,
+                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_LINE"),""));
+        assertEquals(GeometryTypeCodes.POLYGON,
+                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_POLYGON"),""));
+        assertEquals(GeometryTypeCodes.POINT,
+                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_POINT"),""));
+        assertEquals(GeometryTypeCodes.MULTILINESTRING,
+                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_MLINE"),""));
+        assertEquals(GeometryTypeCodes.MULTIPOLYGON,
+                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_MPOLYGON"),""));
+        assertEquals(GeometryTypeCodes.MULTIPOINT,
+                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_MPOINT"),""));
+
         st.execute("drop table T_GEOMETRY, T_POINT,  T_LINE, T_POLYGON");
         st.execute("drop table T_MPOINT,  T_MLINE, T_MPOLYGON");
     }
