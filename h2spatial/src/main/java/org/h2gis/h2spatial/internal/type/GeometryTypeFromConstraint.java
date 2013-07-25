@@ -40,9 +40,13 @@ public class GeometryTypeFromConstraint extends DeterministicScalarFunction {
     }
 
     public static int GeometryTypeFromConstraint(String constraint) {
+        if(constraint.isEmpty()) {
+            return GeometryTypeCodes.GEOMETRY;
+        }
+        constraint = constraint.toUpperCase();
         for(DomainInfo domainsInfo : CreateSpatialExtension.getBuiltInsType()) {
             // Like SC_Point(
-            String constraintFunction = CreateSpatialExtension.getAlias(domainsInfo.getDomainConstraint())+"(";
+            String constraintFunction = CreateSpatialExtension.getAlias(domainsInfo.getDomainConstraint()).toUpperCase()+"(";
             if(domainsInfo.getDomainConstraint() instanceof GeometryConstraint && constraint.contains(constraintFunction)) {
                 return ((GeometryConstraint) domainsInfo.getDomainConstraint()).getGeometryTypeCode();
             }

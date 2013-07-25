@@ -33,10 +33,30 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Generic utilities function to retrieve spatial metadata trough SFS specification
+ * Generic utilities function to retrieve spatial metadata trough SFS specification.
+ * Compatible with H2 and PostGIS.
  * @author Nicolas Fortin
  */
 public class SFSUtilities {
+
+
+    /**
+     * @param connection Active connection
+     * @param location Catalog, schema and table name
+     * @param fieldName Geometry field name or empty (take the first one)
+     * @return The geometry type identifier {@see org.h2gis.h2spatialapi.GeometryTypeCodes}
+     * @throws SQLException
+     */
+    public static int getGeometryType(Connection connection,TableLocation location, String fieldName) throws SQLException {
+        ResultSet geomResultSet = getGeometryColumnsView(connection,location.getCatalog(),location.getSchema(),location.table);
+        while(geomResultSet.next()) {
+            if(fieldName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(fieldName)) {
+                return geomResultSet.getInt("GEOMETRY_TYPE");
+            }
+        }
+        throw new SQLException("Field not found "+fieldName);
+    }
+
     /**
      * Convert catalog.schema.table, schema.table or table into TableLocation instance.
      * Not specified schema or catalog are converted into an empty string.
@@ -75,6 +95,32 @@ public class SFSUtilities {
         return getGeometryFields(connection, location.getCatalog(), location.getSchema(), location.getTable());
     }
 
+    private static ResultSet getGeometryColumnsView(Connection connection,String catalog, String schema, String table) throws SQLException {
+        Integer catalogIndex = null;
+        Integer schemaIndex = null;
+        Integer tableIndex = 1;
+        StringBuilder sb = new StringBuilder("SELECT * from geometry_columns where ");
+        if(!catalog.isEmpty()) {
+            sb.append("UPPER(f_catalog_name) = ? AND ");
+            catalogIndex = 1;
+            tableIndex++;
+        }
+        if(!schema.isEmpty()) {
+            sb.append("UPPER(f_schema_name) = ? AND ");
+            schemaIndex = tableIndex;
+            tableIndex++;
+        }
+        sb.append("UPPER(f_table_name) = ? ");
+        PreparedStatement geomStatement = connection.prepareStatement(sb.toString());
+        if(catalogIndex!=null) {
+            geomStatement.setString(catalogIndex,catalog.toUpperCase());
+        }
+        if(schemaIndex!=null) {
+            geomStatement.setString(schemaIndex,schema.toUpperCase());
+        }
+        geomStatement.setString(tableIndex,table.toUpperCase());
+        return geomStatement.executeQuery();
+    }
     /**
      * Find geometry fields name of a table.
      * @param connection Active connection
@@ -86,33 +132,12 @@ public class SFSUtilities {
      */
     public static List<String> getGeometryFields(Connection connection,String catalog, String schema, String table) throws SQLException {
         List<String> fieldsName = new LinkedList<String>();
-        Integer catalogIndex = null;
-        Integer schemaIndex = null;
-        Integer tableIndex = 1;
-        StringBuilder sb = new StringBuilder("SELECT f_geometry_column from geometry_columns where ");
-        if(!catalog.isEmpty()) {
-            sb.append("UPPER(f_catalog_name) = ? AND ");
-            catalogIndex = 1;
-            tableIndex++;
-        }
-        if(!schema.isEmpty()) {
-            sb.append("UPPER(f_schema_name) = ? AND ");
-            schemaIndex = tableIndex.intValue();
-            tableIndex++;
-        }
-        sb.append("UPPER(f_table_name) = ?");
-        PreparedStatement geomStatement = connection.prepareStatement(sb.toString());
-        if(catalogIndex!=null) {
-            geomStatement.setString(catalogIndex,catalog.toUpperCase());
-        }
-        if(schemaIndex!=null) {
-            geomStatement.setString(schemaIndex,schema.toUpperCase());
-        }
-        geomStatement.setString(tableIndex,table.toUpperCase());
-        ResultSet geomResultSet = geomStatement.executeQuery();
+        sb.append(additionalWhereCondition);
+        ResultSet geomResultSet = getGeometryColumnsView(connection,catalog,schema,table);
         while (geomResultSet.next()) {
-            fieldsName.add(geomResultSet.getString(1));
+            fieldsName.add(geomResultSet.getString("f_geometry_column"));
         }
+        geomResultSet.close();
         return fieldsName;
     }
 
