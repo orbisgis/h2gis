@@ -48,3 +48,20 @@ The spatial predicate operator `&&` for bounding box overlap use this index:
 ```sql
 select idarea, COUNT(idroad) roadscount from area,roads where area.the_geom && roads.the_geom AND ST_Intersects(area.the_geom,roads.the_geom) GROUP BY idarea ORDER BY idarea
 ```
+
+## Spatial JDBC
+
+One of the H2GIS goal is to provide a common interface to H2 and PostGIS for Geometry data. The `spatial-utilities` package provide a **DataSource** and **Connection** wrapper in order to facilitate the usage of JDBC with Geometry fields.
+
+### How to use
+
+When acquiring the **DataSource** or the **Connection** wrap it through SFSUtilities.wrapSpatialDataSource or SFSUtilities.wrapSpatialConnection.
+
+Then when you get a ResultSet trough a spatial table you can use the following command:
+```java
+private void doStuff(Statement st) {
+    SpatialResultSet rs = st.executeQuery("select the_geom from mygeomtable").unWrap(SpatialResultSet.class);
+    rs.next();
+    Geometry myGeom = rs.getGeometry("the_geom");
+}
+``` 
