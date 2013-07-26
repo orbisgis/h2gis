@@ -23,12 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatial;
-
-import org.orbisgis.sputilities.wrapper.ConnectionWrapper;
-import org.orbisgis.sputilities.wrapper.ResultSetMetaDataWrapper;
-import org.orbisgis.sputilities.wrapper.ResultSetWrapper;
-import org.orbisgis.sputilities.wrapper.StatementWrapper;
+package org.orbisgis.sputilities.wrapper;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -47,7 +42,6 @@ import java.sql.ResultSetMetaData;
 import java.sql.RowId;
 import java.sql.SQLException;
 import java.sql.SQLXML;
-import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Calendar;

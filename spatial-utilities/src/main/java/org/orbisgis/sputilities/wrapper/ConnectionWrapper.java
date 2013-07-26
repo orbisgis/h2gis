@@ -132,7 +132,7 @@ public class ConnectionWrapper implements Connection {
 
     @Override
     public PreparedStatement prepareStatement(String sql, int resultSetType, int resultSetConcurrency) throws SQLException {
-        return connection.prepareStatement(sql, resultSetType, resultSetConcurrency);
+        return new PreparedStatementWrapper(connection.prepareStatement(sql, resultSetType, resultSetConcurrency), this);
     }
 
     @Override
