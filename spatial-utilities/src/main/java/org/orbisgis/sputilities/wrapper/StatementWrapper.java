@@ -20,7 +20,7 @@ public class StatementWrapper implements Statement {
 
     @Override
     public ResultSet executeQuery(String sql) throws SQLException {
-        return statement.executeQuery(sql);
+        return new ResultSetWrapper(statement.executeQuery(sql),this);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class StatementWrapper implements Statement {
 
     @Override
     public ResultSet getResultSet() throws SQLException {
-        return statement.getResultSet();
+        return new ResultSetWrapper(statement.getResultSet(),this);
     }
 
     @Override

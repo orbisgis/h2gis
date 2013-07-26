@@ -2,6 +2,8 @@ package org.orbisgis.sputilities.wrapper;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.orbisgis.sputilities.SpatialResultSet;
+import org.orbisgis.sputilities.SpatialResultSetMetaData;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -9,9 +11,17 @@ import java.sql.SQLException;
  * @author Nicolas Fortin
  */
 public class SpatialResultSetImpl extends ResultSetWrapper implements SpatialResultSet {
+    private int firstGeometryFieldIndex = -1;
 
     public SpatialResultSetImpl(ResultSet resultSet, StatementWrapper statement) {
         super(resultSet,statement);
+    }
+
+    private int getFirstGeometryFieldIndex() throws SQLException {
+        if(firstGeometryFieldIndex==-1) {
+            firstGeometryFieldIndex = getMetaData().unwrap(SpatialResultSetMetaData.class).getFirstGeometryFieldIndex();
+        }
+        return firstGeometryFieldIndex;
     }
 
     @Override
@@ -36,7 +46,7 @@ public class SpatialResultSetImpl extends ResultSetWrapper implements SpatialRes
 
     @Override
     public Geometry getGeometry() throws SQLException {
-        return null;
+        return getGeometry(getFirstGeometryFieldIndex());
     }
 
     @Override

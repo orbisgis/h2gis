@@ -39,16 +39,17 @@ public class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper imple
 
     /**
      * Constructor
-     * @param resultSet Active result set
      * @param resultSetMetaData meta data
+     * @param resultSet Active result set
      */
-    public SpatialResultSetMetaDataImpl(ResultSetWrapper resultSet, ResultSetMetaData resultSetMetaData) {
-        super(resultSet, resultSetMetaData);
+    public SpatialResultSetMetaDataImpl(ResultSetMetaData resultSetMetaData, ResultSetWrapper resultSet) {
+        super(resultSetMetaData,resultSet);
     }
 
-    private int getFirstGeometryFieldIndex() throws SQLException {
+    @Override
+    public int getFirstGeometryFieldIndex() throws SQLException {
         if(firstGeometryFieldIndex==-1) {
-            for(int idColumn=0;idColumn<getColumnCount();idColumn++) {
+            for(int idColumn=1;idColumn<=getColumnCount();idColumn++) {
                 if(getColumnTypeName(idColumn).equalsIgnoreCase("geometry")) {
                     firstGeometryFieldIndex = idColumn;
                     break;

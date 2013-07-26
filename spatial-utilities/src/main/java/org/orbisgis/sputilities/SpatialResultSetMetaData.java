@@ -45,4 +45,10 @@ public interface SpatialResultSetMetaData extends ResultSetMetaData {
      * @throws SQLException if this meta data does not contains a geometry field.
      */
     int getGeometryType() throws SQLException;
+
+    /**
+     * @return Column index of the first geometry in this result set.
+     * @throws SQLException
+     */
+    public int getFirstGeometryFieldIndex() throws SQLException;
 }

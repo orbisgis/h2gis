@@ -25,6 +25,10 @@
 
 package org.orbisgis.sputilities;
 
+import org.orbisgis.sputilities.wrapper.ConnectionWrapper;
+import org.orbisgis.sputilities.wrapper.DataSourceWrapper;
+
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -56,6 +60,30 @@ public class SFSUtilities {
             }
         }
         throw new SQLException("Field not found "+fieldName);
+    }
+
+
+    /**
+     * In order to be able to use {@link ResultSet#unwrap(Class)} and
+     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get {@link SpatialResultSet} and
+     * {@link SpatialResultSetMetaData} this method wrap the provided dataSource.
+     * @param dataSource H2 or PostGIS DataSource
+     * @return Wrapped DataSource, with spatial methods
+     */
+    public static DataSource wrapSpatialDataSource(DataSource dataSource) {
+        return new DataSourceWrapper(dataSource);
+    }
+
+    /**
+     * Use this only if DataSource is not available.
+     * In order to be able to use {@link ResultSet#unwrap(Class)} and
+     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get {@link SpatialResultSet} and
+     * {@link SpatialResultSetMetaData} this method wrap the provided connection.
+     * @param connection H2 or PostGIS Connection
+     * @return Wrapped DataSource, with spatial methods
+     */
+    public static Connection wrapConnection(Connection connection) {
+        return new ConnectionWrapper(connection,null);
     }
 
     /**
@@ -158,7 +186,6 @@ public class SFSUtilities {
         public TableLocation(String table) {
             this("", table);
         }
-
 
         @Override
         public String toString() {

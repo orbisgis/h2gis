@@ -32,7 +32,7 @@ public class ConnectionWrapper implements Connection {
 
     @Override
     public Statement createStatement() throws SQLException {
-        return connection.createStatement();
+        return new StatementWrapper(connection.createStatement(),this);
     }
 
     @Override

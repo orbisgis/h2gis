@@ -1,7 +1,5 @@
 package org.orbisgis.sputilities.wrapper;
 
-import org.orbisgis.sputilities.SpatialResultSet;
-
 import java.io.InputStream;
 import java.io.Reader;
 import java.math.BigDecimal;
@@ -228,7 +226,7 @@ public class ResultSetWrapper implements ResultSet {
 
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return resultSet.getMetaData();
+        return new ResultSetMetaDataWrapper(resultSet.getMetaData(), this);
     }
 
     @Override

@@ -38,7 +38,7 @@ public class ResultSetMetaDataWrapper implements ResultSetMetaData {
     private ResultSetMetaData resultSetMetaData;
     protected ResultSetWrapper resultSet;
 
-    public ResultSetMetaDataWrapper(ResultSetWrapper resultSet, ResultSetMetaData resultSetMetaData) {
+    public ResultSetMetaDataWrapper(ResultSetMetaData resultSetMetaData, ResultSetWrapper resultSet) {
         this.resultSet = resultSet;
         this.resultSetMetaData = resultSetMetaData;
     }
@@ -161,7 +161,7 @@ public class ResultSetMetaDataWrapper implements ResultSetMetaData {
     public <T> T unwrap(Class<T> iface) throws SQLException {
         if(iface.isAssignableFrom(SpatialResultSetMetaDataImpl.class)) {
             try {
-                return iface.cast(new SpatialResultSetMetaDataImpl(resultSet,resultSetMetaData));
+                return iface.cast(new SpatialResultSetMetaDataImpl(resultSetMetaData,resultSet));
             } catch (ClassCastException ex) {
                 // Should never throw this as it is checked before.
                 throw new SQLException("Cannot cast "+SpatialResultSetMetaDataImpl.class.getName()+" into "+iface.getName(),ex);
