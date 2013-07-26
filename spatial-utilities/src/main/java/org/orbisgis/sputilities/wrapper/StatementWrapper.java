@@ -155,7 +155,7 @@ public class StatementWrapper implements Statement {
 
     @Override
     public Connection getConnection() throws SQLException {
-        return statement.getConnection();
+        return connection;
     }
 
     @Override

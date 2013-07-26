@@ -27,7 +27,7 @@ package org.h2gis.h2spatial.internal.type;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.h2spatialapi.GeometryTypeCodes;
+import org.orbisgis.sputilities.GeometryTypeCodes;
 
 /**
  * Convert H2 constraint string into a OGC geometry type index.

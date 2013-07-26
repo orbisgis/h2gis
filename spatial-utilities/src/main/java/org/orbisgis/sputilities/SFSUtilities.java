@@ -45,7 +45,7 @@ public class SFSUtilities {
      * @param location Catalog, schema and table name
      * @param fieldName Geometry field name or empty (take the first one)
      * @return The geometry type identifier
-     * @see org.h2gis.h2spatialapi.GeometryTypeCodes
+     * @see GeometryTypeCodes
      * @throws SQLException
      */
     public static int getGeometryType(Connection connection,TableLocation location, String fieldName) throws SQLException {

@@ -598,7 +598,7 @@ public class ResultSetWrapper implements ResultSet {
 
     @Override
     public Statement getStatement() throws SQLException {
-        return resultSet.getStatement();
+        return statement;
     }
 
     @Override

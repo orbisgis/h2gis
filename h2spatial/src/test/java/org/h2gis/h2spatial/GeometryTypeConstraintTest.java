@@ -26,7 +26,7 @@
 package org.h2gis.h2spatial;
 
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialapi.GeometryTypeCodes;
+import org.orbisgis.sputilities.GeometryTypeCodes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

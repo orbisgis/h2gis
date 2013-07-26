@@ -16,11 +16,26 @@ public class SpatialResultSetImpl extends ResultSetWrapper implements SpatialRes
 
     @Override
     public Geometry getGeometry(int columnIndex) throws SQLException {
-        return null;
+        Object field =  getObject(columnIndex);
+        if(field instanceof Geometry) {
+            return (Geometry)field;
+        } else {
+            throw new SQLException("The column "+getMetaData().getColumnName(columnIndex)+ " is not a Geometry");
+        }
     }
 
     @Override
     public Geometry getGeometry(String columnLabel) throws SQLException {
+        Object field =  getObject(columnLabel);
+        if(field instanceof Geometry) {
+            return (Geometry)field;
+        } else {
+            throw new SQLException("The column "+columnLabel+ " is not a Geometry");
+        }
+    }
+
+    @Override
+    public Geometry getGeometry() throws SQLException {
         return null;
     }
 
@@ -32,5 +47,19 @@ public class SpatialResultSetImpl extends ResultSetWrapper implements SpatialRes
     @Override
     public void updateGeometry(String columnLabel, Geometry geometry) throws SQLException {
 
+    }
+
+    @Override
+    public <T> T unwrap(Class<T> iface) throws SQLException {
+        if(iface.isInstance(this)) {
+            try {
+                return iface.cast(this);
+            } catch (ClassCastException ex) {
+                //Should never happen
+                throw new SQLException(ex);
+            }
+        } else {
+            return super.unwrap(iface);
+        }
     }
 }

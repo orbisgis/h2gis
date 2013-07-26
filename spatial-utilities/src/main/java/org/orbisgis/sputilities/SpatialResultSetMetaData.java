@@ -1,4 +1,4 @@
-/**
+/*
  * h2spatial is a library that brings spatial support to the H2 Java database.
  *
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
@@ -23,34 +23,26 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatial.internal.type;
+package org.orbisgis.sputilities;
 
-import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatialapi.AbstractFunction;
-import org.orbisgis.sputilities.GeometryTypeCodes;
-import org.h2gis.h2spatialapi.ScalarFunction;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 
 /**
- * Constraint for MultiLineString field type.
+ * In order to provide a common API with H2 Spatial and PostGIS this MetaData give type information on Geometry fields.
  * @author Nicolas Fortin
  */
-public class SC_MultiLineString extends AbstractFunction implements ScalarFunction , GeometryConstraint {
-
-    @Override
-    public int getGeometryTypeCode() {
-        return GeometryTypeCodes.MULTILINESTRING;
-    }
-
-    @Override
-    public String getJavaStaticMethod() {
-        return "isMultiLineString";
-    }
+public interface SpatialResultSetMetaData extends ResultSetMetaData {
 
     /**
-     * @param geometry Geometry instance or NULL
-     * @return True if null or if the field type fit with the constraint.
+     * @param column
+     * @return {@link GeometryTypeCodes} of the provided column.
      */
-    public static boolean isMultiLineString(Geometry geometry) {
-        return geometry==null || geometry.getGeometryType().equals("MultiLineString");
-    }
+    int getGeometryType(int column) throws SQLException;
+
+    /**
+     * @return {@link GeometryTypeCodes} of the first geometry column.
+     * @throws SQLException if this meta data does not contains a geometry field.
+     */
+    int getGeometryType() throws SQLException;
 }
