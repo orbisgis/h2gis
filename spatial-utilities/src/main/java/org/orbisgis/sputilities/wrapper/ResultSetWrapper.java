@@ -226,7 +226,7 @@ public class ResultSetWrapper implements ResultSet {
 
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        return new ResultSetMetaDataWrapper(resultSet.getMetaData(), this);
+        return new ResultSetMetaDataWrapper(resultSet.getMetaData(), statement);
     }
 
     @Override

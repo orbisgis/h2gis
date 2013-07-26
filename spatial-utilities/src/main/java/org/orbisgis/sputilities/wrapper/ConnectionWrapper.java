@@ -127,7 +127,7 @@ public class ConnectionWrapper implements Connection {
 
     @Override
     public Statement createStatement(int resultSetType, int resultSetConcurrency) throws SQLException {
-        return connection.createStatement(resultSetType, resultSetConcurrency);
+        return new StatementWrapper(connection.createStatement(resultSetType, resultSetConcurrency), this);
     }
 
     @Override

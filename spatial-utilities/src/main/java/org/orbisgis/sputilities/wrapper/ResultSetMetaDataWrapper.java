@@ -36,10 +36,10 @@ import java.sql.SQLException;
  */
 public class ResultSetMetaDataWrapper implements ResultSetMetaData {
     private ResultSetMetaData resultSetMetaData;
-    protected ResultSetWrapper resultSet;
+    protected StatementWrapper statement;
 
-    public ResultSetMetaDataWrapper(ResultSetMetaData resultSetMetaData, ResultSetWrapper resultSet) {
-        this.resultSet = resultSet;
+    public ResultSetMetaDataWrapper(ResultSetMetaData resultSetMetaData, StatementWrapper statement) {
+        this.statement = statement;
         this.resultSetMetaData = resultSetMetaData;
     }
 
@@ -150,24 +150,20 @@ public class ResultSetMetaDataWrapper implements ResultSetMetaData {
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        if(iface.isAssignableFrom(SpatialResultSetMetaData.class)) {
-            return true;
-        } else {
-            return resultSetMetaData.isWrapperFor(iface);
-        }
+        return iface.isAssignableFrom(SpatialResultSetMetaData.class) || resultSetMetaData.isWrapperFor(iface);
     }
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
         if(iface.isAssignableFrom(SpatialResultSetMetaDataImpl.class)) {
             try {
-                return iface.cast(new SpatialResultSetMetaDataImpl(resultSetMetaData,resultSet));
+                return iface.cast(new SpatialResultSetMetaDataImpl(resultSetMetaData,statement));
             } catch (ClassCastException ex) {
                 // Should never throw this as it is checked before.
                 throw new SQLException("Cannot cast "+SpatialResultSetMetaDataImpl.class.getName()+" into "+iface.getName(),ex);
             }
         } else {
-            return resultSet.unwrap(iface);
+            return resultSetMetaData.unwrap(iface);
         }
     }
 }

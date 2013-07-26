@@ -29,7 +29,6 @@ import org.orbisgis.sputilities.SFSUtilities;
 import org.orbisgis.sputilities.SpatialResultSetMetaData;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.List;
 
 /**
  * @author Nicolas Fortin
@@ -40,10 +39,10 @@ public class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper imple
     /**
      * Constructor
      * @param resultSetMetaData meta data
-     * @param resultSet Active result set
+     * @param statement Active statement
      */
-    public SpatialResultSetMetaDataImpl(ResultSetMetaData resultSetMetaData, ResultSetWrapper resultSet) {
-        super(resultSetMetaData,resultSet);
+    public SpatialResultSetMetaDataImpl(ResultSetMetaData resultSetMetaData, StatementWrapper statement) {
+        super(resultSetMetaData,statement);
     }
 
     @Override
@@ -65,7 +64,7 @@ public class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper imple
 
     @Override
     public int getGeometryType(int column) throws SQLException {
-        return SFSUtilities.getGeometryType(resultSet.getStatement().getConnection(),
+        return SFSUtilities.getGeometryType(statement.getConnection(),
                 new SFSUtilities.TableLocation(getCatalogName(column), getSchemaName(column), getTableName(column)),
                 getColumnName(column));
     }
