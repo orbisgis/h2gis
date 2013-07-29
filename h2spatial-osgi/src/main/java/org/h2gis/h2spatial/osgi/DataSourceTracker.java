@@ -71,8 +71,6 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
             } finally {
                 connection.close();
             }
-            CreateSpatialExtension.registerSpatialTables(connection);
-            connection.close();
         } catch (SQLException ex) {
             System.err.print(ex.toString());
         }
