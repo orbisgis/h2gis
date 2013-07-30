@@ -25,6 +25,8 @@
 
 package org.orbisgis.sputilities;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import org.orbisgis.sputilities.wrapper.ConnectionWrapper;
 import org.orbisgis.sputilities.wrapper.DataSourceWrapper;
 
@@ -33,6 +35,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -112,6 +115,29 @@ public class SFSUtilities {
         return new TableLocation(catalog,schema,table);
     }
 
+    /**
+     * Merge the bounding box of all geometries inside the provided table.
+     * @param connection Active connection (not closed by this function)
+     * @param location Location of the table
+     * @param geometryField Geometry field or empty string (take the first geometry field)
+     * @return Envelope of the table
+     * @throws SQLException If the table not exists, empty or does not contain a geometry field.
+     */
+    public static Envelope getTableEnvelope(Connection connection, TableLocation location, String geometryField) throws SQLException {
+        if(geometryField==null || geometryField.isEmpty()) {
+            List<String> geometryFields = getGeometryFields(connection, location);
+            if(geometryFields.isEmpty()) {
+                throw new SQLException("The table "+location+" does not contain a Geometry field, then the extent cannot be computed");
+            }
+            geometryField = geometryFields.get(0);
+        }
+        ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("+geometryField+") ext FROM "+location);
+        if(rs.next()) {
+            // Todo under postgis it is a BOX type
+            return (Envelope)rs.getObject(1);
+        }
+        throw new SQLException("Unable to get the table extent it may be empty");
+    }
 
     /**
      * Find geometry fields name of a table.

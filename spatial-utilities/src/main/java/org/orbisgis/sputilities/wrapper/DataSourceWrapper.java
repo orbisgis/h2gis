@@ -18,12 +18,12 @@ public class DataSourceWrapper implements DataSource {
 
     @Override
     public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        return new ConnectionWrapper(dataSource.getConnection(), this);
     }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        return dataSource.getConnection(username, password);
+        return new ConnectionWrapper(dataSource.getConnection(username, password),this);
     }
 
     @Override
