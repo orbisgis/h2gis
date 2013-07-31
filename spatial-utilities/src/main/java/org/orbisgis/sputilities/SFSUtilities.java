@@ -59,7 +59,7 @@ public class SFSUtilities {
         if(fieldName==null || fieldName.isEmpty()) {
             List<String> geometryFields = getGeometryFields(connection, location);
             if(geometryFields.isEmpty()) {
-                throw new SQLException("The table "+location+" does not contain a Geometry field, then the extent cannot be computed");
+                throw new SQLException("The table "+location+" does not contain a Geometry field, then geometry type cannot be computed");
             }
             fieldName = geometryFields.get(0);
         }
