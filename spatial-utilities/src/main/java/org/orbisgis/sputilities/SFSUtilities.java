@@ -56,6 +56,13 @@ public class SFSUtilities {
      * @throws SQLException
      */
     public static int getGeometryType(Connection connection,TableLocation location, String fieldName) throws SQLException {
+        if(fieldName==null || fieldName.isEmpty()) {
+            List<String> geometryFields = getGeometryFields(connection, location);
+            if(geometryFields.isEmpty()) {
+                throw new SQLException("The table "+location+" does not contain a Geometry field, then the extent cannot be computed");
+            }
+            fieldName = geometryFields.get(0);
+        }
         ResultSet geomResultSet = getGeometryColumnsView(connection,location.getCatalog(),location.getSchema(),location.table);
         while(geomResultSet.next()) {
             if(fieldName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(fieldName)) {
