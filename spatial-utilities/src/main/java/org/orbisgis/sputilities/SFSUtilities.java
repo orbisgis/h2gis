@@ -26,16 +26,13 @@
 package org.orbisgis.sputilities;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import org.orbisgis.sputilities.wrapper.ConnectionWrapper;
 import org.orbisgis.sputilities.wrapper.DataSourceWrapper;
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -63,7 +60,7 @@ public class SFSUtilities {
             }
             fieldName = geometryFields.get(0);
         }
-        ResultSet geomResultSet = getGeometryColumnsView(connection,location.getCatalog(),location.getSchema(),location.table);
+        ResultSet geomResultSet = getGeometryColumnsView(connection,location.getCatalog(),location.getSchema(),location.getTable());
         while(geomResultSet.next()) {
             if(fieldName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(fieldName)) {
                 return geomResultSet.getInt("GEOMETRY_TYPE");
@@ -103,23 +100,7 @@ public class SFSUtilities {
      * @return Java beans for table location
      */
     public static TableLocation splitCatalogSchemaTableName(String concatenatedTableLocation) {
-        String[] values = concatenatedTableLocation.split("\\.");
-        String catalog,schema,table;
-        catalog = schema = table = "";
-        switch (values.length) {
-            case 1:
-                table = values[0];
-                break;
-            case 2:
-                schema = values[0];
-                table = values[1];
-                break;
-            case 3:
-                catalog = values[0];
-                schema = values[1];
-                table = values[2];
-        }
-        return new TableLocation(catalog,schema,table);
+        return TableLocation.parse(concatenatedTableLocation);
     }
 
     /**
@@ -200,60 +181,5 @@ public class SFSUtilities {
         }
         geomResultSet.close();
         return fieldsName;
-    }
-
-    /**
-     * Define table location
-     */
-    public static class TableLocation {
-        private String catalog,schema,table;
-        public TableLocation(String catalog, String schema, String table) {
-            this.catalog = catalog;
-            this.schema = schema;
-            this.table = table;
-        }
-        public TableLocation(String schema, String table) {
-            this("",schema,table);
-        }
-
-        public TableLocation(String table) {
-            this("", table);
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            if(!catalog.isEmpty()) {
-                sb.append(catalog);
-                sb.append(".");
-            }
-            if(!schema.isEmpty()) {
-                sb.append(schema);
-                sb.append(".");
-            }
-            sb.append(table);
-            return sb.toString();
-        }
-
-        /**
-         * @return Table catalog name (database)
-         */
-        public String getCatalog() {
-            return catalog;
-        }
-
-        /**
-         * @return Table schema name
-         */
-        public String getSchema() {
-            return schema;
-        }
-
-        /**
-         * @return Table name
-         */
-        public String getTable() {
-            return table;
-        }
     }
 }

@@ -31,6 +31,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.sputilities.SFSUtilities;
+import org.orbisgis.sputilities.TableLocation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -173,19 +174,19 @@ public class GeometryTypeConstraintTest {
         st.execute("create table T_MPOLYGON (the_geom MULTIPOLYGON)");
 
         assertEquals(GeometryTypeCodes.GEOMETRY,
-                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_GEOMETRY"),""));
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("T_GEOMETRY"),""));
         assertEquals(GeometryTypeCodes.LINESTRING,
-                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_LINE"),""));
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("T_LINE"),""));
         assertEquals(GeometryTypeCodes.POLYGON,
-                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_POLYGON"),""));
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("T_POLYGON"),""));
         assertEquals(GeometryTypeCodes.POINT,
-                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_POINT"),""));
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("T_POINT"),""));
         assertEquals(GeometryTypeCodes.MULTILINESTRING,
-                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_MLINE"),""));
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("T_MLINE"),""));
         assertEquals(GeometryTypeCodes.MULTIPOLYGON,
-                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_MPOLYGON"),""));
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("T_MPOLYGON"),""));
         assertEquals(GeometryTypeCodes.MULTIPOINT,
-                SFSUtilities.getGeometryType(connection, new SFSUtilities.TableLocation("T_MPOINT"),""));
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("T_MPOINT"),""));
 
         st.execute("drop table T_GEOMETRY, T_POINT,  T_LINE, T_POLYGON");
         st.execute("drop table T_MPOINT,  T_MLINE, T_MPOLYGON");
