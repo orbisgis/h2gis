@@ -1,15 +1,26 @@
 package org.orbisgis.sputilities;
 
+import org.h2gis.h2spatialapi.Function;
+
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
+ * DBMS should follow standard but it is not always the case, this class do some common operations.
+ * Compatible with H2 and PostgreSQL.
  * @author Nicolas Fortin
  */
 public class JDBCUtilities {
+    public enum FUNCTION_TYPE { ALL, BUILT_IN, ALIAS}
+    public static final String H2_DRIVER_NAME = "H2 JDBC Driver";
+
     private JDBCUtilities() {}
 
     private static ResultSet getTablesView(Connection connection, String catalog, String schema, String table) throws SQLException {
@@ -74,5 +85,9 @@ public class JDBCUtilities {
             rs.close();
         }
         return isTemporary;
+    }
+
+    private static boolean isH2DataBase(DatabaseMetaData metaData) throws SQLException {
+        return metaData.getDriverName().equals(H2_DRIVER_NAME);
     }
 }

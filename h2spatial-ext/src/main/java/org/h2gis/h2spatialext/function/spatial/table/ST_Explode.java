@@ -172,8 +172,6 @@ public class ST_Explode implements ScalarFunction {
                         sourceRowGeometries.add(factory.createLineString(new Coordinate[0]));
                     } else if(geometry instanceof MultiPolygon) {
                         sourceRowGeometries.add((factory.createPolygon(null,null)));
-                    } else if(geometry instanceof MultiPoint) {
-                        sourceRowGeometries.add((factory.createPoint((Coordinate)null)));
                     } else {
                         sourceRowGeometries.add(null);
                     }

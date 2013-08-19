@@ -88,7 +88,7 @@ public class SpatialFunctionTest {
         assertEquals("LINESTRING EMPTY", ((Geometry)rs.getObject(1)).toText());
         assertTrue(rs.next());
         assertEquals(109,rs.getInt(2));
-        assertEquals("POINT EMPTY", ((Geometry)rs.getObject(1)).toText());
+        assertNull(rs.getObject(1));    // POINT EMPTY does not exists (not supported in WKB)
         assertTrue(rs.next());
         assertEquals(110,rs.getInt(2));
         assertEquals("POLYGON EMPTY", ((Geometry)rs.getObject(1)).toText());

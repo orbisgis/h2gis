@@ -27,6 +27,7 @@ package org.h2gis.h2spatial.osgi;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatialapi.Function;
+import org.orbisgis.sputilities.JDBCUtilities;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
@@ -41,7 +42,6 @@ import java.sql.SQLException;
  */
 public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,FunctionTracker> {
     private BundleContext bundleContext;
-    private static String H2_JDBC_DRIVER_NAME = "H2 JDBC Driver";
     /**
      * Constructor
      * @param bundleContext BundleContext instance
@@ -58,8 +58,7 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
             try {
                 DatabaseMetaData meta = connection.getMetaData();
                 // If not H2 or in client mode, does not register H2 spatial functions.
-                if(!H2_JDBC_DRIVER_NAME.equals(meta.getDriverName()) && meta.usesLocalFiles()) {
-                    connection.close();
+                if(!JDBCUtilities.H2_DRIVER_NAME.equals(meta.getDriverName()) && meta.usesLocalFiles()) {
                     return null;
                 }
                 CreateSpatialExtension.registerGeometryType(connection, "");
