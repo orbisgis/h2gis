@@ -4,7 +4,7 @@
     <groupId>org.h2gis</groupId>
     <artifactId>h2gis</artifactId>
     <packaging>pom</packaging>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.1.1</version>
     <name>H2GIS</name>
     <organization>
         <name>IRSTV CNRS-FR-2488</name>

@@ -91,7 +91,7 @@ public class SpatialIndexTest {
     private void intersectsPredicate() throws SQLException  {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("select b.id from DEP a,DEP b where a.id = 59 and " +
-                "a.the_geom && b.the_geom AND ST_Intersects(a.the_geom,b.the_geom) and a.ID!=b.ID ORDER BY id ASC");
+                "a.the_geom && b.the_geom AND ST_Intersects(a.the_geom,b.the_geom) and a.ID!=b.ID ORDER BY b.id ASC");
         assertEqualsRS(rs,1,45,49,61,62,63,66);
     }
 

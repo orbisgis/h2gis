@@ -4,7 +4,8 @@
     <parent>
         <artifactId>h2gis</artifactId>
         <groupId>org.h2gis</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1.1</version>
+        <relativePath>../</relativePath>
     </parent>
     <name>spatial-utilities</name>
     <artifactId>spatial-utilities</artifactId>
