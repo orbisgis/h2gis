@@ -69,7 +69,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction {
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 Statement st = connection.createStatement();
-                st.execute(String.format("CREATE TABLE %s() ENGINE \"%s\" WITH \"%s\"",tableName,driverDef.className,fileName));
+                st.execute(String.format("CREATE TABLE %s COMMENT '%s' ENGINE \"%s\" WITH \"%s\"",tableName,fileName, driverDef.className,fileName));
                 st.close();
                 return;
             }

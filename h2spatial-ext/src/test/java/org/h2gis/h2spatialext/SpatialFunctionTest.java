@@ -30,6 +30,7 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.sputilities.SFSUtilities;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -87,7 +88,7 @@ public class SpatialFunctionTest {
         assertEquals("LINESTRING EMPTY", ((Geometry)rs.getObject(1)).toText());
         assertTrue(rs.next());
         assertEquals(109,rs.getInt(2));
-        assertEquals("POINT EMPTY", ((Geometry)rs.getObject(1)).toText());
+        assertNull(rs.getObject(1));    // POINT EMPTY does not exists (not supported in WKB)
         assertTrue(rs.next());
         assertEquals(110,rs.getInt(2));
         assertEquals("POLYGON EMPTY", ((Geometry)rs.getObject(1)).toText());
@@ -119,5 +120,21 @@ public class SpatialFunctionTest {
         assertFalse(rs.next());
         st.execute("drop table ptClouds");
         st.close();
+    }
+
+    @Test
+    public void test_TableEnvelope() throws Exception  {
+        Statement st = connection.createStatement();
+        st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);" +
+                "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154))," +
+                "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154))," +
+                "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
+        Envelope result = SFSUtilities.getTableEnvelope(connection, SFSUtilities.splitCatalogSchemaTableName("ptClouds"), "");
+        Envelope expected = new Envelope(-5, 99, -21, 124);
+        assertEquals(expected.getMinX(),result.getMinX(),1e-12);
+        assertEquals(expected.getMaxX(),result.getMaxX(),1e-12);
+        assertEquals(expected.getMinY(),result.getMinY(),1e-12);
+        assertEquals(expected.getMaxY(),result.getMaxY(),1e-12);
+        st.execute("drop table ptClouds");
     }
 }

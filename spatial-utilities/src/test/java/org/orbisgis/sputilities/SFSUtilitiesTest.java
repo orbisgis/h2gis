@@ -35,12 +35,16 @@ import static junit.framework.Assert.assertEquals;
 public class SFSUtilitiesTest {
     @Test
     public void testSplitCatalogSchemaTableName() {
-        SFSUtilities.TableLocation location = SFSUtilities.splitCatalogSchemaTableName("mytable");
+        TableLocation location = SFSUtilities.splitCatalogSchemaTableName("mytable");
         assertEquals("mytable",location.getTable());
         location = SFSUtilities.splitCatalogSchemaTableName("myschema.mytable");
         assertEquals("myschema",location.getSchema());
         assertEquals("mytable",location.getTable());
         location = SFSUtilities.splitCatalogSchemaTableName("mydb.myschema.mytable");
+        assertEquals("mydb",location.getCatalog());
+        assertEquals("myschema",location.getSchema());
+        assertEquals("mytable",location.getTable());
+        location = TableLocation.parse(location.toString());
         assertEquals("mydb",location.getCatalog());
         assertEquals("myschema",location.getSchema());
         assertEquals("mytable",location.getTable());

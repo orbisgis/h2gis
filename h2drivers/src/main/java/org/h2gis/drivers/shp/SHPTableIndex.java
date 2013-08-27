@@ -38,10 +38,10 @@ import org.h2.result.SortOrder;
 import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.Table;
+import org.h2.table.TableFilter;
 import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2gis.drivers.dbf.DBFTableIndex;
-import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 
 import java.io.IOException;
@@ -102,7 +102,7 @@ public class SHPTableIndex extends BaseIndex {
     }
 
     @Override
-    public double getCost(Session session, int[] masks, SortOrder sortOrder) {
+    public double getCost(Session session, int[] masks, TableFilter filter ,SortOrder sortOrder) {
         return getRowCount(session);
     }
 

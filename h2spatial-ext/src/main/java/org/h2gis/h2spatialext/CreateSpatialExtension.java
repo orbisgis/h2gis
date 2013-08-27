@@ -19,7 +19,8 @@ public class CreateSpatialExtension {
     public static Function[] getBuiltInsFunctions() {
         return new Function[] {
                 new ST_Extent(),
-                new ST_Explode()};
+                new ST_Explode(),
+                new DriverManager()};
     }
 
     /**
@@ -48,7 +49,5 @@ public class CreateSpatialExtension {
                 ex.printStackTrace(System.err);
             }
         }
-        // Add h2 drivers
-        org.h2gis.h2spatial.CreateSpatialExtension.registerFunction(st,new DriverManager(),"");
     }
 }

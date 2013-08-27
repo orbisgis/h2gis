@@ -4,7 +4,8 @@
     <parent>
         <artifactId>h2gis</artifactId>
         <groupId>org.h2gis</groupId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1.1</version>
+        <relativePath>../</relativePath>
     </parent>
     <artifactId>h2drivers</artifactId>
     <name>h2drivers</name>
@@ -20,6 +21,7 @@
                 <configuration>
                     <instructions>
                     <Fragment-Host>org.h2</Fragment-Host>
+                    <Import-Package>!org.h2.command.ddl,!org.h2.engine,!org.h2.message,!org.h2.index,!org.h2.table,!org.h2.result,*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

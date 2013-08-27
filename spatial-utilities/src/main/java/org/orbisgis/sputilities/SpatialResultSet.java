@@ -54,13 +54,26 @@ public interface SpatialResultSet extends ResultSet {
     Geometry getGeometry(String columnLabel) throws SQLException;
 
     /**
-     *
-     * @param columnIndex
-     * @param geometry
+     * Retrieves Geometry value of the first geometry column.
+     * @return Geometry value or null
+     * @throws SQLException If there is no Geometry columns.
+     */
+    Geometry getGeometry() throws SQLException;
+
+    /**
+     * Update the geometry value
+     * @param columnIndex Field index
+     * @param geometry Geometry instance
      * @throws SQLException
      */
     void updateGeometry(int columnIndex, Geometry geometry) throws SQLException;
 
+    /**
+     * Update the geometry value
+     * @param columnLabel Field name
+     * @param geometry Geometry instance
+     * @throws SQLException
+     */
     void updateGeometry(String columnLabel, Geometry geometry) throws SQLException;
 
 }

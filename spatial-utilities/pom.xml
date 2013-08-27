@@ -2,16 +2,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-    <artifactId>h2gis</artifactId>
-    <groupId>org.h2gis</groupId>
-    <version>0.1-SNAPSHOT</version>
-  </parent>
+        <artifactId>h2gis</artifactId>
+        <groupId>org.h2gis</groupId>
+        <version>0.1.1</version>
+        <relativePath>../</relativePath>
+    </parent>
     <name>spatial-utilities</name>
     <artifactId>spatial-utilities</artifactId>
     <packaging>bundle</packaging>
     <description>Collection of methods to fetch spatial metadata in SFS database like PostGIS or H2Spatial.
         Theses functions can be commonly used either in PostGIS or in H2.
-    Spatial utilities publish also a DataSourceFactory wrapper that provide JDBC Wrapper for spatial functionality.</description>
+        Spatial utilities publish also a DataSourceFactory wrapper that provide JDBC Wrapper for spatial functionality.</description>
     <build>
         <plugins>
             <plugin>
@@ -22,6 +23,7 @@
                 <configuration>
                     <instructions>
                         <Public-Package>org.orbisgis.sputilities.*</Public-Package>
+                        <Private-Package>org.orbisgis.sputilities.wrapper</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -43,16 +45,27 @@
             <version>${jts-version}</version>
         </dependency>
         <dependency>
-                <groupId>org.osgi</groupId>
-                <artifactId>org.osgi.compendium</artifactId>
-                <version>${org.osgi.compendium-version}</version>
-                <scope>provided</scope>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>${org.osgi.compendium-version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
             <version>${osgi-core-version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2-version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

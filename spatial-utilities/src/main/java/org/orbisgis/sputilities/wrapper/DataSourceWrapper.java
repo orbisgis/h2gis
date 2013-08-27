@@ -6,25 +6,24 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * Entry point for spatial wrapper of SQL Interfaces.
  * @author Nicolas Fortin
  */
 public class DataSourceWrapper implements DataSource {
     private DataSource dataSource;
-    private DataSourceFactoryWrapper dataSourceFactory;
 
-    public DataSourceWrapper(DataSource dataSource, DataSourceFactoryWrapper dataSourceFactory) {
+    public DataSourceWrapper(DataSource dataSource) {
         this.dataSource = dataSource;
-        this.dataSourceFactory = dataSourceFactory;
     }
 
     @Override
     public Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        return new ConnectionWrapper(dataSource.getConnection(), this);
     }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        return dataSource.getConnection(username, password);
+        return new ConnectionWrapper(dataSource.getConnection(username, password),this);
     }
 
     @Override

@@ -27,7 +27,7 @@ package org.h2gis.h2spatial.internal.type;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.h2spatialapi.GeometryTypeCodes;
+import org.orbisgis.sputilities.GeometryTypeCodes;
 
 /**
  * Convert H2 constraint string into a OGC geometry type index.
@@ -40,9 +40,13 @@ public class GeometryTypeFromConstraint extends DeterministicScalarFunction {
     }
 
     public static int GeometryTypeFromConstraint(String constraint) {
+        if(constraint.isEmpty()) {
+            return GeometryTypeCodes.GEOMETRY;
+        }
+        constraint = constraint.toUpperCase();
         for(DomainInfo domainsInfo : CreateSpatialExtension.getBuiltInsType()) {
             // Like SC_Point(
-            String constraintFunction = CreateSpatialExtension.getAlias(domainsInfo.getDomainConstraint())+"(";
+            String constraintFunction = CreateSpatialExtension.getAlias(domainsInfo.getDomainConstraint()).toUpperCase()+"(";
             if(domainsInfo.getDomainConstraint() instanceof GeometryConstraint && constraint.contains(constraintFunction)) {
                 return ((GeometryConstraint) domainsInfo.getDomainConstraint()).getGeometryTypeCode();
             }
