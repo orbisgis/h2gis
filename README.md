@@ -11,9 +11,7 @@ develop.
 
 H2GIS is the root project for the new [OrbisGIS](http://www.orbisgis.org/) data
 management library and is divided into two subprojects: H2Spatial and
-H2Drivers.
-
-Both H2Spatial and H2Drivers are licensed under the GPL 3 license terms.
+H2Drivers, both of which are licensed under the GPL 3 license terms.
 
 #### H2Spatial
 H2Spatial extends H2 by adding spatial storage and analysis capabilities,
