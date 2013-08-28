@@ -95,6 +95,7 @@ import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -317,6 +318,13 @@ public class CreateSpatialExtension {
                 st.execute("CREATE AGGREGATE IF NOT EXISTS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "\"");
         } else {
                 throw new SQLException("Unsupported function "+functionClass);
+        }
+        // Set comment
+        String functionRemarks = getStringProperty(function, Function.PROP_REMARKS);
+        if(!functionRemarks.isEmpty()) {
+            PreparedStatement ps = st.getConnection().prepareStatement("COMMENT ON ALIAS "+functionAlias+" IS ?");
+            ps.setString(1, functionRemarks);
+            ps.execute();
         }
     }
 

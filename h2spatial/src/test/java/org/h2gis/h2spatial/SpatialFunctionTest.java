@@ -24,16 +24,15 @@
  */
 package org.h2gis.h2spatial;
 
-import com.vividsolutions.jts.geom.Envelope;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.sputilities.SFSUtilities;
 
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
@@ -67,11 +66,12 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_EnvelopeIntersects() throws Exception  {
-            Statement st = connection.createStatement();
-            ResultSet rs = st.executeQuery("SELECT ST_EnvelopesIntersect(road_segments.centerline, divided_routes.centerlines) " +
-                    "FROM road_segments, divided_routes WHERE road_segments.fid = 102 AND divided_routes.name = 'Route 75'");
-            assertTrue(rs.next());
-            assertTrue(rs.getBoolean(1));
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_EnvelopesIntersect(road_segments.centerline, divided_routes.centerlines) " +
+                "FROM road_segments, divided_routes WHERE road_segments.fid = 102 AND divided_routes.name = 'Route 75'");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+        rs.close();
     }
 
     @Test
@@ -80,5 +80,16 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Area(ST_Union(ST_Accum(footprint))) FROM buildings GROUP BY SUBSTRING(address,4)");
         assertTrue(rs.next());
         assertEquals(16,rs.getDouble(1),1e-8);
+        rs.close();
+    }
+
+    @Test
+    public void testFunctionRemarks() throws SQLException {
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new DummyFunction(), "");
+        ResultSet procedures = connection.getMetaData().getProcedures(null, null, "DUMMYFUNCTION");
+        assertTrue(procedures.next());
+        assertEquals(DummyFunction.REMARKS, procedures.getString("REMARKS"));
+        procedures.close();
+        CreateSpatialExtension.unRegisterFunction(connection.createStatement(), new DummyFunction());
     }
 }
