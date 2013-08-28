@@ -29,7 +29,7 @@ Ex: `ST_Extent`, `ST_Explode`
 
 #### H2Drivers
 H2Drivers makes use of the TableEngine API to add H2 read/write support for file
-formats such as .shp,.dbf and .mif. With H2Drivers, the user can execute SQL queries
+formats such as .shp, .dbf and .mif. With H2Drivers, the user can execute SQL queries
 on file formats other than pure H2.
 
 Both H2Spatial and H2Drivers are licensed under the GPL 3 license terms.
