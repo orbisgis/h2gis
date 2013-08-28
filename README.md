@@ -25,7 +25,7 @@ including
 
 Additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
 
-Ex: ST_Extent, ST_Explode
+Ex: `ST_Extent`, `ST_Explode`
 
 #### H2Drivers
 H2Drivers makes use of the TableEngine API to add H2 read/write support for file
@@ -58,5 +58,5 @@ CALL SPATIAL_INIT();
 You can open a shapefile by calling the following SQL request:
 
 ```sql
-CALL FILE_TABLE('/home/user/myshapefile.shp','tablename');
+CALL FILE_TABLE('/home/user/myshapefile.shp', 'tablename');
 ```
