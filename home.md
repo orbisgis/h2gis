@@ -57,6 +57,13 @@ One of the H2GIS goal is to provide a common interface to H2 and PostGIS for Geo
 
 When acquiring the **DataSource** or the **Connection** wrap it through SFSUtilities.wrapSpatialDataSource or SFSUtilities.wrapSpatialConnection.
 
+```java
+import org.osgi.service.jdbc.DataSourceFactory;
+public DataSource getDataSource(DataSourceFactory dataSourceFactory) {
+    dataSource = SFSUtilities.wrapSpatialDataSource(dataSourceFactory.createDataSource(properties));
+}
+```
+
 Then when you get a ResultSet trough a spatial table you can use the following command:
 ```java
 private void doStuff(Statement st) {
