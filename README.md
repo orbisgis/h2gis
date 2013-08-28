@@ -13,6 +13,8 @@ H2GIS is the root project for the new [OrbisGIS](http://www.orbisgis.org/) data
 management library and is divided into two subprojects: H2Spatial and
 H2Drivers.
 
+Both H2Spatial and H2Drivers are licensed under the GPL 3 license terms.
+
 #### H2Spatial
 H2Spatial extends H2 by adding spatial storage and analysis capabilities,
 including
@@ -31,10 +33,8 @@ Ex: `ST_Extent`, `ST_Explode`
 H2Drivers makes use of the TableEngine API to add H2 read/write support for file
 formats such as .shp, .dbf and .mif. With H2Drivers, the user can execute SQL queries
 on file formats other than pure H2.
-
-Both H2Spatial and H2Drivers are licensed under the GPL 3 license terms.
            
-### How to Use
+### Usage
 
 Build the project at the root by running:
 
