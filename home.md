@@ -13,14 +13,14 @@ Unzip and run the jar by clicking on it or using the run.sh.
 Find the h2 sql client on https://localhost:8082.
 Click on `Connect` to open a test database located on your user folder.
 
-To init spatial capabilities, run the following SQL request:
+To initialize spatial capabilities:
 
 ```sql
 CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.h2spatialext.CreateSpatialExtension.initSpatialExtension";
 CALL SPATIAL_INIT();
 ```
 
-You can open a shape file by calling the following SQL request:
+You can open a shape file:
 
 ```sql
 CALL FILE_TABLE('/home/user/myshapefile.shp','tablename');
@@ -32,7 +32,7 @@ select * from tablename;
 ```
 
 ## Spatial Index
-On regular table (not shapes) you can add a spatial index (stored on disk):
+On regular tables (not shapes) you can add a spatial index (stored on disk):
 ```sql
 create table area(idarea int primary key, the_geom geometry);
 create spatial index myspatialindex on area(the_geom);
