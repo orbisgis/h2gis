@@ -44,7 +44,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Nicolas Fortin
  */
-public class DBFEngineTest {
+public class  DBFEngineTest {
     private static Connection connection;
     private static final String DB_NAME = "SHPTest";
 

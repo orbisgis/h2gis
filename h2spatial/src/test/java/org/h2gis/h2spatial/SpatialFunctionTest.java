@@ -24,10 +24,12 @@
  */
 package org.h2gis.h2spatial;
 
+import com.vividsolutions.jts.geom.Envelope;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.sputilities.SFSUtilities;
 
 import java.net.URL;
 import java.sql.Connection;

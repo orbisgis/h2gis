@@ -5,7 +5,8 @@
     <parent>
         <groupId>org.h2gis</groupId>
         <artifactId>h2gis</artifactId>
-        <version>0.1-SNAPSHOT</version>
+        <version>0.1.1</version>
+        <relativePath>../</relativePath>
     </parent>
     <artifactId>h2-dist</artifactId>
     <name>h2-dist</name>
@@ -69,6 +70,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-ext</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${sl4j-version}</version>
         </dependency>
     </dependencies>
 </project>

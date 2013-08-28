@@ -5,7 +5,8 @@
 	<parent>
 		<groupId>org.h2gis</groupId>
 		<artifactId>h2gis</artifactId>
-		<version>0.1-SNAPSHOT</version>
+        <version>0.1.1</version>
+        <relativePath>../</relativePath>
 	</parent>
 	<artifactId>h2spatial</artifactId>
 	<name>h2spatial</name>
