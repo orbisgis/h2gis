@@ -34,11 +34,13 @@ on file formats other than pure H2.
            
 ### Usage
 
-For now, H2GIS requires Java 6 (and is not Java 7 compatible).
-Build the project at the root by running:
-```bsh
-mvn clean install
-```
+For now, H2GIS requires Java 6 (and is not yet Java 7 compatible; see issue #15). Before
+building the project, you must install the following dependencies in your local maven
+repository by running `maven clean install` in the project's root directory:
+* [OSGi dependencies](https://github.com/irstv/osgi-dependencies)
+* [maven-junit4osgi-plugin](https://github.com/irstv/felix/tree/trunk/ipojo/junit4osgi/maven-junit4osgi-plugin) (on the trunk branch)
+
+Once the dependencies are installed, run a `maven clean install` in the H2GIS's root directory.
 Then go to the folder h2-dist and run:
 ```bsh
 mvn package assembly:single
