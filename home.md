@@ -44,18 +44,18 @@ insert into roads values(1, 'LINESTRING (27.65595463138 -16.728733459357244, 47.
 insert into roads values(2, 'LINESTRING (17.674858223062415 55.861058601134246, 55.78449905482046 76.73062381852554)');
 ```
 
-The spatial predicate operator `&&` for bounding box overlap use this index:
+The spatial predicate operator `&&` for bounding box overlap uses this index:
 ```sql
 select idarea, COUNT(idroad) roadscount from area,roads where area.the_geom && roads.the_geom AND ST_Intersects(area.the_geom,roads.the_geom) GROUP BY idarea ORDER BY idarea
 ```
 
 ## Spatial JDBC
 
-One of the H2GIS goal is to provide a common interface to H2 and PostGIS for Geometry data. The `spatial-utilities` package provide a **DataSource** and **Connection** wrapper in order to facilitate the usage of JDBC with Geometry fields.
+One of H2GIS's goals is to provide a common interface to H2 and PostGIS for Geometry data. The `spatial-utilities` package provides a **DataSource** and **Connection** wrapper in order to facilitate the usage of JDBC with Geometry fields.
 
-### How to use
+### Usage
 
-When acquiring the **DataSource** or the **Connection** wrap it through SFSUtilities.wrapSpatialDataSource or SFSUtilities.wrapSpatialConnection.
+When acquiring the **DataSource** or the **Connection**, wrap it through `SFSUtilities.wrapSpatialDataSource `or `SFSUtilities.wrapSpatialConnection`.
 
 ```java
 import org.osgi.service.jdbc.DataSourceFactory;
@@ -64,7 +64,7 @@ public DataSource getDataSource(DataSourceFactory dataSourceFactory) {
 }
 ```
 
-Then when you get a ResultSet trough a spatial table you can use the following command:
+Then when you get a `ResultSet` through a spatial table you can use the following command:
 ```java
 private void doStuff(Statement st) {
     SpatialResultSet rs = st.executeQuery("select the_geom from mygeomtable").unWrap(SpatialResultSet.class);
