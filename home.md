@@ -7,20 +7,20 @@ additional spatial functions that we (the [Atelier SIG](http://www.irstv.fr/))
 develop. 
 
 # Quick Start
-Download the [last binary package](http://jenkins.orbisgis.org/job/H2GIS-Deploy/lastBuild/org.h2gis$h2-dist/) h2-dist-###-bin.zip
+Download the [latest binary package](http://jenkins.orbisgis.org/job/H2GIS-Deploy/lastBuild/org.h2gis$h2-dist/) called h2-dist-###-bin.zip
 
 Unzip and run the jar by clicking on it or using the run.sh.
-You fill find h2 sql client on https://localhost:8082
+Find the h2 sql client on https://localhost:8082.
 Click on `Connect` to open a test database located on your user folder.
 
-To init spatial capabilities run the following SQL request:
+To init spatial capabilities, run the following SQL request:
 
 ```sql
 CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.h2spatialext.CreateSpatialExtension.initSpatialExtension";
 CALL SPATIAL_INIT();
 ```
 
-You can open a Shape file by calling the following SQL request:
+You can open a shape file by calling the following SQL request:
 
 ```sql
 CALL FILE_TABLE('/home/user/myshapefile.shp','tablename');
