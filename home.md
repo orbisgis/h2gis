@@ -72,3 +72,9 @@ private void doStuff(Statement st) {
     Geometry myGeom = rs.getGeometry("the_geom");
 }
 ``` 
+
+# Custom function alias
+You can define script in H2 in java language.
+```sql
+CREATE ALIAS PRINT AS $$ void print(String s) { System.out.println(s); } $$;
+```
