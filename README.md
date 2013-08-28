@@ -34,8 +34,8 @@ on file formats other than pure H2.
            
 ### Usage
 
+For now, H2GIS requires Java 6 (and is not Java 7 compatible).
 Build the project at the root by running:
-
 ```bsh
 mvn clean install
 ```
