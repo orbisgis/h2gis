@@ -38,6 +38,13 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_AsWKT extends DeterministicScalarFunction {
+    /**
+     * Default constructor
+     */
+    public ST_AsWKT() {
+        addProperty(PROP_REMARKS, "Convert a geometry into WKT, a text representation of the geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "asWKT";

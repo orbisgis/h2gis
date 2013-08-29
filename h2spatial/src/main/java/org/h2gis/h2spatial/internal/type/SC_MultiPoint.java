@@ -36,6 +36,10 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  */
 public class SC_MultiPoint extends AbstractFunction implements ScalarFunction , GeometryConstraint {
 
+    public SC_MultiPoint() {
+        addProperty(PROP_REMARKS, "Return true if the geometry is a MultiPoint.");
+    }
+
     @Override
     public int getGeometryTypeCode() {
         return GeometryTypeCodes.MULTIPOINT;

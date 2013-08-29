@@ -37,6 +37,15 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_StartPoint extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_StartPoint() {
+        addProperty(PROP_REMARKS, "Returns the first point of a LINESTRING geometry as a POINT or NULL if the input" +
+                " parameter is not a LINESTRING.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getStartPoint";

@@ -36,6 +36,10 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  */
 public class SC_MultiPolygon extends AbstractFunction implements ScalarFunction , GeometryConstraint {
 
+    public SC_MultiPolygon() {
+        addProperty(PROP_REMARKS, "Return true if the geometry is a MultiPolygon.");
+    }
+
     @Override
     public int getGeometryTypeCode() {
         return GeometryTypeCodes.MULTIPOLYGON;

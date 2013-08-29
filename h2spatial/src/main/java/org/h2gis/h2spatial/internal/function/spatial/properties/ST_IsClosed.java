@@ -35,6 +35,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_IsClosed extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_IsClosed() {
+        addProperty(PROP_REMARKS, "Check if the provided geometry is closed.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "isClosed";

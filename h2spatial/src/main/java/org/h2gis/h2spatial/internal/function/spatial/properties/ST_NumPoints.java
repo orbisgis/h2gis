@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_NumPoints extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_NumPoints() {
+        addProperty(PROP_REMARKS, "Get the number of points inside a geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getNumPoints";

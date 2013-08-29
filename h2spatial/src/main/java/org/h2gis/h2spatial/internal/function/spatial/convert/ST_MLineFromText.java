@@ -36,6 +36,13 @@ import java.sql.SQLException;
  */
 public class ST_MLineFromText extends DeterministicScalarFunction {
 
+    /**
+     * Default constructor
+     */
+    public ST_MLineFromText() {
+        addProperty(PROP_REMARKS, "Convert String into a MultiLineString type.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "toGeometry";

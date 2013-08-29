@@ -41,6 +41,10 @@ import java.sql.Types;
 public class ST_Extent extends AbstractFunction implements AggregateFunction {
     private Envelope aggregatedEnvelope;
 
+    public ST_Extent() {
+        addProperty(PROP_REMARKS, "Return an envelope of the aggregation of all geometries in the table.");
+    }
+
     @Override
     public void init(Connection connection) throws SQLException {
         aggregatedEnvelope = null;

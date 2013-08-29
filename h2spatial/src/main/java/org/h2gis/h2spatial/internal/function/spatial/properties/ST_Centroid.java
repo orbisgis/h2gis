@@ -29,9 +29,21 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
+ * Computes the centroid of this Geometry. The centroid is equal to the centroid of the set of component Geometries of
+ * highest dimension (since the lower-dimension geometries contribute zero "weight" to the centroid)
  * @author Nicolas Fortin
  */
 public class ST_Centroid extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Centroid() {
+        addProperty(PROP_REMARKS, "Computes the centroid of this Geometry. The centroid is equal to the centroid of the" +
+                " set of component Geometries of highest dimension (since the lower-dimension geometries contribute zero" +
+                " \"weight\" to the centroid) .");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getCentroid";

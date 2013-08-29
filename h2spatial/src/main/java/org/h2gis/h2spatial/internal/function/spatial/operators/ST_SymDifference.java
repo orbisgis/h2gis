@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_SymDifference extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_SymDifference() {
+        addProperty(PROP_REMARKS, "Compute the symmetric difference between two geometries.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "symDifference";

@@ -36,6 +36,10 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  */
 public class SC_Polygon extends AbstractFunction implements ScalarFunction , GeometryConstraint {
 
+    public SC_Polygon() {
+        addProperty(PROP_REMARKS, "Return true if the geometry is a Polygon.");
+    }
+
     @Override
     public int getGeometryTypeCode() {
         return GeometryTypeCodes.POLYGON;

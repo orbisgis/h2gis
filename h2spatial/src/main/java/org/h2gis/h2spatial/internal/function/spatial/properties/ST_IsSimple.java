@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_IsSimple extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_IsSimple() {
+        addProperty(PROP_REMARKS, "Test if the provided geometry is simple.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "isSimple";

@@ -36,6 +36,8 @@ package org.h2gis.h2spatialapi;
 public interface Function {
     /** SQL function name, take class name by default */
     String PROP_NAME = "name";
+    /** SQL Function description */
+    String PROP_REMARKS = "remarks";
 
     /**
      * Optional function properties

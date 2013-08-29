@@ -35,6 +35,13 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  */
 public class ST_Envelope extends DeterministicScalarFunction {
 
+    /**
+     * Default constructor
+     */
+    public ST_Envelope() {
+        addProperty(PROP_REMARKS, "Get geometry envelope as geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getEnvelope";

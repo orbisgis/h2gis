@@ -38,6 +38,13 @@ import java.sql.SQLException;
 public class ST_InteriorRingN extends DeterministicScalarFunction {
     private static final String OUT_OF_BOUNDS_ERR_MESSAGE = "ST_InteriorRingN index > ST_NumInteriorRings or index <= 0, Ring index must be in the range [1-NbRings]";
 
+    /**
+     * Default constructor
+     */
+    public ST_InteriorRingN() {
+        addProperty(PROP_REMARKS, "Returns a LinearRing instance or Null if parameter is not a Geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getInteriorRing";

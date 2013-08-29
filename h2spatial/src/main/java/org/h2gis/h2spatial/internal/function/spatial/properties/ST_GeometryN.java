@@ -36,6 +36,13 @@ import java.sql.SQLException;
 public class ST_GeometryN extends DeterministicScalarFunction {
     private static final String OUT_OF_BOUNDS_ERR_MESSAGE = "ST_GeometryN index > ST_NumGeometries or index <= 0, Geometry index must be in the range [1-NbGeometry]";
 
+    /**
+     * Default constructor
+     */
+    public ST_GeometryN() {
+        addProperty(PROP_REMARKS, "Returns a Geometry instance or Null if parameter is not a GeometryCollection.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getGeometryN";

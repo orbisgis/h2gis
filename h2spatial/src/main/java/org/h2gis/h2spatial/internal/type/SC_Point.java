@@ -36,6 +36,10 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  */
 public class SC_Point extends AbstractFunction implements ScalarFunction , GeometryConstraint {
 
+    public SC_Point() {
+        addProperty(PROP_REMARKS, "Return true if the geometry is a Point");
+    }
+
     @Override
     public int getGeometryTypeCode() {
         return GeometryTypeCodes.POINT;

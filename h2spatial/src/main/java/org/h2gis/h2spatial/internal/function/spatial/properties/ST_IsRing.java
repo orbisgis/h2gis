@@ -35,6 +35,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_IsRing extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_IsRing() {
+        addProperty(PROP_REMARKS, "Test if the provided geometry is closed and simple.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "isRing";
