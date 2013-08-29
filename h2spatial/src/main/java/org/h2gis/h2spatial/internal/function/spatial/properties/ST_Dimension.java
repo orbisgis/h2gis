@@ -29,10 +29,17 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Get dimension of a geometry 2 or 3
+ * Get dimension of a geometry 0 for a Point, 1 for a line and 2 for a polygon.
  * @author Nicolas Fortin
  */
 public class ST_Dimension extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Dimension() {
+        addProperty(PROP_REMARKS, "Get dimension of a geometry 0 for a Point, 1 for a line and 2 for a polygon.");
+    }
 
     @Override
     public String getJavaStaticMethod() {

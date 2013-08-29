@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_NumGeometries extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_NumGeometries() {
+        addProperty(PROP_REMARKS, "Get the number of geometries inside a geometry collection.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getNumGeometries";

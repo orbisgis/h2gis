@@ -34,6 +34,15 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_PointOnSurface extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_PointOnSurface() {
+        addProperty(PROP_REMARKS, "Get a Point that lie on the surface of a Surface Geometry. The returned point" +
+                " is always the same for the same geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getInteriorPoint";

@@ -38,6 +38,10 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  */
 public class ST_AsBinary extends DeterministicScalarFunction {
 
+    public ST_AsBinary() {
+        addProperty(PROP_REMARKS, "Convert a geometry into WKB.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "toBytes";

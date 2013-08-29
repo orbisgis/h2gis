@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Difference extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Difference() {
+        addProperty(PROP_REMARKS, "Compute the difference between two geometries.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "difference";

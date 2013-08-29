@@ -37,6 +37,14 @@ import java.sql.SQLException;
  * @author Nicolas Fortin
  */
 public class ST_LineFromWKB extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_LineFromWKB() {
+        addProperty(PROP_REMARKS, "Convert WKT into a LinearRing.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "toPolygon";

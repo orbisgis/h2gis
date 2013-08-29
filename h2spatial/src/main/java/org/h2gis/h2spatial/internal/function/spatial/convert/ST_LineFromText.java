@@ -35,6 +35,12 @@ import java.sql.SQLException;
  * @author Nicolas Fortin
  */
 public class ST_LineFromText extends DeterministicScalarFunction {
+    /**
+     * Default constructor
+     */
+    public ST_LineFromText() {
+        addProperty(PROP_REMARKS, "Convert String into a Line type.");
+    }
 
     @Override
     public String getJavaStaticMethod() {

@@ -35,6 +35,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_NumInteriorRings extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_NumInteriorRings() {
+        addProperty(PROP_REMARKS, "Return the number of holes in a geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getHoles";

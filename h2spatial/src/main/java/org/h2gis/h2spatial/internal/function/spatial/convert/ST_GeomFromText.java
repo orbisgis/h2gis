@@ -40,7 +40,13 @@ import java.sql.SQLException;
  * @author Nicolas Fortin
  */
 public class ST_GeomFromText extends DeterministicScalarFunction {
-    private static WKTReader wktReader = new WKTReader();
+
+    /**
+     * Default constructor
+     */
+    public ST_GeomFromText() {
+        addProperty(PROP_REMARKS, "Convert a Well Known Text geometry string into a geometry instance.");
+    }
 
     @Override
     public String getJavaStaticMethod() {
@@ -57,6 +63,7 @@ public class ST_GeomFromText extends DeterministicScalarFunction {
         if(wkt == null) {
             return null;
         }
+        WKTReader wktReader = new WKTReader();
         try {
             return wktReader.read(wkt);
         } catch (ParseException ex) {

@@ -37,6 +37,13 @@ import java.sql.SQLException;
  */
 public class ST_PolyFromText extends DeterministicScalarFunction {
 
+    /**
+     * Default constructor
+     */
+    public ST_PolyFromText() {
+        addProperty(PROP_REMARKS, "Convert String into a Polygon type.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "toGeometry";

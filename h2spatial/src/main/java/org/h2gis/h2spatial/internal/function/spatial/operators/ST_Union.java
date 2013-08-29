@@ -35,6 +35,14 @@ import java.util.Collection;
  * @author Nicolas Fortin
  */
 public class ST_Union extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Union() {
+        addProperty(PROP_REMARKS, "Compute the union of the function geometry parameters.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "union";

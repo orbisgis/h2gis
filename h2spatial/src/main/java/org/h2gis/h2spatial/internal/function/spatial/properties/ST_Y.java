@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Y extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Y() {
+        addProperty(PROP_REMARKS, "Get the first Y coordinate.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getY";

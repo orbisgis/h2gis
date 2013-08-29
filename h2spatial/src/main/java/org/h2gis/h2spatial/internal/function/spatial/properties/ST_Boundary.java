@@ -34,6 +34,13 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  */
 public class ST_Boundary extends DeterministicScalarFunction {
 
+    /**
+     * Default constructor
+     */
+    public ST_Boundary() {
+        addProperty(PROP_REMARKS, "Get geometry boundary as geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getBoundary";

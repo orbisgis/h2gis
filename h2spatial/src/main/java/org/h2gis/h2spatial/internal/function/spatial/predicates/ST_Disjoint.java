@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Disjoint extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Disjoint() {
+        addProperty(PROP_REMARKS, "Return true if the geometry A is disjoint from the geometry B.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "geomDisjoint";

@@ -38,6 +38,13 @@ import java.sql.SQLException;
  */
 public class ST_MPointFromText extends DeterministicScalarFunction {
 
+    /**
+     * Default constructor
+     */
+    public ST_MPointFromText() {
+        addProperty(PROP_REMARKS, "Convert String into a MultiPoint type.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "toGeometry";

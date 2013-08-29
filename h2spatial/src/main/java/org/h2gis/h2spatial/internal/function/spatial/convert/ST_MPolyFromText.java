@@ -38,6 +38,13 @@ import java.sql.SQLException;
  */
 public class ST_MPolyFromText extends DeterministicScalarFunction {
 
+    /**
+     * Default constructor
+     */
+    public ST_MPolyFromText() {
+        addProperty(PROP_REMARKS, "Convert String into a MultiPolygon type.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "toGeometry";

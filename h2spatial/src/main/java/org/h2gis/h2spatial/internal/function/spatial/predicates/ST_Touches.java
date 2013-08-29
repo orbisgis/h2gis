@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Touches extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Touches() {
+        addProperty(PROP_REMARKS, "Return true if the geometry A touches the geometry B.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "geomTouches";
