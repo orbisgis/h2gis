@@ -42,6 +42,13 @@ import java.sql.SQLException;
 public class ST_PointN extends DeterministicScalarFunction {
     private static final String OUT_OF_BOUNDS_ERR_MESSAGE = "ST_PointN index > ST_NumPoints or index <= 0, Point index must be in the range [1-NbPoints]";
 
+    /**
+     * Default constructor
+     */
+    public ST_PointN() {
+        addProperty(PROP_REMARKS, "Returns the N point of a LINESTRING geometry as a POINT or NULL if the input parameter is not a LINESTRING.As the OGC specs ST_PointN is 1-N based.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getPointN";

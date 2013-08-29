@@ -35,6 +35,9 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  * @author Nicolas Fortin
  */
 public class SC_LineString extends AbstractFunction implements ScalarFunction, GeometryConstraint {
+    public SC_LineString() {
+        addProperty(PROP_REMARKS, "Return true if the geometry is a LineString.");
+    }
 
     @Override
     public int getGeometryTypeCode() {

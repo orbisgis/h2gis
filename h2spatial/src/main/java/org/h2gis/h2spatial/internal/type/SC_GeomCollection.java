@@ -37,6 +37,10 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  */
 public class SC_GeomCollection extends AbstractFunction implements ScalarFunction , GeometryConstraint {
 
+    public SC_GeomCollection() {
+        addProperty(PROP_REMARKS, "Return true if the geometry is an instance of GeometryCollection.");
+    }
+
     @Override
     public int getGeometryTypeCode() {
         return GeometryTypeCodes.GEOMCOLLECTION;

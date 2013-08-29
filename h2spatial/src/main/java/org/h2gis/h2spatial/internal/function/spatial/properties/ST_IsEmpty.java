@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_IsEmpty extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_IsEmpty() {
+        addProperty(PROP_REMARKS, "Check if the provided geometry is empty.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "isEmpty";

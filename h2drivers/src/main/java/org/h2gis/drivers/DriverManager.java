@@ -46,6 +46,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction {
 
     public DriverManager() {
         addProperty(PROP_NAME, "FILE_TABLE");
+        addProperty(PROP_REMARKS, "Use the appropriate driver to open a specified file path.");
     }
 
     @Override

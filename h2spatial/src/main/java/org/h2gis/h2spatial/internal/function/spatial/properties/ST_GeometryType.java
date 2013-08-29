@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_GeometryType extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_GeometryType() {
+        addProperty(PROP_REMARKS, "Return the type of geometry : POINT, LINESTRING, POLYGON..");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getGeometryType";

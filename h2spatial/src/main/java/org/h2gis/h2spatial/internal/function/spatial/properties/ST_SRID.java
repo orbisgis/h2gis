@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_SRID extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_SRID() {
+        addProperty(PROP_REMARKS, "Retrieve the SRID from an EWKB encoded geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getSRID";

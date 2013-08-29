@@ -36,6 +36,10 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  */
 public class SC_MultiLineString extends AbstractFunction implements ScalarFunction , GeometryConstraint {
 
+    public SC_MultiLineString() {
+        addProperty(PROP_REMARKS, "Return true if the geometry is a MultiLineString.");
+    }
+
     @Override
     public int getGeometryTypeCode() {
         return GeometryTypeCodes.MULTILINESTRING;

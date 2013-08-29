@@ -42,6 +42,10 @@ public class ST_Accum extends AbstractFunction implements AggregateFunction {
     private List<Geometry> toUnite = new LinkedList<Geometry>();
     private int srid=0;
 
+    public ST_Accum() {
+        addProperty(PROP_REMARKS, "Construct an array of Geometry.");
+    }
+
     @Override
     public void init(Connection connection) throws SQLException {
         srid=0;

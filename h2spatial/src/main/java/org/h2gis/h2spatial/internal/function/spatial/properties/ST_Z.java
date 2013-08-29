@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Z extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Z() {
+        addProperty(PROP_REMARKS, "Get the first Z coordinate.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getZ";

@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Within extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Within() {
+        addProperty(PROP_REMARKS, "Return true if the geometry A is within the geometry B.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "isWithin";

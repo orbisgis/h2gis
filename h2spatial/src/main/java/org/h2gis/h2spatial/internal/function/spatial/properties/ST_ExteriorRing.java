@@ -34,6 +34,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_ExteriorRing extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_ExteriorRing() {
+        addProperty(PROP_REMARKS, "Returns a LinearRing instance or Null if parameter is not a Geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getExteriorRing";

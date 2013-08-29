@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Area extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Area() {
+        addProperty(PROP_REMARKS, "Compute geometry area.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getArea";

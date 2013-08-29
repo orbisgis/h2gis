@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Intersection extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Intersection() {
+        addProperty(PROP_REMARKS, "Compute the intersection between two geometries.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "intersection";

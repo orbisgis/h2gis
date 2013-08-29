@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_EnvelopesIntersect extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_EnvelopesIntersect() {
+        addProperty(PROP_REMARKS, "Return true if the envelope of geometry A intersects the envelope of geometry B.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "isIntersects";

@@ -33,6 +33,11 @@ import javax.xml.bind.DatatypeConverter;
  * @author Nicolas Fortin
  */
 public class HexToVarBinary extends DeterministicScalarFunction {
+
+    public HexToVarBinary() {
+        addProperty(PROP_REMARKS, "Convert Hexadecimal string into an array of byte.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "toVarBinary";

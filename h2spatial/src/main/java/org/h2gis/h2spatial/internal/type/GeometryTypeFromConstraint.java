@@ -34,6 +34,14 @@ import org.orbisgis.sputilities.GeometryTypeCodes;
  * @author Nicolas Fortin
  */
 public class GeometryTypeFromConstraint extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public GeometryTypeFromConstraint() {
+        addProperty(PROP_REMARKS, "Convert H2 constraint string into a OGC geometry type index.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "GeometryTypeFromConstraint";

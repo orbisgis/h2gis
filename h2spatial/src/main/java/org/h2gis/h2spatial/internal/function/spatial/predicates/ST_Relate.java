@@ -38,6 +38,18 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Relate extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Relate() {
+        addProperty(PROP_REMARKS, " This function is used to compute the relation between two geometries," +
+                " as described in the SFS specification. It can be used in two ways. First, if it is given two geometries," +
+                "it returns a 9-character String representation of the 2 geometries IntersectionMatrix." +
+                " If it is given two geometries and an IntersectionMatrix representation, it will return a boolean :" +
+                " true it the two geometries' IntersectionMatrix match the given one, false otherwise.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "relate";

@@ -38,6 +38,11 @@ import java.sql.Statement;
  * @author Nicolas Fortin
  */
 public class ColumnSRID extends AbstractFunction implements ScalarFunction {
+
+    public ColumnSRID() {
+        addProperty(PROP_REMARKS, "Get the column SRID from constraints and data.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getSRID";

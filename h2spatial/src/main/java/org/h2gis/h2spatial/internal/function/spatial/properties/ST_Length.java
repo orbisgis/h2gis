@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_Length extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_Length() {
+        addProperty(PROP_REMARKS, "Compute the geometry length.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getLength";

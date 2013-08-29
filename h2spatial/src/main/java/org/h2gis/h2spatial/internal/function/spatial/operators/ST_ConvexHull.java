@@ -33,6 +33,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Nicolas Fortin
  */
 public class ST_ConvexHull extends DeterministicScalarFunction {
+
+    /**
+     * Default constructor
+     */
+    public ST_ConvexHull() {
+        addProperty(PROP_REMARKS, "Computes the smallest convex Polygon that contains all the points in the Geometry.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "convexHull";
