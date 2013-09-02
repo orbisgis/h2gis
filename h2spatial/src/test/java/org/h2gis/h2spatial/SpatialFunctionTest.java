@@ -24,6 +24,8 @@
  */
 package org.h2gis.h2spatial;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -37,6 +39,7 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import org.orbisgis.sputilities.SpatialResultSet;
 
 /**
  *
@@ -92,4 +95,5 @@ public class SpatialFunctionTest {
         procedures.close();
         CreateSpatialExtension.unRegisterFunction(connection.createStatement(), new DummyFunction());
     }
+    
 }
