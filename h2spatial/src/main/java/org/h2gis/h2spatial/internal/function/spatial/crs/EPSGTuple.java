@@ -23,6 +23,8 @@
  */
 package org.h2gis.h2spatial.internal.function.spatial.crs;
 
+import org.cts.cs.CoordinateSystem;
+
 /**
  * A simple tuple to manage both input and output CRSes used to build a
  * {@link CoordinateOperation}
@@ -38,8 +40,8 @@ public class EPSGTuple {
      * Create the tuple with the input and output epsg codes available in the
      * spatial_ref_sys table
      *
-     * @param intputEPSG
-     * @param targetEPSG
+     * @param intputEPSG the epsg code for the input {@link CoordinateSystem}
+     * @param targetEPSG the epsg code for the ouput {@link CoordinateSystem}
      */
     public EPSGTuple(int intputEPSG, int targetEPSG) {
         this.intputEPSG = intputEPSG;
