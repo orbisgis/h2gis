@@ -46,7 +46,7 @@ import org.cts.registry.RegistryException;
 public class SpatialRefRegistry implements Registry {
 
     private Connection connection;
-    Pattern regex = Pattern.compile("\\s+");
+    private static final Pattern regex = Pattern.compile("\\s+");
 
     @Override
     public String getRegistryName() {
@@ -90,7 +90,7 @@ public class SpatialRefRegistry implements Registry {
     /**
      * Remove + char if exists
      *
-     * @param a string that represents a proj key parameter
+     * @param prjKey represents a proj key parameter
      * @return a new string without + char
      */
     private static String formatKey(String prjKey) {
