@@ -36,17 +36,16 @@ import org.cts.registry.Registry;
 import org.cts.registry.RegistryException;
 
 /**
- * This classe build a registry based on a spatial_ref_sys table stored in the
- * H2 database. * 
+ * This class builds a registry based on a spatial_ref_sys table stored in the
+ * H2 database.
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class SpatialRefRegistry implements Registry {
 
     private Connection connection;
     Pattern regex = Pattern.compile("\\s+");
-    final String crsPS = "SELECT proj4text, auth_name FROM SPATIAL_REF_SYS where srid=?";
-
+    
     @Override
     public String getRegistryName() {
         return "epsg";
@@ -55,7 +54,7 @@ public class SpatialRefRegistry implements Registry {
     @Override
     public Map<String, String> getParameters(String code) throws RegistryException {
         try {
-            PreparedStatement prepStmt = connection.prepareStatement(crsPS);
+            PreparedStatement prepStmt = connection.prepareStatement("SELECT proj4text, auth_name FROM SPATIAL_REF_SYS where srid=?");
             prepStmt.setInt(1, Integer.valueOf(code));
             ResultSet rs = prepStmt.executeQuery();
             if (rs.next()) {
@@ -89,23 +88,27 @@ public class SpatialRefRegistry implements Registry {
     /**
      * Remove + char if exists
      *
-     * @param key
-     * @return
+     * @param a string that represents a proj key parameter
+     * @return a new string without + char
      */
-    private static String formatKey(String key) {
-        String formatKey = key;
-        if (key.startsWith("+")) {
-            formatKey = key.substring(1);
+    private static String formatKey(String prjKey) {
+        String formatKey = prjKey;
+        if (prjKey.startsWith("+")) {
+            formatKey = prjKey.substring(1);
         }
         return formatKey;
     }
 
     @Override
     public Set<String> getSupportedCodes() {        
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    void setConnection(Connection connection) {
+    /**
+     * Set the database connection
+     * @param connection 
+     */
+    public void setConnection(Connection connection) {
         this.connection = connection;
     }
 }

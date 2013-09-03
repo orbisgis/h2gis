@@ -47,9 +47,9 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 /**
  * This class is used to transform a geometry from one CRS to another. 
  * Only integer codes available in the spatial_ref_sys table are allowed.
- * The default source CRS is the internal one of the input geometry.
+ * The default source CRS is the input geometry's internal CRS.
  * 
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_Transform extends AbstractFunction implements ScalarFunction {
 
@@ -62,11 +62,20 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
         return "ST_Transform";
     }
 
+    /**
+     * Returns a new geometry transformed to the SRID referenced by the integer 
+     * parameter available in the spatial_ref_sys table
+     * @param connection
+     * @param geom
+     * @param codeEpsg
+     * @return
+     * @throws SQLException 
+     */
     public static Geometry ST_Transform(Connection connection, Geometry geom, int codeEpsg) throws SQLException {
         if (crsf == null) {
             crsf = new CRSFactory();
             //Activate the CRSFactory and the internal H2 spatial_ref_sys registry to
-            // manage Coordinate Reference System.
+            // manage Coordinate Reference Systems.
             crsf.getRegistryManager().addRegistry(srr);
         }
         srr.setConnection(connection);
@@ -103,17 +112,15 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
     }
 
     /**
-     * This method is used to apply a {@link CoordinateOperation} on a geometry.
+     * This method is used to apply a {@link CoordinateOperation} to a geometry.
      * The transformation loops on each coordinate.
      *
-     * @param coordinateOperation
+     * @param coordinateOperation The CoordinateOperation to apply
      * @return {@link GeometryTransformer}
      * @throws SQLException
      */
     public static GeometryTransformer getGeometryTransformer(final CoordinateOperation coordinateOperation) throws SQLException {
-        GeometryTransformer gt = null;
-        if (gt == null) {
-            gt = new GeometryTransformer() {
+        GeometryTransformer gt = new GeometryTransformer() {
                 @Override
                 protected CoordinateSequence transformCoordinates(
                         CoordinateSequence cs, Geometry geom) {
@@ -140,8 +147,7 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                     }
                     return newcs;
                 }
-            };
-        }
+            };        
         return gt;
 
     }

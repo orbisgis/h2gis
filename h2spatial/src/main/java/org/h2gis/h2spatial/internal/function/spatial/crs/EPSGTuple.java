@@ -24,10 +24,10 @@
 package org.h2gis.h2spatial.internal.function.spatial.crs;
 
 /**
- * A simple tuple to manage both input and output CRS used to build a
+ * A simple tuple to manage both input and output CRSes used to build a
  * {@link CoordinateOperation}
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class EPSGTuple {
 
@@ -62,13 +62,16 @@ public class EPSGTuple {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final EPSGTuple other = (EPSGTuple) obj;
-        if (this.intputEPSG != other.intputEPSG) {
-            return false;
+        if (obj instanceof EPSGTuple) {
+            final EPSGTuple other = (EPSGTuple) obj;
+            if (this.intputEPSG != other.intputEPSG) {
+                return false;
+            }
+            if (this.targetEPSG != other.targetEPSG) {
+                return false;
+            }
+            return true;
         }
-        if (this.targetEPSG != other.targetEPSG) {
-            return false;
-        }
-        return true;
+        return false;
     }
 }

@@ -38,7 +38,7 @@ import org.orbisgis.sputilities.SpatialResultSet;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class CRSFuntionTest {
 
