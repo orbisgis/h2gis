@@ -41,7 +41,7 @@ public class EPSGTuple {
      * spatial_ref_sys table
      *
      * @param intputEPSG the epsg code for the input {@link CoordinateSystem}
-     * @param targetEPSG the epsg code for the ouput {@link CoordinateSystem}
+     * @param targetEPSG the epsg code for the output {@link CoordinateSystem}
      */
     public EPSGTuple(int intputEPSG, int targetEPSG) {
         this.intputEPSG = intputEPSG;
