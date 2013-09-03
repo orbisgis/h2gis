@@ -54,8 +54,8 @@ public class CRSFuntionTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
-    }    
-    
+    }
+
     @Test
     public void test_ST_Transform27572To4326() throws Exception {
         Statement st = connection.createStatement();
@@ -65,6 +65,30 @@ public class CRSFuntionTest {
         SpatialResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(the_geom, 4326) from init;").unwrap(SpatialResultSet.class);
         assertTrue(srs.next());
         assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.0001));
+        st.execute("DROP TABLE IF EXISTS init;");
+    }
+
+    @Test
+    public void testST_Transform4326to2154() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE init AS SELECT ST_GeomFromText('POINT(2.114551393 50.345609791)', 4326) as the_geom;");
+        WKTReader wKTReader = new WKTReader();
+        Geometry targetGeom = wKTReader.read("POINT(636890.74032145 7027895.26344997)");
+        SpatialResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(the_geom, 2154) from init;").unwrap(SpatialResultSet.class);
+        assertTrue(srs.next());
+        assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
+        st.execute("DROP TABLE IF EXISTS init;");
+    }
+
+    @Test
+    public void testST_Transform27572to3857() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE init AS SELECT ST_GeomFromText('POINT(282331 2273699.7)', 27572) as the_geom;");
+        WKTReader wKTReader = new WKTReader();
+        Geometry targetGeom = wKTReader.read("POINT(-208496.537435372 6005369.87702729)");
+        SpatialResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(the_geom, 3857) from init;").unwrap(SpatialResultSet.class);
+        assertTrue(srs.next());
+        assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
         st.execute("DROP TABLE IF EXISTS init;");
     }
 }

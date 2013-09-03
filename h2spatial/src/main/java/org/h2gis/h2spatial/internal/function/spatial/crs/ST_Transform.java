@@ -43,9 +43,12 @@ import org.cts.op.CoordinateOperationFactory;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
+
 /**
- * This class is used to transform a geometry
- *
+ * This class is used to transform a geometry from one CRS to another. 
+ * Only integer codes available in the spatial_ref_sys table are allowed.
+ * The default source CRS is the internal one of the input geometry.
+ * 
  * @author ebocher
  */
 public class ST_Transform extends AbstractFunction implements ScalarFunction {

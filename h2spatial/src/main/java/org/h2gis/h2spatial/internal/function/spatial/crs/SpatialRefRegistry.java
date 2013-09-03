@@ -37,7 +37,7 @@ import org.cts.registry.RegistryException;
 
 /**
  * This classe build a registry based on a spatial_ref_sys table stored in the
- * H2 database.
+ * H2 database. * 
  *
  * @author ebocher
  */
@@ -101,7 +101,7 @@ public class SpatialRefRegistry implements Registry {
     }
 
     @Override
-    public Set<String> getSupportedCodes() {
+    public Set<String> getSupportedCodes() {        
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
