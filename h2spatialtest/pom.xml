@@ -102,6 +102,11 @@
             <artifactId>slf4j-simple</artifactId>
             <version>${sl4j-version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.cts</groupId>
+            <artifactId>cts</artifactId>
+            <version>${cts-version}</version>
+        </dependency>
     </dependencies>
     <build>
         <plugins>
