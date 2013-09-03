@@ -27,7 +27,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -45,7 +47,7 @@ public class SpatialRefRegistry implements Registry {
 
     private Connection connection;
     Pattern regex = Pattern.compile("\\s+");
-    
+
     @Override
     public String getRegistryName() {
         return "epsg";
@@ -100,13 +102,26 @@ public class SpatialRefRegistry implements Registry {
     }
 
     @Override
-    public Set<String> getSupportedCodes() {        
-        throw new UnsupportedOperationException("Not supported yet.");
+    public Set<String> getSupportedCodes() throws RegistryException {
+        Statement st;
+        try {
+            st = connection.createStatement();
+            ResultSet rs = st.executeQuery("SELECT srid from SPATIAL_REF_SYS;");
+            Set<String> codes = new HashSet<String>();
+            while (rs.next()) {
+                codes.add(rs.getString(1));
+            }
+            st.close();
+            return codes;
+        } catch (SQLException ex) {
+            throw new RegistryException("Cannot load the EPSG registry", ex);
+        }
     }
 
     /**
      * Set the database connection
-     * @param connection 
+     *
+     * @param connection
      */
     public void setConnection(Connection connection) {
         this.connection = connection;
