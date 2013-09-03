@@ -28,13 +28,11 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -92,4 +90,5 @@ public class SpatialFunctionTest {
         procedures.close();
         CreateSpatialExtension.unRegisterFunction(connection.createStatement(), new DummyFunction());
     }
+    
 }

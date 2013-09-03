@@ -99,6 +99,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.h2spatial.internal.function.spatial.crs.ST_Transform;
 
 /**
  * Add spatial features to an H2 database
@@ -178,7 +179,8 @@ public class CreateSpatialExtension {
                 new ST_ConvexHull(),
                 new ST_SRID(),
                 new ST_EnvelopesIntersect(),
-                new ST_Accum()};
+                new ST_Accum(),
+                new ST_Transform()};
     }
 
     /**

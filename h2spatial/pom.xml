@@ -25,6 +25,11 @@
 			<version>4.8.2</version>
 			<scope>test</scope>
 		</dependency>
+    <dependency>
+      <groupId>org.cts</groupId>
+      <artifactId>cts</artifactId>
+      <version>${cts-version}</version>
+    </dependency>
 		<dependency>
 			<groupId>com.vividsolutions</groupId>
 			<artifactId>jts</artifactId>

@@ -53,8 +53,7 @@ public class SpatialH2UT {
      * @throws ClassNotFoundException
      */
     public static Connection openSpatialDataBase(String dbName) throws SQLException, ClassNotFoundException {
-        String dbFilePath = getDataBasePath(dbName);
-        File dbFile = new File(dbFilePath +".h2.db");
+        String dbFilePath = getDataBasePath(dbName);       
         String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
         Class.forName("org.h2.Driver");
         // Keep a connection alive to not close the DataBase on each unit test
