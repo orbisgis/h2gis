@@ -57,6 +57,14 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
     private static SpatialRefRegistry srr = new SpatialRefRegistry();
     private static Map<EPSGTuple, CoordinateOperation> copPool = new CopCache(5);
 
+    /**
+     * Constructor
+     */
+    public ST_Transform() {
+        addProperty(PROP_REMARKS, "Transform a geometry from one CRS to another " +
+                "using integer codes from the SPATIAL_REF_SYS table.");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "ST_Transform";
