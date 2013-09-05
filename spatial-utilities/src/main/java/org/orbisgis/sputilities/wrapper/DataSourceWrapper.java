@@ -4,6 +4,8 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 /**
  * Entry point for spatial wrapper of SQL Interfaces.
@@ -44,6 +46,11 @@ public class DataSourceWrapper implements DataSource {
     @Override
     public int getLoginTimeout() throws SQLException {
         return dataSource.getLoginTimeout();
+    }
+
+    @Override
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        return dataSource.getParentLogger();
     }
 
     @Override
