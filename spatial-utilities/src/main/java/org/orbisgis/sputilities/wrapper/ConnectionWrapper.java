@@ -17,17 +17,16 @@ import java.sql.Statement;
 import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * @author Nicolas Fortin
  */
 public class ConnectionWrapper implements Connection {
     private Connection connection;
-    private DataSourceWrapper dataSource;
 
-    public ConnectionWrapper(Connection connection, DataSourceWrapper dataSource) {
+    public ConnectionWrapper(Connection connection) {
         this.connection = connection;
-        this.dataSource = dataSource;
     }
 
     @Override
@@ -263,6 +262,31 @@ public class ConnectionWrapper implements Connection {
     @Override
     public Struct createStruct(String typeName, Object[] attributes) throws SQLException {
         return connection.createStruct(typeName, attributes);
+    }
+
+    // @Override -- Commented out for Java 6 compatibility.
+    public void setSchema(String schema) throws SQLException {
+        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+    }
+
+    // @Override -- Commented out for Java 6 compatibility.
+    public String getSchema() throws SQLException {
+        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+    }
+
+    // @Override -- Commented out for Java 6 compatibility.
+    public void abort(Executor executor) throws SQLException {
+        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+    }
+
+    // @Override -- Commented out for Java 6 compatibility.
+    public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
+        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+    }
+
+    // @Override -- Commented out for Java 6 compatibility.
+    public int getNetworkTimeout() throws SQLException {
+        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
     }
 
     @Override

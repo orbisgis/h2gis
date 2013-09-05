@@ -90,7 +90,7 @@ public class SFSUtilities {
      * @return Wrapped DataSource, with spatial methods
      */
     public static Connection wrapConnection(Connection connection) {
-        return new ConnectionWrapper(connection,null);
+        return new ConnectionWrapper(connection);
     }
 
     /**
