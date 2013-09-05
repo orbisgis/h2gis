@@ -1,10 +1,6 @@
 package org.orbisgis.sputilities.wrapper;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.SQLWarning;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * @author Nicolas Fortin
@@ -216,6 +212,16 @@ public class StatementWrapper implements Statement {
     @Override
     public boolean isPoolable() throws SQLException {
         return statement.isPoolable();
+    }
+
+    @Override
+    public void closeOnCompletion() throws SQLException {
+        statement.closeOnCompletion();
+    }
+
+    @Override
+    public boolean isCloseOnCompletion() throws SQLException {
+        return statement.isCloseOnCompletion();
     }
 
     @Override
