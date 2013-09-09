@@ -969,6 +969,16 @@ public class ResultSetWrapper implements ResultSet {
         resultSet.updateNClob(columnLabel, reader);
     }
 
+    // @Override -- Commented out for Java 6 compatibility.
+    public <T> T getObject(int columnIndex, Class<T> type) throws SQLException {
+        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+    }
+
+    // @Override -- Commented out for Java 6 compatibility.
+    public <T> T getObject(String columnLabel, Class<T> type) throws SQLException {
+        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+    }
+
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
         if(iface.isAssignableFrom(SpatialResultSetImpl.class)) {

@@ -4,6 +4,8 @@ import javax.sql.DataSource;
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
+import java.util.logging.Logger;
 
 /**
  * Entry point for spatial wrapper of SQL Interfaces.
@@ -18,12 +20,12 @@ public class DataSourceWrapper implements DataSource {
 
     @Override
     public Connection getConnection() throws SQLException {
-        return new ConnectionWrapper(dataSource.getConnection(), this);
+        return new ConnectionWrapper(dataSource.getConnection());
     }
 
     @Override
     public Connection getConnection(String username, String password) throws SQLException {
-        return new ConnectionWrapper(dataSource.getConnection(username, password),this);
+        return new ConnectionWrapper(dataSource.getConnection(username, password));
     }
 
     @Override
@@ -44,6 +46,11 @@ public class DataSourceWrapper implements DataSource {
     @Override
     public int getLoginTimeout() throws SQLException {
         return dataSource.getLoginTimeout();
+    }
+
+    // @Override -- Commented out for Java 6 compatibility.
+    public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
     }
 
     @Override
