@@ -54,6 +54,7 @@
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.3</version>
                 <configuration>
+                    <finalName>h2gis-standalone</finalName>
                     <descriptors>
                         <descriptor>src/main/assembly/bin.xml</descriptor>     <!-- Binary Zip-->
                         <descriptor>src/main/assembly/project.xml</descriptor> <!-- Sources   -->
