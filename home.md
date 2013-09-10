@@ -7,7 +7,7 @@ additional spatial functions that we (the [Atelier SIG](http://www.irstv.fr/))
 develop. 
 
 # Quick Start
-Download the [latest binary package](http://jenkins.orbisgis.org/job/H2GIS-Deploy/lastBuild/org.h2gis$h2-dist/) called h2-dist-###-bin.zip
+Download H2GIS standalone jar [latest binary package](http://jenkins.orbisgis.org/view/H2%20GIS/job/H2GIS-Deploy/lastSuccessfulBuild/artifact/h2-dist/target/h2gis-standalone-bin.zip)
 
 Unzip and run the jar by clicking on it or using the run.sh.
 Find the h2 sql client on https://localhost:8082.
