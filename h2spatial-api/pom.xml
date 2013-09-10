@@ -35,12 +35,4 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.core</artifactId>
-            <version>${osgi-core-version}</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
 </project>
