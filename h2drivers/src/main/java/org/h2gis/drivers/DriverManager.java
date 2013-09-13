@@ -25,20 +25,26 @@
 
 package org.h2gis.drivers;
 
+import org.h2.util.StringUtils;
+import org.h2.util.Utils;
 import org.h2gis.drivers.dbf.DBFEngine;
 import org.h2gis.drivers.shp.SHPEngine;
 import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 
 /**
  * Use the appropriate driver to open a specified file path.
  * @author Nicolas Fortin
  */
-public class DriverManager extends AbstractFunction implements ScalarFunction {
+public class DriverManager extends AbstractFunction implements ScalarFunction, DriverFunction {
 
     private static final DriverDef[] DRIVERS = new DriverDef[] {
             new DriverDef(DBFEngine.class.getName(),"dbf"),
@@ -53,24 +59,19 @@ public class DriverManager extends AbstractFunction implements ScalarFunction {
     public String getJavaStaticMethod() {
         return "openFile";
     }
-    /*
-    public static String openFile(Connection connection, String fileName) {
-
-    }
-    */
 
     /**
      * Create a new table
-     * @param connection
-     * @param fileName
-     * @param tableName
+     * @param connection Active connection, do not close this connection.
+     * @param fileName File path to write, if exists it may be replaced
+     * @param tableName [[catalog.]schema.]table reference
      */
     public static void openFile(Connection connection, String fileName, String tableName) throws SQLException {
         String ext = fileName.substring(fileName.lastIndexOf('.') + 1,fileName.length());
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 Statement st = connection.createStatement();
-                st.execute(String.format("CREATE TABLE %s COMMENT '%s' ENGINE \"%s\" WITH \"%s\"",tableName,fileName, driverDef.className,fileName));
+                st.execute(String.format("CREATE TABLE `%s` COMMENT %s ENGINE %s WITH %s", tableName,StringUtils.quoteStringSQL(fileName), StringUtils.quoteJavaString(driverDef.className),StringUtils.quoteJavaString(fileName)));
                 st.close();
                 return;
             }
@@ -103,5 +104,34 @@ public class DriverManager extends AbstractFunction implements ScalarFunction {
         private String getFileExt() {
             return fileExt;
         }
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+        throw new SQLFeatureNotSupportedException("Work in progress..");
+    }
+
+    @Override
+    public IMPORT_DRIVER_TYPE getImportDriverType() {
+        return IMPORT_DRIVER_TYPE.LINK;
+    }
+
+    @Override
+    public String[] getImportFormats() {
+        String[] formats = new String[DRIVERS.length];
+        for(int idDriver = 0; idDriver < DRIVERS.length; idDriver++) {
+            formats[idDriver] = DRIVERS[idDriver].getFileExt();
+        }
+        return formats;
+    }
+
+    @Override
+    public String[] getExportFormats() {
+        return new String[0];
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+        openFile(connection, fileName.getAbsolutePath(), tableReference);
     }
 }
