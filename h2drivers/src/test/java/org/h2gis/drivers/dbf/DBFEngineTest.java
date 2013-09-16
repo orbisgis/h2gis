@@ -25,6 +25,7 @@
 
 package org.h2gis.drivers.dbf;
 
+import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.shp.SHPEngineTest;
 import org.h2gis.h2spatial.CreateSpatialExtension;
@@ -63,7 +64,7 @@ public class  DBFEngineTest {
     @Test
     public void readDBFMetaTest() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.dbf").getPath()+"', 'DBFTABLE');");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
         assertTrue(rs.next());
@@ -85,7 +86,7 @@ public class  DBFEngineTest {
     @Test
     public void readDBFDataTest() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.dbf").getPath()+"', 'DBFTABLE');");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
         assertTrue(rs.next());
@@ -98,7 +99,7 @@ public class  DBFEngineTest {
     @Test
     public void readDBFEncodingTest() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("CALL FILE_TABLE('"+DBFEngineTest.class.getResource("encoding_test.dbf").getPath()+"', 'DBFTABLE');");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("encoding_test.dbf").getPath())+", 'DBFTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
         assertTrue(rs.next());
@@ -122,6 +123,4 @@ public class  DBFEngineTest {
         rs.close();
         st.execute("drop table dbftable");
     }
-
-
 }

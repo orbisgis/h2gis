@@ -26,7 +26,6 @@
 package org.h2gis.drivers;
 
 import org.h2.util.StringUtils;
-import org.h2.util.Utils;
 import org.h2gis.drivers.dbf.DBFEngine;
 import org.h2gis.drivers.shp.SHPEngine;
 import org.h2gis.h2spatialapi.AbstractFunction;
@@ -71,7 +70,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 Statement st = connection.createStatement();
-                st.execute(String.format("CREATE TABLE `%s` COMMENT %s ENGINE %s WITH %s", tableName,StringUtils.quoteStringSQL(fileName), StringUtils.quoteJavaString(driverDef.className),StringUtils.quoteJavaString(fileName)));
+                st.execute(String.format("CREATE TABLE `%s` COMMENT %s ENGINE %s WITH %s", tableName,StringUtils.quoteStringSQL(fileName), StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
                 st.close();
                 return;
             }
@@ -94,14 +93,14 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
         /**
          * @return Class package and name
          */
-        private String getClassName() {
+        public String getClassName() {
             return className;
         }
 
         /**
          * @return File extension, case insensitive
          */
-        private String getFileExt() {
+        public String getFileExt() {
             return fileExt;
         }
     }

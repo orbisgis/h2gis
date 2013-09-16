@@ -32,7 +32,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 /**
- * Merge ShapeFileReader and DBFReader
+ * Merge ShapeFileReader and DBFReader.
+ * TODO Handle SHP without SHX and/or DBF
  * @author Nicolas Fortin
  */
 public class SHPDriver {
@@ -44,12 +45,31 @@ public class SHPDriver {
     private IndexFile shxFileReader;
     private int geometryFieldIndex = 0;
 
-
+    /**
+     * Init this driver from existing files, then open theses files.
+     * @param shpFile Shape file path.
+     * @throws IOException
+     */
     public void initDriverFromFile(File shpFile) throws IOException {             // Read columns from files metadata
         String path = shpFile.getAbsolutePath();
         this.shpFile = shpFile;
-        shxFile = new File(path.substring(0,path.lastIndexOf('.'))+".shx");
-        dbfFile = new File(path.substring(0,path.lastIndexOf('.'))+".dbf");
+        // Find appropriate file extension for shx and dbf, maybe SHX or Shx..
+        String shxFileName = shpFile.getName();
+        String nameWithoutExt = shxFileName.substring(0,shxFileName.lastIndexOf('.'));
+        File[] filesInParentFolder = shpFile.getParentFile().listFiles();
+        if(filesInParentFolder != null) {
+            for(File otherFile : filesInParentFolder) {
+                String otherFileName = otherFile.getName();
+                if(otherFileName.startsWith(nameWithoutExt + ".")) {
+                    String fileExt =  otherFileName.substring(otherFileName.lastIndexOf(".") + 1);
+                    if(fileExt.equalsIgnoreCase("shx")) {
+                        shxFile = otherFile;
+                    } else if(fileExt.equalsIgnoreCase("dbf")) {
+                        dbfFile = otherFile;
+                    }
+                }
+            }
+        }
         FileInputStream fis = new FileInputStream(dbfFile);
         dbaseFileReader = new DbaseFileReader(fis.getChannel());
         FileInputStream shpFis = new FileInputStream(shpFile);
@@ -65,6 +85,10 @@ public class SHPDriver {
         return dbaseFileReader.getHeader();
     }
 
+    /**
+     * Close open files
+     * @throws IOException
+     */
     public void close() throws IOException {
         dbaseFileReader.close();
         shapefileReader.close();
@@ -76,6 +100,10 @@ public class SHPDriver {
     public long getRowCount() {
         return dbaseFileReader.getRecordCount();
     }
+
+    /**
+     * @return Column count
+     */
     public int getFieldCount() {
         return dbaseFileReader.getFieldCount() + 1;
     }
