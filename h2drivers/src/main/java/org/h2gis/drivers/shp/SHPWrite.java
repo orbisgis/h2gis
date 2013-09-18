@@ -27,6 +27,10 @@ package org.h2gis.drivers.shp;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
  * @author Nicolas Fortin
  */
@@ -34,6 +38,10 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return "exportTable";  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+
     }
 }

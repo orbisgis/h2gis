@@ -26,6 +26,7 @@
 package org.h2gis.drivers.shp;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -63,7 +64,7 @@ public class SHPEngineTest {
     @Test
     public void readSHPMetaTest() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'SHPTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'");
         assertTrue(rs.next());

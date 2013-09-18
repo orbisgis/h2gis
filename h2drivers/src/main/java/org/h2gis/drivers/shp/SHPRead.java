@@ -27,7 +27,11 @@ package org.h2gis.drivers.shp;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * SQL Function to copy Shape File data into a Table.
@@ -46,7 +50,12 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path of the SHP file
      */
-    public static void readShape(Connection connection, String tableReference, String fileName) {
-
+    public static void readShape(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+        File file = new File(fileName);
+        if(!file.exists()) {
+            throw new FileNotFoundException("The following file does not exists:\n"+fileName);
+        }
+        SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
+        shpDriverFunction.importFile(connection, tableReference, new File(fileName));
     }
 }

@@ -25,23 +25,40 @@
 
 package org.h2gis.drivers.dbf.internal;
 
+import org.h2gis.drivers.shp.internal.ShapefileHeader;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Merge ShapeFileReader and DBFReader
+ * Manage DBFReader and DBFWriter
  * @author Nicolas Fortin
  */
 public class DBFDriver {
     private File dbfFile;
     private DbaseFileReader dbaseFileReader;
+    private DbaseFileWriter dbaseFileWriter;
 
     public void initDriverFromFile(File dbfFile) throws IOException {
         // Read columns from files metadata
         this.dbfFile = dbfFile;
         FileInputStream fis = new FileInputStream(dbfFile);
         dbaseFileReader = new DbaseFileReader(fis.getChannel());
+    }
+
+    public void initDriver(File dbfFile, DbaseFileHeader dbaseHeader) throws IOException {
+        this.dbfFile = dbfFile;
+        FileOutputStream dbfFos = new FileOutputStream(dbfFile);
+        dbaseFileWriter = new DbaseFileWriter(dbaseHeader,dbfFos.getChannel());
+    }
+
+    /**
+     * @return DBF File path
+     */
+    public File getDbfFile() {
+        return dbfFile;
     }
 
     /**
@@ -59,6 +76,13 @@ public class DBFDriver {
      */
     public long getRowCount() {
         return dbaseFileReader.getRecordCount();
+    }
+
+    /**
+     * @return Column count
+     */
+    public int getFieldCount() {
+        return dbaseFileReader.getFieldCount();
     }
 
     /**

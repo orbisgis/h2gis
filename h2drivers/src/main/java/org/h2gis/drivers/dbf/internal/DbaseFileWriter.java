@@ -115,7 +115,8 @@ public class DbaseFileWriter {
 		header.writeHeader(out);
 		this.header = header;
 		this.channel = out;
-		this.charset = charset == null ? Charset.defaultCharset() : charset;
+        // DBase does not support UTF-8
+		this.charset = charset == null ? Charset.forName(DbaseFileHeader.DEFAULT_ENCODING) : charset;
 		this.formatter = new DbaseFileWriter.FieldFormatter(this.charset);
 		init();
 	}

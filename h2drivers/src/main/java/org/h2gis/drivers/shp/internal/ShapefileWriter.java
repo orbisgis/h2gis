@@ -86,7 +86,10 @@ public class ShapefileWriter {
 
 	private int offset;
 
-	private int cnt;
+	private int cnt = 0; //number of geometries
+
+    private Envelope bounds;
+
 
 	/**
 	 * Creates a new instance of ShapeFileWriter
@@ -99,39 +102,53 @@ public class ShapefileWriter {
 			throws IOException {
 		this.shpChannel = shpChannel;
 		this.shxChannel = shxChannel;
-		shapeBuffer = new WriteBufferManager(shpChannel);
-		indexBuffer = new WriteBufferManager(shxChannel);
 	}
 
-	/**
-	 * Write the headers for this shapefile including the bounds, shape type,
-	 * the number of geometries and the total fileLength (in actual bytes, NOT
-	 * 16 bit words).
-         *
-         * @param bounds
-         * @param type
-         * @param numberOfGeometries
-         * @param fileLength
-         * @throws java.io.IOException
-         */
-	public void writeHeaders(Envelope bounds, ShapeType type,
-			int numberOfGeometries, int fileLength) throws IOException {
+    /**
+     * @return The Shape File Channel
+     */
+    public FileChannel getShpChannel() {
+        return shpChannel;
+    }
+
+    /**
+	 * Write the headers for this shapefile, the first time, then when all geometries are inserted.
+     * @param type Shape type
+     * @throws java.io.IOException
+     */
+	public void writeHeaders(ShapeType type) throws IOException {
 		try {
 			handler = type.getShapeHandler();
 		} catch (ShapefileException se) {
 			throw new IOException("Error with type " + type, se);
 		}
+        long fileLength = shpChannel.position();
+        long shxPosition = shxChannel.position();
+        indexBuffer.flush();
+        shapeBuffer.flush();
+        shpChannel.position(0);
+        shxChannel.position(0);
+        shapeBuffer = new WriteBufferManager(shpChannel);
+        indexBuffer = new WriteBufferManager(shxChannel);
 		ShapefileHeader header = new ShapefileHeader();
-		header.write(shapeBuffer, type, numberOfGeometries, fileLength / 2,
-				bounds.getMinX(), bounds.getMinY(), bounds.getMaxX(), bounds
+        Envelope writeBounds = bounds;
+        if(writeBounds == null) {
+            writeBounds = new Envelope();
+        }
+		header.write(shapeBuffer, type, cnt, (int)(fileLength / 2),
+                writeBounds.getMinX(), writeBounds.getMinY(), writeBounds.getMaxX(), writeBounds
 						.getMaxY());
-		header.write(indexBuffer, type, numberOfGeometries,
-				50 + 4 * numberOfGeometries, bounds.getMinX(),
-				bounds.getMinY(), bounds.getMaxX(), bounds.getMaxY());
-
+		header.write(indexBuffer, type, cnt,
+                50 + 4 * cnt, writeBounds.getMinX(),
+                writeBounds.getMinY(), writeBounds.getMaxX(), writeBounds.getMaxY());
 		offset = 50;
 		this.type = type;
-		cnt = 0;
+        indexBuffer.flush();
+        shapeBuffer.flush();
+        shpChannel.position(fileLength);
+        shxChannel.position(shxPosition);
+        shapeBuffer = new WriteBufferManager(shpChannel);
+        indexBuffer = new WriteBufferManager(shxChannel);
 	}
 
 	/**
@@ -142,6 +159,14 @@ public class ShapefileWriter {
          * @throws java.io.IOException
          */
 	public void writeGeometry(Geometry g) throws IOException {
+        if(type == null) {
+            throw new IllegalStateException("Header must be written before writeGeometry");
+        }
+        if(bounds != null) {
+            bounds.expandToInclude(g.getEnvelopeInternal());
+        } else {
+            bounds = g.getEnvelopeInternal();
+        }
 		int length;
 		if (g == null) {
 			length = 4;
