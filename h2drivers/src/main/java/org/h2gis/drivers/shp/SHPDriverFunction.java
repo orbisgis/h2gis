@@ -74,9 +74,9 @@ public class SHPDriverFunction implements DriverFunction {
                 DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
                 header.setNumRecords(recordCount);
                 SHPDriver shpDriver = new SHPDriver();
-                shpDriver.setGeometryFieldIndex(JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0)));
+                shpDriver.setGeometryFieldIndex(JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0)) - 1);
                 shpDriver.initDriver(fileName,shapeType , header);
-                Object[] row = new Object[header.getNumFields()];
+                Object[] row = new Object[header.getNumFields() + 1];
                 while (rs.next()) {
                     for(int columnId = 0; columnId < row.length; columnId++) {
                         row[columnId] = rs.getObject(columnId + 1);
@@ -153,6 +153,31 @@ public class SHPDriverFunction implements DriverFunction {
     }
 
 
+    private static DBFType getDBFType(int sqlTypeId, String sqlTypeName,int precision, int scale) throws SQLException {
+        switch (sqlTypeId) {
+            case Types.BOOLEAN:
+                return new DBFType('l', 1, 0);
+            case Types.BIT:
+                return new DBFType('n', Math.min(3, precision), 0);
+            case Types.DATE:
+                return new DBFType('d', 8, 0);
+            case Types.DOUBLE:
+            case Types.FLOAT:
+                return new DBFType('f', Math.min(20, precision), Math.min(18,
+                        scale));
+            case Types.INTEGER:
+                return new DBFType('n', Math.min(10, precision), 0);
+            case Types.BIGINT:
+                return new DBFType('n', Math.min(18, precision), 0);
+            case Types.SMALLINT:
+                return new DBFType('n', Math.min(5, precision), 0);
+            case Types.VARCHAR:
+            case Types.NCHAR:
+                return new DBFType('c', Math.min(254, precision), 0);
+            default:
+                throw new SQLException("Field type not supported by DBF : " + sqlTypeName);
+        }
+    }
 
     private static DbaseFileHeader dBaseHeaderFromMetaData(ResultSetMetaData metaData) throws SQLException {
         DbaseFileHeader dbaseFileHeader = new DbaseFileHeader();
@@ -160,31 +185,9 @@ public class SHPDriverFunction implements DriverFunction {
             final String fieldTypeName = metaData.getColumnTypeName(fieldId);
             // TODO postgis check field type
             if(!fieldTypeName.equalsIgnoreCase("geometry")) {
-                char fieldType;
-                switch (metaData.getColumnType(fieldId)) {
-                    case Types.BOOLEAN:
-                        fieldType = 'l';
-                        break;
-                    // (C)character (String)
-                    case Types.VARCHAR:
-                        fieldType = 'c';
-                        break;
-                    case Types.DATE:
-                        fieldType = 'd';
-                        break;
-                    case Types.INTEGER:
-                    case Types.TINYINT:
-                        fieldType = 'n';
-                        break;
-                    case Types.FLOAT:
-                    case Types.DOUBLE:
-                        fieldType = 'f';
-                        break;
-                    default:
-                        throw new SQLException("Field type not supported by DBF : " + fieldTypeName);
-                }
+                DBFType dbfType = getDBFType(metaData.getColumnType(fieldId), fieldTypeName, metaData.getPrecision(fieldId), metaData.getScale(fieldId));
                 try {
-                    dbaseFileHeader.addColumn(metaData.getColumnName(fieldId),fieldType, metaData.getPrecision(fieldId),metaData.getColumnDisplaySize(fieldId));
+                    dbaseFileHeader.addColumn(metaData.getColumnName(fieldId),dbfType.type, dbfType.fieldLength, dbfType.decimalCount);
                 } catch (DbaseFileException ex) {
                     throw new SQLException(ex.getLocalizedMessage(), ex);
                 }
@@ -200,7 +203,7 @@ public class SHPDriverFunction implements DriverFunction {
             ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from `%s`", tableReference));
             try {
                 if(rs.next()) {
-                    rowCount = rs.getInt(0);
+                    rowCount = rs.getInt(1);
                 }
             } finally {
                 rs.close();
@@ -254,6 +257,20 @@ public class SHPDriverFunction implements DriverFunction {
                 throw new SQLException(String.format("Geometry type of the field %s incompatible with ShapeFile, please use (Multi)Point, (Multi)Polygon or (Multi)LineString constraint", fieldName));
         }
         return shapeType;
+    }
+
+    private static class DBFType {
+
+        char type;
+        int fieldLength;
+        int decimalCount;
+
+        DBFType(char type, int fieldLength, int decimalCount) {
+            super();
+            this.type = type;
+            this.fieldLength = fieldLength;
+            this.decimalCount = decimalCount;
+        }
     }
 
     private static String getQuestionMark(int count) {

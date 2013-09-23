@@ -72,12 +72,15 @@ public class SHPDriver extends DBFDriver {
         shapefileWriter.writeGeometry((Geometry)values[geometryFieldIndex]);
         // Extract the DBF part of the row
         Object[] dbfValues = new Object[values.length - 1];
+        // Copy DBF data before geometryFieldIndex
         if(geometryFieldIndex > 0) {
             System.arraycopy(values, 0, dbfValues, 0, geometryFieldIndex);
         }
-        if(geometryFieldIndex < values.length) {
-            System.arraycopy(values, geometryFieldIndex + 1, dbfValues, geometryFieldIndex, values.length - geometryFieldIndex);
+        // Copy DBF data after geometryFieldIndex
+        if(geometryFieldIndex + 1 < values.length) {
+            System.arraycopy(values, geometryFieldIndex + 1, dbfValues, geometryFieldIndex, dbfValues.length - geometryFieldIndex);
         }
+        super.insertRow(dbfValues);
     }
 
     /**

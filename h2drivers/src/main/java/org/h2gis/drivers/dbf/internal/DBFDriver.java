@@ -61,7 +61,7 @@ public class DBFDriver {
      */
     public void insertRow(Object[] values) throws IOException {
         checkWriter();
-        if(values.length != getFieldCount()) {
+        if(values.length != getDbaseFileHeader().getNumFields()) {
             throw new IllegalArgumentException("Incorrect field count "+values.length+" expected "+getFieldCount());
         }
         try {
@@ -94,11 +94,21 @@ public class DBFDriver {
      * @return The DBF file header
      */
     public DbaseFileHeader getDbaseFileHeader() {
-        return dbaseFileReader.getHeader();
+        if(dbaseFileReader != null) {
+            return dbaseFileReader.getHeader();
+        } else if(dbaseFileWriter != null) {
+            return dbaseFileWriter.getHeader();
+        } else {
+            throw new IllegalStateException("The driver is not initialised");
+        }
     }
 
     public void close() throws IOException {
-        dbaseFileReader.close();
+        if(dbaseFileReader != null) {
+            dbaseFileReader.close();
+        } else if(dbaseFileWriter != null) {
+            dbaseFileWriter.close();
+        }
     }
     /**
      * @return Row count
@@ -111,7 +121,7 @@ public class DBFDriver {
      * @return Column count
      */
     public int getFieldCount() {
-        return dbaseFileReader.getFieldCount();
+        return getDbaseFileHeader().getNumFields();
     }
 
     /**

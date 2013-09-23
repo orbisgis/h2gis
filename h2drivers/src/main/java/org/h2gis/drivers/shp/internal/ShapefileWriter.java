@@ -112,7 +112,7 @@ public class ShapefileWriter {
     }
 
     /**
-	 * Write the headers for this shapefile, the first time, then when all geometries are inserted.
+	 * Write the headers for this shapefile.Use this function before inserting the first geometry, then when all geometries are inserted.
      * @param type Shape type
      * @throws java.io.IOException
      */
@@ -122,19 +122,22 @@ public class ShapefileWriter {
 		} catch (ShapefileException se) {
 			throw new IOException("Error with type " + type, se);
 		}
+        if(indexBuffer != null) {
+            indexBuffer.flush();
+        }
+        if(shapeBuffer != null) {
+            shapeBuffer.flush();
+        }
         long fileLength = shpChannel.position();
-        long shxPosition = shxChannel.position();
-        indexBuffer.flush();
-        shapeBuffer.flush();
         shpChannel.position(0);
         shxChannel.position(0);
-        shapeBuffer = new WriteBufferManager(shpChannel);
-        indexBuffer = new WriteBufferManager(shxChannel);
 		ShapefileHeader header = new ShapefileHeader();
         Envelope writeBounds = bounds;
         if(writeBounds == null) {
             writeBounds = new Envelope();
         }
+        indexBuffer = new WriteBufferManager(shxChannel);
+        shapeBuffer = new WriteBufferManager(shpChannel);
 		header.write(shapeBuffer, type, cnt, (int)(fileLength / 2),
                 writeBounds.getMinX(), writeBounds.getMinY(), writeBounds.getMaxX(), writeBounds
 						.getMaxY());
@@ -143,12 +146,6 @@ public class ShapefileWriter {
                 writeBounds.getMinY(), writeBounds.getMaxX(), writeBounds.getMaxY());
 		offset = 50;
 		this.type = type;
-        indexBuffer.flush();
-        shapeBuffer.flush();
-        shpChannel.position(fileLength);
-        shxChannel.position(shxPosition);
-        shapeBuffer = new WriteBufferManager(shpChannel);
-        indexBuffer = new WriteBufferManager(shxChannel);
 	}
 
 	/**
@@ -163,7 +160,9 @@ public class ShapefileWriter {
             throw new IllegalStateException("Header must be written before writeGeometry");
         }
         if(bounds != null) {
-            bounds.expandToInclude(g.getEnvelopeInternal());
+            if(g != null) {
+                bounds.expandToInclude(g.getEnvelopeInternal());
+            }
         } else {
             bounds = g.getEnvelopeInternal();
         }

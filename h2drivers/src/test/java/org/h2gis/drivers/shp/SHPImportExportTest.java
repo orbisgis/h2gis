@@ -65,8 +65,9 @@ public class SHPImportExportTest {
     }
 
     @Test
-    public void exportTableTest() throws SQLException, IOException {
+    public void exportTableTestGeomEnd() throws SQLException, IOException {
         Statement stat = connection.createStatement();
+        File shpFile = new File("target/area_export.shp");
         stat.execute("DROP TABLE IF EXISTS AREA");
         stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
@@ -74,17 +75,45 @@ public class SHPImportExportTest {
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export.shp', 'AREA')");
         // Read this shape file to check values
+        assertTrue(shpFile.exists());
         SHPDriver shpDriver = new SHPDriver();
-        shpDriver.initDriverFromFile(new File("target/area_export.shp'"));
+        shpDriver.initDriverFromFile(shpFile);
         shpDriver.setGeometryFieldIndex(1);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
         Object[] row = shpDriver.getRow(0);
         assertEquals(1, row[0]);
-        assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", ((Geometry)row[1]).toText());
+        // The driver can not create POLYGON
+        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", ((Geometry)row[1]).toText());
         row = shpDriver.getRow(1);
         assertEquals(2, row[0]);
-        assertEquals("POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))", ((Geometry)row[1]).toText());
+        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", ((Geometry)row[1]).toText());
+    }
+
+    @Test
+    public void exportTableTestGeomDeb() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/area_export.shp");
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom POLYGON, idarea int primary key)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export.shp', 'AREA')");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        SHPDriver shpDriver = new SHPDriver();
+        shpDriver.initDriverFromFile(shpFile);
+        shpDriver.setGeometryFieldIndex(0);
+        assertEquals(2, shpDriver.getFieldCount());
+        assertEquals(2, shpDriver.getRowCount());
+        Object[] row = shpDriver.getRow(0);
+        assertEquals(1, row[1]);
+        // The driver can not create POLYGON
+        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", ((Geometry)row[0]).toText());
+        row = shpDriver.getRow(1);
+        assertEquals(2, row[1]);
+        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", ((Geometry)row[0]).toText());
     }
 
     @Test
