@@ -159,8 +159,6 @@ public class DbaseFileWriter {
 			String fieldString = fieldString(record[i], i);
 			if (header.getFieldLength(i) != fieldString
 					.getBytes(charset.name()).length) {
-				// System.out.println(i + " : " + header.getFieldName(i)+" value
-				// = "+fieldString+"");
 				buffer.put(new byte[header.getFieldLength(i)]);
 			} else {
 				buffer.put(fieldString.getBytes(charset.name()));

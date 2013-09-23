@@ -25,6 +25,7 @@
 
 package org.h2gis.drivers.shp.internal;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 
@@ -36,6 +37,14 @@ import java.io.IOException;
 /**
  * Merge ShapeFileReader and DBFReader.
  * TODO Handle SHP without SHX and/or DBF
+ *
+ * How to use:
+ *
+ * In Write mode,
+ * Declare fields by calling {@link SHPDriver#initDriver(java.io.File, ShapeType, org.h2gis.drivers.dbf.internal.DbaseFileHeader)}
+ * then write row using
+ *
+ *
  * @author Nicolas Fortin
  */
 public class SHPDriver extends DBFDriver {
@@ -54,6 +63,23 @@ public class SHPDriver extends DBFDriver {
         this.geometryFieldIndex = geometryFieldIndex;
     }
 
+    @Override
+    public void insertRow(Object[] values) throws IOException {
+        if(!(values[geometryFieldIndex] instanceof Geometry)) {
+            throw new IllegalArgumentException("Field at "+geometryFieldIndex+" should be an instance of Geometry," +
+                    " found "+values[geometryFieldIndex].getClass()+" instead.");
+        }
+        shapefileWriter.writeGeometry((Geometry)values[geometryFieldIndex]);
+        // Extract the DBF part of the row
+        Object[] dbfValues = new Object[values.length - 1];
+        if(geometryFieldIndex > 0) {
+            System.arraycopy(values, 0, dbfValues, 0, geometryFieldIndex);
+        }
+        if(geometryFieldIndex < values.length) {
+            System.arraycopy(values, geometryFieldIndex + 1, dbfValues, geometryFieldIndex, values.length - geometryFieldIndex);
+        }
+    }
+
     /**
      * @return The geometry field index in getRow() array.
      */
@@ -61,6 +87,18 @@ public class SHPDriver extends DBFDriver {
         return geometryFieldIndex;
     }
 
+    @Override
+    public void initDriver(File dbfFile, DbaseFileHeader dbaseHeader) throws IOException {
+        throw new IllegalStateException("Provide ShapeType");
+    }
+
+    /**
+     * Init Driver for Write mode
+     * @param shpFile
+     * @param shapeType
+     * @param dbaseHeader
+     * @throws IOException
+     */
     public void initDriver(File shpFile, ShapeType shapeType, DbaseFileHeader dbaseHeader) throws IOException {
         String path = shpFile.getAbsolutePath();
         String nameWithoutExt = path.substring(0,path.lastIndexOf('.'));
@@ -125,10 +163,10 @@ public class SHPDriver extends DBFDriver {
         if(shapefileReader != null) {
             shapefileReader.close();
             shxFileReader.close();
-        }
-        if(shapefileWriter != null) {
+        } else if(shapefileWriter != null) {
             // Update header
             shapefileWriter.writeHeaders(shapeType);
+            shapefileWriter.close();
         }
     }
 
@@ -157,17 +195,5 @@ public class SHPDriver extends DBFDriver {
             System.arraycopy(dbfValues, geometryFieldIndex, values, geometryFieldIndex + 1, dbfValues.length);
         }
         return values;
-    }
-
-    private void checkReader() {
-        if(shapefileReader == null) {
-            throw new IllegalStateException("The driver is not in read mode");
-        }
-    }
-
-    private void checkWriter() {
-        if(shapefileWriter == null) {
-            throw new IllegalStateException("The driver is not in write mode");
-        }
     }
 }

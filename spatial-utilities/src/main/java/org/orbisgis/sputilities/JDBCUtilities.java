@@ -50,13 +50,25 @@ public class JDBCUtilities {
         return geomStatement.executeQuery();
     }
     private static boolean hasField(ResultSetMetaData resultSetMetaData, String fieldName) throws SQLException {
+        return getFieldIndex(resultSetMetaData, fieldName) != -1;
+    }
+
+    /**
+     * Fetch the metadata, and check field name
+     * @param resultSetMetaData Active result set meta data.
+     * @param fieldName Field name, ignore case
+     * @return The field index [1-n]; -1 if the field is not found
+     * @throws SQLException
+     */
+    public static int getFieldIndex(ResultSetMetaData resultSetMetaData, String fieldName) throws SQLException {
         for(int columnId = 1; columnId <= resultSetMetaData.getColumnCount(); columnId++) {
             if(fieldName.equalsIgnoreCase(resultSetMetaData.getColumnName(columnId))) {
-                return true;
+                return columnId;
             }
         }
-        return false;
+        return -1;
     }
+
     /**
      * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table reference is a temporary table.
      * @param connection Active connection not closed by this method

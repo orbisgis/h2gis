@@ -54,6 +54,35 @@ public class DBFDriver {
         dbaseFileWriter = new DbaseFileWriter(dbaseHeader,dbfFos.getChannel());
     }
 
+
+    /**
+     * Write a row
+     * @param values Content, must be of the same type as declared in the header
+     */
+    public void insertRow(Object[] values) throws IOException {
+        checkWriter();
+        if(values.length != getFieldCount()) {
+            throw new IllegalArgumentException("Incorrect field count "+values.length+" expected "+getFieldCount());
+        }
+        try {
+            dbaseFileWriter.write(values);
+        } catch (DbaseFileException ex) {
+            throw new IOException(ex.getLocalizedMessage(), ex);
+        }
+    }
+
+    private void checkReader() {
+        if(dbaseFileReader == null) {
+            throw new IllegalStateException("The driver is not in read mode");
+        }
+    }
+
+    private void checkWriter() {
+        if(dbaseFileWriter == null) {
+            throw new IllegalStateException("The driver is not in write mode");
+        }
+    }
+
     /**
      * @return DBF File path
      */

@@ -54,6 +54,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>spatial-utilities</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts</artifactId>
             <version>${jts-version}</version>

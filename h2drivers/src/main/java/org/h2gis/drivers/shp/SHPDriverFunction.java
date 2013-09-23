@@ -25,16 +25,27 @@
 
 package org.h2gis.drivers.shp;
 
+import org.h2gis.drivers.dbf.internal.DbaseFileException;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.drivers.shp.internal.SHPDriver;
+import org.h2gis.drivers.shp.internal.ShapeType;
 import org.h2gis.drivers.shp.internal.ShapefileHeader;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.orbisgis.sputilities.GeometryTypeCodes;
+import org.orbisgis.sputilities.JDBCUtilities;
+import org.orbisgis.sputilities.SFSUtilities;
+import org.orbisgis.sputilities.TableLocation;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
+import java.util.List;
 
 /**
  * Read/Write Shape files
@@ -45,7 +56,40 @@ public class SHPDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
-
+        int recordCount = getRowCount(connection, tableReference);
+        //
+        // Read Geometry Index and type
+        List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableReference));
+        if(spatialFieldNames.isEmpty()) {
+            throw new SQLException(String.format("The table %s does not contain a geometry field", tableReference));
+        }
+        int geometryType = SFSUtilities.getGeometryType(connection, TableLocation.parse(tableReference), spatialFieldNames.get(0));
+        ShapeType shapeType = getShapeTypeFromSFSGeometryTypeCode(geometryType, spatialFieldNames.get(0));
+        // Read table content
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableReference));
+            try {
+                ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
+                header.setNumRecords(recordCount);
+                SHPDriver shpDriver = new SHPDriver();
+                shpDriver.setGeometryFieldIndex(JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0)));
+                shpDriver.initDriver(fileName,shapeType , header);
+                Object[] row = new Object[header.getNumFields()];
+                while (rs.next()) {
+                    for(int columnId = 0; columnId < row.length; columnId++) {
+                        row[columnId] = rs.getObject(columnId + 1);
+                    }
+                    shpDriver.insertRow(row);
+                }
+                shpDriver.close();
+            } finally {
+                rs.close();
+            }
+        } finally {
+            st.close();
+        }
     }
 
     @Override
@@ -106,6 +150,110 @@ public class SHPDriverFunction implements DriverFunction {
         } finally {
             shpDriver.close();
         }
+    }
+
+
+
+    private static DbaseFileHeader dBaseHeaderFromMetaData(ResultSetMetaData metaData) throws SQLException {
+        DbaseFileHeader dbaseFileHeader = new DbaseFileHeader();
+        for(int fieldId= 1; fieldId <= metaData.getColumnCount(); fieldId++) {
+            final String fieldTypeName = metaData.getColumnTypeName(fieldId);
+            // TODO postgis check field type
+            if(!fieldTypeName.equalsIgnoreCase("geometry")) {
+                char fieldType;
+                switch (metaData.getColumnType(fieldId)) {
+                    case Types.BOOLEAN:
+                        fieldType = 'l';
+                        break;
+                    // (C)character (String)
+                    case Types.VARCHAR:
+                        fieldType = 'c';
+                        break;
+                    case Types.DATE:
+                        fieldType = 'd';
+                        break;
+                    case Types.INTEGER:
+                    case Types.TINYINT:
+                        fieldType = 'n';
+                        break;
+                    case Types.FLOAT:
+                    case Types.DOUBLE:
+                        fieldType = 'f';
+                        break;
+                    default:
+                        throw new SQLException("Field type not supported by DBF : " + fieldTypeName);
+                }
+                try {
+                    dbaseFileHeader.addColumn(metaData.getColumnName(fieldId),fieldType, metaData.getPrecision(fieldId),metaData.getColumnDisplaySize(fieldId));
+                } catch (DbaseFileException ex) {
+                    throw new SQLException(ex.getLocalizedMessage(), ex);
+                }
+            }
+        }
+        return dbaseFileHeader;
+    }
+
+    private static int getRowCount(Connection connection, String tableReference) throws SQLException {
+        Statement st = connection.createStatement();
+        int rowCount = 0;
+        try {
+            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from `%s`", tableReference));
+            try {
+                if(rs.next()) {
+                    rowCount = rs.getInt(0);
+                }
+            } finally {
+                rs.close();
+            }
+        }finally {
+            st.close();
+        }
+        return rowCount;
+    }
+
+    private static ShapeType getShapeTypeFromSFSGeometryTypeCode(int sfsGeometryTypeCode, String fieldName) throws SQLException {
+        ShapeType shapeType;
+        switch (sfsGeometryTypeCode) {
+            case GeometryTypeCodes.MULTILINESTRING:
+            case GeometryTypeCodes.LINESTRING:
+                shapeType = ShapeType.ARC;
+                break;
+            case GeometryTypeCodes.MULTILINESTRINGM:
+            case GeometryTypeCodes.LINESTRINGM:
+                shapeType = ShapeType.ARCM;
+                break;
+            case GeometryTypeCodes.MULTILINESTRINGZ:
+            case GeometryTypeCodes.LINESTRINGZ:
+                shapeType = ShapeType.ARCZ;
+                break;
+            case GeometryTypeCodes.POINT:
+            case GeometryTypeCodes.MULTIPOINT:
+                shapeType = ShapeType.MULTIPOINT;
+                break;
+            case GeometryTypeCodes.POINTM:
+            case GeometryTypeCodes.MULTIPOINTM:
+                shapeType = ShapeType.MULTIPOINTM;
+                break;
+            case GeometryTypeCodes.POINTZ:
+            case GeometryTypeCodes.MULTIPOINTZ:
+                shapeType = ShapeType.MULTIPOINTZ;
+                break;
+            case GeometryTypeCodes.POLYGON:
+            case GeometryTypeCodes.MULTIPOLYGON:
+                shapeType = ShapeType.POLYGON;
+                break;
+            case GeometryTypeCodes.POLYGONM:
+            case GeometryTypeCodes.MULTIPOLYGONM:
+                shapeType = ShapeType.POLYGONM;
+                break;
+            case GeometryTypeCodes.POLYGONZ:
+            case GeometryTypeCodes.MULTIPOLYGONZ:
+                shapeType = ShapeType.POLYGONZ;
+                break;
+            default:
+                throw new SQLException(String.format("Geometry type of the field %s incompatible with ShapeFile, please use (Multi)Point, (Multi)Polygon or (Multi)LineString constraint", fieldName));
+        }
+        return shapeType;
     }
 
     private static String getQuestionMark(int count) {

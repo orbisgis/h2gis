@@ -27,11 +27,13 @@ package org.h2gis.drivers.shp;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
+ * SQL Function to read a table and write it into a shape file.
  * @author Nicolas Fortin
  */
 public class SHPWrite extends AbstractFunction implements ScalarFunction {
@@ -42,6 +44,7 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
     }
 
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-
+        SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
+        shpDriverFunction.exportTable(connection, tableReference, new File(fileName));
     }
 }
