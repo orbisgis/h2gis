@@ -38,6 +38,10 @@ import java.sql.SQLException;
  */
 public class SHPWrite extends AbstractFunction implements ScalarFunction {
 
+    public SHPWrite() {
+        addProperty(PROP_REMARKS, "Transfer the content of a table into a new shape file");
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "exportTable";  //To change body of implemented methods use File | Settings | File Templates.

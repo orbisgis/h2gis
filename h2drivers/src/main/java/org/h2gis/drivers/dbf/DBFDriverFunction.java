@@ -239,7 +239,7 @@ public class DBFDriverFunction implements DriverFunction {
             final String fieldTypeName = metaData.getColumnTypeName(fieldId);
             // TODO postgis check field type
             if(!fieldTypeName.equalsIgnoreCase("geometry")) {
-                DBFType dbfType = getDBFType(metaData.getColumnType(fieldId), fieldTypeName, metaData.getPrecision(fieldId), metaData.getScale(fieldId));
+                DBFType dbfType = getDBFType(metaData.getColumnType(fieldId), fieldTypeName, metaData.getColumnDisplaySize(fieldId), metaData.getPrecision(fieldId));
                 try {
                     dbaseFileHeader.addColumn(metaData.getColumnName(fieldId),dbfType.type, dbfType.fieldLength, dbfType.decimalCount);
                 } catch (DbaseFileException ex) {
@@ -251,27 +251,27 @@ public class DBFDriverFunction implements DriverFunction {
     }
 
 
-    private static DBFType getDBFType(int sqlTypeId, String sqlTypeName,int precision, int scale) throws SQLException {
+    private static DBFType getDBFType(int sqlTypeId, String sqlTypeName,int length, int precision) throws SQLException {
         switch (sqlTypeId) {
             case Types.BOOLEAN:
                 return new DBFType('l', 1, 0);
             case Types.BIT:
-                return new DBFType('n', Math.min(3, precision), 0);
+                return new DBFType('n', Math.min(3, length), 0);
             case Types.DATE:
                 return new DBFType('d', 8, 0);
             case Types.DOUBLE:
             case Types.FLOAT:
-                return new DBFType('f', Math.min(20, precision), Math.min(18,
-                        scale));
+                return new DBFType('f', Math.min(20, length), Math.min(18,
+                        precision));
             case Types.INTEGER:
-                return new DBFType('n', Math.min(10, precision), 0);
+                return new DBFType('n', Math.min(10, length), 0);
             case Types.BIGINT:
-                return new DBFType('n', Math.min(18, precision), 0);
+                return new DBFType('n', Math.min(18, length), 0);
             case Types.SMALLINT:
-                return new DBFType('n', Math.min(5, precision), 0);
+                return new DBFType('n', Math.min(5, length), 0);
             case Types.VARCHAR:
             case Types.NCHAR:
-                return new DBFType('c', Math.min(254, precision), 0);
+                return new DBFType('c', Math.min(254, length), 0);
             default:
                 throw new SQLException("Field type not supported by DBF : " + sqlTypeName);
         }
