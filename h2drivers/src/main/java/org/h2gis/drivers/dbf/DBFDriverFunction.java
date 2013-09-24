@@ -1,0 +1,279 @@
+/*
+ * h2spatial is a library that brings spatial support to the H2 Java database.
+ *
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ *
+ * h2patial is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * h2spatial is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * h2spatial. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
+package org.h2gis.drivers.dbf;
+
+import org.h2gis.drivers.dbf.internal.DBFDriver;
+import org.h2gis.drivers.dbf.internal.DbaseFileException;
+import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.orbisgis.sputilities.JDBCUtilities;
+import org.orbisgis.sputilities.TableLocation;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+
+/**
+ * @author Nicolas Fortin
+ */
+public class DBFDriverFunction implements DriverFunction {
+    private static final int BATCH_MAX_SIZE = 100;
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+        // Read table content
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableReference));
+            try {
+                ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
+                header.setNumRecords(recordCount);
+                DBFDriver dbfDriver = new DBFDriver();
+                dbfDriver.initDriver(fileName, header);
+                Object[] row = new Object[header.getNumFields()];
+                while (rs.next()) {
+                    for(int columnId = 0; columnId < row.length; columnId++) {
+                        row[columnId] = rs.getObject(columnId + 1);
+                    }
+                    dbfDriver.insertRow(row);
+                }
+                dbfDriver.close();
+            } finally {
+                rs.close();
+            }
+        } finally {
+            st.close();
+        }
+    }
+
+    @Override
+    public IMPORT_DRIVER_TYPE getImportDriverType() {
+        return IMPORT_DRIVER_TYPE.COPY;
+    }
+
+    @Override
+    public String[] getImportFormats() {
+        return new String[] {"dbf"};
+    }
+
+    @Override
+    public String[] getExportFormats() {
+        return new String[] {"dbf"};
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+        DBFDriver dbfDriver = new DBFDriver();
+        dbfDriver.initDriverFromFile(fileName);
+        try {
+            DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
+            // Build CREATE TABLE sql request
+            Statement st = connection.createStatement();
+            st.execute(String.format("CREATE TABLE `%s` (%s)", TableLocation.parse(tableReference),
+                    getSQLColumnTypes(dbfHeader)));
+            st.close();
+            try {
+                PreparedStatement preparedStatement = connection.prepareStatement(
+                        String.format("INSERT INTO `%s` VALUES ( %s )", TableLocation.parse(tableReference),
+                                getQuestionMark(dbfHeader.getNumFields())));
+                try {
+                    long batchSize = 0;
+                    for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
+                        Object[] values = dbfDriver.getRow(rowId);
+                        for (int columnId = 0; columnId < values.length; columnId++) {
+                            preparedStatement.setObject(columnId + 1, values[columnId]);
+                        }
+                        preparedStatement.addBatch();
+                        batchSize++;
+                        if (batchSize >= BATCH_MAX_SIZE) {
+                            preparedStatement.executeBatch();
+                            preparedStatement.clearBatch();
+                            batchSize = 0;
+                        }
+                    }
+                    if(batchSize > 0) {
+                        preparedStatement.executeBatch();
+                    }
+                } finally {
+                    preparedStatement.close();
+                }
+                //TODO create spatial index on the_geom ?
+            } catch (Exception ex) {
+                connection.createStatement().execute("DROP TABLE IF EXISTS " + tableReference);
+                throw new SQLException(ex.getLocalizedMessage(), ex);
+            }
+        } finally {
+            dbfDriver.close();
+        }
+    }
+
+    private static class DBFType {
+
+        char type;
+        int fieldLength;
+        int decimalCount;
+
+        DBFType(char type, int fieldLength, int decimalCount) {
+            super();
+            this.type = type;
+            this.fieldLength = fieldLength;
+            this.decimalCount = decimalCount;
+        }
+    }
+
+    /**
+     * Generate the concatenation of ? characters. Used by PreparedStatement.
+     * @param count Number of ? character to generation
+     * @return Value ex: "?, ?, ?"
+     */
+    public static String getQuestionMark(int count) {
+        StringBuilder qMark = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            if(i > 0) {
+                qMark.append(", ");
+            }
+            qMark.append("?");
+        }
+        return qMark.toString();
+    }
+
+    /**
+     * Return SQL Columns declaration
+     * @param header DBAse file header
+     * @return Array of columns ex: ["id INTEGER", "len DOUBLE"]
+     */
+    public static String getSQLColumnTypes(DbaseFileHeader header) throws IOException {
+        StringBuilder stringBuilder = new StringBuilder();
+        for(int idColumn = 0; idColumn < header.getNumFields(); idColumn++) {
+            if(idColumn > 0) {
+                stringBuilder.append(", ");
+            }
+            stringBuilder.append(header.getFieldName(idColumn));
+            stringBuilder.append(" ");
+            switch (header.getFieldType(idColumn)) {
+                // (L)logical (T,t,F,f,Y,y,N,n)
+                case 'l':
+                case 'L':
+                    stringBuilder.append("BOOLEAN");
+                    break;
+                // (C)character (String)
+                case 'c':
+                case 'C':
+                    stringBuilder.append("CHAR(");
+                    // Append size
+                    int length = header.getFieldLength(idColumn);
+                    stringBuilder.append(String.valueOf(length));
+                    stringBuilder.append(")");
+                    break;
+                // (D)date (Date)
+                case 'd':
+                case 'D':
+                    stringBuilder.append("DATE");
+                    break;
+                // (F)floating (Double)
+                case 'n':
+                case 'N':
+                    if ((header.getFieldDecimalCount(idColumn) == 0)) {
+                        if ((header.getFieldLength(idColumn) >= 0)
+                                && (header.getFieldLength(idColumn) < 10)) {
+                            stringBuilder.append("INT4");
+                        } else {
+                            stringBuilder.append("INT8");
+                        }
+                    } else {
+                        stringBuilder.append("FLOAT8");
+                    }
+                    break;
+                case 'f':
+                case 'F': // floating point number
+                case 'o':
+                case 'O': // floating point number
+                    stringBuilder.append("FLOAT8");
+                    break;
+                default:
+                    throw new IOException("Unknown DBF field type " + header.getFieldType(idColumn));
+            }
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * Create a DBF header from the columns specified in parameter.
+     * @param metaData SQL ResultSetMetadata
+     * @return DbfaseFileHeader instance.
+     * @throws SQLException If one or more type are not supported by DBF
+     */
+    public static DbaseFileHeader dBaseHeaderFromMetaData(ResultSetMetaData metaData) throws SQLException {
+        DbaseFileHeader dbaseFileHeader = new DbaseFileHeader();
+        for(int fieldId= 1; fieldId <= metaData.getColumnCount(); fieldId++) {
+            final String fieldTypeName = metaData.getColumnTypeName(fieldId);
+            // TODO postgis check field type
+            if(!fieldTypeName.equalsIgnoreCase("geometry")) {
+                DBFType dbfType = getDBFType(metaData.getColumnType(fieldId), fieldTypeName, metaData.getPrecision(fieldId), metaData.getScale(fieldId));
+                try {
+                    dbaseFileHeader.addColumn(metaData.getColumnName(fieldId),dbfType.type, dbfType.fieldLength, dbfType.decimalCount);
+                } catch (DbaseFileException ex) {
+                    throw new SQLException(ex.getLocalizedMessage(), ex);
+                }
+            }
+        }
+        return dbaseFileHeader;
+    }
+
+
+    private static DBFType getDBFType(int sqlTypeId, String sqlTypeName,int precision, int scale) throws SQLException {
+        switch (sqlTypeId) {
+            case Types.BOOLEAN:
+                return new DBFType('l', 1, 0);
+            case Types.BIT:
+                return new DBFType('n', Math.min(3, precision), 0);
+            case Types.DATE:
+                return new DBFType('d', 8, 0);
+            case Types.DOUBLE:
+            case Types.FLOAT:
+                return new DBFType('f', Math.min(20, precision), Math.min(18,
+                        scale));
+            case Types.INTEGER:
+                return new DBFType('n', Math.min(10, precision), 0);
+            case Types.BIGINT:
+                return new DBFType('n', Math.min(18, precision), 0);
+            case Types.SMALLINT:
+                return new DBFType('n', Math.min(5, precision), 0);
+            case Types.VARCHAR:
+            case Types.NCHAR:
+                return new DBFType('c', Math.min(254, precision), 0);
+            default:
+                throw new SQLException("Field type not supported by DBF : " + sqlTypeName);
+        }
+    }
+}

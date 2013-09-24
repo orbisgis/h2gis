@@ -25,7 +25,7 @@
 
 package org.h2gis.drivers.shp;
 
-import org.h2gis.drivers.dbf.internal.DbaseFileException;
+import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.drivers.shp.internal.ShapeType;
@@ -44,7 +44,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.List;
 
 /**
@@ -56,7 +55,7 @@ public class SHPDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
-        int recordCount = getRowCount(connection, tableReference);
+        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         //
         // Read Geometry Index and type
         List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableReference));
@@ -71,7 +70,7 @@ public class SHPDriverFunction implements DriverFunction {
             ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableReference));
             try {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
+                DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData);
                 header.setNumRecords(recordCount);
                 SHPDriver shpDriver = new SHPDriver();
                 shpDriver.setGeometryFieldIndex(JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0)) - 1);
@@ -116,11 +115,13 @@ public class SHPDriverFunction implements DriverFunction {
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
-            st.execute(String.format("CREATE TABLE `%s` (the_geom %s, %s)", tableReference, getSFSGeometryType(shpHeader), getSQLColumnTypes(dbfHeader)));
+            st.execute(String.format("CREATE TABLE %s (the_geom %s, %s)", TableLocation.parse(tableReference),
+                    getSFSGeometryType(shpHeader), DBFDriverFunction.getSQLColumnTypes(dbfHeader)));
             st.close();
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                        String.format("INSERT INTO `%s` VALUES ( " + getQuestionMark(dbfHeader.getNumFields() + 1) + ")", tableReference));
+                        String.format("INSERT INTO %s VALUES ( %s )", TableLocation.parse(tableReference),
+                                DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1)));
                 try {
                     long batchSize = 0;
                     for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
@@ -150,68 +151,6 @@ public class SHPDriverFunction implements DriverFunction {
         } finally {
             shpDriver.close();
         }
-    }
-
-
-    private static DBFType getDBFType(int sqlTypeId, String sqlTypeName,int precision, int scale) throws SQLException {
-        switch (sqlTypeId) {
-            case Types.BOOLEAN:
-                return new DBFType('l', 1, 0);
-            case Types.BIT:
-                return new DBFType('n', Math.min(3, precision), 0);
-            case Types.DATE:
-                return new DBFType('d', 8, 0);
-            case Types.DOUBLE:
-            case Types.FLOAT:
-                return new DBFType('f', Math.min(20, precision), Math.min(18,
-                        scale));
-            case Types.INTEGER:
-                return new DBFType('n', Math.min(10, precision), 0);
-            case Types.BIGINT:
-                return new DBFType('n', Math.min(18, precision), 0);
-            case Types.SMALLINT:
-                return new DBFType('n', Math.min(5, precision), 0);
-            case Types.VARCHAR:
-            case Types.NCHAR:
-                return new DBFType('c', Math.min(254, precision), 0);
-            default:
-                throw new SQLException("Field type not supported by DBF : " + sqlTypeName);
-        }
-    }
-
-    private static DbaseFileHeader dBaseHeaderFromMetaData(ResultSetMetaData metaData) throws SQLException {
-        DbaseFileHeader dbaseFileHeader = new DbaseFileHeader();
-        for(int fieldId= 1; fieldId <= metaData.getColumnCount(); fieldId++) {
-            final String fieldTypeName = metaData.getColumnTypeName(fieldId);
-            // TODO postgis check field type
-            if(!fieldTypeName.equalsIgnoreCase("geometry")) {
-                DBFType dbfType = getDBFType(metaData.getColumnType(fieldId), fieldTypeName, metaData.getPrecision(fieldId), metaData.getScale(fieldId));
-                try {
-                    dbaseFileHeader.addColumn(metaData.getColumnName(fieldId),dbfType.type, dbfType.fieldLength, dbfType.decimalCount);
-                } catch (DbaseFileException ex) {
-                    throw new SQLException(ex.getLocalizedMessage(), ex);
-                }
-            }
-        }
-        return dbaseFileHeader;
-    }
-
-    private static int getRowCount(Connection connection, String tableReference) throws SQLException {
-        Statement st = connection.createStatement();
-        int rowCount = 0;
-        try {
-            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from `%s`", tableReference));
-            try {
-                if(rs.next()) {
-                    rowCount = rs.getInt(1);
-                }
-            } finally {
-                rs.close();
-            }
-        }finally {
-            st.close();
-        }
-        return rowCount;
     }
 
     private static ShapeType getShapeTypeFromSFSGeometryTypeCode(int sfsGeometryTypeCode, String fieldName) throws SQLException {
@@ -254,94 +193,10 @@ public class SHPDriverFunction implements DriverFunction {
                 shapeType = ShapeType.POLYGONZ;
                 break;
             default:
-                throw new SQLException(String.format("Geometry type of the field %s incompatible with ShapeFile, please use (Multi)Point, (Multi)Polygon or (Multi)LineString constraint", fieldName));
+                throw new SQLException(String.format("Geometry type of the field %s incompatible with ShapeFile," +
+                        " please use (Multi)Point, (Multi)Polygon or (Multi)LineString constraint", fieldName));
         }
         return shapeType;
-    }
-
-    private static class DBFType {
-
-        char type;
-        int fieldLength;
-        int decimalCount;
-
-        DBFType(char type, int fieldLength, int decimalCount) {
-            super();
-            this.type = type;
-            this.fieldLength = fieldLength;
-            this.decimalCount = decimalCount;
-        }
-    }
-
-    private static String getQuestionMark(int count) {
-        StringBuilder qMark = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            if(i > 0) {
-                qMark.append(", ");
-            }
-            qMark.append("?");
-        }
-        return qMark.toString();
-    }
-
-    /**
-     * Return SQL Columns declaration
-     * @param header DBAse file header
-     * @return Array of columns ex: ["id INTEGER", "len DOUBLE"]
-     */
-    private String getSQLColumnTypes(DbaseFileHeader header) throws IOException {
-        StringBuilder stringBuilder = new StringBuilder();
-        for(int idColumn = 0; idColumn < header.getNumFields(); idColumn++) {
-            if(idColumn > 0) {
-                stringBuilder.append(", ");
-            }
-            stringBuilder.append(header.getFieldName(idColumn));
-            stringBuilder.append(" ");
-            switch (header.getFieldType(idColumn)) {
-                // (L)logical (T,t,F,f,Y,y,N,n)
-                case 'l':
-                case 'L':
-                    stringBuilder.append("BOOLEAN");
-                    break;
-                // (C)character (String)
-                case 'c':
-                case 'C':
-                    stringBuilder.append("CHAR(");
-                    // Append size
-                    int length = header.getFieldLength(idColumn);
-                    stringBuilder.append(String.valueOf(length));
-                    stringBuilder.append(")");
-                    break;
-                // (D)date (Date)
-                case 'd':
-                case 'D':
-                    stringBuilder.append("DATE");
-                    break;
-                // (F)floating (Double)
-                case 'n':
-                case 'N':
-                    if ((header.getFieldDecimalCount(idColumn) == 0)) {
-                        if ((header.getFieldLength(idColumn) >= 0)
-                                && (header.getFieldLength(idColumn) < 10)) {
-                            stringBuilder.append("INT4");
-                        } else {
-                            stringBuilder.append("INT8");
-                        }
-                    } else {
-                        stringBuilder.append("FLOAT8");
-                    }
-                    break;
-                case 'f':
-                case 'F': // floating point number
-                case 'o':
-                case 'O': // floating point number
-                    stringBuilder.append("FLOAT8");
-                    break;
-                default:
-                    throw new IOException("Unknown DBF field type " + header.getFieldType(idColumn));
-            }
-        }
-        return stringBuilder.toString();
     }
 
     private static String getSFSGeometryType(ShapefileHeader header) {

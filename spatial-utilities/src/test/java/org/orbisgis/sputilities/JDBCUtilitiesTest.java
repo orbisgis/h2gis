@@ -10,6 +10,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -45,5 +46,18 @@ public class JDBCUtilitiesTest {
         assertTrue(JDBCUtilities.isTemporaryTable(connection, TableLocation.parse("temptable1")));
         assertFalse(JDBCUtilities.isTemporaryTable(connection, TableLocation.parse("PERSTable")));
         connection.createStatement().execute("DROP TABLE TEMPTABLE1,perstable");
+    }
+
+    @Test
+    public void testRowCount() throws SQLException {
+        connection.createStatement().execute("DROP SCHEMA IF EXISTS testschema");
+        connection.createStatement().execute("CREATE SCHEMA testschema");
+        connection.createStatement().execute("DROP TABLE IF EXISTS testschema.testRowCount");
+        connection.createStatement().execute("CREATE TABLE testschema.testRowCount(id integer primary key, val double)");
+        connection.createStatement().execute("INSERT INTO testschema.testRowCount VALUES (1, 0.2)");
+        connection.createStatement().execute("INSERT INTO testschema.testRowCount VALUES (2, 0.2)");
+        connection.createStatement().execute("INSERT INTO testschema.testRowCount VALUES (3, 0.5)");
+        connection.createStatement().execute("INSERT INTO testschema.testRowCount VALUES (4, 0.6)");
+        assertEquals(4, JDBCUtilities.getRowCount(connection, "testschema.testRowCount"));
     }
 }

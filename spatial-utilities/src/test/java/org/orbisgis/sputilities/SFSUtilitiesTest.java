@@ -35,12 +35,12 @@ import static junit.framework.Assert.assertEquals;
 public class SFSUtilitiesTest {
     @Test
     public void testSplitCatalogSchemaTableName() {
-        TableLocation location = SFSUtilities.splitCatalogSchemaTableName("mytable");
+        TableLocation location = TableLocation.parse("mytable");
         assertEquals("mytable",location.getTable());
-        location = SFSUtilities.splitCatalogSchemaTableName("myschema.mytable");
+        location = TableLocation.parse("myschema.mytable");
         assertEquals("myschema",location.getSchema());
         assertEquals("mytable",location.getTable());
-        location = SFSUtilities.splitCatalogSchemaTableName("mydb.myschema.mytable");
+        location = TableLocation.parse("mydb.myschema.mytable");
         assertEquals("mydb",location.getCatalog());
         assertEquals("myschema",location.getSchema());
         assertEquals("mytable",location.getTable());
@@ -48,5 +48,23 @@ public class SFSUtilitiesTest {
         assertEquals("mydb",location.getCatalog());
         assertEquals("myschema",location.getSchema());
         assertEquals("mytable",location.getTable());
+    }
+
+    @Test
+    public void testSplitCatalogSchemaTableNameWithQuotes() {
+        TableLocation location = TableLocation.parse("`mytable`");
+        assertEquals("mytable",location.getTable());
+        location = TableLocation.parse("`myschema`.`mytable`");
+        assertEquals("myschema",location.getSchema());
+        assertEquals("mytable",location.getTable());
+        location = TableLocation.parse("`mydb`.`myschema`.`mytable`");
+        assertEquals("mydb",location.getCatalog());
+        assertEquals("myschema",location.getSchema());
+        assertEquals("mytable",location.getTable());
+        location = TableLocation.parse("`mydb`.`myschema`.`mytable.hello`");
+        assertEquals("mydb",location.getCatalog());
+        assertEquals("myschema",location.getSchema());
+        assertEquals("mytable.hello",location.getTable());
+        assertEquals("`mydb`.`myschema`.`mytable.hello`", location.toString());
     }
 }

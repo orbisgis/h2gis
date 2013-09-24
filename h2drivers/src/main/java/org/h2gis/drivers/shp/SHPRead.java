@@ -38,6 +38,9 @@ import java.sql.SQLException;
  * @author Nicolas Fortin
  */
 public class SHPRead  extends AbstractFunction implements ScalarFunction {
+    public SHPRead() {
+        addProperty(PROP_REMARKS, "Read a shape file and copy the content in the specified table.");
+    }
 
     @Override
     public String getJavaStaticMethod() {

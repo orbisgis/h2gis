@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -67,6 +68,31 @@ public class JDBCUtilities {
             }
         }
         return -1;
+    }
+
+    /**
+     * Fetch the row count of a table.
+     * @param connection Active connection.
+     * @param tableReference Table reference
+     * @return Row count
+     * @throws SQLException If the table does not exists, or sql request fail.
+     */
+    public static int getRowCount(Connection connection, String tableReference) throws SQLException {
+        Statement st = connection.createStatement();
+        int rowCount = 0;
+        try {
+            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", TableLocation.parse(tableReference)));
+            try {
+                if(rs.next()) {
+                    rowCount = rs.getInt(1);
+                }
+            } finally {
+                rs.close();
+            }
+        }finally {
+            st.close();
+        }
+        return rowCount;
     }
 
     /**
