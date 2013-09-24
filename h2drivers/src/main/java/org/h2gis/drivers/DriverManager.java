@@ -31,6 +31,7 @@ import org.h2gis.drivers.shp.SHPEngine;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.orbisgis.sputilities.TableLocation;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +41,7 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.sql.Statement;
 
 /**
+ * Manage additional table engines in H2.
  * Use the appropriate driver to open a specified file path.
  * @author Nicolas Fortin
  */
@@ -70,7 +72,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 Statement st = connection.createStatement();
-                st.execute(String.format("CREATE TABLE `%s` COMMENT %s ENGINE %s WITH %s", tableName,StringUtils.quoteStringSQL(fileName), StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
+                st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s", TableLocation.parse(tableName),StringUtils.quoteStringSQL(fileName), StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
                 st.close();
                 return;
             }
