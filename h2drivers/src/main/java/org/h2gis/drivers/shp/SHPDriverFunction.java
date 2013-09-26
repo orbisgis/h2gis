@@ -26,11 +26,13 @@
 package org.h2gis.drivers.shp;
 
 import org.h2gis.drivers.dbf.DBFDriverFunction;
+import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.drivers.shp.internal.ShapeType;
 import org.h2gis.drivers.shp.internal.ShapefileHeader;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.orbisgis.sputilities.GeometryTypeCodes;
 import org.orbisgis.sputilities.JDBCUtilities;
 import org.orbisgis.sputilities.SFSUtilities;
@@ -51,11 +53,14 @@ import java.util.List;
  * @author Nicolas Fortin
  */
 public class SHPDriverFunction implements DriverFunction {
+    public static String DESCRIPTION = "ESRI shapefile";
+
     private static final int BATCH_MAX_SIZE = 100;
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+        ProgressVisitor copyProgress = progress.subProcess(recordCount);
         //
         // Read Geometry Index and type
         List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableReference));
@@ -81,6 +86,7 @@ public class SHPDriverFunction implements DriverFunction {
                         row[columnId] = rs.getObject(columnId + 1);
                     }
                     shpDriver.insertRow(row);
+                    copyProgress.endStep();
                 }
                 shpDriver.close();
             } finally {
@@ -88,6 +94,17 @@ public class SHPDriverFunction implements DriverFunction {
             }
         } finally {
             st.close();
+        }
+        copyProgress.endOfProgress();
+    }
+
+
+    @Override
+    public String getFormatDescription(String format) {
+        if(format.equalsIgnoreCase("shp")) {
+            return DESCRIPTION;
+        } else {
+            return "";
         }
     }
 
@@ -107,9 +124,10 @@ public class SHPDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         SHPDriver shpDriver = new SHPDriver();
         shpDriver.initDriverFromFile(fileName);
+        ProgressVisitor copyProgress = progress.subProcess((int)(shpDriver.getRowCount() / BATCH_MAX_SIZE));
         try {
             DbaseFileHeader dbfHeader = shpDriver.getDbaseFileHeader();
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
@@ -135,6 +153,7 @@ public class SHPDriverFunction implements DriverFunction {
                             preparedStatement.executeBatch();
                             preparedStatement.clearBatch();
                             batchSize = 0;
+                            copyProgress.endStep();
                         }
                     }
                     if(batchSize > 0) {
@@ -150,6 +169,7 @@ public class SHPDriverFunction implements DriverFunction {
             }
         } finally {
             shpDriver.close();
+            copyProgress.endOfProgress();
         }
     }
 

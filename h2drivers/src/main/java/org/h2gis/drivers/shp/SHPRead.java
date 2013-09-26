@@ -25,6 +25,7 @@
 package org.h2gis.drivers.shp;
 
 import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
 import java.io.File;
@@ -59,6 +60,6 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
             throw new FileNotFoundException("The following file does not exists:\n"+fileName);
         }
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        shpDriverFunction.importFile(connection, tableReference, new File(fileName));
+        shpDriverFunction.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
     }
 }

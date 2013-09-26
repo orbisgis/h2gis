@@ -25,6 +25,7 @@
 package org.h2gis.drivers.dbf;
 
 import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
 import java.io.File;
@@ -47,6 +48,6 @@ public class DBFRead  extends AbstractFunction implements ScalarFunction {
 
     public static void read(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();
-        dbfDriverFunction.importFile(connection, tableReference, new File(fileName));
+        dbfDriverFunction.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
     }
 }

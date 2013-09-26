@@ -25,8 +25,6 @@
 
 package org.h2gis.drivers.dbf.internal;
 
-import org.h2gis.drivers.shp.internal.ShapefileHeader;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -110,6 +108,7 @@ public class DBFDriver {
             dbaseFileWriter.close();
         }
     }
+
     /**
      * @return Row count
      */

@@ -28,6 +28,7 @@ import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileException;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.orbisgis.sputilities.JDBCUtilities;
 import org.orbisgis.sputilities.TableLocation;
 
@@ -45,10 +46,11 @@ import java.sql.Types;
  * @author Nicolas Fortin
  */
 public class DBFDriverFunction implements DriverFunction {
+    public static String DESCRIPTION = "dBase III format";
     private static final int BATCH_MAX_SIZE = 100;
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         // Read table content
         Statement st = connection.createStatement();
@@ -77,6 +79,15 @@ public class DBFDriverFunction implements DriverFunction {
     }
 
     @Override
+    public String getFormatDescription(String format) {
+        if(format.equalsIgnoreCase("dbf")) {
+            return DESCRIPTION;
+        } else {
+            return "";
+        }
+    }
+
+    @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
         return IMPORT_DRIVER_TYPE.COPY;
     }
@@ -92,7 +103,7 @@ public class DBFDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         DBFDriver dbfDriver = new DBFDriver();
         dbfDriver.initDriverFromFile(fileName);
         try {

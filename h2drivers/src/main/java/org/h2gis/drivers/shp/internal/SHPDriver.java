@@ -47,7 +47,8 @@ import java.io.IOException;
  *
  * @author Nicolas Fortin
  */
-public class SHPDriver extends DBFDriver {
+public class SHPDriver {
+    private DBFDriver dbfDriver = new DBFDriver();
     private File shpFile;
     private File shxFile;
     private ShapefileReader shapefileReader;
@@ -63,7 +64,6 @@ public class SHPDriver extends DBFDriver {
         this.geometryFieldIndex = geometryFieldIndex;
     }
 
-    @Override
     public void insertRow(Object[] values) throws IOException {
         if(!(values[geometryFieldIndex] instanceof Geometry)) {
             throw new IllegalArgumentException("Field at "+geometryFieldIndex+" should be an instance of Geometry," +
@@ -80,7 +80,7 @@ public class SHPDriver extends DBFDriver {
         if(geometryFieldIndex + 1 < values.length) {
             System.arraycopy(values, geometryFieldIndex + 1, dbfValues, geometryFieldIndex, dbfValues.length - geometryFieldIndex);
         }
-        super.insertRow(dbfValues);
+        dbfDriver.insertRow(dbfValues);
     }
 
     /**
@@ -88,11 +88,6 @@ public class SHPDriver extends DBFDriver {
      */
     public int getGeometryFieldIndex() {
         return geometryFieldIndex;
-    }
-
-    @Override
-    public void initDriver(File dbfFile, DbaseFileHeader dbaseHeader) throws IOException {
-        throw new IllegalStateException("Provide ShapeType");
     }
 
     /**
@@ -113,7 +108,7 @@ public class SHPDriver extends DBFDriver {
         shapefileWriter = new ShapefileWriter(shpFos.getChannel(), shxFos.getChannel());
         this.shapeType = shapeType;
         shapefileWriter.writeHeaders(shapeType);
-        super.initDriver(dbfFile, dbaseHeader);
+        dbfDriver.initDriver(dbfFile, dbaseHeader);
     }
 
     /**
@@ -121,7 +116,6 @@ public class SHPDriver extends DBFDriver {
      * @param shpFile Shape file path.
      * @throws IOException
      */
-    @Override
     public void initDriverFromFile(File shpFile) throws IOException {             // Read columns from files metadata
         this.shpFile = shpFile;
         File dbfFile = null;
@@ -143,7 +137,7 @@ public class SHPDriver extends DBFDriver {
             }
         }
         if(dbfFile != null) {
-            super.initDriverFromFile(dbfFile);
+            dbfDriver.initDriverFromFile(dbfFile);
         } else {
             throw new IllegalArgumentException("DBF File not found");
         }
@@ -154,15 +148,28 @@ public class SHPDriver extends DBFDriver {
     }
 
     /**
+     * @return Dbase file header
+     */
+    public DbaseFileHeader getDbaseFileHeader() {
+        return dbfDriver.getDbaseFileHeader();
+    }
+
+    /**
+     * @return Row count
+     */
+    public long getRowCount() {
+        return dbfDriver.getRowCount();
+    }
+
+    /**
      * @return ShapeFile header
      */
     public ShapefileHeader getShapeFileHeader() {
         return shapefileReader.getHeader();
     }
 
-    @Override
     public void close() throws IOException {
-        super.close();
+        dbfDriver.close();
         if(shapefileReader != null) {
             shapefileReader.close();
             shxFileReader.close();
@@ -173,9 +180,8 @@ public class SHPDriver extends DBFDriver {
         }
     }
 
-    @Override
     public int getFieldCount() {
-        return super.getFieldCount() + 1;
+        return dbfDriver.getFieldCount() + 1;
     }
 
     /**
@@ -187,7 +193,7 @@ public class SHPDriver extends DBFDriver {
         final int fieldCount = getFieldCount();
         Object[] values = new Object[fieldCount];
         // Copy dbf values
-        Object[] dbfValues = super.getRow(rowId);
+        Object[] dbfValues = dbfDriver.getRow(rowId);
         // Copy dbf values before geometryFieldIndex
         if(geometryFieldIndex > 0) {
             System.arraycopy(dbfValues, 0, values, 0, geometryFieldIndex);

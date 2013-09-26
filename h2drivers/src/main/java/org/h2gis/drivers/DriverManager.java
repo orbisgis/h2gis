@@ -26,10 +26,13 @@
 package org.h2gis.drivers;
 
 import org.h2.util.StringUtils;
+import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.drivers.dbf.DBFEngine;
+import org.h2gis.drivers.shp.SHPDriverFunction;
 import org.h2gis.drivers.shp.SHPEngine;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.orbisgis.sputilities.TableLocation;
 
@@ -50,6 +53,10 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     private static final DriverDef[] DRIVERS = new DriverDef[] {
             new DriverDef(DBFEngine.class.getName(),"dbf"),
             new DriverDef(SHPEngine.class.getName(),"shp")};
+    private static final int FORMAT = 0;
+    private static final int DESCRIPTION = 1;
+    private static final String[][] formatDescription = new String[][] {{"dbf", DBFDriverFunction.DESCRIPTION},
+                                                                        {"shp", SHPDriverFunction.DESCRIPTION}};
 
     public DriverManager() {
         addProperty(PROP_NAME, "FILE_TABLE");
@@ -59,6 +66,16 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     @Override
     public String getJavaStaticMethod() {
         return "openFile";
+    }
+
+    @Override
+    public String getFormatDescription(String format) {
+        for(String[] descr : formatDescription) {
+            if(descr[FORMAT].equalsIgnoreCase(format)) {
+                return descr[DESCRIPTION];
+            }
+        }
+        return "";
     }
 
     /**
@@ -108,7 +125,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         throw new SQLFeatureNotSupportedException("Work in progress..");
     }
 
@@ -132,7 +149,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         openFile(connection, fileName.getAbsolutePath(), tableReference);
     }
 }

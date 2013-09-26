@@ -59,6 +59,12 @@ public interface DriverFunction {
     String[] getExportFormats();
 
     /**
+     * @param format Format given through getImportFormats and/or getExportFormats
+     * @return The description of this format under the default Locale.An empty string if the description is not available.
+     */
+    String getFormatDescription(String format);
+
+    /**
      *
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
@@ -66,7 +72,7 @@ public interface DriverFunction {
      * @throws SQLException Table read error
      * @throws IOException File write error
      */
-    void exportTable(Connection connection, String tableReference, File fileName) throws SQLException, IOException;
+    void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException;
 
     /**
      *
@@ -76,5 +82,5 @@ public interface DriverFunction {
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
-    void importFile(Connection connection, String tableReference, File fileName) throws SQLException, IOException;
+    void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException;
 }
