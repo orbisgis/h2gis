@@ -282,6 +282,7 @@ public class DBFDriverFunction implements DriverFunction {
                 return new DBFType('n', Math.min(5, length), 0);
             case Types.VARCHAR:
             case Types.NCHAR:
+            case Types.CHAR:
                 return new DBFType('c', Math.min(254, length), 0);
             default:
                 throw new SQLException("Field type not supported by DBF : " + sqlTypeName);

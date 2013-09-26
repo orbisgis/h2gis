@@ -65,22 +65,24 @@ public class DBFImportExportTest {
         Statement stat = connection.createStatement();
         File dbfFile = new File("target/area_export.dbf");
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(idarea int primary key, value DOUBLE)");
-        stat.execute("insert into area values(1, 4.9406564584124654)");
-        stat.execute("insert into area values(2, 2.2250738585072009)");
+        stat.execute("create table area(idarea int primary key, value DOUBLE, descr CHAR(50))");
+        stat.execute("insert into area values(1, 4.9406564584124654, 'main area')");
+        stat.execute("insert into area values(2, 2.2250738585072009, 'second area')");
         // Create a shape file using table area
         stat.execute("CALL DBFWrite('target/area_export.dbf', 'AREA')");
         // Read this shape file to check values
         assertTrue(dbfFile.exists());
         DBFDriver dbfDriver = new DBFDriver();
         dbfDriver.initDriverFromFile(dbfFile);
-        assertEquals(2, dbfDriver.getFieldCount());
+        assertEquals(3, dbfDriver.getFieldCount());
         assertEquals(2, dbfDriver.getRowCount());
         Object[] row = dbfDriver.getRow(0);
         assertEquals(1, row[0]);
         assertEquals(4.9406564584124654, (Double) row[1], 1e-12);
+        assertEquals("main area", row[2]);
         row = dbfDriver.getRow(1);
         assertEquals(2, row[0]);
         assertEquals(2.2250738585072009, (Double) row[1], 1e-12);
+        assertEquals("second area", row[2]);
     }
 }
