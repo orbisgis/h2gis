@@ -3,11 +3,11 @@ H2GIS
 
 H2GIS is a spatial extension of the [H2](http://www.h2database.com/) database
 engine in the spirit of [PostGIS](http://postgis.net/). It adds support for
-managing spatial features and operations including a `Geometry` type, the [Open
+managing spatial features and operations on the new `Geometry` type of H2, the [Open
 Geospatial Consortium](http://www.opengeospatial.org/) (OGC) [Simple Features
 for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL) functions and
 additional spatial functions that we (the [Atelier SIG](http://www.irstv.fr/))
-develop. 
+develop. There is currently about 70 spatial functions in H2GIS. 
 
 H2GIS is the root project for the new [OrbisGIS](http://www.orbisgis.org/) data
 management library and is divided into two subprojects: H2Spatial and
@@ -28,10 +28,14 @@ Additional spatial SQL functions that are not in [Simple Features for SQL](http:
 Ex: `ST_Extent`, `ST_Explode`
 
 #### H2Drivers
-H2Drivers makes use of the TableEngine API to add H2 read/write support for file
-formats such as .shp, .dbf and .mif. With H2Drivers, the user can execute SQL queries
-on file formats other than pure H2.
-           
+H2Drivers add H2 read/write support for file formats such as .shp, .dbf and .mif
+
+This package include 2 implementation of TableEngine that allow you to immediatly 'link' a table with a shape file.
+
+It include also file copy functions:
+* SHPREAD( ) and SHPWRITE( ) to read and write Esri shape files.
+* DBFREAD( ) and DBFWRITE( ) to read and write DBase III files.
+
 ### Usage
 
 For now, H2GIS requires Java 6 (and is not yet Java 7 compatible; see issue #15). Before
@@ -60,3 +64,17 @@ You can open a shapefile by calling the following SQL request:
 ```sql
 CALL FILE_TABLE('/home/user/myshapefile.shp', 'tablename');
 ```
+This special table will be immediatly created (no matter the file size). The content will allways be synchronized with the file content.
+
+You can also copy the content of the file into a regular H2 table:
+
+```sql
+CALL SHPREAD('/home/user/myshapefile.shp', 'tablename');
+```
+
+Or copy the content of a spatial table in a new shape file:
+
+```sql
+CALL SHPWRITE('/home/user/newshapefile.shp', 'tablename');
+```
+
