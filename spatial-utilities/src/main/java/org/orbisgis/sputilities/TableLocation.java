@@ -18,8 +18,11 @@ public class TableLocation {
      * @param table Table name without quotes
      */
     public TableLocation(String catalog, String schema, String table) {
-        this.catalog = catalog;
-        this.schema = schema;
+        if(table == null) {
+            throw new IllegalArgumentException("Cannot construct table location with null table");
+        }
+        this.catalog = catalog == null ? "" : catalog;
+        this.schema = schema  == null ? "" : schema;
         this.table = table;
     }
 
