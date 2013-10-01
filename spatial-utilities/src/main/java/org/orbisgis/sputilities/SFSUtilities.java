@@ -144,12 +144,12 @@ public class SFSUtilities {
         Integer tableIndex = 1;
         StringBuilder sb = new StringBuilder("SELECT * from geometry_columns where ");
         if(!catalog.isEmpty()) {
-            sb.append("UPPER(f_catalog_name) = ? AND ");
+            sb.append("UPPER(f_table_catalog) = ? AND ");
             catalogIndex = 1;
             tableIndex++;
         }
         if(!schema.isEmpty()) {
-            sb.append("UPPER(f_schema_name) = ? AND ");
+            sb.append("UPPER(f_table_schema) = ? AND ");
             schemaIndex = tableIndex;
             tableIndex++;
         }

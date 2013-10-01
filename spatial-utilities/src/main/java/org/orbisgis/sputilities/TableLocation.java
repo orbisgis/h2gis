@@ -1,5 +1,7 @@
 package org.orbisgis.sputilities;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -10,6 +12,14 @@ import java.util.StringTokenizer;
  */
 public class TableLocation {
     private String catalog,schema,table;
+
+    /**
+     * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
+     * @throws SQLException
+     */
+    public TableLocation(ResultSet rs) throws SQLException {
+        this(rs.getString("TABLE_CAT"),rs.getString("TABLE_SCHEM"),rs.getString("TABLE_NAME"));
+    }
 
     /**
      *
