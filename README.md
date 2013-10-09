@@ -78,3 +78,12 @@ Or copy the content of a spatial table in a new shape file:
 CALL SHPWRITE('/home/user/newshapefile.shp', 'tablename');
 ```
 
+#### Acknowledgements
+
+The H2GIS team utilizes open source software. Specifically, we would like to thank  :
+
+* Thomas Mueller and Noel Grandin from [H2 database community] (http://www.h2database.com),
+* Martin Davis from [JTS community] (http://tsusiatsoftware.net/jts/main.html),
+
+
+
