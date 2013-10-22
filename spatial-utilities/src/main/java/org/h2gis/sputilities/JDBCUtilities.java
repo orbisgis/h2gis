@@ -1,4 +1,4 @@
-package org.orbisgis.sputilities;
+package org.h2gis.sputilities;
 
 import org.h2gis.h2spatialapi.Function;
 

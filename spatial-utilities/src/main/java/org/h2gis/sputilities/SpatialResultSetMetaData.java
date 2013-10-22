@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.sputilities;
+package org.h2gis.sputilities;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

@@ -22,14 +22,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sputilities;
+package org.h2gis.sputilities;
 
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.text.ParseException;
 import java.util.Map;
 import java.util.Properties;
 

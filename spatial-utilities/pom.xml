@@ -4,7 +4,7 @@
     <parent>
         <artifactId>h2gis</artifactId>
         <groupId>org.h2gis</groupId>
-        <version>0.1.1</version>
+        <version>1.0.0</version>
         <relativePath>../</relativePath>
     </parent>
     <name>spatial-utilities</name>
@@ -22,8 +22,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Public-Package>org.orbisgis.sputilities.*</Public-Package>
-                        <Private-Package>org.orbisgis.sputilities.wrapper</Private-Package>
+                        <Public-Package>org.h2gis.sputilities.*</Public-Package>
+                        <Private-Package>org.h2gis.sputilities.wrapper</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

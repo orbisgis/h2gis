@@ -1,4 +1,4 @@
-package org.orbisgis.sputilities;
+package org.h2gis.sputilities;
 
 import org.junit.Test;
 import org.osgi.service.jdbc.DataSourceFactory;

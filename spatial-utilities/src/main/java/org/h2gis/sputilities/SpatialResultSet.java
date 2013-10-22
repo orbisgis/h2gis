@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sputilities;
+package org.h2gis.sputilities;
 
 import com.vividsolutions.jts.geom.Geometry;
 

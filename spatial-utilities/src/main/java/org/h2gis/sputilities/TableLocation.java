@@ -1,4 +1,4 @@
-package org.orbisgis.sputilities;
+package org.h2gis.sputilities;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
