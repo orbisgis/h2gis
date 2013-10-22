@@ -1,4 +1,4 @@
-package org.orbisgis.sputilities;
+package org.h2gis.sputilities;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

@@ -1,4 +1,4 @@
-package org.orbisgis.sputilities;
+package org.h2gis.sputilities;
 
 /**
  * Just a class used to split Catalog Schema and Table. Theses components are a unique table identifier.

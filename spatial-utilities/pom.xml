@@ -22,8 +22,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Public-Package>org.orbisgis.sputilities.*</Public-Package>
-                        <Private-Package>org.orbisgis.sputilities.wrapper</Private-Package>
+                        <Public-Package>org.h2gis.sputilities.*</Public-Package>
+                        <Private-Package>org.h2gis.sputilities.wrapper</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

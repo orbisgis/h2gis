@@ -1,4 +1,4 @@
-package org.orbisgis.sputilities.wrapper;
+package org.h2gis.sputilities.wrapper;
 
 import javax.sql.DataSource;
 import java.io.PrintWriter;

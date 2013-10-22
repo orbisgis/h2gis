@@ -1,8 +1,8 @@
-package org.orbisgis.sputilities.wrapper;
+package org.h2gis.sputilities.wrapper;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.orbisgis.sputilities.SpatialResultSet;
-import org.orbisgis.sputilities.SpatialResultSetMetaData;
+import org.h2gis.sputilities.SpatialResultSet;
+import org.h2gis.sputilities.SpatialResultSetMetaData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

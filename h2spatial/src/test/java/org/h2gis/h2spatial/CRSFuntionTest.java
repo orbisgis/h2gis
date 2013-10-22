@@ -33,8 +33,8 @@ import org.junit.AfterClass;
 import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.sputilities.SFSUtilities;
-import org.orbisgis.sputilities.SpatialResultSet;
+import org.h2gis.sputilities.SFSUtilities;
+import org.h2gis.sputilities.SpatialResultSet;
 
 /**
  *

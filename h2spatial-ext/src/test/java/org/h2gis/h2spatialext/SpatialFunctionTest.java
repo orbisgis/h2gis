@@ -30,7 +30,7 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.sputilities.SFSUtilities;
+import org.h2gis.sputilities.SFSUtilities;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
