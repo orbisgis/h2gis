@@ -137,4 +137,9 @@ public class SpatialFunctionTest {
         assertEquals(expected.getMaxY(),result.getMaxY(),1e-12);
         st.execute("drop table ptClouds");
     }
+
+    @Test
+    public void testAggregateProgression() {
+
+    }
 }

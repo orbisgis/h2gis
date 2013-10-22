@@ -25,6 +25,7 @@
 package org.h2gis.h2spatial;
 
 import org.h2.api.AggregateFunction;
+import org.h2gis.h2spatial.internal.function.spatial.crs.ST_SetSRID;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Contains;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Crosses;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Disjoint;
@@ -180,7 +181,8 @@ public class CreateSpatialExtension {
                 new ST_SRID(),
                 new ST_EnvelopesIntersect(),
                 new ST_Accum(),
-                new ST_Transform()};
+                new ST_Transform(),
+                new ST_SetSRID()};
     }
 
     /**
