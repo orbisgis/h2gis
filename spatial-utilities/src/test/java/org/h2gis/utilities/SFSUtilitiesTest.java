@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.sputilities;
+package org.h2gis.utilities;
 
 import org.junit.Test;
 import static junit.framework.Assert.assertEquals;

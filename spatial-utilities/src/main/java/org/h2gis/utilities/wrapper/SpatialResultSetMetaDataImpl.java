@@ -23,11 +23,11 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.sputilities.wrapper;
+package org.h2gis.utilities.wrapper;
 
-import org.h2gis.sputilities.SFSUtilities;
-import org.h2gis.sputilities.SpatialResultSetMetaData;
-import org.h2gis.sputilities.TableLocation;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSetMetaData;
+import org.h2gis.utilities.TableLocation;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

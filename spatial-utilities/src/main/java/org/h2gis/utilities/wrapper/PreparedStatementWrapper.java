@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.sputilities.wrapper;
+package org.h2gis.utilities.wrapper;
 
 import java.io.InputStream;
 import java.io.Reader;

@@ -34,7 +34,7 @@ import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
-import org.orbisgis.sputilities.TableLocation;
+import org.h2gis.utilities.TableLocation;
 
 import java.io.File;
 import java.io.IOException;

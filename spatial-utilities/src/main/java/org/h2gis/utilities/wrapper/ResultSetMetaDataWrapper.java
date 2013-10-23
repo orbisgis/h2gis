@@ -23,9 +23,9 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.sputilities.wrapper;
+package org.h2gis.utilities.wrapper;
 
-import org.h2gis.sputilities.SpatialResultSetMetaData;
+import org.h2gis.utilities.SpatialResultSetMetaData;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;

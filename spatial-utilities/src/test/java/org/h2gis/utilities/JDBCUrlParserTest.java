@@ -1,4 +1,4 @@
-package org.h2gis.sputilities;
+package org.h2gis.utilities;
 
 import org.junit.Test;
 import org.osgi.service.jdbc.DataSourceFactory;

@@ -23,11 +23,11 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.sputilities;
+package org.h2gis.utilities;
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.h2gis.sputilities.wrapper.ConnectionWrapper;
-import org.h2gis.sputilities.wrapper.DataSourceWrapper;
+import org.h2gis.utilities.wrapper.ConnectionWrapper;
+import org.h2gis.utilities.wrapper.DataSourceWrapper;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;

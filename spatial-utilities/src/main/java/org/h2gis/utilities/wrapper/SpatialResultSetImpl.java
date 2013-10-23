@@ -1,8 +1,8 @@
-package org.h2gis.sputilities.wrapper;
+package org.h2gis.utilities.wrapper;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.sputilities.SpatialResultSet;
-import org.h2gis.sputilities.SpatialResultSetMetaData;
+import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.SpatialResultSetMetaData;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

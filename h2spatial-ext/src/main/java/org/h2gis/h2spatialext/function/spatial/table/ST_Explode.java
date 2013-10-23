@@ -34,7 +34,7 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.h2spatialapi.ScalarFunction;
-import org.h2gis.sputilities.SFSUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;

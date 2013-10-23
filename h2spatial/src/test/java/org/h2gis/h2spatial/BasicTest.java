@@ -37,7 +37,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -45,8 +44,8 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import org.orbisgis.sputilities.SFSUtilities;
-import org.orbisgis.sputilities.TableLocation;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;

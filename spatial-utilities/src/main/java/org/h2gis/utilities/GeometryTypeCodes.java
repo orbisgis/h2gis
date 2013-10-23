@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.sputilities;
+package org.h2gis.utilities;
 
 /**
  * Geometry type codes as defined in OGC SFS 1.2.1

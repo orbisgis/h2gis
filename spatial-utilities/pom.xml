@@ -22,8 +22,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Public-Package>org.h2gis.sputilities.*</Public-Package>
-                        <Private-Package>org.h2gis.sputilities.wrapper</Private-Package>
+                        <Public-Package>org.h2gis.utilities.*</Public-Package>
+                        <Private-Package>org.h2gis.utilities.wrapper</Private-Package>
                     </instructions>
                 </configuration>
             </plugin>

@@ -22,7 +22,8 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.sputilities;
+package org.h2gis.utilities;
+import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URLDecoder;

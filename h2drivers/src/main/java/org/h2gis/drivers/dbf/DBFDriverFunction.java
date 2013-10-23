@@ -29,8 +29,8 @@ import org.h2gis.drivers.dbf.internal.DbaseFileException;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
-import org.orbisgis.sputilities.JDBCUtilities;
-import org.orbisgis.sputilities.TableLocation;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 
 import java.io.File;
 import java.io.IOException;

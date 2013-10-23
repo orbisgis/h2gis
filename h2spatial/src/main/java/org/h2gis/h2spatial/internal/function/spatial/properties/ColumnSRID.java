@@ -28,7 +28,7 @@ package org.h2gis.h2spatial.internal.function.spatial.properties;
 import org.h2.util.StringUtils;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
-import org.orbisgis.sputilities.TableLocation;
+import org.h2gis.utilities.TableLocation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

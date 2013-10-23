@@ -1,4 +1,4 @@
-package org.h2gis.sputilities.wrapper;
+package org.h2gis.utilities.wrapper;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

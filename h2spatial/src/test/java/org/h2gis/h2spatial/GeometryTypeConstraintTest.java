@@ -26,12 +26,12 @@
 package org.h2gis.h2spatial;
 
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.sputilities.GeometryTypeCodes;
+import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.h2gis.sputilities.SFSUtilities;
-import org.h2gis.sputilities.TableLocation;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
