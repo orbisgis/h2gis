@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.h2gis</groupId>
 		<artifactId>h2gis</artifactId>
-		<version>0.1.1</version>
+		<version>1.0.0</version>
         <relativePath>../</relativePath>
 	</parent>
 	<artifactId>h2spatial-osgi</artifactId>

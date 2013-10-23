@@ -27,15 +27,17 @@ package org.h2gis.drivers.dbf.internal;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Merge ShapeFileReader and DBFReader
+ * Manage DBFReader and DBFWriter
  * @author Nicolas Fortin
  */
 public class DBFDriver {
     private File dbfFile;
     private DbaseFileReader dbaseFileReader;
+    private DbaseFileWriter dbaseFileWriter;
 
     public void initDriverFromFile(File dbfFile) throws IOException {
         // Read columns from files metadata
@@ -44,21 +46,81 @@ public class DBFDriver {
         dbaseFileReader = new DbaseFileReader(fis.getChannel());
     }
 
+    public void initDriver(File dbfFile, DbaseFileHeader dbaseHeader) throws IOException {
+        this.dbfFile = dbfFile;
+        FileOutputStream dbfFos = new FileOutputStream(dbfFile);
+        dbaseFileWriter = new DbaseFileWriter(dbaseHeader,dbfFos.getChannel());
+    }
+
+
+    /**
+     * Write a row
+     * @param values Content, must be of the same type as declared in the header
+     */
+    public void insertRow(Object[] values) throws IOException {
+        checkWriter();
+        if(values.length != getDbaseFileHeader().getNumFields()) {
+            throw new IllegalArgumentException("Incorrect field count "+values.length+" expected "+getFieldCount());
+        }
+        try {
+            dbaseFileWriter.write(values);
+        } catch (DbaseFileException ex) {
+            throw new IOException(ex.getLocalizedMessage(), ex);
+        }
+    }
+
+    private void checkReader() {
+        if(dbaseFileReader == null) {
+            throw new IllegalStateException("The driver is not in read mode");
+        }
+    }
+
+    private void checkWriter() {
+        if(dbaseFileWriter == null) {
+            throw new IllegalStateException("The driver is not in write mode");
+        }
+    }
+
+    /**
+     * @return DBF File path
+     */
+    public File getDbfFile() {
+        return dbfFile;
+    }
+
     /**
      * @return The DBF file header
      */
     public DbaseFileHeader getDbaseFileHeader() {
-        return dbaseFileReader.getHeader();
+        if(dbaseFileReader != null) {
+            return dbaseFileReader.getHeader();
+        } else if(dbaseFileWriter != null) {
+            return dbaseFileWriter.getHeader();
+        } else {
+            throw new IllegalStateException("The driver is not initialised");
+        }
     }
 
     public void close() throws IOException {
-        dbaseFileReader.close();
+        if(dbaseFileReader != null) {
+            dbaseFileReader.close();
+        } else if(dbaseFileWriter != null) {
+            dbaseFileWriter.close();
+        }
     }
+
     /**
      * @return Row count
      */
     public long getRowCount() {
         return dbaseFileReader.getRecordCount();
+    }
+
+    /**
+     * @return Column count
+     */
+    public int getFieldCount() {
+        return getDbaseFileHeader().getNumFields();
     }
 
     /**

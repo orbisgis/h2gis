@@ -25,33 +25,122 @@
 
 package org.h2gis.drivers.shp.internal;
 
+import com.vividsolutions.jts.geom.Geometry;
+import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
-import org.h2gis.drivers.dbf.internal.DbaseFileReader;
+
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
- * Merge ShapeFileReader and DBFReader
+ * Merge ShapeFileReader and DBFReader.
+ * TODO Handle SHP without SHX and/or DBF
+ *
+ * How to use:
+ *
+ * In Write mode,
+ * Declare fields by calling {@link SHPDriver#initDriver(java.io.File, ShapeType, org.h2gis.drivers.dbf.internal.DbaseFileHeader)}
+ * then write row using
+ *
+ *
  * @author Nicolas Fortin
  */
 public class SHPDriver {
+    private DBFDriver dbfDriver = new DBFDriver();
     private File shpFile;
     private File shxFile;
-    private File dbfFile;
-    private DbaseFileReader dbaseFileReader;
     private ShapefileReader shapefileReader;
+    private ShapefileWriter shapefileWriter;
     private IndexFile shxFileReader;
     private int geometryFieldIndex = 0;
+    private ShapeType shapeType;
 
+    /**
+     * @param geometryFieldIndex The geometry field index in getRow() array.
+     */
+    public void setGeometryFieldIndex(int geometryFieldIndex) {
+        this.geometryFieldIndex = geometryFieldIndex;
+    }
 
-    public void initDriverFromFile(File shpFile) throws IOException {             // Read columns from files metadata
+    public void insertRow(Object[] values) throws IOException {
+        if(!(values[geometryFieldIndex] instanceof Geometry)) {
+            throw new IllegalArgumentException("Field at "+geometryFieldIndex+" should be an instance of Geometry," +
+                    " found "+values[geometryFieldIndex].getClass()+" instead.");
+        }
+        shapefileWriter.writeGeometry((Geometry)values[geometryFieldIndex]);
+        // Extract the DBF part of the row
+        Object[] dbfValues = new Object[values.length - 1];
+        // Copy DBF data before geometryFieldIndex
+        if(geometryFieldIndex > 0) {
+            System.arraycopy(values, 0, dbfValues, 0, geometryFieldIndex);
+        }
+        // Copy DBF data after geometryFieldIndex
+        if(geometryFieldIndex + 1 < values.length) {
+            System.arraycopy(values, geometryFieldIndex + 1, dbfValues, geometryFieldIndex, dbfValues.length - geometryFieldIndex);
+        }
+        dbfDriver.insertRow(dbfValues);
+    }
+
+    /**
+     * @return The geometry field index in getRow() array.
+     */
+    public int getGeometryFieldIndex() {
+        return geometryFieldIndex;
+    }
+
+    /**
+     * Init Driver for Write mode
+     * @param shpFile
+     * @param shapeType
+     * @param dbaseHeader
+     * @throws IOException
+     */
+    public void initDriver(File shpFile, ShapeType shapeType, DbaseFileHeader dbaseHeader) throws IOException {
         String path = shpFile.getAbsolutePath();
+        String nameWithoutExt = path.substring(0,path.lastIndexOf('.'));
+        this.shpFile = new File(nameWithoutExt+".shp");
+        this.shxFile = new File(nameWithoutExt+".shx");
+        File dbfFile = new File(nameWithoutExt+".dbf");
+        FileOutputStream shpFos = new FileOutputStream(shpFile);
+        FileOutputStream shxFos = new FileOutputStream(shxFile);
+        shapefileWriter = new ShapefileWriter(shpFos.getChannel(), shxFos.getChannel());
+        this.shapeType = shapeType;
+        shapefileWriter.writeHeaders(shapeType);
+        dbfDriver.initDriver(dbfFile, dbaseHeader);
+    }
+
+    /**
+     * Init this driver from existing files, then open theses files.
+     * @param shpFile Shape file path.
+     * @throws IOException
+     */
+    public void initDriverFromFile(File shpFile) throws IOException {             // Read columns from files metadata
         this.shpFile = shpFile;
-        shxFile = new File(path.substring(0,path.lastIndexOf('.'))+".shx");
-        dbfFile = new File(path.substring(0,path.lastIndexOf('.'))+".dbf");
-        FileInputStream fis = new FileInputStream(dbfFile);
-        dbaseFileReader = new DbaseFileReader(fis.getChannel());
+        File dbfFile = null;
+        // Find appropriate file extension for shx and dbf, maybe SHX or Shx..
+        String shxFileName = shpFile.getName();
+        String nameWithoutExt = shxFileName.substring(0,shxFileName.lastIndexOf('.'));
+        File[] filesInParentFolder = shpFile.getParentFile().listFiles();
+        if(filesInParentFolder != null) {
+            for(File otherFile : filesInParentFolder) {
+                String otherFileName = otherFile.getName();
+                if(otherFileName.startsWith(nameWithoutExt + ".")) {
+                    String fileExt =  otherFileName.substring(otherFileName.lastIndexOf(".") + 1);
+                    if(fileExt.equalsIgnoreCase("shx")) {
+                        shxFile = otherFile;
+                    } else if(fileExt.equalsIgnoreCase("dbf")) {
+                        dbfFile = otherFile;
+                    }
+                }
+            }
+        }
+        if(dbfFile != null) {
+            dbfDriver.initDriverFromFile(dbfFile);
+        } else {
+            throw new IllegalArgumentException("DBF File not found");
+        }
         FileInputStream shpFis = new FileInputStream(shpFile);
         shapefileReader = new ShapefileReader(shpFis.getChannel());
         FileInputStream shxFis = new FileInputStream(shxFile);
@@ -59,26 +148,42 @@ public class SHPDriver {
     }
 
     /**
-     * @return The DBF file header
+     * @return Dbase file header
      */
     public DbaseFileHeader getDbaseFileHeader() {
-        return dbaseFileReader.getHeader();
+        return dbfDriver.getDbaseFileHeader();
     }
 
-    public void close() throws IOException {
-        dbaseFileReader.close();
-        shapefileReader.close();
-        shxFileReader.close();
-    }
     /**
      * @return Row count
      */
     public long getRowCount() {
-        return dbaseFileReader.getRecordCount();
+        return dbfDriver.getRowCount();
     }
+
+    /**
+     * @return ShapeFile header
+     */
+    public ShapefileHeader getShapeFileHeader() {
+        return shapefileReader.getHeader();
+    }
+
+    public void close() throws IOException {
+        dbfDriver.close();
+        if(shapefileReader != null) {
+            shapefileReader.close();
+            shxFileReader.close();
+        } else if(shapefileWriter != null) {
+            // Update header
+            shapefileWriter.writeHeaders(shapeType);
+            shapefileWriter.close();
+        }
+    }
+
     public int getFieldCount() {
-        return dbaseFileReader.getFieldCount() + 1;
+        return dbfDriver.getFieldCount() + 1;
     }
+
     /**
      * @param rowId Row index
      * @return The row content
@@ -88,12 +193,15 @@ public class SHPDriver {
         final int fieldCount = getFieldCount();
         Object[] values = new Object[fieldCount];
         // Copy dbf values
-        for(int fieldId=0;fieldId<geometryFieldIndex;fieldId++) {
-            values[fieldId] = dbaseFileReader.getFieldValue((int)rowId, fieldId);
+        Object[] dbfValues = dbfDriver.getRow(rowId);
+        // Copy dbf values before geometryFieldIndex
+        if(geometryFieldIndex > 0) {
+            System.arraycopy(dbfValues, 0, values, 0, geometryFieldIndex);
         }
         values[geometryFieldIndex] = shapefileReader.geomAt(shxFileReader.getOffset((int)rowId));
-        for(int fieldId=geometryFieldIndex;fieldId<fieldCount - 1;fieldId++) {
-            values[fieldId + 1] = dbaseFileReader.getFieldValue((int)rowId, fieldId);
+        // Copy dbf values after geometryFieldIndex
+        if(geometryFieldIndex < dbfValues.length) {
+            System.arraycopy(dbfValues, geometryFieldIndex, values, geometryFieldIndex + 1, dbfValues.length);
         }
         return values;
     }

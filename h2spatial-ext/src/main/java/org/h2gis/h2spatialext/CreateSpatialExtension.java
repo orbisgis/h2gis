@@ -1,6 +1,10 @@
 package org.h2gis.h2spatialext;
 
 import org.h2gis.drivers.DriverManager;
+import org.h2gis.drivers.dbf.DBFRead;
+import org.h2gis.drivers.dbf.DBFWrite;
+import org.h2gis.drivers.shp.SHPRead;
+import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialext.function.spatial.aggregate.ST_Extent;
 import org.h2gis.h2spatialext.function.spatial.table.ST_Explode;
 import org.h2gis.h2spatialapi.Function;
@@ -20,7 +24,11 @@ public class CreateSpatialExtension {
         return new Function[] {
                 new ST_Extent(),
                 new ST_Explode(),
-                new DriverManager()};
+                new DriverManager(),
+                new SHPRead(),
+                new SHPWrite(),
+                new DBFRead(),
+                new DBFWrite()};
     }
 
     /**

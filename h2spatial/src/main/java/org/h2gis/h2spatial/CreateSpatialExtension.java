@@ -25,6 +25,7 @@
 package org.h2gis.h2spatial;
 
 import org.h2.api.AggregateFunction;
+import org.h2gis.h2spatial.internal.function.spatial.crs.ST_SetSRID;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Contains;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Crosses;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Disjoint;
@@ -180,7 +181,8 @@ public class CreateSpatialExtension {
                 new ST_SRID(),
                 new ST_EnvelopesIntersect(),
                 new ST_Accum(),
-                new ST_Transform()};
+                new ST_Transform(),
+                new ST_SetSRID()};
     }
 
     /**
@@ -244,8 +246,8 @@ public class CreateSpatialExtension {
     public static void registerSpatialTables(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
-        st.execute("create view geometry_columns as select TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
-                "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS) geometry_type,2 coord_dimension,ColumnSRID(TABLE_NAME,COLUMN_NAME) srid" +
+        st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
+                "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS) geometry_type,2 coord_dimension,ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME) srid" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {

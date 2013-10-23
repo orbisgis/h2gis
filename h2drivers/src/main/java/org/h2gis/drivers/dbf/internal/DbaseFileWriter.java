@@ -97,7 +97,14 @@ public class DbaseFileWriter {
 		this(header, out, null);
 	}
 
-	/**
+    /**
+     * @return The DbaseFileHeader to write.
+     */
+    public DbaseFileHeader getHeader() {
+        return header;
+    }
+
+    /**
 	 * Create a DbaseFileWriter using the specified header and writing to the
 	 * given channel.
 	 *
@@ -115,7 +122,8 @@ public class DbaseFileWriter {
 		header.writeHeader(out);
 		this.header = header;
 		this.channel = out;
-		this.charset = charset == null ? Charset.defaultCharset() : charset;
+        // DBase does not support UTF-8
+		this.charset = charset == null ? Charset.forName(DbaseFileHeader.DEFAULT_ENCODING) : charset;
 		this.formatter = new DbaseFileWriter.FieldFormatter(this.charset);
 		init();
 	}
@@ -158,8 +166,6 @@ public class DbaseFileWriter {
 			String fieldString = fieldString(record[i], i);
 			if (header.getFieldLength(i) != fieldString
 					.getBytes(charset.name()).length) {
-				// System.out.println(i + " : " + header.getFieldName(i)+" value
-				// = "+fieldString+"");
 				buffer.put(new byte[header.getFieldLength(i)]);
 			} else {
 				buffer.put(fieldString.getBytes(charset.name()));
@@ -178,35 +184,32 @@ public class DbaseFileWriter {
                 case 'M':
                 case 'G':
 		case 'c':
-			o = formatter.getFieldString(fieldLen, obj instanceof String ? NULL_STRING
-					: (String)obj);
+			o = formatter.getFieldString(fieldLen, obj != null ? obj.toString() : NULL_STRING);
 			break;
 		case 'L':
 		case 'l':
-			o = (obj instanceof Boolean ? "F" : (Boolean)obj ? "T" : "F");
+			o = (obj == null ? "F" : (Boolean)obj ? "T" : "F");
 			break;
 		case 'N':
 		case 'n':
 			// int?
 			if (header.getFieldDecimalCount(col) == 0) {
-
-				o = formatter.getFieldString(fieldLen, 0, (obj instanceof Double ? NULL_NUMBER : (Double)obj));
+				o = formatter.getFieldString(fieldLen, 0, (obj instanceof Number ? (Number)obj : NULL_NUMBER));
 				break;
 			}
 		case 'F':
 		case 'f':
 			o = formatter.getFieldString(fieldLen, header
-					.getFieldDecimalCount(col), (obj instanceof Double ? NULL_NUMBER : (Double)obj));
+					.getFieldDecimalCount(col), (obj instanceof Number ? (Number)obj : NULL_NUMBER));
 			break;
 		case 'D':
 		case 'd':
-			o = formatter.getFieldString((obj instanceof Date ? null : (Date)obj));
+			o = formatter.getFieldString((obj instanceof Date ? (Date)obj : null));
 			break;
 		default:
 			throw new IllegalStateException("Unknown type "
 					+ header.getFieldType(col));
 		}
-
 		return o;
 	}
 

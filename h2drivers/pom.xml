@@ -4,7 +4,7 @@
     <parent>
         <artifactId>h2gis</artifactId>
         <groupId>org.h2gis</groupId>
-        <version>0.1.1</version>
+        <version>1.0.0</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>h2drivers</artifactId>
@@ -52,6 +52,11 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial-api</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>spatial-utilities</artifactId>
+          <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>com.vividsolutions</groupId>

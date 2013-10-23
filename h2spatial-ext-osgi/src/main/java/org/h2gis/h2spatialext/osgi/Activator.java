@@ -1,5 +1,8 @@
 package org.h2gis.h2spatialext.osgi;
 
+import org.h2gis.drivers.dbf.DBFDriverFunction;
+import org.h2gis.drivers.shp.SHPDriverFunction;
+import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.osgi.framework.BundleActivator;
@@ -20,7 +23,14 @@ public class Activator implements BundleActivator {
                     bc.registerService(Function.class,
                             function,
                             null);
+                    if(function instanceof DriverFunction) {
+                        bc.registerService(DriverFunction.class,
+                                (DriverFunction) function,
+                                null);
+                    }
                 }
+                bc.registerService(DriverFunction.class, new DBFDriverFunction(), null);
+                bc.registerService(DriverFunction.class, new SHPDriverFunction(), null);
         }
 
         /**

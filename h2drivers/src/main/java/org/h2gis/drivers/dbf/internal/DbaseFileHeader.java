@@ -67,71 +67,76 @@ import java.util.Map;
  */
 public class DbaseFileHeader {
     private Logger log = LoggerFactory.getLogger(DbaseFileHeader.class);
+
+    /** Encoding of String, found in Language Code Page DBF Header, use ISO-8859-1 as default value*/
+    public static String DEFAULT_ENCODING = "cp1252";
+    public static byte DEFAULT_ENCODING_FLAG = 0x03;
+
     private static final String FIELD_LENGTH_FOR = "Field Length for ";
 	// Constant for the size of a record
 	private static final int FILE_DESCRIPTOR_SIZE = 32;
     /** @see "https://github.com/infused/dbf/blob/master/lib/dbf/encodings.rb" */
     private static Map<Byte,String> CODE_PAGE_ENCODING = new HashMap<Byte, String>();
     static {
-        CODE_PAGE_ENCODING.put((byte) 0x01,"cp437"); // U.S. MS–DOS
-        CODE_PAGE_ENCODING.put((byte) 0x02,"cp850"); // International MS–DOS
-        CODE_PAGE_ENCODING.put((byte) 0x03,"cp1252");// Windows ANSI
-        CODE_PAGE_ENCODING.put((byte) 0x08,"cp865"); // Danish OEM
-        CODE_PAGE_ENCODING.put((byte) 0x09,"cp437"); // Dutch OEM
-        CODE_PAGE_ENCODING.put((byte) 0x0a,"cp850"); // Dutch OEM
-        CODE_PAGE_ENCODING.put((byte) 0x0b,"cp437"); // Finnish OEM
-        CODE_PAGE_ENCODING.put((byte) 0x0d,"cp437"); // French OEM
-        CODE_PAGE_ENCODING.put((byte) 0x0e,"cp850"); // French OEM
-        CODE_PAGE_ENCODING.put((byte) 0x0f,"cp437"); // German OEM
-        CODE_PAGE_ENCODING.put((byte) 0x10,"cp850"); // German OEM
-        CODE_PAGE_ENCODING.put((byte) 0x11,"cp437"); // Italian OEM
-        CODE_PAGE_ENCODING.put((byte) 0x12,"cp850"); // Italian OEM
-        CODE_PAGE_ENCODING.put((byte) 0x13,"cp932"); // Japanese Shift-JIS
-        CODE_PAGE_ENCODING.put((byte) 0x14,"cp850"); // Spanish OEM
-        CODE_PAGE_ENCODING.put((byte) 0x15,"cp437"); // Swedish OEM
-        CODE_PAGE_ENCODING.put((byte) 0x16,"cp850"); // Swedish OEM
-        CODE_PAGE_ENCODING.put((byte) 0x17,"cp865"); // Norwegian OEM
-        CODE_PAGE_ENCODING.put((byte) 0x18,"cp437"); // Spanish OEM
-        CODE_PAGE_ENCODING.put((byte) 0x19,"cp437"); // English OEM (Britain)
-        CODE_PAGE_ENCODING.put((byte) 0x1a,"cp850"); // English OEM (Britain)
-        CODE_PAGE_ENCODING.put((byte) 0x1b,"cp437"); // English OEM (U.S.)
-        CODE_PAGE_ENCODING.put((byte) 0x1c,"cp863"); // French OEM (Canada)
-        CODE_PAGE_ENCODING.put((byte) 0x1d,"cp850"); // French OEM
-        CODE_PAGE_ENCODING.put((byte) 0x1f,"cp852"); // Czech OEM
-        CODE_PAGE_ENCODING.put((byte) 0x22,"cp852"); // Hungarian OEM
-        CODE_PAGE_ENCODING.put((byte) 0x23,"cp852"); // Polish OEM
-        CODE_PAGE_ENCODING.put((byte) 0x24,"cp860"); // Portuguese OEM
-        CODE_PAGE_ENCODING.put((byte) 0x25,"cp850"); // Portuguese OEM
-        CODE_PAGE_ENCODING.put((byte) 0x26,"cp866"); // Russian OEM
-        CODE_PAGE_ENCODING.put((byte) 0x37,"cp850"); // English OEM (U.S.)
-        CODE_PAGE_ENCODING.put((byte) 0x40,"cp852"); // Romanian OEM
-        CODE_PAGE_ENCODING.put((byte) 0x4d,"cp936"); // Chinese GBK (PRC)
-        CODE_PAGE_ENCODING.put((byte) 0x4e,"cp949"); // Korean (ANSI/OEM)
-        CODE_PAGE_ENCODING.put((byte) 0x4f,"cp950"); // Chinese Big5 (Taiwan)
-        CODE_PAGE_ENCODING.put((byte) 0x50,"cp874"); // Thai (ANSI/OEM)
-        CODE_PAGE_ENCODING.put((byte) 0x57,"cp1252");// ANSI
-        CODE_PAGE_ENCODING.put((byte) 0x58,"cp1252");// Western European ANSI
-        CODE_PAGE_ENCODING.put((byte) 0x59,"cp1252");// Spanish ANSI
-        CODE_PAGE_ENCODING.put((byte) 0x64,"cp852"); // Eastern European MS–DOS
-        CODE_PAGE_ENCODING.put((byte) 0x65,"cp866"); // Russian MS–DOS
-        CODE_PAGE_ENCODING.put((byte) 0x66,"cp865"); // Nordic MS–DOS
-        CODE_PAGE_ENCODING.put((byte) 0x67,"cp861"); // Icelandic MS–DOS
-        CODE_PAGE_ENCODING.put((byte) 0x6a,"cp737"); // Greek MS–DOS (437G)
-        CODE_PAGE_ENCODING.put((byte) 0x6b,"cp857"); // Turkish MS–DOS
-        CODE_PAGE_ENCODING.put((byte) 0x6c,"cp863"); // French–Canadian MS–DOS
-        CODE_PAGE_ENCODING.put((byte) 0x78,"cp950"); // Taiwan Big 5
-        CODE_PAGE_ENCODING.put((byte) 0x79,"cp949"); // Hangul (Wansung)
-        CODE_PAGE_ENCODING.put((byte) 0x7a,"cp936"); // PRC GBK
-        CODE_PAGE_ENCODING.put((byte) 0x7b,"cp932"); // Japanese Shift-JIS
-        CODE_PAGE_ENCODING.put((byte) 0x7c,"cp874"); // Thai Windows/MS–DOS
-        CODE_PAGE_ENCODING.put((byte) 0x86,"cp737"); // Greek OEM
-        CODE_PAGE_ENCODING.put((byte) 0x87,"cp852"); // Slovenian OEM
-        CODE_PAGE_ENCODING.put((byte) 0x88,"cp857"); // Turkish OEM
-        CODE_PAGE_ENCODING.put((byte) 0xc8,"cp1250");// Eastern European Windows
-        CODE_PAGE_ENCODING.put((byte) 0xc9,"cp1251");// Russian Windows
-        CODE_PAGE_ENCODING.put((byte) 0xca,"cp1254");// Turkish Windows
-        CODE_PAGE_ENCODING.put((byte) 0xcb,"cp1253");// Greek Windows
-        CODE_PAGE_ENCODING.put((byte) 0xcc,"cp1257");// Baltic Windows
+        CODE_PAGE_ENCODING.put((byte) 0x01,"cp437");          // U.S. MS–DOS
+        CODE_PAGE_ENCODING.put((byte) 0x02,"cp850");          // International MS–DOS
+        CODE_PAGE_ENCODING.put((byte) 0x03, DEFAULT_ENCODING);// Windows ANSI
+        CODE_PAGE_ENCODING.put((byte) 0x08,"cp865");          // Danish OEM
+        CODE_PAGE_ENCODING.put((byte) 0x09,"cp437");          // Dutch OEM
+        CODE_PAGE_ENCODING.put((byte) 0x0a,"cp850");          // Dutch OEM
+        CODE_PAGE_ENCODING.put((byte) 0x0b,"cp437");          // Finnish OEM
+        CODE_PAGE_ENCODING.put((byte) 0x0d,"cp437");          // French OEM
+        CODE_PAGE_ENCODING.put((byte) 0x0e,"cp850");          // French OEM
+        CODE_PAGE_ENCODING.put((byte) 0x0f,"cp437");          // German OEM
+        CODE_PAGE_ENCODING.put((byte) 0x10,"cp850");          // German OEM
+        CODE_PAGE_ENCODING.put((byte) 0x11,"cp437");          // Italian OEM
+        CODE_PAGE_ENCODING.put((byte) 0x12,"cp850");          // Italian OEM
+        CODE_PAGE_ENCODING.put((byte) 0x13,"cp932");          // Japanese Shift-JIS
+        CODE_PAGE_ENCODING.put((byte) 0x14,"cp850");          // Spanish OEM
+        CODE_PAGE_ENCODING.put((byte) 0x15,"cp437");          // Swedish OEM
+        CODE_PAGE_ENCODING.put((byte) 0x16,"cp850");          // Swedish OEM
+        CODE_PAGE_ENCODING.put((byte) 0x17,"cp865");          // Norwegian OEM
+        CODE_PAGE_ENCODING.put((byte) 0x18,"cp437");          // Spanish OEM
+        CODE_PAGE_ENCODING.put((byte) 0x19,"cp437");          // English OEM (Britain)
+        CODE_PAGE_ENCODING.put((byte) 0x1a,"cp850");          // English OEM (Britain)
+        CODE_PAGE_ENCODING.put((byte) 0x1b,"cp437");          // English OEM (U.S.)
+        CODE_PAGE_ENCODING.put((byte) 0x1c,"cp863");          // French OEM (Canada)
+        CODE_PAGE_ENCODING.put((byte) 0x1d,"cp850");          // French OEM
+        CODE_PAGE_ENCODING.put((byte) 0x1f,"cp852");          // Czech OEM
+        CODE_PAGE_ENCODING.put((byte) 0x22,"cp852");          // Hungarian OEM
+        CODE_PAGE_ENCODING.put((byte) 0x23,"cp852");          // Polish OEM
+        CODE_PAGE_ENCODING.put((byte) 0x24,"cp860");          // Portuguese OEM
+        CODE_PAGE_ENCODING.put((byte) 0x25,"cp850");          // Portuguese OEM
+        CODE_PAGE_ENCODING.put((byte) 0x26,"cp866");          // Russian OEM
+        CODE_PAGE_ENCODING.put((byte) 0x37,"cp850");          // English OEM (U.S.)
+        CODE_PAGE_ENCODING.put((byte) 0x40,"cp852");          // Romanian OEM
+        CODE_PAGE_ENCODING.put((byte) 0x4d,"cp936");          // Chinese GBK (PRC)
+        CODE_PAGE_ENCODING.put((byte) 0x4e,"cp949");          // Korean (ANSI/OEM)
+        CODE_PAGE_ENCODING.put((byte) 0x4f,"cp950");          // Chinese Big5 (Taiwan)
+        CODE_PAGE_ENCODING.put((byte) 0x50,"cp874");          // Thai (ANSI/OEM)
+        CODE_PAGE_ENCODING.put((byte) 0x57, DEFAULT_ENCODING);// ANSI
+        CODE_PAGE_ENCODING.put((byte) 0x58, DEFAULT_ENCODING);// Western European ANSI
+        CODE_PAGE_ENCODING.put((byte) 0x59, DEFAULT_ENCODING);// Spanish ANSI
+        CODE_PAGE_ENCODING.put((byte) 0x64,"cp852");          // Eastern European MS–DOS
+        CODE_PAGE_ENCODING.put((byte) 0x65,"cp866");          // Russian MS–DOS
+        CODE_PAGE_ENCODING.put((byte) 0x66,"cp865");          // Nordic MS–DOS
+        CODE_PAGE_ENCODING.put((byte) 0x67,"cp861");          // Icelandic MS–DOS
+        CODE_PAGE_ENCODING.put((byte) 0x6a,"cp737");          // Greek MS–DOS (437G)
+        CODE_PAGE_ENCODING.put((byte) 0x6b,"cp857");          // Turkish MS–DOS
+        CODE_PAGE_ENCODING.put((byte) 0x6c,"cp863");          // French–Canadian MS–DOS
+        CODE_PAGE_ENCODING.put((byte) 0x78,"cp950");          // Taiwan Big 5
+        CODE_PAGE_ENCODING.put((byte) 0x79,"cp949");          // Hangul (Wansung)
+        CODE_PAGE_ENCODING.put((byte) 0x7a,"cp936");          // PRC GBK
+        CODE_PAGE_ENCODING.put((byte) 0x7b,"cp932");          // Japanese Shift-JIS
+        CODE_PAGE_ENCODING.put((byte) 0x7c,"cp874");          // Thai Windows/MS–DOS
+        CODE_PAGE_ENCODING.put((byte) 0x86,"cp737");          // Greek OEM
+        CODE_PAGE_ENCODING.put((byte) 0x87,"cp852");          // Slovenian OEM
+        CODE_PAGE_ENCODING.put((byte) 0x88,"cp857");          // Turkish OEM
+        CODE_PAGE_ENCODING.put((byte) 0xc8,"cp1250");         // Eastern European Windows
+        CODE_PAGE_ENCODING.put((byte) 0xc9,"cp1251");         // Russian Windows
+        CODE_PAGE_ENCODING.put((byte) 0xca,"cp1254");         // Turkish Windows
+        CODE_PAGE_ENCODING.put((byte) 0xcb,"cp1253");         // Greek Windows
+        CODE_PAGE_ENCODING.put((byte) 0xcc,"cp1257");         // Baltic Windows
     }
 	// type of the file, must be 03h
 	private static final byte MAGIC = 0x03;
@@ -155,8 +160,7 @@ public class DbaseFileHeader {
 	private int headerLength = -1;
 
 	private int largestFieldSize = 0;
-    /** Encoding of String, found in Language Code Page DBF Header, use ISO-8859-1 as default value*/
-    private String fileEncoding = "ISO-8859-1";
+    private String fileEncoding = DEFAULT_ENCODING;
 
 	/**
 	 * Class for holding the information assicated with a record.
@@ -611,6 +615,15 @@ public class DbaseFileHeader {
 		recordCnt = inNumRecords;
 	}
 
+    private byte getEncodingByte() {
+        for(Map.Entry<Byte, String> entry : CODE_PAGE_ENCODING.entrySet()) {
+            if(entry.getValue().equalsIgnoreCase(fileEncoding)) {
+                return entry.getKey();
+            }
+        }
+        return DEFAULT_ENCODING_FLAG;
+    }
+
 	/**
 	 * Write the header data to the DBF file.
 	 *
@@ -649,39 +662,43 @@ public class DbaseFileHeader {
 		buffer.putShort((short) recordLength);
 
 		// // write the reserved bytes in the header
-		// for (int i=0; i<20; i++) out.writeByteLE(0);
-		buffer.position(buffer.position() + 20);
+		buffer.position(buffer.position() + 17);
+        // skip / skip the reserved bytes in the header.
+        // write Language driver
+        buffer.put(getEncodingByte());
+        // skip reserved
+        buffer.position(buffer.position() + 2);
 
 		// write all of the header records
 		int tempOffset = 0;
-		for (int i = 0; i < fields.length; i++) {
+        for (DbaseField field : fields) {
 
-			// write the field name
-			for (int j = 0; j < 11; j++) {
-				if (fields[i].fieldName.length() > j) {
-					buffer.put((byte) fields[i].fieldName.charAt(j));
-				} else {
-					buffer.put((byte) 0);
-				}
-			}
+            // write the field name
+            for (int j = 0; j < 11; j++) {
+                if (field.fieldName.length() > j) {
+                    buffer.put((byte) field.fieldName.charAt(j));
+                } else {
+                    buffer.put((byte) 0);
+                }
+            }
 
-			// write the field type
-			buffer.put((byte) fields[i].fieldType);
-			// // write the field data address, offset from the start of the
-			// record.
-			buffer.putInt(tempOffset);
-			tempOffset += fields[i].fieldLength;
+            // write the field type
+            buffer.put((byte) field.fieldType);
+            // // write the field data address, offset from the start of the
+            // record.
+            buffer.putInt(tempOffset);
+            tempOffset += field.fieldLength;
 
-			// write the length of the field.
-			buffer.put((byte) fields[i].fieldLength);
+            // write the length of the field.
+            buffer.put((byte) field.fieldLength);
 
-			// write the decimal count.
-			buffer.put((byte) fields[i].decimalCount);
+            // write the decimal count.
+            buffer.put((byte) field.decimalCount);
 
-			// write the reserved bytes.
-			// for (in j=0; jj<14; j++) out.writeByteLE(0);
-			buffer.position(buffer.position() + 14);
-		}
+            // write the reserved bytes.
+            // for (in j=0; jj<14; j++) out.writeByteLE(0);
+            buffer.position(buffer.position() + 14);
+        }
 
 		// write the end of the field definitions marker
 		buffer.put((byte) 0x0D);

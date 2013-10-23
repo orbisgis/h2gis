@@ -25,8 +25,10 @@
 
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
+import org.h2.util.StringUtils;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.TableLocation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -55,10 +57,10 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
      * @return Tthe column SRID from constraints and data.
      * @throws SQLException
      */
-    public static int getSRID(Connection connection, String tableName, String columnName) throws SQLException {
+    public static int getSRID(Connection connection, String catalogName, String schemaName, String tableName, String columnName) throws SQLException {
         Statement st = connection.createStatement();
         // Fetch the first geometry to find a stored SRID
-        ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",columnName,tableName));
+        ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;", StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)));
         int srid = 0;
         if(rs.next()) {
             srid = rs.getInt(1);

@@ -25,13 +25,17 @@
 
 package org.h2gis.h2spatial.ut;
 
+import org.h2.util.OsgiDataSourceFactory;
 import org.h2gis.h2spatial.CreateSpatialExtension;
+import org.osgi.service.jdbc.DataSourceFactory;
 
+import javax.sql.DataSource;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
 
 /**
  * Used to create quickly a database on unit tests.
@@ -58,7 +62,7 @@ public class SpatialH2UT {
         Class.forName("org.h2.Driver");
         // Keep a connection alive to not close the DataBase on each unit test
         Connection connection = DriverManager.getConnection(databasePath,
-                "sa", "");
+                "sa", "sa");
         return connection;
     }
     /**
@@ -73,6 +77,46 @@ public class SpatialH2UT {
     private static String getDataBasePath(String dbName) {
         return "target/test-resources/dbH2"+dbName;
     }
+
+    /**
+     * Create a database and return a DataSource
+     * @param dbName
+     * @param initSpatial
+     * @return
+     * @throws SQLException
+     */
+    public static DataSource createDataSource(String dbName ,boolean initSpatial) throws SQLException {
+        // Create H2 memory DataSource
+        org.h2.Driver driver = org.h2.Driver.load();
+        OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
+        Properties properties = new Properties();
+        String databasePath = initDBFile(dbName);
+        properties.setProperty(DataSourceFactory.JDBC_URL, databasePath);
+        properties.setProperty(DataSourceFactory.JDBC_USER, "sa");
+        properties.setProperty(DataSourceFactory.JDBC_PASSWORD, "sa");
+        DataSource dataSource = dataSourceFactory.createDataSource(properties);
+        // Init spatial ext
+        if(initSpatial) {
+            Connection connection = dataSource.getConnection();
+            try {
+                CreateSpatialExtension.initSpatialExtension(connection);
+            } finally {
+                connection.close();
+            }
+        }
+        return dataSource;
+    }
+
+    private static String initDBFile( String dbName ) {
+        String dbFilePath = getDataBasePath(dbName);
+        File dbFile = new File(dbFilePath +".h2.db");
+        String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
+        if(dbFile.exists()) {
+            dbFile.delete();
+        }
+        return databasePath;
+    }
+
     /**
      * Create a spatial database
      * @param dbName filename
@@ -81,17 +125,12 @@ public class SpatialH2UT {
      * @throws Exception
      */
     public static Connection createSpatialDataBase(String dbName,boolean initSpatial)throws SQLException, ClassNotFoundException {
-        String dbFilePath = getDataBasePath(dbName);
-        File dbFile = new File(dbFilePath +".h2.db");
-        String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
+        String databasePath = initDBFile(dbName);
 
         Class.forName("org.h2.Driver");
-        if(dbFile.exists()) {
-            dbFile.delete();
-        }
         // Keep a connection alive to not close the DataBase on each unit test
         Connection connection = DriverManager.getConnection(databasePath,
-                "sa", "");
+                "sa", "sa");
         Statement st = connection.createStatement();
         //Create one row table for tests
         st.execute("CREATE TABLE dummy(id INTEGER);");

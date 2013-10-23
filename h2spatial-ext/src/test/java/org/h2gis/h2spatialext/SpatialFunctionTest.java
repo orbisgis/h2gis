@@ -30,7 +30,7 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.sputilities.SFSUtilities;
+import org.h2gis.utilities.SFSUtilities;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -136,5 +136,10 @@ public class SpatialFunctionTest {
         assertEquals(expected.getMinY(),result.getMinY(),1e-12);
         assertEquals(expected.getMaxY(),result.getMaxY(),1e-12);
         st.execute("drop table ptClouds");
+    }
+
+    @Test
+    public void testAggregateProgression() {
+
     }
 }
