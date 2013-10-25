@@ -25,11 +25,12 @@
 
 package org.h2gis.osgi.test;
 
-import ch.qos.logback.classic.Level;
-import ch.qos.logback.classic.Logger;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
@@ -42,8 +43,6 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
-import org.slf4j.LoggerFactory;
-
 import javax.sql.DataSource;
 import java.awt.*;
 import java.io.File;
@@ -56,6 +55,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.ops4j.pax.exam.CoreOptions.junitBundles;
 import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
@@ -78,37 +78,33 @@ public class BundleTest {
 
     @Configuration
     public Option[] config() {
-            // Reduce log level.
-        Logger root = (Logger) LoggerFactory.getLogger(Logger.ROOT_LOGGER_NAME);
-        root.setLevel(Level.INFO);
         return options(systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("WARN"),
                 mavenBundle("org.h2gis", "h2spatial-api"),
                 mavenBundle("org.h2gis", "spatial-utilities"),
                 mavenBundle("org.orbisgis", "cts"),
                 mavenBundle("com.h2database", "h2"),
                 mavenBundle("org.h2gis", "h2spatial").noStart(),
-                //mavenBundle("org.h2gis", "h2spatial-ext"),
+                mavenBundle("org.h2gis", "h2spatial-ext").noStart(),
                 mavenBundle("org.h2gis", "h2drivers").noStart(),
-                //mavenBundle("org.osgi", "org.osgi.compendium"),
-                //mavenBundle("com.vividsolutions", "jts-osgi"),
-                //mavenBundle("org.h2gis", "h2spatial-osgi"),
-                //mavenBundle("org.h2gis", "h2spatial-ext-osgi"),
+                mavenBundle("org.osgi", "org.osgi.compendium"),
+                mavenBundle("com.vividsolutions", "jts-osgi"),
+                mavenBundle("org.h2gis", "h2spatial-osgi"),
+                mavenBundle("org.h2gis", "h2spatial-ext-osgi"),
                 junitBundles());
     }
     /**
      * Create data source
      */
-    @Test
+    @Before
     public void setUp() throws SQLException {
         // Find if DataSource service is already online
-
-
         ref =  context.getServiceReference(DataSourceFactory.class);
         Properties properties = new Properties();
         properties.put(DataSourceFactory.JDBC_URL,DATABASE_PATH);
         properties.put(DataSourceFactory.JDBC_USER,"sa");
         properties.put(DataSourceFactory.JDBC_PASSWORD,"");
         dataSource = context.getService(ref).createDataSource(properties);
+        assertNotNull(dataSource);
         if(context.getServiceReference(DataSource.class.getName())==null) {
             // First UnitTest
             // Delete database
@@ -132,7 +128,7 @@ public class BundleTest {
         System.out.println("ID\t\tState\tBundle name");
         for (Bundle bundle : context.getBundles()) {
             System.out.println(
-                    "[" + String.format("%02d",bundle.getBundleId()) + "]\t"
+                    "[" + String.format("%02d", bundle.getBundleId()) + "]\t"
                             + getStateString(bundle.getState()) + "\t"
                             + bundle.getSymbolicName());
             // Print services
@@ -165,6 +161,7 @@ public class BundleTest {
                 return "Unknown  ";
         }
     }
+    @After
     public void tearDown() {
         context.ungetService(ref);
     }
