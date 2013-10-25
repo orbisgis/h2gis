@@ -79,17 +79,17 @@ public class BundleTest {
     @Configuration
     public Option[] config() {
         return options(systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("WARN"),
-                mavenBundle("org.h2gis", "h2spatial-api"),
-                mavenBundle("org.h2gis", "spatial-utilities"),
-                mavenBundle("org.orbisgis", "cts"),
-                mavenBundle("com.h2database", "h2"),
-                mavenBundle("org.h2gis", "h2spatial").noStart(),
-                mavenBundle("org.h2gis", "h2spatial-ext").noStart(),
-                mavenBundle("org.h2gis", "h2drivers").noStart(),
                 mavenBundle("org.osgi", "org.osgi.compendium"),
+                mavenBundle("org.orbisgis", "h2spatial-api"),
+                mavenBundle("org.orbisgis", "spatial-utilities"),
+                mavenBundle("org.orbisgis", "cts"),
                 mavenBundle("com.vividsolutions", "jts-osgi"),
-                mavenBundle("org.h2gis", "h2spatial-osgi"),
-                mavenBundle("org.h2gis", "h2spatial-ext-osgi"),
+                mavenBundle("com.h2database", "h2"),
+                mavenBundle("org.orbisgis", "h2spatial").noStart(),
+                mavenBundle("org.orbisgis", "h2spatial-ext").noStart(),
+                mavenBundle("org.orbisgis", "h2drivers").noStart(),
+                mavenBundle("org.orbisgis", "h2spatial-osgi"),
+                mavenBundle("org.orbisgis", "h2spatial-ext-osgi"),
                 junitBundles());
     }
     /**
