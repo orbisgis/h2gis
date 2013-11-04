@@ -75,13 +75,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <distributionManagement>
-    <repository>
-      <id>IRSTV</id>
-      <name>IRSTV repository</name>
-      <url>scp://ateliersig@repo.orbisgis.org:/var/www/repo.orbisgis.org/</url>
-    </repository>
-  </distributionManagement>
   <build>
     <plugins>
       <plugin>
