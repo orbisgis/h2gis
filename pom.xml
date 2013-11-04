@@ -4,7 +4,7 @@
     <groupId>org.orbisgis</groupId>
     <artifactId>h2gis</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1</version>
+    <version>1.0.2-SNAPSHOT</version>
     <name>H2GIS</name>
     <description>H2GIS is a spatial extension of the H2 database engine in the spirit of PostGIS.  It adds support for the Open Geospatial Consortium (OGC) Simple Features for SQL (SFSQL) functions.</description>
     <organization>
