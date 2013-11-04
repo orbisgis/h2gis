@@ -26,6 +26,7 @@
         <module>h2spatial-ext</module>
         <module>h2spatial-ext-osgi</module>
         <module>h2drivers</module>
+        <module>jts-osgi</module>
         <module>h2spatialtest</module>
         <module>h2-dist</module>
   </modules>
@@ -44,13 +45,6 @@
         <connection>scm:git:https://github.com/irstv/H2GIS.git</connection>
         <url>https://github.com/irstv/H2GIS</url>
     </scm>
-    <distributionManagement>
-        <repository>
-            <id>IRSTV</id>
-            <name>IRSTV repository</name>
-            <url>scp://irstv@repo.orbisgis.org:/var/www/repo.orbisgis.org/</url>
-        </repository>
-    </distributionManagement>
     <build>
         <plugins>
             <plugin>

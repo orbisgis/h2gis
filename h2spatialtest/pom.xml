@@ -31,8 +31,8 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts-osgi</artifactId>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jts</artifactId>
             <version>${jts-version}</version>
             <scope>test</scope>
         </dependency>
