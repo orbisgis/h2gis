@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>org.h2gis</groupId>
+    <groupId>org.orbisgis</groupId>
     <artifactId>h2gis</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.3-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>h2spatial</artifactId>
@@ -26,7 +25,7 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.cts</groupId>
+      <groupId>${project.groupId}</groupId>
       <artifactId>cts</artifactId>
       <version>${cts-version}</version>
       <!-- https://github.com/irstv/CTS -->
@@ -76,13 +75,6 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
-  <distributionManagement>
-    <repository>
-      <id>IRSTV</id>
-      <name>IRSTV repository</name>
-      <url>scp://ateliersig@repo.orbisgis.org:/var/www/repo.orbisgis.org/</url>
-    </repository>
-  </distributionManagement>
   <build>
     <plugins>
       <plugin>

@@ -28,8 +28,18 @@ package org.h2gis.osgi.test;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.apache.felix.ipojo.junit4osgi.OSGiTestCase;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.ops4j.pax.exam.Configuration;
+import org.ops4j.pax.exam.Option;
+import javax.inject.Inject;
+import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
+import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import javax.sql.DataSource;
@@ -42,52 +52,83 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.ops4j.pax.exam.CoreOptions.junitBundles;
+import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
+import static org.ops4j.pax.exam.CoreOptions.options;
+import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+
 /**
  * {@see http://felix.apache.org/site/apache-felix-ipojo-junit4osgi-tutorial.html}
  * @author Nicolas Fortin
  */
-public class BundleTest extends OSGiTestCase {
+@RunWith(PaxExam.class)
+@ExamReactorStrategy(PerClass.class)
+public class BundleTest {
+    @Inject
+    BundleContext context;
     private static final String DB_FILE_PATH = "target/test-resources/dbH2";
     private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
     private DataSource dataSource;
     private ServiceReference<DataSourceFactory> ref;
 
+    @Configuration
+    public Option[] config() {
+        return options(systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("WARN"),
+                mavenBundle("org.osgi", "org.osgi.compendium"),
+                mavenBundle("org.orbisgis", "h2spatial-api"),
+                mavenBundle("org.orbisgis", "spatial-utilities"),
+                mavenBundle("org.orbisgis", "cts"),
+                mavenBundle("com.vividsolutions", "jts-osgi"),
+                mavenBundle("com.h2database", "h2"),
+                mavenBundle("org.orbisgis", "h2spatial").noStart(),
+                mavenBundle("org.orbisgis", "h2spatial-ext").noStart(),
+                mavenBundle("org.orbisgis", "h2drivers").noStart(),
+                mavenBundle("org.orbisgis", "h2spatial-osgi"),
+                mavenBundle("org.orbisgis", "h2spatial-ext-osgi"),
+                junitBundles());
+    }
     /**
      * Create data source
      */
+    @Before
     public void setUp() throws SQLException {
         // Find if DataSource service is already online
-
-
-        ref =  getContext().getServiceReference(DataSourceFactory.class);
+        ref =  context.getServiceReference(DataSourceFactory.class);
         Properties properties = new Properties();
         properties.put(DataSourceFactory.JDBC_URL,DATABASE_PATH);
         properties.put(DataSourceFactory.JDBC_USER,"sa");
         properties.put(DataSourceFactory.JDBC_PASSWORD,"");
-        dataSource = ((DataSourceFactory)getServiceObject(ref)).createDataSource(properties);
-        if(getContext().getServiceReference(DataSource.class.getName())==null) {
+        dataSource = context.getService(ref).createDataSource(properties);
+        assertNotNull(dataSource);
+        if(context.getServiceReference(DataSource.class.getName())==null) {
             // First UnitTest
             // Delete database
             File dbFile = new File(DB_FILE_PATH+".h2.db");
             if(dbFile.exists()) {
                 assertTrue(dbFile.delete());
             }
-            getBundleContext().registerService(DataSource.class.getName(),dataSource,null);
+            context.registerService(DataSource.class.getName(), dataSource, null);
         }
     }
+
     /**
      * Validate integration of built-in bundles.
      */
+    @Test
     public void testBuiltInBundleActivation() throws Exception {
         if (GraphicsEnvironment.isHeadless()) {
             return;
         }
         System.out.println("Built-In bundle list :");
         System.out.println("ID\t\tState\tBundle name");
-        for (Bundle bundle : getBundleContext().getBundles()) {
+        for (Bundle bundle : context.getBundles()) {
             System.out.println(
-                    "[" + String.format("%02d",bundle.getBundleId()) + "]\t"
-                            + getStateString(bundle.getState())
+                    "[" + String.format("%02d", bundle.getBundleId()) + "]\t"
+                            + getStateString(bundle.getState()) + "\t"
                             + bundle.getSymbolicName());
             // Print services
             ServiceReference[] refs = bundle.getRegisteredServices();
@@ -96,7 +137,7 @@ public class BundleTest extends OSGiTestCase {
                     String refDescr = ref.toString();
                     if(!refDescr.contains("org.osgi") && !refDescr.contains("org.apache")) {
                         System.out.println(
-                                "\t\t" + ref);
+                                "\t\t\t\t" + ref);
                     }
                 }
             }
@@ -119,8 +160,9 @@ public class BundleTest extends OSGiTestCase {
                 return "Unknown  ";
         }
     }
+    @After
     public void tearDown() {
-        getContext().ungetService(ref);
+        context.ungetService(ref);
     }
     private Connection getConnection() throws SQLException {
         return dataSource.getConnection();
@@ -130,6 +172,7 @@ public class BundleTest extends OSGiTestCase {
      * Create and feed a spatial table, read a Geometry value
      * @throws Exception
      */
+    @Test
     public void testCreateGeometryTable() throws Exception  {
         Connection connection = getConnection();
         try {
@@ -150,7 +193,6 @@ public class BundleTest extends OSGiTestCase {
             connection.close();
         }
     }
-
 
     private static void createTestTable(Statement stat)  throws SQLException {
         stat.execute("create table area(idarea int primary key, the_geom geometry)");
@@ -176,6 +218,7 @@ public class BundleTest extends OSGiTestCase {
      * Create and feed a spatial table, read a Geometry value
      * @throws Exception
      */
+    @Test
     public void testOverlapOperator() throws Exception  {
         Connection connection = getConnection();
         try {
@@ -214,6 +257,7 @@ public class BundleTest extends OSGiTestCase {
      * Create and feed a spatial table, read a Geometry value
      * @throws Exception
      */
+    @Test
     public void testIntersects() throws Exception  {
         Connection connection = getConnection();
         try {

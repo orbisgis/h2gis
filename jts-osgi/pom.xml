@@ -2,31 +2,29 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <artifactId>h2gis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>1.0.3-SNAPSHOT</version>
+        <artifactId>h2gis</artifactId>
+        <version>1.0.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>h2spatial-api</artifactId>
-    <name>h2spatial-api</name>
+    <artifactId>jts</artifactId>
+    <name>jts</name>
+    <version>1.13</version>
     <packaging>bundle</packaging>
-    <description>H2 Spatial API define extension point of h2 spatial</description>
-    <licenses>
-        <license>
-            <name>GPL V3</name>
-            <url>https://github.com/irstv/orbisgis/blob/master/Licenses/license-GPL.txt</url>
-        </license>
-    </licenses>
+    <description>A jar with additional information in the jar MANIFEST in order to comply with OSGi environment</description>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${maven-bundle-plugin-version}</version>
+                <version>2.3.7</version>
                 <extensions>true</extensions>
                 <configuration>
+                    <unpackBundle>true</unpackBundle>
                     <instructions>
-                        <Public-Package>org.h2gis.h2spatialapi.*</Public-Package>
+                        <Embed-Dependency>jts;scope=compile;inline=true</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                        <_exportcontents>com.vividsolutions.jts,com.vividsolutions.jts.*</_exportcontents>
                     </instructions>
                 </configuration>
             </plugin>
@@ -35,4 +33,11 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
+        <dependencies>
+            <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>${jts-version}</version>
+        </dependency>
+    </dependencies>
 </project>

@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>h2gis</artifactId>
-        <groupId>org.h2gis</groupId>
-        <version>1.0.0</version>
+        <groupId>org.orbisgis</groupId>
+        <version>1.0.3-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <name>spatial-utilities</name>
