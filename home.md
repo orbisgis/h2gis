@@ -80,3 +80,7 @@ You can define java function in sql.
 ```sql
 CREATE ALIAS PRINT AS $$ void print(String s) { System.out.println(s); } $$;
 ```
+
+# H2GIS as embedded spatial database
+You can find a short sample that create an embedded spatial database here:
+https://github.com/irstv/orbisgis-samples/tree/master/demoh2gis
