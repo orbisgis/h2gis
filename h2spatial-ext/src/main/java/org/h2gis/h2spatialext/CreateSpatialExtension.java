@@ -6,6 +6,7 @@ import org.h2gis.drivers.dbf.DBFWrite;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialext.function.spatial.aggregate.ST_Extent;
+import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsRectangle;
 import org.h2gis.h2spatialext.function.spatial.table.ST_Explode;
 import org.h2gis.h2spatialapi.Function;
 
@@ -24,6 +25,7 @@ public class CreateSpatialExtension {
         return new Function[] {
                 new ST_Extent(),
                 new ST_Explode(),
+                new ST_IsRectangle(),
                 new DriverManager(),
                 new SHPRead(),
                 new SHPWrite(),

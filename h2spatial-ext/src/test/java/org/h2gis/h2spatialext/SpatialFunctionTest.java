@@ -142,4 +142,19 @@ public class SpatialFunctionTest {
     public void testAggregateProgression() {
 
     }
+
+    @Test
+    public void test_ST_IsRectangle() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE input_table(the_geom Polygon);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); " +
+                "INSERT INTO input_table VALUES(" +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 7, 0 5, 0 0))', 1));");
+        ResultSet rs = st.executeQuery("SELECT ST_IsRectangle(the_geom) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+        assertTrue(rs.next());
+        assertEquals(false, rs.getBoolean(1));
+    }
 }
