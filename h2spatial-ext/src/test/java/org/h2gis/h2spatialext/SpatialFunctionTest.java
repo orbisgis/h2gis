@@ -172,4 +172,25 @@ public class SpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals(false, rs.getBoolean(1));
     }
+
+    @Test
+    public void test_ST_Covers() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE input_table(smallc Polygon, bigc Polygon);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_Buffer(ST_GeomFromText('POINT(1 2)'), 10)," +
+                "ST_Buffer(ST_GeomFromText('POINT(1 2)'), 20));");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_Covers(smallc, smallc)," +
+                "ST_Covers(smallc, bigc)," +
+                "ST_Covers(bigc, smallc)," +
+                "ST_Covers(bigc, ST_ExteriorRing(bigc))," +
+                "ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+        assertEquals(false, rs.getBoolean(2));
+        assertEquals(true, rs.getBoolean(3));
+        assertEquals(true, rs.getBoolean(4));
+        assertEquals(false, rs.getBoolean(5));
+    }
 }
