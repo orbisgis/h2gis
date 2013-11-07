@@ -146,7 +146,8 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_IsRectangle() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("CREATE TABLE input_table(the_geom Polygon);" +
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(the_geom Polygon);" +
                 "INSERT INTO input_table VALUES(" +
                 "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); " +
                 "INSERT INTO input_table VALUES(" +
@@ -156,12 +157,14 @@ public class SpatialFunctionTest {
         assertEquals(true, rs.getBoolean(1));
         assertTrue(rs.next());
         assertEquals(false, rs.getBoolean(1));
+        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_IsValid() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("CREATE TABLE input_table(the_geom Polygon);" +
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(the_geom Polygon);" +
                 "INSERT INTO input_table VALUES(" +
                 "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); " +
                 "INSERT INTO input_table VALUES(" +
@@ -171,12 +174,14 @@ public class SpatialFunctionTest {
         assertEquals(true, rs.getBoolean(1));
         assertTrue(rs.next());
         assertEquals(false, rs.getBoolean(1));
+        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_Covers() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("CREATE TABLE input_table(smallc Polygon, bigc Polygon);" +
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(smallc Polygon, bigc Polygon);" +
                 "INSERT INTO input_table VALUES(" +
                 "ST_Buffer(ST_GeomFromText('POINT(1 2)'), 10)," +
                 "ST_Buffer(ST_GeomFromText('POINT(1 2)'), 20));");
@@ -192,12 +197,14 @@ public class SpatialFunctionTest {
         assertEquals(true, rs.getBoolean(3));
         assertEquals(true, rs.getBoolean(4));
         assertEquals(false, rs.getBoolean(5));
+        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_DWithin() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("CREATE TABLE input_table(geomA Polygon, geomB Polygon);" +
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(geomA Polygon, geomB Polygon);" +
                 "INSERT INTO input_table VALUES(" +
                 "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1), " +
                 "ST_PolyFromText('POLYGON ((12 0, 14 0, 14 6, 12 6, 12 0))', 1));");
@@ -216,5 +223,6 @@ public class SpatialFunctionTest {
         assertEquals(false, rs.getBoolean(5));
         assertEquals(true, rs.getBoolean(6));
         assertEquals(true, rs.getBoolean(7));
+        st.execute("DROP TABLE input_table;");
     }
 }
