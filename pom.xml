@@ -102,6 +102,10 @@
             <name>Erwan Bocher</name>
             <organization>IRSTV CNRS-FR-2488</organization>
         </developer>
+        <developer>
+            <name>Adam Gouge</name>
+            <organization>IRSTV CNRS-FR-2488</organization>
+        </developer>
     </developers>
     <parent>
         <groupId>org.sonatype.oss</groupId>
