@@ -227,13 +227,16 @@ public class SpatialFunctionTest {
                 "ST_LineFromText('LINESTRING(1 2 3, 4 5 6)', 101));");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_XMin(line), ST_XMax(line), " + 
-                "ST_YMin(line), ST_YMax(line)" +
+                "ST_YMin(line), ST_YMax(line)," +
+                "ST_ZMin(line), ST_ZMax(line)" +
                 " FROM input_table;");
         assertTrue(rs.next());
         assertEquals(1.0, rs.getDouble(1), 0.0);
         assertEquals(4.0, rs.getDouble(2), 0.0);
         assertEquals(2.0, rs.getDouble(3), 0.0);
         assertEquals(5.0, rs.getDouble(4), 0.0);
+        assertEquals(3.0, rs.getDouble(5), 0.0);
+        assertEquals(6.0, rs.getDouble(6), 0.0);
         st.execute("DROP TABLE input_table;");
     }
 }
