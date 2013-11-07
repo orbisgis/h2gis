@@ -142,4 +142,79 @@ public class SpatialFunctionTest {
     public void testAggregateProgression() {
 
     }
+
+    @Test
+    public void test_ST_IsRectangle() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE input_table(the_geom Polygon);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); " +
+                "INSERT INTO input_table VALUES(" +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 7, 0 5, 0 0))', 1));");
+        ResultSet rs = st.executeQuery("SELECT ST_IsRectangle(the_geom) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+        assertTrue(rs.next());
+        assertEquals(false, rs.getBoolean(1));
+    }
+
+    @Test
+    public void test_ST_IsValid() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE input_table(the_geom Polygon);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); " +
+                "INSERT INTO input_table VALUES(" +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 10 -5, 0 0))', 1));");
+        ResultSet rs = st.executeQuery("SELECT ST_IsValid(the_geom) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+        assertTrue(rs.next());
+        assertEquals(false, rs.getBoolean(1));
+    }
+
+    @Test
+    public void test_ST_Covers() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE input_table(smallc Polygon, bigc Polygon);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_Buffer(ST_GeomFromText('POINT(1 2)'), 10)," +
+                "ST_Buffer(ST_GeomFromText('POINT(1 2)'), 20));");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_Covers(smallc, smallc)," +
+                "ST_Covers(smallc, bigc)," +
+                "ST_Covers(bigc, smallc)," +
+                "ST_Covers(bigc, ST_ExteriorRing(bigc))," +
+                "ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+        assertEquals(false, rs.getBoolean(2));
+        assertEquals(true, rs.getBoolean(3));
+        assertEquals(true, rs.getBoolean(4));
+        assertEquals(false, rs.getBoolean(5));
+    }
+
+    @Test
+    public void test_ST_DWithin() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE input_table(geomA Polygon, geomB Polygon);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1), " +
+                "ST_PolyFromText('POLYGON ((12 0, 14 0, 14 6, 12 6, 12 0))', 1));");
+        ResultSet rs = st.executeQuery("SELECT ST_DWithin(geomA, geomB, 2.0)," +
+                "ST_DWithin(geomA, geomB, 1.0)," +
+                "ST_DWithin(geomA, geomB, -1.0)," +
+                "ST_DWithin(geomA, geomB, 3.0)," +
+                "ST_DWithin(geomA, geomA, -1.0)," +
+                "ST_DWithin(geomA, geomA, 0.0)," +
+                "ST_DWithin(geomA, geomA, 5000.0) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+        assertEquals(false, rs.getBoolean(2));
+        assertEquals(false, rs.getBoolean(3));
+        assertEquals(true, rs.getBoolean(4));
+        assertEquals(false, rs.getBoolean(5));
+        assertEquals(true, rs.getBoolean(6));
+        assertEquals(true, rs.getBoolean(7));
+    }
 }
