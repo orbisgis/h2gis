@@ -10,7 +10,7 @@ import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsRectangle;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsValid;
-import org.h2gis.h2spatialext.function.spatial.properties.ST_XMax;
+import org.h2gis.h2spatialext.function.spatial.properties.*;
 import org.h2gis.h2spatialext.function.spatial.table.ST_Explode;
 import org.h2gis.h2spatialapi.Function;
 
@@ -19,7 +19,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
+ * Registers the SQL functions contained in h2spatial-ext.
+ *
  * @author Nicolas Fortin
+ * @author Adam Gouge
  */
 public class CreateSpatialExtension {
     /**
@@ -33,7 +36,10 @@ public class CreateSpatialExtension {
                 new ST_Explode(),
                 new ST_IsRectangle(),
                 new ST_IsValid(),
+                new ST_XMin(),
                 new ST_XMax(),
+                new ST_YMin(),
+                new ST_YMax(),
                 new DriverManager(),
                 new SHPRead(),
                 new SHPWrite(),

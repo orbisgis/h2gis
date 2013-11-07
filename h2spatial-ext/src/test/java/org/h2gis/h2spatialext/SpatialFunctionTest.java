@@ -219,16 +219,21 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_XMax() throws Exception {
+    public void test_ST_XYMinMax() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
                 "CREATE TABLE input_table(line Linestring);" +
                 "INSERT INTO input_table VALUES(" +
                 "ST_LineFromText('LINESTRING(1 2 3, 4 5 6)', 101));");
         ResultSet rs = st.executeQuery(
-                "SELECT ST_XMax(line) FROM input_table;");
+                "SELECT ST_XMin(line), ST_XMax(line), " + 
+                "ST_YMin(line), ST_YMax(line)" +
+                " FROM input_table;");
         assertTrue(rs.next());
-        assertEquals(4.0, rs.getDouble(1), 0.0);
+        assertEquals(1.0, rs.getDouble(1), 0.0);
+        assertEquals(4.0, rs.getDouble(2), 0.0);
+        assertEquals(2.0, rs.getDouble(3), 0.0);
+        assertEquals(5.0, rs.getDouble(4), 0.0);
         st.execute("DROP TABLE input_table;");
     }
 }
