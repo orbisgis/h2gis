@@ -217,4 +217,18 @@ public class SpatialFunctionTest {
         assertEquals(true, rs.getBoolean(6));
         assertEquals(true, rs.getBoolean(7));
     }
+
+    @Test
+    public void test_ST_XMax() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(line Linestring);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_LineFromText('LINESTRING(1 2 3, 4 5 6)', 101));");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_XMax(line) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(4.0, rs.getDouble(1), 0.0);
+        st.execute("DROP TABLE input_table;");
+    }
 }
