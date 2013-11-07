@@ -193,4 +193,28 @@ public class SpatialFunctionTest {
         assertEquals(true, rs.getBoolean(4));
         assertEquals(false, rs.getBoolean(5));
     }
+
+    @Test
+    public void test_ST_DWithin() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE input_table(geomA Polygon, geomB Polygon);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1), " +
+                "ST_PolyFromText('POLYGON ((12 0, 14 0, 14 6, 12 6, 12 0))', 1));");
+        ResultSet rs = st.executeQuery("SELECT ST_DWithin(geomA, geomB, 2.0)," +
+                "ST_DWithin(geomA, geomB, 1.0)," +
+                "ST_DWithin(geomA, geomB, -1.0)," +
+                "ST_DWithin(geomA, geomB, 3.0)," +
+                "ST_DWithin(geomA, geomA, -1.0)," +
+                "ST_DWithin(geomA, geomA, 0.0)," +
+                "ST_DWithin(geomA, geomA, 5000.0) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+        assertEquals(false, rs.getBoolean(2));
+        assertEquals(false, rs.getBoolean(3));
+        assertEquals(true, rs.getBoolean(4));
+        assertEquals(false, rs.getBoolean(5));
+        assertEquals(true, rs.getBoolean(6));
+        assertEquals(true, rs.getBoolean(7));
+    }
 }
