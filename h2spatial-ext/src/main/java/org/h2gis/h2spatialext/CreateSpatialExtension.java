@@ -57,6 +57,7 @@ public class CreateSpatialExtension {
      */
     public static Function[] getBuiltInsFunctions() {
         return new Function[] {
+                new ST_3DLength(),
                 new ST_Covers(),
                 new ST_DWithin(),
                 new ST_Extent(),

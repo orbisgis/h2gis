@@ -227,14 +227,14 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_XYMinMax() throws Exception {
+    public void test_ST_XYZMinMax() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
                 "CREATE TABLE input_table(line Linestring);" +
                 "INSERT INTO input_table VALUES(" +
                 "ST_LineFromText('LINESTRING(1 2 3, 4 5 6)', 101));");
         ResultSet rs = st.executeQuery(
-                "SELECT ST_XMin(line), ST_XMax(line), " + 
+                "SELECT ST_XMin(line), ST_XMax(line), " +
                 "ST_YMin(line), ST_YMax(line)," +
                 "ST_ZMin(line), ST_ZMax(line)" +
                 " FROM input_table;");
@@ -339,6 +339,23 @@ public class SpatialFunctionTest {
                         new Coordinate(0, -2, 6),
                         new Coordinate(0, -5, 12)}),
                 TOLERANCE));
+    }
+
+    public void test_ST_3DLength() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(geom Geometry);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText('LINESTRING(1 4 3, 15 7 9, 16 17 22)',2249));" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText('Polygon((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))',2249));");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_3DLength(geom)" +
+                        " FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(Math.sqrt(241) + Math.sqrt(270), rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
         st.execute("DROP TABLE input_table;");
     }
 }
