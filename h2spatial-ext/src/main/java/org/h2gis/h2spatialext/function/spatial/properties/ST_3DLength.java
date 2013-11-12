@@ -27,7 +27,7 @@ package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.CoordinatesUtils;
+import org.h2gis.utilities.geometryUtils.CoordinateUtils;
 
 /**
  * ST_3DLength returns the 3D length (of a LineString) or the 3D perimeter (of a Polygon).
@@ -54,7 +54,7 @@ public class ST_3DLength extends DeterministicScalarFunction {
      */
     public static Double length3D(Geometry geom) {
         if (geom != null) {
-            return CoordinatesUtils.length3D(geom);
+            return CoordinateUtils.length3D(geom);
         } else {
             return null;
         }

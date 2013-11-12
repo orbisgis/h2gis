@@ -27,7 +27,7 @@ package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.CoordinatesUtils;
+import org.h2gis.utilities.geometryUtils.CoordinateUtils;
 
 /**
  * ST_ZMax returns the maximal z-value of the given geometry.
@@ -53,7 +53,7 @@ public class ST_ZMax extends DeterministicScalarFunction {
      */
     public static Double getMaxZ(Geometry geom) {
         if (geom != null) {
-            return CoordinatesUtils.zMinMax(geom.getCoordinates())[1];
+            return CoordinateUtils.zMinMax(geom.getCoordinates())[1];
         } else {
             return null;
         }

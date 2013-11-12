@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.utilities;
+package org.h2gis.utilities.geometryUtils;
 
 import com.vividsolutions.jts.geom.*;
 
@@ -31,7 +31,7 @@ import com.vividsolutions.jts.geom.*;
  *
  * @author Erwan Bocher
  */
-public final class CoordinatesUtils {
+public final class CoordinateUtils {
 
     /**
      * Interpolates a z value (linearly) between the two coordinates.
@@ -264,6 +264,6 @@ public final class CoordinatesUtils {
     /**
      * Private constructor for utility class.
      */
-    private CoordinatesUtils() {
+    private CoordinateUtils() {
     }
 }
