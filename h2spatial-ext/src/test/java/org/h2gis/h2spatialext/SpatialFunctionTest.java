@@ -25,6 +25,7 @@
 package org.h2gis.h2spatialext;
 
 import com.vividsolutions.jts.geom.*;
+import org.h2.value.ValueNull;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
@@ -38,7 +39,6 @@ import java.sql.Statement;
 import static org.junit.Assert.*;
 
 /**
- *
  * @author Nicolas Fortin
  * @author Adam Gouge
  */
@@ -47,11 +47,20 @@ public class SpatialFunctionTest {
     private static final String DB_NAME = "SpatialFunctionTest";
     private static GeometryFactory FACTORY;
     public static final double TOLERANCE = 10E-10;
+    private static final String POLYGON2D =
+            "'POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, " +
+                    "387 213, 377 159, 351 121, 298 101, 234 56, 181 124), " +
+                    "(165 244, 227 219, 234 300, 168 288, 165 244), " +
+                    "(244 130, 305 135, 324 186, 306 210, 272 206, 206 174, 244 130))'";
+    private static final String UNIT_SQUARE =
+            "'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))'";
+    private static final String MULTIPOLYGON2D = "'MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))'";
+    private static final String LINESTRING2D = "'LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)'";
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase(DB_NAME,false);
+        connection = SpatialH2UT.createSpatialDataBase(DB_NAME, false);
         CreateSpatialExtension.initSpatialExtension(connection);
         FACTORY = new GeometryFactory();
     }
@@ -62,7 +71,7 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_ExplodeWithoutGeometryField() throws Exception  {
+    public void test_ST_ExplodeWithoutGeometryField() throws Exception {
         Statement st = connection.createStatement();
         st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64)," +
                 " boundary MULTIPOLYGON);" +
@@ -75,7 +84,7 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_ExplodeEmptyGeometryCollection() throws Exception  {
+    public void test_ST_ExplodeEmptyGeometryCollection() throws Exception {
         Statement st = connection.createStatement();
         st.execute("create table test(the_geom GEOMETRY, value Integer);" +
                 "insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108)," +
@@ -84,16 +93,16 @@ public class SpatialFunctionTest {
                 " (ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'),111);");
         ResultSet rs = st.executeQuery("SELECT the_geom::Geometry , value FROM ST_Explode('test') ORDER BY value");
         assertTrue(rs.next());
-        assertEquals(108,rs.getInt(2));
-        assertEquals("LINESTRING EMPTY", ((Geometry)rs.getObject(1)).toText());
+        assertEquals(108, rs.getInt(2));
+        assertEquals("LINESTRING EMPTY", ((Geometry) rs.getObject(1)).toText());
         assertTrue(rs.next());
-        assertEquals(109,rs.getInt(2));
+        assertEquals(109, rs.getInt(2));
         assertNull(rs.getObject(1));    // POINT EMPTY does not exists (not supported in WKB)
         assertTrue(rs.next());
-        assertEquals(110,rs.getInt(2));
-        assertEquals("POLYGON EMPTY", ((Geometry)rs.getObject(1)).toText());
+        assertEquals(110, rs.getInt(2));
+        assertEquals("POLYGON EMPTY", ((Geometry) rs.getObject(1)).toText());
         assertTrue(rs.next());
-        assertEquals(111,rs.getInt(2));
+        assertEquals(111, rs.getInt(2));
         assertNull(rs.getObject(1));
         rs.close();
         st.execute("drop table test");
@@ -101,29 +110,29 @@ public class SpatialFunctionTest {
 
 
     @Test
-    public void test_ST_Extent() throws Exception  {
+    public void test_ST_Extent() throws Exception {
         Statement st = connection.createStatement();
         st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);" +
-        "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154))," +
+                "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154))," +
                 "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154))," +
                 "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
         ResultSet rs = st.executeQuery("select ST_Extent(the_geom) tableEnv from ptClouds;");
         assertTrue(rs.next());
         Object resultObj = rs.getObject("tableEnv");
         assertTrue(resultObj instanceof Envelope);
-        Envelope result = (Envelope)resultObj;
+        Envelope result = (Envelope) resultObj;
         Envelope expected = new Envelope(-5, 99, -21, 124);
-        assertEquals(expected.getMinX(),result.getMinX(),1e-12);
-        assertEquals(expected.getMaxX(),result.getMaxX(),1e-12);
+        assertEquals(expected.getMinX(), result.getMinX(), 1e-12);
+        assertEquals(expected.getMaxX(), result.getMaxX(), 1e-12);
         assertEquals(expected.getMinY(), result.getMinY(), 1e-12);
-        assertEquals(expected.getMaxY(),result.getMaxY(),1e-12);
+        assertEquals(expected.getMaxY(), result.getMaxY(), 1e-12);
         assertFalse(rs.next());
         st.execute("drop table ptClouds");
         st.close();
     }
 
     @Test
-    public void test_TableEnvelope() throws Exception  {
+    public void test_TableEnvelope() throws Exception {
         Statement st = connection.createStatement();
         st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);" +
                 "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154))," +
@@ -132,9 +141,9 @@ public class SpatialFunctionTest {
         Envelope result = SFSUtilities.getTableEnvelope(connection, SFSUtilities.splitCatalogSchemaTableName("ptClouds"), "");
         Envelope expected = new Envelope(-5, 99, -21, 124);
         assertEquals(expected.getMinX(), result.getMinX(), 1e-12);
-        assertEquals(expected.getMaxX(),result.getMaxX(),1e-12);
+        assertEquals(expected.getMaxX(), result.getMaxX(), 1e-12);
         assertEquals(expected.getMinY(), result.getMinY(), 1e-12);
-        assertEquals(expected.getMaxY(),result.getMaxY(),1e-12);
+        assertEquals(expected.getMaxY(), result.getMaxY(), 1e-12);
         st.execute("drop table ptClouds");
     }
 
@@ -187,10 +196,10 @@ public class SpatialFunctionTest {
                 "ST_Buffer(ST_GeomFromText('POINT(1 2)'), 20));");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_Covers(smallc, smallc)," +
-                "ST_Covers(smallc, bigc)," +
-                "ST_Covers(bigc, smallc)," +
-                "ST_Covers(bigc, ST_ExteriorRing(bigc))," +
-                "ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;");
+                        "ST_Covers(smallc, bigc)," +
+                        "ST_Covers(bigc, smallc)," +
+                        "ST_Covers(bigc, ST_ExteriorRing(bigc))," +
+                        "ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;");
         assertTrue(rs.next());
         assertEquals(true, rs.getBoolean(1));
         assertEquals(false, rs.getBoolean(2));
@@ -235,9 +244,9 @@ public class SpatialFunctionTest {
                 "ST_LineFromText('LINESTRING(1 2 3, 4 5 6)', 101));");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_XMin(line), ST_XMax(line), " +
-                "ST_YMin(line), ST_YMax(line)," +
-                "ST_ZMin(line), ST_ZMax(line)" +
-                " FROM input_table;");
+                        "ST_YMin(line), ST_YMax(line)," +
+                        "ST_ZMin(line), ST_ZMax(line)" +
+                        " FROM input_table;");
         assertTrue(rs.next());
         assertEquals(1.0, rs.getDouble(1), 0.0);
         assertEquals(4.0, rs.getDouble(2), 0.0);
@@ -372,17 +381,54 @@ public class SpatialFunctionTest {
                 "ST_GeomFromText('LINESTRING (1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)',1));" +
                 "INSERT INTO input_table VALUES(" +
                 "ST_GeomFromText('MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))',1));");
-                ResultSet rs = st.executeQuery(
+        ResultSet rs = st.executeQuery(
                 "SELECT ST_CoordDim(geom)" +
                         " FROM input_table;");
         assertTrue(rs.next());
-        assertEquals(2, rs.getInt(1), 0.0);
+        assertEquals(2, rs.getInt(1));
         assertTrue(rs.next());
-        assertEquals(3, rs.getInt(1), 0.0);
+        assertEquals(3, rs.getInt(1));
         assertTrue(rs.next());
-        assertEquals(3, rs.getInt(1), 0.0);
+        assertEquals(3, rs.getInt(1));
         assertTrue(rs.next());
-        assertEquals(2, rs.getInt(1), 0.0);
+        assertEquals(2, rs.getInt(1));
+        st.execute("DROP TABLE input_table;");
+    }
+
+    @Test
+    public void test_ST_CircleCompacity() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(geom Geometry);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_Buffer(ST_GeomFromText('POINT(1 2)'), 10));" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText(" + POLYGON2D + "));" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText(" + UNIT_SQUARE + "));" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText(" + MULTIPOLYGON2D + "));" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText('POINT(1 2)'));" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText(" + LINESTRING2D + "));");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_CircleCompacity(geom)" +
+                        " FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getDouble(1), 0.01);
+        assertTrue(rs.next());
+        assertEquals(0.5127681416229469, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(Math.sqrt(Math.PI) / 2, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        // For the next three values, the SQL value is NULL but the double
+        // value is 0.0.
+        assertEquals(0.0, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(0.0, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(0.0, rs.getDouble(1), 0.0);
         st.execute("DROP TABLE input_table;");
     }
 }
