@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatialext.function.spatial.aggregate;
+package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
