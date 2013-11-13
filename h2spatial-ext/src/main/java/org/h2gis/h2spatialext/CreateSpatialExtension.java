@@ -36,7 +36,7 @@ import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsRectangle;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsValid;
 import org.h2gis.h2spatialext.function.spatial.properties.*;
-import org.h2gis.h2spatialext.function.spatial.table.ST_Explode;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_Explode;
 import org.h2gis.h2spatialapi.Function;
 
 import java.sql.Connection;
