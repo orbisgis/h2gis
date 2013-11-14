@@ -258,8 +258,11 @@ public class SpatialFunctionTest {
                 "CREATE TABLE input_table(geom Geometry);" +
                 "INSERT INTO input_table VALUES(" +
                 "ST_GeomFromText('LINESTRING(1 3, 1 1, 2 1)'));");
-        ResultSet rs = st.executeQuery(
-                "SELECT ST_Rotate(geom, pi()), ST_Rotate(geom, pi() / 3) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Rotate(geom, pi())," +
+                "ST_Rotate(geom, pi() / 3), " +
+                "ST_Rotate(geom, pi()/2, 1.0, 1.0), " +
+                "ST_Rotate(geom, -pi()/2, ST_GeomFromText('POINT(2 1)')) " +
+                "FROM input_table;");
         assertTrue(rs.next());
         assertTrue(((LineString) rs.getObject(1)).equalsExact(
                 FACTORY.createLineString(
@@ -279,6 +282,18 @@ public class SpatialFunctionTest {
                                 new Coordinate(
                                         (2 - 3.0 / 2) * Math.cos(Math.PI / 3) - (1 - 2) * Math.sin(Math.PI / 3) + 3.0 / 2,
                                         (2 - 3.0 / 2) * Math.sin(Math.PI / 3) + (1 - 2) * Math.cos(Math.PI / 3) + 2)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(3)).equalsExact(
+                FACTORY.createLineString(
+                        new Coordinate[]{new Coordinate(-1, 1),
+                                new Coordinate(1, 1),
+                                new Coordinate(1, 2)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(4)).equalsExact(
+                FACTORY.createLineString(
+                        new Coordinate[]{new Coordinate(4, 2),
+                                new Coordinate(2, 2),
+                                new Coordinate(2, 1)}),
                 TOLERANCE));
         st.execute("DROP TABLE input_table;");
     }

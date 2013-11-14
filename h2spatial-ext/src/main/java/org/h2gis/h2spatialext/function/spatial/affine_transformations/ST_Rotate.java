@@ -27,6 +27,7 @@ package org.h2gis.h2spatialext.function.spatial.affine_transformations;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
@@ -49,18 +50,44 @@ public class ST_Rotate extends DeterministicScalarFunction {
     }
 
     /**
-     * Rotates a geometry by a given angle (in radians) about the geometry's
-     * center.
+     * Rotates a geometry by a given angle (in radians) about the center
+     * of the geometry's envelope.
      *
-     * @param geom Geometry
-     * @return The rotated geometry
+     * @param geom  Geometry
+     * @param theta Angle
+     * @return The geometry rotated about the center of its envelope
      */
     public static Geometry getMaxX(Geometry geom, double theta) {
+        Coordinate center = geom.getEnvelopeInternal().centre();
+        return getMaxX(geom, theta, center.x, center.y);
+    }
+
+    /**
+     * Rotates a geometry by a given angle (in radians) about the specified
+     * point.
+     *
+     * @param geom  Geometry
+     * @param theta Angle
+     * @param point The point about which to rotate
+     * @return The geometry rotated by theta about the given point
+     */
+    public static Geometry getMaxX(Geometry geom, double theta, Point point) {
+        return getMaxX(geom, theta, point.getX(), point.getY());
+    }
+
+    /**
+     * Rotates a geometry by a given angle (in radians) about the specified
+     * point at (x0, y0).
+     *
+     * @param geom  Geometry
+     * @param theta Angle
+     * @param x0    x-coordinate of point about which to rotate
+     * @param y0    y-coordinate of point about which to rotate
+     * @return The geometry rotated by theta about (x0, y0)
+     */
+    public static Geometry getMaxX(Geometry geom, double theta, double x0, double y0) {
         if (geom != null) {
-            Coordinate center = geom.getEnvelopeInternal().centre();
-            AffineTransformation trans = AffineTransformation.rotationInstance(
-                    theta, center.x, center.y);
-            return trans.transform(geom);
+            return AffineTransformation.rotationInstance(theta, x0, y0).transform(geom);
         } else {
             return null;
         }
