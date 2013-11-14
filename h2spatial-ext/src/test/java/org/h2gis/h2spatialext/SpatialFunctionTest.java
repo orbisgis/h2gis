@@ -26,24 +26,21 @@ package org.h2gis.h2spatialext;
 
 import com.vividsolutions.jts.geom.*;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
+import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.h2gis.utilities.SFSUtilities;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author Nicolas Fortin
+ * @author Adam Gouge
  */
 public class SpatialFunctionTest {
     private static Connection connection;
@@ -294,6 +291,53 @@ public class SpatialFunctionTest {
                         new Coordinate[]{new Coordinate(4, 2),
                                 new Coordinate(2, 2),
                                 new Coordinate(2, 1)}),
+                TOLERANCE));
+        st.execute("DROP TABLE input_table;");
+    }
+
+    @Test
+    public void test_ST_Scale() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(twoDLine Geometry, threeDLine Geometry);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText('LINESTRING(1 2, 4 5)')," +
+                "ST_GeomFromText('LINESTRING(1 2 3, 4 5 6)'));");
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_Scale(twoDLine, 0.5, 0.75), ST_Scale(threeDLine, 0.5, 0.75), " +
+                "ST_Scale(twoDLine, 0.5, 0.75, 1.2), ST_Scale(threeDLine, 0.5, 0.75, 1.2), " +
+                "ST_Scale(twoDLine, 0.0, -1.0, 2.0), ST_Scale(threeDLine, 0.0, -1.0, 2.0) " +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((LineString) rs.getObject(1)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0.5, 1.5),
+                        new Coordinate(2, 3.75)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(2)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0.5, 1.5, 3),
+                        new Coordinate(2, 3.75, 6)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(3)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0.5, 1.5),
+                        new Coordinate(2, 3.75)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(4)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0.5, 1.5, 3.6),
+                        new Coordinate(2, 3.75, 7.2)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(5)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0, -2),
+                        new Coordinate(0, -5)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(6)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0, -2, 6),
+                        new Coordinate(0, -5, 12)}),
                 TOLERANCE));
         st.execute("DROP TABLE input_table;");
     }

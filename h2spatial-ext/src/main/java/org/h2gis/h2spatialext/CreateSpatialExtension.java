@@ -31,6 +31,7 @@ import org.h2gis.drivers.dbf.DBFWrite;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
+import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
 import org.h2gis.h2spatialext.function.spatial.properties.ST_Extent;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
@@ -63,6 +64,7 @@ public class CreateSpatialExtension {
                 new ST_IsRectangle(),
                 new ST_IsValid(),
                 new ST_Rotate(),
+                new ST_Scale(),
                 new ST_XMin(),
                 new ST_XMax(),
                 new ST_YMin(),
