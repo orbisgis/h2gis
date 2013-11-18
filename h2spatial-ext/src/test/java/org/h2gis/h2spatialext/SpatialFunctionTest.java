@@ -25,7 +25,7 @@
 package org.h2gis.h2spatialext;
 
 import com.vividsolutions.jts.geom.*;
-import org.h2.value.ValueNull;
+import com.vividsolutions.jts.io.WKTReader;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
@@ -56,6 +56,7 @@ public class SpatialFunctionTest {
             "'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))'";
     private static final String MULTIPOLYGON2D = "'MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))'";
     private static final String LINESTRING2D = "'LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)'";
+    private static WKTReader WKT_READER;
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -63,6 +64,7 @@ public class SpatialFunctionTest {
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, false);
         CreateSpatialExtension.initSpatialExtension(connection);
         FACTORY = new GeometryFactory();
+        WKT_READER = new WKTReader();
     }
 
     @AfterClass
@@ -465,6 +467,29 @@ public class SpatialFunctionTest {
         // For a 3D geometry, the 2D perimeter and area are used (projection).
         assertEquals(Math.sqrt(6 * Math.PI) / 5, rs.getDouble(1), 0.000000000000001);
         assertFalse(rs.next());
+    }
+
+    public void test_ST_InteriorPoint() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Geometry, line LineString, " +
+                "polygon Polygon, threeDLine LineString);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText('POINT(1 1)')," +
+                "ST_GeomFromText('LINESTRING(1 2 3, 4 5 6, 5 5 0)')," +
+                "ST_GeomFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))')," +
+                "ST_GeomFromText('LINESTRING(2 0 0, 0 0 2, 2 3 4)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_InteriorPoint(point), " +
+                "ST_InteriorPoint(line)," +
+                "ST_InteriorPoint(polygon)," +
+                "ST_InteriorPoint(threeDLine) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(WKT_READER.read("POINT(1 1)"), rs.getObject(1));
+        assertEquals(WKT_READER.read("POINT(4 5 6)"), rs.getObject(2));
+        assertEquals(WKT_READER.read("POINT(5 2.5)"), rs.getObject(3));
+        assertEquals(WKT_READER.read("POINT(0 0 2)"), rs.getObject(4));
+        assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
+        st.close();
     }
 }
