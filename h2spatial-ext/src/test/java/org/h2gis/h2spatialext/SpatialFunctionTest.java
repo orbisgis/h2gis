@@ -492,4 +492,32 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_PointsToLine() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(multi_point MultiPoint, point Point);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154), " +
+                "ST_PointFromText('POINT(5 5)',2154));" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154)," +
+                "ST_PointFromText('POINT(1 2)',2154));" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154)," +
+                "ST_PointFromText('POINT(3 4)',2154));" +
+                "INSERT INTO input_table(point) VALUES(" +
+                "ST_PointFromText('POINT(99 3)',2154));");
+        ResultSet rs = st.executeQuery("SELECT ST_PointsToLine(point), " +
+                "ST_PointsToLine(multi_point) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(WKT_READER.read("LINESTRING(5 5, 1 2, 3 4, 99 3)"), rs.getObject(1));
+        assertEquals(WKT_READER.read("LINESTRING(5 5, 1 2, 3 4, 99 3," +
+                "-5 12, 11 22, 34 41, 65 124," +
+                "1 12, 5 -21, 9 41, 32 124)"), rs.getObject(2));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }
