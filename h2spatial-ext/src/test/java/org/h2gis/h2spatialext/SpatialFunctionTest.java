@@ -246,9 +246,9 @@ public class SpatialFunctionTest {
                 "ST_LineFromText('LINESTRING(1 2 3, 4 5 6)', 101));");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_XMin(line), ST_XMax(line), " +
-                        "ST_YMin(line), ST_YMax(line)," +
-                        "ST_ZMin(line), ST_ZMax(line)" +
-                        " FROM input_table;");
+                "ST_YMin(line), ST_YMax(line)," +
+                "ST_ZMin(line), ST_ZMax(line)" +
+                " FROM input_table;");
         assertTrue(rs.next());
         assertEquals(1.0, rs.getDouble(1), 0.0);
         assertEquals(4.0, rs.getDouble(2), 0.0);
@@ -469,6 +469,7 @@ public class SpatialFunctionTest {
         assertFalse(rs.next());
     }
 
+    @Test
     public void test_ST_InteriorPoint() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
@@ -516,6 +517,44 @@ public class SpatialFunctionTest {
         assertEquals(WKT_READER.read("LINESTRING(5 5, 1 2, 3 4, 99 3," +
                 "-5 12, 11 22, 34 41, 65 124," +
                 "1 12, 5 -21, 9 41, 32 124)"), rs.getObject(2));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_ToMultiPoint() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(empty_multi_point MultiPoint," +
+                "multi_point MultiPoint, point Point, " +
+                "line LineString, " +
+                "polygon Polygon, multi_polygon MultiPolygon);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText('MULTIPOINT EMPTY',2154)," +
+                "ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)," +
+                "ST_PointFromText('POINT(5 5)',2154)," +
+                "ST_LineFromText('LINESTRING(5 5, 1 2, 3 4, 99 3)',2154)," +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))',2154)," +
+                "ST_MPolyFromText('MULTIPOLYGON(((28 26,28 0,84 0,84 42,28 26)," +
+                "(52 18,66 23,73 9,48 6,52 18))," +
+                "((59 18,67 18,67 13,59 13,59 18)))',2154));");
+        ResultSet rs = st.executeQuery("SELECT ST_ToMultiPoint(empty_multi_point), " +
+                "ST_ToMultiPoint(multi_point), " +
+                "ST_ToMultiPoint(point), " +
+                "ST_ToMultiPoint(line), " +
+                "ST_ToMultiPoint(polygon), " +
+                "ST_ToMultiPoint(multi_polygon) " +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(WKT_READER.read("MULTIPOINT EMPTY"), rs.getObject(1));
+        assertEquals(WKT_READER.read("MULTIPOINT(5 5, 1 2, 3 4, 99 3)"), rs.getObject(2));
+        assertEquals(WKT_READER.read("MULTIPOINT(5 5)"), rs.getObject(3));
+        assertEquals(WKT_READER.read("MULTIPOINT(5 5, 1 2, 3 4, 99 3)"), rs.getObject(4));
+        assertEquals(WKT_READER.read("MULTIPOINT(0 0, 10 0, 10 5, 0 5, 0 0)"), rs.getObject(5));
+        assertEquals(WKT_READER.read("MULTIPOINT(28 26,28 0,84 0,84 42,28 26," +
+                                "52 18,66 23,73 9,48 6,52 18," +
+                                "59 18,67 18,67 13,59 13,59 18)"), rs.getObject(6));
         assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
         st.close();
