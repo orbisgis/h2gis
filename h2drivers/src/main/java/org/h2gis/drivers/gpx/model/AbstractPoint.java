@@ -1,0 +1,418 @@
+/*
+ * h2spatial is a library that brings spatial support to the H2 Java database.
+ *
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ *
+ * h2patial is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * h2spatial is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * h2spatial. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
+package org.h2gis.drivers.gpx.model;
+
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
+
+
+
+import org.xml.sax.Attributes;
+
+/**
+ * Abstract class giving basis for every types of points (waypoint, routepoint
+ * and trackpoint). All setters for attributes are defined here.
+ *
+ * @author Antonin Piasco, Erwan Bocher
+ */
+public abstract class AbstractPoint {
+
+    //The id of the point
+    private int id =0;
+    // This represents a row containing informations about a point
+    private Object[] ptValues;
+
+    /**
+     * General method to initialize a point. It associate to the point an ID, a
+     * latitude, a longitude and a geometry.
+     *
+     * @param ptID An ID for the point
+     * @param attributes Attributes of the point. Here it is latitude and
+     * longitude
+     * @param wktr A WKTReader
+     * @throws ParseException
+     */
+    public final void ptInit(Attributes attributes, WKTReader wktr) throws GPXException {
+        // Associate an ID to the point
+        setValue(GpxMetadata.PTID, id++);
+        // Associate a latitude and a longitude to the point
+        double lat  ;
+        double lon ;
+        
+        try {
+            lat = Double.parseDouble(attributes.getValue(GPXTags.LAT));
+        } catch (NumberFormatException e) {
+            throw new GPXException("Cannot parse the latitude value", e);
+        }
+        try {
+            lon = Double.parseDouble(attributes.getValue(GPXTags.LON));
+        } catch (NumberFormatException e) {
+            throw new GPXException("Cannot parse the longitude value", e);
+        }
+        String eleValue = attributes.getValue(GPXTags.ELE);
+        double ele = Double.NaN;
+        if (eleValue != null) {
+            try {
+                ele = Double.parseDouble(eleValue);
+                
+            } catch (NumberFormatException e) {
+                throw new GPXException("Cannot parse the elevation value", e);
+            }
+        }
+        setValue(GpxMetadata.PTLAT, lat);
+        setValue(GpxMetadata.PTLON, lon);
+        setValue(GpxMetadata.PTELE, eleValue);
+        // Associate a geometry to the point        
+        Geometry geometry;
+        try {
+            geometry = wktr.read("POINT (" + lon + " " + lat + " " + ele + ")");
+        } catch (ParseException ex) {
+            throw new GPXException("Cannot create the geometry point",ex);
+        }
+        setValue(GpxMetadata.THE_GEOM, geometry);
+    }
+
+    /**
+     * Set an attribute for a point. The String currentElement gives the
+     * information of which attribute have to be setted. The attribute to set is
+     * given by the StringBuilder contentBuffer.
+     *
+     * @param currentElement a string presenting the text of the current markup.
+     * @param contentBuffer it contains all informations about the current
+     * element.
+     */
+    public final void setAttribute(String currentElement, StringBuilder contentBuffer) {
+        if (currentElement.compareToIgnoreCase(GPXTags.TIME) == 0) {
+
+            setTime(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.MAGVAR) == 0) {
+
+            setMagvar(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.GEOIDHEIGHT) == 0) {
+
+            setGeoidheight(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.NAME) == 0) {
+
+            setName(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.CMT) == 0) {
+
+            setCmt(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.DESC) == 0) {
+
+            setDesc(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.SRC) == 0) {
+
+            setSrc(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.SYM) == 0) {
+
+            setSym(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.TYPE) == 0) {
+
+            setType(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.FIX) == 0) {
+
+            setFix(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.SAT) == 0) {
+
+            setSat(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.HDOP) == 0) {
+
+            setHdop(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.VDOP) == 0) {
+
+            setVdop(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.PDOP) == 0) {
+
+            setPdop(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.AGEOFDGPSDATA) == 0) {
+
+            setAgeofdgpsdata(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.DGPSID) == 0) {
+
+            setDgpsid(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.EXTENSIONS) == 0) {
+
+            setExtensions();
+
+        }
+    }
+
+    /**
+     * Set attributes about link (the url and an optionnal description) for a
+     * point. This method is only used in parsers for GPX 1.0.
+     *
+     * @param currentElement a string presenting the text of the current markup.
+     * @param contentBuffer it contains all informations about the current
+     * element.
+     */
+    public final void setFullLinkOld(String currentElement, StringBuilder contentBuffer) {
+        if (currentElement.compareToIgnoreCase(GPXTags.URL) == 0) {
+
+            setLink(contentBuffer);
+
+        } else if (currentElement.compareToIgnoreCase(GPXTags.URLNAME) == 0) {
+
+            setLinkText(contentBuffer);
+
+        }
+    }
+
+    /**
+     * Set the elevation (in meters) of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setElevation(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTELE] = Double.parseDouble(contentBuffer.toString());
+    }
+
+    /**
+     * Creation/modification timestamp for element. Date and time in are in
+     * Univeral Coordinated Time (UTC), not local time! Conforms to ISO 8601
+     * specification for date/time representation. Fractional seconds are
+     * allowed for millisecond timing in tracklogs.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setTime(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTTIME] = contentBuffer.toString();
+    }
+
+    /**
+     * Set the Magnetic variation (in degrees) of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setMagvar(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTMAGVAR] = Double.parseDouble(contentBuffer.toString());
+    }
+
+    /**
+     * Set the height (in meters) of geoid (mean sea level) above WGS84 earth
+     * ellipsoid of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setGeoidheight(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTGEOIDWEIGHT] = Double.parseDouble(contentBuffer.toString());
+    }
+
+    /**
+     * Set the name of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setName(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTNAME] = contentBuffer.toString();
+    }
+
+    /**
+     * Set the comment of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setCmt(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTCMT] = contentBuffer.toString();
+    }
+
+    /**
+     * Set the description of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setDesc(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTDESC] = contentBuffer.toString();
+    }
+
+    /**
+     * Set the source of data of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setSrc(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTSRC] = contentBuffer.toString();
+    }
+
+    /**
+     * Set a link to additional information about the point.
+     *
+     * @param attributes The current attributes being parsed
+     */
+    public final void setLink(Attributes attributes) {
+        ptValues[GpxMetadata.PTLINK] = attributes.getValue(GPXTags.HREF);
+    }
+
+    /**
+     * Set a link to additional information about the point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setLink(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTLINK] = contentBuffer.toString();
+    }
+
+    /**
+     * Set a text of hyperlink given in link.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setLinkText(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTLINKTEXT] = contentBuffer.toString();
+    }
+
+    /**
+     * Set the GPS symbol name of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setSym(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTSYM] = contentBuffer.toString();
+    }
+
+    /**
+     * Set the type (classification) of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setType(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTTYPE] = contentBuffer.toString();
+    }
+
+    /**
+     * Set the type of GPX fix used for a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setFix(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTFIX] = contentBuffer.toString();
+    }
+
+    /**
+     * Set the number of satellites used to calculate the GPX fix for a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setSat(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTSAT] = Integer.parseInt(contentBuffer.toString());
+    }
+
+    /**
+     * Set the horizontal dilution of precision of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setHdop(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTHDOP] = Double.parseDouble(contentBuffer.toString());
+    }
+
+    /**
+     * Set the vertical dilution of precision of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setVdop(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTVDOP] = Double.parseDouble(contentBuffer.toString());
+    }
+
+    /**
+     * Set the position dilution of precision of a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setPdop(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTPDOP] = Double.parseDouble(contentBuffer.toString());
+    }
+
+    /**
+     * Set number of seconds since last DGPS update for a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setAgeofdgpsdata(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTAGEOFDGPSDATA] = Double.parseDouble(contentBuffer.toString());
+    }
+
+    /**
+     * Set ID of DGPS station used in differential correction for a point.
+     *
+     * @param contentBuffer Contains the information to put in the table
+     */
+    public final void setDgpsid(StringBuilder contentBuffer) {
+        ptValues[GpxMetadata.PTDGPSID] = Integer.parseInt(contentBuffer.toString());
+    }
+
+    /**
+     * Set extentions of a point to true.
+     */
+    public final void setExtensions() {
+        ptValues[GpxMetadata.PTEXTENSIONS] = true;
+    }
+
+    /**
+     * Gives access to the point's values
+     *
+     * @return a row containing informations about the point
+     */
+    public final Object[] getValues() {
+        return ptValues;
+    }
+
+    /**
+     * Set a Value in corresponding index.
+     *
+     * @param i the index
+     * @param value the value to insert
+     */
+    public final void setValue(int i, Object value) {
+        ptValues[i] = value;
+    }
+
+    /**
+     * Set the size of the table corresponding to a point. Sizes are in
+     * GpxMetadata class.
+     *
+     * @param i the size of the table
+     */
+    public final void setFieldCount(int i) {
+        ptValues = new Object[i];
+    }
+}
