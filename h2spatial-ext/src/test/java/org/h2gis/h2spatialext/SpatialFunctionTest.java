@@ -24,36 +24,36 @@
  */
 package org.h2gis.h2spatialext;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.*;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.h2gis.utilities.SFSUtilities;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  *
  * @author Nicolas Fortin
+ * @author Adam Gouge
  */
 public class SpatialFunctionTest {
     private static Connection connection;
     private static final String DB_NAME = "SpatialFunctionTest";
+    private static GeometryFactory FACTORY;
+    public static final double TOLERANCE = 10E-10;
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME,false);
         CreateSpatialExtension.initSpatialExtension(connection);
+        FACTORY = new GeometryFactory();
     }
 
     @AfterClass
@@ -115,7 +115,7 @@ public class SpatialFunctionTest {
         Envelope expected = new Envelope(-5, 99, -21, 124);
         assertEquals(expected.getMinX(),result.getMinX(),1e-12);
         assertEquals(expected.getMaxX(),result.getMaxX(),1e-12);
-        assertEquals(expected.getMinY(),result.getMinY(),1e-12);
+        assertEquals(expected.getMinY(), result.getMinY(), 1e-12);
         assertEquals(expected.getMaxY(),result.getMaxY(),1e-12);
         assertFalse(rs.next());
         st.execute("drop table ptClouds");
@@ -131,9 +131,9 @@ public class SpatialFunctionTest {
                 "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
         Envelope result = SFSUtilities.getTableEnvelope(connection, SFSUtilities.splitCatalogSchemaTableName("ptClouds"), "");
         Envelope expected = new Envelope(-5, 99, -21, 124);
-        assertEquals(expected.getMinX(),result.getMinX(),1e-12);
+        assertEquals(expected.getMinX(), result.getMinX(), 1e-12);
         assertEquals(expected.getMaxX(),result.getMaxX(),1e-12);
-        assertEquals(expected.getMinY(),result.getMinY(),1e-12);
+        assertEquals(expected.getMinY(), result.getMinY(), 1e-12);
         assertEquals(expected.getMaxY(),result.getMaxY(),1e-12);
         st.execute("drop table ptClouds");
     }
@@ -245,6 +245,100 @@ public class SpatialFunctionTest {
         assertEquals(5.0, rs.getDouble(4), 0.0);
         assertEquals(3.0, rs.getDouble(5), 0.0);
         assertEquals(6.0, rs.getDouble(6), 0.0);
+        st.execute("DROP TABLE input_table;");
+    }
+
+    @Test
+    public void test_ST_Rotate() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(geom Geometry);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText('LINESTRING(1 3, 1 1, 2 1)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Rotate(geom, pi())," +
+                "ST_Rotate(geom, pi() / 3), " +
+                "ST_Rotate(geom, pi()/2, 1.0, 1.0), " +
+                "ST_Rotate(geom, -pi()/2, ST_GeomFromText('POINT(2 1)')) " +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((LineString) rs.getObject(1)).equalsExact(
+                FACTORY.createLineString(
+                        new Coordinate[]{new Coordinate(2, 1),
+                                new Coordinate(2, 3),
+                                new Coordinate(1, 3)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(2)).equalsExact(
+                FACTORY.createLineString(
+                        new Coordinate[]{
+                                new Coordinate(
+                                        (1 - 3.0 / 2) * Math.cos(Math.PI / 3) - (3 - 2) * Math.sin(Math.PI / 3) + 3.0 / 2,
+                                        (1 - 3.0 / 2) * Math.sin(Math.PI / 3) + (3 - 2) * Math.cos(Math.PI / 3) + 2),
+                                new Coordinate(
+                                        (1 - 3.0 / 2) * Math.cos(Math.PI / 3) - (1 - 2) * Math.sin(Math.PI / 3) + 3.0 / 2,
+                                        (1 - 3.0 / 2) * Math.sin(Math.PI / 3) + (1 - 2) * Math.cos(Math.PI / 3) + 2),
+                                new Coordinate(
+                                        (2 - 3.0 / 2) * Math.cos(Math.PI / 3) - (1 - 2) * Math.sin(Math.PI / 3) + 3.0 / 2,
+                                        (2 - 3.0 / 2) * Math.sin(Math.PI / 3) + (1 - 2) * Math.cos(Math.PI / 3) + 2)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(3)).equalsExact(
+                FACTORY.createLineString(
+                        new Coordinate[]{new Coordinate(-1, 1),
+                                new Coordinate(1, 1),
+                                new Coordinate(1, 2)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(4)).equalsExact(
+                FACTORY.createLineString(
+                        new Coordinate[]{new Coordinate(4, 2),
+                                new Coordinate(2, 2),
+                                new Coordinate(2, 1)}),
+                TOLERANCE));
+        st.execute("DROP TABLE input_table;");
+    }
+
+    @Test
+    public void test_ST_Scale() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(twoDLine Geometry, threeDLine Geometry);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText('LINESTRING(1 2, 4 5)')," +
+                "ST_GeomFromText('LINESTRING(1 2 3, 4 5 6)'));");
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_Scale(twoDLine, 0.5, 0.75), ST_Scale(threeDLine, 0.5, 0.75), " +
+                "ST_Scale(twoDLine, 0.5, 0.75, 1.2), ST_Scale(threeDLine, 0.5, 0.75, 1.2), " +
+                "ST_Scale(twoDLine, 0.0, -1.0, 2.0), ST_Scale(threeDLine, 0.0, -1.0, 2.0) " +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((LineString) rs.getObject(1)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0.5, 1.5),
+                        new Coordinate(2, 3.75)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(2)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0.5, 1.5, 3),
+                        new Coordinate(2, 3.75, 6)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(3)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0.5, 1.5),
+                        new Coordinate(2, 3.75)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(4)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0.5, 1.5, 3.6),
+                        new Coordinate(2, 3.75, 7.2)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(5)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0, -2),
+                        new Coordinate(0, -5)}),
+                TOLERANCE));
+        assertTrue(((LineString) rs.getObject(6)).equalsExact(
+                FACTORY.createLineString(new Coordinate[]{
+                        new Coordinate(0, -2, 6),
+                        new Coordinate(0, -5, 12)}),
+                TOLERANCE));
         st.execute("DROP TABLE input_table;");
     }
 }
