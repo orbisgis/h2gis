@@ -350,6 +350,7 @@ public class SpatialFunctionTest {
                 TOLERANCE));
     }
 
+    @Test
     public void test_ST_3DLength() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +

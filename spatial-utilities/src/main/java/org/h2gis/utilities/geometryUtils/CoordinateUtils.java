@@ -34,76 +34,6 @@ import com.vividsolutions.jts.geom.*;
 public final class CoordinateUtils {
 
     /**
-     * Interpolates a z value (linearly) between the two coordinates.
-     *
-     * @param firstCoordinate
-     * @param lastCoordinate
-     * @param toBeInterpolated
-     * @return
-     */
-    public static double interpolate(Coordinate firstCoordinate,
-                                     Coordinate lastCoordinate,
-                                     Coordinate toBeInterpolated) {
-        if (Double.isNaN(firstCoordinate.z)) {
-            return Double.NaN;
-        }
-        if (Double.isNaN(lastCoordinate.z)) {
-            return Double.NaN;
-        }
-        return firstCoordinate.z + (lastCoordinate.z - firstCoordinate.z)
-                * firstCoordinate.distance(toBeInterpolated)
-                / (firstCoordinate.distance(toBeInterpolated)
-                + toBeInterpolated.distance(lastCoordinate));
-    }
-
-    public static boolean contains(Coordinate[] coords, Coordinate coord) {
-        for (Coordinate coordinate : coords) {
-            if (Double.isNaN(coord.z)) {
-                return coordinate.equals(coord);
-            } else {
-                return coordinate.equals3D(coord);
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Checks if a coordinate array contains a specific coordinate.
-     * <p/>
-     * The equality is done only in 2D (z values are not checked).
-     *
-     * @param coords
-     * @param coord
-     * @return
-     */
-    public static boolean contains2D(Coordinate[] coords, Coordinate coord) {
-        for (Coordinate coordinate : coords) {
-            if (coordinate.equals2D(coord)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Check if a coordinate array contains a specific coordinate.
-     * <p/>
-     * The equality is done in 3D (z values ARE checked).
-     *
-     * @param coords
-     * @param coord
-     * @return
-     */
-    public static boolean contains3D(Coordinate[] coords, Coordinate coord) {
-        for (Coordinate coordinate : coords) {
-            if (coordinate.equals3D(coord)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
      * Determine the min and max "z" values in an array of Coordinates.
      *
      * @param cs The array to search.
@@ -146,36 +76,55 @@ public final class CoordinateUtils {
     }
 
     /**
-     * Find the furthest coordinate in a geometry from a base coordinate
+     * Returns the 3D length of the given geometry.
      *
-     * @param base
-     * @param coords
-     * @return the base coordinate and the target coordinate
+     * @param geom Geometry
+     * @return The 3D length of the given geometry
      */
-    public static Coordinate[] getFurthestCoordinate(Coordinate base, Coordinate[] coords) {
-        double distanceMax = Double.MIN_VALUE;
-        Coordinate farCoordinate = null;
-        for (Coordinate coord : coords) {
-            double distance = coord.distance(base);
-            if (distance > distanceMax) {
-                distanceMax = distance;
-                farCoordinate = coord;
+    public static double length3D(Geometry geom) {
+        double sum = 0;
+        for (int i = 0; i < geom.getNumGeometries(); i++) {
+            Geometry subGeom = geom.getGeometryN(i);
+            if (subGeom instanceof Polygon) {
+                sum += length3D((Polygon) subGeom);
+            } else if (subGeom instanceof LineString) {
+                sum += length3D((LineString) subGeom);
             }
         }
-
-        if (farCoordinate != null) {
-            return new Coordinate[]{base, farCoordinate};
-        } else {
-            return null;
-        }
+        return sum;
     }
 
     /**
-     * Computes the length of a linestring specified by a sequence of points.
-     * if a coordinate has a NaN z return 0.
+     * Returns the 3D perimeter of the given polygon.
      *
-     * @param pts the points specifying the linestring
-     * @return the length of the linestring
+     * @param polygon Polygon
+     * @return The 3D perimeter of the given polygon
+     */
+    public static double length3D(Polygon polygon) {
+        double len = 0.0;
+        len += length3D(polygon.getExteriorRing().getCoordinateSequence());
+        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+            len += length3D(polygon.getInteriorRingN(i));
+        }
+        return len;
+    }
+
+    /**
+     * Returns the 3D perimeter of the given LineString.
+     *
+     * @param lineString LineString
+     * @return The 3D perimeter of the given LineString
+     */
+    public static double length3D(LineString lineString) {
+        return length3D(lineString.getCoordinateSequence());
+    }
+
+    /**
+     * Computes the length of a LineString specified by a sequence of
+     * coordinates, returning 0 if there is a coordinate with a NaN z-value.
+     *
+     * @param pts The coordinate sequence
+     * @return The length of the corresponding LineString
      */
     public static double length3D(CoordinateSequence pts) {
         // optimized for processing CoordinateSequences
@@ -213,50 +162,6 @@ public final class CoordinateUtils {
             x0 = x1;
             y0 = y1;
             z0 = z1;
-        }
-        return len;
-    }
-
-    /**
-     * Returns the 3D length of the geometry
-     *
-     * @param geom
-     * @return
-     */
-    public static double length3D(Geometry geom) {
-        double sum = 0;
-        for (int i = 0; i < geom.getNumGeometries(); i++) {
-            Geometry subGeom = geom.getGeometryN(i);
-            if (subGeom instanceof Polygon) {
-                sum += length3D((Polygon) subGeom);
-            } else if (subGeom instanceof LineString) {
-                sum += length3D((LineString) subGeom);
-            }
-        }
-        return sum;
-    }
-
-    /**
-     * Returns the 3D perimeter of a line string.
-     *
-     * @param lineString
-     * @return
-     */
-    public static double length3D(LineString lineString) {
-        return length3D(lineString.getCoordinateSequence());
-    }
-
-    /**
-     * Returns the 3D perimeter of a polygon
-     *
-     * @param polygon
-     * @return
-     */
-    public static double length3D(Polygon polygon) {
-        double len = 0.0;
-        len += length3D(polygon.getExteriorRing().getCoordinateSequence());
-        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-            len += length3D(polygon.getInteriorRingN(i));
         }
         return len;
     }
