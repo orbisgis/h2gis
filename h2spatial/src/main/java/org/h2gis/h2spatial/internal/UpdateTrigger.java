@@ -35,7 +35,9 @@ import java.sql.Statement;
 
 /**
  * This trigger is used to track modification on tables by inserting notification into a temporary table.
- * h2gis_triggers
+ * The table H2GIS_SCHEMA.UPDATE_TRIGGERS contain the list of created triggers.
+ * The table H2GIS_SCHEMA.UPDATE_NOTIFICATIONS contain the list of updates related to triggers.
+ * When this trigger is attached to a table, a line is inserted in H2GIS_SCHEMA.UPDATE_NOTIFICATIONS each time this table is updated.
  * @author Nicolas Fortin
  */
 public class UpdateTrigger implements Trigger {
