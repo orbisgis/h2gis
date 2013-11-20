@@ -38,7 +38,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * polygon's area divided by the area of the circle with circumference equal to
  * the polygon's perimeter.
  * <p/>
- * Note: This uses the 2D perimeter of the polygon.
+ * Note: This uses the 2D perimeter/area of the polygon.
  *
  * @author Adam Gouge
  */

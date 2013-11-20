@@ -418,7 +418,8 @@ public class SpatialFunctionTest {
                 "(ST_GeomFromText(" + UNIT_SQUARE + "))," +
                 "(ST_GeomFromText(" + MULTIPOLYGON2D + "))," +
                 "(ST_GeomFromText('POINT(1 2)'))," +
-                "(ST_GeomFromText(" + LINESTRING2D + "));");
+                "(ST_GeomFromText(" + LINESTRING2D + "))," +
+                "(ST_GeomFromText('POLYGON((0 0 0, 3 0 0, 3 2 0, 0 2 1, 0 0 0))'));");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_CompactnessRatio(geom) FROM input_table;");
         assertTrue(rs.next());
@@ -436,6 +437,10 @@ public class SpatialFunctionTest {
         assertEquals(0.0, rs.getDouble(1), 0.0);
         assertTrue(rs.next());
         assertEquals(0.0, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        // For a 3D geometry, the 2D perimeter and area are used (projection).
+        assertEquals(Math.sqrt(6 * Math.PI) / 5, rs.getDouble(1), 0.000000000000001);
+        assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
 }
