@@ -88,7 +88,7 @@ public class BasicTest {
                    st.execute("DROP TABLE IF EXISTS test");
                    st.execute("create table test as select 1, 'POINT(1 2)'::geometry");
                    st.execute("create trigger updatetrigger AFTER INSERT, UPDATE, DELETE ON test CALL \""+UpdateTrigger.class.getName()+"\"");
-                   st.execute("insert into test values(1, 'POINT(5 5)') , (2, 'POINT(1 1)')");
+                   st.execute("insert into test values(2, 'POINT(5 5)') , (3, 'POINT(1 1)')");
                    ResultSet rs = st.executeQuery("select * from "+new TableLocation(UpdateTrigger.TRIGGER_SCHEMA, UpdateTrigger.NOTIFICATION_TABLE));
                    try {
                        assertTrue(rs.next());
