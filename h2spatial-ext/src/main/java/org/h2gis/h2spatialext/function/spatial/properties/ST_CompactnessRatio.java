@@ -30,18 +30,25 @@ import org.h2gis.h2spatial.internal.type.SC_Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * ST_CircleCompacity computes the perimeter of a circle whose area is equal to the
- * given geometry's area, and returns the ratio of this computed perimeter to the given
- * geometry's perimeter.
+ * ST_CompactnessRatio computes the perimeter of a circle whose area is equal to the
+ * given polygon's area, and returns the ratio of this computed perimeter to the given
+ * polygon's perimeter.
+ * <p/>
+ * Equivalent definition: ST_CompactnessRatio returns the square root of the
+ * polygon's area divided by the area of the circle with circumference equal to
+ * the polygon's perimeter.
+ * <p/>
+ * Note: This uses the 2D perimeter of the polygon.
  *
  * @author Adam Gouge
  */
-public class ST_CircleCompacity extends DeterministicScalarFunction {
+public class ST_CompactnessRatio extends DeterministicScalarFunction {
 
-    public ST_CircleCompacity() {
-        addProperty(PROP_REMARKS, "computes the perimeter of a circle whose area is " +
-                "equal to the given geometry's area, and returns the ratio of " +
-                "this computed perimeter to the given geometry's perimeter.");
+    public ST_CompactnessRatio() {
+        addProperty(PROP_REMARKS, "Returns the compactness ratio of the " +
+                "given polygon, defined to be the the perimeter of a circle " +
+                "whose area is equal to the given geometry's area divided by " +
+                "the given polygon's perimeter.");
     }
 
     @Override
@@ -50,13 +57,10 @@ public class ST_CircleCompacity extends DeterministicScalarFunction {
     }
 
     /**
-     * Computes the perimeter of a circle whose area is equal to the given geometry's
-     * area, and returns the ratio of this computed perimeter to the given geometry's
-     * perimeterReturns the dimension of the coordinates of the given geometry.
+     * Returns the compactness ratio of the given polygon
      *
      * @param geom Geometry
-     * @return The ratio of the computed perimeter to the given geometry's perimeter,
-     *         or null if the given geometry is not a Polygon.
+     * @return The compactness ratio of the given polygon
      */
     public static Double computeCompacity(Geometry geom) {
         if (geom != null) {

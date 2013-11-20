@@ -412,22 +412,17 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
                 "CREATE TABLE input_table(geom Geometry);" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_Buffer(ST_GeomFromText('POINT(1 2)'), 10));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText(" + POLYGON2D + "));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText(" + UNIT_SQUARE + "));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText(" + MULTIPOLYGON2D + "));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText('POINT(1 2)'));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText(" + LINESTRING2D + "));");
+                "INSERT INTO input_table VALUES" +
+                "(ST_Buffer(ST_GeomFromText('POINT(1 2)'), 10))," +
+                "(ST_GeomFromText(" + POLYGON2D + "))," +
+                "(ST_GeomFromText(" + UNIT_SQUARE + "))," +
+                "(ST_GeomFromText(" + MULTIPOLYGON2D + "))," +
+                "(ST_GeomFromText('POINT(1 2)'))," +
+                "(ST_GeomFromText(" + LINESTRING2D + "));");
         ResultSet rs = st.executeQuery(
-                "SELECT ST_CircleCompacity(geom)" +
-                        " FROM input_table;");
+                "SELECT ST_CompactnessRatio(geom) FROM input_table;");
         assertTrue(rs.next());
+        // This _is_ a circle.
         assertEquals(1, rs.getDouble(1), 0.01);
         assertTrue(rs.next());
         assertEquals(0.5127681416229469, rs.getDouble(1), 0.0);
