@@ -33,13 +33,14 @@ public class GpxMetadata {
 
     // Fields count of the tables
     public static final int WPTFIELDCOUNT = 24;
-    public static final int RTEFIELDCOUNT = 10;
+    public static final int RTEFIELDCOUNT = 11;
     public static final int RTEPTFIELDCOUNT = 25;
     public static final int TRKFIELDCOUNT = 11;
     public static final int TRKSEGFIELDCOUNT = 4;
     public static final int TRKPTFIELDCOUNT = 25;
     // Constant for the geometry field
-    public static final int THE_GEOM = 0;
+    public static final int THE_GEOM = 0;   
+    
     // Constant for the points
     public static final int PTID = 1;
     public static final int PTLAT = 2;
@@ -70,11 +71,12 @@ public class GpxMetadata {
     public static final int LINECMT = 3;
     public static final int LINEDESC = 4;
     public static final int LINESRC = 5;
-    public static final int LINELINK = 6;
-    public static final int LINELINKTEXT = 7;
+    public static final int LINELINK_HREF = 6;
+    public static final int LINELINK_HREFTITLE = 7;
     public static final int LINENUMBER = 8;
     public static final int LINETYPE = 9;
     public static final int LINEEXTENSIONS = 10;
+    
     // Constant for the foreign route ID in routepoints
     public static final int RTEPT_RTEID = 24;
     // Constants for the track segments

@@ -49,9 +49,7 @@ public class GPXTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createWayPointsTable(Connection connection, String wayPointsTableName) throws SQLException {
-        Statement stmt = connection.createStatement(
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
+        Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayPointsTableName);
         sb.append(" (the_geom POINT,id INT,");
@@ -66,7 +64,7 @@ public class GPXTablesFactory {
         sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.URLNAME.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SYM.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.FIX.toLowerCase()).append(" TEXT,");
@@ -97,9 +95,7 @@ public class GPXTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createRouteTable(Connection connection, String routeTableName) throws SQLException {
-        Statement stmt = connection.createStatement(
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
+        Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(routeTableName);
         sb.append(" (the_geom LINESTRING,id INT,");
@@ -107,7 +103,8 @@ public class GPXTablesFactory {
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.LINK.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.NUMBER.toLowerCase()).append(" INT,");
         sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" TEXT);");
@@ -124,12 +121,10 @@ public class GPXTablesFactory {
     }
 
     public static PreparedStatement createRoutePointsTable(Connection connection, String routePointsTable) throws SQLException {
-        Statement stmt = connection.createStatement(
-                ResultSet.TYPE_SCROLL_INSENSITIVE,
-                ResultSet.CONCUR_UPDATABLE);
+        Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(routePointsTable);
-        sb.append(" (the_geom POINT,id INT, rte_id INT,");
+        sb.append(" (the_geom POINT,id INT, ");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
@@ -141,7 +136,7 @@ public class GPXTablesFactory {
         sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.URLNAME.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SYM.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.FIX.toLowerCase()).append(" TEXT,");
@@ -151,7 +146,8 @@ public class GPXTablesFactory {
         sb.append(GPXTags.PDOP.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.DGPSID.toLowerCase()).append(" INT,");
-        sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" BOOLEAN);");
+        sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" BOOLEAN,");
+        sb.append("route_id").append(" INT);");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the waypoints table
@@ -161,7 +157,6 @@ public class GPXTablesFactory {
         }
         insert.append(");");
         return connection.prepareStatement(insert.toString());
-        
-        
+
     }
 }

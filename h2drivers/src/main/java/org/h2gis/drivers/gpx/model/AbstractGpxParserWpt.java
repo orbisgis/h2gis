@@ -104,7 +104,7 @@ public class AbstractGpxParserWpt extends AbstractGpxParser {
                 }
                 pStm.execute();
             } catch (SQLException ex) {
-                throw new SAXException("Cannot import the waypoint : "+ getWptID(), ex);
+                throw new SAXException("Cannot import the waypoint.", ex);
             }
             getReader().setContentHandler(parent);
 

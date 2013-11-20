@@ -22,12 +22,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.gpx.model;
+package org.h2gis.drivers.gpx;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.h2gis.drivers.gpx.model.GpxParser;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.TableLocation;
@@ -41,19 +42,19 @@ public class GPXDriverFunction implements DriverFunction {
 
     public static String DESCRIPTION = "GPX file (1.1 and 1.0)";
 
-     @Override
+    @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
         return IMPORT_DRIVER_TYPE.COPY;
     }
 
     @Override
     public String[] getImportFormats() {
-            return new String[] {"gpx"};
+        return new String[]{"gpx"};
     }
 
     @Override
     public String[] getExportFormats() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new String[0];
     }
 
     @Override
@@ -67,13 +68,12 @@ public class GPXDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         GpxParser gpd = new GpxParser();
-        boolean response = gpd.read(fileName, TableLocation.parse(tableReference).toString(), connection);
-        System.out.println("Etat de la lecture du fichier : " + response);
+        gpd.read(fileName, TableLocation.parse(tableReference).toString(), connection);
     }
 }

@@ -46,19 +46,18 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     // String with the value of the element which is being parsed
     private String currentElement;
     // Abstract point which will take values of the current point during the parsing
-    private AbstractPoint currentPoint;
+    private GPXPoint currentPoint;
 // This will take values of the current track segment during the parsing
     //     private TrackSegment currentSegment;
 // Abstract line which will take values of the current line during the parsing
-    private AbstractLine currentLine;
+    private GPXLine currentLine;
     // A stack to know in which element we are
     private StringStack elementNames;
     // Variable to know if we are in an element supposed to be parser by a specific parser
     private boolean specificElement;
     //PreparedStatement to manage gpx table
     private PreparedStatement wptPreparedStmt, rtePreparedStmt, rteptPreparedStmt;
-    // IDs for waypoints, routes and tracks.
-    private int wptID, rteID, rteptID, trkID, trksegID, trkptID;
+    
 
     /**
      * Fires one or more times for each text node encountered. It saves text
@@ -118,7 +117,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
      *
      * @return
      */
-    public AbstractPoint getCurrentPoint() {
+    public GPXPoint getCurrentPoint() {
         return currentPoint;
     }
 
@@ -127,7 +126,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
      *
      * @param currentPoint
      */
-    public void setCurrentPoint(AbstractPoint currentPoint) {
+    public void setCurrentPoint(GPXPoint currentPoint) {
         this.currentPoint = currentPoint;
     }
 
@@ -238,60 +237,6 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     }
 
     /**
-     * Gives the ID of the current waypoint.
-     *
-     * @return
-     */
-    public int getWptID() {
-        return wptID;
-    }
-
-    /**
-     * Set the ID of the current waypoint.
-     *
-     * @param wptID
-     */
-    public void setWptID(int wptID) {
-        this.wptID = wptID;
-    }
-
-    /**
-     * Gives the route id
-     *
-     * @return
-     */
-    public int getRteID() {
-        return rteID;
-    }
-
-    /**
-     * Set the route id
-     *
-     * @param rteID
-     */
-    public void setRteID(int rteID) {
-        this.rteID = rteID;
-    }
-
-    /**
-     * Gives the route points id
-     *
-     * @return
-     */
-    public int getRteptID() {
-        return rteptID;
-    }
-
-    /**
-     * Set the route points id
-     *
-     * @param rteptID
-     */
-    public void setRteptID(int rteptID) {
-        this.rteptID = rteptID;
-    }
-
-    /**
      * Gives the WKTReader used in this parsing.
      *
      * @return
@@ -299,20 +244,22 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     public WKTReader getGeometryReader() {
         return wKTReader;
     }
-    
-    /**
-         * Gives the line which is being parsed.
-         * @return 
-         */
-        public AbstractLine getCurrentLine() {
-                return currentLine;
-        }
 
-        /**
-         * Set the line which will be parsed.
-         * @param currentLine 
-         */
-        public void setCurrentLine(AbstractLine currentLine) {
-                this.currentLine = currentLine;
-        }
+    /**
+     * Gives the line which is being parsed.
+     *
+     * @return
+     */
+    public GPXLine getCurrentLine() {
+        return currentLine;
+    }
+
+    /**
+     * Set the line which will be parsed.
+     *
+     * @param currentLine
+     */
+    public void setCurrentLine(GPXLine currentLine) {
+        this.currentLine = currentLine;
+    }
 }

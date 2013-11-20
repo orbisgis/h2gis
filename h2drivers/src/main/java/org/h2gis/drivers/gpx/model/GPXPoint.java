@@ -33,35 +33,44 @@ import com.vividsolutions.jts.io.WKTReader;
 import org.xml.sax.Attributes;
 
 /**
- * Abstract class giving basis for every types of points (waypoint, routepoint
- * and trackpoint). All setters for attributes are defined here.
+ * This class gives bvalues for every types of points (waypoint, routepoint
+ * and trackpoint).
  *
- * @author Antonin Piasco, Erwan Bocher
+ * @author Erwan Bocher
  */
-public abstract class AbstractPoint {
+public class GPXPoint {
 
-    //The id of the point
-    private int id =0;
     // This represents a row containing informations about a point
     private Object[] ptValues;
+
+    public GPXPoint(int numberOfValues) {
+        this.ptValues = new Object[numberOfValues];
+    }
+
+    /**
+     * This method is used to create a new array of values
+     *
+     * @param valuesCount
+     */
+    public void clearValues(int valuesCount) {
+        ptValues = new Object[valuesCount];
+    }
 
     /**
      * General method to initialize a point. It associate to the point an ID, a
      * latitude, a longitude and a geometry.
      *
-     * @param ptID An ID for the point
+     * @param id An ID for the point
      * @param attributes Attributes of the point. Here it is latitude and
      * longitude
      * @param wktr A WKTReader
      * @throws ParseException
      */
     public final void ptInit(Attributes attributes, WKTReader wktr) throws GPXException {
-        // Associate an ID to the point
-        setValue(GpxMetadata.PTID, id++);
         // Associate a latitude and a longitude to the point
-        double lat  ;
-        double lon ;
-        
+        double lat;
+        double lon;
+
         try {
             lat = Double.parseDouble(attributes.getValue(GPXTags.LAT));
         } catch (NumberFormatException e) {
@@ -77,7 +86,7 @@ public abstract class AbstractPoint {
         if (eleValue != null) {
             try {
                 ele = Double.parseDouble(eleValue);
-                
+
             } catch (NumberFormatException e) {
                 throw new GPXException("Cannot parse the elevation value", e);
             }
@@ -90,7 +99,7 @@ public abstract class AbstractPoint {
         try {
             geometry = wktr.read("POINT (" + lon + " " + lat + " " + ele + ")");
         } catch (ParseException ex) {
-            throw new GPXException("Cannot create the geometry point",ex);
+            throw new GPXException("Cannot create the geometry point", ex);
         }
         setValue(GpxMetadata.THE_GEOM, geometry);
     }
@@ -172,26 +181,6 @@ public abstract class AbstractPoint {
         } else if (currentElement.compareToIgnoreCase(GPXTags.EXTENSIONS) == 0) {
 
             setExtensions();
-
-        }
-    }
-
-    /**
-     * Set attributes about link (the url and an optionnal description) for a
-     * point. This method is only used in parsers for GPX 1.0.
-     *
-     * @param currentElement a string presenting the text of the current markup.
-     * @param contentBuffer it contains all informations about the current
-     * element.
-     */
-    public final void setFullLinkOld(String currentElement, StringBuilder contentBuffer) {
-        if (currentElement.compareToIgnoreCase(GPXTags.URL) == 0) {
-
-            setLink(contentBuffer);
-
-        } else if (currentElement.compareToIgnoreCase(GPXTags.URLNAME) == 0) {
-
-            setLinkText(contentBuffer);
 
         }
     }
@@ -397,22 +386,13 @@ public abstract class AbstractPoint {
     }
 
     /**
-     * Set a Value in corresponding index.
+     * Set a Value in corresponding index. It is used to set the corresponding
+     * id.
      *
      * @param i the index
      * @param value the value to insert
      */
     public final void setValue(int i, Object value) {
         ptValues[i] = value;
-    }
-
-    /**
-     * Set the size of the table corresponding to a point. Sizes are in
-     * GpxMetadata class.
-     *
-     * @param i the size of the table
-     */
-    public final void setFieldCount(int i) {
-        ptValues = new Object[i];
     }
 }

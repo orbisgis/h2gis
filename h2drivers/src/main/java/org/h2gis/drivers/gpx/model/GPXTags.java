@@ -39,11 +39,11 @@ public class GPXTags {
             MAXLON = "maxlon", TIME = "time", DESC = "desc", KEYWORDS = "keywords", RTEPT = "rtept",
             LON = "lon", LAT = "lat", TRKSEG = "trkseg", TRKPT = "trkpt", CMT = "cmt", SRC = "src",
             NUMBER = "number", TYPE = "type", EXTENSIONS = "extensions",
-            URL = "url", URLNAME = "urlname", ELE = "ele", MAGVAR = "magvar", GEOIDHEIGHT = "geoidheight",
+            URL = "url",  ELE = "ele", MAGVAR = "magvar", GEOIDHEIGHT = "geoidheight",
             SYM = "sym", FIX = "fix";
     static public String SAT = "sat", HDOP = "hdop", VDOP = "vdop", PDOP = "pdop",
             AGEOFDGPSDATA = "ageofdgpsdata",
-            DGPSID = "dgpsid";
+            DGPSID = "dgpsid", HREFTITLE="href_title";
 
     private GPXTags() {
     }

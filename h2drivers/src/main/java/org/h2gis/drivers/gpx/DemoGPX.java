@@ -22,7 +22,7 @@ public class DemoGPX {
         try {
             connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
             GpxParser gpd = new GpxParser();
-            boolean response = gpd.read(new File("/home/ebocher/Documents/data/europe.poi.gpx/europe_Shopping.gpx"), "test", connection);
+            boolean response = gpd.read(new File("/home/ebocher/Documents/data/europe.poi.gpx/fells_loop.gpx"), "test", connection);
             System.out.println("Etat de la lecture du fichier : " + response);
         } catch (SQLException ex) {
             throw new SQLException(ex);

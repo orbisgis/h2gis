@@ -43,7 +43,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
 
     // Specific parsers
     private AbstractGpxParserWpt wptParser;
-    // private AbstractGpxParserRte rteParser;
+    private AbstractGpxParserRte rteParser;
     // private AbstractGpxParserTrk trkParser
     // General informations about the document to read
     // The <bounds> element has attributes which specify minimum and maximum latitude and longitude.
@@ -127,9 +127,12 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         clear();
         // We create the tables to store all gpx data in the database
         String wptTableName = tableName + "_waypoints";
+        String routeTableName = tableName + "_route";
+        String routePointsTableName = tableName + "_routepoints";
+
         setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName));
-        setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, tableName + "_route"));
-        setRteptPreparedStmt(GPXTablesFactory.createRoutePointsTable(connection, tableName + "_routepoints"));
+        setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName));
+        setRteptPreparedStmt(GPXTablesFactory.createRoutePointsTable(connection, routePointsTableName));
 
 
         // Initialisation of the contentHandler by default
@@ -146,16 +149,26 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         }
 
         // When the reading ends, close() method has to be called
-        if (wpt) {
-            getWptPreparedStmt().close();
-            if (getWptID() == 0) {
-                Statement statement = connection.createStatement();
-                statement.execute("DROP TABLE IF EXISTS " + wptTableName);
-                statement.close();
-            }
-        }
+        getWptPreparedStmt().close();
+        getRtePreparedStmt().close();
+        getRteptPreparedStmt().close();
+        //We drop the table when no gpx data are imported.
+        tablesCleaner(connection, new String[]{wptTableName, routeTableName, routePointsTableName});
 
         return success;
+    }
+
+    /**
+     *
+     */
+    public void tablesCleaner(Connection connection, String[] tableNames) throws SQLException {
+        Statement statement = connection.createStatement();
+        for (String tableName : tableNames) {
+            if (statement.executeQuery("SELECT count(id) FROM " + tableName + ";") == null) {
+                statement.execute("DROP TABLE IF EXISTS " + tableName + ";");
+            }
+        }
+        statement.close();
     }
 
     /**
@@ -172,7 +185,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      * exception
      */
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if (localName.compareToIgnoreCase(GPXTags.GPX) == 0) {
             version = attributes.getValue(GPXTags.VERSION);
             creator = attributes.getValue(GPXTags.CREATOR);
@@ -442,24 +455,6 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     }
 
     /**
-     * Indicates if we are in a waypoint.
-     *
-     * @return true if we are in a waypoint, false else
-     */
-    public boolean isWpt() {
-        return wpt;
-    }
-
-    /**
-     * Set the indicator to know if we are in a waypoint.
-     *
-     * @param wpt
-     */
-    public void setWpt(boolean wpt) {
-        this.wpt = wpt;
-    }
-
-    /**
      * Gives the parser used to parse waypoint.
      *
      * @return
@@ -475,5 +470,23 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      */
     public void setWptParser(AbstractGpxParserWpt wptParser) {
         this.wptParser = wptParser;
+    }
+
+    /**
+     * Set the parser used to parse routes.
+     *
+     * @param rteParser
+     */
+    public void setRteParser(AbstractGpxParserRte rteParser) {
+        this.rteParser = rteParser;
+    }
+
+    /**
+     * Gives the parser used to parse routes.
+     *
+     * @return
+     */
+    public AbstractGpxParserRte getRteParser() {
+        return rteParser;
     }
 }

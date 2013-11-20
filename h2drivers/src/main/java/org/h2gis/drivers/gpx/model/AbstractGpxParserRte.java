@@ -3,7 +3,6 @@ package org.h2gis.drivers.gpx.model;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.io.ParseException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -27,6 +26,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
     private AbstractGpxParserDefault parent;
     // A list which will contain the coordinates of the route
     private List<Coordinate> rteList;
+    private int idRtPt=1;
 
     /**
      * Create a new specific parser. It has in memory the default parser, the
@@ -43,8 +43,6 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
         setRteptPreparedStmt(parent.getRteptPreparedStmt());
         setElementNames(parent.getElementNames());
         setCurrentLine(parent.getCurrentLine());
-        setRteID(parent.getRteID());
-        setRteptID(parent.getRteptID());
         setRteList(new ArrayList<Coordinate>());
     }
 
@@ -64,16 +62,18 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if (localName.compareToIgnoreCase(GPXTags.RTEPT) == 0) {
             point = true;
-            setRteptID(getRteptID() + 1);
-            setCurrentPoint(new RoutePoint());
+            GPXPoint routePoint = new GPXPoint(GpxMetadata.RTEPTFIELDCOUNT);            
             try {
-                ((RoutePoint) getCurrentPoint()).rteptInit(attributes, getGeometryReader());
+                routePoint.ptInit(attributes, getGeometryReader());
+                routePoint.setValue(GpxMetadata.PTID, idRtPt++);
+                routePoint.setValue(GpxMetadata.RTEPT_RTEID, getCurrentLine().getValues()[GpxMetadata.LINEID]);
                 Coordinate coordinate;
                 coordinate = new Coordinate(Double.parseDouble(attributes.getValue(GPXTags.LON)), Double.parseDouble(attributes.getValue(GPXTags.LAT)), 0);
                 rteList.add(coordinate);
             } catch (GPXException ex) {
                 throw new SAXException("Problem while parsing.", ex);
             }
+            setCurrentPoint(routePoint);
         }
 
         // Clear content buffer
@@ -97,10 +97,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         // currentElement represents the last string encountered in the document
         setCurrentElement(getElementNames().pop());
-
         if (getCurrentElement().compareToIgnoreCase(GPXTags.RTE) == 0) {
-
-            parent.setRteptID(getRteptID());
             Coordinate[] rteArray = new Coordinate[rteList.size()];
             rteArray = rteList.toArray(rteArray);
             // If there are more than one routepoint, we can set a geometry to the route
@@ -121,7 +118,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
                 }
                 pStm.execute();
             } catch (SQLException ex) {
-                throw new SAXException("Cannot import the route line :  " + getRteID(), ex);
+                throw new SAXException("Cannot import the route line ", ex);
             }
             getReader().setContentHandler(parent);
 
@@ -139,7 +136,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
                 }
                 pStm.execute();
             } catch (SQLException ex) {
-                throw new SAXException("Cannot import the route points : " + getRteptID(), ex);
+                throw new SAXException("Cannot import the route points ", ex);
             }
 
         } else if (point) {

@@ -6,17 +6,18 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.xml.sax.Attributes;
 
 /**
- * Abstract class giving basis for every types of line (route and track). All
- * setters for attributes are defined here.
+ * This class giving is used to manage route and track data
  *
- * @author Antonin
+ * @author Erwan Bocher
  */
-public abstract class AbstractLine {
+public class GPXLine {
 
     // This represents a row containing informations about a route or a track
     private Object[] lineValues;
-    //The id of the line
-    private int id = 0;
+
+    public GPXLine(int numberOfValues) {
+        this.lineValues = new Object[numberOfValues];
+    }
 
     /**
      * Set the geometry of a route or a track.
@@ -70,26 +71,6 @@ public abstract class AbstractLine {
     }
 
     /**
-     * Set attributes about link (the url and an optionnal description) for a
-     * line. This method is only used in parsers for GPX 1.0.
-     *
-     * @param currentElement a string presenting the text of the current markup.
-     * @param contentBuffer it contains all informations about the current
-     * element.
-     */
-    public final void setFullLinkOld(String currentElement, StringBuilder contentBuffer) {
-        if (currentElement.compareToIgnoreCase(GPXTags.URL) == 0) {
-
-            setLink(contentBuffer);
-
-        } else if (currentElement.compareToIgnoreCase(GPXTags.URLNAME) == 0) {
-
-            setLinkText(contentBuffer);
-
-        }
-    }
-
-    /**
      * *****************************
      ***** GETTERS AND SETTERS ***** *****************************
      */
@@ -135,7 +116,7 @@ public abstract class AbstractLine {
      * @param attributes The current attributes being parsed
      */
     public final void setLink(Attributes attributes) {
-        lineValues[GpxMetadata.LINELINK] = attributes.getValue(GPXTags.HREF);
+        lineValues[GpxMetadata.LINELINK_HREF] = attributes.getValue(GPXTags.HREF);
     }
 
     /**
@@ -144,7 +125,7 @@ public abstract class AbstractLine {
      * @param contentBuffer Contains the information to put in the table
      */
     public final void setLink(StringBuilder contentBuffer) {
-        lineValues[GpxMetadata.LINELINK] = contentBuffer.toString();
+        lineValues[GpxMetadata.LINELINK_HREF] = contentBuffer.toString();
     }
 
     /**
@@ -153,9 +134,8 @@ public abstract class AbstractLine {
      * @param contentBuffer Contains the information to put in the table
      */
     public final void setLinkText(StringBuilder contentBuffer) {
-        lineValues[GpxMetadata.LINELINKTEXT] = contentBuffer.toString();
-    }
-
+     lineValues[GpxMetadata.LINELINK_HREFTITLE] = contentBuffer.toString();
+     }
     /**
      * Set the GPS number to additional information about the route or the
      * track.
@@ -199,15 +179,5 @@ public abstract class AbstractLine {
      */
     public final void setValue(int i, Object value) {
         lineValues[i] = value;
-    }
-
-    /**
-     * Set the size of the table corresponding to a point. Sizes are in
-     * GpxMetadata class.
-     *
-     * @param i the size of the table
-     */
-    public final void setFieldCount(int i) {
-        lineValues = new Object[i];
     }
 }
