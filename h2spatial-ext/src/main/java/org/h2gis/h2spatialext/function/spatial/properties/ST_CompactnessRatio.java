@@ -26,7 +26,7 @@
 package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatial.internal.type.SC_Polygon;
+import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
@@ -63,12 +63,10 @@ public class ST_CompactnessRatio extends DeterministicScalarFunction {
      * @return The compactness ratio of the given polygon
      */
     public static Double computeCompacity(Geometry geom) {
-        if (geom != null) {
-            if (SC_Polygon.isPolygon(geom)) {
-                final double circleRadius = Math.sqrt(geom.getArea() / Math.PI);
-                final double circleCurcumference = 2 * Math.PI * circleRadius;
-                return circleCurcumference / geom.getLength();
-            }
+        if (geom instanceof Polygon) {
+            final double circleRadius = Math.sqrt(geom.getArea() / Math.PI);
+            final double circleCurcumference = 2 * Math.PI * circleRadius;
+            return circleCurcumference / geom.getLength();
         }
         return null;
     }
