@@ -3,3 +3,7 @@ jdk:
     - oraclejdk7
     - openjdk7
     - openjdk6
+# Do not install anything so that we can use our custom script. Instead, just
+# return true.
+install: true
+script: "./travis-build.sh"
