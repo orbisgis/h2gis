@@ -356,9 +356,11 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE IF EXISTS input_table;" +
                 "CREATE TABLE input_table(geom Geometry);" +
                 "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('LINESTRING(1 4, 15 7, 16 17)',2249))," +
                 "(ST_GeomFromText('LINESTRING(1 4 3, 15 7 9, 16 17 22)',2249))," +
                 "(ST_GeomFromText('MULTILINESTRING((1 4 3, 15 7 9, 16 17 22)," +
                 "(0 0 0, 1 0 0, 1 2 0, 0 2 1))',2249))," +
+                "(ST_GeomFromText('POLYGON((1 1, 3 1, 3 2, 1 2, 1 1))',2249))," +
                 "(ST_GeomFromText('POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))',2249))," +
                 "(ST_GeomFromText('MULTIPOLYGON(((0 0 0, 3 2 0, 3 2 2, 0 0 2, 0 0 0)," +
                 "(-1 1 0, -1 3 0, -1 3 4, -1 1 4, -1 1 0)))',2249))," +
@@ -367,9 +369,13 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery(
                 "SELECT ST_3DLength(geom) FROM input_table;");
         assertTrue(rs.next());
+        assertEquals(Math.sqrt(205) + Math.sqrt(101), rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
         assertEquals(Math.sqrt(241) + Math.sqrt(270), rs.getDouble(1), 0.0);
         assertTrue(rs.next());
         assertEquals(Math.sqrt(241) + Math.sqrt(270) + 3 + Math.sqrt(2), rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(6, rs.getDouble(1), 0.0);
         assertTrue(rs.next());
         assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
         assertTrue(rs.next());
@@ -377,6 +383,24 @@ public class SpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals(Math.sqrt(241) + Math.sqrt(270) + Math.sqrt(2) + 2 * Math.sqrt(5) +
                 Math.sqrt(10), rs.getDouble(1), 0.0);
+        st.execute("DROP TABLE input_table;");
+    }
+
+    @Test
+    public void test_ST_3DLengthEqualsST_LengthFor2DGeometry() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(geom Geometry);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('LINESTRING(1 4, 15 7, 16 17)',2249))," +
+                "(ST_GeomFromText('POLYGON((1 1, 3 1, 3 2, 1 2, 1 1))',2249));");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_Length(geom), ST_3DLength(geom) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(rs.getDouble(1), rs.getDouble(2), 0.0);
+        assertTrue(rs.next());
+        assertEquals(rs.getDouble(1), rs.getDouble(2), 0.0);
+        assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
 

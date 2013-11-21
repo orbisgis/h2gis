@@ -121,49 +121,51 @@ public final class CoordinateUtils {
 
     /**
      * Computes the length of a LineString specified by a sequence of
-     * coordinates, returning 0 if there is a coordinate with a NaN z-value.
+     * coordinates.
      *
      * @param pts The coordinate sequence
      * @return The length of the corresponding LineString
      */
     public static double length3D(CoordinateSequence pts) {
         // optimized for processing CoordinateSequences
-        int n = pts.size();
-        if (n <= 1) {
+
+        int numberOfCoords = pts.size();
+        // Points have no length.
+        if (numberOfCoords < 2) {
             return 0.0;
         }
 
-        double len = 0.0;
+        Coordinate currentCoord = new Coordinate();
+        pts.getCoordinate(0, currentCoord);
+        double x0 = currentCoord.x;
+        double y0 = currentCoord.y;
+        double z0 = currentCoord.z;
 
-        Coordinate p = new Coordinate();
-        pts.getCoordinate(0, p);
-        double x0 = p.x;
-        double y0 = p.y;
-        double z0 = p.z;
+        double length = 0.0;
+        for (int i = 1; i < numberOfCoords; i++) {
+            pts.getCoordinate(i, currentCoord);
 
-        if (Double.isNaN(z0)) {
-            return 0.0;
-        }
+            double x1 = currentCoord.x;
+            double y1 = currentCoord.y;
+            double z1 = currentCoord.z;
 
-        for (int i = 1; i < n; i++) {
-            pts.getCoordinate(i, p);
-
-            double x1 = p.x;
-            double y1 = p.y;
-            double z1 = p.z;
-            if (Double.isNaN(z1)) {
-                return 0.0;
-            }
             double dx = x1 - x0;
             double dy = y1 - y0;
-            double dz = z1 - z0;
+            double dz;
 
-            len += Math.sqrt(dx * dx + dy * dy + dz * dz);
+            // For 2D geometries, we want to return the 2D length.
+            if (Double.isNaN(z0) || Double.isNaN(z1)) {
+                dz = 0.0;
+            } else {
+                dz = z1 - z0;
+            }
+
+            length += Math.sqrt(dx * dx + dy * dy + dz * dz);
             x0 = x1;
             y0 = y1;
             z0 = z1;
         }
-        return len;
+        return length;
     }
 
     /**

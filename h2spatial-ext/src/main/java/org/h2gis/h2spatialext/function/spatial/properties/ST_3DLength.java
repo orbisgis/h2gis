@@ -31,6 +31,7 @@ import org.h2gis.utilities.geometryUtils.CoordinateUtils;
 
 /**
  * ST_3DLength returns the 3D length (of a LineString) or the 3D perimeter (of a Polygon).
+ * In the case of a 2D geometry, ST_3DLength returns the same value as ST_Length.
  *
  * @author Adam Gouge
  */
