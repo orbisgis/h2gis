@@ -74,6 +74,6 @@ public class GPXDriverFunction implements DriverFunction {
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         GpxParser gpd = new GpxParser();
-        gpd.read(fileName, TableLocation.parse(tableReference).toString(), connection);
+        gpd.read(fileName, tableReference, connection);
     }
 }

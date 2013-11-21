@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<gpx
+ version="1.0"
+ creator="ExpertGPS 1.1 - http://www.topografix.com"
+ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xmlns="http://www.topografix.com/GPX/1/0"
+ xsi:schemaLocation="http://www.topografix.com/GPX/1/0 http://www.topografix.com/GPX/1/0/gpx.xsd">
+<time>2002-02-27T17:18:33Z</time>
+<bounds minlat="42.401051" minlon="-71.126602" maxlat="42.468655" maxlon="-71.102973"/>
+<trk>
+ <name><![CDATA[BIG LOOP]]></name>
+ <desc><![CDATA[Big loop around the base of Great Blue Hill]]></desc>
+ <number>2</number>
+<trkseg>
+<trkpt lat="42.210009" lon="-71.096220">
+ <ele>61.569600</ele>
+ <time>2001-06-24T15:09:09Z</time>
+ <cmt><![CDATA[Sun Jun 24 15:08:39 2001]]></cmt>
+ <sym>Dot</sym>
+</trkpt>
+<trkpt lat="42.210031" lon="-71.096220">
+ <ele>61.569600</ele>
+ <time>2001-06-24T15:09:29Z</time>
+ <cmt><![CDATA[Sun Jun 24 15:08:59 2001]]></cmt>
+ <sym>Dot</sym>
+</trkpt>
+</trkseg>
+<trkseg>
+<trkpt lat="42.209129" lon="-71.102335">
+ <ele>43.281600</ele>
+ <time>2001-05-26T20:44:07Z</time>
+ <name><![CDATA[T-0436]]></name>
+ <cmt><![CDATA[Sat May 26 20:43:27 2001]]></cmt>
+ <desc><![CDATA[Trackpoint 0436]]></desc>
+ <sym>Dot</sym>
+</trkpt>
+<trkpt lat="42.208958" lon="-71.102400">
+ <ele>43.586400</ele>
+ <time>2001-05-26T20:44:11Z</time>
+ <name><![CDATA[T-0437]]></name>
+ <cmt><![CDATA[Sat May 26 20:43:31 2001]]></cmt>
+ <desc><![CDATA[Trackpoint 0437]]></desc>
+ <sym>Dot</sym>
+</trkpt>
+</trkseg>
+</trk>
+</gpx>

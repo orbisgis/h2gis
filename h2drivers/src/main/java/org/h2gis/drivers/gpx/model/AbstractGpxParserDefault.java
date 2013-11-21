@@ -31,6 +31,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.utilities.TableLocation;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -38,10 +39,18 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Main class to parse the GPX file
+ *
  * @author Erwan Bocher
  */
 public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
 
+    //Suffix table names
+    String WAYPOINT = "_waypoint";
+    String ROUTE = "_route";
+    String ROUTEPOINT = "_routepoint";
+    String TRACK = "_track";
+    String TRACKSEGMENT = "_tracksegment";
+    String TRACKPOINT = "_trackpoint";
     // Specific parsers
     private AbstractGpxParserWpt wptParser;
     private AbstractGpxParserRte rteParser;
@@ -123,12 +132,12 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         boolean success = false;
         clear();
         // We create the tables to store all gpx data in the database
-        String wptTableName = tableName + "_waypoints";
-        String routeTableName = tableName + "_route";
-        String routePointsTableName = tableName + "_routepoints";
-        String trackTableName = tableName + "_track";
-        String trackSegmentsTableName = tableName + "_tracksegments";
-        String trackPointsTableName = tableName + "_trackpoints";
+        String wptTableName = TableLocation.parse(tableName + WAYPOINT).toString();
+        String routeTableName = TableLocation.parse(tableName + ROUTE).toString();
+        String routePointsTableName = TableLocation.parse(tableName + ROUTEPOINT).toString();
+        String trackTableName = TableLocation.parse(tableName + TRACK).toString();
+        String trackSegmentsTableName = TableLocation.parse(tableName + TRACKSEGMENT).toString();
+        String trackPointsTableName = TableLocation.parse(tableName + TRACKPOINT).toString();
 
         setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName));
         setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName));
@@ -145,18 +154,21 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
             getReader().parse(new InputSource(new FileInputStream(inputFile)));
             success = true;
         } catch (SAXException ex) {
-            throw new SQLException("Cannot create the XML reader to readthis GPX file", ex);
+            throw new SQLException(ex);
         } catch (IOException ex) {
             throw new SQLException("Cannot parse the file " + inputFile.getAbsolutePath(), ex);
+        } finally {
+            // When the reading ends, close() method has to be called
+            getWptPreparedStmt().close();
+            getRtePreparedStmt().close();
+            getRteptPreparedStmt().close();
+            getTrkPreparedStmt().close();
+            getTrkSegmentsPreparedStmt().close();
+            getTrkSegmentsPreparedStmt().close();
+            //We drop the table when no gpx data are imported.
+            tablesCleaner(connection, new String[]{wptTableName, routeTableName, routePointsTableName,
+                trackTableName, trackSegmentsTableName, trackPointsTableName});
         }
-
-        // When the reading ends, close() method has to be called
-        getWptPreparedStmt().close();
-        getRtePreparedStmt().close();
-        getRteptPreparedStmt().close();
-        //We drop the table when no gpx data are imported.
-        tablesCleaner(connection, new String[]{wptTableName, routeTableName, routePointsTableName,
-            trackTableName, trackSegmentsTableName, trackPointsTableName});
 
         return success;
     }
