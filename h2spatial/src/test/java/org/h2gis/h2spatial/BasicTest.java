@@ -27,6 +27,7 @@ package org.h2gis.h2spatial;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2.value.DataType;
 import org.h2.value.Value;
+import org.h2gis.h2spatial.internal.UpdateTrigger;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -77,6 +78,29 @@ public class BasicTest {
 
                 assertTrue(3 == coord.z);
 
+        }
+
+        @Test
+        public void testUpdateTrigger() throws SQLException {
+                Statement st = connection.createStatement();
+               try {
+                   st.execute("drop trigger if exists updatetrigger");
+                   st.execute("DROP TABLE IF EXISTS test");
+                   st.execute("create table test as select 1, 'POINT(1 2)'::geometry");
+                   st.execute("create trigger updatetrigger AFTER INSERT, UPDATE, DELETE ON test CALL \""+UpdateTrigger.class.getName()+"\"");
+                   st.execute("insert into test values(2, 'POINT(5 5)') , (3, 'POINT(1 1)')");
+                   ResultSet rs = st.executeQuery("select * from "+new TableLocation(UpdateTrigger.TRIGGER_SCHEMA, UpdateTrigger.NOTIFICATION_TABLE));
+                   try {
+                       assertTrue(rs.next());
+                       assertEquals(1,rs.getInt(2));
+                       assertFalse(rs.next());
+                   } finally {
+                       rs.close();
+                   }
+               } finally {
+                   st.execute("drop trigger if exists updatetrigger");
+                   st.execute("DROP TABLE IF EXISTS test");
+               }
         }
 
         /**

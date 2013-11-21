@@ -85,13 +85,6 @@
                 </configuration>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>2.2</version>
-            </extension>
-        </extensions>
     </build>
     <developers>
         <developer>
@@ -102,10 +95,14 @@
             <name>Erwan Bocher</name>
             <organization>IRSTV CNRS-FR-2488</organization>
         </developer>
+        <developer>
+            <name>Adam Gouge</name>
+            <organization>IRSTV CNRS-FR-2488</organization>
+        </developer>
     </developers>
     <parent>
-        <groupId>org.sonatype.oss</groupId>
-        <artifactId>oss-parent</artifactId>
-        <version>7</version>
+        <groupId>org.orbisgis</groupId>
+        <artifactId>orbisgis-nexus</artifactId>
+        <version>1</version>
     </parent>
 </project>
