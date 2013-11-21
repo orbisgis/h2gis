@@ -27,7 +27,7 @@ package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.geometryUtils.filter.CoordinateSequenceDimensionFilter;
+import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
 
 /**
  * ST_CoordDim returns the dimension of the coordinates of the given geometry.

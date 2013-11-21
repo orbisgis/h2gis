@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.utilities.geometryUtils;
+package org.h2gis.utilities.jts_utils;
 
 import com.vividsolutions.jts.geom.Coordinate;
 

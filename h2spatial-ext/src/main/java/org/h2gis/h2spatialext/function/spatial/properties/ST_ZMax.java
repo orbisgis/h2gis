@@ -27,7 +27,7 @@ package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.geometryUtils.CoordinateUtils;
+import org.h2gis.utilities.jts_utils.CoordinateUtils;
 
 /**
  * ST_ZMax returns the maximal z-value of the given geometry.
