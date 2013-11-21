@@ -40,10 +40,10 @@ import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 import javax.sql.DataSource;
-import java.awt.*;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -120,9 +120,6 @@ public class BundleTest {
      */
     @Test
     public void testBuiltInBundleActivation() throws Exception {
-        if (GraphicsEnvironment.isHeadless()) {
-            return;
-        }
         System.out.println("Built-In bundle list :");
         System.out.println("ID\t\tState\tBundle name");
         for (Bundle bundle : context.getBundles()) {
@@ -166,6 +163,15 @@ public class BundleTest {
     }
     private Connection getConnection() throws SQLException {
         return dataSource.getConnection();
+    }
+
+    @Test
+    public void checkResolveState() throws BundleException {
+        for (Bundle bundle : context.getBundles()) {
+            if(bundle.getState() == Bundle.INSTALLED) {
+                throw new BundleException("Bundle "+bundle.getSymbolicName()+" not resolved");
+            }
+        }
     }
 
     /**
