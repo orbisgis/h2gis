@@ -26,36 +26,50 @@
 package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.h2gis.h2spatial.internal.type.SC_Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.CoordinateUtils;
 
 /**
- * ST_ZMin returns the minimal z-value of the given geometry.
+ * ST_CompactnessRatio computes the perimeter of a circle whose area is equal to the
+ * given polygon's area, and returns the ratio of this computed perimeter to the given
+ * polygon's perimeter.
+ * <p/>
+ * Equivalent definition: ST_CompactnessRatio returns the square root of the
+ * polygon's area divided by the area of the circle with circumference equal to
+ * the polygon's perimeter.
+ * <p/>
+ * Note: This uses the 2D perimeter/area of the polygon.
  *
  * @author Adam Gouge
  */
-public class ST_ZMin extends DeterministicScalarFunction {
+public class ST_CompactnessRatio extends DeterministicScalarFunction {
 
-    public ST_ZMin() {
-        addProperty(PROP_REMARKS, "Returns the minimal z-value of the given geometry.");
+    public ST_CompactnessRatio() {
+        addProperty(PROP_REMARKS, "Returns the compactness ratio of the " +
+                "given polygon, defined to be the the perimeter of a circle " +
+                "whose area is equal to the given geometry's area divided by " +
+                "the given polygon's perimeter.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "getMinZ";
+        return "computeCompacity";
     }
 
     /**
-     * Returns the minimal z-value of the given geometry.
+     * Returns the compactness ratio of the given polygon
      *
      * @param geom Geometry
-     * @return The minimal z-value of the given geometry, or null if the geometry is null.
+     * @return The compactness ratio of the given polygon
      */
-    public static Double getMinZ(Geometry geom) {
+    public static Double computeCompacity(Geometry geom) {
         if (geom != null) {
-            return CoordinateUtils.zMinMax(geom.getCoordinates())[0];
-        } else {
-            return null;
+            if (SC_Polygon.isPolygon(geom)) {
+                final double circleRadius = Math.sqrt(geom.getArea() / Math.PI);
+                final double circleCurcumference = 2 * Math.PI * circleRadius;
+                return circleCurcumference / geom.getLength();
+            }
         }
+        return null;
     }
 }

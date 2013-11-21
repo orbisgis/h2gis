@@ -27,33 +27,36 @@ package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.CoordinateUtils;
+import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
 
 /**
- * ST_ZMin returns the minimal z-value of the given geometry.
+ * ST_CoordDim returns the dimension of the coordinates of the given geometry.
  *
  * @author Adam Gouge
  */
-public class ST_ZMin extends DeterministicScalarFunction {
+public class ST_CoordDim extends DeterministicScalarFunction {
 
-    public ST_ZMin() {
-        addProperty(PROP_REMARKS, "Returns the minimal z-value of the given geometry.");
+    public ST_CoordDim() {
+        addProperty(PROP_REMARKS, "Returns the dimension of the coordinates of the " +
+                        "given geometry.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "getMinZ";
+        return "getCoordinateDimension";
     }
 
     /**
-     * Returns the minimal z-value of the given geometry.
+     * Returns the dimension of the coordinates of the given geometry.
      *
      * @param geom Geometry
-     * @return The minimal z-value of the given geometry, or null if the geometry is null.
+     * @return The dimension of the coordinates of the given geometry
      */
-    public static Double getMinZ(Geometry geom) {
+    public static Integer getCoordinateDimension(Geometry geom) {
         if (geom != null) {
-            return CoordinateUtils.zMinMax(geom.getCoordinates())[0];
+            CoordinateSequenceDimensionFilter cf = new CoordinateSequenceDimensionFilter();
+            geom.apply(cf);
+            return cf.getDimension();
         } else {
             return null;
         }
