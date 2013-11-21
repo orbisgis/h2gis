@@ -24,6 +24,7 @@
  */
 package org.h2gis.drivers.gpx.model;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -33,7 +34,7 @@ import org.xml.sax.SAXException;
  * informations about the document. To save specific informations (waypoints,
  * routes and tracks) it will call specific classes.
  *
- * @author Antonin, Erwan Bocher
+ * @author  Erwan Bocher and Antonin Piasco
  */
 public class GpxParser extends AbstractGpxParserDefault {
 
@@ -46,9 +47,10 @@ public class GpxParser extends AbstractGpxParserDefault {
     private String license;
     // Copyright holder (TopoSoft, Inc.)
     private String copyrighter;
-    //Waypoint id
-    int idWpt = 1;
-    int idRte = 1;
+    //Waypoint, route and track id
+    private int idWpt = 1;
+    private int idRte = 1;
+    private int trkID = 1;
 
     /**
      * Create a new GPX parser and specify what kind of data must be parsed in
@@ -98,15 +100,19 @@ public class GpxParser extends AbstractGpxParserDefault {
             // Initialisation of a waypoint
             try {
                 GPXPoint currentPoint = new GPXPoint(GpxMetadata.WPTFIELDCOUNT);
-                currentPoint.ptInit(attributes, getGeometryReader());
+                Coordinate coordinate = GPXCoordinate.createCoordinate(attributes);
+                currentPoint.setValue(GpxMetadata.THE_GEOM, getGeometryFactory().createPoint(coordinate));
+                currentPoint.setValue(GpxMetadata.PTLAT, coordinate.y);
+                currentPoint.setValue(GpxMetadata.PTLON, coordinate.x);
+                currentPoint.setValue(GpxMetadata.PTELE, coordinate.z);
                 //Set the identifier
                 currentPoint.setValue(GpxMetadata.PTID, idWpt++);
                 setCurrentPoint(currentPoint);
                 // ContentHandler changing
                 setWptParser(new GpxParserWpt(getReader(), this));
                 getReader().setContentHandler(getWptParser());
-            } catch (GPXException ex) {
-                throw new SAXException("Problem while parsing the waypoint", ex);
+            } catch (NumberFormatException ex) {
+                throw new SAXException(ex);
             }
         } else if (localName.compareToIgnoreCase(GPXTags.RTE) == 0) {
             setSpecificElement(true);
@@ -117,8 +123,15 @@ public class GpxParser extends AbstractGpxParserDefault {
             // ContentHandler changing
             setRteParser(new GpxParserRte(getReader(), this));
             getReader().setContentHandler(getRteParser());
-
         } else if (localName.compareToIgnoreCase(GPXTags.TRK) == 0) {
+            setSpecificElement(true);
+            // Initialisation of a track
+            GPXLine track = new GPXLine(GpxMetadata.TRKFIELDCOUNT);
+            track.setValue(GpxMetadata.LINEID, trkID++);
+            setCurrentLine(track);
+            // ContentHandler changing
+            setTrkParser(new GpxParserTrk(getReader(), this));
+            getReader().setContentHandler(getTrkParser());
         }
     }
 

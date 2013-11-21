@@ -24,7 +24,7 @@
  */
 package org.h2gis.drivers.gpx.model;
 
-import com.vividsolutions.jts.io.WKTReader;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.PreparedStatement;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
@@ -35,12 +35,12 @@ import org.xml.sax.helpers.DefaultHandler;
  * setters and getters used in parsers. It also defines the method characters
  * which is used in all other parsers.
  *
- * @author Antonin Piasco, Erwan Bocher
+ * @author Erwan Bocher and Antonin Piasco
  */
 public abstract class AbstractGpxParser extends DefaultHandler {
 
-    //To write geometry
-    private WKTReader wKTReader = new WKTReader();
+    //To build a geometry
+    private GeometryFactory geometryFactory = new GeometryFactory();
     private XMLReader reader;
     private StringBuilder contentBuffer;
     // String with the value of the element which is being parsed
@@ -48,16 +48,16 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     // Abstract point which will take values of the current point during the parsing
     private GPXPoint currentPoint;
 // This will take values of the current track segment during the parsing
-    //     private TrackSegment currentSegment;
+    private GPXLine currentSegment;
 // Abstract line which will take values of the current line during the parsing
     private GPXLine currentLine;
     // A stack to know in which element we are
     private StringStack elementNames;
     // Variable to know if we are in an element supposed to be parser by a specific parser
     private boolean specificElement;
-    //PreparedStatement to manage gpx table
-    private PreparedStatement wptPreparedStmt, rtePreparedStmt, rteptPreparedStmt;
-    
+    //PreparedStatement to manage gpx tables
+    private PreparedStatement wptPreparedStmt, rtePreparedStmt, rteptPreparedStmt,
+            trkPreparedStmt, trkSegmentsPreparedStmt, trkPointsPreparedStmt;
 
     /**
      * Fires one or more times for each text node encountered. It saves text
@@ -237,12 +237,78 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     }
 
     /**
-     * Gives the WKTReader used in this parsing.
+     * Gives the prepared statement used to store the track.
+     * @return 
+     */
+    public PreparedStatement getTrkPreparedStmt() {
+        return trkPreparedStmt;
+    }
+
+    /**
+     * Gives the prepared statement used to store the track points.
+     * @return 
+     */
+    public PreparedStatement getTrkPointsPreparedStmt() {
+        return trkPointsPreparedStmt;
+    }
+
+    /**
+     * Gives the prepared statement used to store the track segments.
+     * @return 
+     */
+    public PreparedStatement getTrkSegmentsPreparedStmt() {
+        return trkSegmentsPreparedStmt;
+    }
+
+    /**
+     * Set the prepared statement used to store the track.
+     * @param trkPreparedStmt 
+     */
+    public void setTrkPreparedStmt(PreparedStatement trkPreparedStmt) {
+        this.trkPreparedStmt = trkPreparedStmt;
+    }
+
+    /**
+     * Set the prepared statement used to store the track segments.
+     * @param trkSegmentsPreparedStmt 
+     */
+    public void setTrkSegmentsPreparedStmt(PreparedStatement trkSegmentsPreparedStmt) {
+        this.trkSegmentsPreparedStmt = trkSegmentsPreparedStmt;
+    }
+
+    /**
+     * Set the prepared statement used to store the track points.
+     * @param trkPointsPreparedStmt 
+     */
+    public void setTrkPointsPreparedStmt(PreparedStatement trkPointsPreparedStmt) {
+        this.trkPointsPreparedStmt = trkPointsPreparedStmt;
+    }
+
+    /**
+     * Gives the segment which is being parsed.
      *
      * @return
      */
-    public WKTReader getGeometryReader() {
-        return wKTReader;
+    public GPXLine getCurrentSegment() {
+        return currentSegment;
+    }
+
+    /**
+     * Set the segment which will be parsed.
+     *
+     * @param currentSegment
+     */
+    public void setCurrentSegment(GPXLine currentSegment) {
+        this.currentSegment = currentSegment;
+    }
+
+    /**
+     * Gives a geometryFactory to construct gpx geometries
+     *
+     * @return
+     */
+    public GeometryFactory getGeometryFactory() {
+        return geometryFactory;
     }
 
     /**
@@ -262,4 +328,5 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     public void setCurrentLine(GPXLine currentLine) {
         this.currentLine = currentLine;
     }
+    
 }

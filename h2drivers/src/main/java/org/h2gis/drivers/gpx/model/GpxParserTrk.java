@@ -24,41 +24,34 @@
  */
 package org.h2gis.drivers.gpx.model;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
 /**
- * Abstract class of the parsers dedicated to waypoints. A specific parser for
- * version 1.0 and version 1.1 will extend this class.
+ * Specific parser for tracks. It will be call each time a <trk> markup is
+ * found. It is for the 1.1 version
  *
- * @author Erwan Bocher and Antonin Piasco, 
+ * @author Erwan Bocher and Antonin Piasco
  */
-public class AbstractGpxParserWpt extends AbstractGpxParser {
-
-    // Reference to the parent of this specific parser.
-    private AbstractGpxParserDefault parent;
+public final class GpxParserTrk extends AbstractGpxParserTrk {
 
     /**
      * Create a new specific parser. It has in memory the default parser, the
-     * contentBuffer, the elementNames and the currentPoint.
+     * contentBuffer, the elementNames, the currentLine and the trkID.
      *
      * @param reader The XMLReader used in the default class
      * @param parent The parser used in the default class
      */
-    public void initialise(XMLReader reader, AbstractGpxParserDefault parent) {
-        setReader(reader);
-        setParent(parent);
-        setContentBuffer(parent.getContentBuffer());
-        setWptPreparedStmt(parent.getWptPreparedStmt());
-        setElementNames(parent.getElementNames());
-        setCurrentPoint(parent.getCurrentPoint());
+    public GpxParserTrk(XMLReader reader, AbstractGpxParserDefault parent) {
+        super.initialise(reader, parent);
     }
 
     /**
-     * Fires whenever an XML start markup is encountered.
+     * Fires whenever an XML start markup is encountered. It creates a new
+     * trackSegment when a <trkseg> markup is encountered. It creates a new
+     * trackPoint when a <trkpt> markup is encountered. It saves informations
+     * about <link> in currentPoint or currentLine.
      *
      * @param uri URI of the local element
      * @param localName Name of the local element (without prefix)
@@ -70,16 +63,20 @@ public class AbstractGpxParserWpt extends AbstractGpxParser {
      */
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        // Clear content buffer
-        getContentBuffer().delete(0, getContentBuffer().length());
-
-        // Store name of current element in stack
-        getElementNames().push(qName);
+        super.startElement(uri, localName, qName, attributes);
+        if (localName.compareToIgnoreCase(GPXTags.LINK) == 0) {
+            if (isPoint()) {
+                getCurrentPoint().setLink(attributes);
+            } else {
+                getCurrentLine().setLink(attributes);
+            }
+        }
     }
 
     /**
      * Fires whenever an XML end markup is encountered. It catches attributes of
-     * the waypoint and saves them in corresponding values[].
+     * trackPoints, trackSegments or routes and saves them in corresponding
+     * values[].
      *
      * @param uri URI of the local element
      * @param localName Name of the local element (without prefix)
@@ -89,36 +86,11 @@ public class AbstractGpxParserWpt extends AbstractGpxParser {
      */
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        // currentElement represents the last string encountered in the document
-        setCurrentElement(getElementNames().pop());
-
-        if (getCurrentElement().compareToIgnoreCase(GPXTags.WPT) == 0) {
-            //if </wpt> markup is found, the currentPoint is added in the table wptdbd and the default contentHandler is setted.
-            try {
-                PreparedStatement pStm = getWptPreparedStmt();
-                int i = 1;
-                Object[] values = getCurrentPoint().getValues();
-                for (Object object : values) {
-                    pStm.setObject(i, object);
-                    i++;
-                }
-                pStm.execute();
-            } catch (SQLException ex) {
-                throw new SAXException("Cannot import the waypoint.", ex);
-            }
-            getReader().setContentHandler(parent);
-
-        } else {
-            getCurrentPoint().setAttribute(getCurrentElement(), getContentBuffer());
+        super.endElement(uri, localName, qName);
+        if ((getCurrentElement().compareToIgnoreCase("text") == 0) && (isPoint())) {
+            getCurrentPoint().setLinkText(getContentBuffer());
+        } else if (getCurrentElement().compareToIgnoreCase("text") == 0) {
+            getCurrentLine().setLinkText(getContentBuffer());
         }
-    }
-
-    /**
-     * Set the parent of this specific parser.
-     *
-     * @param parent
-     */
-    public void setParent(AbstractGpxParserDefault parent) {
-        this.parent = parent;
     }
 }

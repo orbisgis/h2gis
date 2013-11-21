@@ -27,7 +27,7 @@ package org.h2gis.drivers.gpx.model;
 /**
  * This class is a stack to keep in memory the structure of the GPX file.
  *
- * @author Antonin
+ * @author Erwan Bocher and Antonin Piasco
  */
 public final class StringStack {
 

@@ -19,10 +19,12 @@ public class DemoGPX {
     public static void main(String[] s) throws Exception {
         String DB_NAME = "_testgpx";
         Connection connection = null;
+        String data ="/home/ebocher/Documents/data/europe.poi.gpx/fells_loop.gpx";
+        //String data ="/home/ebocher/Téléchargements/blue_hills.gpx";
         try {
             connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
             GpxParser gpd = new GpxParser();
-            boolean response = gpd.read(new File("/home/ebocher/Documents/data/europe.poi.gpx/fells_loop.gpx"), "test", connection);
+            boolean response = gpd.read(new File(data), "test", connection);
             System.out.println("Etat de la lecture du fichier : " + response);
         } catch (SQLException ex) {
             throw new SQLException(ex);

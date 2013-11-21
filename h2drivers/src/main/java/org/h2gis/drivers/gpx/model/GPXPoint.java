@@ -24,11 +24,6 @@
  */
 package org.h2gis.drivers.gpx.model;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
-
-
 
 import org.xml.sax.Attributes;
 
@@ -56,53 +51,7 @@ public class GPXPoint {
         ptValues = new Object[valuesCount];
     }
 
-    /**
-     * General method to initialize a point. It associate to the point an ID, a
-     * latitude, a longitude and a geometry.
-     *
-     * @param id An ID for the point
-     * @param attributes Attributes of the point. Here it is latitude and
-     * longitude
-     * @param wktr A WKTReader
-     * @throws ParseException
-     */
-    public final void ptInit(Attributes attributes, WKTReader wktr) throws GPXException {
-        // Associate a latitude and a longitude to the point
-        double lat;
-        double lon;
-
-        try {
-            lat = Double.parseDouble(attributes.getValue(GPXTags.LAT));
-        } catch (NumberFormatException e) {
-            throw new GPXException("Cannot parse the latitude value", e);
-        }
-        try {
-            lon = Double.parseDouble(attributes.getValue(GPXTags.LON));
-        } catch (NumberFormatException e) {
-            throw new GPXException("Cannot parse the longitude value", e);
-        }
-        String eleValue = attributes.getValue(GPXTags.ELE);
-        double ele = Double.NaN;
-        if (eleValue != null) {
-            try {
-                ele = Double.parseDouble(eleValue);
-
-            } catch (NumberFormatException e) {
-                throw new GPXException("Cannot parse the elevation value", e);
-            }
-        }
-        setValue(GpxMetadata.PTLAT, lat);
-        setValue(GpxMetadata.PTLON, lon);
-        setValue(GpxMetadata.PTELE, eleValue);
-        // Associate a geometry to the point        
-        Geometry geometry;
-        try {
-            geometry = wktr.read("POINT (" + lon + " " + lat + " " + ele + ")");
-        } catch (ParseException ex) {
-            throw new GPXException("Cannot create the geometry point", ex);
-        }
-        setValue(GpxMetadata.THE_GEOM, geometry);
-    }
+    
 
     /**
      * Set an attribute for a point. The String currentElement gives the
@@ -115,73 +64,39 @@ public class GPXPoint {
      */
     public final void setAttribute(String currentElement, StringBuilder contentBuffer) {
         if (currentElement.compareToIgnoreCase(GPXTags.TIME) == 0) {
-
             setTime(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.MAGVAR) == 0) {
-
             setMagvar(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.GEOIDHEIGHT) == 0) {
-
             setGeoidheight(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.NAME) == 0) {
-
             setName(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.CMT) == 0) {
-
             setCmt(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.DESC) == 0) {
-
             setDesc(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.SRC) == 0) {
-
             setSrc(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.SYM) == 0) {
-
             setSym(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.TYPE) == 0) {
-
             setType(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.FIX) == 0) {
-
             setFix(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.SAT) == 0) {
-
             setSat(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.HDOP) == 0) {
-
             setHdop(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.VDOP) == 0) {
-
             setVdop(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.PDOP) == 0) {
-
             setPdop(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.AGEOFDGPSDATA) == 0) {
-
             setAgeofdgpsdata(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.DGPSID) == 0) {
-
             setDgpsid(contentBuffer);
-
         } else if (currentElement.compareToIgnoreCase(GPXTags.EXTENSIONS) == 0) {
-
             setExtensions();
-
         }
     }
 
@@ -374,7 +289,8 @@ public class GPXPoint {
      */
     public final void setExtensions() {
         ptValues[GpxMetadata.PTEXTENSIONS] = true;
-    }
+    }    
+    
 
     /**
      * Gives access to the point's values

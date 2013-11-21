@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.xml.sax.Attributes;
@@ -36,7 +37,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- *
+ * Main class to parse the GPX file
  * @author Erwan Bocher
  */
 public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
@@ -44,7 +45,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     // Specific parsers
     private AbstractGpxParserWpt wptParser;
     private AbstractGpxParserRte rteParser;
-    // private AbstractGpxParserTrk trkParser
+    private AbstractGpxParserTrk trkParser;
     // General informations about the document to read
     // The <bounds> element has attributes which specify minimum and maximum latitude and longitude.
     private double minLat, maxLat, minLon, maxLon;
@@ -72,10 +73,6 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     private String authorLinkText;
     // Keywords associated with the file.
     private String keywords;
-    // Variables to know which element we are going to parse
-    private boolean wpt;
-    private boolean rte;
-    private boolean trk;
     // The max size of the StringStack
     public static final int STRINGSTACK_SIZE = 50;
 
@@ -129,11 +126,16 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         String wptTableName = tableName + "_waypoints";
         String routeTableName = tableName + "_route";
         String routePointsTableName = tableName + "_routepoints";
+        String trackTableName = tableName + "_track";
+        String trackSegmentsTableName = tableName + "_tracksegments";
+        String trackPointsTableName = tableName + "_trackpoints";
 
         setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName));
         setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName));
         setRteptPreparedStmt(GPXTablesFactory.createRoutePointsTable(connection, routePointsTableName));
-
+        setTrkPreparedStmt(GPXTablesFactory.createTrackTable(connection, trackTableName));
+        setTrkSegmentsPreparedStmt(GPXTablesFactory.createTrackSegmentsTable(connection, trackSegmentsTableName));
+        setTrkPointsPreparedStmt(GPXTablesFactory.createTrackPointsTable(connection, trackPointsTableName));
 
         // Initialisation of the contentHandler by default
         try {
@@ -153,20 +155,24 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         getRtePreparedStmt().close();
         getRteptPreparedStmt().close();
         //We drop the table when no gpx data are imported.
-        tablesCleaner(connection, new String[]{wptTableName, routeTableName, routePointsTableName});
+        tablesCleaner(connection, new String[]{wptTableName, routeTableName, routePointsTableName,
+            trackTableName, trackSegmentsTableName, trackPointsTableName});
 
         return success;
     }
 
     /**
-     *
+     * This method is used to delete tables that contain any rows.
      */
     public void tablesCleaner(Connection connection, String[] tableNames) throws SQLException {
         Statement statement = connection.createStatement();
         for (String tableName : tableNames) {
-            if (statement.executeQuery("SELECT count(id) FROM " + tableName + ";") == null) {
+            ResultSet res = statement.executeQuery("SELECT count(id) FROM " + tableName + ";");
+            res.next();
+            if (res.getInt(1) == 0) {
                 statement.execute("DROP TABLE IF EXISTS " + tableName + ";");
             }
+            res.close();
         }
         statement.close();
     }
@@ -419,42 +425,6 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     }
 
     /**
-     * Indicates if we are in a route.
-     *
-     * @return true if we are in a route, false else
-     */
-    public boolean isRte() {
-        return rte;
-    }
-
-    /**
-     * Set the indicator to know if we are in a route or not.
-     *
-     * @param rte
-     */
-    public void setRte(boolean rte) {
-        this.rte = rte;
-    }
-
-    /**
-     * Indicates if we are in a track.
-     *
-     * @return true if we are in a track, false else
-     */
-    public boolean isTrk() {
-        return trk;
-    }
-
-    /**
-     * Set the indicator to know if we are in a track or not.
-     *
-     * @param trk
-     */
-    public void setTrk(boolean trk) {
-        this.trk = trk;
-    }
-
-    /**
      * Gives the parser used to parse waypoint.
      *
      * @return
@@ -488,5 +458,23 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      */
     public AbstractGpxParserRte getRteParser() {
         return rteParser;
+    }
+
+    /**
+     * Set the parser used to parse the track
+     *
+     * @param trkParser
+     */
+    public void setTrkParser(AbstractGpxParserTrk trkParser) {
+        this.trkParser = trkParser;
+    }
+
+    /**
+     * Givers the parser used to parse the track
+     *
+     * @return
+     */
+    public AbstractGpxParserTrk getTrkParser() {
+        return trkParser;
     }
 }

@@ -27,7 +27,7 @@ package org.h2gis.drivers.gpx.model;
 /**
  * This class stores field information for a standard GPX file.
  *
- * @author Antonin Piasco, Erwan Bocher
+ * @author Erwan Bocher and Antonin Piasco
  */
 public class GpxMetadata {
 
@@ -85,7 +85,7 @@ public class GpxMetadata {
     public static final int TRKSEG_TRKID = 3;
     // Constant for the foreign track segment in trackpoints
     public static final int TRKPT_TRKSEGID = 24;
-
+   
     private GpxMetadata() {
     }
 }

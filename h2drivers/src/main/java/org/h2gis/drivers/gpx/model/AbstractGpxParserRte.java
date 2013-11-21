@@ -3,6 +3,7 @@ package org.h2gis.drivers.gpx.model;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -16,7 +17,7 @@ import org.xml.sax.XMLReader;
  * Abstract class of the parsers dedicated to routes. A specific parser for
  * version 1.0 and version 1.1 will extend this class.
  *
- * @author Antonin
+ * @author Erwan Bocher and Antonin Piasco
  */
 public abstract class AbstractGpxParserRte extends AbstractGpxParser {
 
@@ -26,7 +27,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
     private AbstractGpxParserDefault parent;
     // A list which will contain the coordinates of the route
     private List<Coordinate> rteList;
-    private int idRtPt=1;
+    private int idRtPt = 1;
 
     /**
      * Create a new specific parser. It has in memory the default parser, the
@@ -62,16 +63,18 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if (localName.compareToIgnoreCase(GPXTags.RTEPT) == 0) {
             point = true;
-            GPXPoint routePoint = new GPXPoint(GpxMetadata.RTEPTFIELDCOUNT);            
+            GPXPoint routePoint = new GPXPoint(GpxMetadata.RTEPTFIELDCOUNT);
             try {
-                routePoint.ptInit(attributes, getGeometryReader());
+                Coordinate coordinate = GPXCoordinate.createCoordinate(attributes);
+                routePoint.setValue(GpxMetadata.THE_GEOM, getGeometryFactory().createPoint(coordinate));
+                routePoint.setValue(GpxMetadata.PTLAT, coordinate.y);
+                routePoint.setValue(GpxMetadata.PTLON, coordinate.x);
+                routePoint.setValue(GpxMetadata.PTELE, coordinate.z);
                 routePoint.setValue(GpxMetadata.PTID, idRtPt++);
                 routePoint.setValue(GpxMetadata.RTEPT_RTEID, getCurrentLine().getValues()[GpxMetadata.LINEID]);
-                Coordinate coordinate;
-                coordinate = new Coordinate(Double.parseDouble(attributes.getValue(GPXTags.LON)), Double.parseDouble(attributes.getValue(GPXTags.LAT)), 0);
                 rteList.add(coordinate);
-            } catch (GPXException ex) {
-                throw new SAXException("Problem while parsing.", ex);
+            } catch (NumberFormatException ex) {
+                throw new SAXException(ex);
             }
             setCurrentPoint(routePoint);
         }
@@ -102,9 +105,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
             rteArray = rteList.toArray(rteArray);
             // If there are more than one routepoint, we can set a geometry to the route
             if (rteList.size() > 1) {
-                Geometry geometry;
-                GeometryFactory gf = new GeometryFactory();
-                geometry = gf.createLineString(rteArray);
+                LineString geometry = getGeometryFactory().createLineString(rteArray);
                 getCurrentLine().setGeometry(geometry);
             }
             // if </rte> markup is found, the currentLine is added in the table rtedbd and the default contentHandler is setted.

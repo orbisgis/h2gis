@@ -26,7 +26,6 @@ package org.h2gis.drivers.gpx.model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -98,7 +97,7 @@ public class GPXTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(routeTableName);
-        sb.append(" (the_geom LINESTRING,id INT,");
+        sb.append(" (the_geom LineString,id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
@@ -120,6 +119,14 @@ public class GPXTablesFactory {
         return connection.prepareStatement(insert.toString());
     }
 
+    /**
+     * Createthe route points table to store the route waypoints
+     *
+     * @param connection
+     * @param routePointsTable
+     * @return
+     * @throws SQLException
+     */
     public static PreparedStatement createRoutePointsTable(Connection connection, String routePointsTable) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
@@ -158,5 +165,113 @@ public class GPXTablesFactory {
         insert.append(");");
         return connection.prepareStatement(insert.toString());
 
+    }
+
+    /**
+     * Creat the track table
+     *
+     * @param connection
+     * @param trackTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createTrackTable(Connection connection, String trackTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(trackTableName);
+        sb.append(" (the_geom MultiLineString,id INT,");
+        sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.NUMBER.toLowerCase()).append(" INT,");
+        sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" TEXT);");
+        stmt.execute(sb.toString());
+        stmt.close();
+
+        //We return the preparedstatement of the route table
+        StringBuilder insert = new StringBuilder("INSERT INTO ").append(trackTableName).append(" VALUES ( ?");
+        for (int i = 1; i < GpxMetadata.RTEFIELDCOUNT; i++) {
+            insert.append(",?");
+        }
+        insert.append(");");
+        return connection.prepareStatement(insert.toString());
+    }
+
+    /**
+     * Create the track segments table to store the segments of a track
+     *
+     * @param connection
+     * @param trackSegementsTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createTrackSegmentsTable(Connection connection, String trackSegementsTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(trackSegementsTableName);
+        sb.append(" (the_geom LINESTRING,id INT,");
+        sb.append(GPXTags.EXTENSIONS).append(" TEXT,");
+        sb.append("id_track INT);");
+        stmt.execute(sb.toString());
+        stmt.close();
+        //We return the preparedstatement of the waypoints table
+        StringBuilder insert = new StringBuilder("INSERT INTO ").append(trackSegementsTableName).append(" VALUES ( ?");
+        for (int i = 1; i < GpxMetadata.TRKSEGFIELDCOUNT; i++) {
+            insert.append(",?");
+        }
+        insert.append(");");
+        return connection.prepareStatement(insert.toString());
+
+    }
+
+    /**
+     * Create the track points table to store the track waypoints
+     *
+     * @param connection
+     * @param trackPointsTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createTrackPointsTable(Connection connection, String trackPointsTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(trackPointsTableName);
+        sb.append(" (the_geom POINT,id INT, ");
+        sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.TIME.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.SYM.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.FIX.toLowerCase()).append(" TEXT,");
+        sb.append(GPXTags.SAT.toLowerCase()).append(" INT,");
+        sb.append(GPXTags.HDOP.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.VDOP.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.PDOP.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.DGPSID.toLowerCase()).append(" INT,");
+        sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" BOOLEAN,");
+        sb.append("track_segment_id").append(" INT);");
+        stmt.execute(sb.toString());
+        stmt.close();
+        //We return the preparedstatement of the waypoints table
+        StringBuilder insert = new StringBuilder("INSERT INTO ").append(trackPointsTableName).append(" VALUES ( ?");
+        for (int i = 1; i < GpxMetadata.RTEPTFIELDCOUNT; i++) {
+            insert.append(",?");
+        }
+        insert.append(");");
+        return connection.prepareStatement(insert.toString());
     }
 }

@@ -32,7 +32,7 @@ import org.xml.sax.XMLReader;
  * Specific parser for waypoints. It will be call each time a <wpt> markup is
  * found. It is for the 1.1 version
  *
- * @author Antonin Piasco and Erwan Bocher
+ * @author Erwan Bocher and Antonin Piasco 
  */
 public class GpxParserWpt extends AbstractGpxParserWpt {
 
