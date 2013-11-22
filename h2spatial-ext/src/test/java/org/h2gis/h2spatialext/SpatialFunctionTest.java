@@ -559,4 +559,59 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_ToMultiLine() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(" +
+                "point Point," +
+                "empty_line_string LineString," +
+                "line LineString, " +
+                "polygon Polygon, " +
+                "polygon_with_holes Polygon, " +
+                "multi_polygon MultiPolygon," +
+                "collection Geometry);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_PointFromText('POINT(2 4)',2154)," +
+                "ST_GeomFromText('LINESTRING EMPTY',2154)," +
+                "ST_LineFromText('LINESTRING(5 5, 1 2, 3 4, 99 3)',2154)," +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))',2154)," +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0)," +
+                "(1 1, 2 1, 2 4, 1 4, 1 1))',2154)," +
+                "ST_MPolyFromText('MULTIPOLYGON(((28 26,28 0,84 0,84 42,28 26)," +
+                "(52 18,66 23,73 9,48 6,52 18))," +
+                "((59 18,67 18,67 13,59 13,59 18)))',2154)," +
+                "ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22)," +
+                "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))'));");
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_ToMultiLine(point), " +
+                "ST_ToMultiLine(empty_line_string), " +
+                "ST_ToMultiLine(line), " +
+                "ST_ToMultiLine(polygon), " +
+                "ST_ToMultiLine(polygon_with_holes), " +
+                "ST_ToMultiLine(multi_polygon), " +
+                "ST_ToMultiLine(collection)" +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((MultiLineString) rs.getObject(1)).isEmpty());
+        assertTrue(((MultiLineString) rs.getObject(2)).isEmpty());
+        assertTrue(WKT_READER.read("MULTILINESTRING((5 5, 1 2, 3 4, 99 3))").equalsExact(
+                (MultiLineString) rs.getObject(3), TOLERANCE));
+        assertTrue(WKT_READER.read("MULTILINESTRING((0 0, 10 0, 10 5, 0 5, 0 0))").equalsExact(
+                (MultiLineString) rs.getObject(4), TOLERANCE));
+        assertTrue(WKT_READER.read("MULTILINESTRING((0 0, 10 0, 10 5, 0 5, 0 0)," +
+                "(1 1, 2 1, 2 4, 1 4, 1 1))").equalsExact(
+                (MultiLineString) rs.getObject(5), TOLERANCE));
+        assertTrue(WKT_READER.read("MULTILINESTRING((28 26,28 0,84 0,84 42,28 26)," +
+                "(52 18,66 23,73 9,48 6,52 18)," +
+                "(59 18,67 18,67 13,59 13,59 18))").equalsExact(
+                (MultiLineString) rs.getObject(6), TOLERANCE));
+        assertTrue(WKT_READER.read("MULTILINESTRING((1 4 3, 15 7 9, 16 17 22)," +
+                "(1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))").equalsExact(
+                (MultiLineString) rs.getObject(7), TOLERANCE));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }
