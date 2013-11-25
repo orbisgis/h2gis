@@ -77,25 +77,19 @@ public class GpxParser extends AbstractGpxParserDefault {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
-        if (localName.compareToIgnoreCase(GPXTags.LINK) == 0) {
+        if (localName.equalsIgnoreCase(GPXTags.LINK)) {
             if (author) {
                 setAuthorLink(attributes.getValue(GPXTags.HREF));
             } else if (!isSpecificElement()) {
                 setLink(attributes.getValue(GPXTags.HREF));
             }
-
-        } else if (localName.compareToIgnoreCase(GPXTags.EMAIL) == 0) {
+        } else if (localName.equalsIgnoreCase(GPXTags.EMAIL)) {
             setEmail(attributes.getValue(GPXTags.ID) + "@" + attributes.getValue(GPXTags.DOMAIN));
-
-        } else if (localName.compareToIgnoreCase(GPXTags.COPYRIGHT) == 0) {
-
+        } else if (localName.equalsIgnoreCase(GPXTags.COPYRIGHT)) {
             copyrighter = attributes.getValue(GPXTags.AUTHOR);
-
-        } else if (localName.compareToIgnoreCase(GPXTags.AUTHOR) == 0) {
-
+        } else if (localName.equalsIgnoreCase(GPXTags.AUTHOR)) {
             author = true;
-
-        } else if (localName.compareToIgnoreCase(GPXTags.WPT) == 0) {
+        } else if (localName.equalsIgnoreCase(GPXTags.WPT)) {
             setSpecificElement(true);
             // Initialisation of a waypoint
             try {
@@ -114,7 +108,7 @@ public class GpxParser extends AbstractGpxParserDefault {
             } catch (NumberFormatException ex) {
                 throw new SAXException(ex);
             }
-        } else if (localName.compareToIgnoreCase(GPXTags.RTE) == 0) {
+        } else if (localName.equalsIgnoreCase(GPXTags.RTE)) {
             setSpecificElement(true);
             // Initialisation of a route
             GPXLine route = new GPXLine(GpxMetadata.RTEFIELDCOUNT);
@@ -123,7 +117,7 @@ public class GpxParser extends AbstractGpxParserDefault {
             // ContentHandler changing
             setRteParser(new GpxParserRte(getReader(), this));
             getReader().setContentHandler(getRteParser());
-        } else if (localName.compareToIgnoreCase(GPXTags.TRK) == 0) {
+        } else if (localName.equalsIgnoreCase(GPXTags.TRK)) {
             setSpecificElement(true);
             // Initialisation of a track
             GPXLine track = new GPXLine(GpxMetadata.TRKFIELDCOUNT);

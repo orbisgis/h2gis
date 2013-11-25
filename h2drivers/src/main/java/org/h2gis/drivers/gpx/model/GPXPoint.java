@@ -63,39 +63,39 @@ public class GPXPoint {
      * element.
      */
     public final void setAttribute(String currentElement, StringBuilder contentBuffer) {
-        if (currentElement.compareToIgnoreCase(GPXTags.TIME) == 0) {
+        if (currentElement.equalsIgnoreCase(GPXTags.TIME)) {
             setTime(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.MAGVAR) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.MAGVAR)) {
             setMagvar(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.GEOIDHEIGHT) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.GEOIDHEIGHT)) {
             setGeoidheight(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.NAME) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.NAME)) {
             setName(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.CMT) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.CMT)) {
             setCmt(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.DESC) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.DESC)) {
             setDesc(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.SRC) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.SRC)) {
             setSrc(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.SYM) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.SYM)) {
             setSym(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.TYPE) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.TYPE)) {
             setType(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.FIX) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.FIX)) {
             setFix(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.SAT) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.SAT)) {
             setSat(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.HDOP) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.HDOP)) {
             setHdop(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.VDOP) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.VDOP)) {
             setVdop(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.PDOP) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.PDOP)) {
             setPdop(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.AGEOFDGPSDATA) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.AGEOFDGPSDATA)) {
             setAgeofdgpsdata(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.DGPSID) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.DGPSID)) {
             setDgpsid(contentBuffer);
-        } else if (currentElement.compareToIgnoreCase(GPXTags.EXTENSIONS) == 0) {
+        } else if (currentElement.equalsIgnoreCase(GPXTags.EXTENSIONS)) {
             setExtensions();
         }
     }

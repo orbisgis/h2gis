@@ -62,7 +62,7 @@ public class GpxParserWpt extends AbstractGpxParserWpt {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
-        if (localName.compareToIgnoreCase(GPXTags.LINK) == 0) {
+        if (localName.equalsIgnoreCase(GPXTags.LINK)) {
             getCurrentPoint().setLink(attributes);
         }
     }
@@ -80,7 +80,7 @@ public class GpxParserWpt extends AbstractGpxParserWpt {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
-        if (getCurrentElement().compareToIgnoreCase(GPXTags.TEXT) == 0) {
+        if (getCurrentElement().equalsIgnoreCase(GPXTags.TEXT)) {
             getCurrentPoint().setLinkText(getContentBuffer());
         }
     }

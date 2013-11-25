@@ -34,7 +34,7 @@ import org.xml.sax.XMLReader;
  * Abstract class of the parsers dedicated to waypoints. A specific parser for
  * version 1.0 and version 1.1 will extend this class.
  *
- * @author Erwan Bocher and Antonin Piasco, 
+ * @author Erwan Bocher and Antonin Piasco,
  */
 public class AbstractGpxParserWpt extends AbstractGpxParser {
 
@@ -72,7 +72,6 @@ public class AbstractGpxParserWpt extends AbstractGpxParser {
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         // Clear content buffer
         getContentBuffer().delete(0, getContentBuffer().length());
-
         // Store name of current element in stack
         getElementNames().push(qName);
     }
@@ -92,7 +91,7 @@ public class AbstractGpxParserWpt extends AbstractGpxParser {
         // currentElement represents the last string encountered in the document
         setCurrentElement(getElementNames().pop());
 
-        if (getCurrentElement().compareToIgnoreCase(GPXTags.WPT) == 0) {
+        if (getCurrentElement().equalsIgnoreCase(GPXTags.WPT)) {
             //if </wpt> markup is found, the currentPoint is added in the table wptdbd and the default contentHandler is setted.
             try {
                 PreparedStatement pStm = getWptPreparedStmt();

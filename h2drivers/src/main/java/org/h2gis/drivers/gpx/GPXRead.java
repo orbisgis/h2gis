@@ -36,11 +36,13 @@ import java.sql.SQLException;
 
 /**
  * SQL Function to copy GPX File data into a Table.
+ *
  * @author Erwan Bocher
  */
-public class GPXRead  extends AbstractFunction implements ScalarFunction {
+public class GPXRead extends AbstractFunction implements ScalarFunction {
+
     public GPXRead() {
-        addProperty(PROP_REMARKS, "Read a GPX file and copy the content in the specified table.");
+        addProperty(PROP_REMARKS, "Read a GPX file and copy the content in the specified tables.");
     }
 
     @Override
@@ -50,16 +52,31 @@ public class GPXRead  extends AbstractFunction implements ScalarFunction {
 
     /**
      * Copy data from GPX File into a new table in specified connection.
+     *
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path of the SHP file
      */
     public static void readGPX(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         File file = new File(fileName);
-        if(!file.exists()) {
-            throw new FileNotFoundException("The following file does not exists:\n"+fileName);
+        if (!file.exists()) {
+            throw new FileNotFoundException("The following file does not exists:\n" + fileName);
         }
         GPXDriverFunction gpxdf = new GPXDriverFunction();
         gpxdf.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
+    }
+
+    /**
+     * Copy data from GPX File into a new table in specified connection.
+     *
+     *
+     * @param connection
+     * @param fileName
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void readGPX(Connection connection, String fileName) throws IOException, SQLException {
+        final String name = new File(fileName).getName();
+        readGPX(connection, fileName, name.substring(0, name.lastIndexOf(".")));
     }
 }

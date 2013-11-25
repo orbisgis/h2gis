@@ -64,7 +64,7 @@ public final class GpxParserTrk extends AbstractGpxParserTrk {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         super.startElement(uri, localName, qName, attributes);
-        if (localName.compareToIgnoreCase(GPXTags.LINK) == 0) {
+        if (localName.equalsIgnoreCase(GPXTags.LINK)) {
             if (isPoint()) {
                 getCurrentPoint().setLink(attributes);
             } else {
@@ -87,9 +87,9 @@ public final class GpxParserTrk extends AbstractGpxParserTrk {
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         super.endElement(uri, localName, qName);
-        if ((getCurrentElement().compareToIgnoreCase("text") == 0) && (isPoint())) {
+        if ((getCurrentElement().equalsIgnoreCase(GPXTags.TEXT)) && (isPoint())) {
             getCurrentPoint().setLinkText(getContentBuffer());
-        } else if (getCurrentElement().compareToIgnoreCase("text") == 0) {
+        } else if (getCurrentElement().equalsIgnoreCase(GPXTags.TEXT)) {
             getCurrentLine().setLinkText(getContentBuffer());
         }
     }

@@ -1,8 +1,6 @@
 package org.h2gis.drivers.gpx.model;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -61,7 +59,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
      */
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if (localName.compareToIgnoreCase(GPXTags.RTEPT) == 0) {
+        if (localName.equalsIgnoreCase(GPXTags.RTEPT)) {
             point = true;
             GPXPoint routePoint = new GPXPoint(GpxMetadata.RTEPTFIELDCOUNT);
             try {
@@ -100,7 +98,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         // currentElement represents the last string encountered in the document
         setCurrentElement(getElementNames().pop());
-        if (getCurrentElement().compareToIgnoreCase(GPXTags.RTE) == 0) {
+        if (getCurrentElement().equalsIgnoreCase(GPXTags.RTE)) {
             Coordinate[] rteArray = new Coordinate[rteList.size()];
             rteArray = rteList.toArray(rteArray);
             // If there are more than one routepoint, we can set a geometry to the route
@@ -123,8 +121,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
             }
             getReader().setContentHandler(parent);
 
-        } else if (getCurrentElement().compareToIgnoreCase(GPXTags.RTEPT) == 0) {
-
+        } else if (getCurrentElement().equalsIgnoreCase(GPXTags.RTEPT)) {
             // if </rtept> markup is found, the currentPoint is added in the table rteptdbd.
             point = false;
             try {
@@ -139,12 +136,10 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
             } catch (SQLException ex) {
                 throw new SAXException("Cannot import the route points ", ex);
             }
-
         } else if (point) {
             getCurrentPoint().setAttribute(getCurrentElement(), getContentBuffer());
 
         } else {
-
             getCurrentLine().setAttribute(getCurrentElement(), getContentBuffer());
         }
     }

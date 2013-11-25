@@ -18,7 +18,7 @@ import org.xml.sax.XMLReader;
  * Abstract class of the parsers dedicated to tracks. A specific parser for
  * version 1.0 and version 1.1 will extend this class.
  *
- * @author Erwan Bocher, Antonin Piasco
+ * @author Erwan Bocher and Antonin Piasco
  */
 public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
 
@@ -73,15 +73,14 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
      */
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
-        if (localName.compareToIgnoreCase(GPXTags.TRKSEG) == 0) {
+        if (localName.equalsIgnoreCase(GPXTags.TRKSEG)) {
             segment = true;
             GPXLine trkSegment = new GPXLine(GpxMetadata.TRKSEGFIELDCOUNT);
             trkSegment.setValue(GpxMetadata.LINEID, trksegID++);
-            trkSegment.setValue(GpxMetadata.TRKSEG_TRKID,getCurrentLine().getValues()[GpxMetadata.LINEID]);
+            trkSegment.setValue(GpxMetadata.TRKSEG_TRKID, getCurrentLine().getValues()[GpxMetadata.LINEID]);
             setCurrentSegment(trkSegment);
             trksegList.clear();
-
-        } else if (localName.compareToIgnoreCase(GPXTags.TRKPT) == 0) {
+        } else if (localName.equalsIgnoreCase(GPXTags.TRKPT)) {
             point = true;
             GPXPoint trackPoint = new GPXPoint(GpxMetadata.TRKPTFIELDCOUNT);
             Coordinate coordinate = GPXCoordinate.createCoordinate(attributes);
@@ -94,10 +93,8 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
             trksegList.add(coordinate);
             setCurrentPoint(trackPoint);
         }
-
         // Clear content buffer
         getContentBuffer().delete(0, getContentBuffer().length());
-
         // Store name of current element in stack
         getElementNames().push(qName);
     }
@@ -117,8 +114,7 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         // currentElement represents the last string encountered in the document
         setCurrentElement(getElementNames().pop());
-
-        if (getCurrentElement().compareToIgnoreCase("trk") == 0) {
+        if (getCurrentElement().equalsIgnoreCase(GPXTags.TRK)) {
             //parent.setTrksegID(getTrksegID());
             //parent.setTrkptID(getTrkptID());
             // Set the track geometry.
@@ -152,7 +148,6 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
                 trkList.add(geometry);
             }
             // if </trkseg> markup is found, the currentSegment is added in the table trksegdbd.
-
             try {
                 PreparedStatement pStm = getTrkSegmentsPreparedStmt();
                 int i = 1;
@@ -166,11 +161,9 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
                 throw new SAXException("Cannot import the track segment ", ex);
             }
 
-        } else if (getCurrentElement().compareToIgnoreCase("trkpt") == 0) {
-
+        } else if (getCurrentElement().equalsIgnoreCase(GPXTags.TRKPT)) {
             // if </trkpt> markup is found, the currentPoint is added in the table trkptdbd.
             point = false;
-
             try {
                 PreparedStatement pStm = getTrkPointsPreparedStmt();
                 int i = 1;
@@ -184,15 +177,10 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
                 throw new SAXException("Cannot import the track waypoints.", ex);
             }
         } else if (point) {
-
             getCurrentPoint().setAttribute(getCurrentElement(), getContentBuffer());
-
         } else if (segment) {
-
             getCurrentSegment().setExtensions();
-
         } else {
-
             getCurrentLine().setAttribute(getCurrentElement(), getContentBuffer());
         }
     }

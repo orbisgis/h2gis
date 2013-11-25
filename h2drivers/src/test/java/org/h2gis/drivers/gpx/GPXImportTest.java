@@ -29,8 +29,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.util.StringUtils;
-import org.h2gis.drivers.shp.SHPEngineTest;
-import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
@@ -140,5 +138,27 @@ public class GPXImportTest {
                 , rs.getString("the_geom"));
         rs.close();
         st.execute("DROP TABLE GPXDATA_TRACK, GPXDATA_TRACKSEGMENT,GPXDATA_TRACKPOINT;");
+    }
+    
+    
+    @Test
+    public void importGPXWaypointsFileName() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS WAYPOINT_WAYPOINT");
+        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ");");
+        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WAYPOINT_WAYPOINT'");
+        assertTrue(rs.next());
+        rs.close();
+        // Check number
+        rs = st.executeQuery("SELECT count(id) FROM WAYPOINT_WAYPOINT");
+        rs.next();
+        assertTrue(rs.getInt(1) == 3);
+        rs.close();
+        // Check content
+        rs = st.executeQuery("SELECT * FROM WAYPOINT_WAYPOINT");
+        assertTrue(rs.next());
+        assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
+        rs.close();
+        st.execute("drop table WAYPOINT_WAYPOINT");
     }
 }

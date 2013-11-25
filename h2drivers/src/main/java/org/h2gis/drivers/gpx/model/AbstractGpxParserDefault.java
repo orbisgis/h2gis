@@ -122,22 +122,27 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      * automatically when corresponding markup is found.
      *
      * @param inputFile a File representing the gpx file to read
-     * @param dsf a dataSourceFactory used by the current application in
-     * OrbisGIS
-     * @return a boolean if the parser ends successfully or not
-     * @throws DriverException if the creation of the DiskBufferDriver failed
+     * @param tableName the table used to create all tables
+     * @param connection the connection to the database
+     * @return a boolean value if the parser ends successfully or not
+     * @throws SQLException if the creation of the tables failed
      */
     public boolean read(File inputFile, String tableName, Connection connection) throws SQLException {
         // Initialisation
         boolean success = false;
+        TableLocation requestedTable = TableLocation.parse(tableName);
+        String catalog = requestedTable.getCatalog();
+        String schema = requestedTable.getSchema();
+        String table = requestedTable.getTable();
+
         clear();
         // We create the tables to store all gpx data in the database
-        String wptTableName = TableLocation.parse(tableName + WAYPOINT).toString();
-        String routeTableName = TableLocation.parse(tableName + ROUTE).toString();
-        String routePointsTableName = TableLocation.parse(tableName + ROUTEPOINT).toString();
-        String trackTableName = TableLocation.parse(tableName + TRACK).toString();
-        String trackSegmentsTableName = TableLocation.parse(tableName + TRACKSEGMENT).toString();
-        String trackPointsTableName = TableLocation.parse(tableName + TRACKPOINT).toString();
+        String wptTableName = new TableLocation(catalog, schema, table + WAYPOINT).toString();
+        String routeTableName = new TableLocation(catalog, schema, table + ROUTE).toString();
+        String routePointsTableName = new TableLocation(catalog, schema, table + ROUTEPOINT).toString();
+        String trackTableName = new TableLocation(catalog, schema, table + TRACK).toString();
+        String trackSegmentsTableName = new TableLocation(catalog, schema, table + TRACKSEGMENT).toString();
+        String trackPointsTableName = new TableLocation(catalog, schema, table + TRACKPOINT).toString();
 
         setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName));
         setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName));
@@ -235,30 +240,18 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         // currentElement represents the last string encountered in the document
         setCurrentElement(getElementNames().pop());
 
-        if (getCurrentElement().compareToIgnoreCase(GPXTags.WPT) == 0) {
-
+        if (getCurrentElement().equalsIgnoreCase(GPXTags.WPT)) {
             setSpecificElement(false);
-
-        } else if (getCurrentElement().compareToIgnoreCase(GPXTags.RTE) == 0) {
-
+        } else if (getCurrentElement().equalsIgnoreCase(GPXTags.RTE)) {
             setSpecificElement(false);
-
-        } else if (getCurrentElement().compareToIgnoreCase(GPXTags.TRK) == 0) {
-
+        } else if (getCurrentElement().equalsIgnoreCase(GPXTags.TRK)) {
             setSpecificElement(false);
-
-        } else if ((getCurrentElement().compareToIgnoreCase(GPXTags.TIME) == 0) && (!isSpecificElement())) {
-
+        } else if ((getCurrentElement().equalsIgnoreCase(GPXTags.TIME)) && (!isSpecificElement())) {
             time = getContentBuffer().toString();
-
-        } else if ((getCurrentElement().compareToIgnoreCase(GPXTags.DESC) == 0) && (!isSpecificElement())) {
-
+        } else if ((getCurrentElement().equalsIgnoreCase(GPXTags.DESC)) && (!isSpecificElement())) {
             desc = getContentBuffer().toString();
-
-        } else if (localName.compareToIgnoreCase(GPXTags.KEYWORDS) == 0) {
-
+        } else if (localName.equalsIgnoreCase(GPXTags.KEYWORDS)) {
             keywords = getContentBuffer().toString();
-
         }
     }
 

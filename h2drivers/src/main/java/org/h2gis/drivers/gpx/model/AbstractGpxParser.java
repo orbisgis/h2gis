@@ -47,9 +47,9 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     private String currentElement;
     // Abstract point which will take values of the current point during the parsing
     private GPXPoint currentPoint;
-// This will take values of the current track segment during the parsing
+    // This will take values of the current track segment during the parsing
     private GPXLine currentSegment;
-// Abstract line which will take values of the current line during the parsing
+    // Abstract line which will take values of the current line during the parsing
     private GPXLine currentLine;
     // A stack to know in which element we are
     private StringStack elementNames;
