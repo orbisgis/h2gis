@@ -614,4 +614,43 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_Holes() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(empty_line_string LineString," +
+                "line LineString, " +
+                "polygon Polygon, " +
+                "polygon_with_holes Polygon, " +
+                "collection Geometry);" +
+                "INSERT INTO input_table VALUES(" +
+                "ST_GeomFromText('LINESTRING EMPTY',2154)," +
+                "ST_LineFromText('LINESTRING(5 5, 1 2, 3 4, 99 3)',2154)," +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))',2154)," +
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0)," +
+                "(1 1, 2 1, 2 4, 1 4, 1 1))',2154)," +
+                "ST_GeomFromText('GEOMETRYCOLLECTION(POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0)," +
+                "(1 1, 2 1, 2 4, 1 4, 1 1))," +
+                "POLYGON ((11 6, 14 6, 14 9, 11 9, 11 6)," +
+                "(12 7, 14 7, 14 8, 12 8, 12 7)))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Holes(empty_line_string), " +
+                "ST_Holes(line), " +
+                "ST_Holes(polygon), " +
+                "ST_Holes(polygon_with_holes), " +
+                "ST_Holes(collection)" +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((GeometryCollection) rs.getObject(1)).isEmpty());
+        assertTrue(((GeometryCollection) rs.getObject(2)).isEmpty());
+        assertTrue(((GeometryCollection) rs.getObject(3)).isEmpty());
+        assertTrue(WKT_READER.read("GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)))")
+                .equalsExact((GeometryCollection) rs.getObject(4), TOLERANCE));
+        assertTrue(WKT_READER.read("GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1))," +
+                "POLYGON((12 7, 14 7, 14 8, 12 8, 12 7)))")
+                .equalsExact((GeometryCollection) rs.getObject(5), TOLERANCE));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }

@@ -32,10 +32,7 @@ import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_InteriorPoint;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_PointsToLine;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiPoint;
+import org.h2gis.h2spatialext.function.spatial.convert.*;
 import org.h2gis.h2spatialext.function.spatial.properties.ST_Extent;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
@@ -68,12 +65,13 @@ public class CreateSpatialExtension {
                 new ST_DWithin(),
                 new ST_Extent(),
                 new ST_Explode(),
+                new ST_Holes(),
                 new ST_InteriorPoint(),
                 new ST_IsRectangle(),
                 new ST_IsValid(),
+                new ST_PointsToLine(),
                 new ST_Rotate(),
                 new ST_Scale(),
-                new ST_PointsToLine(),
                 new ST_ToMultiPoint(),
                 new ST_ToMultiLine(),
                 new ST_XMin(),
