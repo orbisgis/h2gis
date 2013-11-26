@@ -66,7 +66,6 @@ public class CreateSpatialExtension {
                 new ST_Extent(),
                 new ST_Explode(),
                 new ST_Holes(),
-                new ST_InteriorPoint(),
                 new ST_IsRectangle(),
                 new ST_IsValid(),
                 new ST_PointsToLine(),

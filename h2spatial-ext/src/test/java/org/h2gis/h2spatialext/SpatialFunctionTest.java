@@ -470,31 +470,6 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_InteriorPoint() throws Exception {
-        Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;" +
-                "CREATE TABLE input_table(point Geometry, line LineString, " +
-                "polygon Polygon, threeDLine LineString);" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText('POINT(1 1)')," +
-                "ST_GeomFromText('LINESTRING(1 2 3, 4 5 6, 5 5 0)')," +
-                "ST_GeomFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))')," +
-                "ST_GeomFromText('LINESTRING(2 0 0, 0 0 2, 2 3 4)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_InteriorPoint(point), " +
-                "ST_InteriorPoint(line)," +
-                "ST_InteriorPoint(polygon)," +
-                "ST_InteriorPoint(threeDLine) FROM input_table;");
-        assertTrue(rs.next());
-        assertEquals(WKT_READER.read("POINT(1 1)"), rs.getObject(1));
-        assertEquals(WKT_READER.read("POINT(4 5 6)"), rs.getObject(2));
-        assertEquals(WKT_READER.read("POINT(5 2.5)"), rs.getObject(3));
-        assertEquals(WKT_READER.read("POINT(0 0 2)"), rs.getObject(4));
-        assertFalse(rs.next());
-        st.execute("DROP TABLE input_table;");
-        st.close();
-    }
-
-    @Test
     public void test_ST_PointsToLine() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
