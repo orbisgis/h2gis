@@ -120,7 +120,23 @@ public class SHPImportExportTest {
     public void copySHPTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS WATERNETWORK");
-        st.execute("CALL SHPRead("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath())+", 'WATERNETWORK');");
+        final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath());
+        st.execute("CALL SHPRead(" + path + ", 'WATERNETWORK');");
+        checkSHPReadResult(st);
+    }
+
+
+    @Test
+    public void copySHPTestAutomaticTableName() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS WATERNETWORK");
+        final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath());
+        // No table name is specified:
+        st.execute("CALL SHPRead(" + path + ");");
+        checkSHPReadResult(st);
+    }
+
+    private void checkSHPReadResult(Statement st) throws SQLException {
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());

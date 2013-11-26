@@ -62,4 +62,18 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
         shpDriverFunction.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
     }
+
+    /**
+     * Copy data from Shape File into a new table in specified connection.
+     * The newly created table is given the same name as the filename
+     * without the ".shp" extension. If such a table already exists, an
+     * exception is thrown.
+     *
+     * @param connection Active connection
+     * @param fileName   File path of the SHP file
+     */
+    public static void readShape(Connection connection, String fileName) throws IOException, SQLException {
+        final String name = new File(fileName).getName();
+        readShape(connection, fileName, name.substring(0, name.lastIndexOf(".")));
+    }
 }
