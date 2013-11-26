@@ -74,6 +74,7 @@ public class CreateSpatialExtension {
                 new ST_Scale(),
                 new ST_ToMultiPoint(),
                 new ST_ToMultiLine(),
+                new ST_ToMultiSegments(),
                 new ST_XMin(),
                 new ST_XMax(),
                 new ST_YMin(),
