@@ -46,6 +46,7 @@ public class SpatialFunctionTest {
     private static Connection connection;
     private static final String DB_NAME = "SpatialFunctionTest";
     private static GeometryFactory FACTORY;
+    private static WKTReader WKT_READER;
     public static final double TOLERANCE = 10E-10;
     private static final String POLYGON2D =
             "'POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, " +
@@ -56,7 +57,6 @@ public class SpatialFunctionTest {
             "'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))'";
     private static final String MULTIPOLYGON2D = "'MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))'";
     private static final String LINESTRING2D = "'LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)'";
-    private static WKTReader WKT_READER;
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -436,7 +436,7 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_CircleCompacity() throws Exception {
+    public void test_ST_CompactnessRatio() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
                 "CREATE TABLE input_table(geom Geometry);" +
@@ -687,6 +687,36 @@ public class SpatialFunctionTest {
                 "(8 7, 9 5), (9 5, 11 3))")
                 .equalsExact((MultiLineString) rs.getObject(7), TOLERANCE));
         assertFalse(rs.next());
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_FurthestPoint() throws Exception {
+        Statement st = connection.createStatement();
+        final String polygon = "ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')";
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Point, geom Geometry);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('POINT(0 0)'), " + polygon + ")," +
+                "(ST_GeomFromText('POINT(4 2.5)'), " + polygon + ")," +
+                "(ST_GeomFromText('POINT(5 2.5)'), " + polygon + ")," +
+                "(ST_GeomFromText('POINT(6 2.5)'), " + polygon + ")," +
+                "(ST_GeomFromText('POINT(5 7)'), " + polygon + ");");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_FurthestPoint(point, geom) FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(10 5)")));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(10 0)")));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(0 0)")));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(0 0)")));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(0 0)")));
+        assertFalse(rs.next());
+        rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
     }
