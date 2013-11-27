@@ -725,4 +725,82 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_LocateAlong() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(geom Geometry);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('LINESTRING(100 300, 400 300, 400 100)'))," +
+                "(ST_GeomFromText('POLYGON((100 100, 400 100, 400 300, 100 300, 100 100)," +
+                "(150 130, 200 130, 200 220, 150 130))'))," +
+                "(ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(100 300, 400 300, 400 100), " +
+                "POLYGON((100 100, 400 100, 400 300, 100 300, 100 100)))'));");
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_LocateAlong(geom, 0.5, 10)," +
+                "ST_LocateAlong(geom, 0.5, -10)," +
+                "ST_LocateAlong(geom, 0.3, 10)," +
+                "ST_LocateAlong(geom, 0.0, 10)," +
+                "ST_LocateAlong(geom, 1.0, 10)," +
+                "ST_LocateAlong(geom, 2.0, 10)," +
+                "ST_LocateAlong(geom, -1.0, 10) " +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 310), (410 200))")));
+        assertTrue(((MultiPoint) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 290), (390 200))")));
+        assertTrue(((MultiPoint) rs.getObject(3)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((190 310), (410 240))")));
+        assertTrue(((MultiPoint) rs.getObject(4)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((100 310), (410 300))")));
+        assertTrue(((MultiPoint) rs.getObject(5)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((400 310), (410 100))")));
+        assertTrue(((MultiPoint) rs.getObject(6)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((700 310), (410 -100))")));
+        assertTrue(((MultiPoint) rs.getObject(7)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((-200 310), (410 500))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 110), (250 290), (110 200), (390 200))")));
+        assertTrue(((MultiPoint) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 90), (250 310), (90 200), (410 200))")));
+        assertTrue(((MultiPoint) rs.getObject(3)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((190 110), (310 290), (110 240), (390 160))")));
+        assertTrue(((MultiPoint) rs.getObject(4)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((100 110), (390 100), (400 290), (110 300))")));
+        assertTrue(((MultiPoint) rs.getObject(5)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((400 110), (390 300), (100 290), (110 100))")));
+        assertTrue(((MultiPoint) rs.getObject(6)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((700 110), (390 500), (-200 290), (110 -100))")));
+        assertTrue(((MultiPoint) rs.getObject(7)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((-200 110), (390 -100), (700 290), (110 500))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 110), (250 290), (110 200), (390 200), " +
+                        "(250 310), (410 200))")));
+        assertTrue(((MultiPoint) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 90), (250 310), (90 200), (410 200), " +
+                        "(250 290), (390 200))")));
+        assertTrue(((MultiPoint) rs.getObject(3)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((190 110), (310 290), (110 240), (390 160), " +
+                        "(190 310), (410 240))")));
+        assertTrue(((MultiPoint) rs.getObject(4)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((100 110), (390 100), (400 290), (110 300), " +
+                        "(100 310), (410 300))")));
+        assertTrue(((MultiPoint) rs.getObject(5)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((400 110), (390 300), (100 290), (110 100), " +
+                        "(400 310), (410 100))")));
+        assertTrue(((MultiPoint) rs.getObject(6)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((700 110), (390 500), (-200 290), (110 -100), " +
+                        "(700 310), (410 -100))")));
+        assertTrue(((MultiPoint) rs.getObject(7)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((-200 110), (390 -100), (700 290), (110 500), " +
+                        "(-200 310), (410 500))")));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }
