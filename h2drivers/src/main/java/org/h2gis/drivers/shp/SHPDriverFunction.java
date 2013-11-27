@@ -206,6 +206,8 @@ public class SHPDriverFunction implements DriverFunction {
                 shapeType = ShapeType.ARCZ;
                 break;
             case GeometryTypeCodes.POINT:
+                shapeType = ShapeType.POINT;
+                break;
             case GeometryTypeCodes.MULTIPOINT:
                 shapeType = ShapeType.MULTIPOINT;
                 break;
