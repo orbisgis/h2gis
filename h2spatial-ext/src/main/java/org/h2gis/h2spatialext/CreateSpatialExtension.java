@@ -45,6 +45,7 @@ import org.h2gis.h2spatialapi.Function;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.drivers.gpx.GPXRead;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -84,7 +85,8 @@ public class CreateSpatialExtension {
                 new SHPRead(),
                 new SHPWrite(),
                 new DBFRead(),
-                new DBFWrite()};
+                new DBFWrite(),
+                new GPXRead()};
     }
 
     /**
