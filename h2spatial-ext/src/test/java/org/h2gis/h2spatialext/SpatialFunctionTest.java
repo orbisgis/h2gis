@@ -694,27 +694,32 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_FurthestPoint() throws Exception {
         Statement st = connection.createStatement();
-        final String polygon = "ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')";
         st.execute("DROP TABLE IF EXISTS input_table;" +
-                "CREATE TABLE input_table(point Point, geom Geometry);" +
+                "CREATE TABLE input_table(point Point);" +
                 "INSERT INTO input_table VALUES" +
-                "(ST_GeomFromText('POINT(0 0)'), " + polygon + ")," +
-                "(ST_GeomFromText('POINT(4 2.5)'), " + polygon + ")," +
-                "(ST_GeomFromText('POINT(5 2.5)'), " + polygon + ")," +
-                "(ST_GeomFromText('POINT(6 2.5)'), " + polygon + ")," +
-                "(ST_GeomFromText('POINT(5 7)'), " + polygon + ");");
-        ResultSet rs = st.executeQuery(
-                "SELECT ST_FurthestPoint(point, geom) FROM input_table;");
+                "(ST_GeomFromText('POINT(0 0)'))," +
+                "(ST_GeomFromText('POINT(4 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 2.5)'))," +
+                "(ST_GeomFromText('POINT(6 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 7)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_FurthestPoint(point, " +
+                "ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')) " +
+                "FROM input_table;");
         assertTrue(rs.next());
-        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(10 5)")));
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(10 5)")));
         assertTrue(rs.next());
-        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(10 0)")));
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((10 0), (10 5))")));
         assertTrue(rs.next());
-        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(0 0)")));
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (10 0), (10 5), (0 5))")));
         assertTrue(rs.next());
-        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(0 0)")));
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (0 5))")));
         assertTrue(rs.next());
-        assertTrue(((Point) rs.getObject(1)).equalsExact(WKT_READER.read("POINT(0 0)")));
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (10 0))")));
         assertFalse(rs.next());
         rs.close();
         st.execute("DROP TABLE input_table;");

@@ -25,15 +25,17 @@
 
 package org.h2gis.h2spatialext.function.spatial.distance;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.*;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * ST_FurthestPoint computes the furthest point contained in the given geometry
- * starting from the given point, using the 2D distance.
+ * ST_FurthestPoint computes the furthest point(s) contained in the given
+ * geometry starting from the given point, using the 2D distance. If the point
+ * is unique, it is returned as a POINT. If it is not, then all furthest points
+ * are returned in a MULTIPOINT.
  *
  * @author Erwan Bocher
  * @author Adam Gouge
@@ -43,7 +45,7 @@ public class ST_FurthestPoint extends DeterministicScalarFunction {
     private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
     public ST_FurthestPoint() {
-        addProperty(PROP_REMARKS, "Computes the furthest point contained in the " +
+        addProperty(PROP_REMARKS, "Computes the furthest point(s) contained in the " +
                 "given geometry starting from the given point, using the 2D distance.");
     }
 
@@ -53,28 +55,36 @@ public class ST_FurthestPoint extends DeterministicScalarFunction {
     }
 
     /**
-     * Computes the furthest point contained in the given geometry starting
+     * Computes the furthest point(s) contained in the given geometry starting
      * from the given point, using the 2D distance.
      *
      * @param point Point
      * @param geom  Geometry
-     * @return The furthest point contained in the given geometry starting from
+     * @return The furthest point(s) contained in the given geometry starting from
      *         the given point, using the 2D distance
      */
-    public static Point getFurthestPoint(Point point, Geometry geom) {
+    public static Puntal getFurthestPoint(Point point, Geometry geom) {
         if (point == null || geom == null) {
             return null;
         }
         double maxDistance = Double.NEGATIVE_INFINITY;
         Coordinate pointCoordinate = point.getCoordinate();
-        Coordinate furthestCoordinate = null;
+        Set<Coordinate> furthestCoordinates = new HashSet<Coordinate>();
         for (Coordinate c : geom.getCoordinates()) {
             double distance = c.distance(pointCoordinate);
-            if (distance > maxDistance) {
+            if (Double.compare(distance, maxDistance) == 0) {
+                furthestCoordinates.add(c);
+            }
+            if (Double.compare(distance, maxDistance) > 0) {
                 maxDistance = distance;
-                furthestCoordinate = c;
+                furthestCoordinates.clear();
+                furthestCoordinates.add(c);
             }
         }
-        return GEOMETRY_FACTORY.createPoint(furthestCoordinate);
+        if (furthestCoordinates.size() == 1) {
+            return GEOMETRY_FACTORY.createPoint(furthestCoordinates.iterator().next());
+        }
+        return GEOMETRY_FACTORY.createMultiPoint(
+                furthestCoordinates.toArray(new Coordinate[furthestCoordinates.size()]));
     }
 }
