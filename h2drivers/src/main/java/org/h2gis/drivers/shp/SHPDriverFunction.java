@@ -25,6 +25,7 @@
 
 package org.h2gis.drivers.shp;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.drivers.shp.internal.SHPDriver;
@@ -53,8 +54,8 @@ import java.util.List;
  */
 public class SHPDriverFunction implements DriverFunction {
     public static String DESCRIPTION = "ESRI shapefile";
-
     private static final int BATCH_MAX_SIZE = 100;
+
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
@@ -67,7 +68,7 @@ public class SHPDriverFunction implements DriverFunction {
             throw new SQLException(String.format("The table %s does not contain a geometry field", tableReference));
         }
         int geometryType = SFSUtilities.getGeometryType(connection, TableLocation.parse(tableReference), spatialFieldNames.get(0));
-        ShapeType shapeType = getShapeTypeFromSFSGeometryTypeCode(geometryType, spatialFieldNames.get(0));
+        ShapeType shapeType = getShapeTypeFromSFSGeometryTypeCode(geometryType);
         // Read table content
         Statement st = connection.createStatement();
         try {
@@ -76,18 +77,35 @@ public class SHPDriverFunction implements DriverFunction {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData);
                 header.setNumRecords(recordCount);
-                SHPDriver shpDriver = new SHPDriver();
-                shpDriver.setGeometryFieldIndex(JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0)) - 1);
-                shpDriver.initDriver(fileName,shapeType , header);
+                SHPDriver shpDriver = null;
                 Object[] row = new Object[header.getNumFields() + 1];
                 while (rs.next()) {
                     for(int columnId = 0; columnId < row.length; columnId++) {
                         row[columnId] = rs.getObject(columnId + 1);
                     }
-                    shpDriver.insertRow(row);
+                    if(shpDriver == null) {
+                        int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
+                        if(shapeType == null) {
+                            // If there is not shape type constraint read the first geometry and use the same type
+                            Geometry geometry = (Geometry)rs.getObject(geoFieldIndex);
+                            if(geometry != null) {
+                                shapeType = getShapeTypeFromSFSGeometryTypeCode(SFSUtilities.getGeometryTypeFromGeometry(geometry));
+                            }
+                        }
+                        if(shapeType != null) {
+                            shpDriver = new SHPDriver();
+                            shpDriver.setGeometryFieldIndex(geoFieldIndex - 1);
+                            shpDriver.initDriver(fileName,shapeType , header);
+                        }
+                    }
+                    if(shpDriver != null) {
+                        shpDriver.insertRow(row);
+                    }
                     copyProgress.endStep();
                 }
-                shpDriver.close();
+                if(shpDriver != null) {
+                    shpDriver.close();
+                }
             } finally {
                 rs.close();
             }
@@ -172,7 +190,7 @@ public class SHPDriverFunction implements DriverFunction {
         }
     }
 
-    private static ShapeType getShapeTypeFromSFSGeometryTypeCode(int sfsGeometryTypeCode, String fieldName) throws SQLException {
+    private static ShapeType getShapeTypeFromSFSGeometryTypeCode(int sfsGeometryTypeCode) throws SQLException {
         ShapeType shapeType;
         switch (sfsGeometryTypeCode) {
             case GeometryTypeCodes.MULTILINESTRING:
@@ -212,8 +230,7 @@ public class SHPDriverFunction implements DriverFunction {
                 shapeType = ShapeType.POLYGONZ;
                 break;
             default:
-                throw new SQLException(String.format("Geometry type of the field %s incompatible with ShapeFile," +
-                        " please use (Multi)Point, (Multi)Polygon or (Multi)LineString constraint", fieldName));
+                return null;
         }
         return shapeType;
     }
