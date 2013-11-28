@@ -172,4 +172,41 @@ public class SHPImportExportTest {
         rs.close();
         st.execute("drop table WATERNETWORK");
     }
+
+    @Test
+    public void exportTableWithoutConstraint() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/area_export.shp");
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export.shp', 'AREA')");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        SHPDriver shpDriver = new SHPDriver();
+        shpDriver.initDriverFromFile(shpFile);
+        shpDriver.setGeometryFieldIndex(0);
+        assertEquals(2, shpDriver.getFieldCount());
+        assertEquals(2, shpDriver.getRowCount());
+        Object[] row = shpDriver.getRow(0);
+        assertEquals(1, row[1]);
+        // The driver can not create POLYGON
+        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", ((Geometry)row[0]).toText());
+        row = shpDriver.getRow(1);
+        assertEquals(2, row[1]);
+        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", ((Geometry)row[0]).toText());
+    }
+
+    @Test(expected = SQLException.class)
+    public void exportTableWithoutConstraintException() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into area values('POINT (-10 109)', 1)");
+        stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export_ex.shp', 'AREA')");
+    }
 }

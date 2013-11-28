@@ -26,6 +26,7 @@
 package org.h2gis.utilities;
 
 import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
 import javax.sql.DataSource;
@@ -33,8 +34,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Generic utilities function to retrieve spatial metadata trough SFS specification.
@@ -42,13 +45,36 @@ import java.util.List;
  * @author Nicolas Fortin
  */
 public class SFSUtilities {
+    private static final Map<String, Integer> GEOM_TYPE_TO_SFS_CODE;
+    static {
+        GEOM_TYPE_TO_SFS_CODE = new HashMap<String, Integer>();
+        GEOM_TYPE_TO_SFS_CODE.put("point", GeometryTypeCodes.POINT);
+        GEOM_TYPE_TO_SFS_CODE.put("linestring", GeometryTypeCodes.LINESTRING);
+        GEOM_TYPE_TO_SFS_CODE.put("polygon", GeometryTypeCodes.POLYGON);
+        GEOM_TYPE_TO_SFS_CODE.put("multipoint", GeometryTypeCodes.MULTIPOINT);
+        GEOM_TYPE_TO_SFS_CODE.put("multilinestring", GeometryTypeCodes.MULTILINESTRING);
+        GEOM_TYPE_TO_SFS_CODE.put("multipolygon", GeometryTypeCodes.MULTIPOLYGON);
+        GEOM_TYPE_TO_SFS_CODE.put("geometry", GeometryTypeCodes.GEOMETRY);
+        GEOM_TYPE_TO_SFS_CODE.put("geometrycollection", GeometryTypeCodes.GEOMCOLLECTION);
+    }
 
-
+    /**
+     * @param geometry Geometry instance
+     * @return The sfs geometry type identifier
+     */
+    public static int getGeometryTypeFromGeometry(Geometry geometry) {
+        Integer sfsGeomCode = GEOM_TYPE_TO_SFS_CODE.get(geometry.getGeometryType().toLowerCase());
+        if(sfsGeomCode == null) {
+            return GeometryTypeCodes.GEOMETRY;
+        } else {
+            return sfsGeomCode;
+        }
+    }
     /**
      * @param connection Active connection
      * @param location Catalog, schema and table name
      * @param fieldName Geometry field name or empty (take the first one)
-     * @return The geometry type identifier
+     * @return The sfs geometry type identifier
      * @see GeometryTypeCodes
      * @throws SQLException
      */
