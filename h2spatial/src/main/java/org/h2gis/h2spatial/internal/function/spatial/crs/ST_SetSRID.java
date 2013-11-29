@@ -1,9 +1,6 @@
 package org.h2gis.h2spatial.internal.function.spatial.crs;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
@@ -25,16 +22,9 @@ public class ST_SetSRID  extends AbstractFunction implements ScalarFunction {
         return "setSRID";
     }
 
-    public static Geometry setSRID(Object geometry, int srid) throws SQLException {
-        if(geometry instanceof Geometry) {
-            Geometry geom = (Geometry)((Geometry)geometry).clone();
-            geom.setSRID(srid);
-            return geom;
-        } else if(geometry instanceof Envelope) {
-            GeometryFactory geometryFactory = new GeometryFactory(new PrecisionModel(), srid);
-            return geometryFactory.toGeometry((Envelope)geometry);
-        } else {
-            throw new SQLException("ST_SetSRID take only Geometry or Envelope instance");
-        }
+    public static Geometry setSRID(Geometry geometry, int srid) throws SQLException {
+        Geometry geom = (Geometry)geometry.clone();
+        geom.setSRID(srid);
+        return geom;
     }
 }

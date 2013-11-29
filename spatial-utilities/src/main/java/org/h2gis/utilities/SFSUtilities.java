@@ -148,7 +148,7 @@ public class SFSUtilities {
         ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("+geometryField+") ext FROM "+location);
         if(rs.next()) {
             // Todo under postgis it is a BOX type
-            return (Envelope)rs.getObject(1);
+            return ((Geometry)rs.getObject(1)).getEnvelopeInternal();
         }
         throw new SQLException("Unable to get the table extent it may be empty");
     }

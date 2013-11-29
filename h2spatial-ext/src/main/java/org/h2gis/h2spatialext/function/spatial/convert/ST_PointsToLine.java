@@ -25,10 +25,14 @@
 
 package org.h2gis.h2spatialext.function.spatial.convert;
 
-import com.vividsolutions.jts.geom.*;
-import org.h2.api.AggregateFunction;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
+import org.h2.api.AggregateTypeFunction;
 import org.h2gis.h2spatialapi.AbstractFunction;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
@@ -42,7 +46,7 @@ import java.util.List;
  * @author Adam Gouge
  * @author Erwan Bocher
  */
-public class ST_PointsToLine extends AbstractFunction implements AggregateFunction {
+public class ST_PointsToLine extends AbstractFunction implements AggregateTypeFunction {
 
     private static GeometryFactory GF;
     private List<Coordinate> coords;
@@ -58,16 +62,14 @@ public class ST_PointsToLine extends AbstractFunction implements AggregateFuncti
     }
 
     @Override
-    public int getType(int[] inputTypes) throws SQLException {
-        if (inputTypes.length != 1) {
-            throw new SQLException(ST_PointsToLine.class.getSimpleName() +
-                    " expects exactly one argument.");
+    public ColumnType getType(int[] inputTypes, String[] inputTypesName) throws SQLException {
+        if(inputTypes.length!=1) {
+            throw new SQLException(ST_PointsToLine.class.getSimpleName()+" expect 1 argument.");
         }
-        if (inputTypes[0] != Types.OTHER && inputTypes[0] != Types.JAVA_OBJECT) {
-            throw new SQLException(ST_PointsToLine.class.getSimpleName() +
-                    " expects a geometry argument");
+        if(inputTypes[0]!=Types.OTHER && inputTypes[0]!=Types.JAVA_OBJECT && !inputTypesName[0].equalsIgnoreCase("geometry")) {
+            throw new SQLException(ST_PointsToLine.class.getSimpleName()+" expect a geometry argument");
         }
-        return Types.OTHER;
+        return new ColumnType(Types.JAVA_OBJECT, "GEOMETRY");
     }
 
     @Override

@@ -24,7 +24,7 @@
  */
 package org.h2gis.h2spatial;
 
-import org.h2.api.AggregateFunction;
+import org.h2.api.AggregateAlias;
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_SetSRID;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Contains;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Crosses;
@@ -325,7 +325,7 @@ public class CreateSpatialExtension {
                 ps.setString(1, functionRemarks);
                 ps.execute();
             }
-        } else if(function instanceof AggregateFunction) {
+        } else if(function instanceof AggregateAlias) {
                 st.execute("CREATE AGGREGATE IF NOT EXISTS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "\"");
         } else {
                 throw new SQLException("Unsupported function "+functionClass);
