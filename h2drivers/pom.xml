@@ -44,7 +44,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.h2database</groupId>
+            <groupId>${h2-package}</groupId>
             <artifactId>h2</artifactId>
             <version>${h2-version}</version>
         </dependency>
