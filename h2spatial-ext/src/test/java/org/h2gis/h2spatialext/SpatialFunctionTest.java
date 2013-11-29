@@ -803,4 +803,102 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_ClosestPoint() throws Exception {
+        //            5
+        //
+        //       +---------+
+        //       |         |
+        //       |         |
+        //           234
+        //       |         |
+        //       |         |
+        //       1---------+
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Point);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('POINT(0 0)'))," +
+                "(ST_GeomFromText('POINT(4 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 2.5)'))," +
+                "(ST_GeomFromText('POINT(6 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 7)'));");
+        ResultSet rs = st.executeQuery("SELECT " +
+                // All points except (5 7) are contained inside the polygon.
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')," +
+                "    point)," +
+                // Only (0 0) intersects the linestring.
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText('LINESTRING(0 0, 10 0, 10 5, 0 5, 0 0)')," +
+                "    point)," +
+                // The closest point on a point to another geometry is always
+                // the point itself.
+                "ST_Equals(" +
+                "    ST_ClosestPoint(" +
+                "        point," +
+                "        ST_GeomFromText('LINESTRING(0 0, 10 0, 10 5, 0 5, 0 0)'))," +
+                "    point)" +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(4 2.5)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(4 0)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(5 2.5)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(5 0)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(6 2.5)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(6 0)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(5 5)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(5 5)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertFalse(rs.next());
+        // In this example, there are infinitely many closest points, but
+        // ST_ClosestPoint returns the first one it finds. (The polygon listed
+        // as the second parameter remains the same, but its coordinates are
+        // listed in a different order).
+        //
+        //       +---------+
+        //       |         |  |
+        //       |         |  |\
+        //       |         |  | \
+        //       |         |   \_\
+        //       +---------+     \\
+        //
+        rs = st.executeQuery("SELECT " +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')," +
+                "    ST_GeomFromText('POLYGON((13 2, 15 0, 13 4, 13 2))'))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')," +
+                "    ST_GeomFromText('POLYGON((13 4, 13 2, 15 0, 13 4))'));");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(10 2)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(10 4)")));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }
