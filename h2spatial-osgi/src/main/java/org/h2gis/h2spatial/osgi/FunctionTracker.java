@@ -31,7 +31,6 @@ package org.h2gis.h2spatial.osgi;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatialapi.Function;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -45,7 +44,7 @@ import java.sql.SQLException;
  * @author Nicolas Fortin
  */
 public class FunctionTracker extends ServiceTracker<Function, Function> {
-    private Connection connection;
+    private DataSource dataSource;
 
     /**
      * Constructor
@@ -55,7 +54,7 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
      */
     public FunctionTracker(DataSource dataSource, BundleContext bundleContext) throws SQLException {
         super(bundleContext,Function.class,null);
-        this.connection = dataSource.getConnection();
+        this.dataSource = dataSource;
     }
 
     @Override
@@ -66,9 +65,13 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
     @Override
     public Function addingService(ServiceReference<Function> reference) {
         Function function = super.addingService(reference);
-        Bundle bundle = reference.getBundle();
         try {
-            CreateSpatialExtension.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
+            Connection connection = dataSource.getConnection();
+            try {
+                CreateSpatialExtension.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
+            }finally {
+                connection.close();
+            }
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
@@ -78,27 +81,15 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
     @Override
     public void removedService(ServiceReference<Function> reference, Function service) {
         try {
-            CreateSpatialExtension.unRegisterFunction(connection.createStatement(), service);
+            Connection connection = dataSource.getConnection();
+            try {
+                CreateSpatialExtension.unRegisterFunction(connection.createStatement(), service);
+            }finally {
+                connection.close();
+            }
         } catch (SQLException ex) {
             ex.printStackTrace(System.err);
         }
         super.removedService(reference, service);
-    }
-
-    /**
-     * @return Connection associated with this tracker.
-     */
-    public Connection getConnection() {
-        return connection;
-    }
-
-    @Override
-    public void close() {
-        super.close();
-        try {
-            connection.close();
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
-        }
     }
 }
