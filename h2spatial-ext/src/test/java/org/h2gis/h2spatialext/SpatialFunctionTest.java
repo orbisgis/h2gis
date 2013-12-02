@@ -690,4 +690,84 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_CreateGRID() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))',0));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_creategrid('input_table', 10, 10);");
+        checkGrid(st.executeQuery("select * from grid;"), true);
+        st.execute("DROP TABLE input_table, grid;");
+    }
+
+    /**
+     * Test to create an oriented regular square grid
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testST_CreateSquareGRIDFromSuquery1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))',0));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_creategrid((select the_geom from input_table), 10, 10);");
+        checkGrid(st.executeQuery("select * from grid;"), true);
+        st.execute("DROP TABLE input_table, grid;");
+    }
+    
+    
+    /**
+     * Test to create an oriented regular square grid
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testST_CreateSquareGRIDFromSuquery2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))',0));"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 1 0, 1 0, 2 10, 0 0  ))',1));");
+        try {
+            st.execute("CREATE TABLE grid AS SELECT * FROM st_creategrid((select the_geom from input_table), 10, 10);");           
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_creategrid((select st_union(st_accum(the_geom)) from input_table), 10, 10);");        
+        checkGrid(st.executeQuery("select * from grid;"), true);
+        st.execute("DROP TABLE input_table, grid;");
+    }
+
+    /**
+     * A method to check if the grid is well computed.
+     *
+     * @param rs
+     * @param checkCentroid
+     * @throws Exception
+     */
+    private void checkGrid(final ResultSet rs, final boolean checkCentroid)
+            throws Exception {
+        final Envelope env = SFSUtilities.getResultSetEnvelope(rs);
+        double minX = env.getMinX();
+        double maxY = env.getMaxY();
+        while (rs.next()) {
+            final Geometry geom = (Geometry) rs.getObject(1);
+            final int id_col = rs.getInt(3);
+            final int id_row = rs.getInt(4);
+            assertTrue(geom instanceof Polygon);
+            assertTrue(geom instanceof Polygon);
+            assertTrue(Math.abs(1 - geom.getArea()) < 0.000001);
+            if (checkCentroid) {
+                assertEquals((minX + 0.5) + (id_col - 1), geom.getCentroid().getCoordinate().x, 0);
+                assertEquals((maxY - 0.5) - (id_row - 1), geom.getCentroid().getCoordinate().y, 0);
+            }
+        }
+    }
 }

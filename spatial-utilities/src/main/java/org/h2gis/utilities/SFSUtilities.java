@@ -33,6 +33,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -207,5 +208,82 @@ public class SFSUtilities {
         }
         geomResultSet.close();
         return fieldsName;
+    }
+    
+    /**
+     * Find geometry fields name of a resultSet.
+     *
+     * @param resultSet
+     * @return A list of Geometry fields name
+     * @throws SQLException
+     */
+    public static List<String> getGeometryFields(ResultSet resultSet) throws SQLException {
+        List<String> fieldsName = new LinkedList<String>();
+        ResultSetMetaData meta = resultSet.getMetaData();
+        int columnCount = meta.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                fieldsName.add(meta.getColumnName(i));
+            }
+        }
+        return fieldsName;
+    }
+
+    /**
+     * Check if the resultset contains a geometry field
+     *
+     * @param resultSet
+     * @return true if the resultset contains one geometry field
+     * @throws SQLException
+     */
+    public static boolean hasGeometryField(ResultSet resultSet) throws SQLException {
+        ResultSetMetaData meta = resultSet.getMetaData();
+        int columnCount = meta.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Compute the full extend of a resultset using the first geometry field. If
+     * the resulset does not contain any geometry field throw an exception
+     *
+     * @param resultSet
+     * @return the full envelope of the resulSet
+     * @throws SQLException
+     */
+    public static Envelope getResultSetEnvelope(ResultSet resultSet) throws SQLException {
+        List<String> geometryFields = getGeometryFields(resultSet);
+        if (geometryFields.isEmpty()) {
+            throw new SQLException("This resultset doesn't contain any geometry field.");
+        } else {
+            return getResultSetEnvelope(resultSet, geometryFields.get(0));
+        }
+    }
+
+    /**
+     * Compute the full extend of a resultset using a specified geometry field.
+     * If the resulset does not contain this geometry field throw an exception
+     *
+     *
+     * @param resultSet
+     * @param fieldName
+     * @return
+     * @throws SQLException
+     */
+    public static Envelope getResultSetEnvelope(ResultSet resultSet, String fieldName) throws SQLException {
+        Envelope aggregatedEnvelope = null;
+        while (resultSet.next()) {
+            Geometry geom = (Geometry) resultSet.getObject(fieldName);
+            if (aggregatedEnvelope != null) {
+                aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
+            } else {
+                aggregatedEnvelope = geom.getEnvelopeInternal();
+            }
+        }
+        return aggregatedEnvelope;
     }
 }
