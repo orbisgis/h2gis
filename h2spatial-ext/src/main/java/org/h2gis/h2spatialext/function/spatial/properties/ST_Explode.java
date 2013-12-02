@@ -213,7 +213,7 @@ public class ST_Explode implements ScalarFunction {
             reset();
             ResultSetMetaData meta = tableQuery.getMetaData();
             for(int i=1;i<=columnCount;i++) {
-                rs.addColumn(meta.getColumnName(i),meta.getColumnType(i),meta.getPrecision(i),meta.getScale(i));
+                rs.addColumn(meta.getColumnName(i),meta.getColumnType(i),meta.getColumnTypeName(i),meta.getPrecision(i),meta.getScale(i));
             }
             rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
             return rs;

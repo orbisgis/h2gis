@@ -26,7 +26,7 @@
 package org.h2gis.h2spatial.internal.function.spatial.aggregate;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2.api.AggregateFunction;
+import org.h2.api.AggregateTypeFunction;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -38,7 +38,7 @@ import java.util.List;
  * Construct an array of Geometry.
  * @author Nicolas Fortin
  */
-public class ST_Accum extends AbstractFunction implements AggregateFunction {
+public class ST_Accum extends AbstractFunction implements AggregateTypeFunction {
     private List<Geometry> toUnite = new LinkedList<Geometry>();
     private int srid=0;
 
@@ -52,14 +52,14 @@ public class ST_Accum extends AbstractFunction implements AggregateFunction {
     }
 
     @Override
-    public int getType(int[] inputTypes) throws SQLException {
+    public ColumnType getType(int[] inputTypes, String[] inputTypesName) throws SQLException {
         if(inputTypes.length!=1) {
             throw new SQLException(ST_Accum.class.getSimpleName()+" expect 1 argument.");
         }
-        if(inputTypes[0]!=Types.OTHER && inputTypes[0]!=Types.JAVA_OBJECT) {
+        if(inputTypes[0]!=Types.OTHER && inputTypes[0]!=Types.JAVA_OBJECT && !inputTypesName[0].equalsIgnoreCase("geometry")) {
             throw new SQLException(ST_Accum.class.getSimpleName()+" expect a geometry argument");
         }
-        return Types.OTHER;
+        return new ColumnType(Types.JAVA_OBJECT, Geometry[].class.getName());
     }
 
     private void addGeometry(Geometry geom) {
