@@ -29,8 +29,11 @@ import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
 import org.h2.message.DbException;
+import org.h2.table.RegularTable;
 import org.h2.table.TableBase;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +43,7 @@ import java.io.IOException;
  * @author Nicolas Fortin
  */
 public class DBFEngine implements TableEngine {
+    private Logger LOGGER = LoggerFactory.getLogger(DBFEngine.class);
     /**
      * @param data tableEngineParams must contains file path.
      * @return A Table instance connected to the provided file path. First column is geometry field.
@@ -51,7 +55,9 @@ public class DBFEngine implements TableEngine {
         }
         File filePath = new File(data.tableEngineParams.get(0));
         if(!filePath.exists()) {
-            throw DbException.get(ErrorCode.FILE_NOT_FOUND_1,filePath.getAbsolutePath());
+            // Do not throw an exception as it will prevent the user from opening the database
+            LOGGER.error("DBF file not found "+filePath.getAbsolutePath());
+            return new RegularTable(data);
         }
         try {
             DBFDriver driver = new DBFDriver();
