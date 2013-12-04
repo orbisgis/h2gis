@@ -26,8 +26,6 @@
 package org.h2gis.h2spatial.internal.function.spatial.convert;
 
 import com.vividsolutions.jts.geom.Geometry;
-
-import org.h2gis.h2spatial.internal.type.SC_Point;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.SQLException;
@@ -58,7 +56,7 @@ public class ST_PointFromText extends DeterministicScalarFunction {
      */
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
-        if(!SC_Point.isPoint(geometry)) {
+        if(!geometry.getGeometryType().equalsIgnoreCase("POINT")) {
             throw new SQLException("Provided Well Known Text geometry is not a point");
         }
         return geometry;

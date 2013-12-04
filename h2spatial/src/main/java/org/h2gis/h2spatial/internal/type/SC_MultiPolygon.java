@@ -29,6 +29,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.jts_utils.GeometryMetaData;
+
+import java.io.IOException;
 
 /**
  * Constraint for MultiPolygon field type.
@@ -51,10 +54,17 @@ public class SC_MultiPolygon extends AbstractFunction implements ScalarFunction 
     }
 
     /**
-     * @param geometry Geometry instance or NULL
+     * @param bytes Geometry WKB or NULL
      * @return True if null or if the field type fit with the constraint.
      */
-    public static boolean isMultiPolygon(Geometry geometry) {
-        return geometry==null || geometry.getGeometryType().equals("MultiPolygon");
+    public static boolean isMultiPolygon(byte[] bytes) {
+        if(bytes==null) {
+            return true;
+        }
+        try {
+            return GeometryMetaData.getMetaDataFromWKB(bytes).geometryType == GeometryTypeCodes.MULTIPOLYGON;
+        } catch (IOException ex) {
+            return false;
+        }
     }
 }

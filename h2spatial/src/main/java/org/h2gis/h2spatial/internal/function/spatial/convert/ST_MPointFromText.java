@@ -58,7 +58,7 @@ public class ST_MPointFromText extends DeterministicScalarFunction {
      */
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
-        if(!SC_MultiPoint.isMultiPoint(geometry)) {
+        if(!geometry.getGeometryType().equalsIgnoreCase("MULTIPOINT")) {
             throw new SQLException("Provided Well Known Text geometry is not a multi point");
         }
         return geometry;

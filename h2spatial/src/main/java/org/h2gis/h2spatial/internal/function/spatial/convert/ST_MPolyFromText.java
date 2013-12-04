@@ -58,7 +58,7 @@ public class ST_MPolyFromText extends DeterministicScalarFunction {
      */
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
-        if(!SC_MultiPolygon.isMultiPolygon(geometry)) {
+        if(!geometry.getGeometryType().equalsIgnoreCase("MULTIPOLYGON")) {
             throw new SQLException("Provided Well Known Text geometry is not a multi polygon");
         }
         return geometry;
