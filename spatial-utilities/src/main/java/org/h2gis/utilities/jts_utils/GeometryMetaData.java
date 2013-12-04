@@ -55,6 +55,12 @@ public class GeometryMetaData {
         this.SRID = SRID;
     }
 
+    /**
+     * Read the first bytes of Geometry WKB.
+     * @param bytes WKB Bytes
+     * @return Geometry MetaData
+     * @throws IOException If WKB meta is invalid (do not check the Geometry)
+     */
     public static GeometryMetaData getMetaDataFromWKB(byte[] bytes) throws IOException {
         ByteOrderDataInStream dis = new ByteOrderDataInStream();
         dis.setInStream(new ByteArrayInStream(bytes));
