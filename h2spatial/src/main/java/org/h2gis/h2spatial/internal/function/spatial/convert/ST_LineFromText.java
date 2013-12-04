@@ -58,7 +58,7 @@ public class ST_LineFromText extends DeterministicScalarFunction {
             return null;
         }
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
-        if(!SC_LineString.isLineString(geometry)) {
+        if(!geometry.getGeometryType().equalsIgnoreCase("linestring")) {
             throw new SQLException("Provided Well Known Text geometry is not a line string");
         }
         return geometry;

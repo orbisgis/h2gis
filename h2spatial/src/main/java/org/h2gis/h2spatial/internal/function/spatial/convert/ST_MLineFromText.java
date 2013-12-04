@@ -56,7 +56,7 @@ public class ST_MLineFromText extends DeterministicScalarFunction {
      */
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
-        if(!SC_MultiLineString.isMultiLineString(geometry)) {
+        if(!geometry.getGeometryType().equalsIgnoreCase("MULTILINESTRING")) {
             throw new SQLException("Provided Well Known Text geometry is not a multi linestring");
         }
         return geometry;

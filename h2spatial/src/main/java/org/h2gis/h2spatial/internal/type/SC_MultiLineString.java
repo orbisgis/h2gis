@@ -29,6 +29,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.jts_utils.GeometryMetaData;
+
+import java.io.IOException;
 
 /**
  * Constraint for MultiLineString field type.
@@ -51,10 +54,17 @@ public class SC_MultiLineString extends AbstractFunction implements ScalarFuncti
     }
 
     /**
-     * @param geometry Geometry instance or NULL
+     * @param bytes Geometry WKB or NULL
      * @return True if null or if the field type fit with the constraint.
      */
-    public static boolean isMultiLineString(Geometry geometry) {
-        return geometry==null || geometry.getGeometryType().equals("MultiLineString");
+    public static boolean isMultiLineString(byte[] bytes) {
+        if(bytes==null) {
+            return true;
+        }
+        try {
+            return GeometryMetaData.getMetaDataFromWKB(bytes).geometryType == GeometryTypeCodes.MULTILINESTRING;
+        } catch (IOException ex) {
+            return false;
+        }
     }
 }

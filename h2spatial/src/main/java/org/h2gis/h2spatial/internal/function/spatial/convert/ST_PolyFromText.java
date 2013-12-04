@@ -57,7 +57,7 @@ public class ST_PolyFromText extends DeterministicScalarFunction {
      */
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
-        if(!SC_Polygon.isPolygon(geometry)) {
+        if(!geometry.getGeometryType().equalsIgnoreCase("POLYGON")) {
             throw new SQLException("Provided Well Known Text geometry is not a polygon");
         }
         return geometry;

@@ -63,10 +63,10 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
         }
         WKBReader wkbReader = new WKBReader();
         try {
-            Geometry geometry = wkbReader.read(bytes);
-            if(!SC_LineString.isLineString(geometry)) {
+            if(!SC_LineString.isLineString(bytes)) {
                 throw new SQLException("Provided WKB is not a LinearString.");
             }
+            Geometry geometry = wkbReader.read(bytes);
             geometry.setSRID(srid);
             return geometry;
         } catch (ParseException ex) {
