@@ -26,9 +26,12 @@ package org.h2gis.drivers.shp;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2.util.StringUtils;
+import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -208,5 +211,28 @@ public class SHPImportExportTest {
         stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export_ex.shp', 'AREA')");
+    }
+
+    @Test
+    public void testDriverManager() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        // Export in target with special chars
+        File shpFile = new File("target/area éxport.shp");
+        DriverFunction exp = new SHPDriverFunction();
+        exp.exportTable(connection, "AREA", shpFile,new EmptyProgressVisitor());
+        stat.execute("DROP TABLE IF EXISTS myshp");
+        DriverFunction manager = new DriverManager();
+        manager.importFile(connection, "myshp", shpFile, new EmptyProgressVisitor());
+        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom)) from myshp");
+        try {
+            assertTrue(rs.next());
+            assertEquals(20000,rs.getDouble(1),1e-6);
+        } finally {
+            rs.close();
+        }
     }
 }
