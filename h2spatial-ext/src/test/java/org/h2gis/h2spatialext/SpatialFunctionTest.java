@@ -1436,6 +1436,25 @@ public class SpatialFunctionTest {
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((1 0.5, 2 0.5, 2 1, 1 1, 1 0.5))")));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
+    }
+
+    @Test
+    public void test_ST_MakeLine() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_MakeLine(ST_GeomFromText('POINT(1 2 3)'), ST_GeomFromText('POINT(4 5 6)')), " +
+                "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)'));");
+        assertTrue(rs.next());
+        assertTrue(((LineString) rs.getObject(1)).equalsExact(
+                    WKT_READER.read("LINESTRING(1 2 3, 4 5 6)")));
+        // Potential problem: The z-coordinate seems to be completely ignored
+        // when testing for equality!
+        assertTrue(((LineString) rs.getObject(1)).equalsExact(
+                WKT_READER.read("LINESTRING(1 2 7, 4 5 9)")));
+        assertTrue(((LineString) rs.getObject(2)).equalsExact(
+                    WKT_READER.read("LINESTRING(1 2, 4 5)")));
+        assertFalse(rs.next());
+        rs.close();
         st.close();
     }
 }
