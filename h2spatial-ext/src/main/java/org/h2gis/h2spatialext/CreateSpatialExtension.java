@@ -34,6 +34,7 @@ import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
 import org.h2gis.h2spatialext.function.spatial.convert.*;
+import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_LocateAlong;
@@ -62,6 +63,7 @@ public class CreateSpatialExtension {
         return new Function[] {
                 new ST_3DLength(),
                 new ST_ClosestPoint(),
+                new ST_ClosestCoordinate(),
                 new ST_CompactnessRatio(),
                 new ST_CoordDim(),
                 new ST_Covers(),

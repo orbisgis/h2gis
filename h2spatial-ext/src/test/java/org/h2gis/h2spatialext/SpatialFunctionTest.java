@@ -736,6 +736,50 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_ClosestCoordinate() throws Exception {
+        Statement st = connection.createStatement();
+        //            5
+        //
+        //       +---------+
+        //       |         |
+        //       |         |
+        //           234
+        //       |         |
+        //       |         |
+        //       1---------+
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Point);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('POINT(0 0)'))," +
+                "(ST_GeomFromText('POINT(4 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 2.5)'))," +
+                "(ST_GeomFromText('POINT(6 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 7)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_ClosestCoordinate(point, " +
+                "ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')) " +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (0 5))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (10 0), (10 5), (0 5))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((10 0), (10 5))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 5), (10 5))")));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
     public void test_ST_LocateAlong() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
