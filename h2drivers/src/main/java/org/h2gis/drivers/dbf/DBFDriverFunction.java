@@ -110,12 +110,12 @@ public class DBFDriverFunction implements DriverFunction {
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
-            st.execute(String.format("CREATE TABLE `%s` (%s)", TableLocation.parse(tableReference),
+            st.execute(String.format("CREATE TABLE %s (%s)", TableLocation.parse(tableReference),
                     getSQLColumnTypes(dbfHeader)));
             st.close();
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                        String.format("INSERT INTO `%s` VALUES ( %s )", TableLocation.parse(tableReference),
+                        String.format("INSERT INTO %s VALUES ( %s )", TableLocation.parse(tableReference),
                                 getQuestionMark(dbfHeader.getNumFields())));
                 try {
                     long batchSize = 0;

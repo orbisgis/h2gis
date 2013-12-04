@@ -24,9 +24,13 @@
  */
 package org.h2gis.drivers.dbf;
 
+import org.h2.util.StringUtils;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
+import org.h2gis.drivers.shp.SHPEngineTest;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,6 +38,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -84,5 +89,44 @@ public class DBFImportExportTest {
         assertEquals(2, row[0]);
         assertEquals(2.2250738585072009, (Double) row[1], 1e-12);
         assertEquals("second area", row[2]);
+    }
+
+    @Test
+    public void importTableTestGeomEnd() throws SQLException, IOException {
+        Statement st = connection.createStatement();
+        final String path = SHPEngineTest.class.getResource("waternetwork.dbf").getPath();
+        DriverFunction driver = new DBFDriverFunction();
+        st.execute("DROP TABLE IF EXISTS waternetwork");
+        driver.importFile(connection, "waternetwork", new File(path), new EmptyProgressVisitor());
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
+        assertTrue(rs.next());
+        assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
+        assertEquals("CHAR", rs.getString("TYPE_NAME"));
+        assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+        assertTrue(rs.next());
+        assertEquals("GID",rs.getString("COLUMN_NAME"));
+        assertEquals("BIGINT", rs.getString("TYPE_NAME"));
+        assertTrue(rs.next());
+        assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
+        assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+        rs.close();
+        // Check content
+        rs = st.executeQuery("SELECT * FROM WATERNETWORK");
+        assertTrue(rs.next());
+        assertEquals("river",rs.getString("type_axe"));
+        assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
+        assertEquals(1, rs.getInt(2)); // gid
+        assertTrue(rs.next());
+        assertEquals("ditch", rs.getString("type_axe"));
+        assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
+        assertEquals(2, rs.getInt(2)); // gid
+        rs.close();
+        // Computation
+        rs = st.executeQuery("SELECT SUM(length) sumlen FROM WATERNETWORK");
+        assertTrue(rs.next());
+        assertEquals(28469.778049948833, rs.getDouble(1), 1e-12);
+        rs.close();
+        st.execute("drop table WATERNETWORK");
     }
 }
