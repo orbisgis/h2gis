@@ -901,4 +901,68 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_ClosestPoint2() throws Exception {
+        // This unit test shows that the point returned by ST_ClosestPoint
+        // depends on the orientations of geometries A and B. If they have the
+        // same orientation, the point returned is the first point found in A.
+        // If they have opposite orientation, the point returned is the point
+        // of A closest to the first point found in B.
+        //
+        //       + +
+        //      a| |b
+        //       + +
+        //
+        Statement st = connection.createStatement();
+        final String a = "'LINESTRING(0 0, 0 1))'";
+        final String aReversed = "'LINESTRING(0 1, 0 0))'";
+        final String b = "'LINESTRING(1 0, 1 1))'";
+        final String bReversed = "'LINESTRING(1 1, 1 0))'";
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + a + ")," +
+                "    ST_GeomFromText(" + b + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + a + ")," +
+                "    ST_GeomFromText(" + bReversed + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + aReversed + ")," +
+                "    ST_GeomFromText(" + b + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + aReversed + ")," +
+                "    ST_GeomFromText(" + bReversed + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + b + ")," +
+                "    ST_GeomFromText(" + a + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + bReversed + ")," +
+                "    ST_GeomFromText(" + a + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + b + ")," +
+                "    ST_GeomFromText(" + aReversed + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + bReversed + ")," +
+                "    ST_GeomFromText(" + aReversed + "));");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(0 1)")));
+        assertTrue(((Point) rs.getObject(3)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertTrue(((Point) rs.getObject(4)).
+                equalsTopo(WKT_READER.read("POINT(0 1)")));
+        assertTrue(((Point) rs.getObject(5)).
+                equalsTopo(WKT_READER.read("POINT(1 0)")));
+        assertTrue(((Point) rs.getObject(6)).
+                equalsTopo(WKT_READER.read("POINT(1 0)")));
+        assertTrue(((Point) rs.getObject(7)).
+                equalsTopo(WKT_READER.read("POINT(1 1)")));
+        assertTrue(((Point) rs.getObject(8)).
+                equalsTopo(WKT_READER.read("POINT(1 1)")));
+        assertFalse(rs.next());
+        rs.close();
+        st.close();
+    }
 }
