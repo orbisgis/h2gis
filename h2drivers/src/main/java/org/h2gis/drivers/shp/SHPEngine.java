@@ -31,6 +31,7 @@ import org.h2.constant.ErrorCode;
 import org.h2.message.DbException;
 import org.h2.table.RegularTable;
 import org.h2.table.TableBase;
+import org.h2.util.StringUtils;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +55,7 @@ public class SHPEngine implements TableEngine {
         if(data.tableEngineParams.isEmpty()) {
             throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
         }
-        File filePath = new File(data.tableEngineParams.get(0));
+        File filePath = new File(StringUtils.javaDecode(data.tableEngineParams.get(0)));
         if(!filePath.exists()) {
             // Do not throw an exception as it will prevent the user from opening the database
             LOGGER.error("Shape file not found "+filePath.getAbsolutePath());
