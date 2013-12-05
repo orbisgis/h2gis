@@ -25,12 +25,11 @@
 
 package org.h2gis.h2spatialext.function.spatial.create;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.*;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -53,18 +52,36 @@ public class ST_MakeLine extends DeterministicScalarFunction {
     /**
      * Constructs a LINESTRING from the given POINTs
      *
+     * @param optionalPoints Points
+     * @return The LINESTRING constructed from the given POINTs
+     */
+    public static LineString createLine(Point pointA, Point pointB, Point... optionalPoints) throws SQLException {
+        List<Coordinate> coordinateList = new LinkedList<Coordinate>();
+        coordinateList.add(pointA.getCoordinate());
+        coordinateList.add(pointB.getCoordinate());
+        for (int i = 0; i < optionalPoints.length; i++) {
+            coordinateList.add(optionalPoints[i].getCoordinate());
+        }
+        return pointA.getFactory().createLineString(
+                coordinateList.toArray(new Coordinate[optionalPoints.length]));
+    }
+
+    /**
+     * Constructs a LINESTRING from the given POINTs
+     *
      * @param points Points
      * @return The LINESTRING constructed from the given POINTs
      */
-    public static LineString createLine(Point... points) throws SQLException {
-        if (points.length < 2) {
+    public static LineString createLine(GeometryCollection points) throws SQLException {
+        final int size = points.getNumGeometries();
+        if (size < 2) {
             throw new SQLException("At least two points are required to make a line.");
         }
         List<Coordinate> coordinateList = new LinkedList<Coordinate>();
-        for (int i = 0; i < points.length; i++) {
-            coordinateList.add(points[i].getCoordinate());
+        for (int i = 0; i < size; i++) {
+            coordinateList.add(points.getGeometryN(i).getCoordinate());
         }
-        return points[0].getFactory().createLineString(
-                coordinateList.toArray(new Coordinate[points.length]));
+        return points.getGeometryN(0).getFactory().createLineString(
+                coordinateList.toArray(new Coordinate[size]));
     }
 }
