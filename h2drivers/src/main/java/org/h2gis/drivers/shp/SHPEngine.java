@@ -29,6 +29,7 @@ import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
 import org.h2.message.DbException;
+import org.h2.table.Column;
 import org.h2.table.RegularTable;
 import org.h2.table.TableBase;
 import org.h2.util.StringUtils;
@@ -58,7 +59,9 @@ public class SHPEngine implements TableEngine {
         File filePath = new File(StringUtils.javaDecode(data.tableEngineParams.get(0)));
         if(!filePath.exists()) {
             // Do not throw an exception as it will prevent the user from opening the database
-            LOGGER.error("Shape file not found "+filePath.getAbsolutePath());
+            LOGGER.error("Shape file not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
+            // Clean index
+            data.create = true;
             return new RegularTable(data);
         }
         try {
