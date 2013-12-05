@@ -206,6 +206,7 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
         public Point getCellEnv() {
             double x1 = (minX + cellI * cellWidth) + deltaX;
             double y1 = (minY + cellHeight * cellJ) + deltaY;
+            cellI++;
             return GF.createPoint(new Coordinate(x1, y1));
         }
 
