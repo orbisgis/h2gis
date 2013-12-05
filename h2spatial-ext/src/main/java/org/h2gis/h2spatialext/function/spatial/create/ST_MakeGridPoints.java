@@ -37,6 +37,8 @@ import org.h2.value.ValueString;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import static org.h2gis.h2spatialapi.ScalarFunction.PROP_NOCACHE;
+import static org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid.getFirstGeometryField;
 import org.h2gis.utilities.SFSUtilities;
 
 /**
@@ -52,6 +54,7 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
         addProperty(PROP_REMARKS, "Calculate a regular grid of points.\n"
                 + "The first argument could be a geometry or a table name.\n"
                 + "The delta X and Y cell grid are expressed in a cartesian plan.");
+        addProperty(PROP_NOCACHE, true);
     }
 
     @Override
@@ -72,54 +75,17 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
      */
     public static ResultSet createGridPoints(Connection connection, Value value, int deltaX, int deltaY) throws SQLException {
         if (value instanceof ValueString) {
-            return createGridFromTable(connection, value.getString(), deltaX, deltaY);
+            GridPointsRowSet gridRowSet = new GridPointsRowSet(connection, deltaX, deltaY, value.getString());
+            return gridRowSet.getResultSet();
         } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
-            return computeGrid(geom.getGeometry().getEnvelopeInternal(), deltaX, deltaY);
+            GridPointsRowSet gridRowSet = new GridPointsRowSet(connection, deltaX, deltaY, geom.getGeometry().getEnvelopeInternal());
+            return gridRowSet.getResultSet();
         } else {
             throw new SQLException("This function supports only table name or geometry as first argument.");
         }
     }
 
-    /**
-     * Create a regular grid of points using the first geometry of the table to
-     * compute the full extent.
-     *
-     * @param connection
-     * @param tableName the name of the table
-     * @param deltaX the X cell size
-     * @param deltaY the Y cell size
-     * @return a resultset that contains all cells as a set of polygons
-     * @throws SQLException
-     */
-    public static ResultSet createGridFromTable(Connection connection, String tableName, int deltaX, int deltaY) throws SQLException {
-        Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("select ST_Extent(" + getFirstGeometryField(tableName, connection) + ")  from " + tableName);
-        rs.next();
-        Geometry geom = (Geometry) rs.getObject(1);
-        if (geom == null) {
-            return null;
-        }
-        return computeGrid(geom.getEnvelopeInternal(), deltaX, deltaY);
-    }
-
-    /**
-     * Return the final grid based on envelope, deltaX and deltaY
-     *
-     * @param envelope
-     * @param deltaX
-     * @param deltaY
-     * @return
-     */
-    private static ResultSet computeGrid(Envelope envelope, int deltaX, int deltaY) {
-        SimpleResultSet srs = new SimpleResultSet(new GridRowSet(envelope, deltaX, deltaY));
-        srs.addColumn("THE_GEOM", Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
-        srs.addColumn("ID", Types.INTEGER, 10, 0);
-        srs.addColumn("ID_COL", Types.INTEGER, 10, 0);
-        srs.addColumn("ID_ROW", Types.INTEGER, 10, 0);
-        return srs;
-    }
-    
     /**
      * Return the first spatial geometry field name
      *
@@ -140,42 +106,54 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
     }
 
     /**
-     * GridRowSet is used to populate the result table with all grid cell
+     * GridPointsRowSet is used to populate the result table with all points
+     * cell
      */
-    private static class GridRowSet implements SimpleRowSource {
+    private static class GridPointsRowSet implements SimpleRowSource {
 
-        private int cellI = 0;
-        private int cellJ = 0;
-        private double cellWidth, cellHeight;
-        private final int maxI, maxJ, deltaX, deltaY;
-        private final double minX, minY;
+        private static int cellI = 0;
+        private static int cellJ = 0;
+        private int maxI, maxJ, deltaX, deltaY;
+        private double minX, minY;
         int id = 0;
+        private final Connection connection;
+        boolean firstRow = true;
+        private Envelope envelope;
+        private boolean isTable;
+        private String tableName;
+        private double cellWidth;
+        private double cellHeight;
 
-        private GridRowSet(Envelope envelope, int deltaX, int deltaY) {
-            minX = envelope.getMinX();
-            minY = envelope.getMinY();
+        private GridPointsRowSet(Connection connection, int deltaX, int deltaY, String tableName) {
+            this.connection = connection;
             this.deltaX = deltaX;
             this.deltaY = deltaY;
-            cellWidth = envelope.getWidth();
-            cellHeight = envelope.getHeight();
-            maxI = (int) Math.ceil(cellWidth
-                    / deltaX);
-            maxJ = (int) Math.ceil(cellHeight
-                    / deltaY);
+            this.tableName = tableName;
+            this.isTable = true;
+        }
+
+        private GridPointsRowSet(Connection connection, int deltaX, int deltaY, Envelope envelope) {
+            this.connection = connection;
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
+            this.envelope = envelope;
+            this.isTable = false;
         }
 
         @Override
         public Object[] readRow() throws SQLException {
-            if (cellI > maxI) {
+            if (firstRow) {
+                reset();
+            }
+            if (cellI == maxI) {
                 cellJ++;
                 cellI = 0;
-                return null;
-            } else if (cellJ > maxJ) {
-                cellJ++;
-                cellI = 0;
+            }
+            if (cellJ >= maxJ) {
+                cellJ = 0;
                 return null;
             }
-            return new Object[]{getCellEnv(minX, minY, cellI++, cellJ++, cellWidth, cellHeight), id++, cellI, cellJ};
+            return new Object[]{getCellEnv(), id++, cellI, cellJ};
         }
 
         @Override
@@ -186,22 +164,67 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
         public void reset() throws SQLException {
             cellI = 0;
             cellJ = 0;
+            firstRow = false;
+            //We compute the extend according the first input value
+            if (isTable) {
+                Statement statement = connection.createStatement();
+                ResultSet rs = statement.executeQuery("select ST_Extent(" + getFirstGeometryField(tableName, connection) + ")  from " + tableName);
+                rs.next();
+                Geometry geomExtend = (Geometry) rs.getObject(1);
+                if (geomExtend == null) {
+                    throw new SQLException("The envelope cannot be null.");
+                } else {
+                    envelope = geomExtend.getEnvelopeInternal();
+                    initParameters();
+                }
+            } else {
+                if (envelope == null) {
+                    throw new SQLException("The input geometry used to compute the grid cannot be null.");
+                } else {
+                    initParameters();
+                }
+            }
         }
 
         /**
-         * Compute the envelope corresponding to parameters
+         * Compute the parameters need to create each cells
          *
-         * @param mainEnvelope Global envelope
-         * @param cellI I cell index
-         * @param cellJ J cell index
-         * @param cellWidth Cell width meter
-         * @param cellHeight Cell height meter
+         */
+        public void initParameters() {
+            this.minX = envelope.getMinX();
+            this.minY = envelope.getMinY();
+            this.cellWidth = envelope.getWidth();
+            this.cellHeight = envelope.getHeight();
+            this.maxI = (int) Math.ceil(cellWidth
+                    / deltaX);
+            this.maxJ = (int) Math.ceil(cellHeight
+                    / deltaY);
+        }
+
+        /**
+         * Compute the point of the cell
+         *
          * @return Center point of the cell
          */
-        public Point getCellEnv(double minX, double minY, int cellI, int cellJ, double cellWidth, double cellHeight) {
+        public Point getCellEnv() {
             double x1 = (minX + cellI * cellWidth) + deltaX;
             double y1 = (minY + cellHeight * cellJ) + deltaY;
             return GF.createPoint(new Coordinate(x1, y1));
+        }
+
+        /**
+         * Give the regular grid
+         *
+         * @return ResultSet
+         * @throws SQLException
+         */
+        public ResultSet getResultSet() throws SQLException {
+            SimpleResultSet srs = new SimpleResultSet(this);
+            srs.addColumn("THE_GEOM", Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
+            srs.addColumn("ID", Types.INTEGER, 10, 0);
+            srs.addColumn("ID_COL", Types.INTEGER, 10, 0);
+            srs.addColumn("ID_ROW", Types.INTEGER, 10, 0);
+            return srs;
         }
     }
 }
