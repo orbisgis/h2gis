@@ -296,6 +296,6 @@ public class ConnectionWrapper implements Connection {
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return connection.isWrapperFor(iface);
+        return iface.isInstance(this) || connection.isWrapperFor(iface);
     }
 }

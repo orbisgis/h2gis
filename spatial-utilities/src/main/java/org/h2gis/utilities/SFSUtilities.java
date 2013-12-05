@@ -104,7 +104,15 @@ public class SFSUtilities {
      * @return Wrapped DataSource, with spatial methods
      */
     public static DataSource wrapSpatialDataSource(DataSource dataSource) {
-        return new DataSourceWrapper(dataSource);
+        try {
+            if(dataSource.isWrapperFor(DataSourceWrapper.class)) {
+                return dataSource;
+            } else {
+                return new DataSourceWrapper(dataSource);
+            }
+        } catch (SQLException ex) {
+            return new DataSourceWrapper(dataSource);
+        }
     }
 
     /**
@@ -116,7 +124,15 @@ public class SFSUtilities {
      * @return Wrapped DataSource, with spatial methods
      */
     public static Connection wrapConnection(Connection connection) {
-        return new ConnectionWrapper(connection);
+        try {
+            if(connection.isWrapperFor(ConnectionWrapper.class)) {
+                return connection;
+            } else {
+                return new ConnectionWrapper(connection);
+            }
+        } catch (SQLException ex) {
+            return new ConnectionWrapper(connection);
+        }
     }
 
     /**

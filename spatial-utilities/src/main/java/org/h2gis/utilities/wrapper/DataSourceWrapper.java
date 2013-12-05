@@ -60,6 +60,6 @@ public class DataSourceWrapper implements DataSource {
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return dataSource.isWrapperFor(iface);
+        return iface.isInstance(this) || dataSource.isWrapperFor(iface);
     }
 }
