@@ -29,6 +29,7 @@ import com.vividsolutions.jts.geom.*;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -55,15 +56,24 @@ public class ST_MakeLine extends DeterministicScalarFunction {
      * @param optionalPoints Points
      * @return The LINESTRING constructed from the given POINTs
      */
-    public static LineString createLine(Point pointA, Point pointB, Point... optionalPoints) throws SQLException {
+    public static LineString createLine(Puntal pointA, Puntal pointB, Puntal... optionalPoints) throws SQLException {
         List<Coordinate> coordinateList = new LinkedList<Coordinate>();
-        coordinateList.add(pointA.getCoordinate());
-        coordinateList.add(pointB.getCoordinate());
+        addCoordinatesToList(pointA, coordinateList);
+        addCoordinatesToList(pointB, coordinateList);
         for (int i = 0; i < optionalPoints.length; i++) {
-            coordinateList.add(optionalPoints[i].getCoordinate());
+            addCoordinatesToList(optionalPoints[i], coordinateList);
         }
-        return pointA.getFactory().createLineString(
+        return ((Geometry) pointA).getFactory().createLineString(
                 coordinateList.toArray(new Coordinate[optionalPoints.length]));
+    }
+
+    private static void addCoordinatesToList(Puntal puntal, List<Coordinate> list) {
+        if (puntal instanceof Point) {
+            list.add(((Point) puntal).getCoordinate());
+        }
+        if (puntal instanceof MultiPoint) {
+            list.addAll(Arrays.asList(((MultiPoint) puntal).getCoordinates()));
+        }
     }
 
     /**
