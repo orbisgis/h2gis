@@ -51,7 +51,7 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
         addProperty(PROP_REMARKS, "Calculate a regular grid.\n"
                 + "The first argument could be a geometry or a table name.\n"
                 + "The delta X and Y cell grid are expressed in a cartesian plan.");
-        //addProperty(PROP_NOCACHE, true);
+        addProperty(PROP_NOCACHE, true);
     }
 
     @Override
