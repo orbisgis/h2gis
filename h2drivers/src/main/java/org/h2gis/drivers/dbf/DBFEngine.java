@@ -57,7 +57,9 @@ public class DBFEngine implements TableEngine {
         File filePath = new File(StringUtils.javaDecode(data.tableEngineParams.get(0)));
         if(!filePath.exists()) {
             // Do not throw an exception as it will prevent the user from opening the database
-            LOGGER.error("DBF file not found "+filePath.getAbsolutePath());
+            LOGGER.error("DBF file not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
+            // Clean index
+            data.create = true;
             return new RegularTable(data);
         }
         try {

@@ -123,7 +123,7 @@ public class SHPEngineTest {
     @Test
     public void readSHPDataTest2() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("drop table shptable");
+        st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT the_geom FROM shptable");
