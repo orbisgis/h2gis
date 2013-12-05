@@ -174,6 +174,24 @@ public class SHPEngineTest {
         } finally {
             rs.close();
         }
+        // Close again the database
+        connection.close();
+        try {
+            // Wait a while
+            Thread.sleep(1000);
+            // Reopen it
+        } finally {
+            connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
+            st = connection.createStatement();
+        }
+        rs = st.executeQuery("SELECT SUM(ST_LENGTH(the_geom)) sumlen FROM shptable");
+        try {
+            assertTrue(rs.next());
+            // The new table should be empty
+            assertEquals(0,rs.getDouble("sumlen"),1e-12);
+        } finally {
+            rs.close();
+        }
         st.execute("drop table if exists shptable");
     }
 }

@@ -29,9 +29,9 @@ import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
 import org.h2.message.DbException;
-import org.h2.table.RegularTable;
 import org.h2.table.TableBase;
 import org.h2.util.StringUtils;
+import org.h2gis.drivers.DummyTable;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +59,7 @@ public class SHPEngine implements TableEngine {
         if(!filePath.exists()) {
             // Do not throw an exception as it will prevent the user from opening the database
             LOGGER.error("Shape file not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
-            // Clean index
-            data.create = true;
-            return new RegularTable(data);
+            return new DummyTable(data);
         }
         try {
             SHPDriver driver = new SHPDriver();

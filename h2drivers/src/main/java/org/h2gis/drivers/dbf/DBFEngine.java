@@ -32,6 +32,7 @@ import org.h2.message.DbException;
 import org.h2.table.RegularTable;
 import org.h2.table.TableBase;
 import org.h2.util.StringUtils;
+import org.h2gis.drivers.DummyTable;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,9 +59,7 @@ public class DBFEngine implements TableEngine {
         if(!filePath.exists()) {
             // Do not throw an exception as it will prevent the user from opening the database
             LOGGER.error("DBF file not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
-            // Clean index
-            data.create = true;
-            return new RegularTable(data);
+            return new DummyTable(data);
         }
         try {
             DBFDriver driver = new DBFDriver();
