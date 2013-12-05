@@ -147,7 +147,7 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
                 cellJ = 0;
                 return null;
             }
-            return new Object[]{getCellEnv(), id++, cellI, cellJ};
+            return new Object[]{getCellEnv(), id++, cellI, cellJ+1};
         }
 
         @Override

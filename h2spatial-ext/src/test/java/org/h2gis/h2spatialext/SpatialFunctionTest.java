@@ -1027,8 +1027,9 @@ public class SpatialFunctionTest {
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))',0));");
         st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1);");
-        checkGrid(st.executeQuery("select * from grid;"),true, true);
+        checkGrid(st);
         st.execute("DROP TABLE input_table, grid;");
+        st.close();
     }
 
     /**
@@ -1044,8 +1045,9 @@ public class SpatialFunctionTest {
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0 ))',0));");
         st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select the_geom from input_table), 1, 1);");
-        checkGrid(st.executeQuery("select * from grid;"), true,true);
+        checkGrid(st);
         st.execute("DROP TABLE input_table, grid;");
+        st.close();
     }
 
     /**
@@ -1068,8 +1070,9 @@ public class SpatialFunctionTest {
             assertTrue(true);
         }
         st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select st_union(st_accum(the_geom)) from input_table), 1, 1);");
-        checkGrid(st.executeQuery("select * from grid;"), true, true);
+        checkGrid(st);
         st.execute("DROP TABLE input_table, grid;");
+        st.close();
     }
     
     
@@ -1081,36 +1084,45 @@ public class SpatialFunctionTest {
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))',0));");
         st.execute("CREATE TABLE grid AS SELECT * FROM st_makegridpoints('input_table', 1, 1);");
-        checkGrid(st.executeQuery("select * from grid;"),false, true);
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(0.5 0.5)")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(1.5 0.5)")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(0.5 1.5)")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(1.5 1.5)")));        
         st.execute("DROP TABLE input_table, grid;");
+        st.close();
     }
     
 
-    /**
-     * A method to check if the grid is well computed.
-     *
-     * @param rs
-     * @param checkCentroid
-     * @throws Exception
+   /**
+    * A method to check if the grid is well computed.
+    * @param Statement
+    * @throws Exception 
+  
      */
-    private void checkGrid(final ResultSet rs, final boolean checkArea, final boolean checkCentroid)
+    private void checkGrid(final Statement st)
             throws Exception {
-        final Envelope env = SFSUtilities.getResultSetEnvelope(rs);
-        double minX = env.getMinX();
-        double maxY = env.getMaxY();
-        while (rs.next()) {
-            final Geometry geom = (Geometry) rs.getObject(1);
-            final int id_col = rs.getInt(3);
-            final int id_row = rs.getInt(4);
-            if (checkArea) {
-                assertTrue(geom instanceof Polygon);
-                assertTrue(Math.abs(1 - geom.getArea()) < 0.000001);
-            }
-            if (checkCentroid) {
-                assertEquals((minX + 0.5) + (id_col - 1), geom.getCentroid().getCoordinate().x, 0);
-                assertEquals((maxY - 0.5) - (id_row - 1), geom.getCentroid().getCoordinate().y, 0);
-            }
-        }
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        rs.close();
     }
-
 }
