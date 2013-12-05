@@ -1,3 +1,5 @@
+Work in progress. Do not take account of this page.
+
 ```sql
 drop alias if exists postgis_version;
 CREATE ALIAS postgis_version AS $$
