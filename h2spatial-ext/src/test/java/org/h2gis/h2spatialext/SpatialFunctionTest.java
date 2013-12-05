@@ -536,26 +536,58 @@ public class SpatialFunctionTest {
     public void test_ST_PointsToLine() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
-                "CREATE TABLE input_table(multi_point MultiPoint, point Point);" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154), " +
-                "ST_PointFromText('POINT(5 5)',2154));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154)," +
-                "ST_PointFromText('POINT(1 2)',2154));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154)," +
-                "ST_PointFromText('POINT(3 4)',2154));" +
-                "INSERT INTO input_table(point) VALUES(" +
-                "ST_PointFromText('POINT(99 3)',2154));");
-        ResultSet rs = st.executeQuery("SELECT ST_PointsToLine(point), " +
-                "ST_PointsToLine(multi_point) FROM input_table;");
+                "CREATE TABLE input_table(multi_point MultiPoint);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)), " +
+                "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154))," +
+                "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
+        ResultSet rs = st.executeQuery("SELECT ST_PointsToLine(multi_point) FROM input_table;");
         assertTrue(rs.next());
-        assertEquals(WKT_READER.read("LINESTRING(5 5, 1 2, 3 4, 99 3)"), rs.getObject(1));
-        assertEquals(WKT_READER.read("LINESTRING(5 5, 1 2, 3 4, 99 3," +
+        assertGeometryEquals("LINESTRING(5 5, 1 2, 3 4, 99 3," +
                 "-5 12, 11 22, 34 41, 65 124," +
-                "1 12, 5 -21, 9 41, 32 124)"), rs.getObject(2));
+                "1 12, 5 -21, 9 41, 32 124)", rs.getBytes(1));
         assertFalse(rs.next());
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Point);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_PointFromText('POINT(5 5)',2154))," +
+                "(ST_PointFromText('POINT(1 2)',2154))," +
+                "(ST_PointFromText('POINT(3 4)',2154))," +
+                "(ST_PointFromText('POINT(99 3)',2154));");
+        rs = st.executeQuery("SELECT ST_PointsToLine(point) FROM input_table;");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(5 5, 1 2, 3 4, 99 3)", rs.getBytes(1));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_MakeLine() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_MakeLine(ST_GeomFromText('POINT(1 2 3)'), ST_GeomFromText('POINT(4 5 6)')), " +
+                "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)')), " +
+                "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)')," +
+                "    ST_GeomFromText('POINT(7 8)'));");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(1 2 3, 4 5 6)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRING(1 2, 4 5)", rs.getBytes(2));
+        assertGeometryEquals("LINESTRING(1 2, 4 5, 7 8)", rs.getBytes(3));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Point);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('POINT(1 2)'))," +
+                "(ST_GeomFromText('POINT(3 4)'))," +
+                "(ST_GeomFromText('POINT(5 6)'))," +
+                "(ST_GeomFromText('POINT(7 8)'))," +
+                "(ST_GeomFromText('POINT(9 10)'));");
+        rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(1 2, 3 4, 5 6, 7 8, 9 10)", rs.getBytes(1));
+        assertFalse(rs.next());
+        rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
     }
@@ -1442,35 +1474,5 @@ public class SpatialFunctionTest {
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((1 0.5, 2 0.5, 2 1, 1 1, 1 0.5))")));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
-    }
-
-    @Test
-    public void test_ST_MakeLine() throws Exception {
-        Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT " +
-                "ST_MakeLine(ST_GeomFromText('POINT(1 2 3)'), ST_GeomFromText('POINT(4 5 6)')), " +
-                "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)')), " +
-                "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)')," +
-                "    ST_GeomFromText('POINT(7 8)'));");
-        assertTrue(rs.next());
-        assertGeometryEquals("LINESTRING(1 2 3, 4 5 6)", rs.getBytes(1));
-        assertGeometryEquals("LINESTRING(1 2, 4 5)", rs.getBytes(2));
-        assertGeometryEquals("LINESTRING(1 2, 4 5, 7 8)", rs.getBytes(3));
-        assertFalse(rs.next());
-        st.execute("DROP TABLE IF EXISTS input_table;" +
-                "CREATE TABLE input_table(point Point);" +
-                "INSERT INTO input_table VALUES" +
-                "(ST_GeomFromText('POINT(1 2)'))," +
-                "(ST_GeomFromText('POINT(3 4)'))," +
-                "(ST_GeomFromText('POINT(5 6)'))," +
-                "(ST_GeomFromText('POINT(7 8)'))," +
-                "(ST_GeomFromText('POINT(9 10)'));");
-        rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;");
-        assertTrue(rs.next());
-        assertGeometryEquals("LINESTRING(1 2, 3 4, 5 6, 7 8, 9 10)", rs.getBytes(1));
-        assertFalse(rs.next());
-        rs.close();
-        st.execute("DROP TABLE input_table;");
-        st.close();
     }
 }
