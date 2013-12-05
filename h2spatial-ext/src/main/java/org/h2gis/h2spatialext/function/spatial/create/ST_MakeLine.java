@@ -30,6 +30,10 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
+import java.sql.SQLException;
+import java.util.LinkedList;
+import java.util.List;
+
 /**
  * ST_MakeLine constructs a LINESTRING from two POINT geometries.
  *
@@ -47,17 +51,20 @@ public class ST_MakeLine extends DeterministicScalarFunction {
     }
 
     /**
-     * Constructs a LINESTRING from two POINT geometries
+     * Constructs a LINESTRING from the given POINTs
      *
-     * @param pointA Point A
-     * @param pointB Point B
-     * @return The LINESTRING constructed from pointA to pointB
+     * @param points Points
+     * @return The LINESTRING constructed from the given POINTs
      */
-    public static LineString createLine(Point pointA, Point pointB) {
-        if (pointA == null || pointB == null) {
-            return null;
+    public static LineString createLine(Point... points) throws SQLException {
+        if (points.length < 2) {
+            throw new SQLException("At least two points are required to make a line.");
         }
-        return pointA.getFactory().createLineString(
-                new Coordinate[]{pointA.getCoordinate(), pointB.getCoordinate()});
+        List<Coordinate> coordinateList = new LinkedList<Coordinate>();
+        for (int i = 0; i < points.length; i++) {
+            coordinateList.add(points[i].getCoordinate());
+        }
+        return points[0].getFactory().createLineString(
+                coordinateList.toArray(new Coordinate[points.length]));
     }
 }

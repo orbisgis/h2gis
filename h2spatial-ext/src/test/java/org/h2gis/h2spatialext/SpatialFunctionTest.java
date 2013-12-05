@@ -1449,10 +1449,13 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT " +
                 "ST_MakeLine(ST_GeomFromText('POINT(1 2 3)'), ST_GeomFromText('POINT(4 5 6)')), " +
-                "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)'));");
+                "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)')), " +
+                "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)')," +
+                "    ST_GeomFromText('POINT(7 8)'));");
         assertTrue(rs.next());
         assertGeometryEquals("LINESTRING(1 2 3, 4 5 6)", rs.getBytes(1));
         assertGeometryEquals("LINESTRING(1 2, 4 5)", rs.getBytes(2));
+        assertGeometryEquals("LINESTRING(1 2, 4 5, 7 8)", rs.getBytes(3));
         assertFalse(rs.next());
         rs.close();
         st.close();
