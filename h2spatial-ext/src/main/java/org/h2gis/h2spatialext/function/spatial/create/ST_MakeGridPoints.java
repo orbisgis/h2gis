@@ -21,6 +21,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -39,28 +40,28 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 
 /**
- * Create a regular grid based on a table.
+ * Create a regular grid of points based on a table or a geometry envelope.
  *
  * @author Erwan Bocher
  */
-public class ST_CreateGrid extends AbstractFunction implements ScalarFunction {
+public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunction {
 
     private static final GeometryFactory GF = new GeometryFactory();
 
-    public ST_CreateGrid() {
-        addProperty(PROP_REMARKS, "Calculate a regular grid.\n"
+    public ST_MakeGridPoints() {
+        addProperty(PROP_REMARKS, "Calculate a regular grid of points.\n"
                 + "The first argument could be a geometry or a table name.\n"
                 + "The delta X and Y cell grid are expressed in a cartesian plan.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "createGrid";
+        return "createGridPoints";
     }
-    
+
     /**
-     * Create a regular grid using the first geometry to compute the full
-     * extent.
+     * Create a regular grid of points using the first input value to compute
+     * the full extent.
      *
      * @param connection
      * @param value could be the name of a table or a geometry.
@@ -69,22 +70,20 @@ public class ST_CreateGrid extends AbstractFunction implements ScalarFunction {
      * @return a resultset that contains all cells as a set of polygons
      * @throws SQLException
      */
-    public static ResultSet createGrid(Connection connection, Value value, int deltaX, int deltaY) throws SQLException {
-        if(value instanceof ValueString){
+    public static ResultSet createGridPoints(Connection connection, Value value, int deltaX, int deltaY) throws SQLException {
+        if (value instanceof ValueString) {
             return createGridFromTable(connection, value.getString(), deltaX, deltaY);
-        }
-        else if (value instanceof ValueGeometry){
+        } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
             return computeGrid(geom.getGeometry().getEnvelopeInternal(), deltaX, deltaY);
-        }
-        else{
+        } else {
             throw new SQLException("This function supports only table name or geometry as first argument.");
         }
     }
-    
-        /**
-     * Create a regular grid using the first geometry to compute the full
-     * extent.
+
+    /**
+     * Create a regular grid of points using the first geometry of the table to
+     * compute the full extent.
      *
      * @param connection
      * @param tableName the name of the table
@@ -95,13 +94,13 @@ public class ST_CreateGrid extends AbstractFunction implements ScalarFunction {
      */
     public static ResultSet createGridFromTable(Connection connection, String tableName, int deltaX, int deltaY) throws SQLException {
         Statement statement = connection.createStatement();
-        ResultSet rs = statement.executeQuery("select ST_Extent(" + getGeometryField(tableName, connection) + ")  from " + tableName);
+        ResultSet rs = statement.executeQuery("select ST_Extent(" + getFirstGeometryField(tableName, connection) + ")  from " + tableName);
         rs.next();
-        Polygon env = (Polygon) rs.getObject(1);
-        if (env == null) {
+        Geometry geom = (Geometry) rs.getObject(1);
+        if (geom == null) {
             return null;
         }
-        return computeGrid(env.getEnvelopeInternal(), deltaX, deltaY);
+        return computeGrid(geom.getEnvelopeInternal(), deltaX, deltaY);
     }
 
     /**
@@ -120,7 +119,7 @@ public class ST_CreateGrid extends AbstractFunction implements ScalarFunction {
         srs.addColumn("ID_ROW", Types.INTEGER, 10, 0);
         return srs;
     }
-
+    
     /**
      * Return the first spatial geometry field name
      *
@@ -130,7 +129,7 @@ public class ST_CreateGrid extends AbstractFunction implements ScalarFunction {
      * @return
      * @throws SQLException
      */
-    public static String getGeometryField(String tableName, Connection connection) throws SQLException {
+    public static String getFirstGeometryField(String tableName, Connection connection) throws SQLException {
         // Find first geometry column
         List<String> geomFields = SFSUtilities.getGeometryFields(connection, SFSUtilities.splitCatalogSchemaTableName(tableName));
         if (!geomFields.isEmpty()) {
@@ -148,13 +147,15 @@ public class ST_CreateGrid extends AbstractFunction implements ScalarFunction {
         private int cellI = 0;
         private int cellJ = 0;
         private double cellWidth, cellHeight;
-        private final int maxI, maxJ;
+        private final int maxI, maxJ, deltaX, deltaY;
         private final double minX, minY;
         int id = 0;
 
         private GridRowSet(Envelope envelope, int deltaX, int deltaY) {
             minX = envelope.getMinX();
             minY = envelope.getMinY();
+            this.deltaX = deltaX;
+            this.deltaY = deltaY;
             cellWidth = envelope.getWidth();
             cellHeight = envelope.getHeight();
             maxI = (int) Math.ceil(cellWidth
@@ -186,31 +187,21 @@ public class ST_CreateGrid extends AbstractFunction implements ScalarFunction {
             cellI = 0;
             cellJ = 0;
         }
-    }
 
-    /**
-     * Compute the envelope corresponding to parameters
-     *
-     * @param mainEnvelope Global envelope
-     * @param cellI I cell index
-     * @param cellJ J cell index
-     * @param cellWidth Cell width meter
-     * @param cellHeight Cell height meter
-     * @return Envelope of the cell
-     */
-    public static Polygon getCellEnv(double minX, double minY, int cellI, int cellJ, double cellWidth, double cellHeight) {
-        final Coordinate[] summits = new Coordinate[5];
-        double x1 = minX + cellI * cellWidth;
-        double y1 = minY + cellHeight * cellJ;
-        double x2 = minX + cellI * cellWidth + cellWidth;
-        double y2 = minY + cellHeight * cellJ + cellHeight;
-        summits[0] = new Coordinate(x1, y1);
-        summits[1] = new Coordinate(x2, y1);
-        summits[2] = new Coordinate(x2, y2);
-        summits[3] = new Coordinate(x1, y2);
-        summits[4] = new Coordinate(x1, y1);
-        final LinearRing g = GF.createLinearRing(summits);
-        final Polygon gg = GF.createPolygon(g, null);
-        return gg;
+        /**
+         * Compute the envelope corresponding to parameters
+         *
+         * @param mainEnvelope Global envelope
+         * @param cellI I cell index
+         * @param cellJ J cell index
+         * @param cellWidth Cell width meter
+         * @param cellHeight Cell height meter
+         * @return Center point of the cell
+         */
+        public Point getCellEnv(double minX, double minY, int cellI, int cellJ, double cellWidth, double cellHeight) {
+            double x1 = (minX + cellI * cellWidth) + deltaX;
+            double y1 = (minY + cellHeight * cellJ) + deltaY;
+            return GF.createPoint(new Coordinate(x1, y1));
+        }
     }
 }

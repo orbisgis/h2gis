@@ -697,8 +697,8 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))',0));");
-        st.execute("CREATE TABLE grid AS SELECT * FROM st_creategrid('input_table', 10, 10);");
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))',0));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1);");
         checkGrid(st.executeQuery("select * from grid;"), true);
         st.execute("DROP TABLE input_table, grid;");
     }
@@ -714,8 +714,8 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))',0));");
-        st.execute("CREATE TABLE grid AS SELECT * FROM st_creategrid((select the_geom from input_table), 10, 10);");
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0 ))',0));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select the_geom from input_table), 1, 1);");
         checkGrid(st.executeQuery("select * from grid;"), true);
         st.execute("DROP TABLE input_table, grid;");
     }
@@ -732,15 +732,15 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 1 0, 1 0, 2 10, 0 0 ))',0));"
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0 ))',0));"
                 + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 1 0, 1 0, 2 10, 0 0  ))',1));");
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0 ))',1));");
         try {
-            st.execute("CREATE TABLE grid AS SELECT * FROM st_creategrid((select the_geom from input_table), 10, 10);");           
+            st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select the_geom from input_table), 1, 1);");           
         } catch (Exception e) {
             assertTrue(true);
         }
-        st.execute("CREATE TABLE grid AS SELECT * FROM st_creategrid((select st_union(st_accum(the_geom)) from input_table), 10, 10);");        
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select st_union(st_accum(the_geom)) from input_table), 1, 1);");        
         checkGrid(st.executeQuery("select * from grid;"), true);
         st.execute("DROP TABLE input_table, grid;");
     }
@@ -761,7 +761,6 @@ public class SpatialFunctionTest {
             final Geometry geom = (Geometry) rs.getObject(1);
             final int id_col = rs.getInt(3);
             final int id_row = rs.getInt(4);
-            assertTrue(geom instanceof Polygon);
             assertTrue(geom instanceof Polygon);
             assertTrue(Math.abs(1 - geom.getArea()) < 0.000001);
             if (checkCentroid) {
