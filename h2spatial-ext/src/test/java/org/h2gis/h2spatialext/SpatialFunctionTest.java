@@ -26,6 +26,7 @@ package org.h2gis.h2spatialext;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
+import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
@@ -35,6 +36,7 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -70,6 +72,10 @@ public class SpatialFunctionTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+
+    private static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
+        assertTrue(Arrays.equals(ValueGeometry.get(expectedWKT).getBytes(), valueWKB));
     }
 
     @Test
@@ -1445,14 +1451,8 @@ public class SpatialFunctionTest {
                 "ST_MakeLine(ST_GeomFromText('POINT(1 2 3)'), ST_GeomFromText('POINT(4 5 6)')), " +
                 "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)'));");
         assertTrue(rs.next());
-        assertTrue(((LineString) rs.getObject(1)).equalsExact(
-                    WKT_READER.read("LINESTRING(1 2 3, 4 5 6)")));
-        // Potential problem: The z-coordinate seems to be completely ignored
-        // when testing for equality!
-        assertTrue(((LineString) rs.getObject(1)).equalsExact(
-                WKT_READER.read("LINESTRING(1 2 7, 4 5 9)")));
-        assertTrue(((LineString) rs.getObject(2)).equalsExact(
-                    WKT_READER.read("LINESTRING(1 2, 4 5)")));
+        assertGeometryEquals("LINESTRING(1 2 3, 4 5 6)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRING(1 2, 4 5)", rs.getBytes(2));
         assertFalse(rs.next());
         rs.close();
         st.close();
