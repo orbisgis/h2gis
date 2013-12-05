@@ -316,8 +316,12 @@ public class CreateSpatialExtension {
             if(getBooleanProperty(function,ScalarFunction.PROP_DETERMINISTIC,false)) {
                 deterministic = " DETERMINISTIC";
             }
+            String nocache = "";
+            if(getBooleanProperty(function, ScalarFunction.PROP_NOCACHE, false)) {
+                nocache = " NOCACHE";
+            }
             // Create alias, H2 does not support prepare statement on create alias
-            st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + deterministic + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
+            st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + deterministic + nocache + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
             // Set comment
             String functionRemarks = getStringProperty(function, Function.PROP_REMARKS);
             if(!functionRemarks.isEmpty()) {

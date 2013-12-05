@@ -33,34 +33,40 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
+
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
 /**
  * This table function explode Geometry Collection into multiple geometries
  * @author Nicolas Fortin
  */
-public class ST_Explode implements ScalarFunction {
+public class ST_Explode extends DeterministicScalarFunction {
     /** The default field name for explode count, value is [1-n] */
     public static final String EXPLODE_FIELD = "EXPLOD_ID";
+
+    public ST_Explode() {
+        addProperty(PROP_REMARKS, "Explode Geometry Collection into multiple geometries");
+        addProperty(PROP_NOCACHE, true);
+    }
 
     @Override
     public String getJavaStaticMethod() {
         return "explode";
-    }
-
-    @Override
-    public Object getProperty(String propertyName) {
-        return null;
     }
 
     /**
@@ -207,14 +213,38 @@ public class ST_Explode implements ScalarFunction {
             }
         }
 
+        private static void copyFields(Connection connection, SimpleResultSet rs, TableLocation tableLocation) throws SQLException {
+            DatabaseMetaData meta = connection.getMetaData();
+            ResultSet columnsRs = meta.getColumns(tableLocation.getCatalog(), tableLocation.getSchema(),
+                    tableLocation.getTable().toUpperCase(), null);
+            Map<Integer, Object[]> columns = new HashMap<Integer, Object[]>();
+            int COLUMN_NAME = 0, COLUMN_TYPE = 1, COLUMN_TYPENAME = 2, COLUMN_PRECISION = 3, COLUMN_SCALE = 4;
+            try {
+                while (columnsRs.next()) {
+                    Object[] columnInfoObjects = new Object[COLUMN_SCALE + 1];
+                    columnInfoObjects[COLUMN_NAME] = columnsRs.getString("COLUMN_NAME");
+                    columnInfoObjects[COLUMN_TYPE] = columnsRs.getInt("DATA_TYPE");
+                    columnInfoObjects[COLUMN_TYPENAME] = columnsRs.getString("TYPE_NAME");
+                    columnInfoObjects[COLUMN_PRECISION] = columnsRs.getInt("COLUMN_SIZE");
+                    columnInfoObjects[COLUMN_SCALE] = columnsRs.getInt("DECIMAL_DIGITS");
+                    columns.put(columnsRs.getInt("ORDINAL_POSITION"), columnInfoObjects);
+                }
+            } finally {
+                columnsRs.close();
+            }
+            for(int i=1;i<=columns.size();i++) {
+                Object[] columnInfoObjects = columns.get(i);
+                rs.addColumn((String)columnInfoObjects[COLUMN_NAME], (Integer)columnInfoObjects[COLUMN_TYPE],
+                        (String)columnInfoObjects[COLUMN_TYPENAME], (Integer)columnInfoObjects[COLUMN_PRECISION]
+                        , (Integer)columnInfoObjects[COLUMN_SCALE]);
+            }
+
+        }
+
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            reset();
-            ResultSetMetaData meta = tableQuery.getMetaData();
-            for(int i=1;i<=columnCount;i++) {
-                rs.addColumn(meta.getColumnName(i),meta.getColumnType(i),meta.getColumnTypeName(i),meta.getPrecision(i),meta.getScale(i));
-            }
+            copyFields(connection, rs, TableLocation.parse(tableName));
             rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
             return rs;
         }

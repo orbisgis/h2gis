@@ -46,6 +46,7 @@ public class SpatialFunctionTest {
     private static Connection connection;
     private static final String DB_NAME = "SpatialFunctionTest";
     private static GeometryFactory FACTORY;
+    private static WKTReader WKT_READER;
     public static final double TOLERANCE = 10E-10;
     private static final String POLYGON2D =
             "'POLYGON ((181 124, 87 162, 76 256, 166 315, 286 325, 373 255, " +
@@ -56,7 +57,6 @@ public class SpatialFunctionTest {
             "'POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))'";
     private static final String MULTIPOLYGON2D = "'MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))'";
     private static final String LINESTRING2D = "'LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)'";
-    private static WKTReader WKT_READER;
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -436,7 +436,7 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_CircleCompacity() throws Exception {
+    public void test_ST_CompactnessRatio() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
                 "CREATE TABLE input_table(geom Geometry);" +
@@ -692,81 +692,330 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_CreateGRID() throws Exception {
+    public void test_ST_FurthestCoordinate() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom Geometry);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))',0));");
-        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1);");
-        checkGrid(st.executeQuery("select * from grid;"), true);
-        st.execute("DROP TABLE input_table, grid;");
+        //            5
+        //
+        //       +---------+
+        //       |         |
+        //       |         |
+        //           234
+        //       |         |
+        //       |         |
+        //       1---------+
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Point);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('POINT(0 0)'))," +
+                "(ST_GeomFromText('POINT(4 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 2.5)'))," +
+                "(ST_GeomFromText('POINT(6 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 7)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_FurthestCoordinate(point, " +
+                "ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')) " +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(10 5)")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((10 0), (10 5))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (10 0), (10 5), (0 5))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (0 5))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (10 0))")));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
     }
 
-    /**
-     * Test to create an oriented regular square grid
-     *
-     * @throws Exception
-     */
     @Test
-    public void testST_CreateSquareGRIDFromSuquery1() throws Exception {
+    public void test_ST_ClosestCoordinate() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom Geometry);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0 ))',0));");
-        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select the_geom from input_table), 1, 1);");
-        checkGrid(st.executeQuery("select * from grid;"), true);
-        st.execute("DROP TABLE input_table, grid;");
-    }
-    
-    
-    /**
-     * Test to create an oriented regular square grid
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testST_CreateSquareGRIDFromSuquery2() throws Exception {
-        Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom Geometry);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0 ))',0));"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0 ))',1));");
-        try {
-            st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select the_geom from input_table), 1, 1);");           
-        } catch (Exception e) {
-            assertTrue(true);
-        }
-        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select st_union(st_accum(the_geom)) from input_table), 1, 1);");        
-        checkGrid(st.executeQuery("select * from grid;"), true);
-        st.execute("DROP TABLE input_table, grid;");
+        //            5
+        //
+        //       +---------+
+        //       |         |
+        //       |         |
+        //           234
+        //       |         |
+        //       |         |
+        //       1---------+
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Point);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('POINT(0 0)'))," +
+                "(ST_GeomFromText('POINT(4 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 2.5)'))," +
+                "(ST_GeomFromText('POINT(6 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 7)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_ClosestCoordinate(point, " +
+                "ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')) " +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (0 5))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 0), (10 0), (10 5), (0 5))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((10 0), (10 5))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((0 5), (10 5))")));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
     }
 
-    /**
-     * A method to check if the grid is well computed.
-     *
-     * @param rs
-     * @param checkCentroid
-     * @throws Exception
-     */
-    private void checkGrid(final ResultSet rs, final boolean checkCentroid)
-            throws Exception {
-        final Envelope env = SFSUtilities.getResultSetEnvelope(rs);
-        double minX = env.getMinX();
-        double maxY = env.getMaxY();
-        while (rs.next()) {
-            final Geometry geom = (Geometry) rs.getObject(1);
-            final int id_col = rs.getInt(3);
-            final int id_row = rs.getInt(4);
-            assertTrue(geom instanceof Polygon);
-            assertTrue(Math.abs(1 - geom.getArea()) < 0.000001);
-            if (checkCentroid) {
-                assertEquals((minX + 0.5) + (id_col - 1), geom.getCentroid().getCoordinate().x, 0);
-                assertEquals((maxY - 0.5) - (id_row - 1), geom.getCentroid().getCoordinate().y, 0);
-            }
-        }
+    @Test
+    public void test_ST_LocateAlong() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(geom Geometry);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('LINESTRING(100 300, 400 300, 400 100)'))," +
+                "(ST_GeomFromText('POLYGON((100 100, 400 100, 400 300, 100 300, 100 100)," +
+                "(150 130, 200 130, 200 220, 150 130))'))," +
+                "(ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(100 300, 400 300, 400 100), " +
+                "POLYGON((100 100, 400 100, 400 300, 100 300, 100 100)))'));");
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_LocateAlong(geom, 0.5, 10)," +
+                "ST_LocateAlong(geom, 0.5, -10)," +
+                "ST_LocateAlong(geom, 0.3, 10)," +
+                "ST_LocateAlong(geom, 0.0, 10)," +
+                "ST_LocateAlong(geom, 1.0, 10)," +
+                "ST_LocateAlong(geom, 2.0, 10)," +
+                "ST_LocateAlong(geom, -1.0, 10) " +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 310), (410 200))")));
+        assertTrue(((MultiPoint) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 290), (390 200))")));
+        assertTrue(((MultiPoint) rs.getObject(3)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((190 310), (410 240))")));
+        assertTrue(((MultiPoint) rs.getObject(4)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((100 310), (410 300))")));
+        assertTrue(((MultiPoint) rs.getObject(5)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((400 310), (410 100))")));
+        assertTrue(((MultiPoint) rs.getObject(6)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((700 310), (410 -100))")));
+        assertTrue(((MultiPoint) rs.getObject(7)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((-200 310), (410 500))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 110), (250 290), (110 200), (390 200))")));
+        assertTrue(((MultiPoint) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 90), (250 310), (90 200), (410 200))")));
+        assertTrue(((MultiPoint) rs.getObject(3)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((190 110), (310 290), (110 240), (390 160))")));
+        assertTrue(((MultiPoint) rs.getObject(4)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((100 110), (390 100), (400 290), (110 300))")));
+        assertTrue(((MultiPoint) rs.getObject(5)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((400 110), (390 300), (100 290), (110 100))")));
+        assertTrue(((MultiPoint) rs.getObject(6)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((700 110), (390 500), (-200 290), (110 -100))")));
+        assertTrue(((MultiPoint) rs.getObject(7)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((-200 110), (390 -100), (700 290), (110 500))")));
+        assertTrue(rs.next());
+        assertTrue(((MultiPoint) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 110), (250 290), (110 200), (390 200), " +
+                        "(250 310), (410 200))")));
+        assertTrue(((MultiPoint) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((250 90), (250 310), (90 200), (410 200), " +
+                        "(250 290), (390 200))")));
+        assertTrue(((MultiPoint) rs.getObject(3)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((190 110), (310 290), (110 240), (390 160), " +
+                        "(190 310), (410 240))")));
+        assertTrue(((MultiPoint) rs.getObject(4)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((100 110), (390 100), (400 290), (110 300), " +
+                        "(100 310), (410 300))")));
+        assertTrue(((MultiPoint) rs.getObject(5)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((400 110), (390 300), (100 290), (110 100), " +
+                        "(400 310), (410 100))")));
+        assertTrue(((MultiPoint) rs.getObject(6)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((700 110), (390 500), (-200 290), (110 -100), " +
+                        "(700 310), (410 -100))")));
+        assertTrue(((MultiPoint) rs.getObject(7)).
+                equalsTopo(WKT_READER.read("MULTIPOINT((-200 110), (390 -100), (700 290), (110 500), " +
+                        "(-200 310), (410 500))")));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_ClosestPoint() throws Exception {
+        //            5
+        //
+        //       +---------+
+        //       |         |
+        //       |         |
+        //           234
+        //       |         |
+        //       |         |
+        //       1---------+
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Point);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('POINT(0 0)'))," +
+                "(ST_GeomFromText('POINT(4 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 2.5)'))," +
+                "(ST_GeomFromText('POINT(6 2.5)'))," +
+                "(ST_GeomFromText('POINT(5 7)'));");
+        ResultSet rs = st.executeQuery("SELECT " +
+                // All points except (5 7) are contained inside the polygon.
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')," +
+                "    point)," +
+                // Only (0 0) intersects the linestring.
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText('LINESTRING(0 0, 10 0, 10 5, 0 5, 0 0)')," +
+                "    point)," +
+                // The closest point on a point to another geometry is always
+                // the point itself.
+                "ST_Equals(" +
+                "    ST_ClosestPoint(" +
+                "        point," +
+                "        ST_GeomFromText('LINESTRING(0 0, 10 0, 10 5, 0 5, 0 0)'))," +
+                "    point)" +
+                "FROM input_table;");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(4 2.5)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(4 0)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(5 2.5)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(5 0)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(6 2.5)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(6 0)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(5 5)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(5 5)")));
+        assertEquals(true, rs.getBoolean(3));
+        assertFalse(rs.next());
+        // In this example, there are infinitely many closest points, but
+        // ST_ClosestPoint returns the first one it finds. (The polygon listed
+        // as the second parameter remains the same, but its coordinates are
+        // listed in a different order).
+        //
+        //       +---------+
+        //       |         |  |
+        //       |         |  |\
+        //       |         |  | \
+        //       |         |   \_\
+        //       +---------+     \\
+        //
+        rs = st.executeQuery("SELECT " +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')," +
+                "    ST_GeomFromText('POLYGON((13 2, 15 0, 13 4, 13 2))'))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))')," +
+                "    ST_GeomFromText('POLYGON((13 4, 13 2, 15 0, 13 4))'));");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(10 2)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(10 4)")));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_ClosestPoint2() throws Exception {
+        // This unit test shows that the point returned by ST_ClosestPoint
+        // depends on the orientations of geometries A and B. If they have the
+        // same orientation, the point returned is the first point found in A.
+        // If they have opposite orientation, the point returned is the point
+        // of A closest to the first point found in B.
+        //
+        //       + +
+        //      a| |b
+        //       + +
+        //
+        Statement st = connection.createStatement();
+        final String a = "'LINESTRING(0 0, 0 1))'";
+        final String aReversed = "'LINESTRING(0 1, 0 0))'";
+        final String b = "'LINESTRING(1 0, 1 1))'";
+        final String bReversed = "'LINESTRING(1 1, 1 0))'";
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + a + ")," +
+                "    ST_GeomFromText(" + b + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + a + ")," +
+                "    ST_GeomFromText(" + bReversed + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + aReversed + ")," +
+                "    ST_GeomFromText(" + b + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + aReversed + ")," +
+                "    ST_GeomFromText(" + bReversed + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + b + ")," +
+                "    ST_GeomFromText(" + a + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + bReversed + ")," +
+                "    ST_GeomFromText(" + a + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + b + ")," +
+                "    ST_GeomFromText(" + aReversed + "))," +
+                "ST_ClosestPoint(" +
+                "    ST_GeomFromText(" + bReversed + ")," +
+                "    ST_GeomFromText(" + aReversed + "));");
+        assertTrue(rs.next());
+        assertTrue(((Point) rs.getObject(1)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertTrue(((Point) rs.getObject(2)).
+                equalsTopo(WKT_READER.read("POINT(0 1)")));
+        assertTrue(((Point) rs.getObject(3)).
+                equalsTopo(WKT_READER.read("POINT(0 0)")));
+        assertTrue(((Point) rs.getObject(4)).
+                equalsTopo(WKT_READER.read("POINT(0 1)")));
+        assertTrue(((Point) rs.getObject(5)).
+                equalsTopo(WKT_READER.read("POINT(1 0)")));
+        assertTrue(((Point) rs.getObject(6)).
+                equalsTopo(WKT_READER.read("POINT(1 0)")));
+        assertTrue(((Point) rs.getObject(7)).
+                equalsTopo(WKT_READER.read("POINT(1 1)")));
+        assertTrue(((Point) rs.getObject(8)).
+                equalsTopo(WKT_READER.read("POINT(1 1)")));
+        assertFalse(rs.next());
+        rs.close();
+        st.close();
     }
 }

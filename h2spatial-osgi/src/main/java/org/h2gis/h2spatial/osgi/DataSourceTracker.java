@@ -27,14 +27,17 @@ package org.h2gis.h2spatial.osgi;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatialapi.Function;
+import org.h2gis.utilities.JDBCUrlParser;
 import org.h2gis.utilities.JDBCUtilities;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
+import org.osgi.service.jdbc.DataSourceFactory;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import java.util.Properties;
 
 /**
  * When a new data source is registered this tracker add spatial features to the linked database.
@@ -58,7 +61,9 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
             try {
                 DatabaseMetaData meta = connection.getMetaData();
                 // If not H2 or in client mode, does not register H2 spatial functions.
-                if(!JDBCUtilities.H2_DRIVER_NAME.equals(meta.getDriverName()) && meta.usesLocalFiles()) {
+                Properties properties = JDBCUrlParser.parse(meta.getURL());
+                if(!JDBCUtilities.H2_DRIVER_NAME.equals(meta.getDriverName())
+                        || "tcp".equalsIgnoreCase(properties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL))) {
                     return null;
                 }
                 CreateSpatialExtension.registerGeometryType(connection, "");

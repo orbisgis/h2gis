@@ -23,44 +23,46 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatial.internal.function.spatial.convert;
+package org.h2gis.h2spatialext.function.spatial.distance;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatial.internal.type.SC_LineString;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.operation.distance.DistanceOp;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import java.sql.SQLException;
 
 /**
- * Convert String into a Line type.
- * @author Nicolas Fortin
+ * ST_ClosestPoint returns the 2D point on geometry A that is closest to
+ * geometry B.  If the closest point is not unique, it returns the first one it
+ * finds. This means that the point returned depends on the order of the
+ * geometry's coordinates.
+ *
+ * @author Adam Gouge
  */
-public class ST_LineFromText extends DeterministicScalarFunction {
-    /**
-     * Default constructor
-     */
-    public ST_LineFromText() {
-        addProperty(PROP_REMARKS, "Convert String into a Line type.");
+public class ST_ClosestPoint extends DeterministicScalarFunction {
+
+    public ST_ClosestPoint() {
+        addProperty(PROP_REMARKS, "Returns the 2D point on geometry A that is " +
+                "closest to geometry B.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "toGeometry";
+        return "closestPoint";
     }
 
     /**
-     * @param wKT WellKnown text value
-     * @param srid Valid SRID
-     * @return Geometry
-     * @throws java.sql.SQLException Invalid argument or the geometry type is wrong.
+     * Returns the 2D point on geometry A that is closest to geometry B.
+     *
+     * @param geomA Geometry A
+     * @param geomB Geometry B
+     * @return The 2D point on geometry A that is closest to geometry B
      */
-    public static Geometry toGeometry(String wKT, int srid) throws SQLException {
-        if(wKT==null) {
+    public static Point closestPoint(Geometry geomA, Geometry geomB) {
+        if (geomA == null || geomB == null) {
             return null;
         }
-        Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
-        if(!geometry.getGeometryType().equalsIgnoreCase("linestring")) {
-            throw new SQLException("Provided Well Known Text geometry is not a line string");
-        }
-        return geometry;
+        // Return the closest point on geomA. (We would have used index
+        // 1 to return the closest point on geomB.)
+        return geomA.getFactory().createPoint(DistanceOp.nearestPoints(geomA, geomB)[0]);
     }
 }

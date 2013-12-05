@@ -63,10 +63,10 @@ public class ST_PolyFromWKB extends DeterministicScalarFunction {
         }
         WKBReader wkbReader = new WKBReader();
         try {
-            Geometry geometry = wkbReader.read(bytes);
-            if(!SC_Polygon.isPolygon(geometry)) {
+            if(!SC_Polygon.isPolygon(bytes)) {
                 throw new SQLException("Provided WKB is not a Polygon.");
             }
+            Geometry geometry = wkbReader.read(bytes);
             geometry.setSRID(srid);
             return geometry;
         } catch (ParseException ex) {

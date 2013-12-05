@@ -89,6 +89,9 @@ public class JDBCUrlParser {
         if(uri.getPort()!=-1) {
             properties.setProperty(DataSourceFactory.JDBC_PORT_NUMBER,String.valueOf(uri.getPort()));
         }
+        if(uri.getScheme()!=null && !"file".equalsIgnoreCase(uri.getScheme())) {
+            properties.setProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL, uri.getScheme());
+        }
         return properties;
     }
 
