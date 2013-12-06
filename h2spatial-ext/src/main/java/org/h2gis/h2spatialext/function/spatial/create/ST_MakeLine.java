@@ -35,11 +35,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * ST_MakeLine constructs a LINESTRING from two POINT geometries.
+ * ST_MakeLine constructs a LINESTRING from POINT and MULTIPOINT geometries.
  *
  * @author Adam Gouge
  */
 public class ST_MakeLine extends DeterministicScalarFunction {
+
+    public static final int REQUIRED_NUMBER_OF_POINTS = 2;
 
     public ST_MakeLine() {
         addProperty(PROP_REMARKS, "Constructs a LINESTRING from two POINT geometries.");
@@ -51,15 +53,18 @@ public class ST_MakeLine extends DeterministicScalarFunction {
     }
 
     /**
-     * Constructs a LINESTRING from the given POINTs
+     * Constructs a LINESTRING from the given POINTs or MULTIPOINTs
      *
-     * @param optionalPoints Points
-     * @return The LINESTRING constructed from the given POINTs
+     * @param pointA The first POINT or MULTIPOINT
+     * @param optionalPoints Optional POINTs or MULTIPOINTs
+     * @return The LINESTRING constructed from the given POINTs or MULTIPOINTs
      */
-    public static LineString createLine(Puntal pointA, Puntal pointB, Puntal... optionalPoints) throws SQLException {
+    public static LineString createLine(Geometry pointA, Geometry... optionalPoints) throws SQLException {
+        if (!atLeastTwoPoints(optionalPoints, countPoints(pointA))) {
+            throw new SQLException("At least two points are required to make a line.");
+        }
         List<Coordinate> coordinateList = new LinkedList<Coordinate>();
         addCoordinatesToList(pointA, coordinateList);
-        addCoordinatesToList(pointB, coordinateList);
         for (int i = 0; i < optionalPoints.length; i++) {
             addCoordinatesToList(optionalPoints[i], coordinateList);
         }
@@ -67,46 +72,13 @@ public class ST_MakeLine extends DeterministicScalarFunction {
                 coordinateList.toArray(new Coordinate[optionalPoints.length]));
     }
 
-    private static void addCoordinatesToList(Puntal puntal, List<Coordinate> list) throws SQLException {
-        if (puntal instanceof Point) {
-            list.add(((Point) puntal).getCoordinate());
-        } else if (puntal instanceof MultiPoint) {
-            list.addAll(Arrays.asList(((MultiPoint) puntal).getCoordinates()));
-        } else {
-            throw new SQLException("Only Points and MultiPoints are accepted.");
-        }
-    }
-
     /**
-     * Returns true as soon as we know the collection contains at least two
-     * points.
-     *
-     * @param points Collection of points
-     * @return True as soon as we know the collection contains at least two
-     * points.
-     */
-    private static boolean atLeastTwoPoints(GeometryCollection points) {
-        int numberOfPoints = 0;
-        for (int i = 0; i < points.getNumGeometries(); i++) {
-            Geometry p = points.getGeometryN(i);
-            if (numberOfPoints < 2) {
-                if (p instanceof Point) {
-                    numberOfPoints++;
-                } else if (p instanceof MultiPoint) {
-                    numberOfPoints = numberOfPoints + p.getNumPoints();
-                }
-            } else {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Constructs a LINESTRING from the given POINTs
+     * Constructs a LINESTRING from the given collection of POINTs and/or
+     * MULTIPOINTs
      *
      * @param points Points
-     * @return The LINESTRING constructed from the given POINTs
+     * @return The LINESTRING constructed from the given collection of POINTs
+     * and/or MULTIPOINTs
      */
     public static LineString createLine(GeometryCollection points) throws SQLException {
         final int size = points.getNumGeometries();
@@ -119,5 +91,72 @@ public class ST_MakeLine extends DeterministicScalarFunction {
         }
         return points.getGeometryN(0).getFactory().createLineString(
                 coordinateList.toArray(new Coordinate[size]));
+    }
+
+    private static void addCoordinatesToList(Geometry puntal, List<Coordinate> list) throws SQLException {
+        if (puntal instanceof Point) {
+            list.add(puntal.getCoordinate());
+        } else if (puntal instanceof MultiPoint) {
+            list.addAll(Arrays.asList(puntal.getCoordinates()));
+        } else {
+            throw new SQLException("Only Points and MultiPoints are accepted.");
+        }
+    }
+
+    private static boolean atLeastTwoPoints(GeometryCollection points) throws SQLException {
+        return atLeastTwoPoints(points, 0);
+    }
+
+    /**
+     * Returns true as soon as we know the collection contains at least two
+     * points. Start counting from the initial number of points.
+     *
+     * @param points                Collection of points
+     * @param initialNumberOfPoints The initial number of points
+     * @return True as soon as we know the collection contains at least two
+     *         points.
+     */
+    private static boolean atLeastTwoPoints(Geometry[] points,
+                                            int initialNumberOfPoints) throws SQLException {
+        if (points.length < 1) {
+            throw new SQLException("The geometry collection must not be empty");
+        }
+        return atLeastTwoPoints(points[0].getFactory().createGeometryCollection(points),
+                initialNumberOfPoints);
+    }
+
+    /**
+     * Returns true as soon as we know the collection contains at least two
+     * points. Start counting from the initial number of points.
+     *
+     * @param points                Collection of points
+     * @param initialNumberOfPoints The initial number of points
+     * @return True as soon as we know the collection contains at least two
+     *         points.
+     */
+    private static boolean atLeastTwoPoints(GeometryCollection points,
+                                            int initialNumberOfPoints) throws SQLException {
+        int numberOfPoints = initialNumberOfPoints;
+        for (int i = 0; i < points.getNumGeometries(); i++) {
+            Geometry p = points.getGeometryN(i);
+            if (numberOfPoints >= REQUIRED_NUMBER_OF_POINTS) {
+                return true;
+            }
+            numberOfPoints = numberOfPoints + countPoints(p);
+        }
+        if (numberOfPoints >= REQUIRED_NUMBER_OF_POINTS) {
+            return true;
+        }
+        return false;
+    }
+
+    private static int countPoints(Geometry p) throws SQLException {
+        if (p instanceof Point) {
+            return 1;
+        } else if (p instanceof MultiPoint) {
+            return p.getNumPoints();
+        } else {
+            throw new SQLException("Only Points and MultiPoints are accepted.");
+        }
     }
 }
