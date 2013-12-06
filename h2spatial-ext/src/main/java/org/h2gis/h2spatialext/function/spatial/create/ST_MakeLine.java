@@ -67,13 +67,39 @@ public class ST_MakeLine extends DeterministicScalarFunction {
                 coordinateList.toArray(new Coordinate[optionalPoints.length]));
     }
 
-    private static void addCoordinatesToList(Puntal puntal, List<Coordinate> list) {
+    private static void addCoordinatesToList(Puntal puntal, List<Coordinate> list) throws SQLException {
         if (puntal instanceof Point) {
             list.add(((Point) puntal).getCoordinate());
-        }
-        if (puntal instanceof MultiPoint) {
+        } else if (puntal instanceof MultiPoint) {
             list.addAll(Arrays.asList(((MultiPoint) puntal).getCoordinates()));
+        } else {
+            throw new SQLException("Only Points and MultiPoints are accepted.");
         }
+    }
+
+    /**
+     * Returns true as soon as we know the collection contains at least two
+     * points.
+     *
+     * @param points Collection of points
+     * @return True as soon as we know the collection contains at least two
+     * points.
+     */
+    private static boolean atLeastTwoPoints(GeometryCollection points) {
+        int numberOfPoints = 0;
+        for (int i = 0; i < points.getNumGeometries(); i++) {
+            Geometry p = points.getGeometryN(i);
+            if (numberOfPoints < 2) {
+                if (p instanceof Point) {
+                    numberOfPoints++;
+                } else if (p instanceof MultiPoint) {
+                    numberOfPoints = numberOfPoints + p.getNumPoints();
+                }
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -84,12 +110,12 @@ public class ST_MakeLine extends DeterministicScalarFunction {
      */
     public static LineString createLine(GeometryCollection points) throws SQLException {
         final int size = points.getNumGeometries();
-        if (size < 2) {
+        if (!atLeastTwoPoints(points)) {
             throw new SQLException("At least two points are required to make a line.");
         }
         List<Coordinate> coordinateList = new LinkedList<Coordinate>();
         for (int i = 0; i < size; i++) {
-            coordinateList.add(points.getGeometryN(i).getCoordinate());
+            coordinateList.addAll(Arrays.asList(points.getGeometryN(i).getCoordinates()));
         }
         return points.getGeometryN(0).getFactory().createLineString(
                 coordinateList.toArray(new Coordinate[size]));
