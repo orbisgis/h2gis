@@ -26,6 +26,7 @@
 package org.h2gis.drivers.shp;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.h2spatial.CreateSpatialExtension;
@@ -34,6 +35,8 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -120,6 +123,7 @@ public class SHPEngineTest {
     @Test
     public void readSHPDataTest2() throws SQLException {
         Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT the_geom FROM shptable");
@@ -130,5 +134,64 @@ public class SHPEngineTest {
         assertEquals(28469.778049948833,sumLength,1e-12);
         rs.close();
         st.execute("drop table shptable");
+    }
+
+    @Test
+    public void testReopenMovedShp() throws Exception {
+        // Copy file in target
+        File src = new File(SHPEngineTest.class.getResource("waternetwork.shp").getPath());
+        File srcDbf = new File(SHPEngineTest.class.getResource("waternetwork.dbf").getPath());
+        File srcShx = new File(SHPEngineTest.class.getResource("waternetwork.shx").getPath());
+        File tmpFile = File.createTempFile("waternetwork","");
+        File dst = new File(tmpFile + ".shp");
+        File dstDbf = new File(tmpFile + ".dbf");
+        File dstShx = new File(tmpFile + ".shx");
+        FileUtils.copyFile(src, dst);
+        FileUtils.copyFile(srcDbf, dstDbf);
+        FileUtils.copyFile(srcShx, dstShx);
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('" + dst + "', 'SHPTABLE');");
+        // Close database
+        connection.close();
+        try {
+            // Wait a while
+            Thread.sleep(1000);
+            // Remove temp file
+            assertTrue(dst.delete());
+            assertTrue(dstDbf.delete());
+            assertTrue(dstShx.delete());
+            // Reopen it
+        } finally {
+            connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
+            st = connection.createStatement();
+        }
+        ResultSet rs = st.executeQuery("SELECT SUM(ST_LENGTH(the_geom)) sumlen FROM shptable");
+        try {
+            assertTrue(rs.next());
+            // The new table should be empty
+            assertEquals(0,rs.getDouble("sumlen"),1e-12);
+        } finally {
+            rs.close();
+        }
+        // Close again the database
+        connection.close();
+        try {
+            // Wait a while
+            Thread.sleep(1000);
+            // Reopen it
+        } finally {
+            connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
+            st = connection.createStatement();
+        }
+        rs = st.executeQuery("SELECT SUM(ST_LENGTH(the_geom)) sumlen FROM shptable");
+        try {
+            assertTrue(rs.next());
+            // The new table should be empty
+            assertEquals(0,rs.getDouble("sumlen"),1e-12);
+        } finally {
+            rs.close();
+        }
+        st.execute("drop table if exists shptable");
     }
 }
