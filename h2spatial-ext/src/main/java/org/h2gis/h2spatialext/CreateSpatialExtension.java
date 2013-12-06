@@ -84,7 +84,6 @@ public class CreateSpatialExtension {
                 new ST_MakeEllipse(),
                 new ST_MakeLine(),
                 new ST_MakePoint(),
-                new ST_PointsToLine(),
                 new ST_Rotate(),
                 new ST_Scale(),
                 new ST_ToMultiPoint(),
