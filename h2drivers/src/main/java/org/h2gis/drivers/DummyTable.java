@@ -35,7 +35,7 @@ import org.h2.table.TableBase;
 import java.util.ArrayList;
 
 /**
- * When linked files are not available, this table define an empty table
+ * When linked files are not available, this table defines an empty table
  * @author Nicolas Fortin
  */
 public class DummyTable extends TableBase {

@@ -38,7 +38,7 @@ import org.h2.table.TableFilter;
 import org.h2.value.Value;
 
 /**
- * When linked files are not available, this table index define an empty table
+ * When linked files are not available, this table index defines an empty table
  * @author Nicolas Fortin
  */
 public class DummyIndex extends BaseIndex {
