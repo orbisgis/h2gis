@@ -579,6 +579,11 @@ public class SpatialFunctionTest {
         assertGeometryEquals("LINESTRING(1 2, 17 6, 4 5, 7 9, 18 -1)", rs.getBytes(4));
         assertGeometryEquals("LINESTRING(1 2, 4 5, 7 8)", rs.getBytes(5));
         assertFalse(rs.next());
+        rs = st.executeQuery("SELECT " +
+                "ST_MakeLine(ST_Accum(ST_GeomFromText('MULTIPOINT(1 2, 3 4)')));");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(1 2, 3 4)", rs.getBytes(1));
+        assertFalse(rs.next());
         st.execute("DROP TABLE IF EXISTS input_table;" +
                 "CREATE TABLE input_table(point Point);" +
                 "INSERT INTO input_table VALUES" +
