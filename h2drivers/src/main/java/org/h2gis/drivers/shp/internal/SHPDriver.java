@@ -67,7 +67,7 @@ public class SHPDriver {
     public void insertRow(Object[] values) throws IOException {
         if(!(values[geometryFieldIndex] instanceof Geometry)) {
             if(values[geometryFieldIndex]==null) {
-                throw new IOException("Shape files does not support NULL Geometry");
+                throw new IOException("Shape files do not support NULL Geometry values.");
             } else {
                 throw new IllegalArgumentException("Field at "+geometryFieldIndex+" should be an instance of Geometry," +
                         " found "+values[geometryFieldIndex].getClass()+" instead.");
