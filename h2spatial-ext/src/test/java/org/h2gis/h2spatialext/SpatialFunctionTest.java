@@ -568,12 +568,16 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT " +
                 "ST_MakeLine(ST_GeomFromText('POINT(1 2 3)'), ST_GeomFromText('POINT(4 5 6)')), " +
                 "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)')), " +
+                "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('MULTIPOINT(4 5, 12 9)')), " +
+                "ST_MakeLine(ST_GeomFromText('MULTIPOINT(1 2, 17 6)'), ST_GeomFromText('MULTIPOINT(4 5, 7 9, 18 -1)')), " +
                 "ST_MakeLine(ST_GeomFromText('POINT(1 2)'), ST_GeomFromText('POINT(4 5)')," +
                 "    ST_GeomFromText('POINT(7 8)'));");
         assertTrue(rs.next());
         assertGeometryEquals("LINESTRING(1 2 3, 4 5 6)", rs.getBytes(1));
         assertGeometryEquals("LINESTRING(1 2, 4 5)", rs.getBytes(2));
-        assertGeometryEquals("LINESTRING(1 2, 4 5, 7 8)", rs.getBytes(3));
+        assertGeometryEquals("LINESTRING(1 2, 4 5, 12 9)", rs.getBytes(3));
+        assertGeometryEquals("LINESTRING(1 2, 17 6, 4 5, 7 9, 18 -1)", rs.getBytes(4));
+        assertGeometryEquals("LINESTRING(1 2, 4 5, 7 8)", rs.getBytes(5));
         assertFalse(rs.next());
         st.execute("DROP TABLE IF EXISTS input_table;" +
                 "CREATE TABLE input_table(point Point);" +
@@ -586,6 +590,29 @@ public class SpatialFunctionTest {
         rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;");
         assertTrue(rs.next());
         assertGeometryEquals("LINESTRING(1 2, 3 4, 5 6, 7 8, 9 10)", rs.getBytes(1));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Geometry);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('POINT(5 5)'))," +
+                "(ST_GeomFromText('MULTIPOINT(1 2, 7 9, 18 -4)'))," +
+                "(ST_GeomFromText('POINT(3 4)'))," +
+                "(ST_GeomFromText('POINT(99 3)'));");
+        rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(5 5, 1 2, 7 9, 18 -4, 3 4, 99 3)", rs.getBytes(1));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(multi_point MultiPoint);" +
+                "INSERT INTO input_table VALUES" +
+                "(ST_GeomFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)')), " +
+                "(ST_GeomFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)'))," +
+                "(ST_GeomFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)'));");
+        rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(multi_point)) FROM input_table;");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(5 5, 1 2, 3 4, 99 3, " +
+                "-5 12, 11 22, 34 41, 65 124, " +
+                "1 12, 5 -21, 9 41, 32 124)", rs.getBytes(1));
         assertFalse(rs.next());
         rs.close();
         st.execute("DROP TABLE input_table;");
