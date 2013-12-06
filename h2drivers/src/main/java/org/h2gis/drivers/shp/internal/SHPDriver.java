@@ -66,8 +66,12 @@ public class SHPDriver {
 
     public void insertRow(Object[] values) throws IOException {
         if(!(values[geometryFieldIndex] instanceof Geometry)) {
-            throw new IllegalArgumentException("Field at "+geometryFieldIndex+" should be an instance of Geometry," +
-                    " found "+values[geometryFieldIndex].getClass()+" instead.");
+            if(values[geometryFieldIndex]==null) {
+                throw new IOException("Shape files does not support NULL Geometry");
+            } else {
+                throw new IllegalArgumentException("Field at "+geometryFieldIndex+" should be an instance of Geometry," +
+                        " found "+values[geometryFieldIndex].getClass()+" instead.");
+            }
         }
         shapefileWriter.writeGeometry((Geometry)values[geometryFieldIndex]);
         // Extract the DBF part of the row
