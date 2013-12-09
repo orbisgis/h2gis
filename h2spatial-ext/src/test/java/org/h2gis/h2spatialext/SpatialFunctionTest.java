@@ -472,6 +472,19 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_MakePoint() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_MakePoint(1.4, -3.7), " +
+                "ST_MakePoint(1.4, -3.7, 6.2);");
+        assertTrue(rs.next());
+        assertEquals(WKT_READER.read("POINT(1.4 -3.7)"), rs.getObject(1));
+        assertEquals(WKT_READER.read("POINT(1.4 -3.7 6.2)"), rs.getObject(2));
+        assertFalse(rs.next());
+        rs.close();
+        st.close();
+    }
+
+    @Test
     public void test_ST_PointsToLine() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
