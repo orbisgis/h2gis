@@ -318,7 +318,7 @@ public class CreateSpatialExtension {
             }
             String nocache = "";
             if(getBooleanProperty(function, ScalarFunction.PROP_NOCACHE, false)) {
-                nocache = " NOCACHE";
+                nocache = " NOBUFFER";
             }
             // Create alias, H2 does not support prepare statement on create alias
             st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + deterministic + nocache + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
