@@ -36,7 +36,7 @@ import java.sql.SQLException;
 
 /**
  * ST_MakeEllipse constructs an elliptical POLYGON with the given width and
- * height centered at the given point.
+ * height centered at the given point. Each ellipse contains 100 line segments.
  *
  * @author Adam Gouge
  * @author Erwan Bocher
@@ -47,7 +47,8 @@ public class ST_MakeEllipse extends DeterministicScalarFunction {
 
     public ST_MakeEllipse() {
         addProperty(PROP_REMARKS, "Constructs an elliptical POLYGON with the " +
-                "given width and height centered at the given point");
+                "given width and height centered at the given point. Each " +
+                "ellipse contains 100 line segments.");
     }
 
     @Override

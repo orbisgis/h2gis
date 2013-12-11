@@ -490,7 +490,8 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT " +
                 "ST_MakeEllipse(ST_MakePoint(0, 0), 6, 4)," +
                 "ST_MakeEllipse(ST_MakePoint(-1, 4), 2, 4)," +
-                "ST_MakeEllipse(ST_MakePoint(4, -5), 4, 4);");
+                "ST_MakeEllipse(ST_MakePoint(4, -5), 4, 4)," +
+                "ST_Buffer(ST_MakePoint(4, -5), 2);");
         assertTrue(rs.next());
         Polygon ellipse1 = (Polygon) rs.getObject(1);
         final Envelope ellipse1EnvelopeInternal = ellipse1.getEnvelopeInternal();
@@ -510,6 +511,16 @@ public class SpatialFunctionTest {
         assertTrue(circleEnvelopeInternal.centre().equals2D(new Coordinate(4, -5)));
         assertEquals(4, circleEnvelopeInternal.getWidth(), 0);
         assertEquals(4, circleEnvelopeInternal.getHeight(), 0);
+        Polygon bufferCircle = (Polygon) rs.getObject(4);
+        // This test shows that the only difference between a circle
+        // constructed using ST_MakeEllipse and a circle contructed using
+        // ST_Buffer is the number of line segments in the approximation.
+        // ST_MakeEllipse is more fine-grained (100 segments rather than 32).
+        final Envelope bufferCircleEnvelopeInternal = bufferCircle.getEnvelopeInternal();
+        assertEquals(33, bufferCircle.getCoordinates().length);
+        assertTrue(bufferCircleEnvelopeInternal.centre().equals2D(circleEnvelopeInternal.centre()));
+        assertEquals(circleEnvelopeInternal.getWidth(), bufferCircleEnvelopeInternal.getWidth(), 0);
+        assertEquals(circleEnvelopeInternal.getHeight(), bufferCircleEnvelopeInternal.getHeight(), 0);
         assertFalse(rs.next());
         rs.close();
         st.close();
