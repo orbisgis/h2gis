@@ -25,6 +25,7 @@
 
 package org.h2gis.drivers.dbf;
 
+import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.shp.SHPEngineTest;
@@ -34,6 +35,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -122,5 +124,37 @@ public class  DBFEngineTest {
         assertEquals("林內圳幹線",rs.getString("RIVERNAME"));
         rs.close();
         st.execute("drop table dbftable");
+    }
+
+    @Test
+    public void testReopenMovedDbf() throws Exception {
+        // Copy file in target
+        File srcDbf = new File(SHPEngineTest.class.getResource("waternetwork.dbf").getPath());
+        File dstDbf = File.createTempFile("waternetwork",".dbf");
+        FileUtils.copyFile(srcDbf, dstDbf);
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
+        st.execute("CALL FILE_TABLE('" + dstDbf + "', 'DBFTABLE');");
+        // Close database
+        connection.close();
+        try {
+            // Wait a while
+            Thread.sleep(1000);
+            // Remove temp file
+            assertTrue(dstDbf.delete());
+            // Reopen it
+        } finally {
+            connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
+            st = connection.createStatement();
+        }
+        ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt FROM dbftable");
+        try {
+            assertTrue(rs.next());
+            // The new table should be empty
+            assertEquals(0,rs.getInt("cpt"));
+        } finally {
+            rs.close();
+        }
+        st.execute("drop table if exists dbftable");
     }
 }

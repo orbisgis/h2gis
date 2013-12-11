@@ -35,9 +35,9 @@ public interface ScalarFunction extends Function {
     /** Boolean, Deterministic functions must always return the same value for the same parameters.
      *  The result of such functions is cached if possible. */
     static final String PROP_DETERMINISTIC = "deterministic";
-    /** Boolean, if nocache is true then this function will be called more often but will not cache the results in
+    /** Boolean, if nobuffer is true then this function will be called more often but will not cache the results in
      *  memory nor files */
-    static final String PROP_NOCACHE = "nocache";
+    static final String PROP_NOBUFFER = "nobuffer";
 
     /**
      * Returns Java name of static methods in this class to expose in database,

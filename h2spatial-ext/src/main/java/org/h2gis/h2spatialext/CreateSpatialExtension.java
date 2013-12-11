@@ -28,12 +28,15 @@ package org.h2gis.h2spatialext;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.dbf.DBFRead;
 import org.h2gis.drivers.dbf.DBFWrite;
+import org.h2gis.drivers.gpx.GPXRead;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
 import org.h2gis.h2spatialext.function.spatial.convert.*;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeEllipse;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakePoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
@@ -47,9 +50,6 @@ import org.h2gis.h2spatialext.function.spatial.properties.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.drivers.gpx.GPXRead;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -77,6 +77,8 @@ public class CreateSpatialExtension {
                 new ST_IsRectangle(),
                 new ST_IsValid(),
                 new ST_LocateAlong(),
+                new ST_MakeEllipse(),
+                new ST_MakePoint(),
                 new ST_PointsToLine(),
                 new ST_Rotate(),
                 new ST_Scale(),
