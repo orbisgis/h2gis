@@ -472,6 +472,61 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_MakePoint() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_MakePoint(1.4, -3.7), " +
+                "ST_MakePoint(1.4, -3.7, 6.2);");
+        assertTrue(rs.next());
+        assertEquals(WKT_READER.read("POINT(1.4 -3.7)"), rs.getObject(1));
+        assertEquals(WKT_READER.read("POINT(1.4 -3.7 6.2)"), rs.getObject(2));
+        assertFalse(rs.next());
+        rs.close();
+        st.close();
+    }
+
+    @Test
+    public void test_ST_MakeEllipse() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_MakeEllipse(ST_MakePoint(0, 0), 6, 4)," +
+                "ST_MakeEllipse(ST_MakePoint(-1, 4), 2, 4)," +
+                "ST_MakeEllipse(ST_MakePoint(4, -5), 4, 4)," +
+                "ST_Buffer(ST_MakePoint(4, -5), 2);");
+        assertTrue(rs.next());
+        Polygon ellipse1 = (Polygon) rs.getObject(1);
+        final Envelope ellipse1EnvelopeInternal = ellipse1.getEnvelopeInternal();
+        assertEquals(101, ellipse1.getCoordinates().length);
+        assertTrue(ellipse1EnvelopeInternal.centre().equals2D(new Coordinate(0, 0)));
+        assertEquals(6, ellipse1EnvelopeInternal.getWidth(), 0);
+        assertEquals(4, ellipse1EnvelopeInternal.getHeight(), 0);
+        Polygon ellipse2 = (Polygon) rs.getObject(2);
+        final Envelope ellipse2EnvelopeInternal = ellipse2.getEnvelopeInternal();
+        assertEquals(101, ellipse2.getCoordinates().length);
+        assertTrue(ellipse2EnvelopeInternal.centre().equals2D(new Coordinate(-1, 4)));
+        assertEquals(2, ellipse2EnvelopeInternal.getWidth(), 0);
+        assertEquals(4, ellipse2EnvelopeInternal.getHeight(), 0);
+        Polygon circle = (Polygon) rs.getObject(3);
+        final Envelope circleEnvelopeInternal = circle.getEnvelopeInternal();
+        assertEquals(101, circle.getCoordinates().length);
+        assertTrue(circleEnvelopeInternal.centre().equals2D(new Coordinate(4, -5)));
+        assertEquals(4, circleEnvelopeInternal.getWidth(), 0);
+        assertEquals(4, circleEnvelopeInternal.getHeight(), 0);
+        Polygon bufferCircle = (Polygon) rs.getObject(4);
+        // This test shows that the only difference between a circle
+        // constructed using ST_MakeEllipse and a circle contructed using
+        // ST_Buffer is the number of line segments in the approximation.
+        // ST_MakeEllipse is more fine-grained (100 segments rather than 32).
+        final Envelope bufferCircleEnvelopeInternal = bufferCircle.getEnvelopeInternal();
+        assertEquals(33, bufferCircle.getCoordinates().length);
+        assertTrue(bufferCircleEnvelopeInternal.centre().equals2D(circleEnvelopeInternal.centre()));
+        assertEquals(circleEnvelopeInternal.getWidth(), bufferCircleEnvelopeInternal.getWidth(), 0);
+        assertEquals(circleEnvelopeInternal.getHeight(), bufferCircleEnvelopeInternal.getHeight(), 0);
+        assertFalse(rs.next());
+        rs.close();
+        st.close();
+    }
+
+    @Test
     public void test_ST_PointsToLine() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +

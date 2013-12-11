@@ -30,7 +30,10 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute a buffer around a geometry.
+ * ST_Buffer computes a buffer around a geometry.  Circular arcs are
+ * approximated using 8 segments per quadrant. In particular, circles contain
+ * 32 line segments.
+ *
  * @author Nicolas Fortin
  */
 public class ST_Buffer extends DeterministicScalarFunction {
