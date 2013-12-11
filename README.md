@@ -37,21 +37,11 @@ It include also file copy functions:
 
 ### Usage
 
-For now, H2GIS requires Java 6 (and is not yet Java 7 compatible; see issue #15). Before
-building the project, you must install the following dependencies in your local maven
-repository by running `maven clean install` in the project's root directory:
-* [OSGi dependencies](https://github.com/irstv/osgi-dependencies)
-* [maven-junit4osgi-plugin](https://github.com/irstv/felix/tree/trunk/ipojo/junit4osgi/maven-junit4osgi-plugin) (on the trunk branch)
+For now, H2GIS requires Java 6 (and is not yet Java 7 compatible; see issue #15). Run `maven clean install -P standalone` in the H2GIS's root directory.
 
-Once the dependencies are installed, run a `maven clean install` in the H2GIS's root directory.
-Then go to the folder h2-dist and run:
-```bsh
-mvn package assembly:single
-```
+In the folder `h2-dist/target/` you will find a zip file `h2gis-standalone-bin.zip` that contain a run.sh file for running H2 with H2GIS. It will open a browser based console application.
 
-In the target folder you will find a zip file that contain a run.sh file for running H2 with H2GIS.
-
-[Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features:
+[Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
 ```sql
 CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.h2spatialext.CreateSpatialExtension.initSpatialExtension";
