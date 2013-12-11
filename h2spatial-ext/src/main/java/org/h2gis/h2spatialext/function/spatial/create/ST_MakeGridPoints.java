@@ -16,7 +16,6 @@
  */
 package org.h2gis.h2spatialext.function.spatial.create;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,7 +25,6 @@ import org.h2.value.ValueString;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 import org.h2gis.h2spatialapi.ScalarFunction;
-import static org.h2gis.h2spatialapi.ScalarFunction.PROP_NOCACHE;
 
 /**
  * Create a regular grid of points based on a table or a geometry envelope.
@@ -42,7 +40,7 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
                 + "The delta X and Y cell grid are expressed in a cartesian plane."
                 + "Note :The geometry could be expressed using a subquery as\n"
                 + " (SELECT the_geom from myTable)");
-        addProperty(PROP_NOCACHE, true);
+        addProperty(PROP_NOBUFFER, true);
     }
 
     @Override
