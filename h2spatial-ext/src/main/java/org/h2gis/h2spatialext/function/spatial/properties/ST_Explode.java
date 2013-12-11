@@ -34,7 +34,6 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -61,7 +60,7 @@ public class ST_Explode extends DeterministicScalarFunction {
 
     public ST_Explode() {
         addProperty(PROP_REMARKS, "Explode Geometry Collection into multiple geometries");
-        addProperty(PROP_NOCACHE, true);
+        addProperty(PROP_NOBUFFER, true);
     }
 
     @Override
