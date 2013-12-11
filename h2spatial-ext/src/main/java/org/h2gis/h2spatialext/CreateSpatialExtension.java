@@ -48,7 +48,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2gis.drivers.gpx.GPXRead;
-import org.h2gis.h2spatialext.function.spatial.mesh.ST_DelaunayTriangles;
+import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
+import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -94,7 +95,8 @@ public class CreateSpatialExtension {
                 new DBFRead(),
                 new DBFWrite(),
                 new GPXRead(),
-                new ST_DelaunayTriangles()};
+                new ST_Delaunay(),
+                new ST_ConstrainedDelaunay()};
     }
 
     /**

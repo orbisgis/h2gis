@@ -1020,13 +1020,13 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_DelaunayTrianglesWithPoints1() throws Exception {
+    public void test_ST_DelaunayWithPoints1() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(the_geom MultiPoint);"
                 + "INSERT INTO input_table VALUES(" +
                 "'MULTIPOINT ((0 0 1), (10 0 1), (10 10 1))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_DelaunayTriangles(the_geom) as the_geom FROM input_table;");    
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom) as the_geom FROM input_table;");    
         rs.next();
         assertEquals((Geometry)rs.getObject(1), WKT_READER.read("MULTIPOLYGON(((0 0, 10 0, 10 10, 0 0)))"));
         rs.close();
@@ -1034,13 +1034,13 @@ public class SpatialFunctionTest {
     }
       
     @Test
-    public void test_ST_DelaunayTrianglesWithPoints2() throws Exception{
+    public void test_ST_DelaunayWithPoints2() throws Exception{
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;" +
                 "CREATE TABLE input_table(the_geom MultiPoint);" +
                 "INSERT INTO input_table VALUES(" +
                 "'MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_DelaunayTriangles(the_geom) as the_geom FROM input_table;");    
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom) as the_geom FROM input_table;");    
         rs.next();
         assertEquals((Geometry)rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((0 0, 10 0, 5 5, 0 0)), ((10 0, 5 5, 10 10, 10 0)))"));
         rs.close();
@@ -1048,13 +1048,13 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_DelaunayTrianglesWithLines() throws Exception {
+    public void test_ST_DelaunayWithLines() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
                 + "INSERT INTO input_table VALUES("
                 + "'MULTILINESTRING ((1.1 8 1, 8 8 1), (2 3.1 1, 8 5.1 1))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_DelaunayTriangles(the_geom) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom) as the_geom FROM input_table;");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals( WKT_READER.read("MULTIPOLYGON ( ((1.1 8, 2 3.1, 8 5.1, 1.1 8)),"
                 + " ((1.1 8, 8 5.1, 8 8, 1.1 8)))")));
@@ -1063,25 +1063,84 @@ public class SpatialFunctionTest {
     }    
     
     @Test
-    public void test_ST_DelaunayTrianglesAPolygon() throws Exception {
+    public void test_ST_DelaunayAsMultiPolygon() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(the_geom POLYGON);"
                 + "INSERT INTO input_table VALUES("
                 + "'POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_DelaunayTriangles(the_geom) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom, 0) as the_geom FROM input_table;");
         rs.next();
          assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON (((1.1 9, 1.1 3, 5 8, 1.1 9)), \n"
                  + "   ((1.1 9, 5 8, 8.8 9.9, 1.1 9)), \n"
-                 + "   ((8.8 9.9, 5 8, 9.5 6.4, 8.8 9.9)), \n"
-                 + "   ((5.1 1.1, 9.5 6.4, 5 8, 5.1 1.1)), \n"
-                 + "   ((5.1 1.1, 5 8, 1.1 3, 5.1 1.1)))")));
+                + "   ((8.8 9.9, 5 8, 9.5 6.4, 8.8 9.9)), \n"
+                + "   ((5.1 1.1, 9.5 6.4, 5 8, 5.1 1.1)), \n"
+                + "   ((5.1 1.1, 5 8, 1.1 3, 5.1 1.1)))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+    }    
+    
+    @Test
+    public void test_ST_DelaunayAsMultiLineString() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES("
+                + "'POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY); ");
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom, 1) as the_geom FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTILINESTRING ((1.1 9, 1.1 3, 5 8, 1.1 9), \n"
+                + "  (1.1 9, 5 8, 8.8 9.9, 1.1 9), \n"
+                + "  (8.8 9.9, 5 8, 9.5 6.4, 8.8 9.9), \n"
+                + "  (5.1 1.1, 9.5 6.4, 5 8, 5.1 1.1), \n"
+                + "  (5.1 1.1, 5 8, 1.1 3, 5.1 1.1))")));
         rs.close();
         st.execute("DROP TABLE input_table;");
     }
     
     
+    @Test
+    public void test_ST_ConstrainedDelaunayWithPolygon() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES("
+                + "'POLYGON ((1.9 8, 2.1 2.2, 7.1 2.2, 4.9 3.5, 7.5 8.1, 3.2 6, 1.9 8))'::GEOMETRY); ");
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(the_geom) as the_geom FROM input_table;");
+        rs.next();
+        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((1.9 8, 2.1 2.2, 3.2 6, 1.9 8)), \n"
+                + "  ((2.1 2.2, 3.2 6, 4.9 3.5, 2.1 2.2)), \n"
+                + "  ((2.1 2.2, 4.9 3.5, 7.1 2.2, 2.1 2.2)), \n"
+                + "  ((7.1 2.2, 4.9 3.5, 7.5 8.1, 7.1 2.2)), \n"
+                + "  ((4.9 3.5, 3.2 6, 7.5 8.1, 4.9 3.5)), \n"
+                + "  ((3.2 6, 1.9 8, 7.5 8.1, 3.2 6)))"));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+    }
     
-    
-   
+    @Test
+    public void test_ST_ConstrainedDelaunayWithLines() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
+                + "INSERT INTO input_table VALUES("
+                + "'MULTILINESTRING ((2 7, 6 7),  (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY); ");
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(the_geom, 1) as the_geom FROM input_table;");
+        rs.next();
+        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTILINESTRING ((2 7, 3.2 4.6), \n"
+                + "  (3.2 4.6, 4.1 5), \n"
+                + "  (4.1 5, 4.1818181818181825 7), \n"
+                + "  (3.2 4.6, 4.1818181818181825 7), \n"
+                + "  (2 7, 4.1818181818181825 7), \n"
+                + "  (4.1818181818181825 7, 5 9), \n"
+                + "  (2 7, 5 9), \n"
+                + "  (3.2 4.6, 6 5), \n"
+                + "  (4.1 5, 6 5), \n"
+                + "  (4.1818181818181825 7, 6 5), \n"
+                + "  (6 5, 6 7), \n"
+                + "  (4.1818181818181825 7, 6 7), \n"
+                + "  (5 9, 6 7))"));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+    }
 }
