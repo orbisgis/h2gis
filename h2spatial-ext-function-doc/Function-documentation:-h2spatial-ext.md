@@ -5,6 +5,8 @@
     * [[ST_Scale]]
 * Geometry creation
     * [[ST_MakePoint]]
+* Predicates
+    * [[ST_Covers]]
 * Properties
     * [[ST_XMax]]
     * [[ST_XMin]]
