@@ -12,10 +12,10 @@ GEOMETRY ST_Rotate(GEOMETRY geom, double angle, double x, double y);
 
 ### Description
 
-Rotates geometry `geom` counter-clockwise by angle `angle` (in radians) about
-the point `origin` (or about the point specified by coordinates `x` and `y`).
-If no point is specified, the geometry is rotated about its center (the center
-of its internal envelope).
+Rotates `geom` counter-clockwise by `angle` (in radians) about the point
+`origin` (or about the point specified by coordinates `x` and `y`).  If no
+point is specified, the geometry is rotated about its center (the center of its
+internal envelope).
 
 ### Examples
 
