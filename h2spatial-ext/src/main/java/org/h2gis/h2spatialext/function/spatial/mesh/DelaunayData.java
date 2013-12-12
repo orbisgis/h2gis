@@ -28,19 +28,19 @@ import org.jdelaunay.delaunay.geometries.DEdge;
 import org.jdelaunay.delaunay.geometries.DPoint;
 
 /**
- * This class is used to collect all data used to computed a mesh based on a
- * delaunay triangulation
+ * This class is used to collect all data used to compute a mesh based on a
+ * Delaunay triangulation
  *
  * @author Erwan Bocher
  */
 public class DelaunayData {
 
-    List<DPoint> delaunayPoints = null;
-    ArrayList<DEdge> delaunayEdges = null;
+    private List<DPoint> delaunayPoints = null;
+    private ArrayList<DEdge> delaunayEdges = null;
 
     /**
-     * Create a meshData structure to collect points and edges that will be used
-     * by the DelaunayTriangulation
+     * Create a mesh data structure to collect points and edges that will be
+     * used by the Delaunay Triangulation
      */
     public DelaunayData() {
         this.delaunayPoints = new ArrayList<DPoint>();
@@ -49,9 +49,9 @@ public class DelaunayData {
 
     /**
      * Put a geometry into the data array. Set true to populate the list of
-     * points and edges, needed for the ContrainedDelaunayTriangulation Set
-     * false to populate only the list of points Note the z value is forced to O
-     * when it's equal to NaN
+     * points and edges, needed for the ContrainedDelaunayTriangulation. Set
+     * false to populate only the list of points. Note the z-value is forced to
+     * O when it's equal to NaN.
      *
      * @param geom
      * @param isConstrained
@@ -75,9 +75,9 @@ public class DelaunayData {
 
     /**
      * Put a geometry into the data array of points. If you want to build a
-     * constrained delaunay triangulation used the method
-     * {@code put(Geometry geom, boolean isConstrained)} Note the z value is
-     * forced to O when it's equal to NaN
+     * constrained Delaunay triangulation, use the method {@code put(Geometry
+     * geom, boolean isConstrained)}. Note the z-value is forced to O when it's
+     * equal to NaN.
      *
      * @param geom
      * @throws DelaunayError
@@ -164,7 +164,8 @@ public class DelaunayData {
 
     /**
      * Gives the collection of edges
-     * @return 
+     *
+     * @return
      */
     public ArrayList<DEdge> getDelaunayEdges() {
         return delaunayEdges;
@@ -172,7 +173,8 @@ public class DelaunayData {
 
     /**
      * Gives the collection of points
-     * @return 
+     *
+     * @return
      */
     public List<DPoint> getDelaunayPoints() {
         return delaunayPoints;

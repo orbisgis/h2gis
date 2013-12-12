@@ -37,7 +37,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.jdelaunay</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>jdelaunay</artifactId>
             <version>${jdelaunay-version}</version>
         </dependency>

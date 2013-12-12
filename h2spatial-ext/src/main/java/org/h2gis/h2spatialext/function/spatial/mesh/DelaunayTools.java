@@ -28,16 +28,16 @@ import org.jdelaunay.delaunay.geometries.DEdge;
 import org.jdelaunay.delaunay.geometries.DTriangle;
 
 /**
- * Tools to convert JDelaunay objects to JTS Geometry
+ * Tools to convert JDelaunay objects to JTS Geometries
  *
  * @author Erwan Bocher
  */
 public class DelaunayTools {
 
-    public static GeometryFactory gf = new GeometryFactory();
+    private static GeometryFactory gf = new GeometryFactory();
 
     /**
-     * Convert a list of triangles to a MultiPolygon
+     * Convert a list of triangles to a JTS MultiPolygon
      * @param triangles
      * @return 
      */
@@ -65,7 +65,7 @@ public class DelaunayTools {
     }
     
     /**
-     * Convert a list of triangles to a MultiLineString
+     * Convert a list of triangles to a JTS MultiLineString
      *
      * @param triangles
      * @return

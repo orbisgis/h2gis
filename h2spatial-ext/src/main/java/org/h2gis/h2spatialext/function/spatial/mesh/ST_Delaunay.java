@@ -24,9 +24,10 @@ import org.jdelaunay.delaunay.ConstrainedMesh;
 import org.jdelaunay.delaunay.error.DelaunayError;
 
 /**
- * Returns polygons that represent a Delaunay Triangulation from a collections
- * of points. Note that the triangulation doesn't compute the intersections
- * between lines it takes only existing coordinates.
+ * Returns polygons that represent a Delaunay triangulation constructed from a
+ * collection of points. Note that the triangulation doesn't compute the
+ * intersections between lines; it takes only existing coordinates.
+ *
  *
  * @author Erwan Bocher
  */
@@ -47,7 +48,7 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      *
      * @param geometry
      * @return a set of polygons (triangles)
-     * @throws SQLException
+     * @throws SQLException, DelaunayError
      */
     public static Geometry createDT(Geometry geometry) throws SQLException, DelaunayError {
         return createDT(geometry, 0);
@@ -60,7 +61,7 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @param flag
      * @return Output is a COLLECTION of polygons (for flag=0) or a
      * MULTILINESTRING (for flag=1)
-     * @throws SQLException
+     * @throws SQLException, DelaunayError
      */
     public static Geometry createDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
         if (flag == 0) {

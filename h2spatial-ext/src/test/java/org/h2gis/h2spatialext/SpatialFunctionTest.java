@@ -1198,4 +1198,21 @@ public class SpatialFunctionTest {
         rs.close();
         st.execute("DROP TABLE input_table;");
     }
+    
+    @Test
+    public void test_ST_ConstrainedDelaunayWithLines2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
+                + "INSERT INTO input_table VALUES("
+                + "'MULTILINESTRING ((2 7, 6 7),  (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY); ");
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(the_geom, 0) as the_geom FROM input_table;");
+        rs.next();
+        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((3.2 4.6, 4.1 5, 4.1818181818181825 7, 3.2 4.6)), "
+                + "((2 7, 3.2 4.6, 4.1818181818181825 7, 2 7)), ((4.1818181818181825 7, 2 7, 5 9, 4.1818181818181825 7)), "
+                + "((3.2 4.6, 4.1 5, 6 5, 3.2 4.6)), ((4.1 5, 4.1818181818181825 7, 6 5, 4.1 5)), "
+                + "((6 5, 4.1818181818181825 7, 6 7, 6 5)), ((4.1818181818181825 7, 5 9, 6 7, 4.1818181818181825 7)))"));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+    }
 }

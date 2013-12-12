@@ -17,7 +17,6 @@
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -28,16 +27,15 @@ import org.jdelaunay.delaunay.error.DelaunayError;
 import org.jdelaunay.delaunay.geometries.DEdge;
 
 /**
- * Returns polygons that represent a Delaunay Triangulation from a collections
- * of points. Note that the triangulation doesn't compute the intersections
- * between lines it takes only existing coordinates.
+ * Returns polygons or lines that represent a Delaunay triangulation constructed
+ * from a geometry. Note that the triangulation computes
+ * the intersections between lines.
  *
  * @author Erwan Bocher
  */
 public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
 
-    public static GeometryFactory gf = new GeometryFactory();
-
+ 
     public ST_ConstrainedDelaunay() {
         addProperty(PROP_REMARKS, "Returns polygons that represent a Constrained Delaunay Triangulation from a geometry\n."
                 + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1");
@@ -49,20 +47,20 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
     }
 
     /**
-     * Build a delaunay constrained delaunay triangulation based on all the
-     * geometry (points and lines)
+     * Build a delaunay constrained delaunay triangulation based on a
+     * geometry (point, line, polygon)
      *
      * @param geometry
      * @return a set of polygons (triangles)
-     * @throws SQLException
+     * @throws SQLException,DelaunayError
      */
     public static Geometry createCDT(Geometry geometry) throws SQLException, DelaunayError {        
         return createCDT(geometry, 0);
     }
 
     /**
-     * Build a delaunay constrained delaunay triangulation based on all the
-     * geometry (points and lines)
+     * Build a delaunay constrained delaunay triangulation based on a
+     * geometry (point, line, polygon)
      *
      * @param geometry
      * @param flag
