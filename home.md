@@ -35,7 +35,7 @@ select * from tablename;
 
 Function documentation may be found here:
 
-* h2spatial-ext
+* [[h2spatial-ext | Function documentation: h2spatial ext]]
 
 ## Spatial Index
 On regular tables (not shapes) you can add a spatial index (stored on disk):
