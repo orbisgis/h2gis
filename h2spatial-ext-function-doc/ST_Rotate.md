@@ -1,14 +1,23 @@
-**Description**: `ST_MakePoint` rotates a geometry by a given angle (in
-radians) about the geometry's center or about the given point.
+### Name
+`ST_MakePoint` rotate a geometry counter-clockwise by a given angle (in
+radians) about a point.
 
-### Example usage
+### Signatures
 
 ```mysql
-SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi()),
+GEOMETRY ST_Rotate(GEOMETRY geom, double angle);
+GEOMETRY ST_Rotate(GEOMETRY geom, double angle, POINT origin);
+GEOMETRY ST_Rotate(GEOMETRY geom, double angle, double x, double y);
+```
+
+### Examples
+
+```mysql
+SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi());
 ```
 Answer:    `LINESTRING(2 1, 2 3, 1 3)`
 ```mysql
-ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi() / 3), 
+SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi() / 3);
 ```
 Answer:
 ```
@@ -17,10 +26,10 @@ LINESTRING(0.3839745962155607 2.0669872981077813,
            2.6160254037844384 1.933012701892219)
 ```
 ```mysql
-ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, -pi()/2, ST_GeomFromText('POINT(2 1)')) 
+SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, -pi()/2, ST_GeomFromText('POINT(2 1)'));
 ```
 Answer:    `LINESTRING(4 1, 2 2, 2 1)`
 ```mysql
-ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi()/2, 1.0, 1.0), 
+SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi()/2, 1.0, 1.0);
 ```
 Answer:    `LINESTRING(-1 1, 1 1, 1 2)`
