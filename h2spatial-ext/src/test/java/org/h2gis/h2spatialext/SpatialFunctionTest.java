@@ -1073,4 +1073,227 @@ public class SpatialFunctionTest {
         rs.close();
         st.close();
     }
+    
+    @Test
+    public void test_ST_MakeGrid() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))'));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1);");
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        rs.close();
+        st.execute("DROP TABLE input_table, grid;");
+        st.close();
+    }
+    
+    @Test
+    public void testST_MakeGridFromGeometry() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1);");
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        rs.close();
+        st.execute("DROP TABLE grid;");
+        st.close();
+    }
+
+    /**
+     * Test to create a regular square grid from a subquery
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testST_MakeGridFromSubquery1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0 ))'));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select the_geom from input_table), 1, 1);");
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        rs.close();
+        st.execute("DROP TABLE input_table, grid;");
+        st.close();
+    }
+
+    /**
+     * Test to create a regular square grid from a complex subquery
+     *
+     * @throws Exception
+     */
+    @Test
+    public void testST_MakeGridFromSubquery2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 1 0, 1 1, 0 0 ))'));"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((1 1, 2 2, 1 2, 1 1 ))'));");
+        try {
+            st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select the_geom from input_table), 1, 1);");
+        } catch (Exception e) {
+            assertTrue(true);
+        }
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid((select st_union(st_accum(the_geom)) from input_table), 1, 1);");
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        rs.close();
+        st.execute("DROP TABLE input_table, grid;");
+        st.close();
+    }
+    
+    
+    @Test
+    public void test_ST_MakeGridPoints() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))'));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegridpoints('input_table', 1, 1);");
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(0.5 0.5)")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(1.5 0.5)")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(0.5 1.5)")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(1.5 1.5)")));        
+        st.execute("DROP TABLE input_table, grid;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_MakeGrid2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0, 2 0, 3 2, 0 0))'));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1);");
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 6);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((2 0, 3 0, 3 1, 2 1, 2 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((2 1, 3 1, 3 2, 2 2, 2 1))")));
+        rs.close();
+        st.execute("DROP TABLE input_table, grid;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_MakeGrid3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0, 1.4 0, 1 0.5, 0 0))'));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 0.5, 0.5);");
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 3);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 0.5 0, 0.5 0.5, 0 0.5, 0 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0.5 0, 1 0, 1 0.5, 0.5 0.5, 0.5 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 1.5 0, 1.5 0.5, 1 0.5, 1 0))")));
+        rs.close();
+        st.execute("DROP TABLE input_table, grid;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_MakeGrid4() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0, 2 0, 1 1, 0 0))'));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 0.5);");
+        ResultSet rs = st.executeQuery("select count(*)  from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select *  from grid;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 0.5, 0 0.5, 0 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 0.5, 1 0.5, 1 0))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0.5, 1 0.5, 1 1, 0 1, 0 0.5))")));
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((1 0.5, 2 0.5, 2 1, 1 1, 1 0.5))")));
+        rs.close();
+        st.execute("DROP TABLE input_table, grid;");
+        st.close();
+    }
 }

@@ -50,6 +50,8 @@ import org.h2gis.h2spatialext.function.spatial.properties.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -96,7 +98,9 @@ public class CreateSpatialExtension {
                 new SHPWrite(),
                 new DBFRead(),
                 new DBFWrite(),
-                new GPXRead()};
+                new GPXRead(),
+                new ST_MakeGrid(),
+                new ST_MakeGridPoints()};
     }
 
     /**
