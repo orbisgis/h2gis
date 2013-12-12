@@ -10,7 +10,7 @@ POINT ST_MakePoint(double x, double y, double z);
 
 ### Description
 
-Constructs a `POINT` from two or three coordinates.
+Constructs a `POINT` from `x` and `y` (and possibly `z`).
 
 ### Examples
 
