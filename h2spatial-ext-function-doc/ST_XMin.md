@@ -1,7 +1,7 @@
 ### Name
 `ST_XMin` -- return the minimum x-value of the given geometry.
 
-### Signatures
+### Signature
 
 ```mysql
 POINT ST_XMin(Geometry geom);

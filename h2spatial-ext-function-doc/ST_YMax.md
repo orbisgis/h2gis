@@ -1,7 +1,7 @@
 ### Name
 `ST_YMax` -- return the maximum y-value of the given geometry.
 
-### Signatures
+### Signature
 
 ```mysql
 POINT ST_YMax(Geometry geom);

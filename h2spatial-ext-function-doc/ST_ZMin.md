@@ -1,7 +1,7 @@
 ### Name
 `ST_ZMin` -- return the minimum z-value of the given geometry.
 
-### Signatures
+### Signature
 
 ```mysql
 POINT ST_ZMin(Geometry geom);

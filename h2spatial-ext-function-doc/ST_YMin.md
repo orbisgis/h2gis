@@ -1,7 +1,7 @@
 ### Name
 `ST_YMin` -- return the minimum y-value of the given geometry.
 
-### Signatures
+### Signature
 
 ```mysql
 POINT ST_YMin(Geometry geom);

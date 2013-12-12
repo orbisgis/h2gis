@@ -1,7 +1,7 @@
 ### Name
 `ST_ZMax` -- return the maximum z-value of the given geometry.
 
-### Signatures
+### Signature
 
 ```mysql
 POINT ST_ZMax(Geometry geom);
