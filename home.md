@@ -49,6 +49,12 @@ The spatial predicate operator `&&` for bounding box overlap uses this index:
 select idarea, COUNT(idroad) roadscount from area,roads where area.the_geom && roads.the_geom AND ST_Intersects(area.the_geom,roads.the_geom) GROUP BY idarea ORDER BY idarea
 ```
 
+## Function documentation
+
+Function documentation may be found here:
+
+* h2spatial-ext
+
 ## Spatial JDBC
 
 One of H2GIS's goals is to provide a common interface to H2 and PostGIS for Geometry data. The `spatial-utilities` package provides a **DataSource** and **Connection** wrapper in order to facilitate the usage of JDBC with Geometry fields.
