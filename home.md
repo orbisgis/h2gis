@@ -31,6 +31,12 @@ You can then show the content:
 select * from tablename;
 ```
 
+## Function documentation
+
+Function documentation may be found here:
+
+* h2spatial-ext
+
 ## Spatial Index
 On regular tables (not shapes) you can add a spatial index (stored on disk):
 ```sql
@@ -48,12 +54,6 @@ The spatial predicate operator `&&` for bounding box overlap uses this index:
 ```sql
 select idarea, COUNT(idroad) roadscount from area,roads where area.the_geom && roads.the_geom AND ST_Intersects(area.the_geom,roads.the_geom) GROUP BY idarea ORDER BY idarea
 ```
-
-## Function documentation
-
-Function documentation may be found here:
-
-* h2spatial-ext
 
 ## Spatial JDBC
 
