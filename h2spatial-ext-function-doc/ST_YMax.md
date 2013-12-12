@@ -14,7 +14,7 @@ Returns the maximum y-value of the given geometry.
 ### Examples
 
 ```mysql
-SELECT ST_YMax(LINESTRING(1 2 3, 4 5 6));
+SELECT ST_YMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 ```
 Answer:    `5.0`
 
