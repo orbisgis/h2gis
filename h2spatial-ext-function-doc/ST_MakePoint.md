@@ -1,3 +1,5 @@
+`ST_MakePoint` constructs a `POINT` from two or three coordinates.
+
 ## Example usage
 
 ```mysql
