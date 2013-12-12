@@ -8,6 +8,7 @@
 * Predicates
     * [[ST_Covers]]
 * Properties
+    * [[ST_IsRectangle]]
     * [[ST_XMax]]
     * [[ST_XMin]]
     * [[ST_YMax]]
