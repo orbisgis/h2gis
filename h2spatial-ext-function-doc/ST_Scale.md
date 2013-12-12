@@ -41,3 +41,7 @@ Answer:    `LINESTRING(0.5 1.5 3.6, 2 3.75 7.2)`
 SELECT ST_Scale('LINESTRING(1 2 3, 4 5 6)'::Geometry, 0.0, -1.0, 2.0);
 ```
 Answer:    `LINESTRING(0 -2 6, 0 -5 12)`
+
+##### History
+
+* Added: [#31](https://github.com/irstv/H2GIS/pull/31)
