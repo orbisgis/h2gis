@@ -2,5 +2,6 @@
 
 * Affine transformations
     * [[ST_Rotate]]
+    * [[ST_Scale]]
 * Geometry creation
     * [[ST_MakePoint]]
