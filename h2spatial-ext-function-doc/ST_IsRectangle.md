@@ -20,7 +20,7 @@ Answer:    `true`
 ```mysql
 SELECT ST_IsRectangle('POLYGON ((0 0, 10 0, 10 7, 0 5, 0 0))'::Geometry);
 ```
-Answer:    `false
+Answer:    `false`
 
 ##### History
 
