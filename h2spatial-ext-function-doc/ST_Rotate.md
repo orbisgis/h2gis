@@ -1,5 +1,5 @@
 ### Name
-`ST_MakePoint` rotate a geometry counter-clockwise by a given angle (in
+`ST_MakePoint` rotate a geometry counter-clockwise by the given angle (in
 radians) about a point.
 
 ### Signatures
@@ -9,6 +9,12 @@ GEOMETRY ST_Rotate(GEOMETRY geom, double angle);
 GEOMETRY ST_Rotate(GEOMETRY geom, double angle, POINT origin);
 GEOMETRY ST_Rotate(GEOMETRY geom, double angle, double x, double y);
 ```
+
+### Description
+
+Rotates a geometry counter-clockwise by the given angle (in radians) about the
+given point.  If no point is specified, the geometry is rotated about its
+center (the center of its internal envelope).
 
 ### Examples
 
