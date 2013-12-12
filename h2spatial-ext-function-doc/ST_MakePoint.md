@@ -1,6 +1,18 @@
-**Description**: `ST_MakePoint` constructs a `POINT` from two or three coordinates.
+### Name
+`ST_MakePoint` -- construct a `POINT` from two or three coordinates.
 
-### Example usage
+### Signatures
+
+```mysql
+POINT ST_MakePoint(double x, double y);
+POINT ST_MakePoint(double x, double y, double z);
+```
+
+### Description
+
+Constructs a `POINT` from two or three coordinates.
+
+### Examples
 
 ```mysql
 SELECT ST_MakePoint(1.4, -3.7);
