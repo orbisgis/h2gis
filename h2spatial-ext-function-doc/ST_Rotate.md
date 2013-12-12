@@ -1,5 +1,5 @@
 ### Name
-`ST_Rotate` rotate a geometry counter-clockwise by the given angle (in
+`ST_Rotate` -- rotate a geometry counter-clockwise by the given angle (in
 radians) about a point.
 
 ### Signatures
