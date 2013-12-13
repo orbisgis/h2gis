@@ -50,6 +50,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircle;
+import org.h2gis.h2spatialext.function.spatial.create.ST_Expand;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
@@ -113,7 +114,8 @@ public class CreateSpatialExtension {
                 new ST_TriangleSlope(),
                 new ST_TriangleDirection(),
                 new ST_BoundingCircle(),
-                new ST_Densify()};
+                new ST_Densify(),
+                new ST_Expand()};
     }
 
     /**

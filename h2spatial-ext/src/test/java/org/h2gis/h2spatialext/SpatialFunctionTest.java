@@ -1648,4 +1648,19 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+    
+    @Test
+    public void test_ST_Expand1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT (100 150)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Expand(the_geom, 10, 10) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry)rs.getObject(1)).equals(WKT_READER.read("POLYGON ((90 140, 90 160, 110 160, 110 140, 90 140))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }
