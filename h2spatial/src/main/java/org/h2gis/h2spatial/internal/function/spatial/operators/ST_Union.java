@@ -28,7 +28,6 @@ package org.h2gis.h2spatial.internal.function.spatial.operators;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import java.util.Collection;
 
 /**
  * Compute the union of the function geometry parameters
@@ -64,7 +63,7 @@ public class ST_Union extends DeterministicScalarFunction {
      * @param geomList Geometry list
      * @return union of the function geometry parameters
      */
-    public static Geometry union(Collection<Geometry> geomList) {
+    public static Geometry union(Geometry geomList) {
         return UnaryUnionOp.union(geomList);
     }
 }
