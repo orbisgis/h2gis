@@ -15,8 +15,8 @@ Returns the minimum x-value of the given geometry.
 
 ```mysql
 SELECT ST_XMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+-- Answer:    1.0
 ```
-Answer:    `1.0`
 
 ##### History
 
