@@ -44,7 +44,7 @@ public class ST_Accum extends AbstractFunction implements AggregateTypeFunction 
     private List<Geometry> toUnite = new LinkedList<Geometry>();
 
     public ST_Accum() {
-        addProperty(PROP_REMARKS, "This aggregate function return a GeometryCollection.");
+        addProperty(PROP_REMARKS, "This aggregate function returns a GeometryCollection.");
     }
 
     @Override
