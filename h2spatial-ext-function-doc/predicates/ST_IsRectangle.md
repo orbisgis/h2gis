@@ -15,12 +15,11 @@ Returns true if `geom` is a rectangle.
 
 ```mysql
 SELECT ST_IsRectangle('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))'::Geometry);
-```
-Answer:    `true`
-```mysql
+-- Answer:    true
+
 SELECT ST_IsRectangle('POLYGON ((0 0, 10 0, 10 7, 0 5, 0 0))'::Geometry);
+-- Answer:    false
 ```
-Answer:    `false`
 
 ##### History
 

@@ -16,12 +16,11 @@ Returns true if `geom` is valid.
 
 ```mysql
 SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))'::Geometry);
-```
-Answer:    `true`
-```mysql
+-- Answer:    true
+
 SELECT ST_IsValid('POLYGON ((0 0, 10 0, 10 5, 10 -5, 0 0))'::Geometry);
+-- Answer:    false
 ```
-Answer:    `false`
 
 ##### History
 

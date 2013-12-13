@@ -22,32 +22,26 @@ Returns true if `geomA` is within `distance` of `geomB`.
 
 ```mysql
 SELECT ST_DWithin(geomA, geomB, 2.0) FROM input_table;
-```
-Answer:    `true`
-```mysql
+-- Answer:    true
+
 SELECT ST_DWithin(geomA, geomB, 1.0) FROM input_table;
-```
-Answer:    `false`
-```mysql
+-- Answer:    false
+
 SELECT ST_DWithin(geomA, geomB, -1.0) FROM input_table;
-```
-Answer:    `false`
-```mysql
+-- Answer:    false
+
 SELECT ST_DWithin(geomA, geomB, 3.0) FROM input_table;
-```
-Answer:    `true`
-```mysql
+-- Answer:    true
+
 SELECT ST_DWithin(geomA, geomA, -1.0) FROM input_table;
-```
-Answer:    `false`
-```mysql
+-- Answer:    false
+
 SELECT ST_DWithin(geomA, geomA, 0.0) FROM input_table;
-```
-Answer:    `true`
-```mysql
+-- Answer:    true
+
 SELECT ST_DWithin(geomA, geomA, 5000.0) FROM input_table;
+-- Answer:    true
 ```
-Answer:    `true`
 
 ##### History
 
