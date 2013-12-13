@@ -59,4 +59,15 @@ public class JDBCUtilitiesTest {
         connection.createStatement().execute("INSERT INTO testschema.testRowCount VALUES (4, 0.6)");
         assertEquals(4, JDBCUtilities.getRowCount(connection, "testschema.testRowCount"));
     }
+
+    @Test
+    public void testPrimaryKeyExtract() throws SQLException {
+        connection.createStatement().execute("DROP TABLE IF EXISTS TEMPTABLE");
+        connection.createStatement().execute("CREATE TABLE TEMPTABLE(id integer primary key)");
+        assertEquals(1, JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), TableLocation.parse("TEMPTABLE")));
+        connection.createStatement().execute("DROP TABLE IF EXISTS TEMPTABLE");
+        connection.createStatement().execute("CREATE TABLE TEMPTABLE(id varchar primary key)");
+        assertEquals(0, JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), TableLocation.parse("TEMPTABLE")));
+        connection.createStatement().execute("DROP TABLE IF EXISTS TEMPTABLE");
+    }
 }
