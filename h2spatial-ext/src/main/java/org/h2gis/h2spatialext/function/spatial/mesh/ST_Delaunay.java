@@ -17,6 +17,7 @@
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
@@ -50,7 +51,7 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @return a set of polygons (triangles)
      * @throws SQLException, DelaunayError
      */
-    public static Geometry createDT(Geometry geometry) throws SQLException, DelaunayError {
+    public static GeometryCollection createDT(Geometry geometry) throws SQLException, DelaunayError {
         return createDT(geometry, 0);
     }
 
@@ -63,7 +64,7 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * MULTILINESTRING (for flag=1)
      * @throws SQLException, DelaunayError
      */
-    public static Geometry createDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
+    public static GeometryCollection createDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
         if (flag == 0) {
             return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
         } else if (flag == 1) {
