@@ -15,8 +15,8 @@ Returns the minimum y-value of the given geometry.
 
 ```mysql
 SELECT ST_YMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+-- Answer:    2.0
 ```
-Answer:    `2.0`
 
 ##### History
 

@@ -15,8 +15,8 @@ Returns the minimum z-value of the given geometry.
 
 ```mysql
 SELECT ST_ZMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+-- Answer:    3.0
 ```
-Answer:    `3.0`
 
 ##### History
 

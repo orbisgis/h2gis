@@ -15,8 +15,8 @@ Returns the maximum x-value of the given geometry.
 
 ```mysql
 SELECT ST_XMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+-- Answer:    4.0
 ```
-Answer:    `4.0`
 
 ##### History
 

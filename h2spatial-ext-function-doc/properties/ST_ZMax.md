@@ -15,8 +15,8 @@ Returns the maximum z-value of the given geometry.
 
 ```mysql
 SELECT ST_ZMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+-- Answer:    6.0
 ```
-Answer:    `6.0`
 
 ##### History
 
