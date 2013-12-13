@@ -27,7 +27,7 @@ import org.jdelaunay.delaunay.geometries.DPoint;
 import org.jdelaunay.delaunay.geometries.DTriangle;
 
 /**
- * This function is used to computed the main slope direction on a triangle
+ * This function is used to compute the main slope direction on a triangle.
  * 
 * @author Erwan Bocher
  */

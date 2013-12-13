@@ -23,7 +23,7 @@ import org.jdelaunay.delaunay.error.DelaunayError;
 import org.jdelaunay.delaunay.geometries.DTriangle;
 
 /**
-* This function is used to computed the slope direction of a triangle
+* This function is used to computed the slope direction of a triangle.
 * @author Erwan Bocher
 */
 public class ST_TriangleSlope extends DeterministicScalarFunction{

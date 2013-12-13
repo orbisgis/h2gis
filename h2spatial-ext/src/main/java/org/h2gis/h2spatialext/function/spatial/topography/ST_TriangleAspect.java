@@ -25,7 +25,7 @@ import org.jdelaunay.delaunay.geometries.DPoint;
 import org.jdelaunay.delaunay.geometries.DTriangle;
 
 /**
- * This function is used to computed the aspect of a triangle Aspect represents
+ * This function is used to compute the aspect of a triangle aspect represents
  * the main slope direction angle compared to the north direction.
  *
  * @author Erwan Bocher
