@@ -95,6 +95,15 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_UnionAggregateAlone() throws Exception  {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Union('MULTIPOLYGON (((1 4, 1 8, 5 5, 1 4)), ((3 8, 2 5, 5 5, 3 8)))')");
+        assertTrue(rs.next());
+        assertEquals("POLYGON ((1 4, 1 8, 2.6 6.8, 3 8, 5 5, 1 4))",rs.getString(1));
+        rs.close();
+    }
+
+    @Test
     public void test_ST_AccumArea() throws Exception  {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Area(ST_Accum(footprint)) FROM buildings GROUP BY SUBSTRING(address,4)");
@@ -108,8 +117,7 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Accum(footprint) FROM buildings GROUP BY SUBSTRING(address,4)");
         assertTrue(rs.next());
-        assertEquals("GEOMETRYCOLLECTION (POLYGON ((50 31, 54 31, 54 29, 50 29, 50 31))," +
-                " POLYGON ((66 34, 62 34, 62 32, 66 32, 66 34)))",rs.getString(1));
+        assertEquals("GEOMETRYCOLLECTION (POLYGON ((50 31, 54 31, 54 29, 50 29, 50 31)), POLYGON ((66 34, 62 34, 62 32, 66 32, 66 34)))",rs.getString(1));
         rs.close();
     }
 
