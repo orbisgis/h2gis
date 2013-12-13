@@ -1538,5 +1538,114 @@ public class SpatialFunctionTest {
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
-    }    
+    }
+    
+    @Test
+    public void test_ST_BoundingCircle1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry)rs.getObject(1)).equals(WKT_READER.read("POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
+                + "355.97696351423673 204.69731282226294, 343.22623616044143 180.84237978870843, "
+                + "326.06664389021483 159.93335610978517, 305.1576202112916 142.77376383955857, "
+                + "281.3026871777371 130.02303648576327, 255.41857648803023 122.17117734991535, "
+                + "228.5 119.51992897523209, 201.58142351196977 122.17117734991535, "
+                + "175.69731282226294 130.02303648576327, 151.84237978870846 142.77376383955857, "
+                + "130.93335610978517 159.93335610978517, 113.77376383955855 180.84237978870843, "
+                + "101.02303648576327 204.697312822263, 93.17117734991535 230.58142351196986, "
+                + "90.51992897523209 257.5000000000001, 93.17117734991538 284.41857648803034, "
+                + "101.02303648576334 310.3026871777372, 113.77376383955868 334.1576202112917, "
+                + "130.9333561097853 355.066643890215, 151.84237978870863 372.22623616044154, "
+                + "175.6973128222632 384.97696351423684, 201.5814235119701 392.8288226500847, "
+                + "228.50000000000034 395.4800710247679, 255.4185764880306 392.8288226500846, "
+                + "281.3026871777374 384.97696351423656, 305.15762021129194 372.2262361604412, "
+                + "326.0666438902152 355.06664389021455, 343.2262361604417 334.15762021129115, "
+                + "355.9769635142369 310.3026871777366, 363.82882265008476 284.41857648802966, "
+                + "366.4800710247679 257.5))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_BoundingCircle2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (140 200, 170 150)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry)rs.getObject(1)).equals(WKT_READER.read("POLYGON ((184.1547594742265 175, 183.59455894601797 "
+                + "169.3121885858704, 181.9354855535274 163.8429565746244, "
+                + "179.24129655680906 158.8024834852735, 175.6155281280883 154.3844718719117, "
+                + "171.1975165147265 150.75870344319094, 166.1570434253756 148.0645144464726, "
+                + "160.6878114141296 146.40544105398203, 155 145.8452405257735, "
+                + "149.3121885858704 146.40544105398203, 143.8429565746244 148.0645144464726, "
+                + "138.80248348527354 150.75870344319094, 134.3844718719117 154.3844718719117,"
+                + " 130.75870344319094 158.8024834852735, 128.0645144464726 163.8429565746244, "
+                + "126.40544105398202 169.3121885858704, 125.8452405257735 175.00000000000003, "
+                + "126.40544105398203 180.68781141412964, 128.06451444647263 186.15704342537566,"
+                + " 130.75870344319097 191.19751651472652, 134.38447187191173 195.61552812808833,"
+                + " 138.80248348527357 199.2412965568091, 143.84295657462442 201.9354855535274, "
+                + "149.31218858587044 203.594558946018, 155.00000000000009 204.1547594742265, "
+                + "160.6878114141297 203.59455894601797, 166.1570434253757 201.93548555352737, "
+                + "171.19751651472654 199.241296556809, 175.61552812808839 195.61552812808824, "
+                + "179.24129655680912 191.19751651472637, 181.93548555352743 186.15704342537552, "
+                + "183.594558946018 180.6878114141295, 184.1547594742265 175))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Densify1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (140 200, 170 150)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Densify(the_geom, 10) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry)rs.getObject(1)).equals(WKT_READER.read("LINESTRING (140 200, 145 191.66666666666666, "
+                + "150 183.33333333333334, 155 175, 160 166.66666666666669, 165 158.33333333333334, 170 150)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Densify2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((100 150, 150 150, 150 100, 100 100, 100 150))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Densify(the_geom, 50) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry)rs.getObject(1)).equals(WKT_READER.read("POLYGON ((100 150, 125 150, 150 150, "
+                + "150 125, 150 100, 125 100, 100 100, 100 125, 100 150))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Densify3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT (100 150)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Densify(the_geom, 50) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry)rs.getObject(1)).equals(WKT_READER.read("POINT (100 150)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }

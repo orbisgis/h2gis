@@ -49,10 +49,12 @@ import org.h2gis.h2spatialext.function.spatial.properties.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircle;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_Densify;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
@@ -109,7 +111,9 @@ public class CreateSpatialExtension {
                 new ST_MakeGridPoints(),
                 new ST_TriangleAspect(),
                 new ST_TriangleSlope(),
-                new ST_TriangleDirection()};
+                new ST_TriangleDirection(),
+                new ST_BoundingCircle(),
+                new ST_Densify()};
     }
 
     /**
