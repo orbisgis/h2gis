@@ -127,38 +127,38 @@ public class JDBCUtilities {
 
     /**
      * @return The integer primary key used for edition[1-n]; 0 if the source is closed or if the table has no primary
-     * key or more than one column as primary key
+     *         key or more than one column as primary key
      */
     public static int getIntegerPrimaryKey(DatabaseMetaData meta, TableLocation tableLocation) throws SQLException {
-            String columnNamePK = null;
-            ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(), tableLocation.getSchema(),
-                    tableLocation.getTable());
+        String columnNamePK = null;
+        ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(), tableLocation.getSchema(),
+                tableLocation.getTable());
+        try {
+            if (rs.next()) {
+                columnNamePK = rs.getString("COLUMN_NAME");
+                // Found the column id
+                if (rs.next()) {
+                    // Multi-column PK is not supported
+                    columnNamePK = null;
+                }
+            }
+        } finally {
+            rs.close();
+        }
+        if (columnNamePK != null) {
+            rs = meta.getColumns(tableLocation.getCatalog(), tableLocation.getSchema(),
+                    tableLocation.getTable(), columnNamePK);
             try {
-                if(rs.next()) {
-                    columnNamePK= rs.getString("COLUMN_NAME");
-                    // Found the column id
-                    if(rs.next()) {
-                        // Multi-column PK is not supported
-                        columnNamePK = null;
+                if (rs.next()) {
+                    int dataType = rs.getInt("DATA_TYPE");
+                    if (dataType == Types.BIGINT || dataType == Types.INTEGER || dataType == Types.ROWID) {
+                        return rs.getInt("ORDINAL_POSITION");
                     }
                 }
             } finally {
                 rs.close();
             }
-            if(columnNamePK != null) {
-                rs = meta.getColumns(tableLocation.getCatalog(), tableLocation.getSchema(),
-                        tableLocation.getTable(), columnNamePK);
-                try{
-                    if(rs.next()) {
-                        int dataType = rs.getInt("DATA_TYPE");
-                        if(dataType == Types.BIGINT || dataType == Types.INTEGER || dataType == Types.ROWID) {
-                            return rs.getInt("ORDINAL_POSITION");
-                        }
-                    }
-                } finally {
-                    rs.close();
-                }
-            }
+        }
         return 0;
     }
 
