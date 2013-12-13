@@ -34,6 +34,7 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.*;
@@ -1438,4 +1439,104 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table, grid;");
         st.close();
     }
+    
+    @Test
+    public void test_ST_TriangleAspect1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(rs.getDouble(1)==0);
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_TriangleAspect2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0 1, 10 0 0, 0 10 1, 0 0 1))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(rs.getDouble(1)==90);
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+    }
+    
+    @Test(expected = SQLException.class)  
+    public void test_ST_TriangleAspect3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0 , 10 0 0, 0 10 1, 0 0 1))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect(the_geom) FROM input_table;");        
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+    }
+    
+    @Test
+    public void test_ST_TriangleSlope1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(rs.getDouble(1)==0);
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_TriangleSlope2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue((rs.getDouble(1)-127.27)<10E-2);
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+    }
+    
+    @Test
+    public void test_ST_TriangleDirection1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry)rs.getObject(1)).isEmpty());
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_TriangleDirection2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((0 0 0, 4 0 0, 2 3 9, 0 0 0))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry)rs.getObject(1)).equals(WKT_READER.read("LINESTRING(2 1 3, 2 0 0)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }    
 }
