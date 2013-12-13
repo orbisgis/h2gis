@@ -54,4 +54,4 @@ SELECT ST_3DLength(geom) FROM input_table;
 
 ##### History
 
-* Added: [#28](https://github.com/irstv/H2GIS/pull/28)
+* Added: [#29](https://github.com/irstv/H2GIS/pull/29)
