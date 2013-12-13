@@ -82,6 +82,19 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_UnionSimple() throws Exception  {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Area(ST_Union('POLYGON((0 0,10 0,10 10,0 10,0 0))'))");
+        assertTrue(rs.next());
+        assertEquals(100,rs.getDouble(1),0);
+        rs.close();
+        rs = st.executeQuery("SELECT ST_Area(ST_Union('MULTIPOLYGON(((0 0,5 0,5 5,0 5,0 0)),((5 5,10 5,10 10,5 10,5 5)))'))");
+        assertTrue(rs.next());
+        assertEquals(50,rs.getDouble(1),0);
+        rs.close();
+    }
+
+    @Test
     public void testFunctionRemarks() throws SQLException {
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DummyFunction(), "");
         ResultSet procedures = connection.getMetaData().getProcedures(null, null, "DUMMYFUNCTION");
