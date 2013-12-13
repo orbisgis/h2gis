@@ -29,6 +29,7 @@ In the case of a 2D geometry, `ST_3DLength` returns the same value as
 ```mysql
 SELECT ST_3DLength(geom) FROM input_table;
 ```
+
 | `ST_3DLength(geom)` |
 | ---- |
 | 24.367696684397245 |
@@ -40,6 +41,7 @@ SELECT ST_3DLength(geom) FROM input_table;
 | 41.004478598956055 |
 
 *Note*: The exact mathematical values are the following:
+
 | `ST_3DLength(geom)` |
 | ---- |
 | `SQRT(205) + SQRT(101)` |
