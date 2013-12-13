@@ -95,6 +95,25 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_AccumArea() throws Exception  {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Area(ST_Accum(footprint)) FROM buildings GROUP BY SUBSTRING(address,4)");
+        assertTrue(rs.next());
+        assertEquals(16,rs.getDouble(1),1e-8);
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Accum() throws Exception  {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Accum(footprint) FROM buildings GROUP BY SUBSTRING(address,4)");
+        assertTrue(rs.next());
+        assertEquals("GEOMETRYCOLLECTION (POLYGON ((50 31, 54 31, 54 29, 50 29, 50 31))," +
+                " POLYGON ((66 34, 62 34, 62 32, 66 32, 66 34)))",rs.getString(1));
+        rs.close();
+    }
+
+    @Test
     public void testFunctionRemarks() throws SQLException {
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DummyFunction(), "");
         ResultSet procedures = connection.getMetaData().getProcedures(null, null, "DUMMYFUNCTION");
