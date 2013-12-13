@@ -15,11 +15,11 @@ Returns true if `geom` is valid.
 ### Examples
 
 ```mysql
-SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))'::Geometry) FROM input_table;
+SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))'::Geometry);
 ```
 Answer:    `true`
 ```mysql
-SELECT ST_IsValid('POLYGON ((0 0, 10 0, 10 5, 10 -5, 0 0))'::Geometry) FROM input_table;
+SELECT ST_IsValid('POLYGON ((0 0, 10 0, 10 5, 10 -5, 0 0))'::Geometry);
 ```
 Answer:    `false`
 
