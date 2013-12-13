@@ -19,24 +19,20 @@ Returns true if no point in `geomB` is outside `geomA`.
 
 ```mysql
 SELECT ST_Covers(smallc, smallc) FROM input_table;
-```
-Answer:    `true`
-```mysql
+-- Answer:    true
+
 SELECT ST_Covers(smallc, bigc) FROM input_table;
-```
-Answer:    `false`
-```mysql
+-- Answer:    false
+
 SELECT ST_Covers(bigc, smallc) FROM input_table;
-```
-Answer:    `true`
-```mysql
+-- Answer:    true
+
 SELECT ST_Covers(bigc, ST_ExteriorRing(bigc)) FROM input_table;
-```
-Answer:    `true`
-```mysql
+-- Answer:    true
+
 SELECT ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;
+-- Answer:    false
 ```
-Answer:    `false`
 
 ##### History
 
