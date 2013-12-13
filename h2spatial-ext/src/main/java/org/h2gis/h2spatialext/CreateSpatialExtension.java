@@ -46,10 +46,11 @@ import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsRectangle;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsValid;
 import org.h2gis.h2spatialext.function.spatial.properties.*;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
+import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
 
@@ -99,6 +100,8 @@ public class CreateSpatialExtension {
                 new DBFRead(),
                 new DBFWrite(),
                 new GPXRead(),
+                new ST_Delaunay(),
+                new ST_ConstrainedDelaunay(),
                 new ST_MakeGrid(),
                 new ST_MakeGridPoints()};
     }

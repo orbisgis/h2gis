@@ -83,6 +83,7 @@ public class BundleTest {
                 mavenBundle("org.orbisgis", "spatial-utilities"),
                 mavenBundle("org.orbisgis", "cts"),
                 mavenBundle("org.orbisgis", "jts"),
+                mavenBundle("org.orbisgis", "jdelaunay"),
                 mavenBundle("org.orbisgis", "h2").version("1.3.174"),
                 mavenBundle("org.orbisgis", "h2spatial").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-ext").noStart(),
