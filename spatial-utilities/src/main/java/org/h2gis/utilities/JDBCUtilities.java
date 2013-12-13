@@ -67,6 +67,28 @@ public class JDBCUtilities {
     }
 
     /**
+     * @param meta DataBase meta data
+     * @param table Table identifier [[catalog.]schema.]table
+     * @param fieldIndex Field ordinal position [1-n]
+     * @return The field name, empty if the field position or table is not found
+     * @throws SQLException If jdbc throws an error
+     */
+    public static String getFieldName(DatabaseMetaData meta, String table, int fieldIndex) throws SQLException {
+        TableLocation location = TableLocation.parse(table);
+        ResultSet rs = meta.getColumns(location.getCatalog(), location.getSchema(), location.getTable(), null);
+        try {
+            while(rs.next()) {
+                if(rs.getInt("ORDINAL_POSITION") == fieldIndex) {
+                    return rs.getString("COLUMN_NAME");
+                }
+            }
+        } finally {
+            rs.close();
+        }
+        return "";
+    }
+
+    /**
      * Fetch the row count of a table.
      * @param connection Active connection.
      * @param tableReference Table reference
@@ -94,11 +116,12 @@ public class JDBCUtilities {
     /**
      * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table reference is a temporary table.
      * @param connection Active connection not closed by this method
-     * @param location Table reference
+     * @param tableReference Table reference
      * @return True if the provided table is temporary.
      * @throws SQLException If the table does not exists.
      */
-    public static boolean isTemporaryTable(Connection connection, TableLocation location) throws SQLException {
+    public static boolean isTemporaryTable(Connection connection, String tableReference) throws SQLException {
+        TableLocation location = TableLocation.parse(tableReference);
         ResultSet rs = getTablesView(connection, location.getCatalog(), location.getSchema(), location.getTable());
         boolean isTemporary = false;
         try {
@@ -121,15 +144,23 @@ public class JDBCUtilities {
         return isTemporary;
     }
 
-    private static boolean isH2DataBase(DatabaseMetaData metaData) throws SQLException {
+    /**
+     * @param metaData Database meta data
+     * @return True if the provided metadata is a h2 database connection.
+     * @throws SQLException
+     */
+    public static boolean isH2DataBase(DatabaseMetaData metaData) throws SQLException {
         return metaData.getDriverName().equals(H2_DRIVER_NAME);
     }
 
     /**
+     * @param meta DataBase meta data
+     * @param tableReference table identifier
      * @return The integer primary key used for edition[1-n]; 0 if the source is closed or if the table has no primary
      *         key or more than one column as primary key
      */
-    public static int getIntegerPrimaryKey(DatabaseMetaData meta, TableLocation tableLocation) throws SQLException {
+    public static int getIntegerPrimaryKey(DatabaseMetaData meta, String tableReference) throws SQLException {
+        TableLocation tableLocation = TableLocation.parse(tableReference);
         String columnNamePK = null;
         ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(), tableLocation.getSchema(),
                 tableLocation.getTable());
