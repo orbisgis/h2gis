@@ -16,41 +16,34 @@ In the case of a 2D geometry, `ST_3DLength` returns the same value as
 
 ### Examples
 
-| geom Geometry |
-| --------- |
-| `LINESTRING(1 4, 15 7, 16 17)` |
-| `LINESTRING(1 4 3, 15 7 9, 16 17 22)` |
-| `MULTILINESTRING((1 4 3, 15 7 9, 16 17 22), (0 0 0, 1 0 0, 1 2 0, 0 2 1))` |
-| `POLYGON((1 1, 3 1, 3 2, 1 2, 1 1))` |
-| `POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))` |
-| `MULTIPOLYGON(((0 0 0, 3 2 0, 3 2 2, 0 0 2, 0 0 0), (-1 1 0, -1 3 0, -1 3 4, -1 1 4, -1 1 0)))` |
-| `GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22), POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))` |
-
 ```mysql
-SELECT ST_3DLength(geom) FROM input_table;
+SELECT ST_3DLength('LINESTRING(1 4, 15 7, 16 17)'::Geometry) FROM input_table;
 ```
-
-| `ST_3DLength(geom)` |
-| ---- |
-| 24.367696684397245 |
-| 31.955851421415005 |
-| 36.3700649837881 |
-| 6.0 |
-| 9.048627177541054 |
-| 23.21110255092798 |
-| 41.004478598956055 |
-
-*Note*: The exact mathematical values are the following:
-
-| `ST_3DLength(geom)` |
-| ---- |
-| `SQRT(205) + SQRT(101)` |
-| `SQRT(241) + SQRT(270)` |
-| `SQRT(241) + SQRT(270) + 3 + SQRT(2)` |
-| `6` |
-| `SQRT(2) + 2 * SQRT(5) + SQRT(10)` |
-| `16 + 2 * SQRT(13)` |
-| `SQRT(241) + SQRT(270) + SQRT(2) + 2 * SQRT(5) + SQRT(10)` |
+Answer:    `24.367696684397245 = SQRT(205) + SQRT(101)`
+```mysql
+SELECT ST_3DLength('LINESTRING(1 4 3, 15 7 9, 16 17 22)'::Geometry) FROM input_table;
+```
+Answer:    `31.955851421415005 = SQRT(241) + SQRT(270)`
+```mysql
+SELECT ST_3DLength('MULTILINESTRING((1 4 3, 15 7 9, 16 17 22), (0 0 0, 1 0 0, 1 2 0, 0 2 1))'::Geometry) FROM input_table;
+```
+Answer:    `36.3700649837881 = SQRT(241) + SQRT(270) + 3 + SQRT(2)`
+```mysql
+SELECT ST_3DLength('POLYGON((1 1, 3 1, 3 2, 1 2, 1 1))'::Geometry) FROM input_table;
+```
+Answer:    `6.0`
+```mysql
+SELECT ST_3DLength('POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))'::Geometry) FROM input_table;
+```
+Answer:    `9.048627177541054 = SQRT(2) + 2 * SQRT(5) + SQRT(10)`
+```mysql
+SELECT ST_3DLength('MULTIPOLYGON(((0 0 0, 3 2 0, 3 2 2, 0 0 2, 0 0 0), (-1 1 0, -1 3 0, -1 3 4, -1 1 4, -1 1 0)))'::Geometry) FROM input_table;
+```
+Answer:    `23.21110255092798 = 16 + 2 * SQRT(13)`
+```mysql
+SELECT ST_3DLength('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22), POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))'::Geometry) FROM input_table;
+```
+Answer:    `41.004478598956055 = SQRT(241) + SQRT(270) + SQRT(2) + 2 * SQRT(5) + SQRT(10)`
 
 ##### History
 
