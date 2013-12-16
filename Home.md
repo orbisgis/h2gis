@@ -1,3 +1,9 @@
+---
+layout: default
+title: H2GIS
+permalink: /
+---
+
 H2GIS is a spatial extension of the [H2](http://www.h2database.com/) database
 engine in the spirit of [PostGIS](http://postgis.net/). It adds support for
 managing spatial features and operations including `(M)Polygon`, `(M)LineString` and `(M)Point` types, the [Open
