@@ -54,6 +54,9 @@ import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
+import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
+import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
+import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -104,7 +107,10 @@ public class CreateSpatialExtension {
                 new ST_Delaunay(),
                 new ST_ConstrainedDelaunay(),
                 new ST_MakeGrid(),
-                new ST_MakeGridPoints()};
+                new ST_MakeGridPoints(),
+                new ST_TriangleAspect(),
+                new ST_TriangleSlope(),
+                new ST_TriangleDirection()};
     }
 
     /**
