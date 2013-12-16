@@ -136,7 +136,7 @@ following is a reference of the available data.
         <code>_config.yml</code> are available through the <code>site</code>
         variable. For example, if you have <code>url: http://mysite.com</code>
         in your configuration file, then in your Posts and Pages it will be
-        stored in <code>site.url</code>. Jekyll does not parse changes to
+        stored in <code>site.baseurl</code>. Jekyll does not parse changes to
         <code>_config.yml</code> in <code>watch</code> mode, you must restart
         Jekyll to see changes to variables.
 
