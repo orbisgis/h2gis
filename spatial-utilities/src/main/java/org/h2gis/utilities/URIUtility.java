@@ -100,9 +100,6 @@ public class URIUtility {
         StringBuilder rel = new StringBuilder();
         String path = base.getPath();
         String separator = "/";
-        if(base.getScheme().equalsIgnoreCase("file")) {
-            separator = File.separator;
-        }
         StringTokenizer tokenizer = new StringTokenizer(target.getPath(), separator);
         String targetPart = "";
         if(tokenizer.hasMoreTokens()) {
