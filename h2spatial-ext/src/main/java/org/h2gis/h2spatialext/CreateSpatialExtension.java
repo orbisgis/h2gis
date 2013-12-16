@@ -55,6 +55,8 @@ import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MinimumRectangle;
+import org.h2gis.h2spatialext.function.spatial.create.ST_OctogonalEnvelope;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Densify;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
@@ -115,7 +117,9 @@ public class CreateSpatialExtension {
                 new ST_TriangleDirection(),
                 new ST_BoundingCircle(),
                 new ST_Densify(),
-                new ST_Expand()};
+                new ST_Expand(),
+                new ST_OctogonalEnvelope(),
+                new ST_MinimumRectangle()};
     }
 
     /**
