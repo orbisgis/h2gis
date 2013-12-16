@@ -49,6 +49,7 @@ import org.h2gis.h2spatialext.function.spatial.properties.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.h2spatialext.function.spatial.clean.ST_RemoveRepeatedPoints;
 import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircle;
 import org.h2gis.h2spatialext.function.spatial.create.ST_Expand;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
@@ -119,7 +120,8 @@ public class CreateSpatialExtension {
                 new ST_Densify(),
                 new ST_Expand(),
                 new ST_OctogonalEnvelope(),
-                new ST_MinimumRectangle()};
+                new ST_MinimumRectangle(),
+                new ST_RemoveRepeatedPoints()};
     }
 
     /**
