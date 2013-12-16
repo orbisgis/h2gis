@@ -22,11 +22,14 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
+ * This class i used to extrude a polygon or a linestring to a set of walls,
+ * roof, or floor using a height.
  *
  * @author Erwan Bocher
  * @author Thomas Leduc
@@ -34,30 +37,31 @@ import java.util.HashMap;
 public class GeometryExtrude {
 
     private static final GeometryFactory GF = new GeometryFactory();
-    public int WALL = 2;
-    public int FLOOR = 0;
-    public int ROOF = 1;
+    public static int WALL = 2;
+    public static int FLOOR = 0;
+    public static int ROOF = 1;
 
     private GeometryExtrude() {
     }
 
     /**
      * This method transform a polygon to collection of geometries that contains
-     * wall, floor and roof using a hight parameter
+     * walls, floor and roof using a hight parameter
      *
      * @param polygon
      * @param high
-     * @return
+     * @return a map that contains the floor geometry (key = 0), the wall
+     * geometries (key = 2) and the roof geometry (key = 1).
      */
-    public HashMap<Integer, Geometry> extrudePolygon(Polygon polygon, double hight) {
+    public static HashMap<Integer, Geometry> extrudePolygon(Polygon polygon, double hight) {
         HashMap<Integer, Geometry> extrudedCollection = new HashMap<Integer, Geometry>();
         //Add the floor
         extrudedCollection.put(FLOOR, getClockWise(polygon));
 
         //We process the exterior ring 
         final LineString shell = getClockWise(polygon.getExteriorRing());
-        
-        ArrayList<Polygon> walls = new ArrayList<Polygon>();        
+
+        ArrayList<Polygon> walls = new ArrayList<Polygon>();
         for (int i = 1; i < shell.getNumPoints(); i++) {
             walls.add(extrudeEdge(shell.getCoordinateN(i - 1), shell.getCoordinateN(i), hight));
         }
@@ -79,17 +83,28 @@ public class GeometryExtrude {
         for (int i = 0; i < nbOfHoles; i++) {
             holes[i] = translate(polygon.getInteriorRingN(i), hight);
         }
-        extrudedCollection.put(ROOF, GF.createPolygon(upperShell, holes));
+        extrudedCollection.put(ROOF, getCounterClockWise(GF.createPolygon(upperShell, holes)));
 
 
         return extrudedCollection;
     }
 
-    public Polygon extrudeLineString() {
-        return null;
+    /**
+     *
+     * @param lineString
+     * @return
+     */
+    public MultiPolygon extrudeLineString(LineString lineString, double hight) {
+        //Extract the walls        
+        Coordinate[] coords = lineString.getCoordinates();
+        Polygon[] walls = new Polygon[coords.length - 1];
+        for (int i = 0; i < coords.length - 1; i++) {
+            walls[i] = extrudeEdge(coords[i], coords[i + 1], hight);
+        }
+        return GF.createMultiPolygon(walls);
     }
 
-    private LineString getClockWise(final LineString lineString) {
+    private static LineString getClockWise(final LineString lineString) {
         final Coordinate c0 = lineString.getCoordinateN(0);
         final Coordinate c1 = lineString.getCoordinateN(1);
         final Coordinate c2 = lineString.getCoordinateN(2);
@@ -101,7 +116,7 @@ public class GeometryExtrude {
         }
     }
 
-    private LineString getCounterClockWise(final LineString lineString) {
+    private static LineString getCounterClockWise(final LineString lineString) {
         final Coordinate c0 = lineString.getCoordinateN(0);
         final Coordinate c1 = lineString.getCoordinateN(1);
         final Coordinate c2 = lineString.getCoordinateN(2);
@@ -112,7 +127,7 @@ public class GeometryExtrude {
         }
     }
 
-    private Polygon getClockWise(final Polygon polygon) {
+    private static Polygon getClockWise(final Polygon polygon) {
         final LinearRing shell = GF.createLinearRing(getClockWise(
                 polygon.getExteriorRing()).getCoordinates());
         final int nbOfHoles = polygon.getNumInteriorRing();
@@ -124,7 +139,7 @@ public class GeometryExtrude {
         return GF.createPolygon(shell, holes);
     }
 
-    private Polygon getCounterClockWise(final Polygon polygon) {
+    private static Polygon getCounterClockWise(final Polygon polygon) {
         final LinearRing shell = GF.createLinearRing(getCounterClockWise(polygon.getExteriorRing()).getCoordinates());
         final int nbOfHoles = polygon.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
@@ -143,7 +158,7 @@ public class GeometryExtrude {
      * @param high
      * @return
      */
-    private Polygon extrudeEdge(final Coordinate beginPoint,
+    private static Polygon extrudeEdge(final Coordinate beginPoint,
             Coordinate endPoint, final double high) {
         if (Double.isNaN(beginPoint.z)) {
             beginPoint.z = 0d;
@@ -160,7 +175,7 @@ public class GeometryExtrude {
             + high), endPoint, beginPoint}), null);
     }
 
-    private LinearRing translate(final LineString ring, final double high) {
+    private static LinearRing translate(final LineString ring, final double high) {
         final Coordinate[] src = ring.getCoordinates();
         final Coordinate[] dst = new Coordinate[src.length];
         for (int i = 0; i < src.length; i++) {
