@@ -50,7 +50,7 @@ public class ST_Expand extends DeterministicScalarFunction {
      */
     public static Geometry expand(Geometry geometry, double detlatX, double deltaY) {
         Envelope expand = geometry.getEnvelopeInternal();
-        expand.expandBy(deltaY, deltaY);
+        expand.expandBy(detlatX, deltaY);
         return toGeometry(expand);
     }
 
