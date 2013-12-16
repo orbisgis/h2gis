@@ -41,6 +41,7 @@ import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_LocateAlong;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeLine;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsRectangle;
@@ -81,8 +82,8 @@ public class CreateSpatialExtension {
                 new ST_IsValid(),
                 new ST_LocateAlong(),
                 new ST_MakeEllipse(),
+                new ST_MakeLine(),
                 new ST_MakePoint(),
-                new ST_PointsToLine(),
                 new ST_Rotate(),
                 new ST_Scale(),
                 new ST_ToMultiPoint(),
