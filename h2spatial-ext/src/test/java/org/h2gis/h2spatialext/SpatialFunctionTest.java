@@ -549,7 +549,7 @@ public class SpatialFunctionTest {
         assertGeometryEquals("LINESTRING(1 2, 4 5, 7 8)", rs.getBytes(5));
         assertFalse(rs.next());
         rs = st.executeQuery("SELECT " +
-                "ST_MakeLine(ST_Accum('MULTIPOINT(1 2, 3 4)'::Geometry));");
+                "ST_MakeLine('MULTIPOINT(1 2, 3 4)'::Geometry);");
         assertTrue(rs.next());
         assertGeometryEquals("LINESTRING(1 2, 3 4)", rs.getBytes(1));
         assertFalse(rs.next());
