@@ -18,6 +18,7 @@ SELECT ST_XMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 -- Answer:    4.0
 ```
 
+![warning](images/icons/illustrations/properties/ST_XMax.png)
 ##### History
 
 * Added: [#28](https://github.com/irstv/H2GIS/pull/28)
