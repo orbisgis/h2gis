@@ -53,11 +53,27 @@ public class GeometryExtrude {
      * @return a map that contains the floor geometry (key = 0), the wall
      * geometries (key = 2) and the roof geometry (key = 1).
      */
-    public static HashMap<Integer, Geometry> extrudePolygon(Polygon polygon, double hight) {
+    public static HashMap<Integer, Geometry> extrudePolygon(Polygon polygon, double hight, ArrayList<Polygon> walls) {
         HashMap<Integer, Geometry> extrudedCollection = new HashMap<Integer, Geometry>();
         //Add the floor
-        extrudedCollection.put(FLOOR, getClockWise(polygon));
-
+        extrudedCollection.put(FLOOR, extractFloor(polygon, hight));
+        extrudedCollection.put(WALL,extractWalls(polygon, hight) );
+        //We create the roof
+        extrudedCollection.put(ROOF, extractRoof(polygon, hight));
+        return extrudedCollection;
+    }
+    
+    public static Polygon extractFloor(Polygon polygon, double hight){
+        return getClockWise(polygon);
+    }
+    
+    /**
+     * Extract walls from a polygon
+     * @param polygon
+     * @param hight
+     * @return 
+     */
+    public static MultiPolygon extractWalls(Polygon polygon, double hight){
         //We process the exterior ring 
         final LineString shell = getClockWise(polygon.getExteriorRing());
 
@@ -75,18 +91,17 @@ public class GeometryExtrude {
                         hole.getCoordinateN(j), hight));
             }
         }
-        extrudedCollection.put(WALL, GF.createMultiPolygon(walls.toArray(new Polygon[walls.size()])));
-
-        //We create the roof        
+        return GF.createMultiPolygon(walls.toArray(new Polygon[walls.size()]));
+    }
+    
+    public static Polygon extractRoof(Polygon polygon, double hight){               
         final LinearRing upperShell = translate(polygon.getExteriorRing(), hight);
+        int nbOfHoles = polygon.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
             holes[i] = translate(polygon.getInteriorRingN(i), hight);
         }
-        extrudedCollection.put(ROOF, getCounterClockWise(GF.createPolygon(upperShell, holes)));
-
-
-        return extrudedCollection;
+        return getCounterClockWise(GF.createPolygon(upperShell, holes));
     }
 
     /**
