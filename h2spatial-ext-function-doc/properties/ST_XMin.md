@@ -18,6 +18,8 @@ SELECT ST_XMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 -- Answer:    1.0
 ```
 
+![warning](images/illustations/properties/ST_XMin.png)
+
 ##### History
 
 * Added: [#28](https://github.com/irstv/H2GIS/pull/28)
