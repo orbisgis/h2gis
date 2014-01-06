@@ -22,7 +22,7 @@ POINT ST_ZMin(Geometry geom);
 
 Returns the minimum z-value of the given geometry.
 
-### Examples
+### Example
 
 {% highlight mysql %}
 SELECT ST_ZMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);

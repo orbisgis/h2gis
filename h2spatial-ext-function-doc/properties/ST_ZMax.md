@@ -22,7 +22,7 @@ POINT ST_ZMax(Geometry geom);
 
 Returns the maximum z-value of the given geometry.
 
-### Examples
+### Example
 
 {% highlight mysql %}
 SELECT ST_ZMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
