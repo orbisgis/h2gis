@@ -2,7 +2,7 @@
 
 <ul>
 {% for item in items %}
-  {% assign item_url = item | prepend:'/docs/' | append:'/' %}
+  {% assign item_url = item | prepend:'/docs/dev/' | append:'/' %}
 
   {% if item_url == page.url %}
     {% assign c = 'current' %}
