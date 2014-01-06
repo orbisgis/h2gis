@@ -1,11 +1,22 @@
-### Name
-`ST_Covers` -- return true if no point in geometry B is outside geometry A.
+---
+
+layout: docs
+
+title: ST_Covers
+
+prev_section: dev/predicates
+
+next_section: dev/ST_DWithin
+
+permalink: /docs/dev/ST_Covers/
+
+---
 
 ### Signature
 
-```mysql
+{% highlight mysql %}
 boolean ST_Covers(Geometry geomA, Geometry geomB);
-```
+{% endhighlight %}
 
 ### Description
 
@@ -17,7 +28,7 @@ Returns true if no point in `geomB` is outside `geomA`.
 | ----|---- |
 | `ST_Buffer(ST_GeomFromText('POINT(1 2)'), 10)` | `ST_Buffer(ST_GeomFromText('POINT(1 2)'), 20))` |
 
-```mysql
+{% highlight mysql %}
 SELECT ST_Covers(smallc, smallc) FROM input_table;
 -- Answer:    true
 
@@ -32,7 +43,7 @@ SELECT ST_Covers(bigc, ST_ExteriorRing(bigc)) FROM input_table;
 
 SELECT ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;
 -- Answer:    false
-```
+{% endhighlight %}
 
 ##### History
 
