@@ -1,11 +1,22 @@
-### Name
-`ST_ZMin` -- return the minimum z-value of the given geometry.
+---
+
+layout: docs
+
+title: ST_ZMin
+
+prev_section: dev/ST_ZMax
+
+next_section:
+
+permalink: /docs/dev/ST_ZMin/
+
+---
 
 ### Signature
 
-```mysql
+{% highlight mysql %}
 POINT ST_ZMin(Geometry geom);
-```
+{% endhighlight %}
 
 ### Description
 
@@ -13,10 +24,10 @@ Returns the minimum z-value of the given geometry.
 
 ### Examples
 
-```mysql
+{% highlight mysql %}
 SELECT ST_ZMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 -- Answer:    3.0
-```
+{% endhighlight %}
 
 ##### History
 

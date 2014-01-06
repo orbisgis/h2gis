@@ -1,12 +1,22 @@
-### Name
-`ST_3DLength` -- return the 3D length or the 3D perimeter of the given
-geometry.
+---
+
+layout: docs
+
+title: ST_3DLength
+
+prev_section: dev/properties
+
+next_section: dev/ST_CompactnessRatio
+
+permalink: /docs/dev/ST_3DLength/
+
+---
  
 ### Signature
 
-```mysql
+{% highlight mysql %}
 double ST_3DLength(Geometry geom);
-```
+{% endhighlight %}
 
 ### Description
 
@@ -16,7 +26,7 @@ In the case of a 2D geometry, `ST_3DLength` returns the same value as
 
 ### Examples
 
-```mysql
+{% highlight mysql %}
 SELECT ST_3DLength('LINESTRING(1 4, 15 7, 16 17)'::Geometry);
 -- Answer:    24.367696684397245 = SQRT(205) + SQRT(101)
 
@@ -40,7 +50,7 @@ SELECT ST_3DLength('MULTIPOLYGON(((0 0 0, 3 2 0, 3 2 2, 0 0 2, 0 0 0),
 SELECT ST_3DLength('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),
                                        POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))'::Geometry);
 -- Answer:    41.004478598956055 = SQRT(241) + SQRT(270) + SQRT(2) + 2 * SQRT(5) + SQRT(10)
-```
+{% endhighlight %}
 
 ##### History
 
