@@ -6,7 +6,7 @@ title: Embedded spatial database
 
 prev_section: dev/function-aliases
 
-next_section: 
+next_section: dev/affine-transformations
 
 permalink: /docs/dev/embedded-spatial-db/
 

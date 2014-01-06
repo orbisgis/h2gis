@@ -1,14 +1,24 @@
-### Name
-`ST_Rotate` -- rotate a geometry counter-clockwise by the given angle (in
-radians) about a point.
+---
+
+layout: docs
+
+title: ST_Rotate
+
+prev_section: dev/affine-transformations
+
+next_section: dev/ST_Scale
+
+permalink: /docs/dev/ST_Rotate/
+
+---
 
 ### Signatures
 
-```mysql
+{% highlight mysql %}
 GEOMETRY ST_Rotate(GEOMETRY geom, double angle);
 GEOMETRY ST_Rotate(GEOMETRY geom, double angle, POINT origin);
 GEOMETRY ST_Rotate(GEOMETRY geom, double angle, double x, double y);
-```
+{% endhighlight %}
 
 ### Description
 
@@ -19,7 +29,7 @@ internal envelope).
 
 ### Examples
 
-```mysql
+{% highlight mysql %}
 SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi());
 -- Answer:    LINESTRING(2 1, 2 3, 1 3)
 
@@ -33,7 +43,7 @@ SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, -pi()/2, ST_GeomFromText
 
 SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi()/2, 1.0, 1.0);
 -- Answer:    LINESTRING(-1 1, 1 1, 1 2)
-```
+{% endhighlight %}
 
 ##### History
 

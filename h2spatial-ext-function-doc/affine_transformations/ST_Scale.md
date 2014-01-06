@@ -1,13 +1,23 @@
-### Name
-`ST_Scale` -- scale the given geometry by multiplying the ordinates by the
-indicated scale factors.
+---
+
+layout: docs
+
+title: ST_Scale
+
+prev_section: dev/ST_Rotate
+
+next_section:
+
+permalink: /docs/dev/ST_Scale/
+
+---
 
 ### Signatures
 
-```mysql
+{% highlight mysql %}
 GEOMETRY ST_Scale(GEOMETRY geom, double xFactor, double yFactor);
 GEOMETRY ST_Scale(GEOMETRY geom, double xFactor, double yFactor, double zFactor);
-```
+{% endhighlight %}
 
 ### Description
 
@@ -17,7 +27,7 @@ is left untouched.
 
 ### Examples
 
-```mysql
+{% highlight mysql %}
 SELECT ST_Scale('LINESTRING(1 2, 4 5)'::Geometry, 0.5, 0.75);
 -- Answer:    LINESTRING(0.5 1.5, 2, 3.75)
 
@@ -35,7 +45,7 @@ SELECT ST_Scale('LINESTRING(1 2 3, 4 5 6)'::Geometry, 0.5, 0.75, 1.2);
 
 SELECT ST_Scale('LINESTRING(1 2 3, 4 5 6)'::Geometry, 0.0, -1.0, 2.0);
 -- Answer:    LINESTRING(0 -2 6, 0 -5 12)
-```
+{% endhighlight %}
 
 ##### History
 
