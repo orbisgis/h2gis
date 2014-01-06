@@ -6,7 +6,7 @@ title: ST_Scale
 
 prev_section: dev/ST_Rotate
 
-next_section:
+next_section: dev/geometry-conversion
 
 permalink: /docs/dev/ST_Scale/
 
