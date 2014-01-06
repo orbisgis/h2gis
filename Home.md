@@ -1,7 +1,11 @@
 ---
+
 layout: docs
+
 title: Welcome
+
 permalink: /docs/dev/home/
+
 ---
 
 H2GIS is a spatial extension of the [H2](http://www.h2database.com/) database
