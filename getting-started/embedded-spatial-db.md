@@ -2,7 +2,7 @@
 
 layout: docs
 
-title: Embedded spatial database
+title: Embedded database
 
 prev_section: dev/function-aliases
 
