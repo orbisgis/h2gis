@@ -33,6 +33,7 @@ SELECT ST_MakePoint(1.4, -3.7, 6.2);
 -- Answer:     POINT(1.4 -3.7 6.2)
 {% endhighlight %}
 
-##### History
+##### See also
 
+* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakePoint.java)
 * Added: [#69](https://github.com/irstv/H2GIS/pull/69)

@@ -45,6 +45,7 @@ SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi()/2, 1.0, 1.0);
 -- Answer:    LINESTRING(-1 1, 1 1, 1 2)
 {% endhighlight %}
 
-##### History
+##### See also
 
+* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/affine_transformations/ST_Rotate.java)
 * Added: [#31](https://github.com/irstv/H2GIS/pull/31)

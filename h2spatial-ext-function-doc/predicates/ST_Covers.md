@@ -45,6 +45,7 @@ SELECT ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;
 -- Answer:    false
 {% endhighlight %}
 
-##### History
+##### See also
 
+* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/predicates/ST_Covers.java)
 * Added: [#26](https://github.com/irstv/H2GIS/pull/26)
