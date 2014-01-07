@@ -1,20 +1,29 @@
-/*
- * Copyright (C) 2013 IRSTV CNRS-FR-2488
+/**
+ * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * h2patial is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * h2spatial is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * h2spatial. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly: info_at_ orbisgis.org
  */
-package org.h2gis.h2spatialext.function.spatial.clean;
+package org.h2gis.utilities.jts_utils;
+
+import java.util.ArrayList;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
@@ -25,9 +34,10 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import java.util.ArrayList;
 
 /**
  * This utility class provides cleaning utilities for JTS {@link Geometry}
@@ -35,9 +45,9 @@ import java.util.ArrayList;
  *
  * @author Erwan Bocher
  */
-public final class GeometryClean {
+public final class GeometryClean extends GeometryUtils{
 
-    private static final GeometryFactory FACTORY = new GeometryFactory();
+    
 
     /**
      * Create a nice Polygon from the given Polygon. Will ensure that shells are
@@ -98,69 +108,69 @@ public final class GeometryClean {
      * @param geom
      * @return
      */
-    public static Geometry removeDuplicatedPoints(Geometry geom) {
+    public static Geometry removeDuplicateCoordinates(Geometry geom) {
         if (geom.isEmpty()) {
             return geom;
-        } else if (geom.getDimension() == 0) {
+        } else if (geom instanceof Point || geom instanceof MultiPoint) {
             return geom;
         } else if (geom instanceof LineString) {
-            return removeDuplicatedPoints((LineString) geom);
+            return removeDuplicateCoordinates((LineString) geom);
         } else if (geom instanceof MultiLineString) {
-            return removeDuplicatedPoints((MultiLineString) geom);
+            return removeDuplicateCoordinates((MultiLineString) geom);
         } else if (geom instanceof Polygon) {
-            return removeDuplicatedPoints((Polygon) geom);
+            return removeDuplicateCoordinates((Polygon) geom);
         } else if (geom instanceof MultiPolygon) {
-            return removeDuplicatedPoints((MultiPolygon) geom);
+            return removeDuplicateCoordinates((MultiPolygon) geom);
         } else if (geom instanceof GeometryCollection) {
-            return removeDuplicatedPoints((GeometryCollection) geom);
+            return removeDuplicateCoordinates((GeometryCollection) geom);
         }
         return null;
     }
 
     /**
-     * Removes duplicated points within a LineString.
+     * Removes duplicated coordinates within a LineString.
      *
      * @param g
      * @return
      */
-    public static LineString removeDuplicatedPoints(LineString g) {
+    public static LineString removeDuplicateCoordinates(LineString g) {
         Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(g.getCoordinates());
         return FACTORY.createLineString(coords);
     }
 
     /**
-     * Removes duplicated points within a linearRing.
+     * Removes duplicated coordinates within a linearRing.
      *
      * @param g
      * @return
      */
-    public static LinearRing removeDuplicatedPoints(LinearRing g) {
+    public static LinearRing removeDuplicateCoordinates(LinearRing g) {
         Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(g.getCoordinates());
         return FACTORY.createLinearRing(coords);
     }
 
     /**
-     * Removes duplicated points in a MultiLineString.
+     * Removes duplicated coordinates in a MultiLineString.
      *
      * @param g
      * @return
      */
-    public static MultiLineString removeDuplicatedPoints(MultiLineString g) {
+    public static MultiLineString removeDuplicateCoordinates(MultiLineString g) {
         ArrayList<LineString> lines = new ArrayList<LineString>();
         for (int i = 0; i < g.getNumGeometries(); i++) {
             LineString line = (LineString) g.getGeometryN(i);
-            lines.add(removeDuplicatedPoints(line));
+            lines.add(removeDuplicateCoordinates(line));
         }
         return FACTORY.createMultiLineString(GeometryFactory.toLineStringArray(lines));
     }
 
     /**
-     * Removes duplicated points within a Polygon.
+     * Removes duplicated coordinates within a Polygon.
      *
      * @param poly
      * @return
      */
-    public static Polygon removeDuplicatedPoints(Polygon poly) {
+    public static Polygon removeDuplicateCoordinates(Polygon poly) {
         Coordinate[] shellCoords = CoordinateArrays.removeRepeatedPoints(poly.getExteriorRing().getCoordinates());
         LinearRing shell = FACTORY.createLinearRing(shellCoords);
         ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
@@ -172,31 +182,31 @@ public final class GeometryClean {
     }
 
     /**
-     * Removes duplicated points within a MultiPolygon.
+     * Removes duplicated coordinates within a MultiPolygon.
      *
      * @param g
      * @return
      */
-    public static MultiPolygon removeDuplicatedPoints(MultiPolygon g) {
+    public static MultiPolygon removeDuplicateCoordinates(MultiPolygon g) {
         ArrayList<Polygon> polys = new ArrayList<Polygon>();
         for (int i = 0; i < g.getNumGeometries(); i++) {
             Polygon poly = (Polygon) g.getGeometryN(i);
-            polys.add(removeDuplicatedPoints(poly));
+            polys.add(removeDuplicateCoordinates(poly));
         }
         return FACTORY.createMultiPolygon(GeometryFactory.toPolygonArray(polys));
     }
 
     /**
-     * Removes duplicated points within a GeometryCollection
+     * Removes duplicated coordinates within a GeometryCollection
      *
      * @param g
      * @return
      */
-    public static GeometryCollection removeDuplicatedPoints(GeometryCollection g) {
+    public static GeometryCollection removeDuplicateCoordinates(GeometryCollection g) {
         ArrayList<Geometry> geoms = new ArrayList<Geometry>();
         for (int i = 0; i < g.getNumGeometries(); i++) {
             Geometry geom = g.getGeometryN(i);
-            geoms.add(removeDuplicatedPoints(geom));
+            geoms.add(removeDuplicateCoordinates(geom));
         }
         return FACTORY.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
     }

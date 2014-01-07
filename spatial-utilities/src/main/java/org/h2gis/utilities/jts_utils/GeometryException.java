@@ -22,34 +22,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.h2spatialext.function.spatial.clean;
-
-import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.GeometryClean;
+package org.h2gis.utilities.jts_utils;
 
 /**
- * Remove duplicated points on a geometry
+ * Exception related to geometry utilities.
+ * 
  * @author Erwan Bocher
  */
-public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction{
+public class GeometryException extends Exception {
 
-    public ST_RemoveRepeatedPoints(){
-        addProperty(PROP_REMARKS, "Returns a version of the given geometry with duplicated points removed.");
-    }
-    
-    @Override
-    public String getJavaStaticMethod() {
-        return "removeRepeatedPoints";
-    }
-    
-    /**
-     * Returns a version of the given geometry with duplicated points removed.
-     * @param geometry
-     * @return 
-     */
-    public static Geometry removeRepeatedPoints(Geometry geometry){
-        return GeometryClean.removeDuplicateCoordinates(geometry);
-    }
-    
+        public GeometryException(String message) {
+                super(message);
+        }
+
 }

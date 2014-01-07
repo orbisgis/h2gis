@@ -19,6 +19,7 @@ package org.h2gis.h2spatialext.function.spatial.volume;
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -43,17 +44,47 @@ public class GeometryExtrude {
 
     private GeometryExtrude() {
     }
+    
+    /**
+     * Extrude the polygon as a collection of geometries
+     * The output geometryCollection contains the floor, the walls and the roof.
+     * @param polygon
+     * @param hight
+     * @return 
+     */
+    public static GeometryCollection extrudePolygonAsGeometry(Polygon polygon, double hight){
+        Geometry[] geometries = new Geometry[3];
+        geometries[0]= extractFloor(polygon, hight);
+        geometries[1]= extractWalls(polygon, hight);
+        geometries[2]= extractRoof(polygon, hight);
+        return GF.createGeometryCollection(geometries);
+    }
+    
+     /**
+     * Extrude the linestring as a collection of geometries
+     * The output geometryCollection contains the floor, the walls and the roof.
+     * @param linestring
+     * @param hight
+     * @return 
+     */
+    public static GeometryCollection extrudeLineStringAsGeometry(LineString lineString, double hight){
+        Geometry[] geometries = new Geometry[3];
+        geometries[0]= lineString;
+        geometries[1]= extractWalls(lineString, hight);
+        geometries[2]= GF.createLineString(translate(lineString, hight));
+        return GF.createGeometryCollection(geometries);
+    }
 
     /**
      * This method transform a polygon to collection of geometries that contains
      * walls, floor and roof using a hight parameter
      *
      * @param polygon
-     * @param high
+     * @param hight
      * @return a map that contains the floor geometry (key = 0), the wall
      * geometries (key = 2) and the roof geometry (key = 1).
      */
-    public static HashMap<Integer, Geometry> extrudePolygon(Polygon polygon, double hight, ArrayList<Polygon> walls) {
+    public static HashMap<Integer, Geometry> extrudePolygon(Polygon polygon, double hight) {
         HashMap<Integer, Geometry> extrudedCollection = new HashMap<Integer, Geometry>();
         //Add the floor
         extrudedCollection.put(FLOOR, extractFloor(polygon, hight));
@@ -63,12 +94,37 @@ public class GeometryExtrude {
         return extrudedCollection;
     }
     
-    public static Polygon extractFloor(Polygon polygon, double hight){
+    /**
+     * This method transform a linestring to collection of geometries that contains
+     * walls, floor and roof using a hight parameter
+     *
+     * @param polygon
+     * @param hight
+     * @return a map that contains the floor geometry (key = 0), the wall
+     * geometries (key = 2) and the roof geometry (key = 1).
+     */
+    public static HashMap<Integer, Geometry> extrudeLineString(LineString lineString, double hight) {
+        HashMap<Integer, Geometry> extrudedCollection = new HashMap<Integer, Geometry>();
+        //Add the floor
+        extrudedCollection.put(FLOOR, getClockWise(lineString));
+        extrudedCollection.put(WALL,extractWalls(lineString, hight) );
+        //We create the roof
+        extrudedCollection.put(ROOF, GF.createLineString(translate(lineString, hight)));
+        return extrudedCollection;
+    }
+    
+    /**
+     * Reverse the polygon to be oriented counter-clockwise
+     * @param polygon
+     * @param hightt
+     * @return 
+     */
+    public static Polygon extractFloor(Polygon polygon, double hightt){
         return getClockWise(polygon);
     }
     
     /**
-     * Extract walls from a polygon
+     * Extract the walls from a polygon
      * @param polygon
      * @param hight
      * @return 
@@ -94,22 +150,29 @@ public class GeometryExtrude {
         return GF.createMultiPolygon(walls.toArray(new Polygon[walls.size()]));
     }
     
+    /**
+     * Extract the roof of a polygon
+     * 
+     * @param polygon
+     * @param hight
+     * @return 
+     */
     public static Polygon extractRoof(Polygon polygon, double hight){               
-        final LinearRing upperShell = translate(polygon.getExteriorRing(), hight);
+        final LinearRing upperShell = GF.createLinearRing(translate(polygon.getExteriorRing(), hight));
         int nbOfHoles = polygon.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
-            holes[i] = translate(polygon.getInteriorRingN(i), hight);
+            holes[i] = GF.createLinearRing(translate(polygon.getInteriorRingN(i), hight));
         }
         return getCounterClockWise(GF.createPolygon(upperShell, holes));
     }
 
     /**
-     *
+     * Extrude the LineString as a set of walls.
      * @param lineString
      * @return
      */
-    public MultiPolygon extrudeLineString(LineString lineString, double hight) {
+    public static MultiPolygon extractWalls(LineString lineString, double hight) {
         //Extract the walls        
         Coordinate[] coords = lineString.getCoordinates();
         Polygon[] walls = new Polygon[coords.length - 1];
@@ -119,6 +182,11 @@ public class GeometryExtrude {
         return GF.createMultiPolygon(walls);
     }
 
+    /**
+     * Reverse the LineString to be oriented clockwise.
+     * @param lineString
+     * @return 
+     */
     private static LineString getClockWise(final LineString lineString) {
         final Coordinate c0 = lineString.getCoordinateN(0);
         final Coordinate c1 = lineString.getCoordinateN(1);
@@ -131,6 +199,11 @@ public class GeometryExtrude {
         }
     }
 
+    /**
+     * Reverse the LineString to be oriented counter-clockwise.
+     * @param lineString
+     * @return 
+     */
     private static LineString getCounterClockWise(final LineString lineString) {
         final Coordinate c0 = lineString.getCoordinateN(0);
         final Coordinate c1 = lineString.getCoordinateN(1);
@@ -142,6 +215,11 @@ public class GeometryExtrude {
         }
     }
 
+    /**
+     * Return a polygon oriented clockwise
+     * @param polygon
+     * @return 
+     */
     private static Polygon getClockWise(final Polygon polygon) {
         final LinearRing shell = GF.createLinearRing(getClockWise(
                 polygon.getExteriorRing()).getCoordinates());
@@ -154,6 +232,11 @@ public class GeometryExtrude {
         return GF.createPolygon(shell, holes);
     }
 
+     /**
+     * Return a polygon oriented counter-clockwise
+     * @param polygon
+     * @return 
+     */
     private static Polygon getCounterClockWise(final Polygon polygon) {
         final LinearRing shell = GF.createLinearRing(getCounterClockWise(polygon.getExteriorRing()).getCoordinates());
         final int nbOfHoles = polygon.getNumInteriorRing();
@@ -170,11 +253,11 @@ public class GeometryExtrude {
      *
      * @param beginPoint
      * @param endPoint
-     * @param high
+     * @param hight
      * @return
      */
     private static Polygon extrudeEdge(final Coordinate beginPoint,
-            Coordinate endPoint, final double high) {
+            Coordinate endPoint, final double hight) {
         if (Double.isNaN(beginPoint.z)) {
             beginPoint.z = 0d;
         }
@@ -185,20 +268,26 @@ public class GeometryExtrude {
         return GF.createPolygon(GF.createLinearRing(new Coordinate[]{
             beginPoint,
             new Coordinate(beginPoint.x, beginPoint.y, beginPoint.z
-            + high),
+            + hight),
             new Coordinate(endPoint.x, endPoint.y, endPoint.z
-            + high), endPoint, beginPoint}), null);
+            + hight), endPoint, beginPoint}), null);
     }
 
-    private static LinearRing translate(final LineString ring, final double high) {
+    /**
+     * Translate the LineString according a specified hight.
+     * @param ring
+     * @param hight
+     * @return a coordinate array translate according the input hight
+     */
+    private static Coordinate[] translate(final LineString ring, final double hight) {
         final Coordinate[] src = ring.getCoordinates();
         final Coordinate[] dst = new Coordinate[src.length];
         for (int i = 0; i < src.length; i++) {
             if (Double.isNaN(src[i].z)) {
                 src[i].z = 0d;
             }
-            dst[i] = new Coordinate(src[i].x, src[i].y, src[i].z + high);
+            dst[i] = new Coordinate(src[i].x, src[i].y, src[i].z + hight);
         }
-        return GF.createLinearRing(dst);
-    }
+        return dst;
+    }    
 }

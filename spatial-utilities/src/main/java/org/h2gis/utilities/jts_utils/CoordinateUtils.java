@@ -74,6 +74,46 @@ public final class CoordinateUtils {
         result[1] = (zmax);
         return result;
     }
+    
+    
+    /**
+     * Interpolates a z value (linearly) between the two coordinates.
+     *
+     * @param firstCoordinate
+     * @param lastCoordinate
+     * @param toBeInterpolated
+     * @return
+     */
+    public static double interpolate(Coordinate firstCoordinate, Coordinate lastCoordinate, Coordinate toBeInterpolated) {
+        if (Double.isNaN(firstCoordinate.z)) {
+            return Double.NaN;
+        }
+        if (Double.isNaN(lastCoordinate.z)) {
+            return Double.NaN;
+        }
+        return firstCoordinate.z + (lastCoordinate.z - firstCoordinate.z) * firstCoordinate.distance(toBeInterpolated)
+                / (firstCoordinate.distance(toBeInterpolated) + toBeInterpolated.distance(lastCoordinate));
+    }
+    
+    
+    /**
+     * Checks if a coordinate array contains a specific coordinate.
+     *
+     * The equality is done only in 2D (z values are not checked).
+     *
+     * @param coords
+     * @param coord
+     * @return
+     */
+    public static boolean contains2D(Coordinate[] coords, Coordinate coord) {
+        for (Coordinate coordinate : coords) {
+            if (coordinate.equals2D(coord)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     /**
      * Private constructor for utility class.

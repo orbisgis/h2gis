@@ -52,6 +52,7 @@ import java.sql.Statement;
 import org.h2gis.h2spatialext.function.spatial.clean.ST_RemoveRepeatedPoints;
 import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircle;
 import org.h2gis.h2spatialext.function.spatial.create.ST_Expand;
+import org.h2gis.h2spatialext.function.spatial.create.ST_Extrude;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
@@ -59,6 +60,7 @@ import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MinimumRectangle;
 import org.h2gis.h2spatialext.function.spatial.create.ST_OctogonalEnvelope;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Densify;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_RemoveHoles;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
@@ -121,7 +123,9 @@ public class CreateSpatialExtension {
                 new ST_Expand(),
                 new ST_OctogonalEnvelope(),
                 new ST_MinimumRectangle(),
-                new ST_RemoveRepeatedPoints()};
+                new ST_RemoveRepeatedPoints(),
+                new ST_Extrude(),
+                new ST_RemoveHoles()};
     }
 
     /**
