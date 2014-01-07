@@ -2,7 +2,7 @@
 
 layout: docs
 
-title: Geometry creation
+title: Create geometries
 
 prev_section: dev/ST_ToMultiSegments
 

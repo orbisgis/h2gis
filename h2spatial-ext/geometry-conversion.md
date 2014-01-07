@@ -2,7 +2,7 @@
 
 layout: docs
 
-title: Geometry conversion
+title: Convert geometries
 
 prev_section: dev/ST_Scale
 

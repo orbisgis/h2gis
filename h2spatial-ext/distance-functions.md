@@ -2,7 +2,7 @@
 
 layout: docs
 
-title: Distance functions
+title: Measure distance
 
 prev_section: dev/ST_MakePoint
 
