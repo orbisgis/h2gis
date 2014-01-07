@@ -4,9 +4,9 @@ layout: docs
 
 title: Convert geometries
 
-prev_section: dev/ST_Scale
+prev_section: ST_Scale
 
-next_section: dev/ST_Holes
+next_section: ST_Holes
 
 permalink: /docs/dev/geometry-conversion/
 

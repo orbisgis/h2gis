@@ -4,9 +4,9 @@ layout: docs
 
 title: ST_Covers
 
-prev_section: dev/predicates
+prev_section: predicates
 
-next_section: dev/ST_DWithin
+next_section: ST_DWithin
 
 permalink: /docs/dev/ST_Covers/
 

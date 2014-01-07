@@ -4,9 +4,9 @@ layout: docs
 
 title: Create geometries
 
-prev_section: dev/ST_ToMultiSegments
+prev_section: ST_ToMultiSegments
 
-next_section: dev/ST_MakePoint
+next_section: ST_MakePoint
 
 permalink: /docs/dev/geometry-creation/
 

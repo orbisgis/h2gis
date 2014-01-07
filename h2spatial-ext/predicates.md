@@ -4,9 +4,9 @@ layout: docs
 
 title: Predicates
 
-prev_section: dev/ST_LocateAlong
+prev_section: ST_LocateAlong
 
-next_section: dev/ST_Covers
+next_section: ST_Covers
 
 permalink: /docs/dev/predicates/
 

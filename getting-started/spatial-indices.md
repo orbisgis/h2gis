@@ -4,9 +4,9 @@ layout: docs
 
 title: Spatial indices
 
-prev_section: dev/quickstart
+prev_section: quickstart
 
-next_section: dev/spatial-jdbc
+next_section: spatial-jdbc
 
 permalink: /docs/dev/spatial-indices/
 

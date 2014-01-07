@@ -4,7 +4,7 @@ layout: docs
 
 title: ST_MakePoint
 
-prev_section: dev/geometry-creation
+prev_section: geometry-creation
 
 next_section:
 

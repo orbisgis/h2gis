@@ -4,9 +4,9 @@ layout: docs
 
 title: ST_Scale
 
-prev_section: dev/ST_Rotate
+prev_section: ST_Rotate
 
-next_section: dev/geometry-conversion
+next_section: geometry-conversion
 
 permalink: /docs/dev/ST_Scale/
 

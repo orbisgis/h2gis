@@ -4,9 +4,9 @@ layout: docs
 
 title: ST_IsRectangle
 
-prev_section: dev/ST_DWithin
+prev_section: ST_DWithin
 
-next_section: dev/ST_IsValid
+next_section: ST_IsValid
 
 permalink: /docs/dev/ST_IsRectangle/
 

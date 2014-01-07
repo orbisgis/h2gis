@@ -4,9 +4,9 @@ layout: docs
 
 title: ST_3DLength
 
-prev_section: dev/properties
+prev_section: properties
 
-next_section: dev/ST_CompactnessRatio
+next_section: ST_CompactnessRatio
 
 permalink: /docs/dev/ST_3DLength/
 

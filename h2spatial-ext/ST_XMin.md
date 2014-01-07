@@ -4,9 +4,9 @@ layout: docs
 
 title: ST_XMin
 
-prev_section: dev/ST_XMax
+prev_section: ST_XMax
 
-next_section: dev/ST_YMax
+next_section: ST_YMax
 
 permalink: /docs/dev/ST_XMin/
 

@@ -4,9 +4,9 @@ layout: docs
 
 title: ST_Rotate
 
-prev_section: dev/affine-transformations
+prev_section: affine-transformations
 
-next_section: dev/ST_Scale
+next_section: ST_Scale
 
 permalink: /docs/dev/ST_Rotate/
 

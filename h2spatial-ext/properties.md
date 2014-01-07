@@ -4,9 +4,9 @@ layout: docs
 
 title: Properties
 
-prev_section: dev/ST_IsValid
+prev_section: ST_IsValid
 
-next_section: dev/ST_3DLength
+next_section: ST_3DLength
 
 permalink: /docs/dev/properties/
 

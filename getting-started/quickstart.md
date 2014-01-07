@@ -4,9 +4,9 @@ layout: docs
 
 title: Quick-start guide
 
-prev_section: dev/home
+prev_section: home
 
-next_section: dev/spatial-indices
+next_section: spatial-indices
 
 permalink: /docs/dev/quickstart/
 

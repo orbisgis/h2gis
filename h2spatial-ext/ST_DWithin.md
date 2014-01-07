@@ -4,9 +4,9 @@ layout: docs
 
 title: ST_DWithin
 
-prev_section: dev/ST_Covers
+prev_section: ST_Covers
 
-next_section: dev/ST_IsRectangle
+next_section: ST_IsRectangle
 
 permalink: /docs/dev/ST_DWithin/
 

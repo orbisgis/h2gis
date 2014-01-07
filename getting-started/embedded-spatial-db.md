@@ -4,9 +4,9 @@ layout: docs
 
 title: Embedded database
 
-prev_section: dev/function-aliases
+prev_section: function-aliases
 
-next_section: dev/affine-transformations
+next_section: affine-transformations
 
 permalink: /docs/dev/embedded-spatial-db/
 

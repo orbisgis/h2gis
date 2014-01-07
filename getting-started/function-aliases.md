@@ -4,9 +4,9 @@ layout: docs
 
 title: Custom function aliases
 
-prev_section: dev/spatial-jdbc
+prev_section: spatial-jdbc
 
-next_section: dev/embedded-spatial-db
+next_section: embedded-spatial-db
 
 permalink: /docs/dev/function-aliases/
 

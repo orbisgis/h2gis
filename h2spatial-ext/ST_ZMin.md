@@ -4,7 +4,7 @@ layout: docs
 
 title: ST_ZMin
 
-prev_section: dev/ST_ZMax
+prev_section: ST_ZMax
 
 next_section:
 

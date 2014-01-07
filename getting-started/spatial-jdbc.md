@@ -4,9 +4,9 @@ layout: docs
 
 title: Spatial JDBC
 
-prev_section: dev/spatial-indices
+prev_section: spatial-indices
 
-next_section: dev/function-aliases
+next_section: function-aliases
 
 permalink: /docs/dev/spatial-jdbc/
 

@@ -4,7 +4,7 @@ layout: docs
 
 title: Welcome
 
-next_section: dev/quickstart
+next_section: quickstart
 
 permalink: /docs/dev/home/
 

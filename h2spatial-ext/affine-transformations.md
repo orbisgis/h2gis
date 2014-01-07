@@ -4,9 +4,9 @@ layout: docs
 
 title: Affine transformations
 
-prev_section: dev/embedded-spatial-db
+prev_section: embedded-spatial-db
 
-next_section: dev/ST_Rotate
+next_section: ST_Rotate
 
 permalink: /docs/dev/affine-transformations/
 

@@ -4,9 +4,9 @@ layout: docs
 
 title: Measure distance
 
-prev_section: dev/ST_MakePoint
+prev_section: ST_MakePoint
 
-next_section: dev/ST_ClosestCoordinate
+next_section: ST_ClosestCoordinate
 
 permalink: /docs/dev/distance-functions/
 
