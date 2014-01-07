@@ -29,6 +29,8 @@ SELECT ST_ZMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 -- Answer:    3.0
 {% endhighlight %}
 
-##### History
+##### See also
 
+* [`ST_XMin`](../ST_XMin), [`ST_XMax`](../ST_XMax), [`ST_YMax`](../ST_YMax), [`ST_YMin`](../ST_YMin), [`ST_ZMax`](../ST_ZMax)
+* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_ZMin.java)
 * Added: [#28](https://github.com/irstv/H2GIS/pull/28)

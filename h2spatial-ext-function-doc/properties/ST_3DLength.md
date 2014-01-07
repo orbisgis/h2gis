@@ -52,6 +52,7 @@ SELECT ST_3DLength('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),
 -- Answer:    41.004478598956055 = SQRT(241) + SQRT(270) + SQRT(2) + 2 * SQRT(5) + SQRT(10)
 {% endhighlight %}
 
-##### History
+##### See also
 
+* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_3DLength.java)
 * Added: [#29](https://github.com/irstv/H2GIS/pull/29)
