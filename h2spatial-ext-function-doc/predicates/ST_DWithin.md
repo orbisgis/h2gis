@@ -27,7 +27,7 @@ Returns true if `geomA` is within `distance` of `geomB`.
 
 | geomA Polygon | geomB Polygon |
 | ----|---- |
-| `POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))` | `POLYGON ((12 0, 14 0, 14 6, 12 6, 12 0))` |
+| POLYGON((0 0, 10 0, 10 5, 0 5, 0 0)) | POLYGON((12 0, 14 0, 14 6, 12 6, 12 0)) |
 
 {% highlight mysql %}
 SELECT ST_DWithin(geomA, geomB, 2.0) FROM input_table;
