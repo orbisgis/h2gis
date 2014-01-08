@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: Quick-start guide
-
 prev_section: home
-
 next_section: spatial-indices
-
 permalink: /docs/dev/quickstart/
-
 ---
 
 For the impatient, the H2GIS web interface may be downloaded and launched as

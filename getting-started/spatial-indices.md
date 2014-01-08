@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: Spatial indices
-
 prev_section: quickstart
-
 next_section: spatial-jdbc
-
 permalink: /docs/dev/spatial-indices/
-
 ---
 
 On regular tables (not shapes) you can add a spatial index (stored on disk):

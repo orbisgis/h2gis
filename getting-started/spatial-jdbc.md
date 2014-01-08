@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: Spatial JDBC
-
 prev_section: spatial-indices
-
 next_section: function-aliases
-
 permalink: /docs/dev/spatial-jdbc/
-
 ---
 
 One of H2GIS's goals is to provide a common interface to H2 and PostGIS for
