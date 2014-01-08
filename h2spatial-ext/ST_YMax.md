@@ -23,7 +23,7 @@ SELECT ST_YMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 -- Answer:    5.0
 {% endhighlight %}
 
-![warning](../../images/illustations/properties/ST_YMax.png)
+![warning](../ST_YMax.png)
 
 ##### See also
 
