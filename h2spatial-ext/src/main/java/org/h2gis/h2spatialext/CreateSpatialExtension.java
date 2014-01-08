@@ -53,6 +53,7 @@ import org.h2gis.h2spatialext.function.spatial.clean.ST_RemoveRepeatedPoints;
 import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircle;
 import org.h2gis.h2spatialext.function.spatial.create.ST_Expand;
 import org.h2gis.h2spatialext.function.spatial.create.ST_Extrude;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeEnvelope;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
@@ -125,7 +126,8 @@ public class CreateSpatialExtension {
                 new ST_MinimumRectangle(),
                 new ST_RemoveRepeatedPoints(),
                 new ST_Extrude(),
-                new ST_RemoveHoles()};
+                new ST_RemoveHoles(),
+                new ST_MakeEnvelope()};
     }
 
     /**
