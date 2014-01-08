@@ -18,7 +18,6 @@ package org.h2gis.h2spatialext.function.spatial.create;
 
 import com.vividsolutions.jts.algorithm.MinimumBoundingCircle;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
