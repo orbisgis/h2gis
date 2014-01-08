@@ -22,33 +22,26 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.gpx;
+package org.h2gis.drivers.kml;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.drivers.gpx.model.GpxParser;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 
 /**
- * This class is used to read a GPX file
  *
  * @author Erwan Bocher
  */
-public class GPXDriverFunction implements DriverFunction {
+public class KMLDriverFunction implements DriverFunction{
 
-    public static String DESCRIPTION = "GPX file (1.1 and 1.0)";
-
-    @Override
-    public IMPORT_DRIVER_TYPE getImportDriverType() {
-        return IMPORT_DRIVER_TYPE.COPY;
-    }
+    public static String DESCRIPTION = "KML 2.2 file";    
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"gpx"};
+        return new String[]{"kml"};
     }
 
     @Override
@@ -58,7 +51,7 @@ public class GPXDriverFunction implements DriverFunction {
 
     @Override
     public String getFormatDescription(String format) {
-        if (format.equalsIgnoreCase("gpx")) {
+        if (format.equalsIgnoreCase("kml")) {
             return DESCRIPTION;
         } else {
             return "";
@@ -67,12 +60,19 @@ public class GPXDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        
+        KMLWriter kMLWriter = new KMLWriter(tableReference, fileName);
+        kMLWriter.write(progress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        GpxParser gpd = new GpxParser();
-        gpd.read(fileName, tableReference, connection);
+        throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public IMPORT_DRIVER_TYPE getImportDriverType() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
 }
