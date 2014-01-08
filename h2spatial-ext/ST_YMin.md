@@ -23,7 +23,7 @@ SELECT ST_YMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 -- Answer:    2.0
 {% endhighlight %}
 
-![warning](../images/illustations/properties/ST_YMin.png)
+![warning](../../images/illustations/properties/ST_YMin.png)
 
 ##### See also
 
