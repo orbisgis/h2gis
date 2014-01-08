@@ -6,7 +6,7 @@ title: Embedded database
 
 prev_section: function-aliases
 
-next_section: affine-transformations
+next_section: h2spatial/aggregates
 
 permalink: /docs/dev/embedded-spatial-db/
 

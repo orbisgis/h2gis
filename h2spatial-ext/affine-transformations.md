@@ -4,7 +4,7 @@ layout: docs
 
 title: Affine transformations
 
-prev_section: embedded-spatial-db
+prev_section:
 
 next_section: ST_Rotate
 
