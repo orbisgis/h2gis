@@ -4,11 +4,11 @@ layout: docs
 
 title: ST_Scale
 
-prev_section: ST_Rotate
+prev_section: h2spatial-ext/ST_Rotate
 
-next_section: geometry-conversion
+next_section: h2spatial-ext/geometry-conversion
 
-permalink: /docs/dev/ST_Scale/
+permalink: /docs/dev/h2spatial-ext/ST_Scale/
 
 ---
 

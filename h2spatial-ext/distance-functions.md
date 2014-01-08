@@ -4,11 +4,11 @@ layout: docs
 
 title: Measure distance
 
-prev_section: ST_MakePoint
+prev_section: h2spatial-ext/ST_MakePoint
 
-next_section: ST_ClosestCoordinate
+next_section: h2spatial-ext/ST_ClosestCoordinate
 
-permalink: /docs/dev/distance-functions/
+permalink: /docs/dev/h2spatial-ext/distance-functions/
 
 ---
 

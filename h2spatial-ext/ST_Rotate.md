@@ -4,11 +4,11 @@ layout: docs
 
 title: ST_Rotate
 
-prev_section: affine-transformations
+prev_section: h2spatial-ext/affine-transformations
 
-next_section: ST_Scale
+next_section: h2spatial-ext/ST_Scale
 
-permalink: /docs/dev/ST_Rotate/
+permalink: /docs/dev/h2spatial-ext/ST_Rotate/
 
 ---
 

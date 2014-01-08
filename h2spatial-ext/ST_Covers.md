@@ -4,11 +4,11 @@ layout: docs
 
 title: ST_Covers
 
-prev_section: predicates
+prev_section: h2spatial-ext/predicates
 
-next_section: ST_DWithin
+next_section: h2spatial-ext/ST_DWithin
 
-permalink: /docs/dev/ST_Covers/
+permalink: /docs/dev/h2spatial-ext/ST_Covers/
 
 ---
 

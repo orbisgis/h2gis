@@ -4,11 +4,11 @@ layout: docs
 
 title: ST_3DLength
 
-prev_section: properties
+prev_section: h2spatial-ext/properties
 
-next_section: ST_CompactnessRatio
+next_section: h2spatial-ext/ST_CompactnessRatio
 
-permalink: /docs/dev/ST_3DLength/
+permalink: /docs/dev/h2spatial-ext/ST_3DLength/
 
 ---
  

@@ -4,11 +4,11 @@ layout: docs
 
 title: ST_YMax
 
-prev_section: ST_XMin
+prev_section: h2spatial-ext/ST_XMin
 
-next_section: ST_YMin
+next_section: h2spatial-ext/ST_YMin
 
-permalink: /docs/dev/ST_YMax/
+permalink: /docs/dev/h2spatial-ext/ST_YMax/
 
 ---
 

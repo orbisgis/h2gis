@@ -4,11 +4,11 @@ layout: docs
 
 title: ST_Holes
 
-prev_section: geometry-conversion
+prev_section: h2spatial-ext/geometry-conversion
 
-next_section: ST_PointsToLine
+next_section: h2spatial-ext/ST_PointsToLine
 
-permalink: /docs/dev/ST_Holes/
+permalink: /docs/dev/h2spatial-ext/ST_Holes/
 
 ---
 

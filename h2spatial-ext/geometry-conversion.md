@@ -4,11 +4,11 @@ layout: docs
 
 title: Convert geometries
 
-prev_section: ST_Scale
+prev_section: h2spatial-ext/ST_Scale
 
-next_section: ST_Holes
+next_section: h2spatial-ext/ST_Holes
 
-permalink: /docs/dev/geometry-conversion/
+permalink: /docs/dev/h2spatial-ext/geometry-conversion/
 
 ---
 

@@ -4,11 +4,11 @@ layout: docs
 
 title: Create geometries
 
-prev_section: ST_ToMultiSegments
+prev_section: h2spatial-ext/ST_ToMultiSegments
 
-next_section: ST_MakePoint
+next_section: h2spatial-ext/ST_MakePoint
 
-permalink: /docs/dev/geometry-creation/
+permalink: /docs/dev/h2spatial-ext/geometry-creation/
 
 ---
 

@@ -4,11 +4,11 @@ layout: docs
 
 title: Predicates
 
-prev_section: ST_LocateAlong
+prev_section: h2spatial-ext/ST_LocateAlong
 
-next_section: ST_Covers
+next_section: h2spatial-ext/ST_Covers
 
-permalink: /docs/dev/predicates/
+permalink: /docs/dev/h2spatial-ext/predicates/
 
 ---
 

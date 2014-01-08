@@ -4,11 +4,11 @@ layout: docs
 
 title: Properties
 
-prev_section: ST_IsValid
+prev_section: h2spatial-ext/ST_IsValid
 
-next_section: ST_3DLength
+next_section: h2spatial-ext/ST_3DLength
 
-permalink: /docs/dev/properties/
+permalink: /docs/dev/h2spatial-ext/properties/
 
 ---
 

@@ -4,11 +4,11 @@ layout: docs
 
 title: Affine transformations
 
-prev_section:
+prev_section: h2spatial/properties
 
-next_section: ST_Rotate
+next_section: h2spatial-ext/ST_Rotate
 
-permalink: /docs/dev/affine-transformations/
+permalink: /docs/dev/h2spatial-ext/affine-transformations/
 
 ---
 

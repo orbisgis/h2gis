@@ -4,11 +4,11 @@ layout: docs
 
 title: ST_MakePoint
 
-prev_section: geometry-creation
+prev_section: h2spatial-ext/geometry-creation
 
 next_section:
 
-permalink: /docs/dev/ST_MakePoint/
+permalink: /docs/dev/h2spatial-ext/ST_MakePoint/
 
 ---
 

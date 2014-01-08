@@ -6,7 +6,7 @@ title: Properties
 
 prev_section: h2spatial/projections
 
-next_section: affine-transformations
+next_section: h2spatial-ext/affine-transformations
 
 permalink: /docs/dev/h2spatial/properties/
 

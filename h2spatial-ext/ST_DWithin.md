@@ -4,11 +4,11 @@ layout: docs
 
 title: ST_DWithin
 
-prev_section: ST_Covers
+prev_section: h2spatial-ext/ST_Covers
 
-next_section: ST_IsRectangle
+next_section: h2spatial-ext/ST_IsRectangle
 
-permalink: /docs/dev/ST_DWithin/
+permalink: /docs/dev/h2spatial-ext/ST_DWithin/
 
 ---
 

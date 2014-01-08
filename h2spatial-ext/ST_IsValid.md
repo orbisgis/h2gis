@@ -4,11 +4,11 @@ layout: docs
 
 title: ST_IsValid
 
-prev_section: ST_IsRectangle
+prev_section: h2spatial-ext/ST_IsRectangle
 
-next_section: properties
+next_section: h2spatial-ext/properties
 
-permalink: /docs/dev/ST_IsValid/
+permalink: /docs/dev/h2spatial-ext/ST_IsValid/
 
 ---
 
