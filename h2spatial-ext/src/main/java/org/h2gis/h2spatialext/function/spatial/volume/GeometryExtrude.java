@@ -37,10 +37,9 @@ import java.util.HashMap;
  */
 public class GeometryExtrude {
 
-    private static final GeometryFactory GF = new GeometryFactory();
-    public static int WALL = 2;
-    public static int FLOOR = 0;
-    public static int ROOF = 1;
+    private static final GeometryFactory GF = new GeometryFactory();    
+
+   
 
     private GeometryExtrude() {
     }
@@ -71,46 +70,18 @@ public class GeometryExtrude {
         Geometry[] geometries = new Geometry[3];
         geometries[0]= lineString;
         geometries[1]= extractWalls(lineString, hight);
-        geometries[2]= GF.createLineString(translate(lineString, hight));
+        geometries[2]= extractRoof(lineString, hight);
         return GF.createGeometryCollection(geometries);
-    }
-
-    /**
-     * This method transform a polygon to collection of geometries that contains
-     * walls, floor and roof using a hight parameter
-     *
-     * @param polygon
-     * @param hight
-     * @return a map that contains the floor geometry (key = 0), the wall
-     * geometries (key = 2) and the roof geometry (key = 1).
-     */
-    public static HashMap<Integer, Geometry> extrudePolygon(Polygon polygon, double hight) {
-        HashMap<Integer, Geometry> extrudedCollection = new HashMap<Integer, Geometry>();
-        //Add the floor
-        extrudedCollection.put(FLOOR, extractFloor(polygon, hight));
-        extrudedCollection.put(WALL,extractWalls(polygon, hight) );
-        //We create the roof
-        extrudedCollection.put(ROOF, extractRoof(polygon, hight));
-        return extrudedCollection;
     }
     
     /**
-     * This method transform a linestring to collection of geometries that contains
-     * walls, floor and roof using a hight parameter
-     *
-     * @param polygon
+     * Extract the linestring "roof". 
+     * @param lineString
      * @param hight
-     * @return a map that contains the floor geometry (key = 0), the wall
-     * geometries (key = 2) and the roof geometry (key = 1).
+     * @return 
      */
-    public static HashMap<Integer, Geometry> extrudeLineString(LineString lineString, double hight) {
-        HashMap<Integer, Geometry> extrudedCollection = new HashMap<Integer, Geometry>();
-        //Add the floor
-        extrudedCollection.put(FLOOR, getClockWise(lineString));
-        extrudedCollection.put(WALL,extractWalls(lineString, hight) );
-        //We create the roof
-        extrudedCollection.put(ROOF, GF.createLineString(translate(lineString, hight)));
-        return extrudedCollection;
+    public static Geometry extractRoof(LineString lineString, double hight) {
+       return  GF.createLineString(translate(lineString, hight));
     }
     
     /**
