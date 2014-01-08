@@ -4,9 +4,9 @@ layout: docs
 
 title: Measure distance
 
-prev_section: h2spatial-ext/ST_MakePoint
+prev_section: h2spatial-ext/geometry-creation
 
-next_section: h2spatial-ext/ST_ClosestCoordinate
+next_section: h2spatial-ext/predicates
 
 permalink: /docs/dev/h2spatial-ext/distance-functions/
 
@@ -14,7 +14,9 @@ permalink: /docs/dev/h2spatial-ext/distance-functions/
 
 The following distance functions are available:
 
-* [`ST_ClosestCoordinate`](../ST_ClosestCoordinate) --- 
-* [`ST_ClosestPoint`](../ST_ClosestPoint) --- 
-* [`ST_FurthestCoordinate`](../ST_FurthestCoordinate) --- 
-* [`ST_LocateAlong`](../ST_LocateAlong) --- 
+| Function | Description |
+| - | - |
+| [`ST_ClosestCoordinate`](../ST_ClosestCoordinate) |  |
+| [`ST_ClosestPoint`](../ST_ClosestPoint) |  |
+| [`ST_FurthestCoordinate`](../ST_FurthestCoordinate) |  |
+| [`ST_LocateAlong`](../ST_LocateAlong) |  |
