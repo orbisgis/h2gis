@@ -25,6 +25,7 @@ package org.h2gis.h2spatialext;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
+import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.AfterClass;
@@ -35,7 +36,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.h2spatialext.function.spatial.clean.ST_RemoveRepeatedPoints;
+import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -72,6 +73,10 @@ public class SpatialFunctionTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+
+    private static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
+        assertTrue(Arrays.equals(ValueGeometry.get(expectedWKT).getBytes(), valueWKB));
     }
 
     @Test
@@ -527,29 +532,62 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_PointsToLine() throws Exception {
+    public void test_ST_MakeLine() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(multi_point MultiPoint, point Point);"
-                + "INSERT INTO input_table VALUES("
-                + "ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154), "
-                + "ST_PointFromText('POINT(5 5)',2154));"
-                + "INSERT INTO input_table VALUES("
-                + "ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154),"
-                + "ST_PointFromText('POINT(1 2)',2154));"
-                + "INSERT INTO input_table VALUES("
-                + "ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154),"
-                + "ST_PointFromText('POINT(3 4)',2154));"
-                + "INSERT INTO input_table(point) VALUES("
-                + "ST_PointFromText('POINT(99 3)',2154));");
-        ResultSet rs = st.executeQuery("SELECT ST_PointsToLine(point), "
-                + "ST_PointsToLine(multi_point) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_MakeLine('POINT(1 2 3)'::Geometry, 'POINT(4 5 6)'::Geometry), " +
+                "ST_MakeLine('POINT(1 2)'::Geometry, 'POINT(4 5)'::Geometry), " +
+                "ST_MakeLine('POINT(1 2)'::Geometry, 'MULTIPOINT(4 5, 12 9)'::Geometry), " +
+                "ST_MakeLine('MULTIPOINT(1 2, 17 6)'::Geometry, 'MULTIPOINT(4 5, 7 9, 18 -1)'::Geometry), " +
+                "ST_MakeLine('POINT(1 2)'::Geometry, 'POINT(4 5)'::Geometry, 'POINT(7 8)'::Geometry);");
         assertTrue(rs.next());
-        assertEquals(WKT_READER.read("LINESTRING(5 5, 1 2, 3 4, 99 3)"), rs.getObject(1));
-        assertEquals(WKT_READER.read("LINESTRING(5 5, 1 2, 3 4, 99 3,"
-                + "-5 12, 11 22, 34 41, 65 124,"
-                + "1 12, 5 -21, 9 41, 32 124)"), rs.getObject(2));
+        assertGeometryEquals("LINESTRING(1 2 3, 4 5 6)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRING(1 2, 4 5)", rs.getBytes(2));
+        assertGeometryEquals("LINESTRING(1 2, 4 5, 12 9)", rs.getBytes(3));
+        assertGeometryEquals("LINESTRING(1 2, 17 6, 4 5, 7 9, 18 -1)", rs.getBytes(4));
+        assertGeometryEquals("LINESTRING(1 2, 4 5, 7 8)", rs.getBytes(5));
         assertFalse(rs.next());
+        rs = st.executeQuery("SELECT " +
+                "ST_MakeLine('MULTIPOINT(1 2, 3 4)'::Geometry);");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(1 2, 3 4)", rs.getBytes(1));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Point);" +
+                "INSERT INTO input_table VALUES" +
+                "('POINT(1 2)'::Geometry)," +
+                "('POINT(3 4)'::Geometry)," +
+                "('POINT(5 6)'::Geometry)," +
+                "('POINT(7 8)'::Geometry)," +
+                "('POINT(9 10)'::Geometry);");
+        rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(1 2, 3 4, 5 6, 7 8, 9 10)", rs.getBytes(1));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(point Geometry);" +
+                "INSERT INTO input_table VALUES" +
+                "('POINT(5 5)'::Geometry)," +
+                "('MULTIPOINT(1 2, 7 9, 18 -4)'::Geometry)," +
+                "('POINT(3 4)'::Geometry)," +
+                "('POINT(99 3)'::Geometry);");
+        rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(5 5, 1 2, 7 9, 18 -4, 3 4, 99 3)", rs.getBytes(1));
+        assertFalse(rs.next());
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(multi_point MultiPoint);" +
+                "INSERT INTO input_table VALUES" +
+                "('MULTIPOINT(5 5, 1 2, 3 4, 99 3)'::Geometry), " +
+                "('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)'::Geometry)," +
+                "('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)'::Geometry);");
+        rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(multi_point)) FROM input_table;");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(5 5, 1 2, 3 4, 99 3, " +
+                "-5 12, 11 22, 34 41, 65 124, " +
+                "1 12, 5 -21, 9 41, 32 124)", rs.getBytes(1));
+        assertFalse(rs.next());
+        rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
     }
@@ -1434,7 +1472,6 @@ public class SpatialFunctionTest {
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((1 0.5, 2 0.5, 2 1, 1 1, 1 0.5))")));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
-        st.close();
     }
 
     @Test
