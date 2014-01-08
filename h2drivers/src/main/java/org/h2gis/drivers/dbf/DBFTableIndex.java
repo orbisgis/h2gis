@@ -146,6 +146,11 @@ public class DBFTableIndex extends BaseIndex {
         return 0;
     }
 
+    @Override
+    public boolean isRowIdIndex() {
+        return true;
+    }
+
     /**
      * Parse the SHP and DBF files then init the provided data structure
      * @param data Data to initialise

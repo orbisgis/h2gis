@@ -32,8 +32,10 @@ import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.message.DbException;
 import org.h2.result.Row;
+import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
+import org.h2.value.Value;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,6 +51,7 @@ public class DBFTable extends TableBase {
     private DBFDriver dbfDriver;
     private Logger log = LoggerFactory.getLogger(DBFTable.class);
     private DBFTableIndex baseIndex;
+    private Column rowIdColumn;
 
     public DBFTable(DBFDriver driver, CreateTableData data) throws IOException {
         super(data);
@@ -165,5 +168,14 @@ public class DBFTable extends TableBase {
     @Override
     public void checkRename() {
         //Nothing to check
+    }
+
+    @Override
+    public Column getRowIdColumn() {
+        if (rowIdColumn == null) {
+            rowIdColumn = new Column(Column.ROWID, Value.LONG);
+            rowIdColumn.setTable(this, -1);
+        }
+        return rowIdColumn;
     }
 }

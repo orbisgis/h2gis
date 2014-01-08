@@ -88,6 +88,7 @@ public class  DBFEngineTest {
     @Test
     public void readDBFDataTest() throws SQLException {
         Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
@@ -96,6 +97,24 @@ public class  DBFEngineTest {
         assertEquals("river",rs.getString("type_axe"));
         rs.close();
         st.execute("drop table dbftable");
+    }
+
+    @Test
+    public void testRowIdHiddenColumn() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
+        // Check random access using hidden column _rowid_
+        ResultSet rs = st.executeQuery("SELECT * FROM dbftable where _rowid_ = " + 0);
+        try {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("gid"));
+            assertEquals("river",rs.getString("type_axe"));
+        } finally {
+            rs.close();
+        }
+        st.execute("drop table if exists dbftable");
+
     }
 
     @Test
