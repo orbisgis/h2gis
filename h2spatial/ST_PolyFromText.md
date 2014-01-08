@@ -1,9 +1,9 @@
 ---
 layout: docs
-title: ST_AsBinary
-prev_section: h2spatial/geometry-conversion
-next_section: h2spatial/ST_AsText
-permalink: /docs/dev/h2spatial/ST_AsBinary/
+title: ST_PolyFromText
+prev_section: h2spatial/ST_PointFromText
+next_section: h2spatial/ST_PolyFromWKB
+permalink: /docs/dev/h2spatial/ST_PolyFromText/
 ---
 
 ### Signatures
@@ -28,4 +28,4 @@ permalink: /docs/dev/h2spatial/ST_AsBinary/
 
 ##### See also
 
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_AsBinary.java)
+* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_PolyFromText.java)
