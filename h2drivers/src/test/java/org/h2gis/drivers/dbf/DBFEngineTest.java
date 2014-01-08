@@ -105,11 +105,22 @@ public class  DBFEngineTest {
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         // Check random access using hidden column _rowid_
-        ResultSet rs = st.executeQuery("SELECT * FROM dbftable where _rowid_ = " + 0);
+        ResultSet rs = st.executeQuery("SELECT * FROM dbftable where _rowid_ = 1");
         try {
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("gid"));
             assertEquals("river",rs.getString("type_axe"));
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT _rowid_ FROM dbftable");
+        try {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt(1));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt(1));
+            assertTrue(rs.next());
+            assertEquals(3, rs.getInt(1));
         } finally {
             rs.close();
         }

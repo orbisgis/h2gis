@@ -69,13 +69,15 @@ public class DBFTableIndex extends BaseIndex {
     @Override
     public Row getRow(Session session, long key) {
         try {
-            Object[] row = driver.getRow(key);
-            Value[] values = new Value[row.length];
+            Object[] driverRow = driver.getRow(key - 1);
+            Value[] values = new Value[driverRow.length];
             Column[] columns = table.getColumns();
-            for(int idField=0;idField<row.length;idField++) {
-                values[idField] = DataType.convertToValue(session, row[idField], columns[idField].getType());
+            for(int idField=0;idField<driverRow.length;idField++) {
+                values[idField] = DataType.convertToValue(session, driverRow[idField], columns[idField].getType());
             }
-            return new Row(values, Row.MEMORY_CALCULATE);
+            Row row =  new Row(values, Row.MEMORY_CALCULATE);
+            row.setKey(key);
+            return row;
         } catch (IOException ex) {
             throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
         }
@@ -98,7 +100,7 @@ public class DBFTableIndex extends BaseIndex {
 
     @Override
     public Cursor find(Session session, SearchRow first, SearchRow last) {
-        return new SHPCursor(this,first != null ? first.getKey() : 0,session);
+        return new SHPCursor(this,first != null ? first.getKey() - 1 : 0,session);
     }
 
     @Override
@@ -123,7 +125,7 @@ public class DBFTableIndex extends BaseIndex {
 
     @Override
     public Cursor findFirstOrLast(Session session, boolean first) {
-        return new SHPCursor(this,first ? 0 : getRowCount(session) - 1,session);
+        return new SHPCursor(this,first ? 0 : getRowCount(session),session);
     }
 
     @Override
@@ -214,7 +216,7 @@ public class DBFTableIndex extends BaseIndex {
 
         private SHPCursor(DBFTableIndex tIndex, long rowIndex, Session session) {
             this.tIndex = tIndex;
-            this.rowIndex = rowIndex - 1;
+            this.rowIndex = rowIndex;
             this.session = session;
         }
 
@@ -230,7 +232,7 @@ public class DBFTableIndex extends BaseIndex {
 
         @Override
         public boolean next() {
-            if(rowIndex + 1 < tIndex.getRowCount(session)) {
+            if(rowIndex < tIndex.getRowCount(session)) {
                 rowIndex ++;
                 return true;
             } else {
@@ -240,7 +242,7 @@ public class DBFTableIndex extends BaseIndex {
 
         @Override
         public boolean previous() {
-            if(rowIndex - 1 >= 0) {
+            if(rowIndex > 0) {
                 rowIndex --;
                 return true;
             } else {

@@ -110,7 +110,18 @@ public class SHPEngineTest {
         st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         // Check random access using hidden column _rowid_
-        ResultSet rs = st.executeQuery("SELECT * FROM shptable where _rowid_ = " + 0);
+        ResultSet rs = st.executeQuery("SELECT _rowid_ FROM shptable");
+        try {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("_rowid_"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("_rowid_"));
+            assertTrue(rs.next());
+            assertEquals(3, rs.getInt("_rowid_"));
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT * FROM shptable where _rowid_ = 1");
         try {
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("gid"));
