@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: ST_Covers
-
 prev_section: h2spatial-ext/predicates
-
 next_section: h2spatial-ext/ST_DWithin
-
 permalink: /docs/dev/h2spatial-ext/ST_Covers/
-
 ---
 
 ### Signature

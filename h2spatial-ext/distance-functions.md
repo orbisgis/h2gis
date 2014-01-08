@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: Measure distance
-
 prev_section: h2spatial-ext/geometry-creation
-
 next_section: h2spatial-ext/predicates
-
 permalink: /docs/dev/h2spatial-ext/distance-functions/
-
 ---
 
 The following distance functions are available:

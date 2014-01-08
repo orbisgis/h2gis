@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: ST_DWithin
-
 prev_section: h2spatial-ext/ST_Covers
-
 next_section: h2spatial-ext/ST_IsRectangle
-
 permalink: /docs/dev/h2spatial-ext/ST_DWithin/
-
 ---
 
 ### Signature

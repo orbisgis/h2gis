@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: ST_Scale
-
 prev_section: h2spatial-ext/ST_Rotate
-
 next_section: h2spatial-ext/geometry-conversion
-
 permalink: /docs/dev/h2spatial-ext/ST_Scale/
-
 ---
 
 ### Signatures

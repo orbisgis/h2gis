@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: ST_3DLength
-
 prev_section: h2spatial-ext/properties
-
 next_section: h2spatial-ext/ST_CompactnessRatio
-
 permalink: /docs/dev/h2spatial-ext/ST_3DLength/
-
 ---
  
 ### Signature

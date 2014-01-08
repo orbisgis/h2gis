@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: ST_YMax
-
 prev_section: h2spatial-ext/ST_XMin
-
 next_section: h2spatial-ext/ST_YMin
-
 permalink: /docs/dev/h2spatial-ext/ST_YMax/
-
 ---
 
 ### Signature

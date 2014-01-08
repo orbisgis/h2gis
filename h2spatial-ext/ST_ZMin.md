@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: ST_ZMin
-
 prev_section: h2spatial-ext/ST_ZMax
-
 next_section:
-
 permalink: /docs/dev/h2spatial-ext/ST_ZMin/
-
 ---
 
 ### Signature

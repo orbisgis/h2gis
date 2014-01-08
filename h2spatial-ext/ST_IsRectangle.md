@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: ST_IsRectangle
-
 prev_section: h2spatial-ext/ST_DWithin
-
 next_section: h2spatial-ext/ST_IsValid
-
 permalink: /docs/dev/h2spatial-ext/ST_IsRectangle/
-
 ---
 
 ### Signature
