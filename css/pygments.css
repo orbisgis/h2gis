@@ -68,3 +68,4 @@
 .highlight .vg { color: #98fb98} /* Name.Variable.Global */
 .highlight .vi { color: #98fb98} /* Name.Variable.Instance */
 .highlight .il { color: #ffffff} /* Literal.Number.Integer.Long */
+.highlight pre { white-space: pre; overflow: scroll; width:inherit; }
