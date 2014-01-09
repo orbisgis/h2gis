@@ -40,6 +40,7 @@ import org.h2.table.Table;
 import org.h2.table.TableFilter;
 import org.h2.value.DataType;
 import org.h2.value.Value;
+import org.h2.value.ValueLong;
 import org.h2gis.drivers.FileDriver;
 
 import java.io.IOException;
@@ -49,7 +50,7 @@ import java.io.IOException;
  * @author Nicolas Fortin
  */
 public class H2TableIndex extends BaseIndex {
-    FileDriver driver;
+    private FileDriver driver;
 
     public H2TableIndex(FileDriver driver, Table table, int id) {
         this.driver = driver;
@@ -62,6 +63,10 @@ public class H2TableIndex extends BaseIndex {
     @Override
     public void checkRename() {
         // Nothing to check
+    }
+
+    public FileDriver getDriver() {
+        return driver;
     }
 
     @Override
@@ -179,7 +184,9 @@ public class H2TableIndex extends BaseIndex {
 
         @Override
         public SearchRow getSearchRow() {
-            return get();
+            Row row =  new Row(new Value[tIndex.getColumns().length], Row.MEMORY_CALCULATE);
+            row.setKey(rowIndex);
+            return row;
         }
 
         @Override
