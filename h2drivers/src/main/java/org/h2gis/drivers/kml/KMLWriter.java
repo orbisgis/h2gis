@@ -181,37 +181,70 @@ public class KMLWriter {
         xmlOut.writeAttribute("type", columnType);
         xmlOut.writeEndElement();//Write schema
     }
-    
+
     /**
      * A Placemark is a Feature with associated Geometry.
-     * 
+     *
      * <Placemark id="ID">
-  <!-- inherited from Feature element -->
-  <name>...</name>                      <!-- string -->
-  <visibility>1</visibility>            <!-- boolean -->
-  <open>0</open>                        <!-- boolean -->
-  <atom:author>...<atom:author>         <!-- xmlns:atom -->
-  <atom:link href=" "/>                <!-- xmlns:atom -->
-  <address>...</address>                <!-- string -->
-  <xal:AddressDetails>...</xal:AddressDetails>  <!-- xmlns:xal -->
-  <phoneNumber>...</phoneNumber>        <!-- string -->
-  <Snippet maxLines="2">...</Snippet>   <!-- string -->
-  <description>...</description>        <!-- string -->
-  <AbstractView>...</AbstractView>      <!-- Camera or LookAt -->
-  <TimePrimitive>...</TimePrimitive>
-  <styleUrl>...</styleUrl>              <!-- anyURI -->
-  <StyleSelector>...</StyleSelector>
-  <Region>...</Region>
-  <Metadata>...</Metadata>              <!-- deprecated in KML 2.2 -->
-  <ExtendedData>...</ExtendedData>      <!-- new in KML 2.2 -->
-
-  <!-- specific to Placemark element -->
-  <Geometry>...</Geometry>
-</Placemark>
-     * @param xmlOut 
+     * <!-- inherited from Feature element -->
+     * <name>...</name> <!-- string -->
+     * <visibility>1</visibility> <!-- boolean -->
+     * <open>0</open> <!-- boolean -->
+     * <atom:author>...<atom:author> <!-- xmlns:atom -->
+     * <atom:link href=" "/> <!-- xmlns:atom -->
+     * <address>...</address> <!-- string -->
+     * <xal:AddressDetails>...</xal:AddressDetails> <!-- xmlns:xal -->
+     * <phoneNumber>...</phoneNumber> <!-- string -->
+     * <Snippet maxLines="2">...</Snippet> <!-- string -->
+     * <description>...</description> <!-- string -->
+     * <AbstractView>...</AbstractView> <!-- Camera or LookAt -->
+     * <TimePrimitive>...</TimePrimitive>
+     * <styleUrl>...</styleUrl> <!-- anyURI -->
+     * <StyleSelector>...</StyleSelector>
+     * <Region>...</Region>
+     * <Metadata>...</Metadata> <!-- deprecated in KML 2.2 -->
+     * <ExtendedData>...</ExtendedData> <!-- new in KML 2.2 -->
+     *
+     * <!-- specific to Placemark element -->
+     * <Geometry>...</Geometry>
+     * </Placemark>
+     *
+     * @param xmlOut
      */
-    public void writePlacemark(XMLStreamWriter xmlOut){
-        
+    public void writePlacemark(XMLStreamWriter xmlOut) throws XMLStreamException {
+        xmlOut.writeStartElement("Placemark");
+
+        xmlOut.writeEndElement();//Write Placemark
+    }
+
+    /**
+     * The ExtendedData element offers three techniques for adding custom data
+     * to a KML Feature (NetworkLink, Placemark, GroundOverlay, PhotoOverlay,
+     * ScreenOverlay, Document, Folder). These techniques are
+     *
+     * Adding untyped data/value pairs using the <Data> element (basic)
+     * Declaring new typed fields using the <Schema> element and then instancing
+     * them using the <SchemaData> element (advanced) Referring to XML elements
+     * defined in other namespaces by referencing the external namespace within
+     * the KML file (basic)
+     *
+     * These techniques can be combined within a single KML file or Feature for
+     * different pieces of data.
+     *
+     * <ExtendedData>
+     * <Data name="string">
+     * <displayName>...</displayName> <!-- string -->
+     * <value>...</value> <!-- string -->
+     * </Data>
+     * <SchemaData schemaUrl="anyURI">
+     * <SimpleData name=""> ... </SimpleData> <!-- string -->
+     * </SchemaData>
+     * <namespace_prefix:other>...</namespace_prefix:other>
+     * </ExtendedData>
+     *
+     * @param xmlOut
+     */
+    public void writeExtendedData(XMLStreamWriter xmlOut) {
     }
 
     /**
