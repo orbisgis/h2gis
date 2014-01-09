@@ -31,12 +31,18 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import org.h2.store.fs.FileUtils;
 import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 
 /**
  *
@@ -44,18 +50,25 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
  */
 public class KMLWriter {
 
-    private String namespaceKML = "http://earth.google.com/kml/2.2";
     private final String tableName;
     private final File fileName;
+    private final Connection connection;
 
-    public KMLWriter(String tableName, File fileName) {
+    public KMLWriter(Connection connection, String tableName, File fileName) {
+        this.connection = connection;
         this.tableName = tableName;
         this.fileName = fileName;
     }
 
     public void write(ProgressVisitor progress) throws SQLException {
-        
-        
+        // Read Geometry Index and type
+        List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
+        if (spatialFieldNames.isEmpty()) {
+            throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
+        }
+        int geometryType = SFSUtilities.getGeometryType(connection, TableLocation.parse(tableName), spatialFieldNames.get(0));
+
+
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(fileName);
@@ -72,9 +85,23 @@ public class KMLWriter {
             xmlOut.writeStartElement("Document");
             xmlOut.writeStartElement("Folder");
             xmlOut.writeStartElement("name");
-            xmlOut.writeCharacters("The name of the layer");
+            xmlOut.writeCharacters(tableName);
             xmlOut.writeEndElement();//Name
-            writeSchema(xmlOut, tableName);
+
+            // Read table content
+            Statement st = connection.createStatement();
+            try {
+                ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
+                try {
+                    ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                    writeSchema(null, resultSetMetaData);
+
+                } finally {
+                    rs.close();
+                }
+            } finally {
+                st.close();
+            }
 
             xmlOut.writeEndElement();//Folder
             xmlOut.writeEndElement();//KML
@@ -93,6 +120,8 @@ public class KMLWriter {
                 throw new SQLException(ex);
             }
         }
+
+        progress.endOfProgress();
     }
 
     /**
@@ -100,24 +129,19 @@ public class KMLWriter {
      * @param xmlOut
      * @param tableName
      */
-    private void writeSchema(XMLStreamWriter xmlOut, String tableName) throws XMLStreamException {
+    private void writeSchema(XMLStreamWriter xmlOut, ResultSetMetaData rsmd) throws XMLStreamException {
         xmlOut.writeStartElement("Schema");
         xmlOut.writeAttribute("name", tableName);
         xmlOut.writeAttribute("id", tableName);
         //Write column metadata
-        
+
         xmlOut.writeEndElement();//Write schema
     }
-    
+
     private void writeSimpleField(XMLStreamWriter xmlOut, String columnName, String columnType) throws XMLStreamException {
         xmlOut.writeStartElement("SimpleField");
         xmlOut.writeAttribute("name", tableName);
         xmlOut.writeAttribute("type", tableName);
         xmlOut.writeEndElement();//Write schema
-    }
-
-    public static void main(String[] args) throws SQLException {
-        KMLWriter kMLWriter = new KMLWriter(null, new File("/tmp/test.kml"));
-        kMLWriter.write(null);
     }
 }

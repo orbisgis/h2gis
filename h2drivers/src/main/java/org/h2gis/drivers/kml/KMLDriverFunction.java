@@ -30,14 +30,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
 
 /**
- *
+ * A driver to export spatial table to kml 2.2 file.
  * @author Erwan Bocher
  */
 public class KMLDriverFunction implements DriverFunction{
 
-    public static String DESCRIPTION = "KML 2.2 file";    
+    public static String DESCRIPTION = "KML 2.2";    
 
     @Override
     public String[] getImportFormats() {
@@ -60,9 +61,10 @@ public class KMLDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        
-        KMLWriter kMLWriter = new KMLWriter(tableReference, fileName);
-        kMLWriter.write(progress);
+        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+        ProgressVisitor copyProgress = progress.subProcess(recordCount);        
+        KMLWriter kMLWriter = new KMLWriter(connection, tableReference, fileName);
+        kMLWriter.write(copyProgress);
     }
 
     @Override
