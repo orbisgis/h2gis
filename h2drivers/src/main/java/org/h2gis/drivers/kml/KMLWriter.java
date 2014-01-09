@@ -266,7 +266,7 @@ public class KMLWriter {
      * altitude.
      *
      * Syntax :
-     * 
+     *
      * <Point id="ID">
      * <!-- specific to Point -->
      * <extrude>0</extrude> <!-- boolean -->
@@ -288,7 +288,7 @@ public class KMLWriter {
         Coordinate coord = point.getCoordinate();
         StringBuilder sb = new StringBuilder();
         sb.append(coord.y).append(",").append(coord.x);
-        if(!Double.isNaN(coord.z)){
+        if (!Double.isNaN(coord.z)) {
             sb.append(",").append(coord.z);
         }
         xmlOut.writeCharacters(sb.toString());
@@ -298,30 +298,35 @@ public class KMLWriter {
 
     /**
      * Defines a connected set of line segments.
-     * 
+     *
      * <LineString id="ID">
-  <!-- specific to LineString -->
-  <gx:altitudeOffset>0</gx:altitudeOffset>  <!-- double -->
-  <extrude>0</extrude>                      <!-- boolean -->
-  <tessellate>0</tessellate>                <!-- boolean -->
-  <altitudeMode>clampToGround</altitudeMode>
-      <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute -->
-      <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor -->
-  <gx:drawOrder>0</gx:drawOrder>            <!-- integer -->
-  <coordinates>...</coordinates>            <!-- lon,lat[,alt] -->
-</LineString>
+     * <!-- specific to LineString -->
+     * <gx:altitudeOffset>0</gx:altitudeOffset> <!-- double -->
+     * <extrude>0</extrude> <!-- boolean -->
+     * <tessellate>0</tessellate> <!-- boolean -->
+     * <altitudeMode>clampToGround</altitudeMode>
+     * <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute
+     * -->
+     * <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor
+     * -->
+     * <gx:drawOrder>0</gx:drawOrder> <!-- integer -->
+     * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
+     * </LineString>
+     *
      * @param xmlOut
      * @param lineString
-     * @throws XMLStreamException 
+     * @throws XMLStreamException
      */
     public void writeKMLLineString(XMLStreamWriter xmlOut, LineString lineString) throws XMLStreamException {
-        xmlOut.writeStartElement("Point");
+        xmlOut.writeStartElement("LineString");
         xmlOut.writeStartElement("coordinates");
-        Coordinate coord = point.getCoordinate();
+        Coordinate[] coords = lineString.getCoordinates();
         StringBuilder sb = new StringBuilder();
-        sb.append(coord.y).append(",").append(coord.x);
-        if(!Double.isNaN(coord.z)){
-            sb.append(",").append(coord.z);
+        for (Coordinate coord : coords) {
+            sb.append(coord.y).append(",").append(coord.x);
+            if (!Double.isNaN(coord.z)) {
+                sb.append(",").append(coord.z);
+            }
         }
         xmlOut.writeCharacters(sb.toString());
         xmlOut.writeEndElement();//Write coordinates
