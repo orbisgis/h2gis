@@ -34,26 +34,27 @@ import org.h2gis.utilities.JDBCUtilities;
 
 /**
  * A driver to export spatial table to kml 2.2 file.
+ *
  * @author Erwan Bocher
  */
-public class KMLDriverFunction implements DriverFunction{
-
-    public static String DESCRIPTION = "KML 2.2";    
+public class KMLDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"kml"};
+        return new String[0];
     }
 
     @Override
     public String[] getExportFormats() {
-        return new String[0];
+        return new String[]{"kml", "kmz"};
     }
 
     @Override
     public String getFormatDescription(String format) {
         if (format.equalsIgnoreCase("kml")) {
-            return DESCRIPTION;
+            return "KML 2.2";
+        } else if (format.equalsIgnoreCase("kmz")) {
+            return "KMZ 2.2";
         } else {
             return "";
         }
@@ -62,7 +63,7 @@ public class KMLDriverFunction implements DriverFunction{
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-        ProgressVisitor copyProgress = progress.subProcess(recordCount);        
+        ProgressVisitor copyProgress = progress.subProcess(recordCount);
         KMLWriter kMLWriter = new KMLWriter(connection, tableReference, fileName);
         kMLWriter.write(copyProgress);
     }
@@ -76,5 +77,4 @@ public class KMLDriverFunction implements DriverFunction{
     public IMPORT_DRIVER_TYPE getImportDriverType() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
 }

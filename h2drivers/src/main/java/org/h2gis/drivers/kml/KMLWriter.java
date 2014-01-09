@@ -47,6 +47,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
@@ -65,7 +69,7 @@ public class KMLWriter {
     private final File fileName;
     private final Connection connection;
     private HashMap<Integer, String> kmlFields;
-    private int columnCount =-1;
+    private int columnCount = -1;
 
     public KMLWriter(Connection connection, String tableName, File fileName) {
         this.connection = connection;
@@ -74,17 +78,78 @@ public class KMLWriter {
     }
 
     public void write(ProgressVisitor progress) throws SQLException {
+        String path = fileName.getAbsolutePath();
+        String extension = "";
+        int i = path.lastIndexOf('.');
+        String nameWithoutExt = path.substring(0, i);
+        if (i >= 0) {
+            extension = path.substring(i + 1);
+        }        
+        if(extension.equalsIgnoreCase("kml")){
+            writeKML(progress);
+        }
+        else if(extension.equalsIgnoreCase("kmz")){
+            writeKMZ(progress, nameWithoutExt+".kmz");
+        }
+        else{
+            throw new SQLException("Please kml or kmz extension.");
+        }
+    }
+
+    public void writeKML(ProgressVisitor progress) throws SQLException {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(fileName);
+            writeKMLDocument(progress, fos);
+        } catch (FileNotFoundException ex) {
+            throw new SQLException(ex);
+
+        } finally {
+            try {
+                if (fos != null) {
+                    fos.close();
+                }
+            } catch (IOException ex) {
+                throw new SQLException(ex);
+            }
+        }
+    }
+
+    public void writeKMZ(ProgressVisitor progress, String fileNameWithExtension) throws SQLException {
+        ZipOutputStream zos = null;
+        try {
+            zos = new ZipOutputStream(new FileOutputStream(fileName));
+            // Create a zip entry for the main KML file
+            zos.putNextEntry(new ZipEntry(fileNameWithExtension));
+            writeKMLDocument(progress, zos);
+            zos.closeEntry();
+            zos.finish();
+        } catch (FileNotFoundException ex) {
+            throw new SQLException(ex);
+        } catch (IOException ex) {
+            throw new SQLException(ex);
+        } finally {
+            try {
+                if (zos != null) {
+                    zos.close();
+                }
+            } catch (IOException ex) {
+                throw new SQLException(ex);
+            }
+        }
+
+
+    }
+
+    private void writeKMLDocument(ProgressVisitor progress, OutputStream outputStream) throws SQLException {
         // Read Geometry Index and type
         List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
         if (spatialFieldNames.isEmpty()) {
             throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
         }
-       
-        OutputStream outputStream = null;
         try {
-            outputStream = new FileOutputStream(fileName);
             XMLStreamWriter xmlOut = XMLOutputFactory.newInstance().createXMLStreamWriter(
-                    new OutputStreamWriter(outputStream, "utf-8"));
+                    outputStream);
             xmlOut.writeStartDocument("UTF-8", "1.0");
             xmlOut.writeStartElement("kml");
             xmlOut.writeDefaultNamespace("http://www.opengis.net/kml/2.2");
@@ -118,16 +183,11 @@ public class KMLWriter {
             } finally {
                 st.close();
             }
-
             xmlOut.writeEndElement();//Folder
             xmlOut.writeEndElement();//KML
             xmlOut.writeEndDocument();//DOC
             xmlOut.close();
-        } catch (FileNotFoundException ex) {
-            throw new SQLException(ex);
         } catch (XMLStreamException ex) {
-            throw new SQLException(ex);
-        } catch (UnsupportedEncodingException ex) {
             throw new SQLException(ex);
         } finally {
             try {
@@ -158,21 +218,21 @@ public class KMLWriter {
      * @param tableName
      */
     private void writeSchema(XMLStreamWriter xmlOut, ResultSetMetaData metaData) throws XMLStreamException, SQLException {
-         columnCount = metaData.getColumnCount();
+        columnCount = metaData.getColumnCount();
         //The schema is writing only if there is more than one column
         if (columnCount > 1) {
             xmlOut.writeStartElement("Schema");
             xmlOut.writeAttribute("name", tableName);
             xmlOut.writeAttribute("id", tableName);
             //Write column metadata
-            kmlFields = new HashMap<Integer, String>();            
+            kmlFields = new HashMap<Integer, String>();
             for (int fieldId = 1; fieldId <= metaData.getColumnCount(); fieldId++) {
                 final String fieldTypeName = metaData.getColumnTypeName(fieldId);
                 if (!fieldTypeName.equalsIgnoreCase("geometry")) {
                     String fieldName = metaData.getColumnName(fieldId);
                     writeSimpleField(xmlOut, fieldName, getKMLType(metaData.getColumnType(fieldId), fieldTypeName));
                     kmlFields.put(fieldId, fieldName);
-                    
+
                 }
             }
             xmlOut.writeEndElement();//Write schema
@@ -238,23 +298,19 @@ public class KMLWriter {
             writeExtendedData(xmlOut, rs);
         }
         //Write Geometry
-        Geometry geometry  = (Geometry) rs.getObject(geoFieldIndex);
-        if(geometry instanceof Point){
+        Geometry geometry = (Geometry) rs.getObject(geoFieldIndex);
+        if (geometry instanceof Point) {
             writeKMLPoint(xmlOut, (Point) geometry);
-        }
-        else if(geometry instanceof LineString){
+        } else if (geometry instanceof LineString) {
             writeKMLLineString(xmlOut, (LineString) geometry);
-        }
-        else if (geometry instanceof Polygon){
+        } else if (geometry instanceof Polygon) {
             writeKMLPolygon(xmlOut, (Polygon) geometry);
-        }
-        else if(geometry instanceof GeometryCollection){
+        } else if (geometry instanceof GeometryCollection) {
             writeKMLMultiGeometry(xmlOut, (GeometryCollection) geometry);
+        } else {
+            throw new SQLException("This geometry type is not supported : " + geometry.toString());
         }
-        else{
-            throw new SQLException("This geometry type is not supported : "+ geometry.toString());
-        }
-        
+
         xmlOut.writeEndElement();//Write Placemark
     }
 
@@ -290,25 +346,25 @@ public class KMLWriter {
     public void writeExtendedData(XMLStreamWriter xmlOut, ResultSet rs) throws XMLStreamException, SQLException {
         xmlOut.writeStartElement("ExtendedData");
         xmlOut.writeStartElement("SchemaData");
-        xmlOut.writeAttribute("schemaUrl", "#"+tableName);
+        xmlOut.writeAttribute("schemaUrl", "#" + tableName);
         for (Map.Entry<Integer, String> entry : kmlFields.entrySet()) {
-                Integer fieldIndex = entry.getKey();
-                String fieldName = entry.getValue();                
-                writeSimpleData(xmlOut, fieldName, rs.getString(fieldIndex));
-            }
-        
-               
+            Integer fieldIndex = entry.getKey();
+            String fieldName = entry.getValue();
+            writeSimpleData(xmlOut, fieldName, rs.getString(fieldIndex));
+        }
+
+
 
         xmlOut.writeEndElement();//Write SchemaData
         xmlOut.writeEndElement();//Write ExtendedData
-        
+
     }
-    
+
     /**
-     * 
-     * @param xmlOut 
+     *
+     * @param xmlOut
      */
-    public void writeSimpleData(XMLStreamWriter xmlOut, String columnName, String value) throws XMLStreamException{
+    public void writeSimpleData(XMLStreamWriter xmlOut, String columnName, String value) throws XMLStreamException {
         xmlOut.writeStartElement("SimpleData");
         xmlOut.writeAttribute("name", columnName);
         xmlOut.writeCharacters(value);
@@ -456,7 +512,7 @@ public class KMLWriter {
      * feature.
      *
      * Syntax :
-     * 
+     *
      * <MultiGeometry id="ID">
      * <!-- specific to MultiGeometry -->
      * <!-- 0 or more Geometry elements -->
@@ -471,28 +527,26 @@ public class KMLWriter {
         for (int i = 0; i < gc.getNumGeometries(); i++) {
             Geometry geom = gc.getGeometryN(i);
             if (geom instanceof Point) {
-                writeKMLPoint(xmlOut,(Point) geom);
-            }
-            else if(geom instanceof LineString){
-                writeKMLLineString(xmlOut, (LineString)geom);
-            }
-            else if(geom instanceof Polygon){
-                writeKMLPolygon(xmlOut,(Polygon) geom);
+                writeKMLPoint(xmlOut, (Point) geom);
+            } else if (geom instanceof LineString) {
+                writeKMLLineString(xmlOut, (LineString) geom);
+            } else if (geom instanceof Polygon) {
+                writeKMLPolygon(xmlOut, (Polygon) geom);
             }
         }
         xmlOut.writeEndElement();//Write MultiGeometry 
     }
 
     /**
-     * 
-     * 
+     *
+     *
      * Syntax :
-     * 
+     *
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
-     * 
+     *
      * @param xmlOut
      * @param coords
-     * @throws XMLStreamException 
+     * @throws XMLStreamException
      */
     public void writeKMLCoordinates(XMLStreamWriter xmlOut, Coordinate[] coords) throws XMLStreamException {
         xmlOut.writeStartElement("coordinates");
@@ -538,37 +592,4 @@ public class KMLWriter {
                 throw new SQLException("Field type not supported by DBF : " + sqlTypeName);
         }
     }
-    
-    /**
-     * Return the string kml value representation from SQL data type
-     *
-     * @param sqlTypeId
-     * @param sqlTypeName
-     * @return
-     * @throws SQLException
-     */
-    private static String getKMLValue(int sqlTypeId, String fieldName, ResultSet rs) throws SQLException {
-        switch (sqlTypeId) {
-            case Types.BOOLEAN:
-                return "";
-            case Types.DOUBLE:
-                return "double";
-            case Types.FLOAT:
-                return "float";
-            case Types.INTEGER:
-            case Types.BIGINT:
-                return "int";
-            case Types.SMALLINT:
-                return "short";
-            case Types.DATE:
-            case Types.VARCHAR:
-            case Types.NCHAR:
-            case Types.CHAR:
-                return "string";
-            default:
-                throw new SQLException("Field type not supported by KML : " + fieldName);
-        }
-    }
-    
-        
 }

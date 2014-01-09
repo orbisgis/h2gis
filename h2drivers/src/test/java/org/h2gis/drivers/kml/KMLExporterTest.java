@@ -61,14 +61,13 @@ public class KMLExporterTest {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/kml_points.kml");
         stat.execute("DROP TABLE IF EXISTS KML_POINTS");
-        stat.execute("create table KML_POINTS(id int primary key, the_geom POINT)");
-        stat.execute("insert into KML_POINTS values(1, 'POINT (47.58 2.19)')");
-        stat.execute("insert into KML_POINTS values(2, 'POINT (47.59 1.06)')");
+        stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
+        stat.execute("insert into KML_POINTS values(1, 'POINT (47.58 2.19)', true)");
+        stat.execute("insert into KML_POINTS values(2, 'POINT (47.59 1.06)', false)");
         // Create a shape file using table area
         stat.execute("CALL KMLWrite('target/kml_points.kml', 'KML_POINTS')");
         // Read this shape file to check values
         assertTrue(shpFile.exists());
-
         stat.close();
     }
     
