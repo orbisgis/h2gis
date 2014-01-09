@@ -33,7 +33,7 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Convert a geometry into binary value.
+ * Convert a geometry into a binary value.
  * @author Nicolas Fortin
  */
 public class ST_AsBinary extends DeterministicScalarFunction {
@@ -48,7 +48,7 @@ public class ST_AsBinary extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert a geometry into binary value.
+     * Convert a geometry into a binary value.
      * @param geometry Geometry instance
      * @return WKB
      */

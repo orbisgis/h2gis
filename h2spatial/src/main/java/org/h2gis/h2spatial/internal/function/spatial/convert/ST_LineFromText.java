@@ -31,7 +31,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert String into a Line type.
+ * Convert a String into a LINESTRING.
  * @author Nicolas Fortin
  */
 public class ST_LineFromText extends DeterministicScalarFunction {
