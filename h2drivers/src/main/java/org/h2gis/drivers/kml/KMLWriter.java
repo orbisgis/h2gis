@@ -502,6 +502,7 @@ public class KMLWriter {
             if (!Double.isNaN(coord.z)) {
                 sb.append(",").append(coord.z);
             }
+            sb.append(" ");
         }
         xmlOut.writeCharacters(sb.toString());
         xmlOut.writeEndElement();//Write coordinates
