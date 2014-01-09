@@ -64,6 +64,7 @@ public class KMLWriter {
     private final File fileName;
     private final Connection connection;
     private HashMap<Integer, String> kmlFields;
+    private int columnCount =-1;
 
     public KMLWriter(Connection connection, String tableName, File fileName) {
         this.connection = connection;
@@ -156,7 +157,7 @@ public class KMLWriter {
      * @param tableName
      */
     private void writeSchema(XMLStreamWriter xmlOut, ResultSetMetaData metaData) throws XMLStreamException, SQLException {
-        int columnCount = metaData.getColumnCount();
+         columnCount = metaData.getColumnCount();
         //The schema is writing only if there is more than one column
         if (columnCount > 1) {
             xmlOut.writeStartElement("Schema");
@@ -232,7 +233,9 @@ public class KMLWriter {
      */
     public void writePlacemark(XMLStreamWriter xmlOut, ResultSet rs) throws XMLStreamException, SQLException {
         xmlOut.writeStartElement("Placemark");
-        writeExtendedData(xmlOut,  rs);
+        if (columnCount > 1) {
+            writeExtendedData(xmlOut, rs);
+        }
 
         xmlOut.writeEndElement();//Write Placemark
     }
