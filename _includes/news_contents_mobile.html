@@ -4,7 +4,7 @@
     <option value="{{ site.baseurl }}/news/">Home</option>
     <optgroup label="v1.x">
       {% for post in site.posts %}
-      <option value="{{ site.baseurl }}/{{ post.url }}">{{ post.title }}</option>
+      <option value="{{ site.baseurl }}{{ post.url }}">{{ post.title }}</option>
       {% endfor %}
     </optgroup>
   </select>
