@@ -51,6 +51,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -78,9 +79,7 @@ public class KMLWriter {
         if (spatialFieldNames.isEmpty()) {
             throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
         }
-        int geometryType = SFSUtilities.getGeometryType(connection, TableLocation.parse(tableName), spatialFieldNames.get(0));
-
-
+       
         OutputStream outputStream = null;
         try {
             outputStream = new FileOutputStream(fileName);
@@ -106,9 +105,11 @@ public class KMLWriter {
                 ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                    int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
+
                     writeSchema(xmlOut, resultSetMetaData);
                     while (rs.next()) {
-                        writePlacemark(xmlOut, rs);
+                        writePlacemark(xmlOut, rs, geoFieldIndex);
                     }
 
                 } finally {
@@ -231,12 +232,29 @@ public class KMLWriter {
      *
      * @param xmlOut
      */
-    public void writePlacemark(XMLStreamWriter xmlOut, ResultSet rs) throws XMLStreamException, SQLException {
+    public void writePlacemark(XMLStreamWriter xmlOut, ResultSet rs, int geoFieldIndex) throws XMLStreamException, SQLException {
         xmlOut.writeStartElement("Placemark");
         if (columnCount > 1) {
             writeExtendedData(xmlOut, rs);
         }
-
+        //Write Geometry
+        Geometry geometry  = (Geometry) rs.getObject(geoFieldIndex);
+        if(geometry instanceof Point){
+            writeKMLPoint(xmlOut, (Point) geometry);
+        }
+        else if(geometry instanceof LineString){
+            writeKMLLineString(xmlOut, (LineString) geometry);
+        }
+        else if (geometry instanceof Polygon){
+            writeKMLPolygon(xmlOut, (Polygon) geometry);
+        }
+        else if(geometry instanceof GeometryCollection){
+            writeKMLMultiGeometry(xmlOut, (GeometryCollection) geometry);
+        }
+        else{
+            throw new SQLException("This geometry type is not supported : "+ geometry.toString());
+        }
+        
         xmlOut.writeEndElement();//Write Placemark
     }
 
