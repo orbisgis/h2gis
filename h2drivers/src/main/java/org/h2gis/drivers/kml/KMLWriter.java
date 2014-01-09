@@ -28,8 +28,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
@@ -45,11 +43,13 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -63,6 +63,7 @@ public class KMLWriter {
     private final String tableName;
     private final File fileName;
     private final Connection connection;
+    private HashMap<Integer, String> kmlFields;
 
     public KMLWriter(Connection connection, String tableName, File fileName) {
         this.connection = connection;
@@ -106,7 +107,7 @@ public class KMLWriter {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     writeSchema(xmlOut, resultSetMetaData);
                     while (rs.next()) {
-                        writePlacemark(xmlOut);
+                        writePlacemark(xmlOut, rs);
                     }
 
                 } finally {
@@ -162,10 +163,14 @@ public class KMLWriter {
             xmlOut.writeAttribute("name", tableName);
             xmlOut.writeAttribute("id", tableName);
             //Write column metadata
+            kmlFields = new HashMap<Integer, String>();            
             for (int fieldId = 1; fieldId <= metaData.getColumnCount(); fieldId++) {
                 final String fieldTypeName = metaData.getColumnTypeName(fieldId);
                 if (!fieldTypeName.equalsIgnoreCase("geometry")) {
-                    writeSimpleField(xmlOut, metaData.getColumnName(fieldId), getKMLType(metaData.getColumnType(fieldId), fieldTypeName));
+                    String fieldName = metaData.getColumnName(fieldId);
+                    writeSimpleField(xmlOut, fieldName, getKMLType(metaData.getColumnType(fieldId), fieldTypeName));
+                    kmlFields.put(fieldId, fieldName);
+                    
                 }
             }
             xmlOut.writeEndElement();//Write schema
@@ -225,8 +230,9 @@ public class KMLWriter {
      *
      * @param xmlOut
      */
-    public void writePlacemark(XMLStreamWriter xmlOut) throws XMLStreamException {
+    public void writePlacemark(XMLStreamWriter xmlOut, ResultSet rs) throws XMLStreamException, SQLException {
         xmlOut.writeStartElement("Placemark");
+        writeExtendedData(xmlOut,  rs);
 
         xmlOut.writeEndElement();//Write Placemark
     }
@@ -260,7 +266,32 @@ public class KMLWriter {
      *
      * @param xmlOut
      */
-    public void writeExtendedData(XMLStreamWriter xmlOut) {
+    public void writeExtendedData(XMLStreamWriter xmlOut, ResultSet rs) throws XMLStreamException, SQLException {
+        xmlOut.writeStartElement("ExtendedData");
+        xmlOut.writeStartElement("SchemaData");
+        xmlOut.writeAttribute("schemaUrl", "#"+tableName);
+        for (Map.Entry<Integer, String> entry : kmlFields.entrySet()) {
+                Integer fieldIndex = entry.getKey();
+                String fieldName = entry.getValue();                
+                writeSimpleData(xmlOut, fieldName, rs.getString(fieldIndex));
+            }
+        
+               
+
+        xmlOut.writeEndElement();//Write SchemaData
+        xmlOut.writeEndElement();//Write ExtendedData
+        
+    }
+    
+    /**
+     * 
+     * @param xmlOut 
+     */
+    public void writeSimpleData(XMLStreamWriter xmlOut, String columnName, String value) throws XMLStreamException{
+        xmlOut.writeStartElement("SimpleData");
+        xmlOut.writeAttribute("name", columnName);
+        xmlOut.writeCharacters(value);
+        xmlOut.writeEndElement();//Write ExtendedData
     }
 
     /**
@@ -431,6 +462,17 @@ public class KMLWriter {
         xmlOut.writeEndElement();//Write MultiGeometry 
     }
 
+    /**
+     * 
+     * 
+     * Syntax :
+     * 
+     * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
+     * 
+     * @param xmlOut
+     * @param coords
+     * @throws XMLStreamException 
+     */
     public void writeKMLCoordinates(XMLStreamWriter xmlOut, Coordinate[] coords) throws XMLStreamException {
         xmlOut.writeStartElement("coordinates");
         StringBuilder sb = new StringBuilder();
@@ -474,4 +516,37 @@ public class KMLWriter {
                 throw new SQLException("Field type not supported by DBF : " + sqlTypeName);
         }
     }
+    
+    /**
+     * Return the string kml value representation from SQL data type
+     *
+     * @param sqlTypeId
+     * @param sqlTypeName
+     * @return
+     * @throws SQLException
+     */
+    private static String getKMLValue(int sqlTypeId, String fieldName, ResultSet rs) throws SQLException {
+        switch (sqlTypeId) {
+            case Types.BOOLEAN:
+                return "";
+            case Types.DOUBLE:
+                return "double";
+            case Types.FLOAT:
+                return "float";
+            case Types.INTEGER:
+            case Types.BIGINT:
+                return "int";
+            case Types.SMALLINT:
+                return "short";
+            case Types.DATE:
+            case Types.VARCHAR:
+            case Types.NCHAR:
+            case Types.CHAR:
+                return "string";
+            default:
+                throw new SQLException("Field type not supported by KML : " + fieldName);
+        }
+    }
+    
+        
 }
