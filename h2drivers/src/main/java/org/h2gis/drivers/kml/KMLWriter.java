@@ -299,6 +299,8 @@ public class KMLWriter {
     /**
      * Defines a connected set of line segments.
      *
+     * Syntax :
+     *
      * <LineString id="ID">
      * <!-- specific to LineString -->
      * <gx:altitudeOffset>0</gx:altitudeOffset> <!-- double -->
@@ -319,8 +321,87 @@ public class KMLWriter {
      */
     public void writeKMLLineString(XMLStreamWriter xmlOut, LineString lineString) throws XMLStreamException {
         xmlOut.writeStartElement("LineString");
+        writeKMLCoordinates(xmlOut, lineString.getCoordinates());
+        xmlOut.writeEndElement();//Write Point
+    }
+
+    /**
+     * A Polygon is defined by an outer boundary and 0 or more inner boundaries.
+     * The boundaries, in turn, are defined by LinearRings.
+     *
+     * Syntax :
+     *
+     * <Polygon id="ID">
+     * <!-- specific to Polygon -->
+     * <extrude>0</extrude> <!-- boolean -->
+     * <tessellate>0</tessellate> <!-- boolean -->
+     * <altitudeMode>clampToGround</altitudeMode>
+     * <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute
+     * -->
+     * <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor
+     * -->
+     * <outerBoundaryIs>
+     * <LinearRing>
+     * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
+     * </LinearRing>
+     * </outerBoundaryIs>
+     * <innerBoundaryIs>
+     * <LinearRing>
+     * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
+     * </LinearRing>
+     * </innerBoundaryIs>
+     * </Polygon>
+     *
+     * @param xmlOut
+     * @param polygon
+     * @throws XMLStreamException
+     */
+    public void writeKMLPolygon(XMLStreamWriter xmlOut, Polygon polygon) throws XMLStreamException {
+        xmlOut.writeStartElement("Polygon");
+        xmlOut.writeStartElement("outerBoundaryIs");
+        writeKMLLinearRing(xmlOut, polygon.getExteriorRing().getCoordinates());
+        xmlOut.writeEndElement();//Write outerBoundaryIs
+        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+            xmlOut.writeStartElement("innerBoundaryIs");
+            writeKMLLinearRing(xmlOut, polygon.getInteriorRingN(i).getCoordinates());
+            xmlOut.writeEndElement();//Write innerBoundaryIs
+        }
+        xmlOut.writeEndElement();//Write Polygon   
+    }
+
+    /**
+     * Defines a closed line string, typically the outer boundary of a Polygon.
+     *
+     * Syntax :
+     *
+     * <LinearRing id="ID">
+     * <!-- specific to LinearRing -->
+     * <gx:altitudeOffset>0</gx:altitudeOffset> <!-- double -->
+     * <extrude>0</extrude> <!-- boolean -->
+     * <tessellate>0</tessellate> <!-- boolean -->
+     * <altitudeMode>clampToGround</altitudeMode>
+     * <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute
+     * -->
+     * <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor
+     * -->
+     * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
+     * </LinearRing>
+     *
+     * @param xmlOut
+     * @param coordinates
+     * @throws XMLStreamException
+     */
+    public void writeKMLLinearRing(XMLStreamWriter xmlOut, Coordinate[] coordinates) throws XMLStreamException {
+        xmlOut.writeStartElement("LinearRing");
+        writeKMLCoordinates(xmlOut, coordinates);
+        xmlOut.writeEndElement();//Write LinearRing 
+    }
+
+    public void writeKMLMultiGeometry(XMLStreamWriter xmlOut, Geometry geometry) throws XMLStreamException {
+    }
+
+    public void writeKMLCoordinates(XMLStreamWriter xmlOut, Coordinate[] coords) throws XMLStreamException {
         xmlOut.writeStartElement("coordinates");
-        Coordinate[] coords = lineString.getCoordinates();
         StringBuilder sb = new StringBuilder();
         for (Coordinate coord : coords) {
             sb.append(coord.y).append(",").append(coord.x);
@@ -330,16 +411,6 @@ public class KMLWriter {
         }
         xmlOut.writeCharacters(sb.toString());
         xmlOut.writeEndElement();//Write coordinates
-        xmlOut.writeEndElement();//Write Point
-    }
-
-    public void writeKMLPolygon(XMLStreamWriter xmlOut, Polygon polygon) throws XMLStreamException {
-    }
-
-    public void writeKMLLinearRing(XMLStreamWriter xmlOut, LinearRing linearRing) throws XMLStreamException {
-    }
-
-    public void writeKMLMultiGeometry(XMLStreamWriter xmlOut, Geometry geometry) throws XMLStreamException {
     }
 
     /**
