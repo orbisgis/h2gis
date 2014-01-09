@@ -25,65 +25,41 @@
 
 package org.h2gis.drivers.dbf;
 
-import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
-import org.h2.constant.ErrorCode;
-import org.h2.message.DbException;
 import org.h2.table.Column;
-import org.h2.table.TableBase;
-import org.h2.util.StringUtils;
 import org.h2.value.Value;
-import org.h2gis.drivers.DummyTable;
-import org.h2gis.drivers.file_table.H2Table;
+import org.h2gis.drivers.file_table.FileEngine;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * SHP Table factory.
  * @author Nicolas Fortin
  */
-public class DBFEngine implements TableEngine {
-    private Logger LOGGER = LoggerFactory.getLogger(DBFEngine.class);
-    /**
-     * @param data tableEngineParams must contains file path.
-     * @return A Table instance connected to the provided file path. First column is geometry field.
-     */
+public class DBFEngine extends FileEngine<DBFDriver> {
+
     @Override
-    public TableBase createTable(CreateTableData data) {
-        if(data.tableEngineParams.isEmpty()) {
-            throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
-        }
-        File filePath = new File(StringUtils.javaDecode(data.tableEngineParams.get(0)));
-        if(!filePath.exists()) {
-            // Do not throw an exception as it will prevent the user from opening the database
-            LOGGER.error("DBF file not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
-            return new DummyTable(data);
-        }
-        try {
-            DBFDriver driver = new DBFDriver();
-            driver.initDriverFromFile(filePath);
-            if(data.columns.isEmpty()) {
-                feedCreateTableData(driver.getDbaseFileHeader(), data);
-            }
-            H2Table shpTable = new H2Table(driver, data);
-            shpTable.init(data.session);
-            return shpTable;
-        } catch (IOException ex) {
-            throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
-        }
+    protected DBFDriver createDriver(File filePath, List<String> args) throws IOException {
+        DBFDriver driver = new DBFDriver();
+        driver.initDriverFromFile(filePath);
+        return driver;
+    }
+
+    @Override
+    protected void feedCreateTableData(DBFDriver driver, CreateTableData data) throws IOException {
+        DbaseFileHeader header = driver.getDbaseFileHeader();
+        feedTableDataFromHeader(header, data);
     }
 
     /**
-     * Parse the SHP and DBF files then init the provided data structure
+     * Parse the DBF file then init the provided data structure
      * @param data Data to initialise
      * @throws java.io.IOException
      */
-    public static void feedCreateTableData(DbaseFileHeader header,CreateTableData data) throws IOException {
+    public static void feedTableDataFromHeader(DbaseFileHeader header, CreateTableData data) throws IOException {
         for (int i = 0; i < header.getNumFields(); i++) {
             String fieldsName = header.getFieldName(i);
             final int type = dbfTypeToH2Type(header,i);

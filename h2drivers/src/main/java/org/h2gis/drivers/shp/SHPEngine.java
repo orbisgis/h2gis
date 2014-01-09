@@ -25,68 +25,36 @@
 
 package org.h2gis.drivers.shp;
 
-import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
-import org.h2.constant.ErrorCode;
-import org.h2.message.DbException;
 import org.h2.table.Column;
-import org.h2.table.TableBase;
-import org.h2.util.StringUtils;
 import org.h2.value.Value;
-import org.h2gis.drivers.DummyTable;
 import org.h2gis.drivers.dbf.DBFEngine;
-import org.h2gis.drivers.file_table.H2Table;
+import org.h2gis.drivers.file_table.FileEngine;
 import org.h2gis.drivers.shp.internal.SHPDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * SHP Table factory.
  * @author Nicolas Fortin
  */
-public class SHPEngine implements TableEngine {
-    private Logger LOGGER = LoggerFactory.getLogger(SHPEngine.class);
+public class SHPEngine extends FileEngine<SHPDriver> {
 
-    /**
-     * @param data tableEngineParams must contains file path.
-     * @return A Table instance connected to the provided file path. First column is geometry field.
-     */
     @Override
-    public TableBase createTable(CreateTableData data) {
-        if(data.tableEngineParams.isEmpty()) {
-            throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
-        }
-        File filePath = new File(StringUtils.javaDecode(data.tableEngineParams.get(0)));
-        if(!filePath.exists()) {
-            // Do not throw an exception as it will prevent the user from opening the database
-            LOGGER.error("Shape file not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
-            return new DummyTable(data);
-        }
-        try {
-            SHPDriver driver = new SHPDriver();
-            driver.initDriverFromFile(filePath);
-            feedCreateTableData(driver, data);
-            H2Table shpTable = new H2Table(driver, data);
-            shpTable.init(data.session);
-            return shpTable;
-        } catch (IOException ex) {
-            throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
-        }
+    protected SHPDriver createDriver(File filePath, List<String> args) throws IOException {
+        SHPDriver driver = new SHPDriver();
+        driver.initDriverFromFile(filePath);
+        return driver;
     }
 
-    /**
-     * Parse the SHP and DBF files then init the provided data structure
-     * @param data Data to initialise
-     * @throws java.io.IOException
-     */
-    public static void feedCreateTableData(SHPDriver driver,CreateTableData data) throws IOException {
+    @Override
+    protected void feedCreateTableData(SHPDriver driver, CreateTableData data) throws IOException {
         if(data.columns.isEmpty()) {
             Column geometryColumn = new Column("THE_GEOM", Value.GEOMETRY);
             data.columns.add(geometryColumn);
-            DBFEngine.feedCreateTableData(driver.getDbaseFileHeader(), data);
+            DBFEngine.feedTableDataFromHeader(driver.getDbaseFileHeader(), data);
         }
     }
 }
