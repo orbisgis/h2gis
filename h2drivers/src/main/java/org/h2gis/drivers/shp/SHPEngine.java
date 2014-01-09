@@ -29,9 +29,13 @@ import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
 import org.h2.message.DbException;
+import org.h2.table.Column;
 import org.h2.table.TableBase;
 import org.h2.util.StringUtils;
+import org.h2.value.Value;
 import org.h2gis.drivers.DummyTable;
+import org.h2gis.drivers.dbf.DBFEngine;
+import org.h2gis.drivers.file_table.H2Table;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,12 +68,25 @@ public class SHPEngine implements TableEngine {
         try {
             SHPDriver driver = new SHPDriver();
             driver.initDriverFromFile(filePath);
-            SHPTableIndex.feedCreateTableData(driver, data);
-            SHPTable shpTable = new SHPTable(driver, data);
+            feedCreateTableData(driver, data);
+            H2Table shpTable = new H2Table(driver, data);
             shpTable.init(data.session);
             return shpTable;
         } catch (IOException ex) {
             throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
+        }
+    }
+
+    /**
+     * Parse the SHP and DBF files then init the provided data structure
+     * @param data Data to initialise
+     * @throws java.io.IOException
+     */
+    public static void feedCreateTableData(SHPDriver driver,CreateTableData data) throws IOException {
+        if(data.columns.isEmpty()) {
+            Column geometryColumn = new Column("THE_GEOM", Value.GEOMETRY);
+            data.columns.add(geometryColumn);
+            DBFEngine.feedCreateTableData(driver.getDbaseFileHeader(), data);
         }
     }
 }

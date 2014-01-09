@@ -29,11 +29,14 @@ import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
 import org.h2.message.DbException;
-import org.h2.table.RegularTable;
+import org.h2.table.Column;
 import org.h2.table.TableBase;
 import org.h2.util.StringUtils;
+import org.h2.value.Value;
 import org.h2gis.drivers.DummyTable;
+import org.h2gis.drivers.file_table.H2Table;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
+import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,13 +68,70 @@ public class DBFEngine implements TableEngine {
             DBFDriver driver = new DBFDriver();
             driver.initDriverFromFile(filePath);
             if(data.columns.isEmpty()) {
-                DBFTableIndex.feedCreateTableData(driver.getDbaseFileHeader(), data);
+                feedCreateTableData(driver.getDbaseFileHeader(), data);
             }
-            DBFTable shpTable = new DBFTable(driver, data);
+            H2Table shpTable = new H2Table(driver, data);
             shpTable.init(data.session);
             return shpTable;
         } catch (IOException ex) {
             throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
+        }
+    }
+
+    /**
+     * Parse the SHP and DBF files then init the provided data structure
+     * @param data Data to initialise
+     * @throws java.io.IOException
+     */
+    public static void feedCreateTableData(DbaseFileHeader header,CreateTableData data) throws IOException {
+        for (int i = 0; i < header.getNumFields(); i++) {
+            String fieldsName = header.getFieldName(i);
+            final int type = dbfTypeToH2Type(header,i);
+            Column column = new Column(fieldsName.toUpperCase(), type);
+            column.setPrecision(header.getFieldLength(i)); // set string length
+            data.columns.add(column);
+        }
+    }
+
+    /**
+     * @see "http://www.clicketyclick.dk/databases/xbase/format/data_types.html"
+     * @param header DBF File Header
+     * @param i DBF Type identifier
+     * @return H2 {@see Value}
+     * @throws java.io.IOException
+     */
+    private static int dbfTypeToH2Type(DbaseFileHeader header, int i) throws IOException {
+        switch (header.getFieldType(i)) {
+            // (L)logical (T,t,F,f,Y,y,N,n)
+            case 'l':
+            case 'L':
+                return Value.BOOLEAN;
+            // (C)character (String)
+            case 'c':
+            case 'C':
+                return Value.STRING_FIXED;
+            // (D)date (Date)
+            case 'd':
+            case 'D':
+                return Value.DATE;
+            // (F)floating (Double)
+            case 'n':
+            case 'N':
+                if ((header.getFieldDecimalCount(i) == 0)) {
+                    if ((header.getFieldLength(i) >= 0)
+                            && (header.getFieldLength(i) < 10)) {
+                        return Value.INT;
+                    } else {
+                        return Value.LONG;
+                    }
+                }
+            case 'f':
+            case 'F': // floating point number
+            case 'o':
+            case 'O': // floating point number
+                return Value.DOUBLE;
+            default:
+                throw new IOException("Unknown DBF field type "+header.getFieldType(i));
         }
     }
 }

@@ -36,12 +36,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -105,11 +103,14 @@ public class  DBFEngineTest {
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         // Check random access using hidden column _rowid_
-        ResultSet rs = st.executeQuery("SELECT * FROM dbftable where _rowid_ = 1");
+        PreparedStatement pst = connection.prepareStatement("SELECT * FROM dbftable where _rowid_ = ?");
+        pst.setInt(1, 1);
+        ResultSet rs = pst.executeQuery();
         try {
             assertTrue(rs.next());
             assertEquals(1, rs.getInt("gid"));
             assertEquals("river",rs.getString("type_axe"));
+            assertFalse(rs.next());
         } finally {
             rs.close();
         }

@@ -23,9 +23,8 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.drivers.shp;
+package org.h2gis.drivers.file_table;
 
-import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
@@ -41,19 +40,18 @@ import org.h2.table.Table;
 import org.h2.table.TableFilter;
 import org.h2.value.DataType;
 import org.h2.value.Value;
-import org.h2gis.drivers.dbf.DBFTableIndex;
-import org.h2gis.drivers.shp.internal.SHPDriver;
+import org.h2gis.drivers.FileDriver;
 
 import java.io.IOException;
 
 /**
- * ScanIndex of SHPTable, the key is the row index.
+ * ScanIndex of {@link org.h2gis.drivers.FileDriver}, the key is the row index [1-n].
  * @author Nicolas Fortin
  */
-public class SHPTableIndex extends BaseIndex {
-    SHPDriver driver;
+public class H2TableIndex extends BaseIndex {
+    FileDriver driver;
 
-    public SHPTableIndex(SHPDriver driver, Table table,int id) {
+    public H2TableIndex(FileDriver driver, Table table, int id) {
         this.driver = driver;
         IndexColumn indexColumn = new IndexColumn();
         indexColumn.columnName = "key";
@@ -75,7 +73,7 @@ public class SHPTableIndex extends BaseIndex {
             for(int idField=0;idField<driverRow.length;idField++) {
                 values[idField] = DataType.convertToValue(session, driverRow[idField], columns[idField].getType());
             }
-            Row row = new Row(values, Row.MEMORY_CALCULATE);
+            Row row =  new Row(values, Row.MEMORY_CALCULATE);
             row.setKey(key);
             return row;
         } catch (IOException ex) {
@@ -100,11 +98,11 @@ public class SHPTableIndex extends BaseIndex {
 
     @Override
     public Cursor find(Session session, SearchRow first, SearchRow last) {
-        return new SHPCursor(this,first != null ? first.getKey() - 1 : 0,session);
+        return new SHPCursor(this, first, last, session);
     }
 
     @Override
-    public double getCost(Session session, int[] masks, TableFilter filter ,SortOrder sortOrder) {
+    public double getCost(Session session, int[] masks,TableFilter filter ,SortOrder sortOrder) {
         return getRowCount(session);
     }
 
@@ -153,28 +151,24 @@ public class SHPTableIndex extends BaseIndex {
         return true;
     }
 
-    /**
-     * Parse the SHP and DBF files then init the provided data structure
-     * @param data Data to initialise
-     * @throws java.io.IOException
-     */
-    public static void feedCreateTableData(SHPDriver driver,CreateTableData data) throws IOException {
-        if(data.columns.isEmpty()) {
-            Column geometryColumn = new Column("THE_GEOM",Value.GEOMETRY);
-            data.columns.add(geometryColumn);
-            DBFTableIndex.feedCreateTableData(driver.getDbaseFileHeader(), data);
-        }
-    }
-
     private static class SHPCursor implements Cursor {
-        private SHPTableIndex tIndex;
+        private H2TableIndex tIndex;
         private long rowIndex;
         private Session session;
+        private SearchRow begin, end;
 
-        private SHPCursor(SHPTableIndex tIndex, long rowIndex, Session session) {
+        private SHPCursor(H2TableIndex tIndex, long rowIndex, Session session) {
             this.tIndex = tIndex;
             this.rowIndex = rowIndex;
             this.session = session;
+        }
+
+        private SHPCursor(H2TableIndex tIndex, SearchRow begin, SearchRow end, Session session) {
+            this.tIndex = tIndex;
+            this.session = session;
+            this.begin = begin;
+            this.end = end;
+            this.rowIndex = begin == null ? 0 : begin.getKey() - 1;
         }
 
         @Override
@@ -189,7 +183,7 @@ public class SHPTableIndex extends BaseIndex {
 
         @Override
         public boolean next() {
-            if(rowIndex < tIndex.getRowCount(session)) {
+            if(rowIndex < tIndex.getRowCount(session) && (end == null || rowIndex < end.getKey())) {
                 rowIndex ++;
                 return true;
             } else {
@@ -199,7 +193,7 @@ public class SHPTableIndex extends BaseIndex {
 
         @Override
         public boolean previous() {
-            if(rowIndex > 0) {
+            if(rowIndex > 0 && (begin == null || rowIndex >= begin.getKey())) {
                 rowIndex --;
                 return true;
             } else {

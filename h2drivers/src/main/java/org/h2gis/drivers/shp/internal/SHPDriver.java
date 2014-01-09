@@ -26,6 +26,7 @@
 package org.h2gis.drivers.shp.internal;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.h2gis.drivers.FileDriver;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 
@@ -47,7 +48,7 @@ import java.io.IOException;
  *
  * @author Nicolas Fortin
  */
-public class SHPDriver {
+public class SHPDriver implements FileDriver {
     private DBFDriver dbfDriver = new DBFDriver();
     private File shpFile;
     private File shxFile;
@@ -158,9 +159,7 @@ public class SHPDriver {
         return dbfDriver.getDbaseFileHeader();
     }
 
-    /**
-     * @return Row count
-     */
+    @Override
     public long getRowCount() {
         return dbfDriver.getRowCount();
     }
@@ -172,6 +171,7 @@ public class SHPDriver {
         return shapefileReader.getHeader();
     }
 
+    @Override
     public void close() throws IOException {
         dbfDriver.close();
         if(shapefileReader != null) {
@@ -188,11 +188,7 @@ public class SHPDriver {
         return dbfDriver.getFieldCount() + 1;
     }
 
-    /**
-     * @param rowId Row index
-     * @return The row content
-     * @throws IOException
-     */
+    @Override
     public Object[] getRow(long rowId) throws IOException {
         final int fieldCount = getFieldCount();
         Object[] values = new Object[fieldCount];
