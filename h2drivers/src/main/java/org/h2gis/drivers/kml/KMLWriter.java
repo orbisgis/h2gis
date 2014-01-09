@@ -24,6 +24,12 @@
  */
 package org.h2gis.drivers.kml;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -135,6 +141,8 @@ public class KMLWriter {
      * KML file.
      * <Schema> is always a child of <Document>.
      *
+     * Syntax :
+     *
      * <Schema name="string" id="ID">
      * <SimpleField type="string" name="string">
      * <displayName>...</displayName> <!-- string -->
@@ -168,6 +176,8 @@ public class KMLWriter {
      * field is ignored. The type can be one of the following : string, int,
      * uint, short, ushort, float, double, bool.
      *
+     * Syntax :
+     *
      * <SimpleField type="string" name="string">
      *
      * @param xmlOut
@@ -184,6 +194,8 @@ public class KMLWriter {
 
     /**
      * A Placemark is a Feature with associated Geometry.
+     *
+     * Syntax :
      *
      * <Placemark id="ID">
      * <!-- inherited from Feature element -->
@@ -231,6 +243,8 @@ public class KMLWriter {
      * These techniques can be combined within a single KML file or Feature for
      * different pieces of data.
      *
+     * Syntax :
+     *
      * <ExtendedData>
      * <Data name="string">
      * <displayName>...</displayName> <!-- string -->
@@ -245,6 +259,82 @@ public class KMLWriter {
      * @param xmlOut
      */
     public void writeExtendedData(XMLStreamWriter xmlOut) {
+    }
+
+    /**
+     * A geographic location defined by longitude, latitude, and (optional)
+     * altitude.
+     *
+     * Syntax :
+     * 
+     * <Point id="ID">
+     * <!-- specific to Point -->
+     * <extrude>0</extrude> <!-- boolean -->
+     * <altitudeMode>clampToGround</altitudeMode>
+     * <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute
+     * -->
+     * <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor
+     * -->
+     * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
+     * </Point>
+     *
+     * @param xmlOut
+     * @param point
+     * @throws XMLStreamException
+     */
+    public void writeKMLPoint(XMLStreamWriter xmlOut, Point point) throws XMLStreamException {
+        xmlOut.writeStartElement("Point");
+        xmlOut.writeStartElement("coordinates");
+        Coordinate coord = point.getCoordinate();
+        StringBuilder sb = new StringBuilder();
+        sb.append(coord.y).append(",").append(coord.x);
+        if(!Double.isNaN(coord.z)){
+            sb.append(",").append(coord.z);
+        }
+        xmlOut.writeCharacters(sb.toString());
+        xmlOut.writeEndElement();//Write coordinates
+        xmlOut.writeEndElement();//Write Point
+    }
+
+    /**
+     * Defines a connected set of line segments.
+     * 
+     * <LineString id="ID">
+  <!-- specific to LineString -->
+  <gx:altitudeOffset>0</gx:altitudeOffset>  <!-- double -->
+  <extrude>0</extrude>                      <!-- boolean -->
+  <tessellate>0</tessellate>                <!-- boolean -->
+  <altitudeMode>clampToGround</altitudeMode>
+      <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute -->
+      <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor -->
+  <gx:drawOrder>0</gx:drawOrder>            <!-- integer -->
+  <coordinates>...</coordinates>            <!-- lon,lat[,alt] -->
+</LineString>
+     * @param xmlOut
+     * @param lineString
+     * @throws XMLStreamException 
+     */
+    public void writeKMLLineString(XMLStreamWriter xmlOut, LineString lineString) throws XMLStreamException {
+        xmlOut.writeStartElement("Point");
+        xmlOut.writeStartElement("coordinates");
+        Coordinate coord = point.getCoordinate();
+        StringBuilder sb = new StringBuilder();
+        sb.append(coord.y).append(",").append(coord.x);
+        if(!Double.isNaN(coord.z)){
+            sb.append(",").append(coord.z);
+        }
+        xmlOut.writeCharacters(sb.toString());
+        xmlOut.writeEndElement();//Write coordinates
+        xmlOut.writeEndElement();//Write Point
+    }
+
+    public void writeKMLPolygon(XMLStreamWriter xmlOut, Polygon polygon) throws XMLStreamException {
+    }
+
+    public void writeKMLLinearRing(XMLStreamWriter xmlOut, LinearRing linearRing) throws XMLStreamException {
+    }
+
+    public void writeKMLMultiGeometry(XMLStreamWriter xmlOut, Geometry geometry) throws XMLStreamException {
     }
 
     /**
