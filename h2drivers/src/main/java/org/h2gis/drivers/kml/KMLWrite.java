@@ -40,7 +40,7 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 public class KMLWrite extends AbstractFunction implements ScalarFunction {
 
     public KMLWrite() {
-        addProperty(PROP_REMARKS, "Export a spatial table to a KML file.");
+        addProperty(PROP_REMARKS, "Export a spatial table to a KML or KMZ file.");
     }
 
     @Override

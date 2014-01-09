@@ -63,7 +63,7 @@ import org.h2gis.utilities.TableLocation;
  *
  * @author Erwan Bocher
  */
-public class KMLWriter {
+public class KMLWriterTool {
 
     private final String tableName;
     private final File fileName;
@@ -71,12 +71,18 @@ public class KMLWriter {
     private HashMap<Integer, String> kmlFields;
     private int columnCount = -1;
 
-    public KMLWriter(Connection connection, String tableName, File fileName) {
+    public KMLWriterTool(Connection connection, String tableName, File fileName) {
         this.connection = connection;
         this.tableName = tableName;
         this.fileName = fileName;
     }
 
+    /**
+     * Write spatial table to kml or kmz file format.
+     *
+     * @param progress
+     * @throws SQLException
+     */
     public void write(ProgressVisitor progress) throws SQLException {
         String path = fileName.getAbsolutePath();
         String extension = "";
@@ -84,19 +90,23 @@ public class KMLWriter {
         String nameWithoutExt = path.substring(0, i);
         if (i >= 0) {
             extension = path.substring(i + 1);
-        }        
-        if(extension.equalsIgnoreCase("kml")){
+        }
+        if (extension.equalsIgnoreCase("kml")) {
             writeKML(progress);
-        }
-        else if(extension.equalsIgnoreCase("kmz")){
-            writeKMZ(progress, nameWithoutExt+".kmz");
-        }
-        else{
+        } else if (extension.equalsIgnoreCase("kmz")) {
+            writeKMZ(progress, nameWithoutExt + ".kmz");
+        } else {
             throw new SQLException("Please kml or kmz extension.");
         }
     }
 
-    public void writeKML(ProgressVisitor progress) throws SQLException {
+    /**
+     * Write the spatial table to a KML format
+     *
+     * @param progress
+     * @throws SQLException
+     */
+    private void writeKML(ProgressVisitor progress) throws SQLException {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(fileName);
@@ -115,15 +125,20 @@ public class KMLWriter {
         }
     }
 
-    public void writeKMZ(ProgressVisitor progress, String fileNameWithExtension) throws SQLException {
+    /**
+     * Write the spatial table to a KMZ format
+     *
+     * @param progress
+     * @param fileNameWithExtension
+     * @throws SQLException
+     */
+    private void writeKMZ(ProgressVisitor progress, String fileNameWithExtension) throws SQLException {
         ZipOutputStream zos = null;
         try {
             zos = new ZipOutputStream(new FileOutputStream(fileName));
             // Create a zip entry for the main KML file
             zos.putNextEntry(new ZipEntry(fileNameWithExtension));
             writeKMLDocument(progress, zos);
-            zos.closeEntry();
-            zos.finish();
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
         } catch (IOException ex) {
@@ -131,7 +146,8 @@ public class KMLWriter {
         } finally {
             try {
                 if (zos != null) {
-                    zos.close();
+                    zos.closeEntry();
+                    zos.finish();
                 }
             } catch (IOException ex) {
                 throw new SQLException(ex);
@@ -141,6 +157,14 @@ public class KMLWriter {
 
     }
 
+    /**
+     * Write the KML document Note the document stores only the first geometry
+     * column in the placeMark element. The other geomtry columns are ignored.
+     *
+     * @param progress
+     * @param outputStream
+     * @throws SQLException
+     */
     private void writeKMLDocument(ProgressVisitor progress, OutputStream outputStream) throws SQLException {
         // Read Geometry Index and type
         List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
@@ -189,12 +213,6 @@ public class KMLWriter {
             xmlOut.close();
         } catch (XMLStreamException ex) {
             throw new SQLException(ex);
-        } finally {
-            try {
-                outputStream.close();
-            } catch (IOException ex) {
-                throw new SQLException(ex);
-            }
         }
 
         progress.endOfProgress();
