@@ -36,10 +36,12 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -94,7 +96,7 @@ public class KMLWriter {
                 ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                    writeSchema(null, resultSetMetaData);
+                    writeSchema(xmlOut, resultSetMetaData);
 
                 } finally {
                     rs.close();
@@ -125,23 +127,82 @@ public class KMLWriter {
     }
 
     /**
+     * Specifies a custom KML schema that is used to add custom data to KML
+     * Features. The "id" attribute is required and must be unique within the
+     * KML file.
+     * <Schema> is always a child of <Document>.
+     *
+     * <Schema name="string" id="ID">
+     * <SimpleField type="string" name="string">
+     * <displayName>...</displayName> <!-- string -->
+     * </SimpleField>
+     * </Schema>
      *
      * @param xmlOut
      * @param tableName
      */
-    private void writeSchema(XMLStreamWriter xmlOut, ResultSetMetaData rsmd) throws XMLStreamException {
+    private void writeSchema(XMLStreamWriter xmlOut, ResultSetMetaData metaData) throws XMLStreamException, SQLException {
         xmlOut.writeStartElement("Schema");
         xmlOut.writeAttribute("name", tableName);
         xmlOut.writeAttribute("id", tableName);
         //Write column metadata
+        for (int fieldId = 1; fieldId <= metaData.getColumnCount(); fieldId++) {
+            final String fieldTypeName = metaData.getColumnTypeName(fieldId);
+            if (!fieldTypeName.equalsIgnoreCase("geometry")) {
+            }
+        }
 
         xmlOut.writeEndElement();//Write schema
     }
 
+    /**
+     * The declaration of the custom field, which must specify both the type and
+     * the name of this field. If either the type or the name is omitted, the
+     * field is ignored. The type can be one of the following : string, int,
+     * uint, short, ushort, float, double, bool.
+     *
+     * <SimpleField type="string" name="string">
+     * 
+     * @param xmlOut
+     * @param columnName
+     * @param columnType
+     * @throws XMLStreamException
+     */
     private void writeSimpleField(XMLStreamWriter xmlOut, String columnName, String columnType) throws XMLStreamException {
         xmlOut.writeStartElement("SimpleField");
-        xmlOut.writeAttribute("name", tableName);
-        xmlOut.writeAttribute("type", tableName);
+        xmlOut.writeAttribute("name", columnName);
+        xmlOut.writeAttribute("type", columnType);
         xmlOut.writeEndElement();//Write schema
+    }
+    
+    /**
+     * Return the kml type representation from SQL data type
+     * 
+     * @param sqlTypeId
+     * @param sqlTypeName
+     * @return
+     * @throws SQLException 
+     */
+    private static String getKMLType(int sqlTypeId, String sqlTypeName) throws SQLException {
+        switch (sqlTypeId) {
+            case Types.BOOLEAN:
+                return "bool";
+            case Types.DOUBLE:
+                return "double";
+            case Types.FLOAT:
+                return "float";
+            case Types.INTEGER:
+            case Types.BIGINT:
+                return "int";
+            case Types.SMALLINT:
+                return "short";
+            case Types.DATE:
+            case Types.VARCHAR:
+            case Types.NCHAR:
+            case Types.CHAR:
+                return "string";
+            default:
+                throw new SQLException("Field type not supported by DBF : " + sqlTypeName);
+        }
     }
 }
