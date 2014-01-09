@@ -97,6 +97,9 @@ public class KMLWriter {
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     writeSchema(xmlOut, resultSetMetaData);
+                    while (rs.next()) {
+                        writePlacemark(xmlOut);
+                    }
 
                 } finally {
                     rs.close();
@@ -142,17 +145,21 @@ public class KMLWriter {
      * @param tableName
      */
     private void writeSchema(XMLStreamWriter xmlOut, ResultSetMetaData metaData) throws XMLStreamException, SQLException {
-        xmlOut.writeStartElement("Schema");
-        xmlOut.writeAttribute("name", tableName);
-        xmlOut.writeAttribute("id", tableName);
-        //Write column metadata
-        for (int fieldId = 1; fieldId <= metaData.getColumnCount(); fieldId++) {
-            final String fieldTypeName = metaData.getColumnTypeName(fieldId);
-            if (!fieldTypeName.equalsIgnoreCase("geometry")) {
+        int columnCount = metaData.getColumnCount();
+        //The schema is writing only if there is more than one column
+        if (columnCount > 1) {
+            xmlOut.writeStartElement("Schema");
+            xmlOut.writeAttribute("name", tableName);
+            xmlOut.writeAttribute("id", tableName);
+            //Write column metadata
+            for (int fieldId = 1; fieldId <= metaData.getColumnCount(); fieldId++) {
+                final String fieldTypeName = metaData.getColumnTypeName(fieldId);
+                if (!fieldTypeName.equalsIgnoreCase("geometry")) {
+                    writeSimpleField(xmlOut, metaData.getColumnName(fieldId), getKMLType(metaData.getColumnType(fieldId), fieldTypeName));
+                }
             }
+            xmlOut.writeEndElement();//Write schema
         }
-
-        xmlOut.writeEndElement();//Write schema
     }
 
     /**
@@ -162,7 +169,7 @@ public class KMLWriter {
      * uint, short, ushort, float, double, bool.
      *
      * <SimpleField type="string" name="string">
-     * 
+     *
      * @param xmlOut
      * @param columnName
      * @param columnType
@@ -176,12 +183,44 @@ public class KMLWriter {
     }
     
     /**
-     * Return the kml type representation from SQL data type
+     * A Placemark is a Feature with associated Geometry.
      * 
+     * <Placemark id="ID">
+  <!-- inherited from Feature element -->
+  <name>...</name>                      <!-- string -->
+  <visibility>1</visibility>            <!-- boolean -->
+  <open>0</open>                        <!-- boolean -->
+  <atom:author>...<atom:author>         <!-- xmlns:atom -->
+  <atom:link href=" "/>                <!-- xmlns:atom -->
+  <address>...</address>                <!-- string -->
+  <xal:AddressDetails>...</xal:AddressDetails>  <!-- xmlns:xal -->
+  <phoneNumber>...</phoneNumber>        <!-- string -->
+  <Snippet maxLines="2">...</Snippet>   <!-- string -->
+  <description>...</description>        <!-- string -->
+  <AbstractView>...</AbstractView>      <!-- Camera or LookAt -->
+  <TimePrimitive>...</TimePrimitive>
+  <styleUrl>...</styleUrl>              <!-- anyURI -->
+  <StyleSelector>...</StyleSelector>
+  <Region>...</Region>
+  <Metadata>...</Metadata>              <!-- deprecated in KML 2.2 -->
+  <ExtendedData>...</ExtendedData>      <!-- new in KML 2.2 -->
+
+  <!-- specific to Placemark element -->
+  <Geometry>...</Geometry>
+</Placemark>
+     * @param xmlOut 
+     */
+    public void writePlacemark(XMLStreamWriter xmlOut){
+        
+    }
+
+    /**
+     * Return the kml type representation from SQL data type
+     *
      * @param sqlTypeId
      * @param sqlTypeName
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     private static String getKMLType(int sqlTypeId, String sqlTypeName) throws SQLException {
         switch (sqlTypeId) {
