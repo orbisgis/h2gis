@@ -2,7 +2,7 @@
   <aside>
     <ul>
       <li class="{% if page.title == 'News' %}current{% endif %}">
-        <a href="/news/">All news</a>
+        <a href="{{ site.baseurl }}/news/">All news</a>
       </li>
       <li class="{% if page.title == 'Releases' %}current{% endif %}">
       <a href="{{ site.baseurl }}/news/releases/">H2GIS releases</a>
@@ -12,7 +12,7 @@
     <ul>
       {% for post in site.posts limit:5 %}
       <li class="{% if page.title == post.title %}current{% endif %}">
-        <a href="{{ post.url }}">Version {{ post.version }}</a>
+        <a href="{{ site.baseurl }}/{{ post.url }}">Version {{ post.version }}</a>
       </li>
       {% endfor %}
     </ul>
