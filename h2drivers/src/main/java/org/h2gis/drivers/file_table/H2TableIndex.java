@@ -71,6 +71,7 @@ public class H2TableIndex extends BaseIndex {
             Value[] values = new Value[driverRow.length];
             Column[] columns = table.getColumns();
             for(int idField=0;idField<driverRow.length;idField++) {
+                // TODO in H2, switch on type parameter instead of if elseif
                 values[idField] = DataType.convertToValue(session, driverRow[idField], columns[idField].getType());
             }
             Row row =  new Row(values, Row.MEMORY_CALCULATE);
