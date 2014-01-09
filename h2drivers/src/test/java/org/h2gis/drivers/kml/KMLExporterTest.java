@@ -64,9 +64,8 @@ public class KMLExporterTest {
         stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
         stat.execute("insert into KML_POINTS values(1, 'POINT (47.58 2.19)', true)");
         stat.execute("insert into KML_POINTS values(2, 'POINT (47.59 1.06)', false)");
-        // Create a shape file using table area
+        // Create a KML file
         stat.execute("CALL KMLWrite('target/kml_points.kml', 'KML_POINTS')");
-        // Read this shape file to check values
         assertTrue(kmlFile.exists());
         stat.close();
     }
@@ -79,11 +78,9 @@ public class KMLExporterTest {
         stat.execute("create table KML_LINESTRING(id int primary key, the_geom LINESTRING)");
         stat.execute("insert into KML_LINESTRING values(1, 'LINESTRING (47.58 2.19, 46.58 1.19)')");
         stat.execute("insert into KML_LINESTRING values(2, 'LINESTRING (47.59 1.06, 46.58 1.19)')");
-        // Create a shape file using table area
-        stat.execute("CALL KMLWrite('target/kml_lineString.kml', 'KML_LINESTRING')");
-        // Read this shape file to check values
+        // Create a KML file
+        stat.execute("CALL KMLWrite('target/kml_lineString.kml', 'KML_LINESTRING')");        
         assertTrue(kmlFile.exists());
-
         stat.close();
     }
     
@@ -95,9 +92,8 @@ public class KMLExporterTest {
         stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
         stat.execute("insert into KML_POINTS values(1, 'POINT (47.58 2.19)', true)");
         stat.execute("insert into KML_POINTS values(2, 'POINT (47.59 1.06)', false)");
-        // Create a shape file using table area
+        // Create a KMZ file
         stat.execute("CALL KMLWrite('target/kml_points.kmz', 'KML_POINTS')");
-        // Read this shape file to check values
         assertTrue(kmzFile.exists());
         stat.close();
     }

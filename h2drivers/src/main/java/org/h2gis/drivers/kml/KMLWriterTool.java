@@ -200,6 +200,8 @@ public class KMLWriterTool {
                     while (rs.next()) {
                         writePlacemark(xmlOut, rs, geoFieldIndex);
                     }
+                    
+                     progress.endStep();
 
                 } finally {
                     rs.close();
