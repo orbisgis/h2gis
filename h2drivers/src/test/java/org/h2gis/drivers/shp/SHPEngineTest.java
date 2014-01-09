@@ -105,6 +105,21 @@ public class SHPEngineTest {
     }
 
     @Test
+    public void readPartialSHPDataTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT TYPE_AXE, GID, LENGTH FROM SHPTABLE;");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt("gid"));
+        assertEquals("river",rs.getString("type_axe"));
+        assertEquals(9.492402903934545,rs.getDouble("length"), 1e-12);
+        rs.close();
+        st.execute("drop table shptable");
+    }
+
+    @Test
     public void testRowIdHiddenColumn() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");

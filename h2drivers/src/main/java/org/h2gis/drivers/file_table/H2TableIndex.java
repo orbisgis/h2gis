@@ -184,7 +184,7 @@ public class H2TableIndex extends BaseIndex {
 
         @Override
         public SearchRow getSearchRow() {
-            Row row =  new Row(new Value[tIndex.getColumns().length], Row.MEMORY_CALCULATE);
+            Row row =  new Row(new Value[tIndex.getTable().getColumns().length], Row.MEMORY_CALCULATE);
             row.setKey(rowIndex);
             return row;
         }
