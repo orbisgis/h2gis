@@ -26,8 +26,10 @@ package org.h2gis.drivers.kml;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
@@ -397,7 +399,36 @@ public class KMLWriter {
         xmlOut.writeEndElement();//Write LinearRing 
     }
 
-    public void writeKMLMultiGeometry(XMLStreamWriter xmlOut, Geometry geometry) throws XMLStreamException {
+    /**
+     * A container for zero or more geometry primitives associated with the same
+     * feature.
+     *
+     * Syntax :
+     * 
+     * <MultiGeometry id="ID">
+     * <!-- specific to MultiGeometry -->
+     * <!-- 0 or more Geometry elements -->
+     * </MultiGeometry>
+     *
+     * @param xmlOut
+     * @param gc
+     * @throws XMLStreamException
+     */
+    public void writeKMLMultiGeometry(XMLStreamWriter xmlOut, GeometryCollection gc) throws XMLStreamException {
+        xmlOut.writeStartElement("MultiGeometry");
+        for (int i = 0; i < gc.getNumGeometries(); i++) {
+            Geometry geom = gc.getGeometryN(i);
+            if (geom instanceof Point) {
+                writeKMLPoint(xmlOut,(Point) geom);
+            }
+            else if(geom instanceof LineString){
+                writeKMLLineString(xmlOut, (LineString)geom);
+            }
+            else if(geom instanceof Polygon){
+                writeKMLPolygon(xmlOut,(Polygon) geom);
+            }
+        }
+        xmlOut.writeEndElement();//Write MultiGeometry 
     }
 
     public void writeKMLCoordinates(XMLStreamWriter xmlOut, Coordinate[] coords) throws XMLStreamException {
