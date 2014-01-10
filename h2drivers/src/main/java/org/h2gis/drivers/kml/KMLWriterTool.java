@@ -321,20 +321,11 @@ public class KMLWriterTool {
         if (columnCount > 1) {
             writeExtendedData(xmlOut, rs);
         }
-        //Write Geometry
-        Geometry geometry = (Geometry) rs.getObject(geoFieldIndex);
-        if (geometry instanceof Point) {
-            writeKMLPoint(xmlOut, (Point) geometry);
-        } else if (geometry instanceof LineString) {
-            writeKMLLineString(xmlOut, (LineString) geometry);
-        } else if (geometry instanceof Polygon) {
-            writeKMLPolygon(xmlOut, (Polygon) geometry);
-        } else if (geometry instanceof GeometryCollection) {
-            writeKMLMultiGeometry(xmlOut, (GeometryCollection) geometry);
-        } else {
-            throw new SQLException("This geometry type is not supported : " + geometry.toString());
-        }
-
+        
+        StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLGeometry((Geometry) rs.getObject(geoFieldIndex), sb);
+        //Write geometry
+        xmlOut.writeCharacters(sb.toString());
         xmlOut.writeEndElement();//Write Placemark
     }
 
@@ -376,9 +367,6 @@ public class KMLWriterTool {
             String fieldName = entry.getValue();
             writeSimpleData(xmlOut, fieldName, rs.getString(fieldIndex));
         }
-
-
-
         xmlOut.writeEndElement();//Write SchemaData
         xmlOut.writeEndElement();//Write ExtendedData
 
@@ -394,100 +382,10 @@ public class KMLWriterTool {
         xmlOut.writeCharacters(value);
         xmlOut.writeEndElement();//Write ExtendedData
     }
+    
 
-    /**
-     * A geographic location defined by longitude, latitude, and (optional)
-     * altitude.
-     *
-     * Syntax :
-     *
-     * <Point id="ID">
-     * <!-- specific to Point -->
-     * <extrude>0</extrude> <!-- boolean -->
-     * <altitudeMode>clampToGround</altitudeMode>
-     * <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute
-     * -->
-     * <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor
-     * -->
-     * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
-     * </Point>
-     *
-     * @param xmlOut
-     * @param point
-     * @throws XMLStreamException
-     */
-    public void writeKMLPoint(XMLStreamWriter xmlOut, Point point) throws XMLStreamException {         
-        StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLPoint(point, sb);
-        xmlOut.writeCharacters(sb.toString());
-    }
-
-    /**
-     * Defines a connected set of line segments.
-     *
-     * Syntax :
-     *
-     * <LineString id="ID">
-     * <!-- specific to LineString -->
-     * <gx:altitudeOffset>0</gx:altitudeOffset> <!-- double -->
-     * <extrude>0</extrude> <!-- boolean -->
-     * <tessellate>0</tessellate> <!-- boolean -->
-     * <altitudeMode>clampToGround</altitudeMode>
-     * <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute
-     * -->
-     * <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor
-     * -->
-     * <gx:drawOrder>0</gx:drawOrder> <!-- integer -->
-     * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
-     * </LineString>
-     *
-     * @param xmlOut
-     * @param lineString
-     * @throws XMLStreamException
-     */
-    public void writeKMLLineString(XMLStreamWriter xmlOut, LineString lineString) throws XMLStreamException {
-       StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLLineString(lineString, sb);
-        xmlOut.writeCharacters(sb.toString());
-    }
-
-    /**
-     * A Polygon is defined by an outer boundary and 0 or more inner boundaries.
-     * The boundaries, in turn, are defined by LinearRings.
-     *
-     * Syntax :
-     *
-     * <Polygon id="ID">
-     * <!-- specific to Polygon -->
-     * <extrude>0</extrude> <!-- boolean -->
-     * <tessellate>0</tessellate> <!-- boolean -->
-     * <altitudeMode>clampToGround</altitudeMode>
-     * <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute
-     * -->
-     * <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor
-     * -->
-     * <outerBoundaryIs>
-     * <LinearRing>
-     * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
-     * </LinearRing>
-     * </outerBoundaryIs>
-     * <innerBoundaryIs>
-     * <LinearRing>
-     * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
-     * </LinearRing>
-     * </innerBoundaryIs>
-     * </Polygon>
-     *
-     * @param xmlOut
-     * @param polygon
-     * @throws XMLStreamException
-     */
-    public void writeKMLPolygon(XMLStreamWriter xmlOut, Polygon polygon) throws XMLStreamException {
-        StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLPolygon(polygon, sb);
-        xmlOut.writeCharacters(sb.toString());        
-    }
-
+    
+   
     /**
      * Defines a closed line string, typically the outer boundary of a Polygon.
      *
