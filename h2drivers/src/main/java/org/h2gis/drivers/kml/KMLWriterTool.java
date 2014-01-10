@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
@@ -87,14 +88,15 @@ public class KMLWriterTool {
         String path = fileName.getAbsolutePath();
         String extension = "";
         int i = path.lastIndexOf('.');
-        String nameWithoutExt = path.substring(0, i);
         if (i >= 0) {
             extension = path.substring(i + 1);
         }
         if (extension.equalsIgnoreCase("kml")) {
             writeKML(progress);
         } else if (extension.equalsIgnoreCase("kmz")) {
-            writeKMZ(progress, nameWithoutExt + ".kmz");
+            String name = fileName.getName();
+            int pos = name.lastIndexOf(".");
+            writeKMZ(progress, name.substring(0, pos) + ".kml");
         } else {
             throw new SQLException("Please kml or kmz extension.");
         }
@@ -172,7 +174,9 @@ public class KMLWriterTool {
             throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
         }
         try {
-            XMLStreamWriter xmlOut = XMLOutputFactory.newInstance().createXMLStreamWriter(
+            final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();            
+            streamWriterFactory.setProperty("escapeCharacters", false);
+            XMLStreamWriter xmlOut = streamWriterFactory.createXMLStreamWriter(
                     outputStream);
             xmlOut.writeStartDocument("UTF-8", "1.0");
             xmlOut.writeStartElement("kml");
@@ -200,8 +204,8 @@ public class KMLWriterTool {
                     while (rs.next()) {
                         writePlacemark(xmlOut, rs, geoFieldIndex);
                     }
-                    
-                     progress.endStep();
+
+                    progress.endStep();
 
                 } finally {
                     rs.close();
@@ -412,18 +416,10 @@ public class KMLWriterTool {
      * @param point
      * @throws XMLStreamException
      */
-    public void writeKMLPoint(XMLStreamWriter xmlOut, Point point) throws XMLStreamException {
-        xmlOut.writeStartElement("Point");
-        xmlOut.writeStartElement("coordinates");
-        Coordinate coord = point.getCoordinate();
+    public void writeKMLPoint(XMLStreamWriter xmlOut, Point point) throws XMLStreamException {         
         StringBuilder sb = new StringBuilder();
-        sb.append(coord.y).append(",").append(coord.x);
-        if (!Double.isNaN(coord.z)) {
-            sb.append(",").append(coord.z);
-        }
+        KMLGeometry.toKMLPoint(point, sb);
         xmlOut.writeCharacters(sb.toString());
-        xmlOut.writeEndElement();//Write coordinates
-        xmlOut.writeEndElement();//Write Point
     }
 
     /**
@@ -450,9 +446,9 @@ public class KMLWriterTool {
      * @throws XMLStreamException
      */
     public void writeKMLLineString(XMLStreamWriter xmlOut, LineString lineString) throws XMLStreamException {
-        xmlOut.writeStartElement("LineString");
-        writeKMLCoordinates(xmlOut, lineString.getCoordinates());
-        xmlOut.writeEndElement();//Write Point
+       StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLLineString(lineString, sb);
+        xmlOut.writeCharacters(sb.toString());
     }
 
     /**
@@ -487,16 +483,9 @@ public class KMLWriterTool {
      * @throws XMLStreamException
      */
     public void writeKMLPolygon(XMLStreamWriter xmlOut, Polygon polygon) throws XMLStreamException {
-        xmlOut.writeStartElement("Polygon");
-        xmlOut.writeStartElement("outerBoundaryIs");
-        writeKMLLinearRing(xmlOut, polygon.getExteriorRing().getCoordinates());
-        xmlOut.writeEndElement();//Write outerBoundaryIs
-        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-            xmlOut.writeStartElement("innerBoundaryIs");
-            writeKMLLinearRing(xmlOut, polygon.getInteriorRingN(i).getCoordinates());
-            xmlOut.writeEndElement();//Write innerBoundaryIs
-        }
-        xmlOut.writeEndElement();//Write Polygon   
+        StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLPolygon(polygon, sb);
+        xmlOut.writeCharacters(sb.toString());        
     }
 
     /**
@@ -521,10 +510,10 @@ public class KMLWriterTool {
      * @param coordinates
      * @throws XMLStreamException
      */
-    public void writeKMLLinearRing(XMLStreamWriter xmlOut, Coordinate[] coordinates) throws XMLStreamException {
-        xmlOut.writeStartElement("LinearRing");
-        writeKMLCoordinates(xmlOut, coordinates);
-        xmlOut.writeEndElement();//Write LinearRing 
+    public void writeKMLLinearRing(XMLStreamWriter xmlOut, LineString lineString) throws XMLStreamException {
+          StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLLinearRing(lineString, sb);
+        xmlOut.writeCharacters(sb.toString());  
     }
 
     /**
@@ -543,44 +532,11 @@ public class KMLWriterTool {
      * @throws XMLStreamException
      */
     public void writeKMLMultiGeometry(XMLStreamWriter xmlOut, GeometryCollection gc) throws XMLStreamException {
-        xmlOut.writeStartElement("MultiGeometry");
-        for (int i = 0; i < gc.getNumGeometries(); i++) {
-            Geometry geom = gc.getGeometryN(i);
-            if (geom instanceof Point) {
-                writeKMLPoint(xmlOut, (Point) geom);
-            } else if (geom instanceof LineString) {
-                writeKMLLineString(xmlOut, (LineString) geom);
-            } else if (geom instanceof Polygon) {
-                writeKMLPolygon(xmlOut, (Polygon) geom);
-            }
-        }
-        xmlOut.writeEndElement();//Write MultiGeometry 
-    }
-
-    /**
-     *
-     *
-     * Syntax :
-     *
-     * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
-     *
-     * @param xmlOut
-     * @param coords
-     * @throws XMLStreamException
-     */
-    public void writeKMLCoordinates(XMLStreamWriter xmlOut, Coordinate[] coords) throws XMLStreamException {
-        xmlOut.writeStartElement("coordinates");
         StringBuilder sb = new StringBuilder();
-        for (Coordinate coord : coords) {
-            sb.append(coord.y).append(",").append(coord.x);
-            if (!Double.isNaN(coord.z)) {
-                sb.append(",").append(coord.z);
-            }
-            sb.append(" ");
-        }
+        KMLGeometry.toKMLMultiGeometry(gc, sb);
         xmlOut.writeCharacters(sb.toString());
-        xmlOut.writeEndElement();//Write coordinates
     }
+    
 
     /**
      * Return the kml type representation from SQL data type

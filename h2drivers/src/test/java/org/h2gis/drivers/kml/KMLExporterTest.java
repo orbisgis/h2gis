@@ -69,7 +69,7 @@ public class KMLExporterTest {
         assertTrue(kmlFile.exists());
         stat.close();
     }
-    
+
     @Test
     public void exportKMLLineString() throws SQLException {
         Statement stat = connection.createStatement();
@@ -79,11 +79,11 @@ public class KMLExporterTest {
         stat.execute("insert into KML_LINESTRING values(1, 'LINESTRING (47.58 2.19, 46.58 1.19)')");
         stat.execute("insert into KML_LINESTRING values(2, 'LINESTRING (47.59 1.06, 46.58 1.19)')");
         // Create a KML file
-        stat.execute("CALL KMLWrite('target/kml_lineString.kml', 'KML_LINESTRING')");        
+        stat.execute("CALL KMLWrite('target/kml_lineString.kml', 'KML_LINESTRING')");
         assertTrue(kmlFile.exists());
         stat.close();
     }
-    
+
     @Test
     public void exportKMZPoints() throws SQLException {
         Statement stat = connection.createStatement();
@@ -96,5 +96,21 @@ public class KMLExporterTest {
         stat.execute("CALL KMLWrite('target/kml_points.kmz', 'KML_POINTS')");
         assertTrue(kmzFile.exists());
         stat.close();
+    }
+
+    @Test
+    public void testCreateKMLPoint() throws SQLException {
+    }
+
+    @Test
+    public void testCreateKMLLineString() throws SQLException {
+    }
+
+    @Test
+    public void testCreateKMLPolygon() throws SQLException {
+    }
+
+    @Test
+    public void testCreateKMLMultiGeometry() throws SQLException {
     }
 }
