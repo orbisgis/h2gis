@@ -1,13 +1,17 @@
 # H2GIS's website
 
-H2GIS's website is built using [jekyll](http://jekyllrb.com/docs/home/) and
-[Github pages](http://pages.github.com/). Consult jekyll's documentation first,
+H2GIS's website is built using [Jekyll](http://jekyllrb.com/docs/home/) and
+[Github pages](http://pages.github.com/). Consult Jekyll's documentation first,
 especially the section on [YAML front
 matter](http://jekyllrb.com/docs/frontmatter/). Or if you're really impatient,
 just take a look at the
 [source](https://raw2.github.com/irstv/H2GIS/gh-pages/docs/dev/h2spatial-ext/ST_Rotate.md)
 of one of the [existing
 pages](http://www.h2gis.org/docs/dev/h2spatial-ext/ST_Rotate/) on the website.
+
+To install Jekyll and serve the website locally, consult GitHub's help page
+[Using Jekyll with
+Pages](https://help.github.com/articles/using-jekyll-with-pages).
 
 ### Contributing
 
