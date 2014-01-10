@@ -196,6 +196,7 @@ public class KMLWriterTool {
             Statement st = connection.createStatement();
             try {
                 ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
+                //TODO : We must apply a projection to the data to WGS84
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
@@ -321,7 +322,6 @@ public class KMLWriterTool {
         if (columnCount > 1) {
             writeExtendedData(xmlOut, rs);
         }
-
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry((Geometry) rs.getObject(geoFieldIndex), sb);
         //Write geometry

@@ -137,12 +137,37 @@ public class KMLExporterTest {
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
         assertTrue(sb.toString().equals("<Polygon><outerBoundaryIs><LinearRing>"
-                + "<coordinates>370.0,140.0 150.0,60.0 120.0,220.0 180.0,"
-                + "310.0 355.0,372.0 260.0,240.0 370.0,140.0</coordinates>"
-                + "</LinearRing></outerBoundaryIs></Polygon>"));
+                + "<coordinates>360.0,100.0 360.0,320.0 150.0,"
+                + "320.0 150.0,100.0 360.0,100.0</coordinates></LinearRing>"
+                + "</outerBoundaryIs><innerBoundaryIs><LinearRing>"
+                + "<coordinates>326.0,146.0 326.0,198.0 275.0,198.0 275.0,"
+                + "146.0 326.0,146.0</coordinates></LinearRing></innerBoundaryIs>"
+                + "<innerBoundaryIs><LinearRing><coordinates>240.0,230.0 240.0,"
+                + "270.0 190.0,270.0 190.0,230.0 240.0,230.0</coordinates>"
+                + "</LinearRing></innerBoundaryIs></Polygon>"));
     }
 
     @Test
-    public void testCreateKMLMultiGeometry() throws SQLException {
+    public void testCreateKMLMultiGeometry() throws Exception {
+        Geometry geom = WKT_READER.read("GEOMETRYCOLLECTION (POLYGON ((100 360, 320 360, "
+                + "320 150, 100 150, 100 360), \n"
+                + "  (146 326, 198 326, 198 275, 146 275, 146 326), \n"
+                + "  (230 240, 270 240, 270 190, 230 190, 230 240)), \n"
+                + "  LINESTRING (140 420, 286 425, 383 315), \n"
+                + "  POINT (79 305))");
+        StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLGeometry(geom, sb);
+        assertTrue(sb.toString().equals("<MultiGeometry><Polygon><outerBoundaryIs>"
+                + "<LinearRing><coordinates>360.0,100.0 360.0,320.0 150.0,"
+                + "320.0 150.0,100.0 360.0,100.0</coordinates></LinearRing>"
+                + "</outerBoundaryIs><innerBoundaryIs><LinearRing><coordinates>"
+                + "326.0,146.0 326.0,198.0 275.0,198.0 275.0,146.0 326.0,146.0"
+                + "</coordinates></LinearRing></innerBoundaryIs><innerBoundaryIs>"
+                + "<LinearRing><coordinates>240.0,230.0 240.0,270.0 190.0,"
+                + "270.0 190.0,230.0 240.0,230.0</coordinates></LinearRing>"
+                + "</innerBoundaryIs></Polygon><LineString><coordinates>"
+                + "420.0,140.0 425.0,286.0 315.0,383.0</coordinates>"
+                + "</LineString><Point><coordinates>305.0,79.0</coordinates>"
+                + "</Point></MultiGeometry>"));
     }
 }
