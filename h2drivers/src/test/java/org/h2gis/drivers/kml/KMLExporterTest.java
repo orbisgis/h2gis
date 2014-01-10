@@ -24,6 +24,9 @@
  */
 package org.h2gis.drivers.kml;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.ParseException;
+import com.vividsolutions.jts.io.WKTReader;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -43,6 +46,7 @@ public class KMLExporterTest {
 
     private static Connection connection;
     private static final String DB_NAME = "KMLExportTest";
+    private static WKTReader WKT_READER = new WKTReader();
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -99,15 +103,43 @@ public class KMLExporterTest {
     }
 
     @Test
-    public void testCreateKMLPoint() throws SQLException {
+    public void testCreateKMLPoint() throws Exception {
+        Geometry geom = WKT_READER.read("POINT(1 1)");
+        StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLGeometry(geom, sb);
+        assertTrue(sb.toString().equals("<Point><coordinates>1.0,1.0</coordinates></Point>"));
     }
 
     @Test
-    public void testCreateKMLLineString() throws SQLException {
+    public void testCreateKMLLineString() throws Exception {
+        Geometry geom = WKT_READER.read("LINESTRING(1 1, 2 2, 3 3)");
+        StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLGeometry(geom, sb);
+        assertTrue(sb.toString().equals("<LineString><coordinates>1.0,1.0 2.0,2.0 3.0,3.0</coordinates></LineString>"));
     }
 
     @Test
-    public void testCreateKMLPolygon() throws SQLException {
+    public void testCreateKMLPolygon() throws Exception {
+        Geometry geom = WKT_READER.read("POLYGON ((140 370, 60 150, 220 120, 310 180, 372 355, 240 260, 140 370))");
+        StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLGeometry(geom, sb);
+        assertTrue(sb.toString().equals("<Polygon><outerBoundaryIs><LinearRing>"
+                + "<coordinates>370.0,140.0 150.0,60.0 120.0,220.0 180.0,"
+                + "310.0 355.0,372.0 260.0,240.0 370.0,140.0</coordinates>"
+                + "</LinearRing></outerBoundaryIs></Polygon>"));
+    }
+
+    @Test
+    public void testCreateKMLPolygonWithHoles() throws Exception {
+        Geometry geom = WKT_READER.read("POLYGON ((100 360, 320 360, 320 150, 100 150, 100 360), \n"
+                + "  (146 326, 198 326, 198 275, 146 275, 146 326), \n"
+                + "  (230 240, 270 240, 270 190, 230 190, 230 240))");
+        StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLGeometry(geom, sb);
+        assertTrue(sb.toString().equals("<Polygon><outerBoundaryIs><LinearRing>"
+                + "<coordinates>370.0,140.0 150.0,60.0 120.0,220.0 180.0,"
+                + "310.0 355.0,372.0 260.0,240.0 370.0,140.0</coordinates>"
+                + "</LinearRing></outerBoundaryIs></Polygon>"));
     }
 
     @Test

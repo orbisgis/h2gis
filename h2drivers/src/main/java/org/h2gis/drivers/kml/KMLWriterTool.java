@@ -174,7 +174,7 @@ public class KMLWriterTool {
             throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
         }
         try {
-            final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();            
+            final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();
             streamWriterFactory.setProperty("escapeCharacters", false);
             XMLStreamWriter xmlOut = streamWriterFactory.createXMLStreamWriter(
                     outputStream);
@@ -321,7 +321,7 @@ public class KMLWriterTool {
         if (columnCount > 1) {
             writeExtendedData(xmlOut, rs);
         }
-        
+
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry((Geometry) rs.getObject(geoFieldIndex), sb);
         //Write geometry
@@ -382,59 +382,6 @@ public class KMLWriterTool {
         xmlOut.writeCharacters(value);
         xmlOut.writeEndElement();//Write ExtendedData
     }
-    
-
-    
-   
-    /**
-     * Defines a closed line string, typically the outer boundary of a Polygon.
-     *
-     * Syntax :
-     *
-     * <LinearRing id="ID">
-     * <!-- specific to LinearRing -->
-     * <gx:altitudeOffset>0</gx:altitudeOffset> <!-- double -->
-     * <extrude>0</extrude> <!-- boolean -->
-     * <tessellate>0</tessellate> <!-- boolean -->
-     * <altitudeMode>clampToGround</altitudeMode>
-     * <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute
-     * -->
-     * <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor
-     * -->
-     * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
-     * </LinearRing>
-     *
-     * @param xmlOut
-     * @param coordinates
-     * @throws XMLStreamException
-     */
-    public void writeKMLLinearRing(XMLStreamWriter xmlOut, LineString lineString) throws XMLStreamException {
-          StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLLinearRing(lineString, sb);
-        xmlOut.writeCharacters(sb.toString());  
-    }
-
-    /**
-     * A container for zero or more geometry primitives associated with the same
-     * feature.
-     *
-     * Syntax :
-     *
-     * <MultiGeometry id="ID">
-     * <!-- specific to MultiGeometry -->
-     * <!-- 0 or more Geometry elements -->
-     * </MultiGeometry>
-     *
-     * @param xmlOut
-     * @param gc
-     * @throws XMLStreamException
-     */
-    public void writeKMLMultiGeometry(XMLStreamWriter xmlOut, GeometryCollection gc) throws XMLStreamException {
-        StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLMultiGeometry(gc, sb);
-        xmlOut.writeCharacters(sb.toString());
-    }
-    
 
     /**
      * Return the kml type representation from SQL data type

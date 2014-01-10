@@ -48,7 +48,7 @@ public class KMLGeometry {
      * @param geometry
      */
     public static void toKMLGeometry(Geometry geometry, StringBuilder sb) throws SQLException {
-        if (geometry instanceof Point) {
+        if (geometry instanceof Point) {            
             toKMLPoint((Point) geometry, sb);
         } else if (geometry instanceof LineString) {
             toKMLLineString((LineString) geometry, sb);
@@ -113,13 +113,13 @@ public class KMLGeometry {
      * <gx:drawOrder>0</gx:drawOrder> <!-- integer -->
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </LineString>
-     * 
+     *
      * Supported syntax :
-     * 
+     *
      * <LineString>
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </LineString>
-     * 
+     *
      * @param lineString
      */
     public static void toKMLLineString(LineString lineString, StringBuilder sb) {
@@ -129,8 +129,28 @@ public class KMLGeometry {
     }
 
     /**
-     * Transform a linestring to a kml linearRing
+     * Defines a closed line string, typically the outer boundary of a Polygon.
+     *
+     * Syntax :
+     *
+     * <LinearRing id="ID">
+     * <!-- specific to LinearRing -->
+     * <gx:altitudeOffset>0</gx:altitudeOffset> <!-- double -->
+     * <extrude>0</extrude> <!-- boolean -->
+     * <tessellate>0</tessellate> <!-- boolean -->
+     * <altitudeMode>clampToGround</altitudeMode>
+     * <!-- kml:altitudeModeEnum: clampToGround, relativeToGround, or absolute
+     * -->
+     * <!-- or, substitute gx:altitudeMode: clampToSeaFloor, relativeToSeaFloor
+     * -->
+     * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
+     * </LinearRing>
      * 
+     * Supported syntax :
+     *
+     * <LinearRing>
+     * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
+     * </LinearRing>
      *
      * @param lineString
      */
@@ -166,9 +186,9 @@ public class KMLGeometry {
      * </LinearRing>
      * </innerBoundaryIs>
      * </Polygon>
-     * 
+     *
      * Supported syntax :
-     * 
+     *
      * <Polygon>
      * <outerBoundaryIs>
      * <LinearRing>
@@ -180,27 +200,26 @@ public class KMLGeometry {
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] -->
      * </LinearRing>
      * </innerBoundaryIs>
-     *</Polygon>
-     * 
+     * </Polygon>
+     *
      * @param polygon
      */
     public static void toKMLPolygon(Polygon polygon, StringBuilder sb) {
         sb.append("<Polygon>");
         sb.append("<outerBoundaryIs>");
         toKMLLinearRing(polygon.getExteriorRing(), sb);
-        appendKMLCoordinates(polygon.getExteriorRing().getCoordinates(), sb);
-        sb.append("</LinearRing>");
         sb.append("</outerBoundaryIs>");
         for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
             sb.append("<innerBoundaryIs>");
             toKMLLinearRing(polygon.getInteriorRingN(i), sb);
             sb.append("</innerBoundaryIs>");
         }
+        sb.append("</Polygon>");
     }
 
     /**
      * Support all kml geometries
-     * 
+     *
      * @param gc
      */
     public static void toKMLMultiGeometry(GeometryCollection gc, StringBuilder sb) {
@@ -221,20 +240,23 @@ public class KMLGeometry {
     /**
      * Build a string represention to kml coordinates
      *
-     * Syntax : 
-     * 
+     * Syntax :
+     *
      * <coordinates>...</coordinates> <!-- lon,lat[,alt] tuples -->
      *
      * @param coords
      */
     public static void appendKMLCoordinates(Coordinate[] coords, StringBuilder sb) {
-        sb.append("<coordinates>");
-        for (Coordinate coord : coords) {
+        sb.append("<coordinates>");        
+        for (int i = 0; i < coords.length; i++) {
+            Coordinate coord = coords[i];
             sb.append(coord.y).append(",").append(coord.x);
             if (!Double.isNaN(coord.z)) {
                 sb.append(",").append(coord.z);
             }
+            if(i<coords.length-1){
             sb.append(" ");
+            }
         }
         sb.append("</coordinates>");
     }
