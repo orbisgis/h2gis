@@ -25,8 +25,10 @@
 
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.utilities.jts_utils.GeometryMetaData;
+
+import java.io.IOException;
 
 /**
  * Retrieve the SRID from an EWKB encoded geometry.
@@ -50,10 +52,10 @@ public class ST_SRID extends DeterministicScalarFunction {
      * @param geometry Geometry instance or null
      * @return SRID value or 0 if input geometry does not have one.
      */
-    public static Integer getSRID(Geometry geometry) {
+    public static Integer getSRID(byte[] geometry) throws IOException {
         if(geometry==null) {
             return 0;
         }
-        return geometry.getSRID();
+        return GeometryMetaData.getMetaDataFromWKB(geometry).SRID;
     }
 }

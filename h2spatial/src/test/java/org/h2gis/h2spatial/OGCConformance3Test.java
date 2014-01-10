@@ -57,7 +57,7 @@ public class OGCConformance3Test {
         URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test3.sql");
         Statement st = connection.createStatement();
         // Unit test will create own spatial ref table
-        st.execute("drop table if exists spatial_ref_sys;");
+        //st.execute("drop table if exists spatial_ref_sys;");
         st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
     }
 

@@ -25,6 +25,7 @@
 
 package org.h2gis.h2spatial;
 
+import org.h2gis.h2spatial.internal.function.spatial.properties.ColumnSRID;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.AfterClass;
@@ -42,17 +43,17 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 /**
- * Test constraints on geometry type.
+ * Test constraints functions
  * @author Nicolas Fortin
  */
-public class GeometryTypeConstraintTest {
+public class ConstraintTest {
     private static Connection connection;
 
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase("GeometryTypeConstraintTest");
+        connection = SpatialH2UT.createSpatialDataBase("ConstraintTest");
     }
 
     @AfterClass
@@ -149,6 +150,18 @@ public class GeometryTypeConstraintTest {
         assertFalse(rs.next());
         st.execute("drop table T_GEOMETRY, T_POINT,  T_LINE, T_POLYGON");
         st.execute("drop table T_MPOINT,  T_MLINE, T_MPOLYGON");
+    }
+
+    @Test
+    public void testSRIDConstraintExtraction() {
+        assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "the_geom"));
+        assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(\"the_GEOM\") =23", "the_geom"));
+        assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(`the_GEOM`)= 23", "the_geom"));
+        assertEquals(23, ColumnSRID.getSRIDFromConstraint("GEOMETRY_TYPE = \"POLYGON\" AND ST_SRID  (  the_geom  )  =   23", "the_geom"));
+
+        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "geom"));
+        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23 OR ST_SRID(geom)=44", "geom"));
+        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(geom)=44 OR ST_SRID(the_geom)=23", "geom"));
     }
 
     /**
