@@ -25,9 +25,6 @@
 
 package org.h2gis.h2spatial;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKBReader;
-import org.h2gis.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

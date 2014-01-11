@@ -66,8 +66,8 @@ public class KMLExporterTest {
         File kmlFile = new File("target/kml_points.kml");
         stat.execute("DROP TABLE IF EXISTS KML_POINTS");
         stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
-        stat.execute("insert into KML_POINTS values(1, 'POINT (47.58 2.19)', true)");
-        stat.execute("insert into KML_POINTS values(2, 'POINT (47.59 1.06)', false)");
+        stat.execute("insert into KML_POINTS values(1, ST_Geomfromtext('POINT (47.58 2.19)', 4326), true)");
+        stat.execute("insert into KML_POINTS values(2, ST_Geomfromtext('POINT (47.59 1.06)',  4326), false)");
         // Create a KML file
         stat.execute("CALL KMLWrite('target/kml_points.kml', 'KML_POINTS')");
         assertTrue(kmlFile.exists());
@@ -80,8 +80,8 @@ public class KMLExporterTest {
         File kmlFile = new File("target/kml_lineString.kml");
         stat.execute("DROP TABLE IF EXISTS KML_LINESTRING");
         stat.execute("create table KML_LINESTRING(id int primary key, the_geom LINESTRING)");
-        stat.execute("insert into KML_LINESTRING values(1, 'LINESTRING (47.58 2.19, 46.58 1.19)')");
-        stat.execute("insert into KML_LINESTRING values(2, 'LINESTRING (47.59 1.06, 46.58 1.19)')");
+        stat.execute("insert into KML_LINESTRING values(1, ST_Geomfromtext('LINESTRING (47.58 2.19, 46.58 1.19)', 4326))");
+        stat.execute("insert into KML_LINESTRING values(2, ST_Geomfromtext('LINESTRING (47.59 1.06, 46.58 1.19)', 4326))");
         // Create a KML file
         stat.execute("CALL KMLWrite('target/kml_lineString.kml', 'KML_LINESTRING')");
         assertTrue(kmlFile.exists());
@@ -94,8 +94,8 @@ public class KMLExporterTest {
         File kmzFile = new File("target/kml_points.kmz");
         stat.execute("DROP TABLE IF EXISTS KML_POINTS");
         stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
-        stat.execute("insert into KML_POINTS values(1, 'POINT (47.58 2.19)', true)");
-        stat.execute("insert into KML_POINTS values(2, 'POINT (47.59 1.06)', false)");
+        stat.execute("insert into KML_POINTS values(1, ST_Geomfromtext('POINT (47.58 2.19)',4326), true)");
+        stat.execute("insert into KML_POINTS values(2, ST_Geomfromtext('POINT (47.59 1.06)',4326), false)");
         // Create a KMZ file
         stat.execute("CALL KMLWrite('target/kml_points.kmz', 'KML_POINTS')");
         assertTrue(kmzFile.exists());
@@ -169,5 +169,39 @@ public class KMLExporterTest {
                 + "420.0,140.0 425.0,286.0 315.0,383.0</coordinates>"
                 + "</LineString><Point><coordinates>305.0,79.0</coordinates>"
                 + "</Point></MultiGeometry>"));
+    }
+
+    @Test
+    public void exportKMZPointsBadSRID() throws SQLException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS KML_POINTS");
+        stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
+        stat.execute("insert into KML_POINTS values(1, ST_Geomfromtext('POINT (47.58 2.19)',27572), true)");
+        stat.execute("insert into KML_POINTS values(2, ST_Geomfromtext('POINT (47.59 1.06)',27572), false)");
+        // Create a KMZ file
+        try {
+            stat.execute("CALL KMLWrite('target/kml_points.kmz', 'KML_POINTS')");
+        } catch (SQLException ex) {
+            assertTrue(true);
+        } finally {
+            stat.close();
+        }
+    }
+    
+    @Test
+    public void exportKMZPointsNoSRID() throws SQLException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS KML_POINTS");
+        stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
+        stat.execute("insert into KML_POINTS values(1, ST_Geomfromtext('POINT (47.58 2.19)'), true)");
+        stat.execute("insert into KML_POINTS values(2, ST_Geomfromtext('POINT (47.59 1.06)'), false)");
+        // Create a KMZ file
+        try {
+            stat.execute("CALL KMLWrite('target/kml_points.kmz', 'KML_POINTS')");
+        } catch (SQLException ex) {
+            assertTrue(true);
+        } finally {
+            stat.close();
+        }
     }
 }

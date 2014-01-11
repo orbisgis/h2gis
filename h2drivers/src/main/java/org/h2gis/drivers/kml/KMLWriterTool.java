@@ -24,32 +24,21 @@
  */
 package org.h2gis.drivers.kml;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.xml.stream.XMLOutputFactory;
@@ -203,7 +192,7 @@ public class KMLWriterTool {
 
                     writeSchema(xmlOut, resultSetMetaData);
                     while (rs.next()) {
-                        writePlacemark(xmlOut, rs, geoFieldIndex);
+                        writePlacemark(xmlOut, rs, geoFieldIndex, spatialFieldNames.get(0));
                     }
 
                     progress.endStep();
@@ -317,13 +306,21 @@ public class KMLWriterTool {
      *
      * @param xmlOut
      */
-    public void writePlacemark(XMLStreamWriter xmlOut, ResultSet rs, int geoFieldIndex) throws XMLStreamException, SQLException {
+    public void writePlacemark(XMLStreamWriter xmlOut, ResultSet rs, int geoFieldIndex, String spatialFieldName) throws XMLStreamException, SQLException {
         xmlOut.writeStartElement("Placemark");
         if (columnCount > 1) {
             writeExtendedData(xmlOut, rs);
         }
         StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLGeometry((Geometry) rs.getObject(geoFieldIndex), sb);
+        Geometry geom = (Geometry) rs.getObject(geoFieldIndex);
+        int inputSRID = geom.getSRID();
+        if (inputSRID == 0) {
+            throw new SQLException("A coordinate reference system must be set to save the KML file");
+        } else if (inputSRID != 4326) {
+             throw new SQLException("The kml format supports only the WGS84 projection. \n"
+                     + "Please use ST_Transform("+ spatialFieldName + ","+ inputSRID+ ")");            
+        }
+        KMLGeometry.toKMLGeometry(geom, sb);
         //Write geometry
         xmlOut.writeCharacters(sb.toString());
         xmlOut.writeEndElement();//Write Placemark
