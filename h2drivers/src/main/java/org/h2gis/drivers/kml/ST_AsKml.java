@@ -43,7 +43,7 @@ public class ST_AsKml extends DeterministicScalarFunction {
      * @return
      * @throws SQLException
      */
-    public String toKml(Geometry geometry) throws SQLException {
+    public static String toKml(Geometry geometry) throws SQLException {
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geometry, sb);
         return sb.toString();
