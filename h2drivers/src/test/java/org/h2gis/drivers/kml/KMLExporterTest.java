@@ -25,7 +25,6 @@
 package org.h2gis.drivers.kml;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.File;
 import java.sql.Connection;

@@ -25,6 +25,7 @@
 package org.h2gis.drivers.kml;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -166,7 +167,7 @@ public class KMLWriterTool {
             final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();
             streamWriterFactory.setProperty("escapeCharacters", false);
             XMLStreamWriter xmlOut = streamWriterFactory.createXMLStreamWriter(
-                    outputStream);
+                    new BufferedOutputStream(outputStream));
             xmlOut.writeStartDocument("UTF-8", "1.0");
             xmlOut.writeStartElement("kml");
             xmlOut.writeDefaultNamespace("http://www.opengis.net/kml/2.2");

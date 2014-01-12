@@ -51,6 +51,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2gis.drivers.kml.KMLWrite;
+import org.h2gis.drivers.kml.ST_AsKml;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
@@ -112,7 +113,8 @@ public class CreateSpatialExtension {
                 new ST_TriangleAspect(),
                 new ST_TriangleSlope(),
                 new ST_TriangleDirection(),
-                new KMLWrite()};
+                new KMLWrite(),
+                new ST_AsKml()};
     }
 
     /**
