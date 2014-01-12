@@ -108,7 +108,7 @@ public class KMLExporterTest {
         Geometry geom = WKT_READER.read("POINT(1 2)");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
-        assertTrue(sb.toString().equals("<Point><coordinates>1.0,2.0,0</coordinates></Point>"));
+        assertTrue(sb.toString().equals("<Point><coordinates>1.0,2.0</coordinates></Point>"));
     }
 
     @Test
@@ -116,7 +116,7 @@ public class KMLExporterTest {
         Geometry geom = WKT_READER.read("LINESTRING(1 1, 2 2, 3 3)");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
-        assertTrue(sb.toString().equals("<LineString><coordinates>1.0,1.0,0 2.0,2.0,0 3.0,3.0,0</coordinates></LineString>"));
+        assertTrue(sb.toString().equals("<LineString><coordinates>1.0,1.0 2.0,2.0 3.0,3.0</coordinates></LineString>"));
     }
 
     @Test
@@ -125,7 +125,7 @@ public class KMLExporterTest {
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
         assertTrue(sb.toString().equals("<Polygon><outerBoundaryIs><LinearRing><coordinates>"
-                + "140.0,370.0,0 60.0,150.0,0 220.0,120.0,0 310.0,180.0,0 372.0,355.0,0 240.0,260.0,0 140.0,370.0,0"
+                + "140.0,370.0 60.0,150.0 220.0,120.0 310.0,180.0 372.0,355.0 240.0,260.0 140.0,370.0"
                 + "</coordinates></LinearRing></outerBoundaryIs></Polygon>"));
     }
 
@@ -137,11 +137,11 @@ public class KMLExporterTest {
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
         assertTrue(sb.toString().equals("<Polygon><outerBoundaryIs><LinearRing><coordinates>"
-                + "100.0,360.0,0 320.0,360.0,0 320.0,150.0,0 100.0,150.0,0 100.0,360.0,0</coordinates>"
+                + "100.0,360.0 320.0,360.0 320.0,150.0 100.0,150.0 100.0,360.0</coordinates>"
                 + "</LinearRing></outerBoundaryIs><innerBoundaryIs><LinearRing><coordinates>"
-                + "146.0,326.0,0 198.0,326.0,0 198.0,275.0,0 146.0,275.0,0 146.0,326.0,0</coordinates>"
+                + "146.0,326.0 198.0,326.0 198.0,275.0 146.0,275.0 146.0,326.0</coordinates>"
                 + "</LinearRing></innerBoundaryIs><innerBoundaryIs><LinearRing>"
-                + "<coordinates>230.0,240.0,0 270.0,240.0,0 270.0,190.0,0 230.0,190.0,0 230.0,240.0,0"
+                + "<coordinates>230.0,240.0 270.0,240.0 270.0,190.0 230.0,190.0 230.0,240.0"
                 + "</coordinates></LinearRing></innerBoundaryIs></Polygon>"));
     }
 
@@ -156,14 +156,14 @@ public class KMLExporterTest {
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
         assertTrue(sb.toString().equals("<MultiGeometry><Polygon><outerBoundaryIs><LinearRing>"
-                + "<coordinates>100.0,360.0,0 320.0,360.0,0 320.0,150.0,0 100.0,150.0,0 100.0,360.0,0"
+                + "<coordinates>100.0,360.0 320.0,360.0 320.0,150.0 100.0,150.0 100.0,360.0"
                 + "</coordinates></LinearRing></outerBoundaryIs><innerBoundaryIs><LinearRing>"
-                + "<coordinates>146.0,326.0,0 198.0,326.0,0 198.0,275.0,0 146.0,275.0,0 146.0,326.0,0"
+                + "<coordinates>146.0,326.0 198.0,326.0 198.0,275.0 146.0,275.0 146.0,326.0"
                 + "</coordinates></LinearRing></innerBoundaryIs><innerBoundaryIs><LinearRing>"
-                + "<coordinates>230.0,240.0,0 270.0,240.0,0 270.0,190.0,0 230.0,190.0,0 230.0,240.0,0"
+                + "<coordinates>230.0,240.0 270.0,240.0 270.0,190.0 230.0,190.0 230.0,240.0"
                 + "</coordinates></LinearRing></innerBoundaryIs></Polygon><LineString>"
-                + "<coordinates>140.0,420.0,0 286.0,425.0,0 383.0,315.0,0</coordinates>"
-                + "</LineString><Point><coordinates>79.0,305.0,0</coordinates></Point></MultiGeometry>"));
+                + "<coordinates>140.0,420.0 286.0,425.0 383.0,315.0</coordinates>"
+                + "</LineString><Point><coordinates>79.0,305.0</coordinates></Point></MultiGeometry>"));
     }
 
     @Test
@@ -209,7 +209,7 @@ public class KMLExporterTest {
         // Create a KMZ file
         ResultSet res = stat.executeQuery("SELECT ST_AsKml(the_geom) from KML_POINTS");
         res.next();
-        assertTrue(res.getString(1).equals("<Point><coordinates>2.19,47.58,0</coordinates></Point>"));
+        assertTrue(res.getString(1).equals("<Point><coordinates>2.19,47.58</coordinates></Point>"));
         res.close();
         stat.close();
     }

@@ -92,9 +92,6 @@ public class KMLGeometry {
         if (!Double.isNaN(coord.z)) {
             sb.append(",").append(coord.z);
         }
-        else{
-            sb.append(",").append("0");
-        }
         sb.append("</coordinates>").append("</Point>");
     }
 
@@ -256,9 +253,6 @@ public class KMLGeometry {
             sb.append(coord.x).append(",").append(coord.y);
             if (!Double.isNaN(coord.z)) {
                 sb.append(",").append(coord.z);
-            }
-            else{
-                sb.append(",").append("0");
             }
             if(i<coords.length-1){
             sb.append(" ");
