@@ -101,7 +101,7 @@ public class GeometryEditTest {
      * @throws Exception
      */
     @Test
-    public void testSnapedPoint() throws Exception {
+    public void testSnappedPoint() throws Exception {
         LineString line = (LineString) wKTReader.read("LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)");
         Point point = (Point) wKTReader.read("POINT(1.5 4 )");
         //Test a point in a segment
@@ -120,7 +120,7 @@ public class GeometryEditTest {
     }
 
     @Test
-    public void testSnapedPoint2() throws Exception {
+    public void testSnappedPoint2() throws Exception {
         LineString line = (LineString) wKTReader.read("LINESTRING (102.91254820528033 205.68116285968554, 345 204)");
         Point point = (Point) wKTReader.read("POINT ( 243.56500711237553 204.70440967283074 )");
         //Test a point in a segment
@@ -243,7 +243,6 @@ public class GeometryEditTest {
             Geometry pol = pols.getGeometryN(i);
             assertTrue(is25Geometry(pol));
         }
-
     }
 
     /**
@@ -258,7 +257,6 @@ public class GeometryEditTest {
         //Test move a polygon
         Geometry result = GeometryEdit.moveGeometry(geom, new Coordinate(0, 0), point.getCoordinate());
         assertTrue(result.getCoordinates()[0].equals2D(point.getCoordinate()));
-
     }
 
     /**

@@ -37,7 +37,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 
 /**
- * This utility class provides conversions tools for JTS {@link Geometry} objects.
+ * Conversion tools for JTS {@link Geometry}s.
  * 
  * @author Erwan Bocher
  */

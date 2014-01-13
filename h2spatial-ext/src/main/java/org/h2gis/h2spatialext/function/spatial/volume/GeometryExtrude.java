@@ -29,7 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * This class i used to extrude a polygon or a linestring to a set of walls,
+ * This class is used to extrude a polygon or a linestring to a set of walls,
  * roof, or floor using a height.
  *
  * @author Erwan Bocher

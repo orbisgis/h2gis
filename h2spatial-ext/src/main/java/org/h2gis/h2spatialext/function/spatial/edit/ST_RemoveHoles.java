@@ -21,7 +21,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.GeometryEdit;
 
 /**
- * Remove holes in a polygon or multipolygon
+ * Removes any holes from a polygon or multipolygon
  * @author Erwan Bocher
  */
 public class ST_RemoveHoles extends DeterministicScalarFunction{
@@ -36,14 +36,13 @@ public class ST_RemoveHoles extends DeterministicScalarFunction{
     }
     
     /**
-     * Remove hole in a geometry. 
-     * If geometry doesn't contain any holes return
-     * the same geometry
-     * @param geometry
-     * @return 
+     * Remove any holes from the geometry. If the geometry doesn't contain any
+     * holes, return it unchanged.
+     *
+     * @param geometry Geometry
+     * @return Geometry with no holes
      */
     public static Geometry removeHoles(Geometry geometry){
         return GeometryEdit.removeHoles(geometry);
     }
-    
 }

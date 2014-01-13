@@ -28,14 +28,16 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute the minimum rectangle to a geometry.
+ * Gets the minimum rectangular POLYGON which encloses the input geometry. See
+ * {@link MinimumDiameter}.
+ *
  * @author Erwan Bocher
  */
 public class ST_MinimumRectangle extends DeterministicScalarFunction{
 
     
     public ST_MinimumRectangle(){
-       addProperty(PROP_REMARKS, "Gets the minimum rectangular (Polygon) which encloses the input geometry.");
+       addProperty(PROP_REMARKS, "Gets the minimum rectangular POLYGON which encloses the input geometry.");
     }
     
     @Override
@@ -45,11 +47,10 @@ public class ST_MinimumRectangle extends DeterministicScalarFunction{
     
     /**
      * Gets the minimum rectangular {@link Polygon} which encloses the input geometry.
-     * @param geometry
+     * @param geometry Input geometry
      * @return 
      */
     public static Geometry computeMinimumRectangle(Geometry geometry){     
         return new MinimumDiameter(geometry).getMinimumRectangle();
     }
-    
 }

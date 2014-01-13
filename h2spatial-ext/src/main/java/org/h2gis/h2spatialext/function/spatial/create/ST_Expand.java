@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Expands the envelope of the geometry by a given delta X and Y.
+ * Expands a geometry's envelope by the given delta X and delta Y.
  *
  * @author Erwan Bocher
  */
@@ -39,7 +39,7 @@ public class ST_Expand extends DeterministicScalarFunction {
     private static GeometryFactory gf = new GeometryFactory();
 
     public ST_Expand() {
-        addProperty(PROP_REMARKS, "Expands the envelope of the geometry by a given delta X and Y.\n Both"
+        addProperty(PROP_REMARKS, "Expands a geometry's envelope by the given delta X and delta Y.\n Both"
                 + " positive and negative distances are supported.");
     }
 
@@ -49,7 +49,7 @@ public class ST_Expand extends DeterministicScalarFunction {
     }
 
     /**
-     * Expands the envelope of the geometry by a given delta X and Y. Both
+     * Expands a geometry's envelope by the given delta X and delta Y. Both
      * positive and negative distances are supported.
      *
      * @param deltaX the distance to expand the envelope along the the X axis
@@ -62,7 +62,7 @@ public class ST_Expand extends DeterministicScalarFunction {
     }
 
     /**
-     * Converts from Envelope to a polygon geometry.
+     * Converts from an Envelope to a POLYGON geometry.
      *
      * @param envelope
      * @return

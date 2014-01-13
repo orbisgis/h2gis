@@ -22,15 +22,17 @@ import com.vividsolutions.jts.geom.OctagonalEnvelope;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute the octogonal envelope using a given geometry.
+ * Computes the octogonal envelope of a geometry.
+ *
+ * @see com.vividsolutions.jts.geom.OctagonalEnvelope
  * @author Erwan Bocher
  */
 public class ST_OctogonalEnvelope extends DeterministicScalarFunction{
 
-    private static  GeometryFactory gf = new GeometryFactory();
+    private static final GeometryFactory GF = new GeometryFactory();
     
     public ST_OctogonalEnvelope(){
-        addProperty(PROP_REMARKS, "Compute the octogonal envelope using a given geometry.");
+        addProperty(PROP_REMARKS, "Computes the octogonal envelope of a geometry");
     }
     
     @Override
@@ -39,7 +41,6 @@ public class ST_OctogonalEnvelope extends DeterministicScalarFunction{
     }
     
     public static Geometry computeOctogonalEnvelope(Geometry geometry){
-        return new OctagonalEnvelope(geometry).toGeometry(gf);
+        return new OctagonalEnvelope(geometry).toGeometry(GF);
     }
-    
 }
