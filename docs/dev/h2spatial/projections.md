@@ -16,5 +16,5 @@ The following projection functions are available:
 
 | Function | Description |
 | - | - |
-| [`ST_SetSRID`](../../../ST_SetSRID) | |
-| [`ST_Transform`](../../../ST_Transform) | |
+| [`ST_SetSRID`](../../ST_SetSRID) | |
+| [`ST_Transform`](../../ST_Transform) | |

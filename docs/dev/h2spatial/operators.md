@@ -16,9 +16,9 @@ The following operator functions are available:
 
 | Function | Description |
 | - | - |
-| [`ST_Buffer`](../../../ST_Buffer) | |
-| [`ST_ConvexHull`](../../../ST_ConvexHull) | |
-| [`ST_Difference`](../../../ST_Difference) | |
-| [`ST_Intersection`](../../../ST_Intersection) | |
-| [`ST_SymDifference`](../../../ST_SymDifference) | |
-| [`ST_Union`](../../../ST_Union) | |
+| [`ST_Buffer`](../../ST_Buffer) | |
+| [`ST_ConvexHull`](../../ST_ConvexHull) | |
+| [`ST_Difference`](../../ST_Difference) | |
+| [`ST_Intersection`](../../ST_Intersection) | |
+| [`ST_SymDifference`](../../ST_SymDifference) | |
+| [`ST_Union`](../../ST_Union) | |
