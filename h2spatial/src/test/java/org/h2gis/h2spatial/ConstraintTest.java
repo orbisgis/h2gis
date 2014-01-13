@@ -33,7 +33,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.junit.rules.ExpectedException;
 
+import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -159,9 +161,81 @@ public class ConstraintTest {
         assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(`the_GEOM`)= 23", "the_geom"));
         assertEquals(23, ColumnSRID.getSRIDFromConstraint("GEOMETRY_TYPE = \"POLYGON\" AND ST_SRID  (  the_geom  )  =   23", "the_geom"));
 
-        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "geom"));
-        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23 OR ST_SRID(geom)=44", "geom"));
-        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(geom)=44 OR ST_SRID(the_geom)=23", "geom"));
+        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "geom")); //wrong column name
+        // two srid constraint on the same column
+        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(geom)=44 OR ST_SRID(geom)=23", "geom"));
+
+        assertEquals(44, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23 AND ST_SRID(geom)=44", "geom"));
+    }
+
+    /**
+     * Check constraint violation
+     * @throws SQLException
+     */
+    @Test(expected = SQLException.class)
+    public void testWrongSRID() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            st.execute("drop table IF EXISTS T_SRID");
+            st.execute("create table T_SRID (the_geom GEOMETRY)");
+            st.execute("alter table t_srid ADD CONSTRAINT SRIDCONSTR CHECK ST_SRID(the_geom) = 27572");
+        } catch (SQLException ex) {
+            return;
+        }
+        st.execute("insert into T_SRID values('POINT(1 1)')");
+    }
+
+    /**
+     * Check constraint pass
+     * @throws SQLException
+     */
+    @Test
+    public void testGoodSRID() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table IF EXISTS T_SRID");
+        st.execute("create table T_SRID (the_geom GEOMETRY)");
+        st.execute("alter table t_srid ADD CONSTRAINT SRIDCONSTR CHECK ST_SRID(the_geom) = 27572");
+        st.execute("insert into T_SRID values(ST_GeomFromText('POINT(1 1)', 27572))");
+    }
+
+    /**
+     * Check constraint pass
+     * @throws SQLException
+     */
+    @Test
+    public void testTableSRIDGeometryColumns() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table IF EXISTS T_SRID");
+        st.execute("create table T_SRID (the_geom GEOMETRY)");
+        ResultSet rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'T_SRID'");
+        assertTrue(rs.next());
+        assertEquals(0, rs.getInt("srid"));
+        assertFalse(rs.next());
+        rs.close();
+        // Check 0 in srid
+        st.execute("alter table t_srid ADD CONSTRAINT SRIDCONSTR CHECK ST_SRID(the_geom) = 27572");
+        // Check 27572 in srid
+        rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'T_SRID'");
+        assertTrue(rs.next());
+        assertEquals(27572, rs.getInt("srid"));
+        assertFalse(rs.next());
+        rs.close();
+    }
+
+    /**
+     * Check constraint pass
+     * @throws SQLException
+     */
+    @Test
+    public void testColumnSRIDGeometryColumns() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table IF EXISTS T_SRID");
+        st.execute("create table T_SRID (the_geom GEOMETRY CHECK ST_SRID(the_geom) = 27572)");
+        ResultSet rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'T_SRID'");
+        assertTrue(rs.next());
+        assertEquals(27572, rs.getInt("srid"));
+        assertFalse(rs.next());
+        rs.close();
     }
 
     /**
