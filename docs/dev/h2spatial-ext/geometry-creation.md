@@ -10,4 +10,4 @@ The following geometry creation functions are available:
 
 | Function | Description |
 | - | - |
-| [`ST_MakePoint`](../ST_MakePoint) | Construct a `POINT` from two or three coordinates |
+| [`ST_MakePoint`](../../ST_MakePoint) | Construct a `POINT` from two or three coordinates |

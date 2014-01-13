@@ -10,7 +10,7 @@ The following distance functions are available:
 
 | Function | Description |
 | - | - |
-| [`ST_ClosestCoordinate`](../ST_ClosestCoordinate) |  |
-| [`ST_ClosestPoint`](../ST_ClosestPoint) |  |
-| [`ST_FurthestCoordinate`](../ST_FurthestCoordinate) |  |
-| [`ST_LocateAlong`](../ST_LocateAlong) |  |
+| [`ST_ClosestCoordinate`](../../ST_ClosestCoordinate) |  |
+| [`ST_ClosestPoint`](../../ST_ClosestPoint) |  |
+| [`ST_FurthestCoordinate`](../../ST_FurthestCoordinate) |  |
+| [`ST_LocateAlong`](../../ST_LocateAlong) |  |

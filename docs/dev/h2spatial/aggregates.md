@@ -10,4 +10,4 @@ The following aggregate functions are available:
 
 | Function | Description |
 | - | - |
-| [`ST_Accum`](../ST_Accum) | |
+| [`ST_Accum`](../../ST_Accum) | |

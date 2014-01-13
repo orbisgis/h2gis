@@ -10,8 +10,8 @@ The following geometry conversion functions are available:
 
 | Function | Description |
 | - | - |
-| [`ST_Holes`](../ST_Holes) | Return a geometry's holes |
-| [`ST_PointsToLine`](../ST_PointsToLine) |  |
-| [`ST_ToMultiLine`](../ST_ToMultiLine) |  |
-| [`ST_ToMultiPoint`](../ST_ToMultiPoint) |  |
-| [`ST_ToMultiSegments`](../ST_ToMultiSegments) |  |
+| [`ST_Holes`](../../ST_Holes) | Return a geometry's holes |
+| [`ST_PointsToLine`](../../ST_PointsToLine) |  |
+| [`ST_ToMultiLine`](../../ST_ToMultiLine) |  |
+| [`ST_ToMultiPoint`](../../ST_ToMultiPoint) |  |
+| [`ST_ToMultiSegments`](../../ST_ToMultiSegments) |  |
