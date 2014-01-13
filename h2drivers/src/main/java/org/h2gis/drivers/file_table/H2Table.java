@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.drivers.shp;
+package org.h2gis.drivers.file_table;
 
 import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
@@ -32,9 +32,11 @@ import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.message.DbException;
 import org.h2.result.Row;
+import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
-import org.h2gis.drivers.shp.internal.SHPDriver;
+import org.h2.value.Value;
+import org.h2gis.drivers.FileDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,36 +44,45 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 /**
- * A table linked to a SHP and DBF files.
+ * A table linked with a {@link org.h2gis.drivers.FileDriver}
  * @author Nicolas Fortin
  */
-public class SHPTable extends TableBase {
-    private SHPDriver shpDriver;
-    private Logger log = LoggerFactory.getLogger(SHPTable.class);
-    private SHPTableIndex baseIndex;
+public class H2Table extends TableBase {
+    private FileDriver driver;
+    private static final Logger LOG = LoggerFactory.getLogger(H2Table.class);
+    private H2TableIndex baseIndex;
+    private Column rowIdColumn;
 
-    public SHPTable(SHPDriver driver, CreateTableData data) throws IOException {
+    public H2Table(FileDriver driver, CreateTableData data) throws IOException {
         super(data);
-        this.shpDriver = driver;
+        this.driver = driver;
     }
+
+    /**
+     * Create row index
+     * @param session database session
+     */
     public void init(Session session) {
-        baseIndex = new SHPTableIndex(shpDriver,this,this.getId());
+        baseIndex = new H2TableIndex(driver,this,this.getId());
     }
+
     @Override
     public void lock(Session session, boolean exclusive, boolean force) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
     public void close(Session session) {
         try {
-            shpDriver.close();
+            driver.close();
         } catch (IOException ex) {
-            log.error("Error while closing the SHP driver",ex);
+            LOG.error("Error while closing the SHP driver", ex);
         }
     }
 
     @Override
     public void unlock(Session s) {
+        //To change body of implemented methods use File | Settings | File Templates.
     }
 
     @Override
@@ -147,12 +158,12 @@ public class SHPTable extends TableBase {
 
     @Override
     public long getRowCount(Session session) {
-        return shpDriver.getRowCount();
+        return driver.getRowCount();
     }
 
     @Override
     public long getRowCountApproximation() {
-        return shpDriver.getRowCount();
+        return driver.getRowCount();
     }
 
     @Override
@@ -163,5 +174,14 @@ public class SHPTable extends TableBase {
     @Override
     public void checkRename() {
         //Nothing to check
+    }
+
+    @Override
+    public Column getRowIdColumn() {
+        if (rowIdColumn == null) {
+            rowIdColumn = new Column(Column.ROWID, Value.LONG);
+            rowIdColumn.setTable(this, -1);
+        }
+        return rowIdColumn;
     }
 }

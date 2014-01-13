@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers;
+package org.h2gis.drivers.file_table;
 
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;

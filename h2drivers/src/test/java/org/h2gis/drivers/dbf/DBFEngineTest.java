@@ -36,12 +36,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -88,6 +86,7 @@ public class  DBFEngineTest {
     @Test
     public void readDBFDataTest() throws SQLException {
         Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
@@ -96,6 +95,38 @@ public class  DBFEngineTest {
         assertEquals("river",rs.getString("type_axe"));
         rs.close();
         st.execute("drop table dbftable");
+    }
+
+    @Test
+    public void testRowIdHiddenColumn() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
+        // Check random access using hidden column _rowid_
+        PreparedStatement pst = connection.prepareStatement("SELECT * FROM dbftable where _rowid_ = ?");
+        pst.setInt(1, 1);
+        ResultSet rs = pst.executeQuery();
+        try {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("gid"));
+            assertEquals("river",rs.getString("type_axe"));
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT _rowid_ FROM dbftable");
+        try {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt(1));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt(1));
+            assertTrue(rs.next());
+            assertEquals(3, rs.getInt(1));
+        } finally {
+            rs.close();
+        }
+        st.execute("drop table if exists dbftable");
+
     }
 
     @Test
