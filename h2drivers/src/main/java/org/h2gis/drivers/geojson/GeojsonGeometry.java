@@ -19,15 +19,18 @@
  * h2spatial. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * or contact directly: info_at_ orbisgis.org
  */
 package org.h2gis.drivers.geojson;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * Convert a JTS geometry to a Geojson 1.0 representation.
@@ -41,6 +44,9 @@ import com.vividsolutions.jts.geom.Point;
  * member is always an array. The structure for the elements in this array is
  * determined by the type of geometry.
  *
+ * Note that unquoted whitespace is not significant in JSON. Whitespace is used
+ * in the examples to help illustrate the data structures, but is not required.
+ *
  * @author Erwan Bocher
  */
 public class GeojsonGeometry {
@@ -49,15 +55,20 @@ public class GeojsonGeometry {
     }
 
     /**
-     * Transform a JTS geometry to a geojson representation
+     * Transform a JTS geometry to a geojson representation.
      *
      * @param geom
      * @param sb
      */
     public static void toGeojsonGeometry(Geometry geom, StringBuilder sb) {
         if (geom instanceof Point) {
-            toGeojsonPoint(null, sb);
+            toGeojsonPoint((Point) geom, sb);
         } else if (geom instanceof LineString) {
+            toGeojsonLineString((LineString) geom, sb);
+        } else if (geom instanceof Polygon) {
+            toGeojsonPolygon((Polygon) geom, sb);
+        } else if (geom instanceof MultiPoint) {
+            toGeojsonMultiPoint((MultiPoint) geom, sb);
         }
     }
 
@@ -88,7 +99,7 @@ public class GeojsonGeometry {
      */
     public static void toGeojsonPoint(Point point, StringBuilder sb) {
         Coordinate coord = point.getCoordinate();
-        sb.append("{{\"type\":\"Point\",\"coordinates\":[");
+        sb.append("{\"type\":\"Point\",\"coordinates\":[");
         sb.append(coord.x).append(",").append(coord.y);
         if (!Double.isNaN(coord.z)) {
             sb.append(",").append(coord.z);
@@ -97,7 +108,23 @@ public class GeojsonGeometry {
     }
 
     /**
-     * Coordinates of LineString are an array of positions
+     * Coordinates of a MultiPoint are an array of positions.
+     *
+     * Syntax :
+     *
+     * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
+     *
+     * @param multiPoint
+     * @param sb
+     */
+    public static void toGeojsonMultiPoint(MultiPoint multiPoint, StringBuilder sb) {
+        sb.append("{\"type\":\"MultiPoint\",\"coordinates\":");
+        toGeojsonCoordinates(multiPoint.getCoordinates(), sb);
+        sb.append("}");
+    }
+
+    /**
+     * Coordinates of LineString are an array of positions.
      *
      * Syntax :
      *
@@ -107,6 +134,63 @@ public class GeojsonGeometry {
      * @param sb
      */
     public static void toGeojsonLineString(LineString lineString, StringBuilder sb) {
+        sb.append("{\"type\":\"LineString\",\"coordinates\":");
+        toGeojsonCoordinates(lineString.getCoordinates(), sb);
+        sb.append("}");
+    }
+
+    /**
+     * Coordinates of a MultiLineString are an array of LineString coordinate
+     * arrays.
+     *
+     * Syntax :
+     *
+     * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
+     * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
+     *
+     * @param multiLineString
+     * @param sb
+     */
+    public static void toGeojsonMultiLineString(MultiLineString multiLineString, StringBuilder sb) {
+        sb.append("{\"type\":\"LineString\",\"coordinates\":");
+        toGeojsonCoordinates(lineString.getCoordinates(), sb);
+        sb.append("}");
+    }
+
+    /**
+     * Coordinates of a Polygon are an array of LinearRing coordinate arrays.
+     * The first element in the array represents the exterior ring. Any
+     * subsequent elements represent interior rings (or holes).
+     *
+     * Syntax :
+     *
+     * No holes:
+     *
+     * { "type": "Polygon", "coordinates": [ [ [100.0, 0.0], [101.0, 0.0],
+     * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ] ] }
+     *
+     * With holes:
+     *
+     * { "type": "Polygon", "coordinates": [ [ [100.0, 0.0], [101.0, 0.0],
+     * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ], [ [100.2, 0.2], [100.8, 0.2],
+     * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ] ] }
+     *
+     *
+     * @param polygon
+     * @param sb
+     */
+    public static void toGeojsonPolygon(Polygon polygon, StringBuilder sb) {
+        sb.append("{\"type\":\"Polygon\",\"coordinates\":");
+
+        //Process exterior ring
+        toGeojsonCoordinates(polygon.getExteriorRing().getCoordinates(), sb);
+
+        //Process interior rings
+        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+            sb.append(",");
+            toGeojsonCoordinates(polygon.getInteriorRingN(i).getCoordinates(), sb);
+        }
+        sb.append("}");
     }
 
     /**
@@ -150,5 +234,18 @@ public class GeojsonGeometry {
             sb.append(",").append(coord.z);
         }
         sb.append("]");
+    }
+
+    /**
+     * Convert a JTS Envelope to a GeoJson representation.
+     *
+     * @param e The envelope
+     *
+     * @return The envelope encoded as GeoJSON
+     */
+    public String toGeoJsonEnvelope(Envelope e) {
+        return new StringBuffer().append("[").append(e.getMinX()).append(",")
+                .append(e.getMinY()).append(",").append(e.getMaxX()).append(",")
+                .append(e.getMaxY()).append("]").toString();
     }
 }

@@ -24,25 +24,73 @@
  */
 package org.h2gis.drivers.geojson;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import static org.junit.Assert.assertTrue;
-import com.vividsolutions.jts.io.WKTReader;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
+import org.h2gis.h2spatial.CreateSpatialExtension;
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
  * @author Erwan Bocher
  */
 public class GeojsonExportTest {
+    
+    private static Connection connection;
+    private static final String DB_NAME = "GeojsonExportTest";
 
-    private WKTReader wKTReader = new WKTReader();
+    @BeforeClass
+    public static void tearUp() throws Exception {
+        // Keep a connection alive to not close the DataBase on each unit test
+        connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsGeoJson(), "");
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        connection.close();
+    }
 
     @Test
     public void testGeojsonPoint() throws Exception {
-        Geometry geom = wKTReader.read("POINT(1 2)");
-        StringBuilder sb = new StringBuilder();
-        GeojsonGeometry.toGeojsonPoint((Point)geom, sb);
-        //assertTrue(sb.toString().equals("{{"type":"Point","coordinates":[1.0,2.0]}"));        
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS POINTS");
+        stat.execute("create table POINTS(idarea int primary key, the_geom POINT)");        
+        stat.execute("insert into POINTS values(1, 'POINT(1 2)')");        
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from POINTS;");
+        res.next();
+        assertTrue(res.getString(1).equals("{\"type\":\"Point\",\"coordinates\":[1.0,2.0]}"));
+        res.close();
+        stat.close();
+    }
+    
+     @Test
+    public void testGeojsonLineString() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS LINES");
+        stat.execute("create table LINES(idarea int primary key, the_geom LINESTRING)");        
+        stat.execute("insert into LINES values(1, 'LINESTRING(1 2, 2 3)')");        
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from LINES;");
+        res.next();
+        assertTrue(res.getString(1).equals("{\"type\":\"LineString\",\"coordinates\":[[1.0,2.0],[2.0,3.0]]}"));
+        res.close();
+        stat.close();
+    }
+     
+      @Test
+    public void testGeojsonLineString() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS POLYGONS");
+        stat.execute("create table POLYGONS(idarea int primary key, the_geom POLYGON)");        
+        stat.execute("insert into POLYGONS values(1, 'LINESTRING(1 2, 2 3)')");        
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from POLYGONS;");
+        res.next();
+        assertTrue(res.getString(1).equals("{\"type\":\"Polygon\",\"coordinates\":[[1.0,2.0],[2.0,3.0]]}"));
+        res.close();
+        stat.close();
     }
 }

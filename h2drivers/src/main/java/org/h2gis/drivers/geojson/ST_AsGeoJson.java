@@ -34,6 +34,11 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
         return "toGeojson";
     }
     
+    /**
+     * Convert the geometry
+     * @param geom
+     * @return 
+     */
     public static String toGeojson(Geometry geom) {
         StringBuilder sb = new StringBuilder();
         GeojsonGeometry.toGeojsonGeometry(geom, sb);
