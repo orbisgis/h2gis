@@ -49,7 +49,7 @@ import java.util.ArrayList;
  */
 public class H2Table extends TableBase {
     private FileDriver driver;
-    private Logger log = LoggerFactory.getLogger(H2Table.class);
+    private static final Logger LOG = LoggerFactory.getLogger(H2Table.class);
     private H2TableIndex baseIndex;
     private Column rowIdColumn;
 
@@ -76,7 +76,7 @@ public class H2Table extends TableBase {
         try {
             driver.close();
         } catch (IOException ex) {
-            log.error("Error while closing the SHP driver",ex);
+            LOG.error("Error while closing the SHP driver", ex);
         }
     }
 

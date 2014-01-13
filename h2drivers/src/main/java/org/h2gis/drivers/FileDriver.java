@@ -6,9 +6,11 @@ import java.io.IOException;
  * Implement this interface in order to create a {@link org.h2gis.drivers.file_table.H2Table} in your
  * {@link org.h2.api.TableEngine} implementation.
  * How to use:
- *   -Implement this interface with your file driver
- *   -Implement {@link org.h2gis.drivers.file_table.FileEngine}
- *   -Add your {@link org.h2gis.drivers.file_table.FileEngine} implementation into the {@link org.h2gis.drivers.DriverManager}
+ * <ul>
+ * <li>Implement this interface with your file driver</li>
+ * <li>Implement {@link org.h2gis.drivers.file_table.FileEngine}</li>
+ * <li>Add your {@link org.h2gis.drivers.file_table.FileEngine} implementation into the {@link org.h2gis.drivers.DriverManager}</li>
+ * </ul>
  * @author Nicolas Fortin
  */
 public interface FileDriver {
