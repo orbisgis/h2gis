@@ -56,7 +56,7 @@ import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 
 /**
- * This utility class contains editing methods for JTS {@link Geometry} objects.
+ * Editing methods for JTS {@link Geometry}s.
  *
  * Geometry objects are unmodifiable; this class allows you to "modify" a
  * Geometry in a sense -- the modified Geometry is returned as a new Geometry.
@@ -130,7 +130,6 @@ public final class GeometryEdit extends GeometryUtils {
             this.startZ = startZ;
             this.endZ = endZ;
             this.length = length;
-
         }
 
         @Override
@@ -146,7 +145,6 @@ public final class GeometryEdit extends GeometryUtils {
                 sumLenght += coord.distance(previousCoord);
                 seq.setOrdinate(i, 2, startZ + dZ * sumLenght / length);
             }
-
         }
 
         @Override
@@ -173,9 +171,7 @@ public final class GeometryEdit extends GeometryUtils {
             final double endZ) {
 
         final double bigD = geom.getLength();
-
         final double z = endZ - startZ;
-
         final Coordinate coordEnd = geom.getCoordinates()[geom.getCoordinates().length - 1];
 
         geom.apply(new CoordinateSequenceFilter() {
@@ -219,7 +215,6 @@ public final class GeometryEdit extends GeometryUtils {
         });
 
         return geom;
-
     }
 
     /**
@@ -234,7 +229,6 @@ public final class GeometryEdit extends GeometryUtils {
         LineString[] lineStrings = new LineString[num];
         for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
             lineStrings[i] = reverse3D((LineString) multiLineString.getGeometryN(i));
-
         }
         return FACTORY.createMultiLineString(lineStrings);
     }
@@ -254,7 +248,6 @@ public final class GeometryEdit extends GeometryUtils {
             CoordinateSequences.reverse(seq);
             return FACTORY.createLineString(seq);
         }
-
         return lineString;
     }
 
@@ -307,7 +300,6 @@ public final class GeometryEdit extends GeometryUtils {
         });
 
         return geom;
-
     }
 
     /**
@@ -566,7 +558,6 @@ public final class GeometryEdit extends GeometryUtils {
             return snapedPoint;
         }
         return null;
-
     }
 
     /**
@@ -620,8 +611,6 @@ public final class GeometryEdit extends GeometryUtils {
         } else {
             return null;
         }
-
-
     }
 
     /**
@@ -634,7 +623,6 @@ public final class GeometryEdit extends GeometryUtils {
     public static LinearRing insertVertexInLinearRing(LineString lineString,
             Point vertexPoint) {
         return insertVertexInLinearRing(lineString, vertexPoint, -1);
-
     }
 
     /**
@@ -677,7 +665,6 @@ public final class GeometryEdit extends GeometryUtils {
     public static Geometry insertVertexInPolygon(Polygon polygon,
             Point vertexPoint) throws GeometryException {
         return insertVertexInPolygon(polygon, vertexPoint, -1);
-
     }
 
     /**

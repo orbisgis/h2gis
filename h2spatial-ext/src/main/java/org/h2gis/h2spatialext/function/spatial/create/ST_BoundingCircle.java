@@ -21,8 +21,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute the minimum bounding circle of a geomety. More information
- * {@code MinimumBoundingCircle}
+ * Compute the minimum bounding circle of a geometry. For more information,
+ * see {@link MinimumBoundingCircle}.
  *
  * @author Erwan Bocher
  */

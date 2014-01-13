@@ -19,7 +19,7 @@ package org.h2gis.utilities.jts_utils;
 import com.vividsolutions.jts.geom.GeometryFactory;
 
 /**
- * This class is used to avoid duplicate factory object
+ * This class is used to avoid duplicate {@link GeometryFactory}s.
  * @author Erwan Bocher
  */
 public abstract class GeometryUtils {

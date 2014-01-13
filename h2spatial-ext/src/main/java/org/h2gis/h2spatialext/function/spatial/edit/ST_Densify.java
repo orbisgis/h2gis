@@ -21,14 +21,15 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Makes denser a geometry using a given distance tolerance.
+ * Densifies a geometry using the given distance tolerance.
  *
+ * @see com.vividsolutions.jts.densify.Densifier
  * @author Erwan Bocher
  */
 public class ST_Densify extends DeterministicScalarFunction {
 
     public ST_Densify() {
-        addProperty(PROP_REMARKS, "Makes denser a geometry using a given distance tolerance.");
+        addProperty(PROP_REMARKS, "Densifies a geometry using the given distance tolerance");
     }
 
     @Override
@@ -37,11 +38,11 @@ public class ST_Densify extends DeterministicScalarFunction {
     }
 
     /**
-     * Densify a geometry adding new points using a distance tolerance
+     * Densify a geometry using the given distance tolerance.
      *
-     * @param geometry
-     * @param tolerance
-     * @return
+     * @param geometry  Geometry
+     * @param tolerance Distance tolerance
+     * @return Densified geometry
      */
     public static Geometry densify(Geometry geometry, double tolerance) {
         return Densifier.densify(geometry, tolerance);

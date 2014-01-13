@@ -51,5 +51,4 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction{
     public static Geometry removeRepeatedPoints(Geometry geometry){
         return GeometryClean.removeDuplicateCoordinates(geometry);
     }
-    
 }

@@ -23,31 +23,17 @@
  */
 package org.h2gis.utilities.jts_utils;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
+import com.vividsolutions.jts.geom.*;
+
 import java.util.ArrayList;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateArrays;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-
 /**
- * This utility class provides cleaning utilities for JTS {@link Geometry}
- * objects.
+ * Cleaning utilities for JTS {@link Geometry}s.
  *
  * @author Erwan Bocher
  */
 public final class GeometryClean extends GeometryUtils{
-
-    
 
     /**
      * Create a nice Polygon from the given Polygon. Will ensure that shells are
@@ -97,9 +83,7 @@ public final class GeometryClean extends GeometryUtils{
             ps[t] = makeGoodShapePolygon((Polygon) mp.getGeometryN(t));
         }
 
-        result = FACTORY.createMultiPolygon(ps);
-
-        return result;
+        return FACTORY.createMultiPolygon(ps);
     }
 
     /**

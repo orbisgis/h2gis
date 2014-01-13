@@ -27,7 +27,7 @@ package org.h2gis.utilities.jts_utils;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * This utility class provides some useful methods related to JTS {@link Coordinate} objects.
+ * Useful methods for JTS {@link Coordinate}s.
  *
  * @author Erwan Bocher
  */
@@ -74,8 +74,7 @@ public final class CoordinateUtils {
         result[1] = (zmax);
         return result;
     }
-    
-    
+
     /**
      * Interpolates a z value (linearly) between the two coordinates.
      *
@@ -94,8 +93,7 @@ public final class CoordinateUtils {
         return firstCoordinate.z + (lastCoordinate.z - firstCoordinate.z) * firstCoordinate.distance(toBeInterpolated)
                 / (firstCoordinate.distance(toBeInterpolated) + toBeInterpolated.distance(lastCoordinate));
     }
-    
-    
+
     /**
      * Checks if a coordinate array contains a specific coordinate.
      *
@@ -113,7 +111,6 @@ public final class CoordinateUtils {
         }
         return false;
     }
-
 
     /**
      * Private constructor for utility class.

@@ -29,9 +29,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Creates a rectangular Polygon formed from the minima and maxima by the given
- * shell. Input values must be in SRS specified by the SRID. If no SRID is
- * specified the unknown spatial reference system is assumed
+ * Creates a rectangular POLYGON formed from the given x and y minima.  The user may specify an SRID; if no SRID is specified the unknown spatial reference system is assumed.
  *
  * @author Erwan Bocher
  */
@@ -40,8 +38,10 @@ public class ST_MakeEnvelope extends DeterministicScalarFunction {
     private static final GeometryFactory GF = new GeometryFactory();
 
     public ST_MakeEnvelope() {
-        addProperty(PROP_REMARKS, "Creates a rectangular Polygon formed from the given minimums and maximums.\n"
-                + " Input values must be in SRS specified by the SRID.");
+        addProperty(PROP_REMARKS,
+                "Creates a rectangular POLYGON formed from the given x and y minima.\n"
+                + " The user may specify an SRID; if no SRID is specified the unknown\n"
+                + " spatial reference system is assumed.");
     }
 
     @Override
@@ -53,11 +53,11 @@ public class ST_MakeEnvelope extends DeterministicScalarFunction {
      * Creates a rectangular Polygon formed from the minima and maxima by the
      * given shell.
      *
-     * @param xmin
-     * @param ymin
-     * @param xmax
-     * @param ymax
-     * @return
+     * @param xmin X min
+     * @param ymin Y min
+     * @param xmax X max
+     * @param ymax Y max
+     * @return Envelope as a POLYGON
      */
     public static Polygon makeEnvelope(double xmin, double ymin, double xmax, double ymax) {
         Coordinate[] coordinates = new Coordinate[]{
@@ -74,12 +74,12 @@ public class ST_MakeEnvelope extends DeterministicScalarFunction {
      * Creates a rectangular Polygon formed from the minima and maxima by the
      * given shell.
      * The user can set a srid.
-     * @param xmin
-     * @param ymin
-     * @param xmax
-     * @param ymax
-     * @param srid
-     * @return
+     * @param xmin X min
+     * @param ymin Y min
+     * @param xmax X max
+     * @param ymax Y max
+     * @param srid SRID
+     * @return Envelope as a POLYGON
      */
     public static Polygon makeEnvelope(double xmin, double ymin, double xmax, double ymax, int srid) {
         Polygon geom = makeEnvelope(xmin, ymin, xmax, ymax);
