@@ -28,19 +28,25 @@ package org.h2gis.h2spatial.internal.function.spatial.properties;
 import org.h2.util.StringUtils;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.omg.DynamicAny._DynEnumStub;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Get the column SRID from constraints and data.
  * @author Nicolas Fortin
  */
 public class ColumnSRID extends AbstractFunction implements ScalarFunction {
-
+    private static final String SRID_FUNC = ST_SRID.class.getSimpleName();
+    private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("ST_SRID\\s*\\(\\s*[\"`]?\\w*[\"`]?\\s*\\)\\s*=\\s*\\d+", Pattern.CASE_INSENSITIVE);
+    private static final Pattern COLUMN_PATTERN = Pattern.compile("\\(\\s*[\"`]?\\w+[\"`]?\\s*\\)");
+    private static final Pattern SRID_PATTERN = Pattern.compile("\\d+$");
+    private static final Pattern COLUMN_NAME_PATTERN = Pattern.compile("\\w+");
     public ColumnSRID() {
         addProperty(PROP_REMARKS, "Get the column SRID from constraints and data.");
     }
@@ -51,35 +57,82 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
     }
 
     /**
+     *
+     * @param constraint Constraint expression ex:"ST_SRID(the_geom) = 27572"
+     * @return The SRID or 0 if no constraint are found or constraint on other column
+     */
+    public static int getSRIDFromConstraint(String constraint, String columnName) {
+        int srid = 0;
+        Matcher matcher = SRID_CONSTRAINT_PATTERN.matcher(constraint);
+        while (matcher.find()) {
+            Matcher matcherColumn = COLUMN_PATTERN.matcher(matcher.group());
+            boolean isCurrentGeometryColumn = false;
+            if (matcherColumn.find()) {
+                Matcher matcherColumnName = COLUMN_NAME_PATTERN.matcher(matcherColumn.group());
+                if (matcherColumnName.find()) {
+                    if(matcherColumnName.group().equalsIgnoreCase(columnName)) {
+                        isCurrentGeometryColumn = true;
+                    }
+                }
+            }
+            Matcher matcherSrid = SRID_PATTERN.matcher(matcher.group());
+            if (matcherSrid.find() && isCurrentGeometryColumn) {
+                int sridConstr = Integer.valueOf(matcherSrid.group());
+                if(srid != 0 && srid != sridConstr) {
+                    // Two srid constraint on the same column
+                    return 0;
+                }
+                srid = sridConstr;
+            }
+        }
+        return srid;
+    }
+
+
+    /**
      * @param connection Active connection
      * @param tableName Target table name
      * @param columnName Spatial field name
-     * @return Tthe column SRID from constraints and data.
+     * @param constraint Column constraint
+     * @return The column SRID from constraints and data.
      * @throws SQLException
      */
-    public static int getSRID(Connection connection, String catalogName, String schemaName, String tableName, String columnName) throws SQLException {
+    public static int getSRID(Connection connection, String catalogName, String schemaName, String tableName, String columnName,String constraint) throws SQLException {
         Statement st = connection.createStatement();
+        // Merge column constraint and table constraint
+        PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection, catalogName, schemaName,
+                tableName, "INFORMATION_SCHEMA.CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
+        ResultSet rsConstraint = pst.executeQuery();
+        try {
+            while (rsConstraint.next()) {
+                String tableConstr = rsConstraint.getString("CHECK_EXPRESSION");
+                if(tableConstr != null) {
+                    constraint += tableConstr;
+                }
+            }
+        } finally {
+            rsConstraint.close();
+            pst.close();
+        }
+        if(constraint != null && constraint.toUpperCase().contains(SRID_FUNC)) {
+            // Check constraint
+            // Extract column and SRID constraint value
+            // constraint = ".. ST_SRID(the_geom) = 27572 .."
+            int srid = getSRIDFromConstraint(constraint, columnName);
+            if(srid > 0) {
+                return srid;
+            }
+        }
         // Fetch the first geometry to find a stored SRID
-        ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;", StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)));
-        int srid = 0;
+        ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
+                StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)));
         if(rs.next()) {
-            srid = rs.getInt(1);
+            int srid = rs.getInt(1);
             if(srid > 0) {
                 return srid;
             }
         }
         rs.close();
-        // TODO read constraint
-
-        // Use first SRID from SPATIAL_REF_SYS
-        try {
-            rs = st.executeQuery("select srid from SPATIAL_REF_SYS LIMIT 1;");
-            if(rs.next()) {
-                return rs.getInt(1);
-            }
-        } catch (SQLException ex) {
-            //Table not found
-        }
         // Unable to find a valid SRID
         return 0;
 
