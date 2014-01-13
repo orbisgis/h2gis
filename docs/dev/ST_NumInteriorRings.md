@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_NumInteriorRings
+category: h2spatial/properties
 prev_section: ST_NumInteriorRing
 next_section: ST_NumPoints
 permalink: /docs/dev/ST_NumInteriorRings/

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_XMax
+category: h2spatial-ext/properties
 prev_section: ST_Extent
 next_section: ST_XMin
 permalink: /docs/dev/ST_XMax/

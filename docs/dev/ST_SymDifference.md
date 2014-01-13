@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_SymDifference
+category: h2spatial/operators
 prev_section: ST_Intersection
 next_section: ST_Union
 permalink: /docs/dev/ST_SymDifference/

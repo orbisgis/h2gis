@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_MLineFromText
+category: h2spatial/geometry-conversion
 prev_section: ST_LineFromWKB
 next_section: ST_MPointFromText
 permalink: /docs/dev/ST_MLineFromText/

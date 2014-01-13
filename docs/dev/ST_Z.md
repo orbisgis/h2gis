@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Z
+category: h2spatial/properties
 prev_section: ST_Y
 next_section: h2spatial-ext/affine-transformations
 permalink: /docs/dev/ST_Z/

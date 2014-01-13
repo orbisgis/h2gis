@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Length
+category: h2spatial/properties
 prev_section: ST_IsSimple
 next_section: ST_M
 permalink: /docs/dev/ST_Length/

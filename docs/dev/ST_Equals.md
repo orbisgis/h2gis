@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Equals
+category: h2spatial/predicates
 prev_section: ST_EnvelopesIntersect
 next_section: ST_Intersects
 permalink: /docs/dev/ST_Equals/

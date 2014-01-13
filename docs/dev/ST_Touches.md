@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Touches
+category: h2spatial/predicates
 prev_section: ST_Relate
 next_section: ST_Within
 permalink: /docs/dev/ST_Touches/

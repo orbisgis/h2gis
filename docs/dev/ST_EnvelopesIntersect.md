@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_EnvelopesIntersect
+category: h2spatial/predicates
 prev_section: ST_Disjoint
 next_section: ST_Equals
 permalink: /docs/dev/ST_EnvelopesIntersect/

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_PointN
+category: h2spatial/properties
 prev_section: ST_NumPoints
 next_section: ST_PointOnSurface
 permalink: /docs/dev/ST_PointN/

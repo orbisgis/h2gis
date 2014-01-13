@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_GeomFromText
+category: h2spatial/geometry-conversion
 prev_section: ST_AsText
 next_section: ST_LineFromText
 permalink: /docs/dev/ST_GeomFromText/

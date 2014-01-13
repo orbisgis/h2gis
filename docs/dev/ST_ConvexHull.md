@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_ConvexHull
+category: h2spatial/operators
 prev_section: ST_Buffer
 next_section: ST_Difference
 permalink: /docs/dev/ST_ConvexHull/

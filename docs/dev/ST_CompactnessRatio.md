@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_CompactnessRatio
+category: h2spatial-ext/properties
 prev_section: ST_3DLength
 next_section: ST_CoordDim
 permalink: /docs/dev/ST_CompactnessRatio/

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_DWithin
+category: h2spatial-ext/predicates
 prev_section: ST_Covers
 next_section: ST_IsRectangle
 permalink: /docs/dev/ST_DWithin/

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Dimension
+category: h2spatial/properties
 prev_section: ST_Centroid
 next_section: ST_Distance
 permalink: /docs/dev/ST_Dimension/

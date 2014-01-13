@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_ClosestPoint
+category: h2spatial-ext/distance-functions
 prev_section: ST_ClosestCoordinate
 next_section: ST_FurthestCoordinate
 permalink: /docs/dev/ST_ClosestPoint/

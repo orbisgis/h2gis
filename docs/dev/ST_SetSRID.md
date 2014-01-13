@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_SetSRID
+category: h2spatial/projections
 prev_section: h2spatial/projections
 next_section: ST_Transform
 permalink: /docs/dev/ST_SetSRID/

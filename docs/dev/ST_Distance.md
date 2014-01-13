@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Distance
+category: h2spatial/properties
 prev_section: ST_Dimension
 next_section: ST_EndPoint
 permalink: /docs/dev/ST_Distance/

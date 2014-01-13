@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_IsValid
+category: h2spatial-ext/predicates
 prev_section: ST_IsRectangle
 next_section: h2spatial-ext/properties
 permalink: /docs/dev/ST_IsValid/

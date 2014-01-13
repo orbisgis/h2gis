@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_YMax
+category: h2spatial-ext/properties
 prev_section: ST_XMin
 next_section: ST_YMin
 permalink: /docs/dev/ST_YMax/

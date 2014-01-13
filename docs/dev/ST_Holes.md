@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Holes
+category: h2spatial-ext/geometry-conversion
 prev_section: h2spatial-ext/geometry-conversion
 next_section: ST_PointsToLine
 permalink: /docs/dev/ST_Holes/

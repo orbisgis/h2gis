@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Covers
+category: h2spatial-ext/predicates
 prev_section: h2spatial-ext/predicates
 next_section: ST_DWithin
 permalink: /docs/dev/ST_Covers/

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_M
+category: h2spatial/properties
 prev_section: ST_Length
 next_section: ST_NumGeometries
 permalink: /docs/dev/ST_M/

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_X
+category: h2spatial/properties
 prev_section: ST_StartPoint
 next_section: ST_Y
 permalink: /docs/dev/ST_X/

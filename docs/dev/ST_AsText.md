@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_AsText
+category: h2spatial/geometry-conversion
 prev_section: ST_AsBinary
 next_section: ST_AsWKT
 permalink: /docs/dev/ST_AsText/

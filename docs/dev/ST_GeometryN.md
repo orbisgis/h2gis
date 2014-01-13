@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_GeometryN
+category: h2spatial/properties
 prev_section: ST_ExteriorRing
 next_section: ST_GeometryType
 permalink: /docs/dev/ST_GeometryN/

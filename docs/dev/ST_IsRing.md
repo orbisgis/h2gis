@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_IsRing
+category: h2spatial/properties
 prev_section: ST_IsEmpty
 next_section: ST_IsSimple
 permalink: /docs/dev/ST_IsRing/

@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_SRID
+category: h2spatial/properties
 prev_section: ST_PointOnSurface
 next_section: ST_StartPoint
 permalink: /docs/dev/ST_SRID/

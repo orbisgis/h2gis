@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_PointFromText
+category: h2spatial/geometry-conversion
 prev_section: ST_MPolyFromText
 next_section: ST_PolyFromText
 permalink: /docs/dev/ST_PointFromText/

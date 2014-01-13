@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_ToMultiSegments
+category: h2spatial-ext/geometry-conversion
 prev_section: ST_ToMultiPoint
 next_section: h2spatial-ext/geometry-creation
 permalink: /docs/dev/ST_ToMultiSegments/

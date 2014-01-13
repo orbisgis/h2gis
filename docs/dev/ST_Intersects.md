@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Intersects
+category: h2spatial/predicates
 prev_section: ST_Equals
 next_section: ST_Overlaps
 permalink: /docs/dev/ST_Intersects/

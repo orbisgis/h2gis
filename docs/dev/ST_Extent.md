@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Extent
+category: h2spatial-ext/properties
 prev_section: ST_Explode
 next_section: ST_XMax
 permalink: /docs/dev/ST_Extent/

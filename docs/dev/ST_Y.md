@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Y
+category: h2spatial/properties
 prev_section: ST_X
 next_section: ST_Z
 permalink: /docs/dev/ST_Y/

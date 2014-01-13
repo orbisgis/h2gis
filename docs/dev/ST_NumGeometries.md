@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_NumGeometries
+category: h2spatial/properties
 prev_section: ST_M
 next_section: ST_NumInteriorRing
 permalink: /docs/dev/ST_NumGeometries/

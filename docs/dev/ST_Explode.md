@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Explode
+category: h2spatial-ext/properties
 prev_section: ST_CoordDim
 next_section: ST_Extent
 permalink: /docs/dev/ST_Explode/

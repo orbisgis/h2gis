@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Contains
+category: h2spatial/predicates
 prev_section: h2spatial/predicates
 next_section: ST_Crosses
 permalink: /docs/dev/ST_Contains/

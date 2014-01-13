@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Relate
+category: h2spatial/predicates
 prev_section: ST_Overlaps
 next_section: ST_Touches
 permalink: /docs/dev/ST_Relate/

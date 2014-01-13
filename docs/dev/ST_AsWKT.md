@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_AsWKT
+category: h2spatial/geometry-conversion
 prev_section: ST_AsText
 next_section: ST_GeomFromText
 permalink: /docs/dev/ST_AsWKT/

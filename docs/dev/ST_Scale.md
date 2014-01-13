@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Scale
+category: h2spatial-ext/affine-transformations
 prev_section: ST_Rotate
 next_section: h2spatial-ext/geometry-conversion
 permalink: /docs/dev/ST_Scale/

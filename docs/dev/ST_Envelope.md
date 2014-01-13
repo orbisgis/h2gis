@@ -1,6 +1,7 @@
 ---
 layout: docs
 title: ST_Envelope
+category: h2spatial/properties
 prev_section: ST_EndPoint
 next_section: ST_ExteriorRing
 permalink: /docs/dev/ST_Envelope/
