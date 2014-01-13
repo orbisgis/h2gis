@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: Aggregates
-
-prev_section: embedded-spatial-db
-
-next_section: h2spatial/geometry-conversion
-
+prev_section: h2spatial/properties
+next_section: h2spatial-ext/affine-transformations
 permalink: /docs/dev/h2spatial/aggregates/
-
 ---
 
 The following aggregate functions are available:

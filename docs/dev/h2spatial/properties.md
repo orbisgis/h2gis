@@ -1,15 +1,9 @@
 ---
-
 layout: docs
-
 title: Properties
-
 prev_section: h2spatial/projections
-
-next_section: h2spatial-ext/affine-transformations
-
+next_section: h2spatial/aggregates
 permalink: /docs/dev/h2spatial/properties/
-
 ---
 
 The following property functions are available:

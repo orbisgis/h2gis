@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Accum
 prev_section: h2spatial/aggregates
-next_section: h2spatial/geometry-conversion
+next_section: h2spatial-ext/geometry-conversion
 permalink: /docs/dev/h2spatial/ST_Accum/
 ---
 

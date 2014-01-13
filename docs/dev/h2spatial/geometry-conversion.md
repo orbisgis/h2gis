@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Convert geometries
-prev_section: h2spatial/aggregates
+prev_section: embedded-spatial-db
 next_section: h2spatial/operators
 permalink: /docs/dev/h2spatial/geometry-conversion/
 ---

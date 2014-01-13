@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Affine transformations
-prev_section: h2spatial/properties
+prev_section: h2spatial/aggregates
 next_section: h2spatial-ext/geometry-conversion
 permalink: /docs/dev/h2spatial-ext/affine-transformations/
 ---
