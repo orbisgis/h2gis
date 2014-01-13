@@ -26,9 +26,11 @@ package org.h2gis.drivers.geojson;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
@@ -69,6 +71,8 @@ public class GeojsonGeometry {
             toGeojsonPolygon((Polygon) geom, sb);
         } else if (geom instanceof MultiPoint) {
             toGeojsonMultiPoint((MultiPoint) geom, sb);
+        } else if (geom instanceof MultiLineString) {
+            toGeojsonMultiLineString((MultiLineString) geom, sb);
         }
     }
 
@@ -152,9 +156,12 @@ public class GeojsonGeometry {
      * @param sb
      */
     public static void toGeojsonMultiLineString(MultiLineString multiLineString, StringBuilder sb) {
-        sb.append("{\"type\":\"LineString\",\"coordinates\":");
-        toGeojsonCoordinates(lineString.getCoordinates(), sb);
-        sb.append("}");
+        sb.append("{\"type\":\"MultiLineString\",\"coordinates\":[");
+        for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
+            sb.append(",");
+            toGeojsonCoordinates(multiLineString.getGeometryN(i).getCoordinates(), sb);
+        }
+        sb.append("]}");
     }
 
     /**
@@ -180,7 +187,7 @@ public class GeojsonGeometry {
      * @param sb
      */
     public static void toGeojsonPolygon(Polygon polygon, StringBuilder sb) {
-        sb.append("{\"type\":\"Polygon\",\"coordinates\":");
+        sb.append("{\"type\":\"Polygon\",\"coordinates\":[");
 
         //Process exterior ring
         toGeojsonCoordinates(polygon.getExteriorRing().getCoordinates(), sb);
@@ -190,7 +197,77 @@ public class GeojsonGeometry {
             sb.append(",");
             toGeojsonCoordinates(polygon.getInteriorRingN(i).getCoordinates(), sb);
         }
-        sb.append("}");
+        sb.append("]}");
+    }
+
+    /**
+     * Coordinates of a MultiPolygon are an array of Polygon coordinate arrays.
+     *
+     * Syntax :
+     *
+     * { "type": "MultiPolygon", "coordinates": [ [[[102.0, 2.0], [103.0, 2.0],
+     * [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]], [[[100.0, 0.0], [101.0, 0.0],
+     * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
+     * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
+     *
+     * @param multiPolygon
+     * @param sb
+     */
+    public static void toGeojsonMultiPolygon(MultiPolygon multiPolygon, StringBuilder sb) {
+        sb.append("{\"type\":\"MultiPolygon\",\"coordinates\":[");
+
+        for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+            Polygon p = (Polygon) multiPolygon.getGeometryN(i);
+            sb.append("[");
+            //Process exterior ring
+            toGeojsonCoordinates(p.getExteriorRing().getCoordinates(), sb);
+
+            //Process interior rings
+            for (int j = 0; j < p.getNumInteriorRing(); j++) {
+                sb.append(",");
+                toGeojsonCoordinates(p.getInteriorRingN(j).getCoordinates(), sb);
+            }
+            sb.append("]");            
+            if(i<multiPolygon.getNumGeometries()-1){
+                sb.append(",");
+            }
+        }
+        sb.append("]}");
+    }
+
+    /**
+     * A GeoJSON object with type "GeometryCollection" is a geometry object
+     * which represents a collection of geometry objects.
+     *
+     * A geometry collection must have a member with the name "geometries". The
+     * value corresponding to "geometries"is an array. Each element in this
+     * array is a GeoJSON geometry object.
+     *
+     * Syntax :
+     *
+     * { "type": "GeometryCollection", "geometries": [ { "type": "Point",
+     * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
+     * [101.0, 0.0], [102.0, 1.0] ] } ] }
+     *
+     * @param geometryCollection
+     * @param sb
+     */
+    public static void toGeojsonGeometryCollection(GeometryCollection geometryCollection, StringBuilder sb) {
+        sb.append("{\"type\":\"GeometryCollection\",\"geometries\":[");
+        for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
+            Geometry geom = geometryCollection.getGeometryN(i);
+            if (geom instanceof Point) {
+                toGeojsonPoint((Point) geom, sb);
+                sb.append(",");
+            } else if (geom instanceof LineString) {
+                toGeojsonLineString((LineString) geom, sb);
+                sb.append(",");
+            } else if (geom instanceof Polygon) {
+                toGeojsonPolygon((Polygon) geom, sb);
+                sb.append(",");
+            }
+        }
+        sb.append("]}");
     }
 
     /**

@@ -35,7 +35,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     }
     
     /**
-     * Convert the geometry
+     * Convert the geometry to a geojson representation
      * @param geom
      * @return 
      */

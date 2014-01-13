@@ -39,7 +39,7 @@ import static org.junit.Assert.assertTrue;
  * @author Erwan Bocher
  */
 public class GeojsonExportTest {
-    
+
     private static Connection connection;
     private static final String DB_NAME = "GeojsonExportTest";
 
@@ -59,34 +59,34 @@ public class GeojsonExportTest {
     public void testGeojsonPoint() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS POINTS");
-        stat.execute("create table POINTS(idarea int primary key, the_geom POINT)");        
-        stat.execute("insert into POINTS values(1, 'POINT(1 2)')");        
+        stat.execute("create table POINTS(idarea int primary key, the_geom POINT)");
+        stat.execute("insert into POINTS values(1, 'POINT(1 2)')");
         ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from POINTS;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"Point\",\"coordinates\":[1.0,2.0]}"));
         res.close();
         stat.close();
     }
-    
-     @Test
+
+    @Test
     public void testGeojsonLineString() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS LINES");
-        stat.execute("create table LINES(idarea int primary key, the_geom LINESTRING)");        
-        stat.execute("insert into LINES values(1, 'LINESTRING(1 2, 2 3)')");        
+        stat.execute("create table LINES(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into LINES values(1, 'LINESTRING(1 2, 2 3)')");
         ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from LINES;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"LineString\",\"coordinates\":[[1.0,2.0],[2.0,3.0]]}"));
         res.close();
         stat.close();
     }
-     
-      @Test
-    public void testGeojsonLineString() throws Exception {
+
+    @Test
+    public void testGeojsonPolygon() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS POLYGONS");
-        stat.execute("create table POLYGONS(idarea int primary key, the_geom POLYGON)");        
-        stat.execute("insert into POLYGONS values(1, 'LINESTRING(1 2, 2 3)')");        
+        stat.execute("create table POLYGONS(idarea int primary key, the_geom POLYGON)");
+        stat.execute("insert into POLYGONS values(1, 'POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))')");
         ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from POLYGONS;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"Polygon\",\"coordinates\":[[1.0,2.0],[2.0,3.0]]}"));
