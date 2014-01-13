@@ -45,7 +45,7 @@
 -- -- !#@ ADAPTATION END
 
 -- -- !#@ ADAPTATION BEGIN
--- H2GIS provide its own spatial ref sys
+-- H2GIS provides its own spatial ref sys
 -- CREATE TABLE spatial_ref_sys (
 --
 --srid INTEGER NOT NULL PRIMARY KEY,
@@ -166,7 +166,7 @@ neatline POLYGON);
 
 -- Spatial Reference System
 -- -- !#@ ADAPTATION BEGIN
--- Column's name is given has H2GIS may insert additional columns
+-- Adapted sql add column name. H2GIS may insert additional columns later for PostGIS compatibility
 -- ---------------------
 -- -- BEGIN ORIGINAL SQL
 -- ---------------------
