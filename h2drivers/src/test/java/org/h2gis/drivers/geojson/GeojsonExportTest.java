@@ -167,17 +167,19 @@ public class GeojsonExportTest {
     public void testGeojsonGeometryCollection() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS GEOMETRYCOLLECTIONS");
-        stat.execute("create table GEOMETRYCOLLECTIONS(idarea int primary key, the_geom MULTIPOLYGON)");
+        stat.execute("create table GEOMETRYCOLLECTIONS(idarea int primary key, the_geom GEOMETRY)");
         stat.execute("insert into GEOMETRYCOLLECTIONS values(1, 'GEOMETRYCOLLECTION ("
                 + "POLYGON ((100 360, 140 360, 140 320, 100 320, 100 360)), \n"
                 + "  POINT (130 290), \n"
                 + "  LINESTRING (190 360, 190 280))')");
         ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from GEOMETRYCOLLECTIONS;");
         res.next();
-        assertTrue(res.getString(1).equals("{\"type\":\"MultiPolygon\",\"coordinates\":["
-                + "[[[120.0,370.0],[180.0,370.0],[180.0,290.0],[120.0,290.0],[120.0,370.0]]],"
-                + "[[[162.0,245.0],[234.0,245.0],[234.0,175.0],[162.0,175.0],[162.0,245.0]]],"
-                + "[[[210.0,390.0],[235.0,390.0],[235.0,308.0],[210.0,308.0],[210.0,390.0]]]]}"));
+        assertTrue(res.getString(1).equals("{\"type\":\"GeometryCollection\",\"geometries\":["
+                + "{\"type\":\"Polygon\",\"coordinates\":["
+                + "[[100.0,360.0],[140.0,360.0],[140.0,320.0],[100.0,320.0],[100.0,360.0]]"
+                + "]},"
+                + "{\"type\":\"Point\",\"coordinates\":[130.0,290.0]},"
+                + "{\"type\":\"LineString\",\"coordinates\":[[190.0,360.0],[190.0,280.0]]}]}"));
         res.close();
         stat.close();
     }
