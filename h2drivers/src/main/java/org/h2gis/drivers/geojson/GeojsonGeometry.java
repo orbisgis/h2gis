@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Erwan Bocher
  */
 public class GeojsonGeometry {
-    
+
     private GeojsonGeometry() {
     }
 
@@ -161,7 +161,7 @@ public class GeojsonGeometry {
      */
     public static void toGeojsonMultiLineString(MultiLineString multiLineString, StringBuilder sb) {
         sb.append("{\"type\":\"MultiLineString\",\"coordinates\":[");
-        for (int i = 0; i < multiLineString.getNumGeometries(); i++) {            
+        for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
             toGeojsonCoordinates(multiLineString.getGeometryN(i).getCoordinates(), sb);
             if (i < multiLineString.getNumGeometries() - 1) {
                 sb.append(",");
@@ -219,7 +219,7 @@ public class GeojsonGeometry {
      */
     public static void toGeojsonMultiPolygon(MultiPolygon multiPolygon, StringBuilder sb) {
         sb.append("{\"type\":\"MultiPolygon\",\"coordinates\":[");
-        
+
         for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
             Polygon p = (Polygon) multiPolygon.getGeometryN(i);
             sb.append("[");
@@ -230,7 +230,7 @@ public class GeojsonGeometry {
                 sb.append(",");
                 toGeojsonCoordinates(p.getInteriorRingN(j).getCoordinates(), sb);
             }
-            sb.append("]");            
+            sb.append("]");
             if (i < multiPolygon.getNumGeometries() - 1) {
                 sb.append(",");
             }
@@ -265,8 +265,8 @@ public class GeojsonGeometry {
                 toGeojsonLineString((LineString) geom, sb);
             } else if (geom instanceof Polygon) {
                 toGeojsonPolygon((Polygon) geom, sb);
-            }            
-            if(i<geometryCollection.getNumGeometries()-1){
+            }
+            if (i < geometryCollection.getNumGeometries() - 1) {
                 sb.append(",");
             }
         }
