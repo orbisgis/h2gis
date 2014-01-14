@@ -52,7 +52,7 @@ import com.vividsolutions.jts.geom.Polygon;
  * @author Erwan Bocher
  */
 public class GeojsonGeometry {
-
+    
     private GeojsonGeometry() {
     }
 
@@ -73,6 +73,10 @@ public class GeojsonGeometry {
             toGeojsonMultiPoint((MultiPoint) geom, sb);
         } else if (geom instanceof MultiLineString) {
             toGeojsonMultiLineString((MultiLineString) geom, sb);
+        } else if (geom instanceof MultiPolygon) {
+            toGeojsonMultiPolygon((MultiPolygon) geom, sb);
+        } else {
+            toGeojsonGeometryCollection((GeometryCollection) geom, sb);
         }
     }
 
@@ -157,9 +161,11 @@ public class GeojsonGeometry {
      */
     public static void toGeojsonMultiLineString(MultiLineString multiLineString, StringBuilder sb) {
         sb.append("{\"type\":\"MultiLineString\",\"coordinates\":[");
-        for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
-            sb.append(",");
+        for (int i = 0; i < multiLineString.getNumGeometries(); i++) {            
             toGeojsonCoordinates(multiLineString.getGeometryN(i).getCoordinates(), sb);
+            if (i < multiLineString.getNumGeometries() - 1) {
+                sb.append(",");
+            }
         }
         sb.append("]}");
     }
@@ -188,10 +194,8 @@ public class GeojsonGeometry {
      */
     public static void toGeojsonPolygon(Polygon polygon, StringBuilder sb) {
         sb.append("{\"type\":\"Polygon\",\"coordinates\":[");
-
         //Process exterior ring
         toGeojsonCoordinates(polygon.getExteriorRing().getCoordinates(), sb);
-
         //Process interior rings
         for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
             sb.append(",");
@@ -215,20 +219,19 @@ public class GeojsonGeometry {
      */
     public static void toGeojsonMultiPolygon(MultiPolygon multiPolygon, StringBuilder sb) {
         sb.append("{\"type\":\"MultiPolygon\",\"coordinates\":[");
-
+        
         for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
             Polygon p = (Polygon) multiPolygon.getGeometryN(i);
             sb.append("[");
             //Process exterior ring
             toGeojsonCoordinates(p.getExteriorRing().getCoordinates(), sb);
-
             //Process interior rings
             for (int j = 0; j < p.getNumInteriorRing(); j++) {
                 sb.append(",");
                 toGeojsonCoordinates(p.getInteriorRingN(j).getCoordinates(), sb);
             }
             sb.append("]");            
-            if(i<multiPolygon.getNumGeometries()-1){
+            if (i < multiPolygon.getNumGeometries() - 1) {
                 sb.append(",");
             }
         }
@@ -258,12 +261,12 @@ public class GeojsonGeometry {
             Geometry geom = geometryCollection.getGeometryN(i);
             if (geom instanceof Point) {
                 toGeojsonPoint((Point) geom, sb);
-                sb.append(",");
             } else if (geom instanceof LineString) {
                 toGeojsonLineString((LineString) geom, sb);
-                sb.append(",");
             } else if (geom instanceof Polygon) {
                 toGeojsonPolygon((Polygon) geom, sb);
+            }            
+            if(i<geometryCollection.getNumGeometries()-1){
                 sb.append(",");
             }
         }
