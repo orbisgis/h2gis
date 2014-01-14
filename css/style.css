@@ -12,7 +12,7 @@ body {
   font-weight: 300;
   color: #ddd;
   background: #333;
-  border-top: 5px solid #fc0;
+  border-top: 5px solid #4db3ff;
   box-shadow: inset 0 3px 30px rgba(0,0,0,.3);
   text-shadow: 0 1px 3px rgba(0,0,0,.5);
 }
@@ -83,7 +83,7 @@ nav li {
 }
 
 .main-nav li.current a {
-  background: #fc0;
+  background: #4db3ff;
   color: #222;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 1px 5px rgba(0,0,0,.5);
   text-shadow: 0 1px 0 rgba(255,255,255,.3);
@@ -99,7 +99,7 @@ nav li {
   float: left;
   width: 100%;
   background: #333;
-  color: #fc0;
+  color: #4db3ff;
   text-align: center;
   text-transform: uppercase;
   font-size: 14px;
@@ -109,7 +109,7 @@ nav li {
 }
 
 .mobile-nav .current a {
-  background: #fc0;
+  background: #4db3ff;
   color: #222;
   box-shadow: inset 0 1px 0 rgba(255,255,255,.5), 0 1px 5px rgba(0,0,0,.5);
   text-shadow: 0 1px 0 rgba(255,255,255,.3);
@@ -200,7 +200,7 @@ body > footer a:hover img {
 /* Quickstart */
 
 .quickstart {
-  background: #3F1F1F;
+  background: #00223b;
   color: #fff;
   margin: 60px 0;
   box-shadow: inset 0 3px 10px rgba(0,0,0,.4);
@@ -656,7 +656,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 a {
-  color: #fc0;
+  color: #87ceeb;
   text-decoration: none;
   transition: all .25s;
    -moz-transition: all .25s;
@@ -664,7 +664,7 @@ a {
 }
 
 a:hover {
-  color: #f90;
+  color: #0092ff;
 }
 
 strong {
@@ -904,7 +904,7 @@ code.option, code.flag, code.filter, code.output {
 
 .note:after {
   content: "★";
-  color: #fc0;
+  color: #4db3ff;
   position: absolute;
   top: 14px;
   left: 14px;
@@ -926,7 +926,7 @@ code.option, code.flag, code.filter, code.output {
 
 .warning:after {
   content: "‼";
-  color: #fc0;
+  color: #4db3ff;
   position: absolute;
   top: 15px;
   left: 15px;
