@@ -36,11 +36,14 @@ overview: true
   <div class="grid">
     <div class="unit golden-small center-on-mobiles">
         <h4>Getting started<br>couldn't be simpler.<br></h4>
-        <p style="text-align:center"><a href="http://tinyurl.com/h2gis-zip">
-            <img src="{{ site.baseurl }}/img/download_button.png"
-                onmouseover="this.src='{{ site.baseurl }}/img/download_button_hover.png';"
-                onmouseout="this.src='{{ site.baseurl }}/img/download_button.png';"
-                alt="Download"></a></p>
+        <p style="text-align:center">
+          <div id="cf">
+            <a href="http://tinyurl.com/h2gis-zip">
+                <img class="bottom" src="{{ site.baseurl }}/img/download_button_hover.png" alt="Download"/>
+                <img class="top" src="{{ site.baseurl }}/img/download_button.png" alt="Download"/>
+            </a>
+          </div>
+        </p>
     </div>
     <div class="unit golden-large code">
       <p class="title">Quick-start Instructions</p>

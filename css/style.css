@@ -944,3 +944,25 @@ code.option, code.flag, code.filter, code.output {
     padding: 0 10px;
   }
 }
+
+/* Crossfade images */
+
+#cf {
+  position:relative;
+  height:33px;
+  width:100px;
+  margin:0 auto;
+}
+
+#cf img {
+  position:absolute;
+  left:0;
+  -webkit-transition: opacity 0.25s ease-in-out;
+  -moz-transition: opacity 0.25s ease-in-out;
+  -o-transition: opacity 0.25s ease-in-out;
+  transition: opacity 0.25s ease-in-out;
+}
+
+#cf img.top:hover {
+  opacity:0;
+}
