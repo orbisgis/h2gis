@@ -128,52 +128,12 @@
     </filter>
     <filter
        inkscape:collect="always"
-       id="filter3833"
-       color-interpolation-filters="sRGB">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.8889983"
-         id="feGaussianBlur3835" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter3907"
-       x="-0.21919575"
-       width="1.4383914"
-       y="-0.18668674"
-       height="1.3733735"
-       color-interpolation-filters="sRGB">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="6.2008153"
-         id="feGaussianBlur3909" />
-    </filter>
-    <filter
-       inkscape:collect="always"
        id="filter3934"
        color-interpolation-filters="sRGB">
       <feGaussianBlur
          inkscape:collect="always"
          stdDeviation="1.4690254"
          id="feGaussianBlur3936" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter3994"
-       color-interpolation-filters="sRGB">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.4075993"
-         id="feGaussianBlur3996" />
-    </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter4040"
-       color-interpolation-filters="sRGB">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="1.3738169"
-         id="feGaussianBlur4042" />
     </filter>
     <filter
        inkscape:collect="always"
@@ -198,10 +158,10 @@
        xlink:href="#linearGradient4737"
        id="linearGradient4751"
        gradientUnits="userSpaceOnUse"
-       x1="221.33928"
-       y1="-115.90071"
-       x2="222.33928"
-       y2="201.00446" />
+       x1="225.58192"
+       y1="-171.76215"
+       x2="226.58192"
+       y2="121.80849" />
     <linearGradient
        inkscape:collect="always"
        xlink:href="#linearGradient4760"
@@ -219,9 +179,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="287.90825"
-     inkscape:cy="154.92591"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="233.16737"
+     inkscape:cy="58.375854"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -242,7 +202,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -260,7 +220,7 @@
        id="rect5231"
        style="fill:#000000;fill-opacity:1;stroke:none;filter:url(#filter5305)" />
     <rect
-       style="fill:#3ff41f;fill-opacity:1;stroke:none"
+       style="fill:#4db3ff;fill-opacity:1;stroke:none"
        id="rect2985"
        width="380.71429"
        height="124.28571"
@@ -325,7 +285,7 @@
        id="path4745"
        d="M 44.971112,103.22728 26.990852,76.71654 9.010602,50.205805 l 14.273,0 -0.0448,-18.082473 43.92913,-0.0012 -0.0328,18.083626 13.8277,0 -17.98026,26.510735 z"
        inkscape:transform-center-y="14.645193"
-       style="fill:#87ceeb;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:2.7;stroke-miterlimit:4;stroke-dasharray:none" />
+       style="fill:#3ff41f;fill-opacity:1;stroke:#000000;stroke-opacity:1;stroke-width:2.70000000000000018;stroke-miterlimit:4;stroke-dasharray:none" />
     <path
        style="fill:url(#linearGradient4731);fill-opacity:1;stroke:none"
        inkscape:transform-center-y="14.645193"
