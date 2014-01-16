@@ -6,31 +6,33 @@ next_section: function-aliases
 permalink: /docs/dev/spatial-jdbc/
 ---
 
-One of H2GIS's goals is to provide a common interface to H2 and PostGIS for
-Geometry data. The `spatial-utilities` package provides a `DataSource` and
-`Connection` wrapper in order to facilitate the usage of JDBC with Geometry
-fields.
+One of H2GIS's big-picture goals is to provide a common interface to H2 and
+PostGIS for Geometry data.
 
-When acquiring the `DataSource` or the `Connection`, wrap it through
-`SFSUtilities.wrapSpatialDataSource `or `SFSUtilities.wrapSpatialConnection`.
+For convenience, the `spatial-utilities` package provides wrappers that
+facilitate using the [Java Database Connectivity][] (JDBC) API in the presence
+of Geometry fields.
 
-{% highlight java %}
-import org.osgi.service.jdbc.DataSourceFactory;
-public DataSource getDataSource(DataSourceFactory dataSourceFactory) {
-    dataSource = SFSUtilities.wrapSpatialDataSource(
-        dataSourceFactory.createDataSource(properties));
-}
-{% endhighlight %}
+## Example
 
-Then when you get a `ResultSet` through a spatial table you can use the
-following command:
+`DataSource`s and `Connection`s must be wrapped:
 
 {% highlight java %}
-private void doStuff(Statement st) {
-    SpatialResultSet rs = st.executeQuery(
-        "SELECT the_geom FROM mygeomtable")
-            .unWrap(SpatialResultSet.class);
-    rs.next();
-    Geometry myGeom = rs.getGeometry("the_geom");
-}
+DataSource wrappedDataSource =
+    SFSUtilities.wrapSpatialDataSource(originalDataSource);
+Connection wrappedConnection
+    SFSUtilities.wrapSpatialConnection(originalConnection);
 {% endhighlight %}
+
+`ResultSet`s must be unwrapped into `SpatialResultSet`s in order to access
+Geometry fields:
+
+{% highlight java %}
+SpatialResultSet rs = st.executeQuery(
+    "SELECT the_geom FROM mygeomtable").
+        unWrap(SpatialResultSet.class);
+rs.next();
+Geometry myGeom = rs.getGeometry("the_geom");
+{% endhighlight %}
+
+[Java Database Connectivity]: http://www.oracle.com/technetwork/java/javase/jdbc/index.html
