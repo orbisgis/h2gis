@@ -42,9 +42,9 @@ Now we execute the request:
 
 {% highlight mysql %}
 SELECT idarea, COUNT(idroad) roadscount
-    FROM area,roads
+    FROM area, roads
     WHERE area.the_geom && roads.the_geom
-    AND ST_Intersects(area.the_geom,roads.the_geom)
+    AND ST_Intersects(area.the_geom, roads.the_geom)
     GROUP BY idarea
     ORDER BY idarea;
 {% endhighlight %}
