@@ -24,7 +24,7 @@ SELECT ST_XMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 -- Answer:    1.0
 {% endhighlight %}
 
-![warning](../ST_XMin.png)
+<img class="displayed" src="../ST_XMin.png"/>
 
 ##### See also
 

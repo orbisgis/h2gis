@@ -24,7 +24,7 @@ SELECT ST_YMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 -- Answer:    2.0
 {% endhighlight %}
 
-![warning](../ST_YMin.png)
+<img class="displayed" src="../ST_YMin.png"/>
 
 ##### See also
 
