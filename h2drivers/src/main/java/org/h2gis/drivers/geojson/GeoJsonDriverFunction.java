@@ -22,12 +22,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
 
 /**
  *
  * @author Erwan Bocher
  */
-public class GeoJsonDriverFunction implements DriverFunction{
+public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
@@ -41,22 +42,28 @@ public class GeoJsonDriverFunction implements DriverFunction{
 
     @Override
     public String[] getExportFormats() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return new String[]{"geojson"};
     }
 
     @Override
     public String getFormatDescription(String format) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        if (format.equalsIgnoreCase("geojson")) {
+            return "GeoJson 1.0";
+        } else {
+            return "";
+        }
     }
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+        ProgressVisitor copyProgress = progress.subProcess(recordCount);
+        GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection, tableReference, fileName);
+        geoJsonDriver.write(copyProgress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
 }

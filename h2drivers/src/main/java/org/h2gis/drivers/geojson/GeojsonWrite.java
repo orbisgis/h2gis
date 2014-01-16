@@ -16,10 +16,12 @@
  */
 package org.h2gis.drivers.geojson;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
@@ -29,6 +31,11 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  */
 public class GeojsonWrite extends AbstractFunction implements ScalarFunction {
 
+    
+    public GeojsonWrite(){
+        addProperty(PROP_REMARKS, "Export a spatial table to a geojson file.");
+    }
+    
     @Override
     public String getJavaStaticMethod() {
         return "writeGeoJson";
@@ -44,5 +51,7 @@ public class GeojsonWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void writeGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+            GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
+            gjdf.exportTable(connection, tableReference,  new  File(fileName), new EmptyProgressVisitor());
     }
 }

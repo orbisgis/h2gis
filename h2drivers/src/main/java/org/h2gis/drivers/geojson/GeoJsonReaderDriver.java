@@ -16,13 +16,17 @@
  */
 package org.h2gis.drivers.geojson;
 
+import java.io.File;
+import java.sql.Connection;
+
 /**
  *
- * @author Erwan
+ * @author Erwan Bocher
  */
-public class GeoJsonDriver {
+public class GeoJsonReaderDriver {
     
-    public GeoJsonDriver(){
+    public GeoJsonReaderDriver(Connection connection, String tableReference, File fileName){
         
     }
+    
 }

@@ -48,6 +48,7 @@ public class GeojsonExportTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsGeoJson(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new GeojsonWrite(), "");
     }
 
     @AfterClass
@@ -181,6 +182,28 @@ public class GeojsonExportTest {
                 + "{\"type\":\"Point\",\"coordinates\":[130.0,290.0]},"
                 + "{\"type\":\"LineString\",\"coordinates\":[[190.0,360.0],[190.0,280.0]]}]}"));
         res.close();
+        stat.close();
+    }
+
+    @Test
+    public void testWriteGeojsonPointWithProperties() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS POINTS");
+        stat.execute("create table POINTS(idarea int primary key, the_geom POINT, orbisgis boolean)");
+        stat.execute("insert into POINTS values(1, 'POINT(1 2)', true)");
+        stat.execute("insert into POINTS values(2, 'POINT(10 200)', false)");
+        stat.execute("CALL GeoJsonWrite('/tmp/points.geojson', 'POINTS');");
+        stat.close();
+    }
+
+    @Test
+    public void testWriteGeojsonPoint() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS POINTS");
+        stat.execute("create table POINTS(the_geom POINT)");
+        stat.execute("insert into POINTS values( 'POINT(1 2)')");
+        stat.execute("insert into POINTS values( 'POINT(10 200)')");
+        stat.execute("CALL GeoJsonWrite('/tmp/points.geojson', 'POINTS');");
         stat.close();
     }
 }
