@@ -6,7 +6,17 @@ next_section: spatial-jdbc
 permalink: /docs/dev/spatial-indices/
 ---
 
-On regular tables (not shapes) you can add a spatial index (stored on disk):
+To optimize spatial queries, [spatial indices][] are supported on the Geometry
+columns of regular tables (not shapefiles). The [syntax][] is the following:
+
+{% highlight mysql %}
+CREATE SPATIAL INDEX [index_name] ON table_name(geometry_column);
+{% endhighlight %}
+
+The spatial index is stored on disk.  Several spatial operators (such as the
+`&&` predicate operator for bounding box overlap) use this index.
+
+## Example
 
 {% highlight mysql %}
 CREATE TABLE area(idarea int PRIMARY KEY, the_geom GEOMETRY);
@@ -19,8 +29,6 @@ INSERT INTO roads VALUES(1, 'LINESTRING (27.65595463138 -16.728733459357244, 47.
 INSERT INTO roads VALUES(2, 'LINESTRING (17.674858223062415 55.861058601134246, 55.78449905482046 76.73062381852554)');
 {% endhighlight %}
 
-The spatial predicate operator `&&` for bounding box overlap uses this index:
-
 {% highlight mysql %}
 SELECT idarea, COUNT(idroad) roadscount
     FROM area,roads
@@ -30,3 +38,5 @@ SELECT idarea, COUNT(idroad) roadscount
     ORDER BY idarea
 {% endhighlight %}
 
+[spatial indices]: http://en.wikipedia.org/wiki/Spatial_index#Spatial_index
+[syntax]: http://www.h2database.com/html/grammar.html#create_index
