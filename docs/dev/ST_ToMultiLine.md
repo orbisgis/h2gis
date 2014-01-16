@@ -2,7 +2,7 @@
 layout: docs
 title: ST_ToMultiLine
 category: h2spatial-ext/geometry-conversion
-prev_section: ST_PointsToLine
+prev_section: ST_MakeLine
 next_section: ST_ToMultiPoint
 permalink: /docs/dev/ST_ToMultiLine/
 ---

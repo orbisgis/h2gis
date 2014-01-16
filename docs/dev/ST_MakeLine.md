@@ -1,10 +1,10 @@
 ---
 layout: docs
-title: ST_PointsToLine
+title: ST_MakeLine
 category: h2spatial-ext/geometry-conversion
 prev_section: ST_Holes
 next_section: ST_ToMultiLine
-permalink: /docs/dev/ST_PointsToLine/
+permalink: /docs/dev/ST_MakeLine/
 ---
 
 ### Signature
@@ -22,4 +22,4 @@ permalink: /docs/dev/ST_PointsToLine/
 
 ##### See also
 
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_PointsToLine.java)
+* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_MakeLine.java)
