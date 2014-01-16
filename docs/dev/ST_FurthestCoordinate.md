@@ -17,7 +17,7 @@ permalink: /docs/dev/ST_FurthestCoordinate/
 
 ### Examples
 
-{% highlight sql %}
+{% highlight mysql %}
 {% endhighlight %}
 
 ##### See also

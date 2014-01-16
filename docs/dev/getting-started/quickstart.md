@@ -24,7 +24,7 @@ Command-line gurus, just execute the following commands:
 Spatial functions will not be available until the following request is
 executed:
 
-{% highlight sql %}
+{% highlight mysql %}
 CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR
     "org.h2gis.h2spatialext.CreateSpatialExtension.initSpatialExtension";
 CALL SPATIAL_INIT();
@@ -32,7 +32,7 @@ CALL SPATIAL_INIT();
 
 To open a shape file and show its contents:
 
-{% highlight sql %}
+{% highlight mysql %}
 CALL FILE_TABLE('/home/user/myshapefile.shp', 'tablename');
 SELECT * FROM TABLENAME;
 {% endhighlight %}

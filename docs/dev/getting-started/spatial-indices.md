@@ -8,7 +8,7 @@ permalink: /docs/dev/spatial-indices/
 
 On regular tables (not shapes) you can add a spatial index (stored on disk):
 
-{% highlight sql %}
+{% highlight mysql %}
 CREATE TABLE area(idarea int PRIMARY KEY, the_geom GEOMETRY);
 CREATE SPATIAL INDEX myspatialindex ON area(the_geom);
 INSERT INTO area VALUES(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))');
@@ -21,7 +21,7 @@ INSERT INTO roads VALUES(2, 'LINESTRING (17.674858223062415 55.861058601134246, 
 
 The spatial predicate operator `&&` for bounding box overlap uses this index:
 
-{% highlight sql %}
+{% highlight mysql %}
 SELECT idarea, COUNT(idroad) roadscount
     FROM area,roads
     WHERE area.the_geom && roads.the_geom

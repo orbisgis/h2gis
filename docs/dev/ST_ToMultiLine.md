@@ -17,7 +17,7 @@ permalink: /docs/dev/ST_ToMultiLine/
 
 ### Examples
 
-{% highlight sql %}
+{% highlight mysql %}
 {% endhighlight %}
 
 ##### See also

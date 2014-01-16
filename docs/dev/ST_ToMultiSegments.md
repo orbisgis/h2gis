@@ -17,7 +17,7 @@ permalink: /docs/dev/ST_ToMultiSegments/
 
 ### Examples
 
-{% highlight sql %}
+{% highlight mysql %}
 {% endhighlight %}
 
 ##### See also

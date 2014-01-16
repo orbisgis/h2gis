@@ -21,7 +21,7 @@ dimension less than 2.
 
 ### Examples
 
-{% highlight sql %}
+{% highlight mysql %}
 SELECT ST_Holes('LINESTRING EMPTY'::Geometry);
 -- Answer: GEOMETRYCOLLECTION EMPTY
 

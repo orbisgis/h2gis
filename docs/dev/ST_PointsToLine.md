@@ -17,7 +17,7 @@ permalink: /docs/dev/ST_PointsToLine/
 
 ### Examples
 
-{% highlight sql %}
+{% highlight mysql %}
 {% endhighlight %}
 
 ##### See also

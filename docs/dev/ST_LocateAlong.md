@@ -17,7 +17,7 @@ permalink: /docs/dev/ST_LocateAlong/
 
 ### Examples
 
-{% highlight sql %}
+{% highlight mysql %}
 {% endhighlight %}
 
 ##### See also
