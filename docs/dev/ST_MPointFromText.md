@@ -25,4 +25,4 @@ permalink: /docs/dev/ST_MPointFromText/
 
 ##### See also
 
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_MPointFromText.java)
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_MPointFromText.java" target="_blank">Source code</a>

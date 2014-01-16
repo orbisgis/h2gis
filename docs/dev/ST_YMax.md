@@ -29,5 +29,5 @@ SELECT ST_YMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 ##### See also
 
 * [`ST_XMin`](../ST_XMin), [`ST_XMax`](../ST_XMax), [`ST_YMin`](../ST_YMin), [`ST_ZMax`](../ST_ZMax), [`ST_ZMin`](../ST_ZMin)
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_YMax.java)
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_YMax.java" target="_blank">Source code</a>
 * Added: [#28](https://github.com/irstv/H2GIS/pull/28)

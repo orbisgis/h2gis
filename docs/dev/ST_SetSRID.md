@@ -25,4 +25,4 @@ permalink: /docs/dev/ST_SetSRID/
 
 ##### See also
 
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/crs/ST_SetSRID.java)
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/crs/ST_SetSRID.java" target="_blank">Source code</a>

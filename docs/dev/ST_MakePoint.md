@@ -30,5 +30,5 @@ SELECT ST_MakePoint(1.4, -3.7, 6.2);
 
 ##### See also
 
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakePoint.java)
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakePoint.java" target="_blank">Source code</a>
 * Added: [#69](https://github.com/irstv/H2GIS/pull/69)

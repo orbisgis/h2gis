@@ -29,5 +29,5 @@ SELECT ST_IsValid('POLYGON ((0 0, 10 0, 10 5, 10 -5, 0 0))'::Geometry);
 
 ##### See also
 
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/predicates/ST_IsValid.java)
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/predicates/ST_IsValid.java" target="_blank">Source code</a>
 * Added: [#26](https://github.com/irstv/H2GIS/pull/26)

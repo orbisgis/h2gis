@@ -26,4 +26,4 @@ permalink: /docs/dev/ST_AsText/
 ##### See also
 
 * [`ST_AsWKT`](../ST_AsWKT)
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_AsText.java)
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_AsText.java" target="_blank">Source code</a>

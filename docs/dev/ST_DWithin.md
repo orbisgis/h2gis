@@ -49,5 +49,5 @@ SELECT ST_DWithin(geomA, geomA, 5000.0) FROM input_table;
 
 ##### See also
 
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/predicates/ST_DWithin.java)
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/predicates/ST_DWithin.java" target="_blank">Source code</a>
 * Added: [#26](https://github.com/irstv/H2GIS/pull/26)

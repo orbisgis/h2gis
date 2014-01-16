@@ -6,7 +6,7 @@ prev_section: h2spatial-ext/properties
 next_section: ST_CompactnessRatio
 permalink: /docs/dev/ST_3DLength/
 ---
- 
+
 ### Signature
 
 {% highlight mysql %}
@@ -49,5 +49,5 @@ SELECT ST_3DLength('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),
 
 ##### See also
 
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_3DLength.java)
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_3DLength.java" target="_blank">Source code</a>
 * Added: [#29](https://github.com/irstv/H2GIS/pull/29)
