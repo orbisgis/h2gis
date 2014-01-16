@@ -7,7 +7,7 @@ permalink: /docs/dev/quickstart/
 ---
 
 Download the latest H2GIS web interface on the home page and run the jar
-contained in the zip file. Then click on *Connect* in the web interface. You
+contained in the zip file. Then click on **Connect** in the web interface. You
 will of course need a working [Java][] runtime environment.
 
 Command-line gurus, just execute the following commands:
