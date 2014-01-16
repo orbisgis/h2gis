@@ -26,12 +26,11 @@ executed:
 
 {% highlight sql %}
 CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR
-    "org.h2gis.h2spatialext.CreateSpatialExtension
-        .initSpatialExtension";
+    "org.h2gis.h2spatialext.CreateSpatialExtension.initSpatialExtension";
 CALL SPATIAL_INIT();
 {% endhighlight %}
 
-To open a shape file and show its content:
+To open a shape file and show its contents:
 
 {% highlight sql %}
 CALL FILE_TABLE('/home/user/myshapefile.shp', 'tablename');
