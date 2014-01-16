@@ -11,7 +11,6 @@ The following geometry conversion functions are available:
 | Function | Description |
 | - | - |
 | [`ST_Holes`](../../ST_Holes) | Return a geometry's holes |
-| [`ST_MakeLine`](../../ST_MakeLine) | `(MULTI)POINT` &rarr; `LINESTRING` |
 | [`ST_ToMultiLine`](../../ST_ToMultiLine) |  |
 | [`ST_ToMultiPoint`](../../ST_ToMultiPoint) |  |
 | [`ST_ToMultiSegments`](../../ST_ToMultiSegments) |  |

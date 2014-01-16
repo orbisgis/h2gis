@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_MakeLine
-category: h2spatial-ext/geometry-conversion
-prev_section: ST_Holes
-next_section: ST_ToMultiLine
+category: h2spatial-ext/geometry-creation
+prev_section: h2spatial-ext/geometry-creation
+next_section: ST_MakePoint
 permalink: /docs/dev/ST_MakeLine/
 ---
 
@@ -22,4 +22,4 @@ permalink: /docs/dev/ST_MakeLine/
 
 ##### See also
 
-* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_MakeLine.java)
+* [Source code](https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakeLine.java)

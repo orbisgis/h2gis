@@ -10,4 +10,5 @@ The following geometry creation functions are available:
 
 | Function | Description |
 | - | - |
+| [`ST_MakeLine`](../../ST_MakeLine) | `(MULTI)POINT` &rarr; `LINESTRING` |
 | [`ST_MakePoint`](../../ST_MakePoint) | Construct a `POINT` from two or three coordinates |

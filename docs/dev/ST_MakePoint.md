@@ -2,8 +2,8 @@
 layout: docs
 title: ST_MakePoint
 category: h2spatial-ext/geometry-creation
-prev_section: h2spatial-ext/geometry-creation
-next_section:
+prev_section: ST_MakeLine
+next_section: h2spatial-ext/distance-functions
 permalink: /docs/dev/ST_MakePoint/
 ---
 
