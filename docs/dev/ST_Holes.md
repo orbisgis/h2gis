@@ -47,4 +47,4 @@ SELECT ST_Holes('GEOMETRYCOLLECTION(
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_Holes.java" target="_blank">Source code</a>
-* Added: [#52](https://github.com/irstv/H2GIS/pull/52)
+* Added: <a href="https://github.com/irstv/H2GIS/pull/52" target="_blank">#52</a>

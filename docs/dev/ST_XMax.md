@@ -30,4 +30,4 @@ SELECT ST_XMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 
 * [`ST_XMin`](../ST_XMin), [`ST_YMax`](../ST_YMax), [`ST_YMin`](../ST_YMin), [`ST_ZMax`](../ST_ZMax), [`ST_ZMin`](../ST_ZMin)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_XMax.java" target="_blank">Source code</a>
-* Added: [#28](https://github.com/irstv/H2GIS/pull/28)
+* Added: <a href="https://github.com/irstv/H2GIS/pull/28" target="_blank">#28</a>
