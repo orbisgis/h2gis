@@ -29,7 +29,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Return true if the envelope of geometry A intersects the envelope of geometry B
+ * Return true if the envelope of Geometry A intersects the envelope of
+ * Geometry B.
+ *
  * @author Nicolas Fortin
  */
 public class ST_EnvelopesIntersect extends DeterministicScalarFunction {
@@ -38,20 +40,21 @@ public class ST_EnvelopesIntersect extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_EnvelopesIntersect() {
-        addProperty(PROP_REMARKS, "Return true if the envelope of geometry A intersects the envelope of geometry B.");
+        addProperty(PROP_REMARKS, "Return true if the envelope of Geometry A intersects the envelope of Geometry B");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "isIntersects";
+        return "intersects";
     }
 
     /**
      * @param surface Surface Geometry.
      * @param testGeometry Geometry instance
-     * @return true if the envelope of geometry A intersects the envelope of geometry B
+     * @return true if the envelope of Geometry A intersects the envelope of
+     * Geometry B
      */
-    public static Boolean isIntersects(Geometry surface,Geometry testGeometry) {
+    public static Boolean intersects(Geometry surface,Geometry testGeometry) {
         if(surface==null && testGeometry==null) {
             return null;
         }

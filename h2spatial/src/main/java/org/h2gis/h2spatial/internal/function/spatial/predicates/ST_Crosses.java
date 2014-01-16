@@ -29,7 +29,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Return true if the geometry A crosses the geometry B
+ * Return true if Geometry A crosses Geometry B.
  * @author Nicolas Fortin
  */
 public class ST_Crosses extends DeterministicScalarFunction {
@@ -38,7 +38,7 @@ public class ST_Crosses extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_Crosses() {
-        addProperty(PROP_REMARKS, "Return true if the geometry A crosses the geometry B.");
+        addProperty(PROP_REMARKS, "Return true if Geometry A crosses Geometry B");
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ST_Crosses extends DeterministicScalarFunction {
     /**
      * @param a Geometry Geometry.
      * @param b Geometry instance
-     * @return true if the geometry A crosses the geometry B
+     * @return true if Geometry A crosses Geometry B
      */
     public static Boolean geomCrosses(Geometry a,Geometry b) {
         if(a==null || b==null) {
