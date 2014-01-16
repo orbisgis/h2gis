@@ -31,7 +31,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert String into a MultiLineString type.
+ * Convert a WKT String into a MULTILINESTRING.
  * @author Nicolas Fortin
  */
 public class ST_MLineFromText extends DeterministicScalarFunction {
@@ -40,7 +40,7 @@ public class ST_MLineFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_MLineFromText() {
-        addProperty(PROP_REMARKS, "Convert String into a MultiLineString type.");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a MULTILINESTRING");
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ST_MLineFromText extends DeterministicScalarFunction {
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
         if(!geometry.getGeometryType().equalsIgnoreCase("MULTILINESTRING")) {
-            throw new SQLException("Provided Well Known Text geometry is not a multi linestring");
+            throw new SQLException("The provided WKT Geometry is not a MULTILINESTRING");
         }
         return geometry;
     }

@@ -33,7 +33,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert a Well Known Text String into a LINESTRING.
+ * Convert Well Known Binary into a LINESTRING.
  * @author Nicolas Fortin
  */
 public class ST_LineFromWKB extends DeterministicScalarFunction {
@@ -42,7 +42,7 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_LineFromWKB() {
-        addProperty(PROP_REMARKS, "Convert a Well Known Text String into a LINESTRING");
+        addProperty(PROP_REMARKS, "Convert Well Known Binary into a LINESTRING");
     }
 
     @Override

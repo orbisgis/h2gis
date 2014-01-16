@@ -33,13 +33,13 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Convert a geometry into a binary value.
+ * Convert a geometry into Well Known Binary..
  * @author Nicolas Fortin
  */
 public class ST_AsBinary extends DeterministicScalarFunction {
 
     public ST_AsBinary() {
-        addProperty(PROP_REMARKS, "Convert a geometry into WKB.");
+        addProperty(PROP_REMARKS, "Convert a geometry into Well Known Binary.");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ST_AsBinary extends DeterministicScalarFunction {
     /**
      * Convert a geometry into a binary value.
      * @param geometry Geometry instance
-     * @return WKB
+     * @return Well Known Binary
      */
     public static byte[] toBytes(ValueGeometry geometry) {
         if(geometry==null) {
