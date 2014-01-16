@@ -18,16 +18,27 @@ The spatial index is stored on disk.  Several spatial operators (such as the
 
 ## Example
 
+In this example, we calculate the number of roads that intersect several
+polygonal areas.  First, we create the `area` and `roads` tables, putting a
+spatial index on their Geometry columns:
+
 {% highlight mysql %}
-CREATE TABLE area(idarea int PRIMARY KEY, the_geom GEOMETRY);
+CREATE TABLE area(idarea INT PRIMARY KEY, the_geom GEOMETRY);
 CREATE SPATIAL INDEX myspatialindex ON area(the_geom);
-INSERT INTO area VALUES(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))');
-INSERT INTO area VALUES(2, 'POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))');
-CREATE TABLE ROADS(idroad int PRIMARY KEY, the_geom GEOMETRY);
+INSERT INTO area VALUES(1,
+    'POLYGON ((0 0, 20 0, 20 10, 0 10, 0 0))');
+INSERT INTO area VALUES(2,
+    'POLYGON ((25 5, 40 5, 40 15, 25 15, 25 5))');
+INSERT INTO area VALUES(3,
+    'POLYGON ((45 10, 50 10, 50 13, 45 13, 45 10))');
+
+CREATE TABLE roads(idroad INT PRIMARY KEY, the_geom GEOMETRY);
 CREATE SPATIAL INDEX ON roads(the_geom);
-INSERT INTO roads VALUES(1, 'LINESTRING (27.65595463138 -16.728733459357244, 47.61814744801515 40.435727788279806)');
-INSERT INTO roads VALUES(2, 'LINESTRING (17.674858223062415 55.861058601134246, 55.78449905482046 76.73062381852554)');
+INSERT INTO roads VALUES(1, 'LINESTRING (2 2, 7 7)');
+INSERT INTO roads VALUES(2, 'LINESTRING (15 -1, 30 13)');
 {% endhighlight %}
+
+Now we execute the request:
 
 {% highlight mysql %}
 SELECT idarea, COUNT(idroad) roadscount
@@ -35,8 +46,18 @@ SELECT idarea, COUNT(idroad) roadscount
     WHERE area.the_geom && roads.the_geom
     AND ST_Intersects(area.the_geom,roads.the_geom)
     GROUP BY idarea
-    ORDER BY idarea
+    ORDER BY idarea;
 {% endhighlight %}
+
+Result:
+
+| IDAREA | ROADSCOUNT |
+| - | - |
+| 1 | 2 |
+| 2 | 1 |
+
+Note that [`ST_Intersects`](../ST_Intersects) does not yet support spatial
+indices, but it will in a future release.
 
 [spatial indices]: http://en.wikipedia.org/wiki/Spatial_index#Spatial_index
 [syntax]: http://www.h2database.com/html/grammar.html#create_index
