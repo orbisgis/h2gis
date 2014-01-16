@@ -178,7 +178,7 @@ public class GeoJsonWriteDriver {
      *
      * Syntax :
      *
-     * * { "type": "Feature", "geometry":{"type": "Point", "coordinates":
+     * { "type": "Feature", "geometry":{"type": "Point", "coordinates":
      * [102.0, 0.5]}, "properties": {"prop0": "value0"} }
      *
      * @param writer
@@ -224,6 +224,7 @@ public class GeoJsonWriteDriver {
      * @param geometry
      */
     void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {
+        gen.writeObjectFieldStart("geometry");
         if (geom instanceof Point) {
             write((Point) geom, gen);
         } else if (geom instanceof MultiPoint) {
@@ -241,14 +242,13 @@ public class GeoJsonWriteDriver {
         } else {
             throw new RuntimeException("Unsupported Geomery type");
         }
+        gen.writeEndObject();
     }
     
     private void write(Point point, JsonGenerator gen) throws IOException {
-        gen.writeStartObject();
         gen.writeStringField("type", "Point");
         gen.writeFieldName("coordinates");
         writeCoordinate(point.getCoordinate(), gen);
-        gen.writeEndObject();
     }
     
     private void write(MultiPoint points, JsonGenerator gen) throws IOException {

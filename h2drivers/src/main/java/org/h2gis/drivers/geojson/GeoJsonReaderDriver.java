@@ -147,6 +147,15 @@ public class GeoJsonReaderDriver {
 
     }
 
-    private void parseFeature(JsonParser jsParser) {
+    /**
+     * Syntax :
+     *
+     * { "type": "Feature", "geometry":{"type": "Point", "coordinates":
+     * [102.0, 0.5]}, "properties": {"prop0": "value0"} }
+     * @param jsParser 
+     */
+    private void parseFeature(JsonParser jsParser) throws IOException {
+        jsParser.nextToken();
+        System.out.println(jsParser.getText());
     }
 }
