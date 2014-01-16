@@ -29,7 +29,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Computes the smallest convex Polygon that contains all the points in the Geometry
+ * Computes the smallest convex POLYGON that contains all the points in the
+ * Geometry.
+ *
  * @author Nicolas Fortin
  */
 public class ST_ConvexHull extends DeterministicScalarFunction {
@@ -38,7 +40,7 @@ public class ST_ConvexHull extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_ConvexHull() {
-        addProperty(PROP_REMARKS, "Computes the smallest convex Polygon that contains all the points in the Geometry.");
+        addProperty(PROP_REMARKS, "Computes the smallest convex POLYGON that contains all the points in the Geometry");
     }
 
     @Override
