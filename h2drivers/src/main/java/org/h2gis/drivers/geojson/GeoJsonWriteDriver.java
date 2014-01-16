@@ -19,12 +19,22 @@ package org.h2gis.drivers.geojson;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -56,13 +66,13 @@ import org.h2gis.utilities.TableLocation;
  * @author Erwan
  */
 public class GeoJsonWriteDriver {
-
+    
     private final String tableName;
     private final File fileName;
     private final Connection connection;
     private Map<String, Integer> cachedColumnNames;
     private int columnCountProperties = -1;
-
+    
     public GeoJsonWriteDriver(Connection connection, String tableName, File fileName) {
         this.connection = connection;
         this.tableName = tableName;
@@ -85,7 +95,7 @@ public class GeoJsonWriteDriver {
         if (extension.equalsIgnoreCase("geojson")) {
             writeGeoJson(progress);
         } else {
-            throw new SQLException("Please kml or kmz extension.");
+            throw new SQLException("Please geojson extension.");
         }
     }
 
@@ -109,7 +119,7 @@ public class GeoJsonWriteDriver {
             Statement st = connection.createStatement();
             try {
                 ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
-
+                
                 JsonFactory jsonFactory = new JsonFactory();
                 JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
 
@@ -117,11 +127,11 @@ public class GeoJsonWriteDriver {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
                 jsonGenerator.writeArrayFieldStart("features");
-
+                
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
-
+                    
                     cacheMetadata(resultSetMetaData);
                     while (rs.next()) {
                         writeFeature(jsonGenerator, rs, geoFieldIndex);
@@ -132,7 +142,7 @@ public class GeoJsonWriteDriver {
                     jsonGenerator.writeEndObject();
                     jsonGenerator.flush();
                     jsonGenerator.close();
-
+                    
                 } finally {
                     rs.close();
                 }
@@ -141,7 +151,7 @@ public class GeoJsonWriteDriver {
             }
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
-
+            
         } finally {
             try {
                 if (fos != null) {
@@ -179,9 +189,8 @@ public class GeoJsonWriteDriver {
         // feature header
         jsonGenerator.writeStartObject();
         jsonGenerator.writeStringField("type", "Feature");
-
         //Write the first geometry
-        writeGeometry(jsonGenerator, (Geometry) rs.getObject(geoFieldIndex));
+        writeGeometry( (Geometry) rs.getObject(geoFieldIndex), jsonGenerator);
         //Write the properties
         writeProperties(jsonGenerator, rs);
         // feature footer
@@ -207,16 +216,125 @@ public class GeoJsonWriteDriver {
     }
 
     /**
+     * Syntax :
+     *
+     * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}
      *
      * @param jsonGenerator
      * @param geometry
      */
-    private void writeGeometry(JsonGenerator jsonGenerator, Geometry geometry) throws IOException {
-        jsonGenerator.writeObjectFieldStart("geometry");
-        StringBuilder sb = new StringBuilder();
-        GeojsonGeometry.toGeojsonGeometry(geometry, sb);
-        jsonGenerator.writeString(sb.toString());
-        jsonGenerator.writeEndObject();
+    void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {
+        if (geom instanceof Point) {
+            write((Point) geom, gen);
+        } else if (geom instanceof MultiPoint) {
+            write((MultiPoint) geom, gen);
+        } else if (geom instanceof LineString) {
+            write((LineString) geom, gen);
+        } else if (geom instanceof MultiLineString) {
+            write((MultiLineString) geom, gen);
+        } else if (geom instanceof Polygon) {
+            write((Polygon) geom, gen);
+        } else if (geom instanceof MultiPolygon) {
+            write((MultiPolygon) geom, gen);
+        } else if (geom instanceof GeometryCollection) {
+            write((GeometryCollection) geom, gen);
+        } else {
+            throw new RuntimeException("Unsupported Geomery type");
+        }
+    }
+    
+    private void write(Point point, JsonGenerator gen) throws IOException {
+        gen.writeStartObject();
+        gen.writeStringField("type", "Point");
+        gen.writeFieldName("coordinates");
+        writeCoordinate(point.getCoordinate(), gen);
+        gen.writeEndObject();
+    }
+    
+    private void write(MultiPoint points, JsonGenerator gen) throws IOException {
+        gen.writeStartObject();
+        gen.writeStringField("type", "MultiPoint");
+        gen.writeFieldName("coordinates");
+        writeCoordinates(points.getCoordinates(), gen);
+        gen.writeEndObject();
+    }
+    
+    private void write(LineString geom, JsonGenerator gen) throws IOException {
+        gen.writeStartObject();
+        gen.writeStringField("type", "LineString");
+        gen.writeFieldName("coordinates");
+        writeCoordinates(geom.getCoordinates(), gen);
+        gen.writeEndObject();
+    }
+    
+    private void write(MultiLineString geom, JsonGenerator gen) throws IOException {
+        gen.writeStartObject();
+        gen.writeStringField("type", "MultiLineString");
+        gen.writeFieldName("coordinates");
+        gen.writeStartArray();
+        for (int i = 0; i < geom.getNumGeometries(); ++i) {
+            writeCoordinates(geom.getGeometryN(i).getCoordinates(), gen);
+        }
+        gen.writeEndArray();
+        gen.writeEndObject();
+    }
+    
+    private void write(GeometryCollection coll, JsonGenerator gen) throws IOException {
+        gen.writeStartObject();
+        gen.writeStringField("type", "GeometryCollection");
+        gen.writeArrayFieldStart("geometries");
+        for (int i = 0; i < coll.getNumGeometries(); ++i) {
+            writeGeometry(coll.getGeometryN(i), gen);
+        }
+        gen.writeEndArray();
+        gen.writeEndObject();
+    }
+    
+    private void write(Polygon geom, JsonGenerator gen) throws IOException {
+        gen.writeStartObject();
+        gen.writeStringField("type", "Polygon");
+        gen.writeFieldName("coordinates");
+        gen.writeStartArray();
+        writeCoordinates(geom.getExteriorRing().getCoordinates(), gen);
+        for (int i = 0; i < geom.getNumInteriorRing(); ++i) {
+            writeCoordinates(geom.getInteriorRingN(i).getCoordinates(), gen);
+        }
+        gen.writeEndArray();
+        gen.writeEndObject();
+    }
+    
+    private void write(MultiPolygon geom, JsonGenerator gen) throws IOException {
+        gen.writeStartObject();
+        gen.writeStringField("type", "Polygon");
+        gen.writeFieldName("coordinates");
+        gen.writeStartArray();
+        for (int i = 0; i < geom.getNumGeometries(); ++i) {
+            Polygon p = (Polygon) geom.getGeometryN(i);
+            writeCoordinates(p.getExteriorRing().getCoordinates(), gen);
+            for (int j = 0; j < p.getNumInteriorRing(); ++j) {
+                writeCoordinates(p.getInteriorRingN(j).getCoordinates(), gen);
+            }
+        }
+        gen.writeEndArray();
+        gen.writeEndObject();
+    }
+    
+    private void writeCoordinate(Coordinate coordinate, JsonGenerator gen) throws IOException {
+        gen.writeStartArray();
+        gen.writeNumber(coordinate.x);
+        gen.writeNumber(coordinate.y);
+        if (!Double.isNaN(coordinate.z)) {
+            gen.writeNumber(coordinate.z);
+        }
+        gen.writeEndArray();
+    }
+    
+    private void writeCoordinates(Coordinate[] coordinates, JsonGenerator gen) throws IOException {
+        gen.writeStartArray();
+        for (Coordinate coord : coordinates) {
+            writeCoordinate(coord, gen);
+        }
+        gen.writeEndArray();
     }
 
     /**

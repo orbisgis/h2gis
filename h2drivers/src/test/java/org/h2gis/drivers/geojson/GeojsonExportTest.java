@@ -192,7 +192,7 @@ public class GeojsonExportTest {
         stat.execute("create table POINTS(idarea int primary key, the_geom POINT, orbisgis boolean)");
         stat.execute("insert into POINTS values(1, 'POINT(1 2)', true)");
         stat.execute("insert into POINTS values(2, 'POINT(10 200)', false)");
-        stat.execute("CALL GeoJsonWrite('/tmp/points.geojson', 'POINTS');");
+        stat.execute("CALL GeoJsonWrite('/tmp/points_properties.geojson', 'POINTS');");
         stat.close();
     }
 
