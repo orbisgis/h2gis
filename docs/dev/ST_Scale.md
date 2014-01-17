@@ -25,7 +25,11 @@ is left untouched.
 {% highlight mysql %}
 SELECT ST_Scale('LINESTRING(1 2, 4 5)'::Geometry, 0.5, 0.75);
 -- Answer:    LINESTRING(0.5 1.5, 2 3.75)
+{% endhighlight %}
 
+<img class="displayed" src="../ST_Scale.png"/>
+
+{% highlight mysql %}
 SELECT ST_Scale('LINESTRING(1 2, 4 5)'::Geometry, 0.5, 0.75, 1.2);
 -- Answer:    LINESTRING(0.5 1.5, 2 3.75)
 
