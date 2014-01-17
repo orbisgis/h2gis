@@ -27,7 +27,11 @@ internal envelope).
 {% highlight mysql %}
 SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi());
 -- Answer:    LINESTRING(2 1, 2 3, 1 3)
+{% endhighlight %}
 
+<img class="displayed" src="../ST_Rotate.png"/>
+
+{% highlight mysql %}
 SELECT ST_Rotate('LINESTRING(1 3, 1 1, 2 1)'::Geometry, pi() / 3);
 -- Answer: LINESTRING(0.3839745962155607 2.0669872981077813,
 --                    2.1160254037844384 1.0669872981077806,
