@@ -34,7 +34,11 @@ SELECT ST_Holes('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))'::Geometry);
 SELECT ST_Holes('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0),
                           (1 1, 2 1, 2 4, 1 4, 1 1))'::Geometry);
 -- Answer: GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)))
+{% endhighlight %}
 
+<img class="displayed" src="../ST_Holes_1.png"/>
+
+{% highlight mysql %}
 SELECT ST_Holes('GEOMETRYCOLLECTION(
                 POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0),
                          (1 1, 2 1, 2 4, 1 4, 1 1)),
@@ -43,6 +47,8 @@ SELECT ST_Holes('GEOMETRYCOLLECTION(
 -- Answer: GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)),
 --                            POLYGON((12 7, 14 7, 14 8, 12 8, 12 7)))
 {% endhighlight %}
+
+<img class="displayed" src="../ST_Holes_2.png"/>
 
 ##### See also
 
