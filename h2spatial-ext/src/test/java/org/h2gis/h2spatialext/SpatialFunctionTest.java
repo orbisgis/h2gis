@@ -188,7 +188,7 @@ public class SpatialFunctionTest {
                 "INSERT INTO input_table VALUES(" +
                 "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); " +
                 "INSERT INTO input_table VALUES(" +
-                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 10 -5, 0 0))', 1));");
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))', 1));");
         ResultSet rs = st.executeQuery("SELECT ST_IsValid(the_geom) FROM input_table;");
         assertTrue(rs.next());
         assertEquals(true, rs.getBoolean(1));
