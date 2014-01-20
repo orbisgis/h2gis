@@ -5,3 +5,4 @@ permalink: /news/:year/:month/:day/:title/
 excerpt_separator: noifniof3nioaniof3nioafafinoafnoif
 repository: https://github.com/irstv/H2GIS
 baseurl: 
+exclude: ["vendor"]
