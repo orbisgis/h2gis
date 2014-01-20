@@ -37,7 +37,7 @@ import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Relate;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Touches;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Within;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Envelope;
-import org.h2gis.h2spatial.internal.type.SC_MultiPolygon;
+import org.h2gis.h2spatial.internal.type.*;
 import org.h2gis.h2spatial.internal.function.HexToVarBinary;
 import org.h2gis.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsBinary;
@@ -84,14 +84,6 @@ import org.h2gis.h2spatial.internal.function.spatial.properties.ST_StartPoint;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_X;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Y;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Z;
-import org.h2gis.h2spatial.internal.type.DomainInfo;
-import org.h2gis.h2spatial.internal.type.GeometryTypeFromConstraint;
-import org.h2gis.h2spatial.internal.type.SC_GeomCollection;
-import org.h2gis.h2spatial.internal.type.SC_LineString;
-import org.h2gis.h2spatial.internal.type.SC_MultiLineString;
-import org.h2gis.h2spatial.internal.type.SC_MultiPoint;
-import org.h2gis.h2spatial.internal.type.SC_Point;
-import org.h2gis.h2spatial.internal.type.SC_Polygon;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import java.net.URL;
@@ -182,7 +174,8 @@ public class CreateSpatialExtension {
                 new ST_EnvelopesIntersect(),
                 new ST_Accum(),
                 new ST_Transform(),
-                new ST_SetSRID()};
+                new ST_SetSRID(),
+                new GeometryTypeNameFromConstraint()};
     }
 
     /**
@@ -247,7 +240,7 @@ public class CreateSpatialExtension {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
         st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
-                "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS) geometry_type,2 coord_dimension,ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid" +
+                "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS) geometry_type,2 coord_dimension,ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid, GeometryTypeNameFromConstraint(CHECK_CONSTRAINT || REMARKS) type" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {
