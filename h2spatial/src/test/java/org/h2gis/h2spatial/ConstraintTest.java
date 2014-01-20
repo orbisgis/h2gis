@@ -243,6 +243,54 @@ public class ConstraintTest {
      * @throws Exception
      */
     @Test
+    public void testGeometryColumnsName() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("drop table T_GEOMETRY IF EXISTS");
+        st.execute("create table T_GEOMETRY (the_geom GEOMETRY)");
+        st.execute("drop table T_POINT IF EXISTS");
+        st.execute("create table T_POINT (the_geom POINT)");
+        st.execute("drop table T_LINE IF EXISTS");
+        st.execute("create table T_LINE (the_geom LINESTRING)");
+        st.execute("drop table T_POLYGON IF EXISTS");
+        st.execute("create table T_POLYGON (the_geom POLYGON)");
+        st.execute("drop table T_MPOINT IF EXISTS");
+        st.execute("create table T_MPOINT (the_geom MULTIPOINT)");
+        st.execute("drop table T_MLINE IF EXISTS");
+        st.execute("create table T_MLINE (the_geom MULTILINESTRING)");
+        st.execute("drop table T_MPOLYGON IF EXISTS");
+        st.execute("create table T_MPOLYGON (the_geom MULTIPOLYGON)");
+
+        ResultSet rs = st.executeQuery("select * from GEOMETRY_COLUMNS where f_table_name IN ('T_GEOMETRY', 'T_POINT'," +
+                "  'T_LINE', 'T_POLYGON','T_MPOINT','T_MLINE', 'T_MPOLYGON') order by f_table_name");
+        try {
+            assertTrue(rs.next());
+            assertEquals("GEOMETRY", rs.getString("type"));
+            assertTrue(rs.next());
+            assertEquals("LINESTRING", rs.getString("type"));
+            assertTrue(rs.next());
+            assertEquals("MULTILINESTRING", rs.getString("type"));
+            assertTrue(rs.next());
+            assertEquals("MULTIPOINT", rs.getString("type"));
+            assertTrue(rs.next());
+            assertEquals("MULTIPOLYGON", rs.getString("type"));
+            assertTrue(rs.next());
+            assertEquals("POINT", rs.getString("type"));
+            assertTrue(rs.next());
+            assertEquals("POLYGON", rs.getString("type"));
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
+
+        st.execute("drop table T_GEOMETRY, T_POINT,  T_LINE, T_POLYGON");
+        st.execute("drop table T_MPOINT,  T_MLINE, T_MPOLYGON");
+    }
+
+    /**
+     * LineString into LineString column
+     * @throws Exception
+     */
+    @Test
     public void testGeometryColumnsViewUtility() throws Exception {
         Statement st = connection.createStatement();
         st.execute("drop table T_GEOMETRY IF EXISTS");
