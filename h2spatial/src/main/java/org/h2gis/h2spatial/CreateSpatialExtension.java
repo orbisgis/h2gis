@@ -37,7 +37,6 @@ import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Relate;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Touches;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Within;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Envelope;
-import org.h2gis.h2spatial.internal.type.*;
 import org.h2gis.h2spatial.internal.function.HexToVarBinary;
 import org.h2gis.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsBinary;
@@ -84,14 +83,26 @@ import org.h2gis.h2spatial.internal.function.spatial.properties.ST_StartPoint;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_X;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Y;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Z;
+import org.h2gis.h2spatial.internal.type.DomainInfo;
+import org.h2gis.h2spatial.internal.type.GeometryTypeFromConstraint;
+import org.h2gis.h2spatial.internal.type.GeometryTypeNameFromConstraint;
+import org.h2gis.h2spatial.internal.type.SC_GeomCollection;
+import org.h2gis.h2spatial.internal.type.SC_LineString;
+import org.h2gis.h2spatial.internal.type.SC_MultiLineString;
+import org.h2gis.h2spatial.internal.type.SC_MultiPoint;
+import org.h2gis.h2spatial.internal.type.SC_MultiPolygon;
+import org.h2gis.h2spatial.internal.type.SC_Point;
+import org.h2gis.h2spatial.internal.type.SC_Polygon;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialapi.ScalarFunction;
+
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_Transform;
 
 /**
