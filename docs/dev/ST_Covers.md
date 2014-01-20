@@ -21,7 +21,9 @@ Returns true if no point in `geomB` is outside `geomA`.
 
 | smallc Polygon | bigc Polygon |
 | ----|---- |
-| ST_Buffer(ST_GeomFromText( 'POINT(1 2)'), 10) | ST_Buffer(ST_GeomFromText( 'POINT(1 2)'), 20)) |
+| POLYGON((1 1, 5 1, 5 4, 1 4, 1 1)) | POLYGON((0 0, 10 0, 10 5, 0 5, 0 0)) |
+
+<img class="displayed" src="../ST_Covers.png"/>
 
 {% highlight mysql %}
 SELECT ST_Covers(smallc, smallc) FROM input_table;
