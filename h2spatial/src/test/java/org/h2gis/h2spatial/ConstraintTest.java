@@ -25,7 +25,8 @@
 
 package org.h2gis.h2spatial;
 
-import org.h2gis.h2spatial.internal.function.spatial.properties.ColumnSRID;
+import org.h2gis.h2spatial.internal.function.spatial.properties._ColumnSRID;
+import org.h2gis.h2spatial.internal.type.DimensionFromConstraint;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.AfterClass;
@@ -33,9 +34,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.junit.rules.ExpectedException;
 
-import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -156,16 +155,16 @@ public class ConstraintTest {
 
     @Test
     public void testSRIDConstraintExtraction() {
-        assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "the_geom"));
-        assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(\"the_GEOM\") =23", "the_geom"));
-        assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(`the_GEOM`)= 23", "the_geom"));
-        assertEquals(23, ColumnSRID.getSRIDFromConstraint("GEOMETRY_TYPE = \"POLYGON\" AND ST_SRID  (  the_geom  )  =   23", "the_geom"));
+        assertEquals(23, _ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "the_geom"));
+        assertEquals(23, _ColumnSRID.getSRIDFromConstraint("ST_SRID(\"the_GEOM\") =23", "the_geom"));
+        assertEquals(23, _ColumnSRID.getSRIDFromConstraint("ST_SRID(`the_GEOM`)= 23", "the_geom"));
+        assertEquals(23, _ColumnSRID.getSRIDFromConstraint("GEOMETRY_TYPE = \"POLYGON\" AND ST_SRID  (  the_geom  )  =   23", "the_geom"));
 
-        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "geom")); //wrong column name
+        assertEquals(0, _ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "geom")); //wrong column name
         // two srid constraint on the same column
-        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(geom)=44 OR ST_SRID(geom)=23", "geom"));
+        assertEquals(0, _ColumnSRID.getSRIDFromConstraint("ST_SRID(geom)=44 OR ST_SRID(geom)=23", "geom"));
 
-        assertEquals(44, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23 AND ST_SRID(geom)=44", "geom"));
+        assertEquals(44, _ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23 AND ST_SRID(geom)=44", "geom"));
     }
 
     /**
@@ -325,5 +324,58 @@ public class ConstraintTest {
 
         st.execute("drop table T_GEOMETRY, T_POINT,  T_LINE, T_POLYGON");
         st.execute("drop table T_MPOINT,  T_MLINE, T_MPOLYGON");
+    }
+
+    @Test
+    public void testZConstraintOk() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table LIDAR_PTS IF EXISTS");
+        st.execute("create table LIDAR_PTS (the_geom POINT CHECK ST_HASZ(the_geom))");
+        st.execute("insert into LIDAR_PTS VALUES ('POINT(12 14 56)')");
+        st.execute("drop table LIDAR_PTS IF EXISTS");
+    }
+
+    @Test(expected = SQLException.class)
+    public void testZConstraintError() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table LIDAR_PTS IF EXISTS");
+        st.execute("create table LIDAR_PTS (the_geom POINT CHECK ST_HASZ(the_geom))");
+        st.execute("insert into LIDAR_PTS VALUES ('POINT(12 14)')");
+        st.execute("insert into LIDAR_PTS VALUES ('POINT(13 18)')");
+        st.execute("drop table LIDAR_PTS IF EXISTS");
+    }
+
+    @Test
+    public void testDimensionFromConstraint() {
+        assertEquals(2, DimensionFromConstraint.dimensionFromConstraint("!ST_HASZ(the_geom)", "the_geom"));
+        assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("ST_HASZ(the_geom)", "the_geom"));
+        assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("ST_HASZ(the_geom)= true", "the_geom"));
+        assertEquals(2, DimensionFromConstraint.dimensionFromConstraint("ST_HASZ(the_geom)<> true", "the_geom"));
+        assertEquals(2, DimensionFromConstraint.dimensionFromConstraint("ST_HASZ( the_geom )= false", "the_geom"));
+        assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("ST_HASZ(`the_geom`)= true", "the_geom"));
+        assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("ST_HASZ(\"the_geom\")= true", "the_geom"));
+        assertEquals(2, DimensionFromConstraint.dimensionFromConstraint("ST_HASZ(\"geom\")= true", "the_geom"));
+        assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("!ST_HASZ(the_geom) = false", "the_geom"));
+    }
+    @Test
+    public void testGeometryColumnCoordDimension() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table T_GEOMETRY2D IF EXISTS");
+        st.execute("drop table T_GEOMETRY3D IF EXISTS");
+        st.execute("create table T_GEOMETRY2D (the_geom GEOMETRY)");
+        st.execute("alter table T_GEOMETRY2D add constraint zconstr CHECK ST_HASZ(the_geom) = false");
+        st.execute("create table T_GEOMETRY3D (the_geom GEOMETRY CHECK ST_HASZ(the_geom))");
+        ResultSet rs = st.executeQuery("SELECT * FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME IN ('T_GEOMETRY2D','T_GEOMETRY3D') ORDER BY F_TABLE_NAME");
+        try {
+            assertTrue(rs.next());
+            assertEquals("T_GEOMETRY2D", rs.getString("F_TABLE_NAME"));
+            assertEquals(2, rs.getInt("COORD_DIMENSION"));
+            assertTrue(rs.next());
+            assertEquals("T_GEOMETRY3D", rs.getString("F_TABLE_NAME"));
+            assertEquals(3, rs.getInt("COORD_DIMENSION"));
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
     }
 }

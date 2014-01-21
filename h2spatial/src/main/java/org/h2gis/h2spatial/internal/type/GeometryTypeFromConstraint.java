@@ -40,6 +40,7 @@ public class GeometryTypeFromConstraint extends DeterministicScalarFunction {
      */
     public GeometryTypeFromConstraint() {
         addProperty(PROP_REMARKS, "Convert H2 constraint string into a OGC geometry type index.");
+        addProperty(PROP_NAME, "_GeometryTypeFromConstraint");
     }
 
     @Override

@@ -25,6 +25,7 @@
 package org.h2gis.h2spatial;
 
 import org.h2.api.AggregateAlias;
+import org.h2gis.h2spatial.internal.function.HexToVarBinary;
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_SetSRID;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Contains;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Crosses;
@@ -36,8 +37,7 @@ import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Overlaps;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Relate;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Touches;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Within;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Envelope;
-import org.h2gis.h2spatial.internal.function.HexToVarBinary;
+import org.h2gis.h2spatial.internal.function.spatial.properties.*;
 import org.h2gis.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsBinary;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsText;
@@ -56,43 +56,7 @@ import org.h2gis.h2spatial.internal.function.spatial.operators.ST_Difference;
 import org.h2gis.h2spatial.internal.function.spatial.operators.ST_Intersection;
 import org.h2gis.h2spatial.internal.function.spatial.operators.ST_SymDifference;
 import org.h2gis.h2spatial.internal.function.spatial.operators.ST_Union;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ColumnSRID;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Area;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Boundary;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Centroid;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Dimension;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Distance;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_EndPoint;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_ExteriorRing;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_GeometryN;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_GeometryType;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_InteriorRingN;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_IsClosed;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_IsRing;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_IsSimple;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Length;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumGeometries;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumInteriorRing;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumInteriorRings;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumPoints;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_PointN;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_PointOnSurface;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_SRID;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_StartPoint;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_X;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Y;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Z;
-import org.h2gis.h2spatial.internal.type.DomainInfo;
-import org.h2gis.h2spatial.internal.type.GeometryTypeFromConstraint;
-import org.h2gis.h2spatial.internal.type.GeometryTypeNameFromConstraint;
-import org.h2gis.h2spatial.internal.type.SC_GeomCollection;
-import org.h2gis.h2spatial.internal.type.SC_LineString;
-import org.h2gis.h2spatial.internal.type.SC_MultiLineString;
-import org.h2gis.h2spatial.internal.type.SC_MultiPoint;
-import org.h2gis.h2spatial.internal.type.SC_MultiPolygon;
-import org.h2gis.h2spatial.internal.type.SC_Point;
-import org.h2gis.h2spatial.internal.type.SC_Polygon;
+import org.h2gis.h2spatial.internal.type.*;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
@@ -126,6 +90,11 @@ public class CreateSpatialExtension {
      */
     public static Function[] getBuiltInsFunctions() {
         return new Function[] {
+                new HexToVarBinary(),
+                new GeometryTypeFromConstraint(),
+                new _ColumnSRID(),
+                new GeometryTypeNameFromConstraint(),
+                new DimensionFromConstraint(),
                 new ST_GeomFromText(),
                 new ST_Area(),
                 new ST_AsBinary(),
@@ -136,9 +105,7 @@ public class CreateSpatialExtension {
                 new ST_MLineFromText(),
                 new ST_PolyFromText(),
                 new ST_MPolyFromText(),
-                new HexToVarBinary(),
                 new ST_Dimension(),
-                new GeometryTypeFromConstraint(),
                 new ST_AsText(),
                 new ST_PolyFromWKB(),
                 new ST_IsEmpty(),
@@ -148,7 +115,6 @@ public class CreateSpatialExtension {
                 new ST_X(),
                 new ST_Y(),
                 new ST_Z(),
-                new ColumnSRID(),
                 new ST_StartPoint(),
                 new ST_EndPoint(),
                 new ST_IsClosed(),
@@ -186,7 +152,7 @@ public class CreateSpatialExtension {
                 new ST_Accum(),
                 new ST_Transform(),
                 new ST_SetSRID(),
-                new GeometryTypeNameFromConstraint()};
+                new ST_HasZ()};
     }
 
     /**
@@ -251,7 +217,7 @@ public class CreateSpatialExtension {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
         st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
-                "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS) geometry_type,2 coord_dimension,ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid, GeometryTypeNameFromConstraint(CHECK_CONSTRAINT || REMARKS) type" +
+                "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS) geometry_type,_DimensionFromConstraint(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) coord_dimension,_ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid, _GeometryTypeNameFromConstraint(CHECK_CONSTRAINT || REMARKS) type" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {

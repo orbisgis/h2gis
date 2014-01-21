@@ -26,6 +26,7 @@ public class GeometryTypeNameFromConstraint extends DeterministicScalarFunction 
 
     public GeometryTypeNameFromConstraint() {
         addProperty(PROP_REMARKS, "Parse the constraint and return the Geometry type name");
+        addProperty(PROP_NAME, "_GeometryTypeNameFromConstraint");
     }
 
     @Override
