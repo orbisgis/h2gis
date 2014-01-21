@@ -52,10 +52,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="364.28911"
-     inkscape:cy="563.05846"
+     inkscape:cx="402.58905"
+     inkscape:cy="557.49465"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1440"
      inkscape:window-height="824"
@@ -115,7 +115,7 @@
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.42324239;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.69296948, 3.38593897;stroke-dashoffset:0"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0"
        d="m 444.70129,298.03355 0,267.56562"
        id="path2991"
        inkscape:connector-curvature="0"
@@ -123,7 +123,7 @@
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.42324239;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.69296948, 3.38593897;stroke-dashoffset:0"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,3.2;stroke-dashoffset:0"
        d="m 536.68967,297.03355 0,267.56562"
        id="path2995"
        inkscape:connector-curvature="0"
@@ -131,7 +131,7 @@
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0"
        d="m 348.69548,485.61079 229.02518,0"
        id="path3001"
        inkscape:connector-curvature="0"
@@ -139,7 +139,7 @@
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0"
        d="m 348.69548,405.61079 229.02518,0"
        id="path3005"
        inkscape:connector-curvature="0"
@@ -177,8 +177,8 @@
            id="rect3816" /></flowRegion><flowPara
          style="font-style:italic"
          id="flowPara3818">z</flowPara></flowRoot>    <flowRoot
-       transform="matrix(0.42678923,0,0,0.44823304,97.059147,267.77126)"
-       style="font-size:36.58148575px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.42678923,0,0,0.44823304,99.059147,263.77126)"
+       style="font-size:32.00880051px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        id="flowRoot4814"
        xml:space="preserve"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
@@ -187,11 +187,11 @@
          id="flowRegion4816"><rect
            y="626.07782"
            x="487.39859"
-           height="48.487324"
-           width="121.21831"
+           height="40.59959"
+           width="89.738983"
            id="rect4818"
-           style="font-size:36.58148575px" /></flowRegion><flowPara
-         style="font-size:36.58148575px;font-style:italic"
+           style="font-size:32.00880051px" /></flowRegion><flowPara
+         style="font-size:32.00880051px;font-style:italic"
          id="flowPara4820">0,0,0</flowPara></flowRoot>    <path
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
@@ -224,9 +224,9 @@
        inkscape:connector-curvature="0"
        id="path3997"
        d="m 444.74978,565.47198 -162.48457,94.2416"
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0;marker-end:none" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0;marker-end:none"
        d="m 536.74978,565.47198 -162.48457,94.2416"
        id="path4001"
        inkscape:connector-curvature="0"
@@ -238,12 +238,12 @@
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0"
        d="m 348.69548,325.61079 229.02518,0"
        id="path4005"
        inkscape:connector-curvature="0" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-start:none;marker-end:none"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0;marker-start:none;marker-end:none"
        d="m 276.77175,331.47288 c 0,0 0,264.8098 0,275.85516"
        id="path4193"
        inkscape:connector-curvature="0"
@@ -259,7 +259,7 @@
        inkscape:connector-curvature="0"
        id="path4201"
        d="m 216.77175,365.47288 c 0,0 0,264.8098 0,275.85516"
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-start:none;marker-end:none" />
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0;marker-start:none;marker-end:none" />
     <path
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
@@ -268,7 +268,7 @@
        inkscape:connector-curvature="0"
        id="path4393"
        d="M 348.78024,485.71081 186.26521,579.71358"
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0;marker-end:none" />
     <path
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
@@ -277,7 +277,7 @@
        inkscape:connector-curvature="0"
        id="path4397"
        d="M 348.78024,405.71081 186.26521,499.71358"
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0;marker-end:none" />
     <path
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
@@ -286,9 +286,9 @@
        inkscape:connector-curvature="0"
        id="path4401"
        d="M 348.78024,325.71081 186.26521,419.71358"
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none" />
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0;marker-end:none" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0;marker-end:none"
        d="m 279.22433,607.06392 240.89749,0"
        id="path4589"
        inkscape:connector-curvature="0"
@@ -297,7 +297,7 @@
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
     <path
-       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
+       style="fill:none;stroke:#000000;stroke-width:0.4;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6,1.6;stroke-dashoffset:0;marker-end:none"
        d="m 216.97433,641.81392 240.89749,0"
        id="path4593"
        inkscape:connector-curvature="0"
@@ -311,35 +311,8 @@
      id="layer2"
      inkscape:label="Trace">
     <path
-       inkscape:connector-curvature="0"
-       id="path4626"
-       d="m 348.73335,565.58162 0,-158.76473"
-       style="fill:#ffb100;fill-opacity:1;stroke:#fe0000;stroke-width:1.10000001999999997;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       sodipodi:nodetypes="cc"
-       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
-       inkscape:export-xdpi="99"
-       inkscape:export-ydpi="99" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path4624"
-       d="m 443.82875,565.59925 -94.76815,0.0352 -71.31852,41.15073"
-       style="fill:none;stroke:#fe0000;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       sodipodi:nodetypes="ccc"
-       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
-       inkscape:export-xdpi="99"
-       inkscape:export-ydpi="99" />
-    <path
-       sodipodi:nodetypes="cc"
-       style="fill:#ffb100;fill-opacity:1;stroke:#fe0000;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="M 372.991,606.88935 372.2891,407.01434"
-       id="path4628"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
-       inkscape:export-xdpi="99"
-       inkscape:export-ydpi="99" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:2.3969872px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="M 349.66831,564.08593 371.06348,406.94886"
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="M 349.66831,564.08593 371.77059,447.96105"
        id="path4632"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
@@ -363,7 +336,7 @@
        inkscape:connector-curvature="0"
        id="path4652"
        d="m 373.38311,606.98879 70.50398,-41.07227"
-       style="fill:#ffb100;fill-opacity:1;stroke:#fe0000;stroke-width:1.10000001999999997;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#ffb100;fill-opacity:1;stroke:#fe0000;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.4000001,4.4000001;stroke-dashoffset:0"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
        inkscape:export-xdpi="99"
@@ -372,7 +345,7 @@
        inkscape:connector-curvature="0"
        id="path4654"
        d="m 373.00703,607.14628 -95.52948,-0.21022"
-       style="fill:#ffb100;fill-opacity:1;stroke:#fe0000;stroke-width:1.10000001999999997;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:#ffb100;fill-opacity:1;stroke:#fe0000;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.4000001,4.4000001;stroke-dashoffset:0"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
        inkscape:export-xdpi="99"
@@ -386,48 +359,23 @@
        sodipodi:rx="1.0606601"
        sodipodi:ry="1.0606601"
        d="m 151.93957,514.69586 a 1.0606601,1.0606601 0 1 1 -2.12132,0 1.0606601,1.0606601 0 1 1 2.12132,0 z"
-       transform="matrix(1.4171426,0,0,1.4171426,157.41413,-323.20951)"
+       transform="matrix(1.4171426,0,0,1.4171426,158.70702,-283.91662)"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
        inkscape:export-xdpi="99"
        inkscape:export-ydpi="99" />
+    <path
+       inkscape:export-ydpi="99"
+       inkscape:export-xdpi="99"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMax.png"
+       sodipodi:nodetypes="cc"
+       style="fill:#ffb100;fill-opacity:1;stroke:#fe0000;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.4000001,4.4000001;stroke-dashoffset:0"
+       d="m 372.73335,607.58162 0,-158.76473"
+       id="path3037"
+       inkscape:connector-curvature="0" />
   </g>
   <g
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="Zmax"
-     style="display:inline">
-    <text
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:0.99999998%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="438"
-       y="554.36218"
-       id="text3202"
-       sodipodi:linespacing="0.99999998%"><tspan
-         sodipodi:role="line"
-         id="tspan3204"
-         x="438"
-         y="554.36218">1</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:0.99999998%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
-       x="265.76953"
-       y="600.19421"
-       id="text3202-0"
-       sodipodi:linespacing="0.99999998%"><tspan
-         sodipodi:role="line"
-         id="tspan3204-8"
-         x="265.76953"
-         y="600.19421">1</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       x="331"
-       y="406.36218"
-       id="text3248"
-       sodipodi:linespacing="125%"><tspan
-         sodipodi:role="line"
-         id="tspan3250"
-         x="331"
-         y="406.36218">2</tspan></text>
-  </g>
+     style="display:inline" />
 </svg>
