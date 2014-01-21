@@ -52,8 +52,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="336.34852"
-     inkscape:cy="568.97853"
+     inkscape:cx="475.39904"
+     inkscape:cy="555.59525"
      inkscape:document-units="px"
      inkscape:current-layer="layer6"
      showgrid="false"
@@ -209,7 +209,7 @@
            x="487.39859"
            y="626.07782" /></flowRegion><flowPara
          id="flowPara3810"
-         style="font-style:italic">x</flowPara></flowRoot>    <flowRoot
+         style="font-style:italic">y</flowPara></flowRoot>    <flowRoot
        transform="matrix(0.61674087,0,0,0.61674087,24.361835,-105.70006)"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        id="flowRoot3812"
@@ -263,7 +263,7 @@
            x="487.39859"
            y="626.07782" /></flowRegion><flowPara
          id="flowPara3809"
-         style="font-style:italic">y</flowPara></flowRoot>    <path
+         style="font-style:italic">x</flowPara></flowRoot>    <path
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 1.6;stroke-dashoffset:0;marker-end:none"
        d="m 388.74978,565.47198 -162.48457,94.2416"
        id="path3811"
@@ -468,8 +468,8 @@
     <path
        inkscape:connector-curvature="0"
        id="path4626"
-       d="m 348.73335,565.58162 0,-240.07409"
-       style="fill:#ffb100;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 348.73335,565.58162 0,-239.76473"
+       style="fill:#ffb100;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMin.png"
        inkscape:export-xdpi="99"
@@ -477,15 +477,15 @@
     <path
        inkscape:connector-curvature="0"
        id="path4624"
-       d="m 508.74999,565.64344 -159.68749,0 -142.57795,82.43072"
-       style="fill:none;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       d="m 548.48055,565.64344 -199.41995,-0.009 -113.9217,65.89947"
+       style="fill:none;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        sodipodi:nodetypes="ccc"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMin.png"
        inkscape:export-xdpi="99"
        inkscape:export-ydpi="99" />
     <path
-       style="fill:none;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       d="m 388.74999,565.64344 -39.68749,0 -57.72429,33.36432"
+       style="fill:none;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       d="m 428.46093,565.64344 -79.39843,0 -30.23161,17.49593"
        id="path4597"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccc"
@@ -503,7 +503,7 @@
     <path
        inkscape:connector-curvature="0"
        id="path4620"
-       d="m 331.05568,598.81564 0,-119.86005"
+       d="m 397.95888,583.06042 0,-119.86005"
        style="fill:#ffb100;fill-opacity:1;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMin.png"
        inkscape:export-xdpi="99"
@@ -511,7 +511,7 @@
     <path
        sodipodi:nodetypes="cc"
        style="fill:#ffb100;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 366.69828,648.20263 0,-240.07409"
+       d="m 434.72844,631.65191 0,-239.93046"
        id="path4628"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMin.png"
@@ -519,7 +519,7 @@
        inkscape:export-ydpi="99" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 330.96729,478.25394 35.53212,-70.18035"
+       d="m 398.46729,462.25394 35.53212,-70.18035"
        id="path4632"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMin.png"
@@ -534,12 +534,12 @@
        sodipodi:rx="1.0606601"
        sodipodi:ry="1.0606601"
        d="m 151.93957,514.69586 a 1.0606601,1.0606601 0 1 1 -2.12132,0 1.0606601,1.0606601 0 1 1 2.12132,0 z"
-       transform="matrix(1.4171426,0,0,1.4171426,117.38474,-250.7797)"
+       transform="matrix(1.4171426,0,0,1.4171426,184.16213,-266.20347)"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMin.png"
        inkscape:export-xdpi="99"
        inkscape:export-ydpi="99" />
     <path
-       transform="matrix(1.4171426,0,0,1.4171426,152.74008,-321.49038)"
+       transform="matrix(1.4171426,0,0,1.4171426,220.85088,-337.42785)"
        d="m 151.93957,514.69586 a 1.0606601,1.0606601 0 1 1 -2.12132,0 1.0606601,1.0606601 0 1 1 2.12132,0 z"
        sodipodi:ry="1.0606601"
        sodipodi:rx="1.0606601"
@@ -554,7 +554,7 @@
     <path
        inkscape:connector-curvature="0"
        id="path4652"
-       d="m 366.69828,648.20263 141.7746,-82.50448"
+       d="m 434.88311,631.75135 113.58977,-66.0532"
        style="fill:#ffb100;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMin.png"
@@ -563,7 +563,7 @@
     <path
        inkscape:connector-curvature="0"
        id="path4654"
-       d="M 366.69828,648.20263 206.78166,647.99241"
+       d="M 434.86579,631.7624 235.15433,631.55218"
        style="fill:#ffb100;fill-opacity:1;stroke:#24a300;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
        sodipodi:nodetypes="cc"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMin.png"
@@ -571,7 +571,7 @@
        inkscape:export-ydpi="99" />
     <path
        style="fill:#ffb100;fill-opacity:1;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 331.05568,598.81564 -39.43777,0.11608"
+       d="M 398.14243,583.08252 318.8396,583.1986"
        id="path4656"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc"
@@ -580,7 +580,7 @@
        inkscape:export-ydpi="99" />
     <path
        style="fill:#ffb100;fill-opacity:1;stroke:#ffb100;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="m 331.05568,598.81564 57.39084,-33.09885"
+       d="m 398.151,583.08774 30.29552,-17.37095"
        id="path4658"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc"
@@ -591,12 +591,12 @@
   <g
      inkscape:groupmode="layer"
      id="layer5"
-     inkscape:label="Zmax"
+     inkscape:label="Zmin"
      style="display:inline">
     <g
        style="display:inline"
        id="g4928-0-6"
-       transform="matrix(0,1,-1,0,863.47842,245.9823)"
+       transform="matrix(0,1,-1,0,930.27586,230.44959)"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_ZMin.png"
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669">
@@ -604,8 +604,8 @@
          sodipodi:nodetypes="cc"
          inkscape:connector-curvature="0"
          id="path2995-5-6-6-9"
-         d="M 232.62406,531.91802 199.52263,514.40076"
-         style="fill:none;stroke:#fe0000;stroke-width:1.20000005;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+         d="M 232.62406,531.91802 215.49883,581.5096"
+         style="fill:none;stroke:#fe0000;stroke-width:1.20000005;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
       <path
          transform="matrix(0.58881578,0,0,0.58881578,39.786881,295.69346)"
          d="m 331.07143,401.82648 c 0,1.97244 -1.59898,3.57143 -3.57143,3.57143 -1.97245,0 -3.57143,-1.59899 -3.57143,-3.57143 0,-1.97245 1.59898,-3.57143 3.57143,-3.57143 1.97245,0 3.57143,1.59898 3.57143,3.57143 z"
@@ -618,7 +618,7 @@
          sodipodi:type="arc" />
     </g>
     <flowRoot
-       transform="matrix(0.21464122,0,0,0.21464122,255.99221,301.86492)"
+       transform="matrix(0.21464122,0,0,0.21464122,289.53965,296.20721)"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
        id="flowRoot4859-7-1"
        xml:space="preserve"
