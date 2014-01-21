@@ -2,6 +2,7 @@
 layout: docs
 title: ST_IsSimple
 category: h2spatial/properties
+description: 
 prev_section: ST_IsRing
 next_section: ST_Length
 permalink: /docs/dev/ST_IsSimple/

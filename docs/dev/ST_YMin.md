@@ -2,6 +2,7 @@
 layout: docs
 title: ST_YMin
 category: h2spatial-ext/properties
+description: Return the minimum y-value of the given geometry
 prev_section: ST_YMax
 next_section: ST_ZMax
 permalink: /docs/dev/ST_YMin/
@@ -10,7 +11,7 @@ permalink: /docs/dev/ST_YMin/
 ### Signature
 
 {% highlight mysql %}
-POINT ST_YMin(Geometry geom);
+double ST_YMin(Geometry geom);
 {% endhighlight %}
 
 ### Description

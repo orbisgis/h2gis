@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Accum
 category: h2spatial/aggregates
+description: Construct an array of Geometries
 prev_section: h2spatial/aggregates
 next_section: h2spatial-ext/affine-transformations
 permalink: /docs/dev/ST_Accum/

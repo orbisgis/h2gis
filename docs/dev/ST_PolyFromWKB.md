@@ -2,6 +2,7 @@
 layout: docs
 title: ST_PolyFromWKB
 category: h2spatial/geometry-conversion
+description: Well Known Binary &rarr; <code>POLYGON</code>
 prev_section: ST_PolyFromText
 next_section: h2spatial/operators
 permalink: /docs/dev/ST_PolyFromWKB/

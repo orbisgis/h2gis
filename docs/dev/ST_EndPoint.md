@@ -2,6 +2,7 @@
 layout: docs
 title: ST_EndPoint
 category: h2spatial/properties
+description: 
 prev_section: ST_Distance
 next_section: ST_Envelope
 permalink: /docs/dev/ST_EndPoint/

@@ -2,6 +2,7 @@
 layout: docs
 title: ST_GeometryType
 category: h2spatial/properties
+description: 
 prev_section: ST_GeometryN
 next_section: ST_InteriorRingN
 permalink: /docs/dev/ST_GeometryType/

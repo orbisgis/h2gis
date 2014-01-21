@@ -2,6 +2,7 @@
 layout: docs
 title: ST_AsBinary
 category: h2spatial/geometry-conversion
+description: Geometry &rarr; Well Known Binary
 prev_section: h2spatial/geometry-conversion
 next_section: ST_AsText
 permalink: /docs/dev/ST_AsBinary/

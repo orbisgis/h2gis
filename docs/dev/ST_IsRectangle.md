@@ -2,6 +2,7 @@
 layout: docs
 title: ST_IsRectangle
 category: h2spatial-ext/predicates
+description: Return true if the given geometry is a rectangle
 prev_section: ST_DWithin
 next_section: ST_IsValid
 permalink: /docs/dev/ST_IsRectangle/

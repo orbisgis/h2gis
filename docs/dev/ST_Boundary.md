@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Boundary
 category: h2spatial/properties
+description: 
 prev_section: ST_Area
 next_section: ST_Centroid
 permalink: /docs/dev/ST_Boundary/

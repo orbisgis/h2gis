@@ -2,6 +2,7 @@
 layout: docs
 title: ST_MPointFromText
 category: h2spatial/geometry-conversion
+description: Well Known Text &rarr; <code>MULTIPOINT</code>
 prev_section: ST_MLineFromText
 next_section: ST_MPolyFromText
 permalink: /docs/dev/ST_MPointFromText/

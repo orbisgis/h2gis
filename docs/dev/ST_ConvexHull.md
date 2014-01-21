@@ -2,6 +2,7 @@
 layout: docs
 title: ST_ConvexHull
 category: h2spatial/operators
+description: Compute the smallest convex <code>POLYGON</code> that contains all the points in the Geometry
 prev_section: ST_Buffer
 next_section: ST_Difference
 permalink: /docs/dev/ST_ConvexHull/
