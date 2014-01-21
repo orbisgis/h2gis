@@ -10,7 +10,7 @@ permalink: /docs/dev/ST_ZMin/
 ### Signature
 
 {% highlight mysql %}
-DOUBLE ST_ZMin(Geometry geom);
+double ST_ZMin(Geometry geom);
 {% endhighlight %}
 
 ### Description
