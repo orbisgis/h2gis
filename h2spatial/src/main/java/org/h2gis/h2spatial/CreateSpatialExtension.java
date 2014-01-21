@@ -152,7 +152,7 @@ public class CreateSpatialExtension {
                 new ST_Accum(),
                 new ST_Transform(),
                 new ST_SetSRID(),
-                new ST_HasZ()};
+                new ST_CoordDim()};
     }
 
     /**

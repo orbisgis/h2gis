@@ -31,6 +31,7 @@ import org.h2gis.drivers.dbf.DBFWrite;
 import org.h2gis.drivers.gpx.GPXRead;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
+import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
@@ -74,7 +75,6 @@ public class CreateSpatialExtension {
                 new ST_ClosestPoint(),
                 new ST_ClosestCoordinate(),
                 new ST_CompactnessRatio(),
-                new ST_CoordDim(),
                 new ST_Covers(),
                 new ST_DWithin(),
                 new ST_Extent(),
