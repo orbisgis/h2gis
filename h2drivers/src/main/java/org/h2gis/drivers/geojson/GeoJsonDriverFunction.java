@@ -37,7 +37,7 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[0];
+        return new String[]{"geojson"};
     }
 
     @Override
@@ -64,6 +64,7 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, tableReference, fileName);
+        geoJsonReaderDriver.read(progress);
     }
 }
