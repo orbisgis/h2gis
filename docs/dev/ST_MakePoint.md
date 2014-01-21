@@ -23,10 +23,16 @@ Constructs a `POINT` from `x` and `y` (and possibly `z`).
 {% highlight mysql %}
 SELECT ST_MakePoint(1.4, -3.7);
 -- Answer:     POINT(1.4 -3.7)
+{% endhighlight %}
 
+<img class="displayed" src="../ST_MakePoint_1.png"/>
+
+{% highlight mysql %}
 SELECT ST_MakePoint(1.4, -3.7, 6.2);
 -- Answer:     POINT(1.4 -3.7 6.2)
 {% endhighlight %}
+
+<img class="displayed" src="../ST_MakePoint_2.png"/>
 
 ##### See also
 
