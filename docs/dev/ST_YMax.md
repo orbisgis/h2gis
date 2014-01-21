@@ -10,7 +10,7 @@ permalink: /docs/dev/ST_YMax/
 ### Signature
 
 {% highlight mysql %}
-POINT ST_YMax(Geometry geom);
+DOUBLE ST_YMax(Geometry geom);
 {% endhighlight %}
 
 ### Description

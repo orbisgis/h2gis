@@ -10,7 +10,7 @@ permalink: /docs/dev/ST_YMin/
 ### Signature
 
 {% highlight mysql %}
-POINT ST_YMin(Geometry geom);
+DOUBLE ST_YMin(Geometry geom);
 {% endhighlight %}
 
 ### Description
