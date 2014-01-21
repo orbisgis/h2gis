@@ -2,6 +2,7 @@
 layout: docs
 title: ST_StartPoint
 category: h2spatial/properties
+description: 
 prev_section: ST_SRID
 next_section: ST_X
 permalink: /docs/dev/ST_StartPoint/

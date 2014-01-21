@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Difference
 category: h2spatial/operators
+description: Compute the difference between two Geometries
 prev_section: ST_ConvexHull
 next_section: ST_Intersection
 permalink: /docs/dev/ST_Difference/

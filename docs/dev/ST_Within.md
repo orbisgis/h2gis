@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Within
 category: h2spatial/predicates
+description: 
 prev_section: ST_Touches
 next_section: h2spatial/projections
 permalink: /docs/dev/ST_Within/

@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Disjoint
 category: h2spatial/predicates
+description: Return true if the two Geometries are disjoint
 prev_section: ST_Crosses
 next_section: ST_EnvelopesIntersect
 permalink: /docs/dev/ST_Disjoint/

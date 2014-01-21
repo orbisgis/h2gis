@@ -2,6 +2,7 @@
 layout: docs
 title: ST_LineFromText
 category: h2spatial/geometry-conversion
+description: Well Known Text &rarr; <code>LINESTRING</code>
 prev_section: ST_GeomFromText
 next_section: ST_LineFromWKB
 permalink: /docs/dev/ST_LineFromText/

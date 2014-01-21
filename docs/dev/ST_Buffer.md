@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Buffer
 category: h2spatial/operators
+description: Compute a buffer around a Geometry
 prev_section: h2spatial/operators
 next_section: ST_ConvexHull
 permalink: /docs/dev/ST_Buffer/

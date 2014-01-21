@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Crosses
 category: h2spatial/predicates
+description: Return true if Geometry A crosses Geometry B
 prev_section: ST_Contains
 next_section: ST_Disjoint
 permalink: /docs/dev/ST_Crosses/

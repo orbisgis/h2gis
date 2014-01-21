@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Overlaps
 category: h2spatial/predicates
+description: 
 prev_section: ST_Intersects
 next_section: ST_Relate
 permalink: /docs/dev/ST_Overlaps/

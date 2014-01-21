@@ -2,6 +2,7 @@
 layout: docs
 title: ST_SymDifference
 category: h2spatial/operators
+description: Compute the symmetric difference between two Geometries
 prev_section: ST_Intersection
 next_section: ST_Union
 permalink: /docs/dev/ST_SymDifference/

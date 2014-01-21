@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Holes
 category: h2spatial-ext/geometry-conversion
+description: Return a geometry's holes
 prev_section: h2spatial-ext/geometry-conversion
 next_section: ST_ToMultiLine
 permalink: /docs/dev/ST_Holes/

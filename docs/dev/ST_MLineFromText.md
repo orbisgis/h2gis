@@ -2,6 +2,7 @@
 layout: docs
 title: ST_MLineFromText
 category: h2spatial/geometry-conversion
+description: Well Known Text &rarr; <code>MULTILINESTRING</code>
 prev_section: ST_LineFromWKB
 next_section: ST_MPointFromText
 permalink: /docs/dev/ST_MLineFromText/

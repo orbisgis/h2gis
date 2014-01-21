@@ -2,6 +2,7 @@
 layout: docs
 title: ST_FurthestCoordinate
 category: h2spatial-ext/distance-functions
+description: 
 prev_section: ST_ClosestPoint
 next_section: ST_LocateAlong
 permalink: /docs/dev/ST_FurthestCoordinate/

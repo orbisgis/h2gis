@@ -2,6 +2,7 @@
 layout: docs
 title: ST_PolyFromText
 category: h2spatial/geometry-conversion
+description: Well Known Text &rarr; <code>POLYGON</code>
 prev_section: ST_PointFromText
 next_section: ST_PolyFromWKB
 permalink: /docs/dev/ST_PolyFromText/

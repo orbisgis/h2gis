@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Area
 category: h2spatial/properties
+description: 
 prev_section: h2spatial/properties
 next_section: ST_Boundary
 permalink: /docs/dev/ST_Area/

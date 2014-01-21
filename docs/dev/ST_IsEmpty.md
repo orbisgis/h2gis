@@ -2,6 +2,7 @@
 layout: docs
 title: ST_IsEmpty
 category: h2spatial/properties
+description: 
 prev_section: ST_IsClosed
 next_section: ST_IsRing
 permalink: /docs/dev/ST_IsEmpty/
