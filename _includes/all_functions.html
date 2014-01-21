@@ -1,0 +1,20 @@
+<!-- For this to work, every page must have a category and a description -->
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+{% assign pages = site.pages | sort: 'name' %}
+{% for p in pages %}
+    {% if p.title contains 'ST_' %}
+        <tr>
+        <td><a href="{{ p.url }}"><code>{{ p.title }}</code></a></td>
+        <td>{{ p.description }}</td>
+        </tr>
+    {% endif %}
+{% endfor %}
+</tbody>
+</table>

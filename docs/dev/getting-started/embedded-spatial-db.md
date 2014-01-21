@@ -2,7 +2,7 @@
 layout: docs
 title: Embedded database
 prev_section: function-aliases
-next_section: h2spatial/geometry-conversion
+next_section: list-all-functions
 permalink: /docs/dev/embedded-spatial-db/
 ---
 
