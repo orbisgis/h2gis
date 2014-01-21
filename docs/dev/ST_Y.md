@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Y
 category: h2spatial/properties
+description: 
 prev_section: ST_X
 next_section: ST_Z
 permalink: /docs/dev/ST_Y/

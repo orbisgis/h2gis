@@ -2,6 +2,7 @@
 layout: docs
 title: ST_NumPoints
 category: h2spatial/properties
+description: 
 prev_section: ST_NumInteriorRings
 next_section: ST_PointN
 permalink: /docs/dev/ST_NumPoints/
