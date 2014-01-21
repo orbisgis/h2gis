@@ -2,6 +2,7 @@
 layout: docs
 title: ST_MPolyFromText
 category: h2spatial/geometry-conversion
+description: Well Known Text &rarr; <code>MULTIPOLYGON</code>
 prev_section: ST_MPointFromText
 next_section: ST_PointFromText
 permalink: /docs/dev/ST_MPolyFromText/

@@ -2,6 +2,7 @@
 layout: docs
 title: ST_LineFromWKB
 category: h2spatial/geometry-conversion
+description: Well Known Binary &rarr; <code>LINESTRING</code>
 prev_section: ST_LineFromText
 next_section: ST_MLineFromText
 permalink: /docs/dev/ST_LineFromWKB/
