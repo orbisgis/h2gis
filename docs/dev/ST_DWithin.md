@@ -2,6 +2,7 @@
 layout: docs
 title: ST_DWithin
 category: h2spatial-ext/predicates
+description: Return true if the geometries are within the specified distance of one another
 prev_section: ST_Covers
 next_section: ST_IsRectangle
 permalink: /docs/dev/ST_DWithin/
