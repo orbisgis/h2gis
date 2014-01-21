@@ -79,11 +79,11 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.50000001"
-     inkscape:cx="455.43861"
-     inkscape:cy="462.95326"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="431.70909"
+     inkscape:cy="255.73624"
      inkscape:document-units="px"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1680"
      inkscape:window-height="974"
@@ -100,7 +100,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -625,6 +625,15 @@
        d="m 161.85835,906.7561 0,-247.26473"
        id="path3970"
        inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3074"
+       d="m 347.82743,637.70197 -185.96908,21.7894"
+       style="fill:none;stroke:#fe0000;stroke-width:0.60000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4000001, 1.20000005;stroke-dashoffset:0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_2.png"
+       inkscape:export-xdpi="99"
+       inkscape:export-ydpi="99" />
   </g>
   <g
      inkscape:groupmode="layer"
