@@ -2,7 +2,7 @@
 layout: docs
 title: ST_CoordDim
 category: h2spatial-ext/properties
-description: 
+description: Return the dimension of the coordinates of the given geometry
 prev_section: ST_CompactnessRatio
 next_section: ST_Explode
 permalink: /docs/dev/ST_CoordDim/
@@ -21,7 +21,6 @@ Returns the dimension of the coordinates of `geom`.
 
 {% highlight mysql %}
 SELECT ST_CoordDim('POINT(1 2)'::Geometry);
-
 -- Answer: 2
 
 SELECT ST_CoordDim('LINESTRING(0 0 0, 1 1 2)'::Geometry);
