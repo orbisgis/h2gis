@@ -24,6 +24,8 @@ SELECT ST_ZMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
 -- Answer:    3.0
 {% endhighlight %}
 
+<img class="displayed" src="../ST_ZMin.png"/>
+
 ##### See also
 
 * [`ST_XMin`](../ST_XMin), [`ST_XMax`](../ST_XMax), [`ST_YMax`](../ST_YMax), [`ST_YMin`](../ST_YMin), [`ST_ZMax`](../ST_ZMax)
