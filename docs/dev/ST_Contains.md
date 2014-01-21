@@ -5,6 +5,7 @@ category: h2spatial/predicates
 prev_section: h2spatial/predicates
 next_section: ST_Crosses
 permalink: /docs/dev/ST_Contains/
+description: Return true if Geometry A contains Geometry B
 ---
 
 ### Signatures
