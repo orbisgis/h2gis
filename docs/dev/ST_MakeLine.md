@@ -10,10 +10,10 @@ permalink: /docs/dev/ST_MakeLine/
 ### Signature
 
 {% highlight mysql %}
-LINESTRING ST_MakeLine(GEOMETRY pointA, pointB, ...);
-LINESTRING ST_MakeLine(GEOMETRY point, multipoint, ...);
-LINESTRING ST_MakeLine(GEOMETRY multipoint);
-LINESTRING ST_MakeLine(GEOMETRY multipoint, mutipoint);
+LINESTRING ST_MakeLine(POINT pointA, POINT pointB, ...);
+LINESTRING ST_MakeLine(POINT pointA, MULTIPOINT multipoint, ...);
+LINESTRING ST_MakeLine(MULTIPOINT multipoint);
+LINESTRING ST_MakeLine(MULTIPOINT multipointA, MULTIPOINT multipointB);
 LINESTRING ST_MakeLine(GEOMETRYCOLLECTION points);
 {% endhighlight %}
 
