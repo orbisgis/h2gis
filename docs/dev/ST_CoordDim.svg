@@ -52,10 +52,10 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="402.58905"
+     inkscape:cx="265.41034"
      inkscape:cy="557.49465"
      inkscape:document-units="px"
-     inkscape:current-layer="layer2"
+     inkscape:current-layer="layer6"
      showgrid="false"
      inkscape:window-width="1440"
      inkscape:window-height="824"
@@ -63,7 +63,8 @@
      inkscape:window-y="24"
      inkscape:window-maximized="1"
      showguides="true"
-     inkscape:guide-bbox="true" />
+     inkscape:guide-bbox="true"
+     inkscape:snap-global="true" />
   <metadata
      id="metadata7">
     <rdf:RDF>
@@ -371,6 +372,11 @@
        style="fill:#ffb100;fill-opacity:1;stroke:#fe0000;stroke-width:1.10000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.4000001,4.4000001;stroke-dashoffset:0"
        d="m 372.73335,607.58162 0,-158.76473"
        id="path3037"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#fe0000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:4, 4;stroke-dashoffset:0"
+       d="M 371.93816,445.66458 349.31074,405.3595"
+       id="path3029"
        inkscape:connector-curvature="0" />
   </g>
   <g
