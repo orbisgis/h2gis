@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_Difference/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_Difference(geomA, geomB)
+GEOMETRY ST_Difference(GEOMETRY geomA, GEOMETRY geomB)
 {% endhighlight %}
 
 ### Description
