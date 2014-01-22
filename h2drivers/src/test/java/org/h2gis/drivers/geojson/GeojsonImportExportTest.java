@@ -216,6 +216,8 @@ public class GeojsonImportExportTest {
         stat.execute("insert into POINTS values( 'POINT(1 2)')");
         stat.execute("insert into POINTS values( 'POINT(10 200)')");
         stat.execute("CALL GeoJsonWrite('target/points.geojson', 'POINTS');");
+        stat.execute("CALL GeoJsonRead('target/points.geojson', 'POINTS_READ');");
+        stat.execute("DROP TABLE IF EXISTS POINTS_READ");
         stat.close();
     }
 }
