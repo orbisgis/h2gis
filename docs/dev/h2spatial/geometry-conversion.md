@@ -2,7 +2,7 @@
 layout: docs
 title: Convert geometries
 category: h2spatial/geometry-conversion
-prev_section: embedded-spatial-db
+prev_section: functions
 next_section: h2spatial/operators
 permalink: /docs/dev/h2spatial/geometry-conversion/
 ---
