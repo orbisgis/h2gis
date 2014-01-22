@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Explode
 category: h2spatial-ext/properties
-description: Return the multiple geometries to one geometry collection
+description: Return geometry collection to multiple geometries
 prev_section: ST_CoordDim
 next_section: ST_Extent
 permalink: /docs/dev/ST_Explode/
