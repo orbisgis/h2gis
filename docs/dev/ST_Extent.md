@@ -20,9 +20,11 @@ Return the extent that encloses the geometry collection
 ### Examples
 
 {% highlight mysql %}
-select ST_Extent('MULTIPOINT(5 5, 1 2, 3 4, 99 3)'::Geometry) tableEnv from ptClouds;
---answer : POLYGON ((1 2, 1 5, 99 5, 99 2, 1 2))
+SELECT ST_Extent('MULTIPOINT(5 5, 1 2, 3 4, 10 3)'::Geometry) 
+tableEnv;
+-- Answer : POLYGON ((1 2, 1 5, 10 5, 10 2, 1 2))
 {% endhighlight %}
+<img class="displayed" src="../ST_Extent.png"/>
 
 ##### See also
 
