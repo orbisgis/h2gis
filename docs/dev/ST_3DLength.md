@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_3DLength/
 ### Signature
 
 {% highlight mysql %}
-double ST_3DLength(Geometry geom);
+double ST_3DLength(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_ZMin/
 ### Signature
 
 {% highlight mysql %}
-double ST_ZMin(Geometry geom);
+double ST_ZMin(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_ZMax/
 ### Signature
 
 {% highlight mysql %}
-double ST_ZMax(Geometry geom);
+double ST_ZMax(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

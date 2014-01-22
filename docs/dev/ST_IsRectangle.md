@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_IsRectangle/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_IsRectangle(Geometry geom);
+boolean ST_IsRectangle(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

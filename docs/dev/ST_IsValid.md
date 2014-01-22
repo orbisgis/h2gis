@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_IsValid/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_IsValid(Geometry geom);
+boolean ST_IsValid(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_CoordDim/
 ### Signature
 
 {% highlight mysql %}
-int ST_CoordDim(Geometry geom)
+int ST_CoordDim(GEOMETRY geom)
 {% endhighlight %}
 
 ### Description

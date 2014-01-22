@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_YMax/
 ### Signature
 
 {% highlight mysql %}
-double ST_YMax(Geometry geom);
+double ST_YMax(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

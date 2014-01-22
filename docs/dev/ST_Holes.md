@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_Holes/
 ### Signature
 
 {% highlight mysql %}
-GeometryCollection ST_Holes(Geometry geom)
+GEOMETRYCOLLECTION ST_Holes(GEOMETRY geom)
 {% endhighlight %}
 
 ### Description
