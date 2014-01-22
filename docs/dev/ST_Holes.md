@@ -16,8 +16,8 @@ GEOMETRYCOLLECTION ST_Holes(GEOMETRY geom)
 
 ### Description
 
-Returns the given `Geometry` or `GeometryCollection`'s holes as a
-`GeometryCollection`. Returns `GEOMETRYCOLLECTION EMPTY` for geometries of
+Returns the given `GEOMETRY` or `GEOMETRYCOLLECTION`'s holes as a
+`GEOMETRYCOLLECTION`. Returns `GEOMETRYCOLLECTION EMPTY` for geometries of
 dimension less than 2.
 
 ### Examples

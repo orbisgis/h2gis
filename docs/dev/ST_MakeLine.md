@@ -72,7 +72,7 @@ SELECT ST_MakeLine('MULTIPOINT(1 2, 3 4)'::Geometry);
 
 #### Aggregate function
 {% highlight mysql %}
-CREATE TABLE input_table(point Point);
+CREATE TABLE input_table(point POINT);
 INSERT INTO input_table VALUES
      ('POINT(1 2)'::Geometry),
      ('POINT(3 4)'::Geometry),
@@ -82,7 +82,7 @@ INSERT INTO input_table VALUES
 SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;
 -- Answer:     LINESTRING(1 2, 3 4, 5 6, 7 8, 9 10)
 
-CREATE TABLE input_table(point Geometry);
+CREATE TABLE input_table(point GEOMETRY);
 INSERT INTO input_table VALUES
      ('POINT(5 5)'::Geometry),
      ('MULTIPOINT(1 2, 7 9, 18 -4)'::Geometry),
@@ -91,7 +91,7 @@ INSERT INTO input_table VALUES
 SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;
 -- Answer:     LINESTRING(5 5, 1 2, 7 9, 18 -4, 3 4, 99 3)
 
-CREATE TABLE input_table(multi_point MultiPoint);
+CREATE TABLE input_table(multi_point MULTIPOINT);
 INSERT INTO input_table VALUES
      ('MULTIPOINT(5 5, 1 2, 3 4, 99 3)'::Geometry),
      ('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)'::Geometry),
