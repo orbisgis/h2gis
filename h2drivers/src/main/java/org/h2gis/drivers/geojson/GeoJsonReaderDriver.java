@@ -239,7 +239,7 @@ public class GeoJsonReaderDriver {
             String fieldName = jp.getText().toUpperCase(); //FIELD_NAME columnName            
             JsonToken value = jp.nextToken();
             if (value == JsonToken.VALUE_STRING) {
-                metadataBuilder.append(fieldName).append(" TEXT");
+                metadataBuilder.append(fieldName).append(" VARCHAR");
                 fieldsMetadata.put(fieldName, fieldIndex++);
             } else if (value == JsonToken.VALUE_TRUE) {
                 metadataBuilder.append(fieldName).append(" BOOLEAN");
@@ -254,7 +254,7 @@ public class GeoJsonReaderDriver {
                 metadataBuilder.append(fieldName).append(" INT");
                 fieldsMetadata.put(fieldName, fieldIndex++);
             } else if (value == JsonToken.VALUE_NULL) {
-                metadataBuilder.append(fieldName).append(" TEXT");
+                metadataBuilder.append(fieldName).append(" VARCHAR");
                 fieldsMetadata.put(fieldName, fieldIndex++);
             } else {
                 //TODO ignore value
@@ -301,12 +301,11 @@ public class GeoJsonReaderDriver {
         } else if (firstField.equalsIgnoreCase("properties")) {
             parseProperties(jp, fieldIndex);
         }
-        //There is only one geometry field in the feature so the next
-        //token correspond to the end object of the feature
+        //If there is only one geometry field in the feature them the next
+        //token corresponds to the end object of the feature
         jp.nextToken();
         if (jp.getCurrentToken() != JsonToken.END_OBJECT) {
             String secondParam = jp.getText();// field name
-
             if (secondParam.equalsIgnoreCase("geometry")) {
                 getPreparedStatement().setObject(fieldIndex, parseGeometry(jp));
                 fieldIndex++;
@@ -316,8 +315,7 @@ public class GeoJsonReaderDriver {
             }
             jp.nextToken(); //END_OBJECT } feature
         }
-        
-        
+        getPreparedStatement().execute();      
     }
 
     /**
@@ -380,17 +378,23 @@ public class GeoJsonReaderDriver {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             JsonToken value = jp.nextToken();
             if (value == JsonToken.VALUE_STRING) {
-                getPreparedStatement().setString(fieldIndex++, jp.getText());
+                getPreparedStatement().setObject(fieldIndex, jp.getText());
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_TRUE) {
-                getPreparedStatement().setBoolean(fieldIndex++, jp.getValueAsBoolean());
+                getPreparedStatement().setObject(fieldIndex, jp.getValueAsBoolean());
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_FALSE) {
-                getPreparedStatement().setBoolean(fieldIndex++, jp.getValueAsBoolean());
+                getPreparedStatement().setObject(fieldIndex, jp.getValueAsBoolean());
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
-                getPreparedStatement().setDouble(fieldIndex++, jp.getValueAsDouble());
+                getPreparedStatement().setObject(fieldIndex, jp.getValueAsDouble());
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                getPreparedStatement().setInt(fieldIndex++, jp.getValueAsInt());
+                getPreparedStatement().setObject(fieldIndex, jp.getValueAsInt());
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_NULL) {
-                getPreparedStatement().setObject(fieldIndex++, null);
+                getPreparedStatement().setObject(fieldIndex, null);
+                fieldIndex++;
             } else {
                 //ignore other value
             }

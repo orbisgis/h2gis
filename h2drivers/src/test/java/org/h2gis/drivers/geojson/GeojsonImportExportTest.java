@@ -24,6 +24,8 @@
  */
 package org.h2gis.drivers.geojson;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
@@ -42,6 +44,7 @@ public class GeojsonImportExportTest {
 
     private static Connection connection;
     private static final String DB_NAME = "GeojsonExportTest";
+    private WKTReader WKTREADER = new WKTReader();
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -216,7 +219,32 @@ public class GeojsonImportExportTest {
         stat.execute("insert into POINTS values( 'POINT(1 2)')");
         stat.execute("insert into POINTS values( 'POINT(10 200)')");
         stat.execute("CALL GeoJsonWrite('target/points.geojson', 'POINTS');");
-        stat.execute("CALL GeoJsonRead('target/points.geojson', 'POINTS_READ');");
+        stat.execute("CALL GeoJsonRead('target/points.geojson', 'POINTS_READ');");        
+        ResultSet res = stat.executeQuery("SELECT * FROM POINTS_READ;");
+        res.next();
+        assertTrue(((Geometry)res.getObject(1)).equals(WKTREADER.read("POINT(1 2)")));
+        res.next();
+        assertTrue(((Geometry)res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS POINTS_READ");
+        stat.close();
+    }
+    
+    @Test
+    public void testWriteReadGeojsonPointProperties() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS POINTS");
+        stat.execute("create table POINTS(the_geom POINT, id INT, climat VARCHAR)");
+        stat.execute("insert into POINTS values( 'POINT(1 2)', 1, 'bad')");
+        stat.execute("insert into POINTS values( 'POINT(10 200)', 2, 'good')");
+        stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'POINTS');");
+        stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'POINTS_READ');");        
+        ResultSet res = stat.executeQuery("SELECT * FROM POINTS_READ;");
+        res.next();
+        assertTrue(((Geometry)res.getObject(1)).equals(WKTREADER.read("POINT(1 2)")));
+        res.next();
+        assertTrue(((Geometry)res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
+        res.close();
         stat.execute("DROP TABLE IF EXISTS POINTS_READ");
         stat.close();
     }
