@@ -2,7 +2,7 @@
 layout: docs
 title: ST_XMax
 category: h2spatial-ext/properties
-description: Return the maximum x-value of the given geometry
+description: Return the maximum x-value of a Geometry
 prev_section: ST_Extent
 next_section: ST_XMin
 permalink: /docs/dev/ST_XMax/
@@ -11,12 +11,12 @@ permalink: /docs/dev/ST_XMax/
 ### Signature
 
 {% highlight mysql %}
-double ST_XMax(Geometry geom);
+double ST_XMax(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
 
-Returns the maximum x-value of the given geometry.
+Returns the maximum x-value of `geom`.
 
 ### Example
 

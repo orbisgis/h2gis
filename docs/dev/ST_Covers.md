@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Covers
 category: h2spatial-ext/predicates
-description: Return true if no point in geometry B is outside geometry A
+description: Return true if no point in Geometry B is outside Geometry A
 prev_section: h2spatial-ext/predicates
 next_section: ST_DWithin
 permalink: /docs/dev/ST_Covers/
@@ -20,7 +20,7 @@ Returns true if no point in `geomB` is outside `geomA`.
 
 ### Examples
 
-| smallc Polygon | bigc Polygon |
+| smallc POLYGON | bigc POLYGON |
 | ----|---- |
 | POLYGON((1 1, 5 1, 5 4, 1 4, 1 1)) | POLYGON((0 0, 10 0, 10 5, 0 5, 0 0)) |
 

@@ -2,7 +2,7 @@
 layout: docs
 title: ST_CoordDim
 category: h2spatial-ext/properties
-description: Return the dimension of the coordinates of the given geometry
+description: Return the dimension of the coordinates of a Geometry
 prev_section: ST_CompactnessRatio
 next_section: ST_Explode
 permalink: /docs/dev/ST_CoordDim/
@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_CoordDim/
 ### Signature
 
 {% highlight mysql %}
-int ST_CoordDim(Geometry geom)
+int ST_CoordDim(GEOMETRY geom)
 {% endhighlight %}
 
 ### Description

@@ -2,7 +2,7 @@
 layout: docs
 title: ST_ZMax
 category: h2spatial-ext/properties
-description: Return the maximum z-value of the given geometry
+description: Return the maximum z-value of a Geometry
 prev_section: ST_YMin
 next_section: ST_ZMin
 permalink: /docs/dev/ST_ZMax/
@@ -11,12 +11,12 @@ permalink: /docs/dev/ST_ZMax/
 ### Signature
 
 {% highlight mysql %}
-double ST_ZMax(Geometry geom);
+double ST_ZMax(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
 
-Returns the maximum z-value of the given geometry.
+Returns the maximum z-value of `geom`.
 
 ### Example
 

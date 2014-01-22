@@ -2,7 +2,7 @@
 layout: docs
 title: ST_XMin
 category: h2spatial-ext/properties
-description: Return the minimum x-value of the given geometry
+description: Return the minimum x-value of a Geometry
 prev_section: ST_XMax
 next_section: ST_YMax
 permalink: /docs/dev/ST_XMin/
@@ -11,12 +11,12 @@ permalink: /docs/dev/ST_XMin/
 ### Signature
 
 {% highlight mysql %}
-double ST_XMin(Geometry geom);
+double ST_XMin(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
 
-Returns the minimum x-value of the given geometry.
+Returns the minimum x-value of `geom`.
 
 ### Example
 
