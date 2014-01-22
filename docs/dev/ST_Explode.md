@@ -24,7 +24,8 @@ If no field name is specified, the first Geometry column is used.
 ### Examples
 
 {% highlight mysql %}
-CREATE table test_point AS SELECT 'MULTIPOINT((1 1), (2 2))'::Geometry the_geom;
+CREATE TABLE test_point AS SELECT
+    'MULTIPOINT((1 1), (2 2))'::Geometry the_geom;
 SELECT * FROM st_explode('test_point');
 -- Answer:
 --    |   THE_GEOM  | EXPLOD_ID |
@@ -36,9 +37,10 @@ SELECT * FROM st_explode('test_point');
 <img class="displayed" src="../ST_Explode.png"/>
 
 {% highlight mysql %}
-CREATE table test_point AS SELECT 'MULTIPOINT((1 1), (2 2))'
-::Geometry the_geomA, 'MULTIPOINT((3 3),(2 6))'::Geometry the_geomB;
-SELECT * FROM st_explode('test_point','the_geomB');
+CREATE TABLE test_point AS SELECT
+    'MULTIPOINT((1 1), (2 2))'::Geometry the_geomA,
+    'MULTIPOINT((3 3), (2 6))'::Geometry the_geomB;
+SELECT * FROM ST_Explode('test_point', 'the_geomB');
 -- Answer:
 --    |   THE_GEOMB | EXPLOD_ID |
 --    | ------------|-----------|
