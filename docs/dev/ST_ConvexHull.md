@@ -23,8 +23,9 @@ Computes the smallest convex `POLYGON` that contains all the points of `geom`. `
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_ConvexHull( 'GEOMETRYCOLLECTION (POINT (1 2), LINESTRING (1 4, 4 7), 
-POLYGON ((3 1, 7 1, 7 6, 3 1)))'::Geometry);
+SELECT ST_ConvexHull('GEOMETRYCOLLECTION (POINT (1 2), 
+  LINESTRING (1 4, 4 7), POLYGON ((3 1, 7 1, 7 6, 3 1)))'
+  ::Geometry);
 
 -- Answer: POLYGON((3 1, 7 1, 7 6, 4 7, 1 4, 1 2, 3 1))
 {% endhighlight %}
