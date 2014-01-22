@@ -1,7 +1,6 @@
 package org.h2gis.h2spatial.internal.type;
 
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
-import org.h2gis.h2spatial.internal.function.spatial.properties._ColumnSRID;
+import org.h2gis.h2spatial.internal.function.spatial.properties.ColumnSRID;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.Connection;
@@ -57,7 +56,7 @@ public class DimensionFromConstraint extends DeterministicScalarFunction {
         try {
             Statement st = connection.createStatement();
             // Merge column constraint and table constraint
-            constraint+= _ColumnSRID.fetchConstraint(connection, catalogName, schemaName, tableName);
+            constraint+= ColumnSRID.fetchConstraint(connection, catalogName, schemaName, tableName);
             return dimensionFromConstraint(constraint, columnName);
         } catch (SQLException ex) {
             return 2;

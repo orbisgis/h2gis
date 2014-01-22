@@ -25,7 +25,7 @@
 
 package org.h2gis.h2spatial;
 
-import org.h2gis.h2spatial.internal.function.spatial.properties._ColumnSRID;
+import org.h2gis.h2spatial.internal.function.spatial.properties.ColumnSRID;
 import org.h2gis.h2spatial.internal.type.DimensionFromConstraint;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GeometryTypeCodes;
@@ -155,16 +155,16 @@ public class ConstraintTest {
 
     @Test
     public void testSRIDConstraintExtraction() {
-        assertEquals(23, _ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "the_geom"));
-        assertEquals(23, _ColumnSRID.getSRIDFromConstraint("ST_SRID(\"the_GEOM\") =23", "the_geom"));
-        assertEquals(23, _ColumnSRID.getSRIDFromConstraint("ST_SRID(`the_GEOM`)= 23", "the_geom"));
-        assertEquals(23, _ColumnSRID.getSRIDFromConstraint("GEOMETRY_TYPE = \"POLYGON\" AND ST_SRID  (  the_geom  )  =   23", "the_geom"));
+        assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "the_geom"));
+        assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(\"the_GEOM\") =23", "the_geom"));
+        assertEquals(23, ColumnSRID.getSRIDFromConstraint("ST_SRID(`the_GEOM`)= 23", "the_geom"));
+        assertEquals(23, ColumnSRID.getSRIDFromConstraint("GEOMETRY_TYPE = \"POLYGON\" AND ST_SRID  (  the_geom  )  =   23", "the_geom"));
 
-        assertEquals(0, _ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "geom")); //wrong column name
+        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23", "geom")); //wrong column name
         // two srid constraint on the same column
-        assertEquals(0, _ColumnSRID.getSRIDFromConstraint("ST_SRID(geom)=44 OR ST_SRID(geom)=23", "geom"));
+        assertEquals(0, ColumnSRID.getSRIDFromConstraint("ST_SRID(geom)=44 OR ST_SRID(geom)=23", "geom"));
 
-        assertEquals(44, _ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23 AND ST_SRID(geom)=44", "geom"));
+        assertEquals(44, ColumnSRID.getSRIDFromConstraint("ST_SRID(the_geom)=23 AND ST_SRID(geom)=44", "geom"));
     }
 
     /**

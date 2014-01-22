@@ -92,7 +92,7 @@ public class CreateSpatialExtension {
         return new Function[] {
                 new HexToVarBinary(),
                 new GeometryTypeFromConstraint(),
-                new _ColumnSRID(),
+                new ColumnSRID(),
                 new GeometryTypeNameFromConstraint(),
                 new DimensionFromConstraint(),
                 new ST_GeomFromText(),

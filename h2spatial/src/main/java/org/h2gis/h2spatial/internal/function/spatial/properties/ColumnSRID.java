@@ -41,12 +41,13 @@ import java.util.regex.Pattern;
  * Get the column SRID from constraints and data.
  * @author Nicolas Fortin
  */
-public class _ColumnSRID extends AbstractFunction implements ScalarFunction {
+public class ColumnSRID extends AbstractFunction implements ScalarFunction {
     private static final String SRID_FUNC = ST_SRID.class.getSimpleName();
     private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("ST_SRID\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
 
-    public _ColumnSRID() {
+    public ColumnSRID() {
         addProperty(PROP_REMARKS, "Get the column SRID from constraints and data.");
+        addProperty(PROP_NAME, "_ColumnSRID");
     }
 
     @Override
