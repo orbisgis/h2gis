@@ -2,7 +2,7 @@
 layout: docs
 title: ST_IsValid
 category: h2spatial-ext/predicates
-description: Return true if the given geometry is valid
+description: Return true if the Geometry is valid
 prev_section: ST_IsRectangle
 next_section: h2spatial-ext/properties
 permalink: /docs/dev/ST_IsValid/

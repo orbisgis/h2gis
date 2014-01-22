@@ -2,7 +2,7 @@
 layout: docs
 title: ST_ZMin
 category: h2spatial-ext/properties
-description: Return the minimum z-value of the given geometry
+description: Return the minimum z-value of a Geometry
 prev_section: ST_ZMax
 next_section:
 permalink: /docs/dev/ST_ZMin/
@@ -16,7 +16,7 @@ double ST_ZMin(GEOMETRY geom);
 
 ### Description
 
-Returns the minimum z-value of the given geometry.
+Returns the minimum z-value of `geom`.
 
 ### Example
 

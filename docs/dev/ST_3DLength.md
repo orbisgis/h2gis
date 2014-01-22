@@ -2,7 +2,7 @@
 layout: docs
 title: ST_3DLength
 category: h2spatial-ext/properties
-description: Return the 3D length or the 3D perimeter of the given geometry
+description: Return the 3D length or the 3D perimeter a Geometry
 prev_section: h2spatial-ext/properties
 next_section: ST_CompactnessRatio
 permalink: /docs/dev/ST_3DLength/
@@ -17,7 +17,7 @@ double ST_3DLength(GEOMETRY geom);
 ### Description
 
 Returns the 3D length (of a `LINESTRING`) or the 3D perimeter (of a `POLYGON`).
-In the case of a 2D geometry, `ST_3DLength` returns the same value as
+In the case of a 2D Geometry, `ST_3DLength` returns the same value as
 `ST_Length`.
 
 ### Examples

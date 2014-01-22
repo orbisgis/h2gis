@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Rotate
 category: h2spatial-ext/affine-transformations
-description: Rotate a geometry counter-clockwise by the given angle (in radians) about a point 
+description: Rotate a Geometry counter-clockwise by an angle (in radians) about a point 
 prev_section: h2spatial-ext/affine-transformations
 next_section: ST_Scale
 permalink: /docs/dev/ST_Rotate/
@@ -20,7 +20,7 @@ GEOMETRY ST_Rotate(GEOMETRY geom, double angle, double x, double y);
 
 Rotates `geom` counter-clockwise by `angle` (in radians) about the point
 `origin` (or about the point specified by coordinates `x` and `y`).  If no
-point is specified, the geometry is rotated about its center (the center of its
+point is specified, `geom` is rotated about its center (the center of its
 internal envelope).
 
 ### Examples

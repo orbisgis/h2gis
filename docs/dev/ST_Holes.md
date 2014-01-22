@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Holes
 category: h2spatial-ext/geometry-conversion
-description: Return a geometry's holes
+description: Return a Geometry's holes
 prev_section: h2spatial-ext/geometry-conversion
 next_section: ST_ToMultiLine
 permalink: /docs/dev/ST_Holes/
@@ -12,12 +12,13 @@ permalink: /docs/dev/ST_Holes/
 
 {% highlight mysql %}
 GEOMETRYCOLLECTION ST_Holes(GEOMETRY geom)
+GEOMETRYCOLLECTION ST_Holes(GEOMETRYCOLLECTION geom)
 {% endhighlight %}
 
 ### Description
 
 Returns the given `GEOMETRY` or `GEOMETRYCOLLECTION`'s holes as a
-`GEOMETRYCOLLECTION`. Returns `GEOMETRYCOLLECTION EMPTY` for geometries of
+`GEOMETRYCOLLECTION`. Returns `GEOMETRYCOLLECTION EMPTY` for Geometries of
 dimension less than 2.
 
 ### Examples

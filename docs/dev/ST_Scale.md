@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Scale
 category: h2spatial-ext/affine-transformations
-description: Scale the given geometry by multiplying the ordinates by the indicated scale factors 
+description: Scale a Geometry by multiplying the ordinates by the indicated scale factors 
 prev_section: ST_Rotate
 next_section: h2spatial-ext/geometry-conversion
 permalink: /docs/dev/ST_Scale/
@@ -17,8 +17,8 @@ GEOMETRY ST_Scale(GEOMETRY geom, double xFactor, double yFactor, double zFactor)
 
 ### Description
 
-Scales the given geometry by multiplying the ordinates by the indicated scale
-factors. If `zFactor` is omitted and the geometry contains a z-coordinate, it
+Scales `geom` Geometry by multiplying the ordinates by the indicated scale
+factors. If `zFactor` is omitted and `geom` contains a z-coordinate, it
 is left untouched.
 
 ### Examples
