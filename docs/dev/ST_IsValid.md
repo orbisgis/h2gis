@@ -21,10 +21,10 @@ Returns true if `geom` is valid.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))'::Geometry);
+SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
 -- Answer:    true
 
-SELECT ST_IsValid('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))'::Geometry);
+SELECT ST_IsValid('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))');
 -- Answer:    false
 {% endhighlight %}
 

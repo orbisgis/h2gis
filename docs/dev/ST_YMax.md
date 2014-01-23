@@ -21,7 +21,7 @@ Returns the maximum y-value of `geom`.
 ### Example
 
 {% highlight mysql %}
-SELECT ST_YMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+SELECT ST_YMax('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    5.0
 {% endhighlight %}
 
