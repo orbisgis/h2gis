@@ -37,7 +37,7 @@ It include also file copy functions:
 
 ### Usage
 
-For now, H2GIS requires Java 6 (and is not yet Java 7 compatible; see issue #15). Run `maven clean install -P standalone` in the H2GIS's root directory.
+For now, H2GIS requires Java 6. Run `maven clean install -P standalone` in the H2GIS's root directory.
 
 In the folder `h2-dist/target/` you will find a zip file `h2gis-standalone-bin.zip` that contain a run.sh file for running H2 with H2GIS. It will open a browser based console application.
 
