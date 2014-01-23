@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Explode
 category: h2spatial-ext/properties
-description: Explode `GEOMETRYCOLLECTION`s into multiple Geometries
+description: Explode <CODE>GEOMETRYCOLLECTION</CODE>'s into multiple Geometries
 prev_section: ST_CoordDim
 next_section: ST_Extent
 permalink: /docs/dev/ST_Explode/
