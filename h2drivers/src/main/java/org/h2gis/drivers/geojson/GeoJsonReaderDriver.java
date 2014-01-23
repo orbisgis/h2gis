@@ -1,18 +1,26 @@
 /*
- * Copyright (C) 2014 IRSTV CNRS-FR-2488
+ * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * h2patial is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * h2spatial is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * h2spatial. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.h2gis.drivers.geojson;
 
@@ -494,6 +502,7 @@ public class GeoJsonReaderDriver {
      *
      * @param jsParser
      * @throws IOException
+     * @return Point
      */
     private Point parsePoint(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -516,6 +525,7 @@ public class GeoJsonReaderDriver {
      *
      * @param jsParser
      * @throws IOException
+     * @return MultiPoint
      */
     private MultiPoint parseMultiPoint(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -560,7 +570,7 @@ public class GeoJsonReaderDriver {
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
      *
      * @param jsParser
-     * @return
+     * @return MultiLineString
      */
     private MultiLineString parseMultiLinestring(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -603,7 +613,7 @@ public class GeoJsonReaderDriver {
      *
      *
      * @param jp
-     * @return
+     * @return Polygon
      */
     private Polygon parsePolygon(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -644,9 +654,9 @@ public class GeoJsonReaderDriver {
      * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
      *
      * @param jp
-     * @return
      * @throws IOException
      * @throws SQLException
+     * @return MultiPolygon
      */
     private MultiPolygon parseMultiPolygon(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -695,7 +705,10 @@ public class GeoJsonReaderDriver {
      * [101.0, 0.0], [102.0, 1.0] ] } ]
      *
      * @param jp
-     * @return
+     *
+     * @throws IOException
+     * @throws SQLException
+     * @return GeometryCollection
      */
     private GeometryCollection parseGeometryCollection(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME geometries        
@@ -722,10 +735,11 @@ public class GeoJsonReaderDriver {
      * [ [100.0, 0.0], [101.0, 1.0] ]
      *
      * @param jp
-     * @return
      * @throws IOException
+     * @throws SQLException
+     * @return Coordinate[]
      */
-    public Coordinate[] parseCoordinates(JsonParser jp) throws IOException {
+    private Coordinate[] parseCoordinates(JsonParser jp) throws IOException {
         jp.nextToken(); // START_ARRAY [ to parse the each positions
         ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
         while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
@@ -743,6 +757,9 @@ public class GeoJsonReaderDriver {
      *
      * 100.0, 0.0]
      *
+     * @param jp
+     * @throws IOException
+     * @return Coordinate
      */
     private Coordinate parseCoordinate(JsonParser jp) throws IOException {
         jp.nextToken();
@@ -786,8 +803,6 @@ public class GeoJsonReaderDriver {
                 throw new SQLException("Malformed geojson file. Expected 'FeatureCollection', found '" + geomType + "'");
             }
             jp.close();
-
-
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
 
