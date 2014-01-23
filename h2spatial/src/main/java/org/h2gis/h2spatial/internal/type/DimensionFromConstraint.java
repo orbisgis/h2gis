@@ -30,6 +30,12 @@ public class DimensionFromConstraint extends DeterministicScalarFunction {
         return "dimensionFromConnection";
     }
 
+    /**
+     * Public for Unit test
+     * @param constraint Constraint value ex: ST_COORDIM(the_geom) = 3
+     * @param columnName Column name ex:the_geom
+     * @return The dimension constraint [2-3]
+     */
     public static int dimensionFromConstraint(String constraint, String columnName) {
         Matcher matcher = Z_CONSTRAINT_PATTERN.matcher(constraint);
         if(matcher.find()) {
@@ -52,6 +58,15 @@ public class DimensionFromConstraint extends DeterministicScalarFunction {
         return 2;
     }
 
+    /**
+     * @param connection Active connection
+     * @param catalogName Table db
+     * @param schemaName Table schema
+     * @param tableName Table name
+     * @param columnName Column name
+     * @param constraint Column constraint
+     * @return The dimension constraint [2-3]
+     */
     public static int dimensionFromConnection(Connection connection, String catalogName, String schemaName, String tableName, String columnName,String constraint) {
         try {
             Statement st = connection.createStatement();
