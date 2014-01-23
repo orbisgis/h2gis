@@ -63,10 +63,10 @@ public class GeojsonImportExportTest {
     @Test
     public void testGeojsonPoint() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS POINTS");
-        stat.execute("create table POINTS(idarea int primary key, the_geom POINT)");
-        stat.execute("insert into POINTS values(1, 'POINT(1 2)')");
-        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from POINTS;");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+        stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT)");
+        stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)')");
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from TABLE_POINT;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"Point\",\"coordinates\":[1.0,2.0]}"));
         res.close();
@@ -76,10 +76,10 @@ public class GeojsonImportExportTest {
     @Test
     public void testGeojsonLineString() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS LINES");
-        stat.execute("create table LINES(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into LINES values(1, 'LINESTRING(1 2, 2 3)')");
-        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from LINES;");
+        stat.execute("DROP TABLE IF EXISTS TABLE_LINE");
+        stat.execute("create table TABLE_LINE(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into TABLE_LINE values(1, 'LINESTRING(1 2, 2 3)')");
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from TABLE_LINE;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"LineString\",\"coordinates\":[[1.0,2.0],[2.0,3.0]]}"));
         res.close();
@@ -89,10 +89,10 @@ public class GeojsonImportExportTest {
     @Test
     public void testGeojsonPolygon() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS POLYGONS");
-        stat.execute("create table POLYGONS(idarea int primary key, the_geom POLYGON)");
-        stat.execute("insert into POLYGONS values(1, 'POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))')");
-        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from POLYGONS;");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON");
+        stat.execute("create table TABLE_POLYGON(idarea int primary key, the_geom POLYGON)");
+        stat.execute("insert into TABLE_POLYGON values(1, 'POLYGON((0 0, 2 0, 2 2, 0 2, 0 0))')");
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from TABLE_POLYGON;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"Polygon\",\"coordinates\":"
                 + "[[[0.0,0.0],[2.0,0.0],[2.0,2.0],[0.0,2.0],[0.0,0.0]]]}"));
@@ -103,12 +103,12 @@ public class GeojsonImportExportTest {
     @Test
     public void testGeojsonPolygonWithHole() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS POLYGONS");
-        stat.execute("create table POLYGONS(idarea int primary key, the_geom POLYGON)");
-        stat.execute("insert into POLYGONS values(1, 'POLYGON ((101 345, 300 345, 300 100, 101 100, 101 345), \n"
+        stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON");
+        stat.execute("create table TABLE_POLYGON(idarea int primary key, the_geom POLYGON)");
+        stat.execute("insert into TABLE_POLYGON values(1, 'POLYGON ((101 345, 300 345, 300 100, 101 100, 101 345), \n"
                 + "  (130 300, 190 300, 190 220, 130 220, 130 300), \n"
                 + "  (220 200, 255 200, 255 138, 220 138, 220 200))')");
-        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from POLYGONS;");
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from TABLE_POLYGON;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"Polygon\",\"coordinates\":["
                 + "[[101.0,345.0],[300.0,345.0],[300.0,100.0],[101.0,100.0],[101.0,345.0]],"
@@ -121,10 +121,10 @@ public class GeojsonImportExportTest {
     @Test
     public void testGeojsonMultiPoint() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS MULTIPOINTS");
-        stat.execute("create table MULTIPOINTS(idarea int primary key, the_geom MULTIPOINT)");
-        stat.execute("insert into MULTIPOINTS values(1, 'MULTIPOINT ((190 320), (180 160), (394 276))')");
-        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from MULTIPOINTS;");
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINT");
+        stat.execute("create table TABLE_MULTIPOINT(idarea int primary key, the_geom MULTIPOINT)");
+        stat.execute("insert into TABLE_MULTIPOINT values(1, 'MULTIPOINT ((190 320), (180 160), (394 276))')");
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from TABLE_MULTIPOINT;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"MultiPoint\",\"coordinates\":["
                 + "[190.0,320.0],"
@@ -137,11 +137,11 @@ public class GeojsonImportExportTest {
     @Test
     public void testGeojsonMultiLineString() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS MULTILINESTRINGS");
-        stat.execute("create table MULTILINESTRINGS(idarea int primary key, the_geom MULTILINESTRING)");
-        stat.execute("insert into MULTILINESTRINGS values(1, 'MULTILINESTRING ((80 240, 174 356, 280 250), \n"
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRING");
+        stat.execute("create table TABLE_MULTILINESTRING(idarea int primary key, the_geom MULTILINESTRING)");
+        stat.execute("insert into TABLE_MULTILINESTRING values(1, 'MULTILINESTRING ((80 240, 174 356, 280 250), \n"
                 + "  (110 140, 170 240, 280 360))')");
-        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from MULTILINESTRINGS;");
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from TABLE_MULTILINESTRING;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"MultiLineString\",\"coordinates\":["
                 + "[[80.0,240.0],[174.0,356.0],[280.0,250.0]],"
@@ -153,12 +153,12 @@ public class GeojsonImportExportTest {
     @Test
     public void testGeojsonMultiPolygon() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS MULTIPOLYGONS");
-        stat.execute("create table MULTIPOLYGONS(idarea int primary key, the_geom MULTIPOLYGON)");
-        stat.execute("insert into MULTIPOLYGONS values(1, 'MULTIPOLYGON (((120 370, 180 370, 180 290, 120 290, 120 370)), \n"
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOLYGON");
+        stat.execute("create table TABLE_MULTIPOLYGON(idarea int primary key, the_geom MULTIPOLYGON)");
+        stat.execute("insert into TABLE_MULTIPOLYGON values(1, 'MULTIPOLYGON (((120 370, 180 370, 180 290, 120 290, 120 370)), \n"
                 + "  ((162 245, 234 245, 234 175, 162 175, 162 245)), \n"
                 + "  ((210 390, 235 390, 235 308, 210 308, 210 390)))')");
-        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from MULTIPOLYGONS;");
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from TABLE_MULTIPOLYGON;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"MultiPolygon\",\"coordinates\":["
                 + "[[[120.0,370.0],[180.0,370.0],[180.0,290.0],[120.0,290.0],[120.0,370.0]]],"
@@ -171,13 +171,13 @@ public class GeojsonImportExportTest {
     @Test
     public void testGeojsonGeometryCollection() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS GEOMETRYCOLLECTIONS");
-        stat.execute("create table GEOMETRYCOLLECTIONS(idarea int primary key, the_geom GEOMETRY)");
-        stat.execute("insert into GEOMETRYCOLLECTIONS values(1, 'GEOMETRYCOLLECTION ("
+        stat.execute("DROP TABLE IF EXISTS TABLE_GEOMETRYCOLLECTION");
+        stat.execute("create table TABLE_GEOMETRYCOLLECTION(idarea int primary key, the_geom GEOMETRY)");
+        stat.execute("insert into TABLE_GEOMETRYCOLLECTION values(1, 'GEOMETRYCOLLECTION ("
                 + "POLYGON ((100 360, 140 360, 140 320, 100 320, 100 360)), \n"
                 + "  POINT (130 290), \n"
                 + "  LINESTRING (190 360, 190 280))')");
-        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from GEOMETRYCOLLECTIONS;");
+        ResultSet res = stat.executeQuery("SELECT ST_AsGeoJson(the_geom) from TABLE_GEOMETRYCOLLECTION;");
         res.next();
         assertTrue(res.getString(1).equals("{\"type\":\"GeometryCollection\",\"geometries\":["
                 + "{\"type\":\"Polygon\",\"coordinates\":["
@@ -188,64 +188,47 @@ public class GeojsonImportExportTest {
         res.close();
         stat.close();
     }
-
-    @Test
-    public void testWriteGeojsonPointWithProperties() throws Exception {
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS POINTS");
-        stat.execute("create table POINTS(idarea int primary key, the_geom POINT, orbisgis boolean)");
-        stat.execute("insert into POINTS values(1, 'POINT(1 2)', true)");
-        stat.execute("insert into POINTS values(2, 'POINT(10 200)', false)");
-        stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'POINTS');");
-        stat.close();
-    }
-
-    @Test
-    public void testWriteGeojsonPoint() throws Exception {
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS POINTS");
-        stat.execute("create table POINTS(the_geom POINT)");
-        stat.execute("insert into POINTS values( 'POINT(1 2)')");
-        stat.execute("insert into POINTS values( 'POINT(10 200)')");
-        stat.execute("CALL GeoJsonWrite('target/points.geojson', 'POINTS');");
-        stat.close();
-    }
+   
     
     @Test
     public void testWriteReadGeojsonPoint() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS POINTS");
-        stat.execute("create table POINTS(the_geom POINT)");
-        stat.execute("insert into POINTS values( 'POINT(1 2)')");
-        stat.execute("insert into POINTS values( 'POINT(10 200)')");
-        stat.execute("CALL GeoJsonWrite('target/points.geojson', 'POINTS');");
-        stat.execute("CALL GeoJsonRead('target/points.geojson', 'POINTS_READ');");        
-        ResultSet res = stat.executeQuery("SELECT * FROM POINTS_READ;");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+        stat.execute("create table TABLE_POINTS(the_geom POINT)");
+        stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)')");
+        stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)')");
+        stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS');");
+        stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");        
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
         res.next();
         assertTrue(((Geometry)res.getObject(1)).equals(WKTREADER.read("POINT(1 2)")));
         res.next();
         assertTrue(((Geometry)res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
         res.close();
-        stat.execute("DROP TABLE IF EXISTS POINTS_READ");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();
     }
     
     @Test
     public void testWriteReadGeojsonPointProperties() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS POINTS");
-        stat.execute("create table POINTS(the_geom POINT, id INT, climat VARCHAR)");
-        stat.execute("insert into POINTS values( 'POINT(1 2)', 1, 'bad')");
-        stat.execute("insert into POINTS values( 'POINT(10 200)', 2, 'good')");
-        stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'POINTS');");
-        stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'POINTS_READ');");        
-        ResultSet res = stat.executeQuery("SELECT * FROM POINTS_READ;");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+        stat.execute("create table TABLE_POINTS(the_geom POINT, id INT, climat VARCHAR)");
+        stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)', 1, 'bad')");
+        stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)', 2, 'good')");
+        stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'TABLE_POINTS');");
+        stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'TABLE_POINTS_READ');");        
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
         res.next();
         assertTrue(((Geometry)res.getObject(1)).equals(WKTREADER.read("POINT(1 2)")));
+        assertTrue((res.getInt(2)==1));
+        assertTrue((res.getString(3).equals("bad")));
         res.next();
         assertTrue(((Geometry)res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
+        assertTrue((res.getInt(2)==2));
+        assertTrue((res.getString(3).equals("good")));
         res.close();
-        stat.execute("DROP TABLE IF EXISTS POINTS_READ");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();
     }
 }
