@@ -54,7 +54,7 @@ import org.h2gis.utilities.TableLocation;
  *
  * @author Erwan Bocher
  */
-public class KMLWriterTool {
+public class KMLWriterDriver {
 
     private final String tableName;
     private final File fileName;
@@ -62,7 +62,7 @@ public class KMLWriterTool {
     private HashMap<Integer, String> kmlFields;
     private int columnCount = -1;
 
-    public KMLWriterTool(Connection connection, String tableName, File fileName) {
+    public KMLWriterDriver(Connection connection, String tableName, File fileName) {
         this.connection = connection;
         this.tableName = tableName;
         this.fileName = fileName;
@@ -321,7 +321,7 @@ public class KMLWriterTool {
              throw new SQLException("The kml format supports only the WGS84 projection. \n"
                      + "Please use ST_Transform("+ spatialFieldName + ","+ inputSRID+ ")");            
         }
-        KMLGeometry.toKMLGeometry(geom, sb);
+        KMLGeometry.toKMLGeometry(geom,false,AltitudeModeEnum.CLAMPTOGROUND, sb);
         //Write geometry
         xmlOut.writeCharacters(sb.toString());
         xmlOut.writeEndElement();//Write Placemark

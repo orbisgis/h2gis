@@ -45,7 +45,22 @@ public class ST_AsKml extends DeterministicScalarFunction {
      */
     public static String toKml(Geometry geometry) throws SQLException {
         StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLGeometry(geometry, sb);
+        KMLGeometry.toKMLGeometry(geometry,false, AltitudeModeEnum.CLAMPTOGROUND, sb);
+        return sb.toString();
+    }
+    
+     /**
+     * Generates a KML geometry and specifies the altitudeMode.
+     *
+     * @param geometry
+     * @param altitudeModeEnum
+     * @param extrude
+     * @return
+     * @throws SQLException
+     */
+    public static String toKml(Geometry geometry, boolean extrude, AltitudeModeEnum altitudeModeEnum) throws SQLException {
+        StringBuilder sb = new StringBuilder();
+        KMLGeometry.toKMLGeometry(geometry,extrude, altitudeModeEnum, sb);
         return sb.toString();
     }
 }
