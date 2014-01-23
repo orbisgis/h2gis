@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_Extent/
 ### Signature
 
 {% highlight mysql %}
-ST_Extent(Geometry geom)
+Geometry ST_Extent(Geometry geom)
 {% endhighlight %}
 
 ### Description
