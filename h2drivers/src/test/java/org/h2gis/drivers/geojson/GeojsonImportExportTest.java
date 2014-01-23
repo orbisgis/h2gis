@@ -360,9 +360,11 @@ public class GeojsonImportExportTest {
         stat.execute("CALL GeoJsonRead('target/geometrycollection.geojson', 'TABLE_GEOMETRYCOLLECTION_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_GEOMETRYCOLLECTION_READ;");
         res.next();
-        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("GEOMETRYCOLLECTION (POLYGON ((80 320, 110 320, 110 280, 80 280, 80 320)), \n"
-                + "  LINESTRING (70 190, 77 200, 150 240), \n"
-                + "  POINT (160 300))")));
+        Geometry geom = (Geometry) res.getObject(1);
+        assertTrue(geom.getNumGeometries()==3);
+        assertTrue(geom.getGeometryN(0).equals(WKTREADER.read("POLYGON ((80 320, 110 320, 110 280, 80 280, 80 320))")));
+        assertTrue(geom.getGeometryN(1).equals(WKTREADER.read("LINESTRING (70 190, 77 200, 150 240)")));
+        assertTrue(geom.getGeometryN(2).equals(WKTREADER.read("POINT (160 300)")));
         res.close();
         stat.execute("DROP TABLE IF EXISTS TABLE_GEOMETRYCOLLECTION_READ");
         stat.close();

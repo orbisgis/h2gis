@@ -21,6 +21,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
@@ -253,13 +254,13 @@ public class GeoJsonReaderDriver {
                 || geomType.equalsIgnoreCase("geometrycollection")) {
             jp.nextToken(); // FIELD_NAME coordinates
             //if (jp.getText().equalsIgnoreCase("coordinates")) {
-                jp.nextToken();//START coordinates array
-                jp.skipChildren();
-                //jp.nextToken();//End coordinates array
-                metadataBuilder.append("THE_GEOM GEOMETRY,");
-            
+            jp.nextToken();//START coordinates array
+            jp.skipChildren();
+            //jp.nextToken();//End coordinates array
+            metadataBuilder.append("THE_GEOM GEOMETRY,");
+
             //}else {
-             //   throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + jp.getText() + "'");
+            //   throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + jp.getText() + "'");
             //}
         } else {
             throw new SQLException("Unsupported geometry : " + geomType);
@@ -334,6 +335,7 @@ public class GeoJsonReaderDriver {
         String firstField = jp.getText();
         int fieldIndex = 1;
         if (firstField.equalsIgnoreCase("geometry")) {
+            jp.nextToken(); //START_OBJECT {
             getPreparedStatement().setObject(fieldIndex, parseGeometry(jp));
             fieldIndex++;
         } else if (firstField.equalsIgnoreCase("properties")) {
@@ -345,6 +347,7 @@ public class GeoJsonReaderDriver {
         if (jp.getCurrentToken() != JsonToken.END_OBJECT) {
             String secondParam = jp.getText();// field name
             if (secondParam.equalsIgnoreCase("geometry")) {
+                jp.nextToken(); //START_OBJECT {
                 getPreparedStatement().setObject(fieldIndex, parseGeometry(jp));
                 fieldIndex++;
             } else if (secondParam.equalsIgnoreCase("properties")) {
@@ -366,8 +369,7 @@ public class GeoJsonReaderDriver {
      * @throws IOException
      * @return Geometry
      */
-    private Geometry parseGeometry(JsonParser jsParser) throws IOException, SQLException {
-        jsParser.nextToken(); //START_OBJECT {
+    private Geometry parseGeometry(JsonParser jsParser) throws IOException, SQLException {        
         jsParser.nextToken(); // FIELD_NAME type     
         jsParser.nextToken(); //VALUE_STRING Point
         String geomType = jsParser.getText();
@@ -383,6 +385,8 @@ public class GeoJsonReaderDriver {
             return parsePolygon(jsParser);
         } else if (geomType.equalsIgnoreCase("multipolygon")) {
             return parseMultiPolygon(jsParser);
+        } else if (geomType.equalsIgnoreCase("geometrycollection")) {
+            return parseGeometryCollection(jsParser);
         } else {
             throw new SQLException("Unsupported geometry : " + geomType);
         }
@@ -655,6 +659,36 @@ public class GeoJsonReaderDriver {
         } else {
             throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
+    }
+
+    /**
+     * Each element in the geometries array of a GeometryCollection is one of
+     * the geometry objects described above:
+     *
+     * { "type": "GeometryCollection", "geometries": [ { "type": "Point",
+     * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
+     * [101.0, 0.0], [102.0, 1.0] ] } ] 
+     *
+     * @param jp
+     * @return
+     */
+    private GeometryCollection parseGeometryCollection(JsonParser jp) throws IOException, SQLException {
+        jp.nextToken(); // FIELD_NAME geometries        
+        String coordinatesField = jp.getText();
+        if (coordinatesField.equalsIgnoreCase("geometries")) {
+            jp.nextToken();//START array
+            jp.nextToken();//START object
+            ArrayList<Geometry> geometries = new ArrayList<Geometry>();
+            while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
+                geometries.add(parseGeometry(jp));
+                jp.nextToken();
+            }
+            jp.nextToken();//END_OBJECT } geometry
+            return  GF.createGeometryCollection(geometries.toArray(new Geometry[geometries.size()]));
+        } else {
+            throw new SQLException("Malformed geojson file. Expected 'geometries', found '" + coordinatesField + "'");
+        }
+
     }
 
     /**
