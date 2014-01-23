@@ -43,12 +43,11 @@ import java.util.regex.Pattern;
  */
 public class ColumnSRID extends AbstractFunction implements ScalarFunction {
     private static final String SRID_FUNC = ST_SRID.class.getSimpleName();
-    private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("ST_SRID\\s*\\(\\s*[\"`]?\\w*[\"`]?\\s*\\)\\s*=\\s*\\d+", Pattern.CASE_INSENSITIVE);
-    private static final Pattern COLUMN_PATTERN = Pattern.compile("\\(\\s*[\"`]?\\w+[\"`]?\\s*\\)");
-    private static final Pattern SRID_PATTERN = Pattern.compile("\\d+$");
-    private static final Pattern COLUMN_NAME_PATTERN = Pattern.compile("\\w+");
+    private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("ST_SRID\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+
     public ColumnSRID() {
         addProperty(PROP_REMARKS, "Get the column SRID from constraints and data.");
+        addProperty(PROP_NAME, "_ColumnSRID");
     }
 
     @Override
@@ -65,19 +64,9 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
         int srid = 0;
         Matcher matcher = SRID_CONSTRAINT_PATTERN.matcher(constraint);
         while (matcher.find()) {
-            Matcher matcherColumn = COLUMN_PATTERN.matcher(matcher.group());
-            boolean isCurrentGeometryColumn = false;
-            if (matcherColumn.find()) {
-                Matcher matcherColumnName = COLUMN_NAME_PATTERN.matcher(matcherColumn.group());
-                if (matcherColumnName.find()) {
-                    if(matcherColumnName.group().equalsIgnoreCase(columnName)) {
-                        isCurrentGeometryColumn = true;
-                    }
-                }
-            }
-            Matcher matcherSrid = SRID_PATTERN.matcher(matcher.group());
-            if (matcherSrid.find() && isCurrentGeometryColumn) {
-                int sridConstr = Integer.valueOf(matcherSrid.group());
+            String extractedColumnName = matcher.group(1).replace("\"","").replace("`","");
+            int sridConstr = Integer.valueOf(matcher.group(5));
+            if (extractedColumnName.equalsIgnoreCase(columnName)) {
                 if(srid != 0 && srid != sridConstr) {
                     // Two srid constraint on the same column
                     return 0;
@@ -88,6 +77,35 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
         return srid;
     }
 
+    /**
+     * Read table constraints from database metadata.
+     * @param connection Active connection
+     * @param catalogName Catalog name or empty string
+     * @param schemaName Schema name or empty string
+     * @param tableName table name
+     * @return Found table constraints
+     * @throws SQLException
+     */
+    public static String fetchConstraint(Connection connection, String catalogName, String schemaName, String tableName) throws SQLException {
+        // Merge column constraint and table constraint
+        PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection, catalogName, schemaName,
+                tableName, "INFORMATION_SCHEMA.CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
+        ResultSet rsConstraint = pst.executeQuery();
+        try {
+            StringBuilder constraint = new StringBuilder();
+            while (rsConstraint.next()) {
+                String tableConstr = rsConstraint.getString("CHECK_EXPRESSION");
+                if(tableConstr != null) {
+                    constraint.append(tableConstr);
+                }
+            }
+            return constraint.toString();
+        } finally {
+            rsConstraint.close();
+            pst.close();
+        }
+    }
+
 
     /**
      * @param connection Active connection
@@ -95,46 +113,35 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
      * @param columnName Spatial field name
      * @param constraint Column constraint
      * @return The column SRID from constraints and data.
-     * @throws SQLException
      */
-    public static int getSRID(Connection connection, String catalogName, String schemaName, String tableName, String columnName,String constraint) throws SQLException {
-        Statement st = connection.createStatement();
-        // Merge column constraint and table constraint
-        PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection, catalogName, schemaName,
-                tableName, "INFORMATION_SCHEMA.CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
-        ResultSet rsConstraint = pst.executeQuery();
+    public static int getSRID(Connection connection, String catalogName, String schemaName, String tableName, String columnName,String constraint) {
         try {
-            while (rsConstraint.next()) {
-                String tableConstr = rsConstraint.getString("CHECK_EXPRESSION");
-                if(tableConstr != null) {
-                    constraint += tableConstr;
+            Statement st = connection.createStatement();
+            // Merge column constraint and table constraint
+            constraint+=fetchConstraint(connection, catalogName, schemaName,tableName);
+            if(constraint.toUpperCase().contains(SRID_FUNC)) {
+                // Check constraint
+                // Extract column and SRID constraint value
+                // constraint = ".. ST_SRID(the_geom) = 27572 .."
+                int srid = getSRIDFromConstraint(constraint, columnName);
+                if(srid > 0) {
+                    return srid;
                 }
             }
-        } finally {
-            rsConstraint.close();
-            pst.close();
-        }
-        if(constraint != null && constraint.toUpperCase().contains(SRID_FUNC)) {
-            // Check constraint
-            // Extract column and SRID constraint value
-            // constraint = ".. ST_SRID(the_geom) = 27572 .."
-            int srid = getSRIDFromConstraint(constraint, columnName);
-            if(srid > 0) {
-                return srid;
+            // Fetch the first geometry to find a stored SRID
+            ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
+                    StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)));
+            if(rs.next()) {
+                int srid = rs.getInt(1);
+                if(srid > 0) {
+                    return srid;
+                }
             }
+            rs.close();
+            // Unable to find a valid SRID
+            return 0;
+        } catch (SQLException ex) {
+            return 0;
         }
-        // Fetch the first geometry to find a stored SRID
-        ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
-                StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)));
-        if(rs.next()) {
-            int srid = rs.getInt(1);
-            if(srid > 0) {
-                return srid;
-            }
-        }
-        rs.close();
-        // Unable to find a valid SRID
-        return 0;
-
     }
 }

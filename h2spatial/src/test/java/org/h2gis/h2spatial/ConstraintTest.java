@@ -26,6 +26,7 @@
 package org.h2gis.h2spatial;
 
 import org.h2gis.h2spatial.internal.function.spatial.properties.ColumnSRID;
+import org.h2gis.h2spatial.internal.type.DimensionFromConstraint;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.AfterClass;
@@ -33,9 +34,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.junit.rules.ExpectedException;
 
-import javax.xml.transform.Result;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -325,5 +324,57 @@ public class ConstraintTest {
 
         st.execute("drop table T_GEOMETRY, T_POINT,  T_LINE, T_POLYGON");
         st.execute("drop table T_MPOINT,  T_MLINE, T_MPOLYGON");
+    }
+
+    @Test
+    public void testZConstraintOk() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table LIDAR_PTS IF EXISTS");
+        st.execute("create table LIDAR_PTS (the_geom POINT CHECK ST_COORDDIM(the_geom) = 3)");
+        st.execute("insert into LIDAR_PTS VALUES ('POINT(12 14 56)')");
+        st.execute("drop table LIDAR_PTS IF EXISTS");
+    }
+
+    @Test(expected = SQLException.class)
+    public void testZConstraintError() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table LIDAR_PTS IF EXISTS");
+        st.execute("create table LIDAR_PTS (the_geom POINT CHECK ST_COORDDIM(the_geom) = 3)");
+        st.execute("insert into LIDAR_PTS VALUES ('POINT(12 14)')");
+        st.execute("insert into LIDAR_PTS VALUES ('POINT(13 18)')");
+        st.execute("drop table LIDAR_PTS IF EXISTS");
+    }
+
+    @Test
+    public void testDimensionFromConstraint() {
+        assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM(the_geom) = 3", "the_geom"));
+        assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM(the_geom) > 2", "the_geom"));
+        assertEquals(2, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM(the_geom) < 3", "the_geom"));
+        assertEquals(2, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM( the_geom )!= 3", "the_geom"));
+        assertEquals(2, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM( the_geom )<> 3", "the_geom"));
+        assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM(`the_geom`)> 2", "the_geom"));
+        assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM(\"the_geom\")!= 2", "the_geom"));
+        assertEquals(2, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM(\"geom\")= 3", "the_geom"));
+    }
+    @Test
+    public void testGeometryColumnCoordDimension() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table T_GEOMETRY2D IF EXISTS");
+        st.execute("drop table T_GEOMETRY3D IF EXISTS");
+        st.execute("create table T_GEOMETRY2D (the_geom GEOMETRY)");
+        st.execute("alter table T_GEOMETRY2D add constraint zconstr CHECK ST_COORDDIM(the_geom) = 2");
+        st.execute("create table T_GEOMETRY3D (the_geom GEOMETRY CHECK ST_COORDDIM(the_geom) = 3)");
+        ResultSet rs = st.executeQuery("SELECT * FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME IN ('T_GEOMETRY2D','T_GEOMETRY3D') ORDER BY F_TABLE_NAME");
+        try {
+            assertTrue(rs.next());
+            assertEquals("T_GEOMETRY2D", rs.getString("F_TABLE_NAME"));
+            assertEquals(2, rs.getInt("COORD_DIMENSION"));
+            assertTrue(rs.next());
+            assertEquals("T_GEOMETRY3D", rs.getString("F_TABLE_NAME"));
+            assertEquals(3, rs.getInt("COORD_DIMENSION"));
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
     }
 }

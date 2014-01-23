@@ -25,7 +25,6 @@
 
 package org.h2gis.h2spatial.internal.type;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.h2spatialapi.ScalarFunction;
