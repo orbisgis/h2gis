@@ -32,7 +32,7 @@
                     <arguments>
                         <argument>-classpath</argument>
                         <classpath />
-                        <argument>org.h2.tools.Server</argument>
+                        <argument>org.h2.tools.Console</argument>
                     </arguments>
                 </configuration>
             </plugin>
@@ -43,7 +43,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.h2.tools.Server</mainClass>
+                            <mainClass>org.h2.tools.Console</mainClass>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>bin/</classpathPrefix>
                         </manifest>
