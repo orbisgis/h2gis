@@ -23,6 +23,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.Point;
 import java.io.File;
 import java.io.FileInputStream;
@@ -330,7 +331,6 @@ public class GeoJsonReaderDriver {
         if (firstField.equalsIgnoreCase("geometry")) {
             getPreparedStatement().setObject(fieldIndex, parseGeometry(jp));
             fieldIndex++;
-            jp.nextToken();//END_OBJECT } geometry
         } else if (firstField.equalsIgnoreCase("properties")) {
             parseProperties(jp, fieldIndex);
         }
@@ -342,7 +342,6 @@ public class GeoJsonReaderDriver {
             if (secondParam.equalsIgnoreCase("geometry")) {
                 getPreparedStatement().setObject(fieldIndex, parseGeometry(jp));
                 fieldIndex++;
-                jp.nextToken();//END_OBJECT } geometry;
             } else if (secondParam.equalsIgnoreCase("properties")) {
                 parseProperties(jp, fieldIndex);
             }
@@ -371,6 +370,8 @@ public class GeoJsonReaderDriver {
             return parsePoint(jsParser);
         } else if (geomType.equalsIgnoreCase("linestring")) {
             return parseLinestring(jsParser);
+        } else if (geomType.equalsIgnoreCase("multilinestring")) {
+            return parseMultiLinestring(jsParser);
         } else {
             throw new SQLException("Unsupported geometry : " + geomType);
         }
@@ -391,7 +392,9 @@ public class GeoJsonReaderDriver {
         jp.nextToken(); // FIELD_NAME coordinates        
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase("coordinates")) {
-            return GF.createPoint(parseCoordinate(jp));
+            jp.nextToken(); // START_ARRAY [ to parse the coordinate
+            Point point = GF.createPoint(parseCoordinate(jp));
+            return point;
         } else {
             throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
@@ -454,7 +457,6 @@ public class GeoJsonReaderDriver {
                 String geomType = jp.getText();
                 if (geomType.equalsIgnoreCase("feature")) {
                     parseFeature(jp);
-
                     token = jp.nextToken(); //START_OBJECT new feature
                 } else {
                     throw new SQLException("Malformed geojson file. Expected 'Feature', found '" + geomType + "'");
@@ -480,27 +482,73 @@ public class GeoJsonReaderDriver {
         jp.nextToken(); // FIELD_NAME coordinates        
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase("coordinates")) {
-            jp.nextToken(); // START_ARRAY [
-            ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
-            while (jp.nextToken() != JsonToken.END_OBJECT) {
-                coords.add(parseCoordinate(jp));
-            }
-            return GF.createLineString(coords.toArray(new Coordinate[coords.size()]));
+            jp.nextToken(); // START_ARRAY [ coordinates
+            LineString line = GF.createLineString(parseCoordinates(jp));
+            jp.nextToken();//END_OBJECT } geometry
+            return line;
         } else {
             throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
     }
 
     /**
-     * Parses a geojson coordinate array and returns a JTS coordinate
+     * Parses an array of positions defined as :
      *
-     * Syntax :
+     * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
+     * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
      *
-     * [100.0, 0.0]
+     * @param jsParser
+     * @return
+     */
+    private MultiLineString parseMultiLinestring(JsonParser jp) throws IOException, SQLException {
+        jp.nextToken(); // FIELD_NAME coordinates        
+        String coordinatesField = jp.getText();
+        if (coordinatesField.equalsIgnoreCase("coordinates")) {
+            ArrayList<LineString> lineStrings = new ArrayList<LineString>();
+            jp.nextToken();//START_ARRAY [ coordinates
+            jp.nextToken(); // START_ARRAY [ coordinates line
+            while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
+                lineStrings.add(GF.createLineString(parseCoordinates(jp)));
+                jp.nextToken();
+            }
+            MultiLineString line = GF.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+            jp.nextToken();//END_OBJECT } geometry
+            return line;
+        } else {
+            throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
+        }
+
+    }
+
+    /**
+     * Parses a sequence of coordinates array expressed as
+     *
+     * [ [100.0, 0.0], [101.0, 1.0] ]
+     *
+     * @param jp
+     * @return
+     * @throws IOException
+     */
+    public Coordinate[] parseCoordinates(JsonParser jp) throws IOException {
+        jp.nextToken(); // START_ARRAY [ to parse the each positions
+        ArrayList<Coordinate> coords = new ArrayList<Coordinate>();
+        while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
+            coords.add(parseCoordinate(jp));
+        }
+        return coords.toArray(new Coordinate[coords.size()]);
+    }
+
+    /**
+     * Parses a geojson coordinate array and returns a JTS coordinate. The first
+     * token corresponds to the first X value. The last token correponds to the
+     * end of the coordinate array "]".
+     *
+     * Parsed syntax :
+     *
+     * 100.0, 0.0]
      *
      */
     private Coordinate parseCoordinate(JsonParser jp) throws IOException {
-        jp.nextToken(); // START_ARRAY [
         jp.nextToken();
         double x = jp.getDoubleValue();// VALUE_NUMBER_FLOAT
         jp.nextToken(); // second value
@@ -515,6 +563,7 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // exit array
             coord = new Coordinate(x, y, z);
         }
+        jp.nextToken();
         return coord;
     }
 
@@ -560,11 +609,5 @@ public class GeoJsonReaderDriver {
                 throw new SQLException(ex);
             }
         }
-    }
-
-    public static void main(String[] args) throws Exception {
-        String jsonFile = "/tmp/points_properties.geojson";
-        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(null, "points", new File(jsonFile));
-        geoJsonReaderDriver.read(new EmptyProgressVisitor());
     }
 }

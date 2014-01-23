@@ -260,15 +260,12 @@ public class GeoJsonWriteDriver {
     }
     
     private void write(LineString geom, JsonGenerator gen) throws IOException {
-        gen.writeStartObject();
         gen.writeStringField("type", "LineString");
         gen.writeFieldName("coordinates");
         writeCoordinates(geom.getCoordinates(), gen);
-        gen.writeEndObject();
     }
     
     private void write(MultiLineString geom, JsonGenerator gen) throws IOException {
-        gen.writeStartObject();
         gen.writeStringField("type", "MultiLineString");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
@@ -276,22 +273,18 @@ public class GeoJsonWriteDriver {
             writeCoordinates(geom.getGeometryN(i).getCoordinates(), gen);
         }
         gen.writeEndArray();
-        gen.writeEndObject();
     }
     
     private void write(GeometryCollection coll, JsonGenerator gen) throws IOException {
-        gen.writeStartObject();
         gen.writeStringField("type", "GeometryCollection");
         gen.writeArrayFieldStart("geometries");
         for (int i = 0; i < coll.getNumGeometries(); ++i) {
             writeGeometry(coll.getGeometryN(i), gen);
         }
         gen.writeEndArray();
-        gen.writeEndObject();
     }
     
     private void write(Polygon geom, JsonGenerator gen) throws IOException {
-        gen.writeStartObject();
         gen.writeStringField("type", "Polygon");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
@@ -300,12 +293,10 @@ public class GeoJsonWriteDriver {
             writeCoordinates(geom.getInteriorRingN(i).getCoordinates(), gen);
         }
         gen.writeEndArray();
-        gen.writeEndObject();
     }
     
     private void write(MultiPolygon geom, JsonGenerator gen) throws IOException {
-        gen.writeStartObject();
-        gen.writeStringField("type", "Polygon");
+        gen.writeStringField("type", "MultiPolygon");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
         for (int i = 0; i < geom.getNumGeometries(); ++i) {
@@ -316,7 +307,6 @@ public class GeoJsonWriteDriver {
             }
         }
         gen.writeEndArray();
-        gen.writeEndObject();
     }
     
     private void writeCoordinate(Coordinate coordinate, JsonGenerator gen) throws IOException {
