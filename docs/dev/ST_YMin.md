@@ -21,7 +21,7 @@ Returns the minimum y-value of `geom`.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_YMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+SELECT ST_YMin('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    2.0
 {% endhighlight %}
 

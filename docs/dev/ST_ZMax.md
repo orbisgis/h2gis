@@ -21,7 +21,7 @@ Returns the maximum z-value of `geom`.
 ### Example
 
 {% highlight mysql %}
-SELECT ST_ZMax('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+SELECT ST_ZMax('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    6.0
 {% endhighlight %}
 

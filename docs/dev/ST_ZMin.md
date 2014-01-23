@@ -21,7 +21,7 @@ Returns the minimum z-value of `geom`.
 ### Example
 
 {% highlight mysql %}
-SELECT ST_ZMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+SELECT ST_ZMin('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    3.0
 {% endhighlight %}
 

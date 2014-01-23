@@ -21,7 +21,7 @@ Returns the minimum x-value of `geom`.
 ### Example
 
 {% highlight mysql %}
-SELECT ST_XMin('LINESTRING(1 2 3, 4 5 6)'::Geometry);
+SELECT ST_XMin('LINESTRING(1 2 3, 4 5 6)');
 -- Answer:    1.0
 {% endhighlight %}
 
