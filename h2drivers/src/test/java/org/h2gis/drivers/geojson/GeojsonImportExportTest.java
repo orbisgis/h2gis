@@ -280,8 +280,8 @@ public class GeojsonImportExportTest {
         stat.execute("create table TABLE_MULTIPOINTS(the_geom MULTIPOINT)");
         stat.execute("insert into TABLE_MULTIPOINTS values( 'MULTIPOINT ((140 260), (246 284))')");
         stat.execute("insert into TABLE_MULTIPOINTS values( 'MULTIPOINT ((150 290), (180 170), (266 275))')");
-        stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_MULTIPOINTS');");
-        stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_MULTIPOINTS_READ');");
+        stat.execute("CALL GeoJsonWrite('target/multipoints.geojson', 'TABLE_MULTIPOINTS');");
+        stat.execute("CALL GeoJsonRead('target/multipoints.geojson', 'TABLE_MULTIPOINTS_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOINTS_READ;");
         res.next();
         assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((140 260), (246 284))")));
@@ -298,8 +298,8 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON");
         stat.execute("create table TABLE_POLYGON(the_geom POLYGON)");
         stat.execute("insert into TABLE_POLYGON values( 'POLYGON ((110 320, 220 320, 220 200, 110 200, 110 320))')");
-        stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_POLYGON');");
-        stat.execute("CALL GeoJsonRead('target/mutilines.geojson', 'TABLE_POLYGON_READ');");
+        stat.execute("CALL GeoJsonWrite('target/polygon.geojson', 'TABLE_POLYGON');");
+        stat.execute("CALL GeoJsonRead('target/polygon.geojson', 'TABLE_POLYGON_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POLYGON_READ;");
         res.next();
         assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POLYGON ((110 320, 220 320, 220 200, 110 200, 110 320))")));
@@ -316,8 +316,8 @@ public class GeojsonImportExportTest {
         stat.execute("insert into TABLE_POLYGON values( 'POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), \n"
                 + "  (120 280, 170 280, 170 220, 120 220, 120 280), \n"
                 + "  (191 195, 250 195, 250 140, 191 140, 191 195))')");
-        stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_POLYGON');");
-        stat.execute("CALL GeoJsonRead('target/mutilines.geojson', 'TABLE_POLYGON_READ');");
+        stat.execute("CALL GeoJsonWrite('target/polygonholes.geojson', 'TABLE_POLYGON');");
+        stat.execute("CALL GeoJsonRead('target/polygonholes.geojson', 'TABLE_POLYGON_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POLYGON_READ;");
         res.next();
         assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), \n"
@@ -325,6 +325,26 @@ public class GeojsonImportExportTest {
                 + "  (191 195, 250 195, 250 140, 191 140, 191 195))")));
         res.close();
         stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON_READ");
+        stat.close();
+    }
+
+    @Test
+    public void testWriteReadGeojsonMultiPolygon() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOLYGON");
+        stat.execute("create table TABLE_MULTIPOLYGON(the_geom MULTIPOLYGON)");
+        stat.execute("insert into TABLE_MULTIPOLYGON values( 'MULTIPOLYGON (((95 352, 160 352, 160 290, 95 290, 95 352)), \n"
+                + "  ((151 235, 236 235, 236 176, 151 176, 151 235)), \n"
+                + "  ((200 350, 245 350, 245 278, 200 278, 200 350)))')");
+        stat.execute("CALL GeoJsonWrite('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON');");
+        stat.execute("CALL GeoJsonRead('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOLYGON_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOLYGON (((95 352, 160 352, 160 290, 95 290, 95 352)), \n"
+                + "  ((151 235, 236 235, 236 176, 151 176, 151 235)), \n"
+                + "  ((200 350, 245 350, 245 278, 200 278, 200 350)))")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOLYGON_READ");
         stat.close();
     }
 }

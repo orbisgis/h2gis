@@ -26,6 +26,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
@@ -379,6 +380,8 @@ public class GeoJsonReaderDriver {
             return parseMultiLinestring(jsParser);
         } else if (geomType.equalsIgnoreCase("polygon")) {
             return parsePolygon(jsParser);
+        } else if (geomType.equalsIgnoreCase("multipolygon")) {
+            return parseMultiPolygon(jsParser);
         } else {
             throw new SQLException("Unsupported geometry : " + geomType);
         }
@@ -597,8 +600,56 @@ public class GeoJsonReaderDriver {
                 jp.nextToken();//END_OBJECT } geometry
                 return GF.createPolygon(linearRing, null);
             }
+        } else {
+            throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
+        }
+    }
 
-
+    /**
+     * Coordinates of a MultiPolygon are an array of Polygon coordinate arrays:
+     *
+     * { "type": "MultiPolygon", "coordinates": [ [[[102.0, 2.0], [103.0, 2.0],
+     * [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]], [[[100.0, 0.0], [101.0, 0.0],
+     * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
+     * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
+     *
+     * @param jp
+     * @return
+     * @throws IOException
+     * @throws SQLException
+     */
+    private MultiPolygon parseMultiPolygon(JsonParser jp) throws IOException, SQLException {
+        jp.nextToken(); // FIELD_NAME coordinates        
+        String coordinatesField = jp.getText();
+        if (coordinatesField.equalsIgnoreCase("coordinates")) {
+            ArrayList<Polygon> polygons = new ArrayList<Polygon>();
+            jp.nextToken(); // START_ARRAY [ coordinates             
+            jp.nextToken(); //Start the polygon
+            while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
+                //Parse the polygon
+                jp.nextToken(); //Start the RING
+                int linesIndex = 0;
+                LinearRing linearRing = null;
+                ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
+                while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
+                    if (linesIndex == 0) {
+                        linearRing = GF.createLinearRing(parseCoordinates(jp));
+                    } else {
+                        holes.add(GF.createLinearRing(parseCoordinates(jp)));
+                    }
+                    jp.nextToken();//END RING
+                    linesIndex++;
+                }
+                if (linesIndex > 1) {
+                    jp.nextToken();//END_OBJECT
+                    polygons.add(GF.createPolygon(linearRing, holes.toArray(new LinearRing[holes.size()])));
+                } else {
+                    jp.nextToken();//END_OBJECT
+                    polygons.add(GF.createPolygon(linearRing, null));
+                }
+            }
+            jp.nextToken();//END_OBJECT } geometry
+            return GF.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
 
         } else {
             throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");

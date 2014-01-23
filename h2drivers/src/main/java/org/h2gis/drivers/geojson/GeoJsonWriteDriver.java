@@ -64,13 +64,13 @@ import org.h2gis.utilities.TableLocation;
  * @author Erwan
  */
 public class GeoJsonWriteDriver {
-    
+
     private final String tableName;
     private final File fileName;
     private final Connection connection;
     private Map<String, Integer> cachedColumnNames;
     private int columnCountProperties = -1;
-    
+
     public GeoJsonWriteDriver(Connection connection, String tableName, File fileName) {
         this.connection = connection;
         this.tableName = tableName;
@@ -117,7 +117,7 @@ public class GeoJsonWriteDriver {
             Statement st = connection.createStatement();
             try {
                 ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
-                
+
                 JsonFactory jsonFactory = new JsonFactory();
                 JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
 
@@ -125,11 +125,11 @@ public class GeoJsonWriteDriver {
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
                 jsonGenerator.writeArrayFieldStart("features");
-                
+
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
-                    
+
                     cacheMetadata(resultSetMetaData);
                     while (rs.next()) {
                         writeFeature(jsonGenerator, rs, geoFieldIndex);
@@ -140,7 +140,7 @@ public class GeoJsonWriteDriver {
                     jsonGenerator.writeEndObject();
                     jsonGenerator.flush();
                     jsonGenerator.close();
-                    
+
                 } finally {
                     rs.close();
                 }
@@ -149,7 +149,7 @@ public class GeoJsonWriteDriver {
             }
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
-            
+
         } finally {
             try {
                 if (fos != null) {
@@ -176,8 +176,8 @@ public class GeoJsonWriteDriver {
      *
      * Syntax :
      *
-     * { "type": "Feature", "geometry":{"type": "Point", "coordinates":
-     * [102.0, 0.5]}, "properties": {"prop0": "value0"} }
+     * { "type": "Feature", "geometry":{"type": "Point", "coordinates": [102.0,
+     * 0.5]}, "properties": {"prop0": "value0"} }
      *
      * @param writer
      * @param resultSetMetaData
@@ -188,7 +188,7 @@ public class GeoJsonWriteDriver {
         jsonGenerator.writeStartObject();
         jsonGenerator.writeStringField("type", "Feature");
         //Write the first geometry
-        writeGeometry( (Geometry) rs.getObject(geoFieldIndex), jsonGenerator);
+        writeGeometry((Geometry) rs.getObject(geoFieldIndex), jsonGenerator);
         //Write the properties
         writeProperties(jsonGenerator, rs);
         // feature footer
@@ -242,25 +242,25 @@ public class GeoJsonWriteDriver {
         }
         gen.writeEndObject();
     }
-    
+
     private void write(Point point, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "Point");
         gen.writeFieldName("coordinates");
         writeCoordinate(point.getCoordinate(), gen);
     }
-    
-    private void write(MultiPoint points, JsonGenerator gen) throws IOException {        
+
+    private void write(MultiPoint points, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "MultiPoint");
         gen.writeFieldName("coordinates");
         writeCoordinates(points.getCoordinates(), gen);
     }
-    
+
     private void write(LineString geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "LineString");
         gen.writeFieldName("coordinates");
         writeCoordinates(geom.getCoordinates(), gen);
     }
-    
+
     private void write(MultiLineString geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "MultiLineString");
         gen.writeFieldName("coordinates");
@@ -270,7 +270,7 @@ public class GeoJsonWriteDriver {
         }
         gen.writeEndArray();
     }
-    
+
     private void write(GeometryCollection coll, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "GeometryCollection");
         gen.writeArrayFieldStart("geometries");
@@ -279,7 +279,7 @@ public class GeoJsonWriteDriver {
         }
         gen.writeEndArray();
     }
-    
+
     private void write(Polygon geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "Polygon");
         gen.writeFieldName("coordinates");
@@ -290,21 +290,23 @@ public class GeoJsonWriteDriver {
         }
         gen.writeEndArray();
     }
-    
+
     private void write(MultiPolygon geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "MultiPolygon");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
         for (int i = 0; i < geom.getNumGeometries(); ++i) {
             Polygon p = (Polygon) geom.getGeometryN(i);
+            gen.writeStartArray();
             writeCoordinates(p.getExteriorRing().getCoordinates(), gen);
             for (int j = 0; j < p.getNumInteriorRing(); ++j) {
                 writeCoordinates(p.getInteriorRingN(j).getCoordinates(), gen);
             }
+            gen.writeEndArray();
         }
         gen.writeEndArray();
     }
-    
+
     private void writeCoordinate(Coordinate coordinate, JsonGenerator gen) throws IOException {
         gen.writeStartArray();
         gen.writeNumber(coordinate.x);
@@ -314,7 +316,7 @@ public class GeoJsonWriteDriver {
         }
         gen.writeEndArray();
     }
-    
+
     private void writeCoordinates(Coordinate[] coordinates, JsonGenerator gen) throws IOException {
         gen.writeStartArray();
         for (Coordinate coord : coordinates) {
