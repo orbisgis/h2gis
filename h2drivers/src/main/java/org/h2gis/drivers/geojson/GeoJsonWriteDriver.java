@@ -338,6 +338,7 @@ public class GeoJsonWriteDriver {
         gen.writeArrayFieldStart("geometries");
         for (int i = 0; i < coll.getNumGeometries(); ++i) {
             Geometry geom = coll.getGeometryN(i);
+            gen.writeStartObject();
             if (geom instanceof Point) {
                 write((Point) geom, gen);
             } else if (geom instanceof MultiPoint) {
@@ -355,6 +356,7 @@ public class GeoJsonWriteDriver {
             } else {
                 throw new RuntimeException("Unsupported Geomery type");
             }
+             gen.writeEndObject();
         }
         gen.writeEndArray();
     }
