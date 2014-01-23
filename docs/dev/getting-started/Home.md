@@ -18,6 +18,11 @@ H2GIS adds support for
   Specification for SQL][] and
 * additional spatial functions we develop.
 
+## Get help
+
+If you get stuck or just have a question, send us a line on our [user][] or
+[developer][] mailing lists.
+
 ## Check back soon!
 
 This documentation is currently under active development, so check back soon
@@ -33,3 +38,5 @@ please [file an issue][] and we'll potentially include it in this guide.
 [Simple Features Implementation Specification for SQL]: http://www.opengeospatial.org/standards/sfs
 [Atelier SIG]: http://www.irstv.fr/
 [file an issue]: http://github.com/irstv/H2GIS/issues/new
+[user]: http://h2gis.1099522.n5.nabble.com/H2GIS-users-f2.html
+[developer]: http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html
