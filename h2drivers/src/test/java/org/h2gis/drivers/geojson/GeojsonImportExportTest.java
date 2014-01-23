@@ -272,4 +272,40 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();
     }
+    
+    
+     @Test
+    public void testWriteReadGeojsonMultiPoint() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINTS");
+        stat.execute("create table TABLE_MULTIPOINTS(the_geom MULTIPOINT)");
+        stat.execute("insert into TABLE_MULTIPOINTS values( 'MULTIPOINT ((140 260), (246 284))')");
+        stat.execute("insert into TABLE_MULTIPOINTS values( 'MULTIPOINT ((150 290), (180 170), (266 275))')");
+        stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_MULTIPOINTS');");
+        stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_MULTIPOINTS_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOINTS_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((140 260), (246 284))")));
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((150 290), (180 170), (266 275))")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.close();
+    }
+
+    @Test
+    public void testWriteReadGeojsonPolygon() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON");
+        stat.execute("create table TABLE_POLYGON(the_geom POLYGON)");
+        stat.execute("insert into TABLE_POLYGON values( 'POLYGON ((110 320, 220 320, 220 200, 110 200, 110 320))");
+        stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_POLYGON');");
+        stat.execute("CALL GeoJsonRead('target/mutilines.geojson', 'TABLE_POLYGON_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POLYGON_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POLYGON ((110 320, 220 320, 220 200, 110 200, 110 320))")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.close();
+    }
 }

@@ -24,6 +24,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import java.io.File;
 import java.io.FileInputStream;
@@ -368,6 +369,8 @@ public class GeoJsonReaderDriver {
         String geomType = jsParser.getText();
         if (geomType.equalsIgnoreCase("point")) {
             return parsePoint(jsParser);
+        } else if (geomType.equalsIgnoreCase("multipoint")) {
+            return parseMultiPoint(jsParser);
         } else if (geomType.equalsIgnoreCase("linestring")) {
             return parseLinestring(jsParser);
         } else if (geomType.equalsIgnoreCase("multilinestring")) {
@@ -376,28 +379,6 @@ public class GeoJsonReaderDriver {
             throw new SQLException("Unsupported geometry : " + geomType);
         }
 
-    }
-
-    /**
-     * Parses one position
-     *
-     * Syntax :
-     *
-     * { "type": "Point", "coordinates": [100.0, 0.0] }
-     *
-     * @param jsParser
-     * @throws IOException
-     */
-    private Point parsePoint(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME coordinates        
-        String coordinatesField = jp.getText();
-        if (coordinatesField.equalsIgnoreCase("coordinates")) {
-            jp.nextToken(); // START_ARRAY [ to parse the coordinate
-            Point point = GF.createPoint(parseCoordinate(jp));
-            return point;
-        } else {
-            throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
-        }
     }
 
     /**
@@ -465,6 +446,51 @@ public class GeoJsonReaderDriver {
             //LOOP END_ARRAY ]
         } else {
             throw new SQLException("Malformed geojson file. Expected 'features', found '" + firstParam + "'");
+        }
+    }
+
+    /**
+     * Parses one position
+     *
+     * Syntax :
+     *
+     * { "type": "Point", "coordinates": [100.0, 0.0] }
+     *
+     * @param jsParser
+     * @throws IOException
+     */
+    private Point parsePoint(JsonParser jp) throws IOException, SQLException {
+        jp.nextToken(); // FIELD_NAME coordinates        
+        String coordinatesField = jp.getText();
+        if (coordinatesField.equalsIgnoreCase("coordinates")) {
+            jp.nextToken(); // START_ARRAY [ to parse the coordinate
+            Point point = GF.createPoint(parseCoordinate(jp));
+            return point;
+        } else {
+            throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
+        }
+    }
+
+    /**
+     * Parses an array of positions
+     *
+     * Syntax :
+     *
+     * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
+     *
+     * @param jsParser
+     * @throws IOException
+     */
+    private MultiPoint parseMultiPoint(JsonParser jp) throws IOException, SQLException {
+        jp.nextToken(); // FIELD_NAME coordinates        
+        String coordinatesField = jp.getText();
+        if (coordinatesField.equalsIgnoreCase("coordinates")) {
+            jp.nextToken(); // START_ARRAY [ coordinates
+            MultiPoint mPoint = GF.createMultiPoint(parseCoordinates(jp));
+            jp.nextToken();//END_OBJECT } geometry
+            return mPoint;
+        } else {
+            throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
     }
 

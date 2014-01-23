@@ -19,7 +19,6 @@ package org.h2gis.drivers.geojson;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -34,7 +33,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -251,12 +249,10 @@ public class GeoJsonWriteDriver {
         writeCoordinate(point.getCoordinate(), gen);
     }
     
-    private void write(MultiPoint points, JsonGenerator gen) throws IOException {
-        gen.writeStartObject();
+    private void write(MultiPoint points, JsonGenerator gen) throws IOException {        
         gen.writeStringField("type", "MultiPoint");
         gen.writeFieldName("coordinates");
         writeCoordinates(points.getCoordinates(), gen);
-        gen.writeEndObject();
     }
     
     private void write(LineString geom, JsonGenerator gen) throws IOException {
