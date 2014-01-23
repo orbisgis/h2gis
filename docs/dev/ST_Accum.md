@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_Accum/
 ### Signatures
 
 {% highlight mysql %}
-integer ST_Accum(Geometry geom)
+Geometry ST_Accum(Geometry geom)
 {% endhighlight %}
 
 ### Description
