@@ -23,9 +23,11 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -375,10 +377,11 @@ public class GeoJsonReaderDriver {
             return parseLinestring(jsParser);
         } else if (geomType.equalsIgnoreCase("multilinestring")) {
             return parseMultiLinestring(jsParser);
+        } else if (geomType.equalsIgnoreCase("polygon")) {
+            return parsePolygon(jsParser);
         } else {
             throw new SQLException("Unsupported geometry : " + geomType);
         }
-
     }
 
     /**
@@ -544,6 +547,62 @@ public class GeoJsonReaderDriver {
             throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
 
+    }
+
+    /**
+     * Coordinates of a Polygon are an array of LinearRing coordinate arrays.
+     * The first element in the array represents the exterior ring. Any
+     * subsequent elements represent interior rings (or holes).
+     *
+     * Syntax :
+     *
+     * No holes:
+     *
+     * { "type": "Polygon", "coordinates": [ [ [100.0, 0.0], [101.0, 0.0],
+     * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ] ] }
+     *
+     * With holes:
+     *
+     * { "type": "Polygon", "coordinates": [ [ [100.0, 0.0], [101.0, 0.0],
+     * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ], [ [100.2, 0.2], [100.8, 0.2],
+     * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ] ] }
+     *
+     *
+     *
+     * @param jp
+     * @return
+     */
+    private Polygon parsePolygon(JsonParser jp) throws IOException, SQLException {
+        jp.nextToken(); // FIELD_NAME coordinates        
+        String coordinatesField = jp.getText();
+        if (coordinatesField.equalsIgnoreCase("coordinates")) {
+            jp.nextToken(); // START_ARRAY [ coordinates
+            jp.nextToken(); //Start the RING
+            int linesIndex = 0;
+            LinearRing linearRing = null;
+            ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
+            while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
+                if (linesIndex == 0) {
+                    linearRing = GF.createLinearRing(parseCoordinates(jp));
+                } else {
+                    holes.add(GF.createLinearRing(parseCoordinates(jp)));
+                }
+                jp.nextToken();//END RING
+                linesIndex++;
+            }
+            if (linesIndex > 1) {
+                jp.nextToken();//END_OBJECT } geometry
+                return GF.createPolygon(linearRing, holes.toArray(new LinearRing[holes.size()]));
+            } else {
+                jp.nextToken();//END_OBJECT } geometry
+                return GF.createPolygon(linearRing, null);
+            }
+
+
+
+        } else {
+            throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + coordinatesField + "'");
+        }
     }
 
     /**

@@ -272,9 +272,8 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();
     }
-    
-    
-     @Test
+
+    @Test
     public void testWriteReadGeojsonMultiPoint() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINTS");
@@ -298,14 +297,34 @@ public class GeojsonImportExportTest {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON");
         stat.execute("create table TABLE_POLYGON(the_geom POLYGON)");
-        stat.execute("insert into TABLE_POLYGON values( 'POLYGON ((110 320, 220 320, 220 200, 110 200, 110 320))");
+        stat.execute("insert into TABLE_POLYGON values( 'POLYGON ((110 320, 220 320, 220 200, 110 200, 110 320))')");
         stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_POLYGON');");
         stat.execute("CALL GeoJsonRead('target/mutilines.geojson', 'TABLE_POLYGON_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POLYGON_READ;");
         res.next();
         assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POLYGON ((110 320, 220 320, 220 200, 110 200, 110 320))")));
         res.close();
-        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON_READ");
+        stat.close();
+    }
+
+    @Test
+    public void testWriteReadGeojsonPolygonWithHoles() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON");
+        stat.execute("create table TABLE_POLYGON(the_geom POLYGON)");
+        stat.execute("insert into TABLE_POLYGON values( 'POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), \n"
+                + "  (120 280, 170 280, 170 220, 120 220, 120 280), \n"
+                + "  (191 195, 250 195, 250 140, 191 140, 191 195))')");
+        stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_POLYGON');");
+        stat.execute("CALL GeoJsonRead('target/mutilines.geojson', 'TABLE_POLYGON_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POLYGON_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POLYGON ((100 300, 300 300, 300 100, 100 100, 100 300), \n"
+                + "  (120 280, 170 280, 170 220, 120 220, 120 280), \n"
+                + "  (191 195, 250 195, 250 140, 191 140, 191 195))")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POLYGON_READ");
         stat.close();
     }
 }
