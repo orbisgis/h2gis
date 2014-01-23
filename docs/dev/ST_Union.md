@@ -27,7 +27,7 @@ Input Geometries can be `(MULTI)POINT`s, `(MULTI)LINESTRING`s, `(MULTI)POLYGON`s
 
 ##### Aggregate function
 Computes the union of a set of Geometries.
-`geom` is a `GEOMETRYCOLLECTION` resulting from a `ST_Accum` operation on a table.
+`geom` is a `GEOMETRYCOLLECTION` resulting from an `ST_Accum` operation on a table.
 
 
 ##### In both cases: 
@@ -56,11 +56,12 @@ SELECT ST_Union(geomA, geomB) FROM input_table;
 {% highlight mysql %}
 CREATE TABLE input_table(geom POLYGON);
 INSERT INTO input_table VALUES
-     ('POLYGON((1 1, 7 1, 7 6, 1 6, 1 1))'::Geometry),
-     ('POLYGON((3 2, 8 2, 8 8, 3 8, 3 2))'::Geometry),
-     ('POLYGON((1 7, 2 7, 2 8, 1 8, 1 7))'::Geometry);
+     ('POLYGON((1 1, 7 1, 7 6, 1 6, 1 1))'),
+     ('POLYGON((3 2, 8 2, 8 8, 3 8, 3 2))'),
+     ('POLYGON((1 7, 2 7, 2 8, 1 8, 1 7))');
 SELECT ST_Union(ST_Accum(geom)) FROM input_table;
--- Answer: MULTIPOLYGON (((1 7, 2 7, 2 8, 1 8, 1 7)), ((7 2, 7 1, 1 1, 1 6, 3 6, 3 8, 8 8, 8 2, 7 2)))
+-- Answer: MULTIPOLYGON (((7 2, 7 1, 1 1, 1 6, 3 6, 3 8, 8 8, 8 2, 7 2)),
+--                       ((1 7, 2 7, 2 8, 1 8, 1 7)))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Union_2.png"/>
