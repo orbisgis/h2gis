@@ -25,6 +25,7 @@
 
 package org.h2gis.h2spatial;
 
+import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -242,7 +243,7 @@ public class OGCConformance3Test {
         assertTrue(rs.next());
         // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
         // Real OGC expected result "LINESTRING (67 13, 67 18, 59 18, 59 13, 67 13)"
-        assertEquals("LINEARRING (67 13, 67 18, 59 18, 59 13, 67 13)", rs.getString(1));
+        assertEquals(ValueGeometry.get("LINEARRING (67 13, 67 18, 59 18, 59 13, 67 13)"), ValueGeometry.get(rs.getString(1)));
     }
 
     /**
@@ -416,7 +417,7 @@ public class OGCConformance3Test {
         assertTrue(rs.next());
         // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
         // Real OGC expected result "LINESTRING (52 18, 66 23, 73 9, 48 6, 52 18)"
-        assertEquals("LINEARRING (52 18, 66 23, 73 9, 48 6, 52 18)", rs.getString(1));
+        assertEquals(ValueGeometry.get("LINEARRING (52 18, 66 23, 73 9, 48 6, 52 18)"), ValueGeometry.get(rs.getString(1)));
     }
 
     /**
@@ -442,7 +443,7 @@ public class OGCConformance3Test {
         assertTrue(rs.next());
         // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
         // Real OGC expected result "LINESTRING (59 18, 67 18, 67 13, 59 13, 59 18)"
-        assertEquals("LINEARRING (59 18, 67 18, 67 13, 59 13, 59 18)", rs.getString(1));
+        assertEquals(ValueGeometry.get("LINEARRING (59 18, 67 18, 67 13, 59 13, 59 18)"), ValueGeometry.get(rs.getString(1)));
     }
 
     /**
