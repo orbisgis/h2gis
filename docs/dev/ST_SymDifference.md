@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_SymDifference/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_SymDifference(GEOMETRY geomA, GEOMETRY geomB)
+GEOMETRY ST_SymDifference(GEOMETRY geomA, GEOMETRY geomB);
 {% endhighlight %}
 
 ### Description
@@ -27,7 +27,7 @@ Computes the symmetric difference between `geomA` and `geomB`.
 | POLYGON((1 1, 7 1, 7 6, 1 6, 1 1)) | POLYGON((3 2, 8 2, 8 8, 3 8, 3 2)) |
 
 {% highlight mysql %}
-SELECT ST_Difference(geomA, geomB);
+SELECT ST_SymDifference(geomA, geomB) FROM input_table;
 -- Answer: MULTIPOLYGON(((1 1, 7 1, 7 2, 3 2, 3 6, 1 6, 1 1)), 
 --                      ((7 2, 8 2, 8 8, 3 8, 3 6, 7 6, 7 2)))
 {% endhighlight %}
