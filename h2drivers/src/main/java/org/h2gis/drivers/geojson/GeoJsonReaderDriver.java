@@ -252,14 +252,15 @@ public class GeoJsonReaderDriver {
                 || geomType.equalsIgnoreCase("multipolygon")
                 || geomType.equalsIgnoreCase("geometrycollection")) {
             jp.nextToken(); // FIELD_NAME coordinates
-            if (jp.getText().equalsIgnoreCase("coordinates")) {
+            //if (jp.getText().equalsIgnoreCase("coordinates")) {
                 jp.nextToken();//START coordinates array
                 jp.skipChildren();
                 //jp.nextToken();//End coordinates array
                 metadataBuilder.append("THE_GEOM GEOMETRY,");
-            } else {
-                throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + jp.getText() + "'");
-            }
+            
+            //}else {
+             //   throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + jp.getText() + "'");
+            //}
         } else {
             throw new SQLException("Unsupported geometry : " + geomType);
         }

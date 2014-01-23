@@ -71,6 +71,13 @@ public class GeoJsonWriteDriver {
     private Map<String, Integer> cachedColumnNames;
     private int columnCountProperties = -1;
 
+    /**
+     * A simple geojson driver to write a spatial table to a geojson file.
+     *
+     * @param connection
+     * @param tableName
+     * @param fileName
+     */
     public GeoJsonWriteDriver(Connection connection, String tableName, File fileName) {
         this.connection = connection;
         this.tableName = tableName;
@@ -214,6 +221,8 @@ public class GeoJsonWriteDriver {
     }
 
     /**
+     * Write JTS geometry to geojson geometry representation.
+     * 
      * Syntax :
      *
      * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}
@@ -221,7 +230,7 @@ public class GeoJsonWriteDriver {
      * @param jsonGenerator
      * @param geometry
      */
-    void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {
+    private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {
         gen.writeObjectFieldStart("geometry");
         if (geom instanceof Point) {
             write((Point) geom, gen);
@@ -243,24 +252,65 @@ public class GeoJsonWriteDriver {
         gen.writeEndObject();
     }
 
+    /**
+     * Point coordinates are in x, y order (easting, northing for projected
+     * coordinates, longitude, latitude for geographic coordinates):
+     *
+     * { "type": "Point", "coordinates": [100.0, 0.0] }
+     *
+     *
+     * @param point
+     * @param gen
+     * @throws IOException
+     */
     private void write(Point point, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "Point");
         gen.writeFieldName("coordinates");
         writeCoordinate(point.getCoordinate(), gen);
     }
 
+    /**
+     * Coordinates of a MultiPoint are an array of positions:
+     *
+     * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
+     *
+     *
+     * @param points
+     * @param gen
+     * @throws IOException
+     */
     private void write(MultiPoint points, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "MultiPoint");
         gen.writeFieldName("coordinates");
         writeCoordinates(points.getCoordinates(), gen);
     }
 
+    /**
+     * Coordinates of LineString are an array of positions :
+     *
+     * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
+     *
+     * @param geom
+     * @param gen
+     * @throws IOException
+     */
     private void write(LineString geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "LineString");
         gen.writeFieldName("coordinates");
         writeCoordinates(geom.getCoordinates(), gen);
     }
 
+    /**
+     * Coordinates of a MultiLineString are an array of LineString coordinate
+     * arrays:
+     *
+     * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
+     * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
+     *
+     * @param geom
+     * @param gen
+     * @throws IOException
+     */
     private void write(MultiLineString geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "MultiLineString");
         gen.writeFieldName("coordinates");
@@ -271,15 +321,64 @@ public class GeoJsonWriteDriver {
         gen.writeEndArray();
     }
 
+    /**
+     * Each element in the geometries array of a GeometryCollection is one of
+     * the geometry objects described above:
+     *
+     * { "type": "GeometryCollection", "geometries": [ { "type": "Point",
+     * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
+     * [101.0, 0.0], [102.0, 1.0] ] } ] }
+     *
+     * @param coll
+     * @param gen
+     * @throws IOException
+     */
     private void write(GeometryCollection coll, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "GeometryCollection");
         gen.writeArrayFieldStart("geometries");
         for (int i = 0; i < coll.getNumGeometries(); ++i) {
-            writeGeometry(coll.getGeometryN(i), gen);
+            Geometry geom = coll.getGeometryN(i);
+            if (geom instanceof Point) {
+                write((Point) geom, gen);
+            } else if (geom instanceof MultiPoint) {
+                write((MultiPoint) geom, gen);
+            } else if (geom instanceof LineString) {
+                write((LineString) geom, gen);
+            } else if (geom instanceof MultiLineString) {
+                write((MultiLineString) geom, gen);
+            } else if (geom instanceof Polygon) {
+                write((Polygon) geom, gen);
+            } else if (geom instanceof MultiPolygon) {
+                write((MultiPolygon) geom, gen);
+            } else if (geom instanceof GeometryCollection) {
+                write((GeometryCollection) geom, gen);
+            } else {
+                throw new RuntimeException("Unsupported Geomery type");
+            }
         }
         gen.writeEndArray();
     }
 
+    /**
+     * Coordinates of a Polygon are an array of LinearRing coordinate arrays.
+     * The first element in the array represents the exterior ring. Any
+     * subsequent elements represent interior rings (or holes).
+     *
+     * No holes:
+     *
+     * { "type": "Polygon", "coordinates": [ [ [100.0, 0.0], [101.0, 0.0],
+     * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ] ] }
+     *
+     * With holes:
+     *
+     * { "type": "Polygon", "coordinates": [ [ [100.0, 0.0], [101.0, 0.0],
+     * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ], [ [100.2, 0.2], [100.8, 0.2],
+     * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2] ] ] }
+     *
+     * @param geom
+     * @param gen
+     * @throws IOException
+     */
     private void write(Polygon geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "Polygon");
         gen.writeFieldName("coordinates");
@@ -291,6 +390,20 @@ public class GeoJsonWriteDriver {
         gen.writeEndArray();
     }
 
+    /**
+     *
+     *
+     * Coordinates of a MultiPolygon are an array of Polygon coordinate arrays:
+     *
+     * { "type": "MultiPolygon", "coordinates": [ [[[102.0, 2.0], [103.0, 2.0],
+     * [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]], [[[100.0, 0.0], [101.0, 0.0],
+     * [101.0, 1.0], [100.0, 1.0], [100.0, 0.0]], [[100.2, 0.2], [100.8, 0.2],
+     * [100.8, 0.8], [100.2, 0.8], [100.2, 0.2]]] ] }
+     *
+     * @param geom
+     * @param gen
+     * @throws IOException
+     */
     private void write(MultiPolygon geom, JsonGenerator gen) throws IOException {
         gen.writeStringField("type", "MultiPolygon");
         gen.writeFieldName("coordinates");
@@ -307,6 +420,13 @@ public class GeoJsonWriteDriver {
         gen.writeEndArray();
     }
 
+    /**
+     * Write coordinate positions
+     *
+     * @param coordinate
+     * @param gen
+     * @throws IOException
+     */
     private void writeCoordinate(Coordinate coordinate, JsonGenerator gen) throws IOException {
         gen.writeStartArray();
         gen.writeNumber(coordinate.x);

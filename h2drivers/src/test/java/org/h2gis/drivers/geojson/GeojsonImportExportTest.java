@@ -269,7 +269,7 @@ public class GeojsonImportExportTest {
         assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTILINESTRING ((126 324, 280 300), \n"
                 + "  (140 190, 320 220))")));
         res.close();
-        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRINGS_READ");
         stat.close();
     }
 
@@ -288,7 +288,7 @@ public class GeojsonImportExportTest {
         res.next();
         assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((150 290), (180 170), (266 275))")));
         res.close();
-        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINTS_READ");
         stat.close();
     }
 
@@ -345,6 +345,74 @@ public class GeojsonImportExportTest {
                 + "  ((200 350, 245 350, 245 278, 200 278, 200 350)))")));
         res.close();
         stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOLYGON_READ");
+        stat.close();
+    }
+
+    @Test
+    public void testWriteReadGeojsonGeometryCollection() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_GEOMETRYCOLLECTION");
+        stat.execute("create table TABLE_GEOMETRYCOLLECTION(the_geom GEOMETRY)");
+        stat.execute("insert into TABLE_GEOMETRYCOLLECTION values( 'GEOMETRYCOLLECTION (POLYGON ((80 320, 110 320, 110 280, 80 280, 80 320)), \n"
+                + "  LINESTRING (70 190, 77 200, 150 240), \n"
+                + "  POINT (160 300))')");
+        stat.execute("CALL GeoJsonWrite('target/geometrycollection.geojson', 'TABLE_GEOMETRYCOLLECTION');");
+        stat.execute("CALL GeoJsonRead('target/geometrycollection.geojson', 'TABLE_GEOMETRYCOLLECTION_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_GEOMETRYCOLLECTION_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("GEOMETRYCOLLECTION (POLYGON ((80 320, 110 320, 110 280, 80 280, 80 320)), \n"
+                + "  LINESTRING (70 190, 77 200, 150 240), \n"
+                + "  POINT (160 300))")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_GEOMETRYCOLLECTION_READ");
+        stat.close();
+    }
+
+    @Test
+    public void testWriteReadGeojsonSingleMultiPolygon() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOLYGON");
+        stat.execute("create table TABLE_MULTIPOLYGON(the_geom MULTIPOLYGON)");
+        stat.execute("insert into TABLE_MULTIPOLYGON values( 'MULTIPOLYGON (((95 352, 160 352, 160 290, 95 290, 95 352)))')");
+        stat.execute("CALL GeoJsonWrite('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON');");
+        stat.execute("CALL GeoJsonRead('target/mutilipolygon.geojson', 'TABLE_MULTIPOLYGON_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOLYGON_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOLYGON (((95 352, 160 352, 160 290, 95 290, 95 352)))")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOLYGON_READ");
+        stat.close();
+    }
+
+    @Test
+    public void testWriteReadGeojsonSingleMultiPoint() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINTS");
+        stat.execute("create table TABLE_MULTIPOINTS(the_geom MULTIPOINT)");
+        stat.execute("insert into TABLE_MULTIPOINTS values( 'MULTIPOINT ((140 260))')");
+        stat.execute("CALL GeoJsonWrite('target/multipoints.geojson', 'TABLE_MULTIPOINTS');");
+        stat.execute("CALL GeoJsonRead('target/multipoints.geojson', 'TABLE_MULTIPOINTS_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTIPOINTS_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((140 260))")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTIPOINTS_READ");
+        stat.close();
+    }
+
+    @Test
+    public void testWriteReadGeojsonSingleMultiLinestring() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRINGS");
+        stat.execute("create table TABLE_MULTILINESTRINGS(the_geom MULTILINESTRING)");
+        stat.execute("insert into TABLE_MULTILINESTRINGS values( 'MULTILINESTRING ((90 220, 260 320, 280 200))')");
+        stat.execute("CALL GeoJsonWrite('target/mutilines.geojson', 'TABLE_MULTILINESTRINGS');");
+        stat.execute("CALL GeoJsonRead('target/mutilines.geojson', 'TABLE_MULTILINESTRINGS_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MULTILINESTRINGS_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTILINESTRING ((90 220, 260 320, 280 200))")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRINGS_READ");
         stat.close();
     }
 }
