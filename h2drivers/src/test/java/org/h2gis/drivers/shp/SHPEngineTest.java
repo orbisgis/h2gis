@@ -91,6 +91,7 @@ public class SHPEngineTest {
     @Test
     public void readSHPDataTest() throws SQLException {
         Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM shptable");
@@ -103,8 +104,54 @@ public class SHPEngineTest {
     }
 
     @Test
+    public void readPartialSHPDataTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT TYPE_AXE, GID, LENGTH FROM SHPTABLE;");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt("gid"));
+        assertEquals("river",rs.getString("type_axe"));
+        assertEquals(9.492402903934545,rs.getDouble("length"), 1e-12);
+        rs.close();
+        st.execute("drop table shptable");
+    }
+
+    @Test
+    public void testRowIdHiddenColumn() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        // Check random access using hidden column _rowid_
+        ResultSet rs = st.executeQuery("SELECT _rowid_ FROM shptable");
+        try {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("_rowid_"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("_rowid_"));
+            assertTrue(rs.next());
+            assertEquals(3, rs.getInt("_rowid_"));
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT * FROM shptable where _rowid_ = 1");
+        try {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("gid"));
+            assertEquals("river",rs.getString("type_axe"));
+            assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))",rs.getObject("the_geom").toString());
+        } finally {
+            rs.close();
+        }
+        st.execute("drop table shptable");
+
+    }
+
+    @Test
     public void persistenceTest() throws Exception {
         Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM shptable");
         assertTrue(rs.next());

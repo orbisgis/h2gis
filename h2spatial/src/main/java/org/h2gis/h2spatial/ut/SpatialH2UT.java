@@ -59,11 +59,10 @@ public class SpatialH2UT {
     public static Connection openSpatialDataBase(String dbName) throws SQLException, ClassNotFoundException {
         String dbFilePath = getDataBasePath(dbName);       
         String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
-        Class.forName("org.h2.Driver");
+        org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
-        Connection connection = DriverManager.getConnection(databasePath,
+        return DriverManager.getConnection(databasePath,
                 "sa", "sa");
-        return connection;
     }
     /**
      * Create a spatial database
@@ -126,8 +125,7 @@ public class SpatialH2UT {
      */
     public static Connection createSpatialDataBase(String dbName,boolean initSpatial)throws SQLException, ClassNotFoundException {
         String databasePath = initDBFile(dbName);
-
-        Class.forName("org.h2.Driver");
+        org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
         Connection connection = DriverManager.getConnection(databasePath,
                 "sa", "sa");

@@ -23,15 +23,15 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatialext.function.spatial.properties;
+package org.h2gis.h2spatial.internal.function.spatial.properties;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
+import org.h2gis.utilities.jts_utils.GeometryMetaData;
+import java.io.IOException;
 
 /**
  * ST_CoordDim returns the dimension of the coordinates of the given geometry.
- *
+ * Implements the SQL/MM Part 3: Spatial 5.1.3
  * @author Adam Gouge
  */
 public class ST_CoordDim extends DeterministicScalarFunction {
@@ -52,13 +52,10 @@ public class ST_CoordDim extends DeterministicScalarFunction {
      * @param geom Geometry
      * @return The dimension of the coordinates of the given geometry
      */
-    public static Integer getCoordinateDimension(Geometry geom) {
-        if (geom != null) {
-            CoordinateSequenceDimensionFilter cf = new CoordinateSequenceDimensionFilter();
-            geom.apply(cf);
-            return cf.getDimension();
-        } else {
+    public static Integer getCoordinateDimension(byte[] geom) throws IOException {
+        if (geom == null) {
             return null;
         }
+        return GeometryMetaData.getMetaDataFromWKB(geom).dimension;
     }
 }

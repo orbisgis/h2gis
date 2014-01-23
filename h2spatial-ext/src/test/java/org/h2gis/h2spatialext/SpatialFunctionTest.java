@@ -188,7 +188,7 @@ public class SpatialFunctionTest {
                 "INSERT INTO input_table VALUES(" +
                 "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); " +
                 "INSERT INTO input_table VALUES(" +
-                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 10 -5, 0 0))', 1));");
+                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))', 1));");
         ResultSet rs = st.executeQuery("SELECT ST_IsValid(the_geom) FROM input_table;");
         assertTrue(rs.next());
         assertEquals(true, rs.getBoolean(1));
@@ -412,33 +412,6 @@ public class SpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals(rs.getDouble(1), rs.getDouble(2), 0.0);
         assertFalse(rs.next());
-        st.execute("DROP TABLE input_table;");
-    }
-
-    @Test
-    public void test_ST_CoordDim() throws Exception {
-        Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;" +
-                "CREATE TABLE input_table(geom Geometry);" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText('POINT(1 2)',1));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText('LINESTRING(0 0, 1 1 2)',1));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText('LINESTRING (1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)',1));" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_GeomFromText('MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))',1));");
-        ResultSet rs = st.executeQuery(
-                "SELECT ST_CoordDim(geom)" +
-                        " FROM input_table;");
-        assertTrue(rs.next());
-        assertEquals(2, rs.getInt(1));
-        assertTrue(rs.next());
-        assertEquals(3, rs.getInt(1));
-        assertTrue(rs.next());
-        assertEquals(3, rs.getInt(1));
-        assertTrue(rs.next());
-        assertEquals(2, rs.getInt(1));
         st.execute("DROP TABLE input_table;");
     }
 

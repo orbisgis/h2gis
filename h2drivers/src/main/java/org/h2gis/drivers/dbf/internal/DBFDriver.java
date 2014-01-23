@@ -25,6 +25,8 @@
 
 package org.h2gis.drivers.dbf.internal;
 
+import org.h2gis.drivers.FileDriver;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,7 +36,7 @@ import java.io.IOException;
  * Manage DBFReader and DBFWriter
  * @author Nicolas Fortin
  */
-public class DBFDriver {
+public class DBFDriver implements FileDriver {
     private File dbfFile;
     private DbaseFileReader dbaseFileReader;
     private DbaseFileWriter dbaseFileWriter;
@@ -101,6 +103,7 @@ public class DBFDriver {
         }
     }
 
+    @Override
     public void close() throws IOException {
         if(dbaseFileReader != null) {
             dbaseFileReader.close();
@@ -109,9 +112,7 @@ public class DBFDriver {
         }
     }
 
-    /**
-     * @return Row count
-     */
+    @Override
     public long getRowCount() {
         return dbaseFileReader.getRecordCount();
     }
@@ -123,11 +124,7 @@ public class DBFDriver {
         return getDbaseFileHeader().getNumFields();
     }
 
-    /**
-     * @param rowId Row index
-     * @return The row content
-     * @throws java.io.IOException
-     */
+    @Override
     public Object[] getRow(long rowId) throws IOException {
         final int fieldCount = dbaseFileReader.getFieldCount();
         Object[] values = new Object[fieldCount];

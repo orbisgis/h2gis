@@ -29,6 +29,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2.api.AggregateTypeFunction;
+import org.h2.value.Value;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -52,14 +53,14 @@ public class ST_Accum extends AbstractFunction implements AggregateTypeFunction 
     }
 
     @Override
-    public ColumnType getType(int[] inputTypes, String[] inputTypesName) throws SQLException {
+    public int getInternalType(int[] inputTypes) throws SQLException {
         if(inputTypes.length!=1) {
             throw new SQLException(ST_Accum.class.getSimpleName()+" expect 1 argument.");
         }
-        if(inputTypes[0]!=Types.OTHER && inputTypes[0]!=Types.JAVA_OBJECT && !inputTypesName[0].equalsIgnoreCase("geometry")) {
+        if(inputTypes[0]!= Value.GEOMETRY) {
             throw new SQLException(ST_Accum.class.getSimpleName()+" expect a geometry argument");
         }
-        return new ColumnType(Types.JAVA_OBJECT, "GEOMETRY");
+        return Value.GEOMETRY;
     }
 
     private void addGeometry(Geometry geom) {
