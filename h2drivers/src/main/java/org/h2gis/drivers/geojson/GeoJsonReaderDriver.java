@@ -39,8 +39,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 
 /**
@@ -67,7 +65,16 @@ public class GeoJsonReaderDriver {
     private GeometryFactory GF = new GeometryFactory();
     private PreparedStatement preparedStatement = null;
     private JsonFactory jsFactory;
+    private boolean hasProperties = false;
+    private int featureCounter = 1;
 
+    /**
+     * This driver import a geojson file into a spatial table.
+     *
+     * @param connection
+     * @param tableName
+     * @param fileName
+     */
     public GeoJsonReaderDriver(Connection connection, String tableName, File fileName) {
         this.connection = connection;
         this.tableName = tableName;
@@ -75,6 +82,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
+     * Read the geojson file
      *
      * @param progress
      */
@@ -135,7 +143,6 @@ public class GeoJsonReaderDriver {
     private boolean parseMetadata() throws SQLException, IOException {
         FileInputStream fis = null;
         boolean hasGeometryField = false;
-        boolean hasProperties = false;
         int fieldIndex = 0;
         StringBuilder metadataBuilder = new StringBuilder();
         try {
@@ -149,6 +156,11 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // field_name (type)
             jp.nextToken(); // value_string (FeatureCollection)
             String geomType = jp.getText();
+            //TODO take into account crs as
+            /**
+             * "type": "FeatureCollection", "crs": { "type": "name",
+             * "properties": { "name": "EPSG:4326" } }, features:
+             */
             if (geomType.equalsIgnoreCase("featurecollection")) {
                 jp.nextToken(); // FIELD_NAME features
                 String firstParam = jp.getText();
@@ -187,9 +199,10 @@ public class GeoJsonReaderDriver {
                                 }
                                 jp.nextToken(); //END_OBJECT } feature
                             }
-                            //if(!hasProperties){
-                            //    metadataBuilder.append("ID INT, PRIMARY KEY (ID)");
-                            //}
+                            if (!hasProperties) {
+                                metadataBuilder.append("ID INT, PRIMARY KEY (ID)");
+                                fieldIndex++;
+                            }
                             metadataBuilder.append(")");
                         } else {
                             throw new SQLException("Malformed geojson file. Expected 'Feature', found '" + geomType + "'");
@@ -250,18 +263,23 @@ public class GeoJsonReaderDriver {
         if (geomType.equalsIgnoreCase("point") || geomType.equalsIgnoreCase("linestring")
                 || geomType.equalsIgnoreCase("polygon") || geomType.equalsIgnoreCase("multipoint")
                 || geomType.equalsIgnoreCase("multilinestring")
-                || geomType.equalsIgnoreCase("multipolygon")
-                || geomType.equalsIgnoreCase("geometrycollection")) {
+                || geomType.equalsIgnoreCase("multipolygon")) {
             jp.nextToken(); // FIELD_NAME coordinates
-            //if (jp.getText().equalsIgnoreCase("coordinates")) {
-            jp.nextToken();//START coordinates array
-            jp.skipChildren();
-            //jp.nextToken();//End coordinates array
-            metadataBuilder.append("THE_GEOM GEOMETRY,");
-
-            //}else {
-            //   throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + jp.getText() + "'");
-            //}
+            if (jp.getText().equalsIgnoreCase("coordinates")) {
+                jp.nextToken();//START coordinates array
+                jp.skipChildren();
+                metadataBuilder.append("THE_GEOM GEOMETRY,");
+            } else {
+                throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + jp.getText() + "'");
+            }
+        } else if (geomType.equalsIgnoreCase("geometrycollection")) {
+            jp.nextToken();//START geometries array
+            if (jp.getText().equalsIgnoreCase("geometries")) {
+                jp.skipChildren();
+                metadataBuilder.append("THE_GEOM GEOMETRY,");
+            } else {
+                throw new SQLException("Malformed geojson file. Expected 'geometries', found '" + jp.getText() + "'");
+            }
         } else {
             throw new SQLException("Unsupported geometry : " + geomType);
         }
@@ -271,6 +289,7 @@ public class GeoJsonReaderDriver {
      * Parses the metadata properties
      *
      * @param jp
+     * @return index
      */
     private int parseMetadataProperties(JsonParser jp, StringBuilder metadataBuilder, int fieldIndex) throws IOException {
         jp.nextToken();//START_OBJECT {
@@ -318,11 +337,13 @@ public class GeoJsonReaderDriver {
      *
      * @return
      */
-    public PreparedStatement getPreparedStatement() {
+    private PreparedStatement getPreparedStatement() {
         return preparedStatement;
     }
 
     /**
+     * Feature in GeoJSON contain a geometry object and additional properties
+     *
      * Syntax :
      *
      * { "type": "Feature", "geometry":{"type": "Point", "coordinates": [102.0,
@@ -355,6 +376,9 @@ public class GeoJsonReaderDriver {
             }
             jp.nextToken(); //END_OBJECT } feature
         }
+        if (!hasProperties) {
+            getPreparedStatement().setObject(fieldIndex, featureCounter);
+        }
         getPreparedStatement().execute();
     }
 
@@ -369,7 +393,7 @@ public class GeoJsonReaderDriver {
      * @throws IOException
      * @return Geometry
      */
-    private Geometry parseGeometry(JsonParser jsParser) throws IOException, SQLException {        
+    private Geometry parseGeometry(JsonParser jsParser) throws IOException, SQLException {
         jsParser.nextToken(); // FIELD_NAME type     
         jsParser.nextToken(); //VALUE_STRING Point
         String geomType = jsParser.getText();
@@ -449,7 +473,8 @@ public class GeoJsonReaderDriver {
                 String geomType = jp.getText();
                 if (geomType.equalsIgnoreCase("feature")) {
                     parseFeature(jp);
-                    token = jp.nextToken(); //START_OBJECT new feature
+                    token = jp.nextToken(); //START_OBJECT new feature                    
+                    featureCounter++;
                 } else {
                     throw new SQLException("Malformed geojson file. Expected 'Feature', found '" + geomType + "'");
                 }
@@ -667,7 +692,7 @@ public class GeoJsonReaderDriver {
      *
      * { "type": "GeometryCollection", "geometries": [ { "type": "Point",
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
-     * [101.0, 0.0], [102.0, 1.0] ] } ] 
+     * [101.0, 0.0], [102.0, 1.0] ] } ]
      *
      * @param jp
      * @return
@@ -684,7 +709,7 @@ public class GeoJsonReaderDriver {
                 jp.nextToken();
             }
             jp.nextToken();//END_OBJECT } geometry
-            return  GF.createGeometryCollection(geometries.toArray(new Geometry[geometries.size()]));
+            return GF.createGeometryCollection(geometries.toArray(new Geometry[geometries.size()]));
         } else {
             throw new SQLException("Malformed geojson file. Expected 'geometries', found '" + coordinatesField + "'");
         }
@@ -755,11 +780,6 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // value_string (FeatureCollection)
             String geomType = jp.getText();
 
-            //TODO take into account crs as
-            /**
-             * "type": "FeatureCollection", "crs": { "type": "name",
-             * "properties": { "name": "EPSG:4326" } }, features:
-             */
             if (geomType.equalsIgnoreCase("featurecollection")) {
                 parseFeatures(jp);
             } else {

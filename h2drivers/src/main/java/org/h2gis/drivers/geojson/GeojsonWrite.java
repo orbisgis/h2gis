@@ -33,7 +33,7 @@ public class GeojsonWrite extends AbstractFunction implements ScalarFunction {
 
     
     public GeojsonWrite(){
-        addProperty(PROP_REMARKS, "Export a spatial table to a geojson file.");
+        addProperty(PROP_REMARKS, "Export a spatial table to a geojson 1.0 file.");
     }
     
     @Override

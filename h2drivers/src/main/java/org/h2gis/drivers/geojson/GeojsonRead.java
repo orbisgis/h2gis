@@ -33,7 +33,7 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 public class GeojsonRead extends AbstractFunction implements ScalarFunction {
 
     public GeojsonRead() {
-        addProperty(PROP_REMARKS, "Import a geojson file.");
+        addProperty(PROP_REMARKS, "Import a geojson 1.0 file.");
     }
 
     @Override
@@ -41,6 +41,15 @@ public class GeojsonRead extends AbstractFunction implements ScalarFunction {
         return "readGeoJson";
     }
 
+    /**
+     * Read the geojson file.
+     * 
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @throws IOException
+     * @throws SQLException 
+     */
     public static void readGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
         gjdf.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());

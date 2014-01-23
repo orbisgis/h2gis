@@ -25,7 +25,9 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 
 /**
- *
+ * GeoJson driver to export a spatial table in a geojson 1.0 file.
+ * This driver is able to import a geojson file.
+ * 
  * @author Erwan Bocher
  */
 public class GeoJsonDriverFunction implements DriverFunction {
