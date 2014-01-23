@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Extent
 category: h2spatial-ext/properties
-description: Return the extent of the geometry collection 
+description: Return the extent of the <CODE>GEOMETRYCOLLECTION</CODE>
 prev_section: ST_Explode
 next_section: ST_XMax
 permalink: /docs/dev/ST_Extent/
@@ -15,7 +15,7 @@ ST_Extent(Geometry geom)
 {% endhighlight %}
 
 ### Description
-Return the extent that encloses the geometry collection
+Return the extent that encloses the `GEOMETRYCOLLECTION`
 
 ### Examples
 
