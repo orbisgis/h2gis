@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Explode
 category: h2spatial-ext/properties
-description: Explode GEOMETRYCOLLECTIONs into multiple Geometries
+description: Explode `GEOMETRYCOLLECTION`s into multiple Geometries
 prev_section: ST_CoordDim
 next_section: ST_Extent
 permalink: /docs/dev/ST_Explode/
@@ -25,7 +25,7 @@ If no field name is specified, the first Geometry column is used.
 {% highlight mysql %}
 CREATE TABLE test_point AS SELECT
     'MULTIPOINT((1 1), (2 2))'::Geometry the_geom;
-SELECT * FROM st_explode('test_point');
+SELECT * FROM ST_Explode('test_point');
 -- Answer:
 --    |   THE_GEOM  | EXPLOD_ID |
 --    | ------------|-----------|
@@ -41,7 +41,7 @@ CREATE TABLE test_point AS SELECT
     'MULTIPOINT((3 3), (2 6))'::Geometry the_geomB;
 SELECT * FROM ST_Explode('test_point', 'the_geomB');
 -- Answer:
---    |        THE_GEOMA    	| THE_GEOMB   | EXPLOD_ID |
+--    |        THE_GEOMA        | THE_GEOMB   | EXPLOD_ID |
 --    |-------------------------|-------------|-----------|
 --    |MULTIPOINT ((1 1), (2 2))| POINT (3 3) |      1    |
 --    |MULTIPOINT ((1 1), (2 2))| POINT (2 6) |      2    |
