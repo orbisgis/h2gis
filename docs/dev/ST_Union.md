@@ -11,27 +11,28 @@ permalink: /docs/dev/ST_Union/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_Union(GEOMETRY geomA, GEOMETRY geomB)
-GEOMETRY ST_Union(GEOMETRYCOLLECTION geom)
+GEOMETRY ST_Union(GEOMETRY geomA);
+GEOMETRY ST_Union(GEOMETRY geomA, GEOMETRY geomB);
+GEOMETRY ST_Union(GEOMETRYCOLLECTION geom);
 {% endhighlight %}
 
 ### Description
 
-ST_Union can be used as a scalar or an aggregate function.
+`ST_Union` can be used as a scalar or an aggregate function.
 
 ##### Scalar function
 
-Computes the union of two or more Geometries.
-Input Geometries can be (MULTI)`POINT`s, (MULTI)`LINESTRING`s, (MULTI)`POLYGON`s or `GEOMETRYCOLLECTION`s.
+Computes the union of one or more Geometries.
+Input Geometries can be `(MULTI)POINT`s, `(MULTI)LINESTRING`s, `(MULTI)POLYGON`s or `GEOMETRYCOLLECTION`s.
 
 ##### Aggregate function
 Computes the union of a set of Geometries.
-Input Geometry is a `GEOMETRYCOLLECTION` resulting on a `ST_Accum` operation on a table.
+`geom` is a `GEOMETRYCOLLECTION` resulting from a `ST_Accum` operation on a table.
 
 
-##### In both cases (scalar and aggregate): 
-  * if no input Geometries, the result is `NULL`.
-  * output Geometries can be single or multiple.
+##### In both cases: 
+  * If no input Geometriy is given, the result is `NULL`.
+  * Output Geometries can be single or multiple.
 
 {% include sfs-1-2-1.html %}
 
@@ -44,7 +45,7 @@ Input Geometry is a `GEOMETRYCOLLECTION` resulting on a `ST_Accum` operation on 
 | POLYGON((1 1, 7 1, 7 6, 1 6, 1 1)) | POLYGON((3 2, 8 2, 8 8, 3 8, 3 2)) |
 
 {% highlight mysql %}
-SELECT ST_Union(geomA, geomB);
+SELECT ST_Union(geomA, geomB) FROM input_table;
 -- Answer: POLYGON((7 2, 7 1, 1 1, 1 6, 3 6, 3 8, 8 8, 8 2, 7 2))
 {% endhighlight %}
 
