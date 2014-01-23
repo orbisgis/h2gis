@@ -40,7 +40,7 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
 /**
  * This driver import a geojson file into a spatial table.
  *
- * Supported geometries are Point, LineString, Polygon, GeometryCollection.
+ * Supported geometries are Point, LineString, Polygon and GeometryCollection.
  *
  * The driver requires that all Feature objects in a collection must have the
  * same schema of properties.
@@ -61,7 +61,6 @@ public class GeoJsonReaderDriver {
     private GeometryFactory GF = new GeometryFactory();
     private PreparedStatement preparedStatement = null;
     private JsonFactory jsFactory;
-    private HashMap<String, Integer> fieldsMetadata;
 
     public GeoJsonReaderDriver(Connection connection, String tableName, File fileName) {
         this.connection = connection;
@@ -117,7 +116,7 @@ public class GeoJsonReaderDriver {
         if (parseMetadata()) {
             parseData();
         } else {
-            throw new SQLException("Create the table " + tableName + " to import the geojson data");
+            throw new SQLException("Cannot create the table " + tableName + " to import the geojson data");
         }
     }
 
@@ -140,8 +139,6 @@ public class GeoJsonReaderDriver {
             metadataBuilder.append(tableName);
             metadataBuilder.append(" (");
 
-            fieldsMetadata = new HashMap<String, Integer>();
-
             jp.nextToken();//START_OBJECT
             jp.nextToken(); // field_name (type)
             jp.nextToken(); // value_string (FeatureCollection)
@@ -160,24 +157,29 @@ public class GeoJsonReaderDriver {
                             jp.nextToken(); // FIELD_NAME geometry
                             String firstField = jp.getText();
                             if (firstField.equalsIgnoreCase("geometry")) {
-                                metadataBuilder.append("THE_GEOM GEOMETRY,");
-                                fieldsMetadata.put("THE_GEOM", fieldIndex++);
+                                parseGeometryMetadata(jp, metadataBuilder);
                                 hasGeometryField = true;
+                                fieldIndex++;
                                 jp.nextToken();//END_OBJECT } geometry
                             } else if (firstField.equalsIgnoreCase("properties")) {
-                                parseMetadataProperties(jp, metadataBuilder, fieldIndex);
+                                fieldIndex = parseMetadataProperties(jp, metadataBuilder, fieldIndex);
                                 hasProperties = true;
-                            }                            
-                            jp.nextToken(); // field name
-                            String secondParam = jp.getText();
-                            if (secondParam.equalsIgnoreCase("geometry")) {
-                                metadataBuilder.append("THE_GEOM GEOMETRY,");
-                                fieldsMetadata.put("THE_GEOM", fieldIndex++);
-                                hasGeometryField = true;
-                                jp.nextToken();//END_OBJECT } geometry;
-                            } else if (secondParam.equalsIgnoreCase("properties")) {
-                                parseMetadataProperties(jp, metadataBuilder, fieldIndex);
-                                hasProperties = true;
+                            }
+                            //If there is only one geometry field in the feature them the next
+                            //token corresponds to the end object of the feature
+                            jp.nextToken();
+                            if (jp.getCurrentToken() != JsonToken.END_OBJECT) {
+                                String secondParam = jp.getText();
+                                if (secondParam.equalsIgnoreCase("geometry")) {
+                                    parseGeometryMetadata(jp, metadataBuilder);
+                                    hasGeometryField = true;
+                                    fieldIndex++;
+                                    jp.nextToken();//END_OBJECT } geometry;
+                                } else if (secondParam.equalsIgnoreCase("properties")) {
+                                    fieldIndex = parseMetadataProperties(jp, metadataBuilder, fieldIndex);
+                                    hasProperties = true;
+                                }
+                                jp.nextToken(); //END_OBJECT } feature
                             }
                             //if(!hasProperties){
                             //    metadataBuilder.append("ID INT, PRIMARY KEY (ID)");
@@ -229,38 +231,69 @@ public class GeoJsonReaderDriver {
     }
 
     /**
+     * Parses geometry metadata
+     *
+     * @param jp
+     * @param metadataBuilder
+     */
+    private void parseGeometryMetadata(JsonParser jp, StringBuilder metadataBuilder) throws IOException, SQLException {
+        jp.nextToken(); //START_OBJECT {
+        jp.nextToken(); // FIELD_NAME type     
+        jp.nextToken(); //VALUE_STRING Point
+        String geomType = jp.getText();
+        if (geomType.equalsIgnoreCase("point") || geomType.equalsIgnoreCase("linestring")
+                || geomType.equalsIgnoreCase("polygon") || geomType.equalsIgnoreCase("multipoint")
+                || geomType.equalsIgnoreCase("multilinestring")
+                || geomType.equalsIgnoreCase("multipolygon")
+                || geomType.equalsIgnoreCase("geometrycollection")) {
+            jp.nextToken(); // FIELD_NAME coordinates
+            if (jp.getText().equalsIgnoreCase("coordinates")) {
+                jp.nextToken();//START coordinates array
+                jp.skipChildren();
+                //jp.nextToken();//End coordinates array
+                metadataBuilder.append("THE_GEOM GEOMETRY,");
+            } else {
+                throw new SQLException("Malformed geojson file. Expected 'coordinates', found '" + jp.getText() + "'");
+            }
+        } else {
+            throw new SQLException("Unsupported geometry : " + geomType);
+        }
+    }
+
+    /**
      * Parses the metadata properties
      *
      * @param jp
      */
-    private void parseMetadataProperties(JsonParser jp, StringBuilder metadataBuilder, int fieldIndex) throws IOException {
+    private int parseMetadataProperties(JsonParser jp, StringBuilder metadataBuilder, int fieldIndex) throws IOException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = jp.getText().toUpperCase(); //FIELD_NAME columnName            
             JsonToken value = jp.nextToken();
             if (value == JsonToken.VALUE_STRING) {
                 metadataBuilder.append(fieldName).append(" VARCHAR");
-                fieldsMetadata.put(fieldName, fieldIndex++);
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_TRUE) {
                 metadataBuilder.append(fieldName).append(" BOOLEAN");
-                fieldsMetadata.put(fieldName, fieldIndex++);
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_FALSE) {
                 metadataBuilder.append(fieldName).append(" BOOLEAN");
-                fieldsMetadata.put(fieldName, fieldIndex++);
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
                 metadataBuilder.append(fieldName).append(" DOUBLE");
-                fieldsMetadata.put(fieldName, fieldIndex++);
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
                 metadataBuilder.append(fieldName).append(" INT");
-                fieldsMetadata.put(fieldName, fieldIndex++);
+                fieldIndex++;
             } else if (value == JsonToken.VALUE_NULL) {
                 metadataBuilder.append(fieldName).append(" VARCHAR");
-                fieldsMetadata.put(fieldName, fieldIndex++);
+                fieldIndex++;
             } else {
                 //TODO ignore value
             }
             metadataBuilder.append(",");
         }
+        return fieldIndex;
     }
 
     /**
@@ -315,7 +348,7 @@ public class GeoJsonReaderDriver {
             }
             jp.nextToken(); //END_OBJECT } feature
         }
-        getPreparedStatement().execute();      
+        getPreparedStatement().execute();
     }
 
     /**
@@ -339,7 +372,7 @@ public class GeoJsonReaderDriver {
         } else if (geomType.equalsIgnoreCase("linestring")) {
             return parseLinestring(jsParser);
         } else {
-            throw new SQLException("Unsupported geometry : "+ geomType);
+            throw new SQLException("Unsupported geometry : " + geomType);
         }
 
     }
@@ -421,7 +454,7 @@ public class GeoJsonReaderDriver {
                 String geomType = jp.getText();
                 if (geomType.equalsIgnoreCase("feature")) {
                     parseFeature(jp);
-                    
+
                     token = jp.nextToken(); //START_OBJECT new feature
                 } else {
                     throw new SQLException("Malformed geojson file. Expected 'Feature', found '" + geomType + "'");
