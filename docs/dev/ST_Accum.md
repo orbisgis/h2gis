@@ -11,13 +11,15 @@ permalink: /docs/dev/ST_Accum/
 ### Signatures
 
 {% highlight mysql %}
-Geometry ST_Accum(Geometry geom)
+Geometry ST_Accum(Geometry geom);
 {% endhighlight %}
 
 ### Description
 
-This aggregate function returns a `GEOMETRYCOLLECTION`.
-This function is the inverse of ST_Explode.
+This aggregate function converts a set of Geometries into a `GEOMETRYCOLLECTION`.
+`geom` can be `(MULTI)POINT`s, `(MULTI)LINESTRING`s, `(MULTI)POLYGON`s or `GEOMETRYCOLLECTION`.
+
+This function is the inverse of `ST_Explode`.
 
 ### Examples
 
@@ -31,12 +33,13 @@ INSERT INTO input_table VALUES
 SELECT ST_Accum(geom) FROM input_table;
 -- Answer : 
 --  GEOMETRYCOLLECTION (
-     POLYGON ((9 0, 9 11, 10 11, 10 0, 9 0)), 
-     POLYGON ((1 1, 1 7, 7 7, 7 1, 1 1))), 
-     POINT (1 1), POINT (2 2))
+--   POLYGON ((9 0, 9 11, 10 11, 10 0, 9 0)), 
+--   POLYGON ((1 1, 1 7, 7 7, 7 1, 1 1)), 
+--   POINT (1 1), POINT (2 2))
 {% endhighlight %}
 <img class="displayed" src="../ST_Accum.png"/>
 
 ##### See also
 
+* <a href="www.h2gis.org/docs/dev/ST_Explod" target="_blank">ST_Explode</a>
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/aggregate/ST_Accum.java" target="_blank">Source code</a>
