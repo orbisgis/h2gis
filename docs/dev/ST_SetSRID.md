@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_SetSRID/
 ### Signatures
 
 {% highlight mysql %}
-Geometry ST_setSRID(Geometry geom, int srid)
+GEOMETRY ST_setSRID(Geometry geom, int srid);
 {% endhighlight %}
 
 ### Description
@@ -25,9 +25,9 @@ This function can take at first argument an instance of Geometry or Envelope.
 ### Examples
 
 {% highlight mysql %}
-CREATE table testSrid(the_geom Geometry);
+CREATE TABLE testSrid(the_geom Geometry);
 INSERT INTO testSrid VALUES (
-    ST_GeomFromText('POINT( 15 25 )',27572));
+    ST_GeomFromText('POINT(15 25)',27572));
 SELECT ST_SRID(ST_SETSRID(the_geom,5321)) trans,
     ST_SRID(the_geom) original FROM testSrid;
 -- Answer :
