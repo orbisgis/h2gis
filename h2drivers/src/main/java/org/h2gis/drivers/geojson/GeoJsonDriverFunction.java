@@ -22,24 +22,24 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.gpx;
+package org.h2gis.drivers.geojson;
+
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.drivers.gpx.model.GpxParser;
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.ProgressVisitor;
 
 /**
- * This class is used to read a GPX file
- *
+ * GeoJSON driver to import a GeoJSON file and export a spatial table in a
+ * GeoJSON 1.0 file.
+ * 
  * @author Erwan Bocher
  */
-public class GPXDriverFunction implements DriverFunction {
-
-    public static String DESCRIPTION = "GPX file (1.1 and 1.0)";
+public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
@@ -48,18 +48,18 @@ public class GPXDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"gpx"};
+        return new String[]{"geojson"};
     }
 
     @Override
     public String[] getExportFormats() {
-        return new String[0];
+        return new String[]{"geojson"};
     }
 
     @Override
     public String getFormatDescription(String format) {
-        if (format.equalsIgnoreCase("gpx")) {
-            return DESCRIPTION;
+        if (format.equalsIgnoreCase("geojson")) {
+            return "GeoJSON 1.0";
         } else {
             return "";
         }
@@ -67,12 +67,15 @@ public class GPXDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+        ProgressVisitor copyProgress = progress.subProcess(recordCount);
+        GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection, tableReference, fileName);
+        geoJsonDriver.write(copyProgress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        GpxParser gpd = new GpxParser();
-        gpd.read(fileName, tableReference, connection);
+        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, tableReference, fileName);
+        geoJsonReaderDriver.read(progress);
     }
 }
