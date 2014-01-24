@@ -109,7 +109,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      * additional elements are allowed -- interpretation and meaning of
      * additional elements is beyond the scope of this specification.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
@@ -129,7 +129,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     /**
      * Coordinates of a MultiPoint are an array of positions.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
@@ -145,7 +145,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     /**
      * Coordinates of LineString are an array of positions.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
@@ -162,7 +162,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      * Coordinates of a MultiLineString are an array of LineString coordinate
      * arrays.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
@@ -186,7 +186,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      * The first element in the array represents the exterior ring. Any
      * subsequent elements represent interior rings (or holes).
      *
-     * Syntax :
+     * Syntax:
      *
      * No holes:
      *
@@ -218,7 +218,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     /**
      * Coordinates of a MultiPolygon are an array of Polygon coordinate arrays.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "MultiPolygon", "coordinates": [ [[[102.0, 2.0], [103.0, 2.0],
      * [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]], [[[100.0, 0.0], [101.0, 0.0],
@@ -257,7 +257,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      * value corresponding to "geometries"is an array. Each element in this
      * array is a GeoJSON geometry object.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "GeometryCollection", "geometries": [ { "type": "Point",
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
@@ -288,7 +288,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      * Convert a jts array of coordinates to a geojson coordinates
      * representation
      *
-     * Syntax :
+     * Syntax:
      *
      * [[X1,Y1],[X2,Y2]]
      *
@@ -311,7 +311,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      *
      * Only x, y and z values are supported
      *
-     * Syntax :
+     * Syntax:
      *
      * [X,Y] or [X,Y,Z]
      *

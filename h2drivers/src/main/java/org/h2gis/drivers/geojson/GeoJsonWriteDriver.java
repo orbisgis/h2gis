@@ -63,7 +63,7 @@ import org.h2gis.utilities.TableLocation;
  * features. GeoJSON supports the following geometry types: Point, LineString,
  * Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.
  *
- * Syntax :
+ * Syntax:
  *
  * { "type": "FeatureCollection", "features": [ { "type": "Feature",
  * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}, "properties":
@@ -189,7 +189,7 @@ public class GeoJsonWriteDriver {
      * true, false, and null. An array consists of elements where each element
      * is a value as described above.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "Feature", "geometry":{"type": "Point", "coordinates": [102.0,
      * 0.5]}, "properties": {"prop0": "value0"} }
@@ -231,7 +231,7 @@ public class GeoJsonWriteDriver {
     /**
      * Write JTS geometry to geojson geometry representation.
      * 
-     * Syntax :
+     * Syntax:
      *
      * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}
      *

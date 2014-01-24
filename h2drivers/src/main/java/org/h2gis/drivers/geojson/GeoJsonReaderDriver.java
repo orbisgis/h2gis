@@ -348,7 +348,7 @@ public class GeoJsonReaderDriver {
     /**
      * Features in GeoJSON contain a geometry object and additional properties
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "Feature", "geometry":{"type": "Point", "coordinates": [102.0,
      * 0.5]}, "properties": {"prop0": "value0"} }
@@ -389,7 +389,7 @@ public class GeoJsonReaderDriver {
     /**
      * Parses a geojson geometry and returns its JTS representation.
      *
-     * Syntax :
+     * Syntax:
      *
      * "geometry":{"type": "Point", "coordinates": [102.0,0.5]}
      *
@@ -423,7 +423,7 @@ public class GeoJsonReaderDriver {
     /**
      * Parses the properties of a feature
      *
-     * Syntax :
+     * Syntax:
      *
      * "properties": {"prop0": "value0"}
      *
@@ -492,7 +492,7 @@ public class GeoJsonReaderDriver {
     /**
      * Parses one position
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
@@ -515,7 +515,7 @@ public class GeoJsonReaderDriver {
     /**
      * Parses an array of positions
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
@@ -540,7 +540,7 @@ public class GeoJsonReaderDriver {
      *
      * Parse the array of positions.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
@@ -593,7 +593,7 @@ public class GeoJsonReaderDriver {
      * The first element in the array represents the exterior ring. Any
      * subsequent elements represent interior rings (or holes).
      *
-     * Syntax :
+     * Syntax:
      *
      * No holes:
      *
