@@ -92,7 +92,7 @@
      inkscape:cx="343.70163"
      inkscape:cy="371.76913"
      inkscape:document-units="px"
-     inkscape:current-layer="layer1"
+     inkscape:current-layer="layer5"
      showgrid="false"
      inkscape:window-width="1440"
      inkscape:window-height="824"
@@ -386,14 +386,14 @@
        sodipodi:type="arc" />
     <path
        sodipodi:type="arc"
-       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:6.26251328;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       style="fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:#000000;stroke-width:6.26251316;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
        id="path3519"
        sodipodi:cx="327.5"
        sodipodi:cy="401.82648"
        sodipodi:rx="3.5714285"
        sodipodi:ry="3.5714285"
        d="m 331.07143,401.82648 a 3.5714285,3.5714285 0 1 1 -7.14286,0 3.5714285,3.5714285 0 1 1 7.14286,0 z"
-       transform="matrix(0,0.71856135,-0.71856135,0,687.84729,485.95617)"
+       transform="matrix(0,0.71856135,-0.71856135,0,687.84729,445.95617)"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
        inkscape:export-xdpi="99"
        inkscape:export-ydpi="99" />
