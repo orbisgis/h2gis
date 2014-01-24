@@ -16,10 +16,10 @@ boolean ST_Equals(GEOMETRY geomA, GEOMETRY geomB);
 
 ### Description
 
-Return true if `geomA` is equal to `geomB`.
+Return true if `geomA` is topologically equal to `geomB`.
 
 Equal means:
-  * Shapes of `geomA` and `geomB` are strictly identical --> `ST_Within(A,B) = true` and `ST_Within(B,A) = true`.
+  * Shapes of `geomA` and `geomB` have exactly the same shape. I.e., `ST_Within(A,B) = true` and `ST_Within(B,A) = true`.
   * The directionality and the order of points is ignored.
 
 {% include sfs-1-2-1.html %}
