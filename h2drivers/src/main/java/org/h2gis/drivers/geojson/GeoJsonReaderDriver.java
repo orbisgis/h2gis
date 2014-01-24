@@ -50,18 +50,14 @@ import java.util.ArrayList;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 
 /**
- * This driver import a geojson file into a spatial table.
+ * Driver to import a geojson file into a spatial table.
  *
- * Supported geometries are Point, LineString, Polygon and GeometryCollection.
+ * Supported geometries are POINT, LINESTRING, POLYGON and GEOMETRYCOLLECTION.
  *
- * The driver requires that all Feature objects in a collection must have the
- * same schema of properties.
- *
- * To build the table schema the first feature of the FeatureCollection is
- * parsed.
- *
- * If the geojson format does not contain any properties a default primary key
- * will be added.
+ * The driver requires all Feature objects in a collection to have the same
+ * schema of properties. To build the table schema the first feature of the
+ * FeatureCollection is parsed. If the geojson format does not contain any
+ * properties, a default primary key is added.
  *
  * @author Erwan Bocher
  */
@@ -70,14 +66,14 @@ public class GeoJsonReaderDriver {
     private final String tableName;
     private final File fileName;
     private final Connection connection;
-    private GeometryFactory GF = new GeometryFactory();
+    private static final GeometryFactory GF = new GeometryFactory();
     private PreparedStatement preparedStatement = null;
     private JsonFactory jsFactory;
     private boolean hasProperties = false;
     private int featureCounter = 1;
 
     /**
-     * This driver import a geojson file into a spatial table.
+     * Driver to import a geojson file into a spatial table.
      *
      * @param connection
      * @param tableName
@@ -90,7 +86,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Read the geojson file
+     * Read the geojson file.
      *
      * @param progress
      */
@@ -109,9 +105,9 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Parses a GeoJson 1.0 file and writes it into a table.
+     * Parses a GeoJson 1.0 file and writes it to a table.
      *
-     * A GeoJson is structured as
+     * A GeoJson file is structured as follows:
      *
      * { "type": "FeatureCollection", "features": [ { "type": "Feature",
      * "geometry": {"type": "Point", "coordinates": [102.0, 0.5]}, "properties":
@@ -122,10 +118,10 @@ public class GeoJsonReaderDriver {
      * [[100.0, 0.0], [101.0, 0.0], [101.0, 1.0], [100.0, 1.0], [100.0, 0.0] ]
      * ]}, "properties": { "prop0": "value0", "prop1": {"this": "that"} } } ] }
      *
-     * Note : To include information on the coordinate range for geometries a
+     * Note: To include information on the coordinate range for geometries, a
      * GeoJSON object may have a member named "bbox".
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "FeatureCollection", "bbox": [100.0, 0.0, 105.0, 1.0],
      * "features": [ ... ] }
@@ -143,7 +139,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Parses the first geojson feature to create the preparedstatment.
+     * Parses the first geojson feature to create the PreparedStatement.
      *
      * @throws SQLException
      * @throws IOException
@@ -164,7 +160,7 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // field_name (type)
             jp.nextToken(); // value_string (FeatureCollection)
             String geomType = jp.getText();
-            //TODO take into account crs as
+            // TODO take into account CRS as
             /**
              * "type": "FeatureCollection", "crs": { "type": "name",
              * "properties": { "name": "EPSG:4326" } }, features:
@@ -191,8 +187,8 @@ public class GeoJsonReaderDriver {
                                 fieldIndex = parseMetadataProperties(jp, metadataBuilder, fieldIndex);
                                 hasProperties = true;
                             }
-                            //If there is only one geometry field in the feature them the next
-                            //token corresponds to the end object of the feature
+                            // If there is only one geometry field in the feature them the next
+                            // token corresponds to the end object of the feature.
                             jp.nextToken();
                             if (jp.getCurrentToken() != JsonToken.END_OBJECT) {
                                 String secondParam = jp.getText();
@@ -236,12 +232,12 @@ public class GeoJsonReaderDriver {
             }
         }
 
-        //Now we create the table if there is at leat one geometry field
+        // Now we create the table if there is at leat one geometry field.
         if (hasGeometryField) {
             Statement stmt = connection.createStatement();
             stmt.execute(metadataBuilder.toString());
             stmt.close();
-            //We return the preparedstatement of the waypoints table
+            // We return the preparedstatement of the waypoints table.
             if (fieldIndex > 0) {
                 StringBuilder insert = new StringBuilder("INSERT INTO ").append(tableName).append(" VALUES ( ?");
                 for (int i = 1; i < fieldIndex; i++) {
@@ -258,7 +254,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Parses geometry metadata
+     * Parses geometry metadata.
      *
      * @param jp
      * @param metadataBuilder
@@ -294,7 +290,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Parses the metadata properties
+     * Parses the metadata properties.
      *
      * @param jp
      * @return index
@@ -323,7 +319,7 @@ public class GeoJsonReaderDriver {
                 metadataBuilder.append(fieldName).append(" VARCHAR");
                 fieldIndex++;
             } else {
-                //TODO ignore value
+                // TODO: ignore value.
             }
             metadataBuilder.append(",");
         }
@@ -331,7 +327,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Creates the JsonFactory
+     * Creates the JsonFactory.
      */
     private void init() {
         jsFactory = new JsonFactory();
@@ -341,7 +337,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Get the preparedStatement to set the values to the table
+     * Get the PreparedStatement to set the values to the table.
      *
      * @return
      */
@@ -350,7 +346,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Feature in GeoJSON contain a geometry object and additional properties
+     * Features in GeoJSON contain a geometry object and additional properties
      *
      * Syntax :
      *

@@ -24,17 +24,18 @@
  */
 package org.h2gis.drivers.geojson;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
- * GeoJson driver to export a spatial table in a geojson 1.0 file.
- * This driver is able to import a geojson file.
+ * GeoJson driver to import a geojson file and export a spatial table in a
+ * geojson 1.0 file.
  * 
  * @author Erwan Bocher
  */
