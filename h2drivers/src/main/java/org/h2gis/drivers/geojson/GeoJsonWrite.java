@@ -24,42 +24,43 @@
  */
 package org.h2gis.drivers.geojson;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
- * SQL function to read a GeoJSON file an creates the corresponding spatial
- * table.
+ * SQL function to write a spatial table to a GeoJSON file.
  *
  * @author Erwan Bocher
  */
-public class GeojsonRead extends AbstractFunction implements ScalarFunction {
+public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
 
-    public GeojsonRead() {
-        addProperty(PROP_REMARKS, "Import a GeoJSON 1.0 file.");
+    
+    public GeoJsonWrite(){
+        addProperty(PROP_REMARKS, "Export a spatial table to a GeoJSON 1.0 file.");
     }
-
+    
     @Override
     public String getJavaStaticMethod() {
-        return "readGeoJson";
+        return "writeGeoJson";
     }
 
     /**
-     * Read the GeoJSON file.
-     * 
+     * Write the GeoJSON file.
+     *
      * @param connection
      * @param fileName
      * @param tableReference
      * @throws IOException
-     * @throws SQLException 
+     * @throws SQLException
      */
-    public static void readGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
-        gjdf.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
+    public static void writeGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+            GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
+            gjdf.exportTable(connection, tableReference,  new  File(fileName), new EmptyProgressVisitor());
     }
 }

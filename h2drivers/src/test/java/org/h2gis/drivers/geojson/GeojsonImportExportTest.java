@@ -51,8 +51,8 @@ public class GeojsonImportExportTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsGeoJSON(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new GeojsonWrite(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new GeojsonRead(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new GeoJsonWrite(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new GeoJsonRead(), "");
     }
 
     @AfterClass
