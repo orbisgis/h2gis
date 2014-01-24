@@ -37,7 +37,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Transform a JTS geometry to a geojson geometry representation
+ * Transform a JTS geometry to a GeoJSON geometry representation
  *
  * @author Erwan Bocher
  */
@@ -55,7 +55,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert the geometry to a geojson representation
+     * Convert the geometry to a GeoJSON representation
      *
      * @param geom
      * @return
@@ -68,7 +68,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     
     
     /**
-     * Transform a JTS geometry to a geojson representation.
+     * Transform a JTS geometry to a GeoJSON representation.
      *
      * @param geom
      * @param sb
@@ -285,7 +285,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert a jts array of coordinates to a geojson coordinates
+     * Convert a jts array of coordinates to a GeoJSON coordinates
      * representation
      *
      * Syntax:
@@ -307,7 +307,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert a JTS coordinate to a geojson representation
+     * Convert a JTS coordinate to a GeoJSON representation
      *
      * Only x, y and z values are supported
      *
@@ -328,7 +328,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert a JTS Envelope to a GeoJson representation.
+     * Convert a JTS Envelope to a GeoJSON representation.
      *
      * @param e The envelope
      *

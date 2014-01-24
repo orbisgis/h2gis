@@ -34,8 +34,8 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * GeoJson driver to import a geojson file and export a spatial table in a
- * geojson 1.0 file.
+ * GeoJSON driver to import a GeoJSON file and export a spatial table in a
+ * GeoJSON 1.0 file.
  * 
  * @author Erwan Bocher
  */
@@ -59,7 +59,7 @@ public class GeoJsonDriverFunction implements DriverFunction {
     @Override
     public String getFormatDescription(String format) {
         if (format.equalsIgnoreCase("geojson")) {
-            return "GeoJson 1.0";
+            return "GeoJSON 1.0";
         } else {
             return "";
         }

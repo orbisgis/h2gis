@@ -33,7 +33,7 @@ import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
- * SQL function to read a geojson file an creates the corresponding spatial
+ * SQL function to read a GeoJSON file an creates the corresponding spatial
  * table.
  *
  * @author Erwan Bocher
@@ -41,7 +41,7 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 public class GeojsonRead extends AbstractFunction implements ScalarFunction {
 
     public GeojsonRead() {
-        addProperty(PROP_REMARKS, "Import a geojson 1.0 file.");
+        addProperty(PROP_REMARKS, "Import a GeoJSON 1.0 file.");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class GeojsonRead extends AbstractFunction implements ScalarFunction {
     }
 
     /**
-     * Read the geojson file.
+     * Read the GeoJSON file.
      * 
      * @param connection
      * @param fileName

@@ -56,7 +56,7 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 
 /**
- * A simple geojson driver to write a spatial table to a geojson file.
+ * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
  *
  * GeoJSON is a format for encoding a variety of geographic data structures. A
  * GeoJSON object may represent a geometry, a feature, or a collection of
@@ -80,7 +80,7 @@ public class GeoJsonWriteDriver {
     private int columnCountProperties = -1;
 
     /**
-     * A simple geojson driver to write a spatial table to a geojson file.
+     * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
      *
      * @param connection
      * @param tableName
@@ -93,7 +93,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write spatial table to geojson file format.
+     * Write spatial table to GeoJSON file format.
      *
      * @param progress
      * @throws SQLException
@@ -113,7 +113,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write the spatial table to a geojson format
+     * Write the spatial table to a GeoJSON format
      *
      * @param progress
      * @throws SQLException
@@ -136,7 +136,7 @@ public class GeoJsonWriteDriver {
                 JsonFactory jsonFactory = new JsonFactory();
                 JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
 
-                // header of the geojson file
+                // header of the GeoJSON file
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
                 jsonGenerator.writeArrayFieldStart("features");
@@ -177,7 +177,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write a geojson feature
+     * Write a GeoJSON feature
      *
      * Features in GeoJSON contain a geometry object and additional properties,
      * and a feature collection represents a list of features.
@@ -229,7 +229,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write JTS geometry to geojson geometry representation.
+     * Write JTS geometry to GeoJSON geometry representation.
      * 
      * Syntax:
      *
@@ -463,7 +463,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write the geojson properties
+     * Write the GeoJSON properties
      *
      * @param jsonGenerator
      * @param rs
@@ -482,7 +482,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Return true is the SQL type is supported by the geojson driver
+     * Return true is the SQL type is supported by the GeoJSON driver
      *
      * @param sqlTypeId
      * @param sqlTypeName
@@ -503,7 +503,7 @@ public class GeoJsonWriteDriver {
             case Types.CHAR:
                 return true;
             default:
-                throw new SQLException("Field type not supported by geojson driver : " + sqlTypeName);
+                throw new SQLException("Field type not supported by GeoJSON driver : " + sqlTypeName);
         }
     }
 }
