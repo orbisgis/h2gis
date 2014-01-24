@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Extent
 category: h2spatial-ext/properties
-description: Return the extent of the GEOMETRYCOLLECTION
+description: Return the minimum bounding box of the GEOMETRYCOLLECTION
 prev_section: ST_Explode
 next_section: ST_XMax
 permalink: /docs/dev/ST_Extent/
@@ -15,7 +15,7 @@ Geometry ST_Extent(Geometry geom);
 {% endhighlight %}
 
 ### Description
-Returns the extent `POLYGON` that encloses the `GEOMETRYCOLLECTION`.
+Returns the minimum bounding box that encloses the `GEOMETRYCOLLECTION`.
 
 ### Examples
 
