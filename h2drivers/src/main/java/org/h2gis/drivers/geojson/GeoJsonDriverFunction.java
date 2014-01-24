@@ -42,7 +42,7 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return IMPORT_DRIVER_TYPE.COPY;
     }
 
     @Override
