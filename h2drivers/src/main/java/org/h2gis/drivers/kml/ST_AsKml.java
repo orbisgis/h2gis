@@ -28,7 +28,9 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 public class ST_AsKml extends DeterministicScalarFunction {
 
     public ST_AsKml() {
-        addProperty(PROP_REMARKS, "Return the geometry as a Keyhole Markup Language (KML) element.");
+        addProperty(PROP_REMARKS, "Return the geometry as a Keyhole Markup Language (KML) element.\n"
+                + "Note this function supports two arguments : extrude and altitude mode.\n"
+                + "");
     }
 
     @Override
@@ -45,12 +47,26 @@ public class ST_AsKml extends DeterministicScalarFunction {
      */
     public static String toKml(Geometry geometry) throws SQLException {
         StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLGeometry(geometry,false, AltitudeModeEnum.CLAMPTOGROUND, sb);
+        KMLGeometry.toKMLGeometry(geometry, sb);
         return sb.toString();
     }
-    
-     /**
-     * Generates a KML geometry and specifies the altitudeMode.
+
+    /**
+     * Generates a KML geometry. Specifies the extrude and altitudeMode.
+     *
+     * Available extrude values are true, false or none.
+     * 
+     * Supported altitude mode :
+     * 
+     * For KML profil
+     * 
+     * CLAMPTOGROUND = 1; RELATIVETOGROUND = 2; ABSOLUTE = 4;
+     *
+     * For GX profil
+     * CLAMPTOSEAFLOOR = 8; RELATIVETOSEAFLOOR = 16; 
+     * 
+     * No altitude :
+     * NONE = 0;
      *
      * @param geometry
      * @param altitudeModeEnum
@@ -58,9 +74,13 @@ public class ST_AsKml extends DeterministicScalarFunction {
      * @return
      * @throws SQLException
      */
-    public static String toKml(Geometry geometry, boolean extrude, AltitudeModeEnum altitudeModeEnum) throws SQLException {
+    public static String toKml(Geometry geometry, boolean extrude, int altitudeModeEnum) throws SQLException {
         StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLGeometry(geometry,extrude, altitudeModeEnum, sb);
+        if (extrude) {
+            KMLGeometry.toKMLGeometry(geometry, ExtrudeMode.TRUE, altitudeModeEnum, sb);
+        } else {
+            KMLGeometry.toKMLGeometry(geometry, ExtrudeMode.FALSE, altitudeModeEnum, sb);
+        }
         return sb.toString();
     }
 }

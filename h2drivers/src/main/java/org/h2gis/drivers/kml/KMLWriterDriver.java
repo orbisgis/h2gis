@@ -321,7 +321,7 @@ public class KMLWriterDriver {
              throw new SQLException("The kml format supports only the WGS84 projection. \n"
                      + "Please use ST_Transform("+ spatialFieldName + ","+ inputSRID+ ")");            
         }
-        KMLGeometry.toKMLGeometry(geom,false,AltitudeModeEnum.CLAMPTOGROUND, sb);
+        KMLGeometry.toKMLGeometry(geom,ExtrudeMode.NONE,AltitudeMode.NONE, sb);
         //Write geometry
         xmlOut.writeCharacters(sb.toString());
         xmlOut.writeEndElement();//Write Placemark
