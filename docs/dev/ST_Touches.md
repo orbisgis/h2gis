@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Touches
 category: h2spatial/predicates
-description: Return true if the geometry A touches the geometry B
+description: Return true if Geometry A touches Geometry B
 prev_section: ST_Relate
 next_section: ST_Within
 permalink: /docs/dev/ST_Touches/
@@ -16,14 +16,14 @@ boolean ST_Touches(GEOMETRY geomA, GEOMETRY geomB);
 
 ### Description
 
-Returns true if the `geomA` touches the `geomB`.
+Returns true if `geomA` touches `geomB`.
 
 Touches means that:
   * `geomA` and `geomB` have at least one point in common.
-  * `geomA` and `geomB` interiors do not intersect.
+  * The interiors of `geomA` and `geomB` do not intersect.
 
 ##### Remarks
-  * `ST_Touches` can only be used to determine the relation between pairs listed here : (`POLYGON`, `POLYGON`), (`POLYGON`, `LINESTRING`), (`POLYGON`, `POINT`), (`LINESTRING`, `LINESTRING`) and (`LINESTRING`, `POINT`). The relation (`POINT`, `POINT`) is excluded. 
+  * `ST_Touches` can only be used to determine the relation between pairs listed here : `(POLYGON, POLYGON)`, `(POLYGON, LINESTRING)`, `(POLYGON, POINT)`, `(LINESTRING, LINESTRING)` and `(LINESTRING, POINT)`. The relation `(POINT, POINT)` is excluded. 
   * `GEOMETRYCOLLECTION`s are not taken into account.
 
 {% include sfs-1-2-1.html %}
