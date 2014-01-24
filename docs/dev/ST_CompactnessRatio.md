@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_CompactnessRatio/
 ### Signature
 
 {% highlight mysql %}
-double ST_CompactnessRatio(POLYGON poly)
+double ST_CompactnessRatio(POLYGON poly);
 {% endhighlight %}
 
 ### Description
@@ -38,13 +38,22 @@ SELECT ST_CompactnessRatio(geom) ratio FROM input_table;
 --    |  0.886226925452758  |
 {% endhighlight %}
 
-*Note*: In this example, both geometries have a perimeter of 24.
+*Note*: In this example, both geometries have a perimeter equal to 24.
 
 <img class="displayed" src="../ST_CompactnessRatio.png"/>
 
 {% highlight mysql %}
 SELECT ST_CompactnessRatio(ST_Buffer(('POINT(1 2)'), 10));
 -- Answer: 0.9983912919723259
+--    Note : That a buffer is not a circle. It's an
+--    approximation, ST_Buffer create 32 segments to arc of a
+--    cercle. That's why the compactness ratio is not equal to 1.
+
+SELECT ST_CompactnessRatio(ST_MakeEllipse('POINT(1 2)', 10, 10));
+-- Answer: 0.9998354822360185
+--    Note : ST_MaketEllipse create 100 segments to arc of a
+--    cercle. That's why the compactness ratio is not equal to 1
+--    but is more precise than ST_Buffer.
 
 SELECT ST_CompactnessRatio(
     'POLYGON ((4 12, 1 6, 6 3, 15 2, 17 5, 16 10, 9 14, 4 12), 
@@ -61,4 +70,6 @@ SELECT ST_CompactnessRatio('POINT(1 2)');
 
 ##### See also
 
+* <a href="http://www.h2gis.org/docs/dev/ST_Buffer" target="_blank">ST_Buffer</a>
+* <a href="http://www.h2gis.org/docs/dev/ST_MakeEllipse" target="_blank">ST_MakeEllipse</a>
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_CompactnessRatio.java" target="_blank">Source code</a>
