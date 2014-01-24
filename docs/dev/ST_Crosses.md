@@ -11,24 +11,24 @@ permalink: /docs/dev/ST_Crosses/
 ### Signatures
 
 {% highlight mysql %}
-boolean ST_Crosses(GEOMETRY geomA,GEOMETRY geomB);
+boolean ST_Crosses(GEOMETRY geomA, GEOMETRY geomB);
 {% endhighlight %}
 
 ### Description
 
 Returns true if `geomA` crosses `geomB`.
 
-Crosses means that :
-  * The intersection between `geomA` and `geomB` gives a new Geometry whose dimension is less than the maximum dimension of input Geometries.
+Crosses means that:
+  * The intersection between `geomA` and `geomB` gives a new Geometry whose dimension is less than the maximum dimension of the input Geometries.
   * `geomA` and `geomB` have some, but not all interior points in common.
   * The intersection set is interior to both `geomA` and `geomB`.
 
 {% include sfs-1-2-1.html %}
 
-##### Remark
-In the OpenGIS Simple Features Specification this predicate is only defined for `POINT`/`LINESTRING`, `POINT`/`POLYGON`, `LINESTRING`/`LINESTRING`, and `LINESTRING`/`POLYGON` situations.
+##### Note
+In the OpenGIS Simple Features Specification this predicate is only defined for (`POINT`, `LINESTRING`), (`POINT`, `POLYGON`), (`LINESTRING`, `LINESTRING`), and (`LINESTRING`, `POLYGON`) situations.
 
-JTS and Geos extend this definition to `POLYGON`/`LINESTRING`, `POLYGON`/`POINT` and `LINESTRING`/`POINT` situation.
+JTS and Geos extend this definition to (`POLYGON`, `LINESTRING`), (`POLYGON`, `POINT`) and (`LINESTRING`, `POINT`) situations.
 
 ### Examples
 
