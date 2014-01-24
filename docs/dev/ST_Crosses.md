@@ -26,9 +26,9 @@ Crosses means that:
 {% include sfs-1-2-1.html %}
 
 ##### Note
-In the OpenGIS Simple Features Specification this predicate is only defined for (`POINT`, `LINESTRING`), (`POINT`, `POLYGON`), (`LINESTRING`, `LINESTRING`), and (`LINESTRING`, `POLYGON`) situations.
+In the OpenGIS Simple Features Specification this predicate is only defined for `(POINT, LINESTRING)`, `(POINT, POLYGON)`, `(LINESTRING, LINESTRING)`, and `(LINESTRING, POLYGON)` situations.
 
-JTS and Geos extend this definition to (`POLYGON`, `LINESTRING`), (`POLYGON`, `POINT`) and (`LINESTRING`, `POINT`) situations.
+JTS and Geos extend this definition to `(POLYGON, LINESTRING)`, `(POLYGON, POINT)` and `(LINESTRING, POINT)` situations.
 
 ### Examples
 
