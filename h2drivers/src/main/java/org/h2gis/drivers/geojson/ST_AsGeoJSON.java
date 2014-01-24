@@ -37,16 +37,16 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Transform a JTS geometry to a geojson geometry representation
+ * Transform a JTS geometry to a GeoJSON geometry representation.
  *
  * @author Erwan Bocher
  */
-public class ST_AsGeoJson extends DeterministicScalarFunction {
+public class ST_AsGeoJSON extends DeterministicScalarFunction {
 
-    public ST_AsGeoJson() {
-        addProperty(PROP_REMARKS, "Return the geometry as a Geometry Javascript Object Notation (GeoJSON 1.0) element. \n"
-                + "2D and 3D Geometries are both supported. \n"
-                + "GeoJSON only support SFS 1.1 geometry type (POINT, LINESTRING, POLYGON and COLLECTION).");
+    public ST_AsGeoJSON() {
+        addProperty(PROP_REMARKS, "Return the geometry as a Geometry Javascript Object Notation (GeoJSON 1.0) element.\n"
+                + "2D and 3D Geometries are both supported.\n"
+                + "GeoJSON only supports SFS 1.1 geometry types (POINT, LINESTRING, POLYGON and COLLECTION).");
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert the geometry to a geojson representation
+     * Convert the geometry to a GeoJSON representation.
      *
      * @param geom
      * @return
@@ -68,7 +68,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     
     
     /**
-     * Transform a JTS geometry to a geojson representation.
+     * Transform a JTS geometry to a GeoJSON representation.
      *
      * @param geom
      * @param sb
@@ -109,7 +109,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      * additional elements are allowed -- interpretation and meaning of
      * additional elements is beyond the scope of this specification.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
@@ -129,7 +129,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     /**
      * Coordinates of a MultiPoint are an array of positions.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
@@ -145,7 +145,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     /**
      * Coordinates of LineString are an array of positions.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
@@ -162,7 +162,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      * Coordinates of a MultiLineString are an array of LineString coordinate
      * arrays.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
@@ -186,7 +186,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      * The first element in the array represents the exterior ring. Any
      * subsequent elements represent interior rings (or holes).
      *
-     * Syntax :
+     * Syntax:
      *
      * No holes:
      *
@@ -218,7 +218,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     /**
      * Coordinates of a MultiPolygon are an array of Polygon coordinate arrays.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "MultiPolygon", "coordinates": [ [[[102.0, 2.0], [103.0, 2.0],
      * [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]], [[[100.0, 0.0], [101.0, 0.0],
@@ -257,7 +257,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
      * value corresponding to "geometries"is an array. Each element in this
      * array is a GeoJSON geometry object.
      *
-     * Syntax :
+     * Syntax:
      *
      * { "type": "GeometryCollection", "geometries": [ { "type": "Point",
      * "coordinates": [100.0, 0.0] }, { "type": "LineString", "coordinates": [
@@ -285,10 +285,10 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert a jts array of coordinates to a geojson coordinates
-     * representation
+     * Convert a jts array of coordinates to a GeoJSON coordinates
+     * representation.
      *
-     * Syntax :
+     * Syntax:
      *
      * [[X1,Y1],[X2,Y2]]
      *
@@ -307,11 +307,11 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert a JTS coordinate to a geojson representation
+     * Convert a JTS coordinate to a GeoJSON representation.
      *
-     * Only x, y and z values are supported
+     * Only x, y and z values are supported.
      *
-     * Syntax :
+     * Syntax:
      *
      * [X,Y] or [X,Y,Z]
      *
@@ -328,7 +328,7 @@ public class ST_AsGeoJson extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert a JTS Envelope to a GeoJson representation.
+     * Convert a JTS Envelope to a GeoJSON representation.
      *
      * @param e The envelope
      *

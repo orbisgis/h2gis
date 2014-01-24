@@ -24,24 +24,25 @@
  */
 package org.h2gis.drivers.geojson;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+
 /**
- * SQL function to write a spatial table to a geoJson file
+ * SQL function to write a spatial table to a GeoJSON file.
  *
  * @author Erwan Bocher
  */
-public class GeojsonWrite extends AbstractFunction implements ScalarFunction {
+public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
 
     
-    public GeojsonWrite(){
-        addProperty(PROP_REMARKS, "Export a spatial table to a geojson 1.0 file.");
+    public GeoJsonWrite(){
+        addProperty(PROP_REMARKS, "Export a spatial table to a GeoJSON 1.0 file.");
     }
     
     @Override
@@ -50,7 +51,7 @@ public class GeojsonWrite extends AbstractFunction implements ScalarFunction {
     }
 
     /**
-     * Write the geoJson file
+     * Write the GeoJSON file.
      *
      * @param connection
      * @param fileName
