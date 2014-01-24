@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_ToMultiLine/
 ### Signature
 
 {% highlight mysql %}
-MultiLineString ST_ToMultiLine(Geometry geom);
+MULTILINESTRING ST_ToMultiLine(Geometry geom);
 {% endhighlight %}
 
 ### Description
