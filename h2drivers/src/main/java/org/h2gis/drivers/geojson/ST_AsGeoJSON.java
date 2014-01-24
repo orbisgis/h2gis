@@ -37,16 +37,16 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Transform a JTS geometry to a GeoJSON geometry representation
+ * Transform a JTS geometry to a GeoJSON geometry representation.
  *
  * @author Erwan Bocher
  */
 public class ST_AsGeoJSON extends DeterministicScalarFunction {
 
     public ST_AsGeoJSON() {
-        addProperty(PROP_REMARKS, "Return the geometry as a Geometry Javascript Object Notation (GeoJSON 1.0) element. \n"
-                + "2D and 3D Geometries are both supported. \n"
-                + "GeoJSON only support SFS 1.1 geometry type (POINT, LINESTRING, POLYGON and COLLECTION).");
+        addProperty(PROP_REMARKS, "Return the geometry as a Geometry Javascript Object Notation (GeoJSON 1.0) element.\n"
+                + "2D and 3D Geometries are both supported.\n"
+                + "GeoJSON only supports SFS 1.1 geometry types (POINT, LINESTRING, POLYGON and COLLECTION).");
     }
 
     @Override
@@ -55,7 +55,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert the geometry to a GeoJSON representation
+     * Convert the geometry to a GeoJSON representation.
      *
      * @param geom
      * @return
@@ -286,7 +286,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
 
     /**
      * Convert a jts array of coordinates to a GeoJSON coordinates
-     * representation
+     * representation.
      *
      * Syntax:
      *
@@ -307,9 +307,9 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert a JTS coordinate to a GeoJSON representation
+     * Convert a JTS coordinate to a GeoJSON representation.
      *
-     * Only x, y and z values are supported
+     * Only x, y and z values are supported.
      *
      * Syntax:
      *

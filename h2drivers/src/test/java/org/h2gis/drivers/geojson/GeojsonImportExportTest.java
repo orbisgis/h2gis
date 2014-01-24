@@ -44,7 +44,7 @@ public class GeojsonImportExportTest {
 
     private static Connection connection;
     private static final String DB_NAME = "GeojsonExportTest";
-    private WKTReader WKTREADER = new WKTReader();
+    private static final WKTReader WKTREADER = new WKTReader();
 
     @BeforeClass
     public static void tearUp() throws Exception {

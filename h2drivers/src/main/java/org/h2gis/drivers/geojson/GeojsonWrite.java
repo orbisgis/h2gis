@@ -33,7 +33,7 @@ import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
- * SQL function to write a spatial table to a GeoJSON file
+ * SQL function to write a spatial table to a GeoJSON file.
  *
  * @author Erwan Bocher
  */
@@ -50,7 +50,7 @@ public class GeojsonWrite extends AbstractFunction implements ScalarFunction {
     }
 
     /**
-     * Write the GeoJSON file
+     * Write the GeoJSON file.
      *
      * @param connection
      * @param fileName

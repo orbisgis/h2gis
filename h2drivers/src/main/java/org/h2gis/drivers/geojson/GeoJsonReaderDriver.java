@@ -560,7 +560,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Parses an array of positions defined as :
+     * Parses an array of positions defined as:
      *
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
@@ -749,7 +749,7 @@ public class GeoJsonReaderDriver {
      * token corresponds to the first X value. The last token correponds to the
      * end of the coordinate array "]".
      *
-     * Parsed syntax :
+     * Parsed syntax:
      *
      * 100.0, 0.0]
      *
@@ -777,7 +777,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Parses the GeoJSON data and set the values to the table
+     * Parses the GeoJSON data and set the values to the table.
      *
      * @throws IOException
      * @throws SQLException

@@ -60,8 +60,8 @@ import org.h2gis.utilities.TableLocation;
  *
  * GeoJSON is a format for encoding a variety of geographic data structures. A
  * GeoJSON object may represent a geometry, a feature, or a collection of
- * features. GeoJSON supports the following geometry types: Point, LineString,
- * Polygon, MultiPoint, MultiLineString, MultiPolygon, and GeometryCollection.
+ * features. GeoJSON supports the following geometry types: POINT, LINESTRING,
+ * POLYGON, MULTIPOINT, MULTILINESTRING, MULTIPOLYGON, and GEOMETRYCOLLECTION.
  *
  * Syntax:
  *
@@ -69,7 +69,7 @@ import org.h2gis.utilities.TableLocation;
  * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}, "properties":
  * {"prop0": "value0"} } ]}
  *
- * @author Erwan
+ * @author Erwan Bocher
  */
 public class GeoJsonWriteDriver {
 
@@ -93,7 +93,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write spatial table to GeoJSON file format.
+     * Write the spatial table to GeoJSON format.
      *
      * @param progress
      * @throws SQLException
@@ -113,7 +113,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write the spatial table to a GeoJSON format
+     * Write the spatial table to GeoJSON format.
      *
      * @param progress
      * @throws SQLException
@@ -177,7 +177,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write a GeoJSON feature
+     * Write a GeoJSON feature.
      *
      * Features in GeoJSON contain a geometry object and additional properties,
      * and a feature collection represents a list of features.
@@ -229,7 +229,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write JTS geometry to GeoJSON geometry representation.
+     * Write a JTS geometry to its GeoJSON geometry representation.
      * 
      * Syntax:
      *
@@ -431,7 +431,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write coordinate positions
+     * Write coordinate positions.
      *
      * @param coordinate
      * @param gen
@@ -448,7 +448,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write coordinate array
+     * Write coordinate array.
      *
      * @param coordinates
      * @param gen
@@ -463,7 +463,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Write the GeoJSON properties
+     * Write the GeoJSON properties.
      *
      * @param jsonGenerator
      * @param rs
@@ -482,7 +482,7 @@ public class GeoJsonWriteDriver {
     }
 
     /**
-     * Return true is the SQL type is supported by the GeoJSON driver
+     * Return true is the SQL type is supported by the GeoJSON driver.
      *
      * @param sqlTypeId
      * @param sqlTypeName
@@ -503,7 +503,7 @@ public class GeoJsonWriteDriver {
             case Types.CHAR:
                 return true;
             default:
-                throw new SQLException("Field type not supported by GeoJSON driver : " + sqlTypeName);
+                throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);
         }
     }
 }
