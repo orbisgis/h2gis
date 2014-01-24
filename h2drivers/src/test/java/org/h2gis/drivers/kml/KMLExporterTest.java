@@ -107,7 +107,7 @@ public class KMLExporterTest {
     public void testCreateKMLPoint() throws Exception {
         Geometry geom = WKT_READER.read("POINT(1 2)");
         StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLGeometry(geom, false, AltitudeModeEnum.CLAMPTOGROUND, sb);
+        KMLGeometry.toKMLGeometry(geom,  sb);
         assertTrue(sb.toString().equals("<Point><coordinates>1.0,2.0</coordinates></Point>"));
     }
 
