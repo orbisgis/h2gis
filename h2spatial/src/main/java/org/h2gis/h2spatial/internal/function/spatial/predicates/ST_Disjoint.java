@@ -29,7 +29,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Return true if the geometry A is disjoint from the geometry B
+ * Return true if the two Geometries are disjoint.
+ *
  * @author Nicolas Fortin
  */
 public class ST_Disjoint extends DeterministicScalarFunction {
@@ -38,7 +39,7 @@ public class ST_Disjoint extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_Disjoint() {
-        addProperty(PROP_REMARKS, "Return true if the geometry A is disjoint from the geometry B.");
+        addProperty(PROP_REMARKS, "Return true if the two Geometries are disjoint");
     }
 
     @Override
@@ -47,12 +48,13 @@ public class ST_Disjoint extends DeterministicScalarFunction {
     }
 
     /**
-     * Return true if the geometry A is disjoint from the geometry B
+     * Return true if the two Geometries are disjoint
+     *
      * @param a Geometry Geometry.
      * @param b Geometry instance
-     * @return true if the geometry A is disjoint from the geometry B
+     * @return true if the two Geometries are disjoint
      */
-    public static Boolean geomDisjoint(Geometry a,Geometry b) {
+    public static Boolean geomDisjoint(Geometry a, Geometry b) {
         if(a==null || b==null) {
             return null;
         }

@@ -31,7 +31,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert String into a Point type.
+ * Convert a WKT String into a Point.
  * @author Nicolas Fortin
  */
 public class ST_PointFromText extends DeterministicScalarFunction {
@@ -40,7 +40,7 @@ public class ST_PointFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_PointFromText() {
-        addProperty(PROP_REMARKS, "Convert String into a Point type.");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a Point");
     }
 
     @Override
@@ -57,7 +57,7 @@ public class ST_PointFromText extends DeterministicScalarFunction {
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
         if(!geometry.getGeometryType().equalsIgnoreCase("POINT")) {
-            throw new SQLException("Provided Well Known Text geometry is not a point");
+            throw new SQLException("The provided WKT Geometry is not a POINT.");
         }
         return geometry;
     }

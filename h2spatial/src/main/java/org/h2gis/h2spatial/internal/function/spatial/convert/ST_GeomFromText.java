@@ -35,7 +35,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert a Well Known Text geometry string into a geometry instance.
+ * Convert a Well Known Text String into a Geometry instance.
  * TODO Read SRID in table constraint
  * @author Nicolas Fortin
  */

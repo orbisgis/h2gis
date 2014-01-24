@@ -29,7 +29,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute the intersection between two geometries
+ * Compute the intersection of two Geometries.
  * @author Nicolas Fortin
  */
 public class ST_Intersection extends DeterministicScalarFunction {
@@ -38,7 +38,7 @@ public class ST_Intersection extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_Intersection() {
-        addProperty(PROP_REMARKS, "Compute the intersection between two geometries.");
+        addProperty(PROP_REMARKS, "Compute the intersection of two Geometries");
     }
 
     @Override

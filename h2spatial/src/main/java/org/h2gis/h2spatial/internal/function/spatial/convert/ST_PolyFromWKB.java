@@ -34,7 +34,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert WKB into Geometry then check that it is a Polygon
+ * Convert Well Known Binary into Geometry then check that it is a Polygon
  * @author Nicolas Fortin
  */
 public class ST_PolyFromWKB extends DeterministicScalarFunction {
@@ -43,7 +43,7 @@ public class ST_PolyFromWKB extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_PolyFromWKB() {
-        addProperty(PROP_REMARKS, "Convert WKB into Geometry then check that it is a Polygon.");
+        addProperty(PROP_REMARKS, "Convert Well Known Binary into Geometry then check that it is a Polygon.");
     }
 
     @Override

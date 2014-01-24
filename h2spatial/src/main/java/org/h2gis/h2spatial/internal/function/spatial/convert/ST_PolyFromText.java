@@ -32,7 +32,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert String into a Polygon type.
+ * Convert a WKT String into a POLYGON.
  * @author Nicolas Fortin
  */
 public class ST_PolyFromText extends DeterministicScalarFunction {
@@ -41,7 +41,7 @@ public class ST_PolyFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_PolyFromText() {
-        addProperty(PROP_REMARKS, "Convert String into a Polygon type.");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a POLYGON");
     }
 
     @Override
@@ -58,7 +58,7 @@ public class ST_PolyFromText extends DeterministicScalarFunction {
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
         if(!geometry.getGeometryType().equalsIgnoreCase("POLYGON")) {
-            throw new SQLException("Provided Well Known Text geometry is not a polygon");
+            throw new SQLException("The provided WKT Geometry is not a POLYGON.");
         }
         return geometry;
     }

@@ -33,7 +33,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert String into a MultiPolygon type.
+ * Convert a WKT String into a MULTIPOLYGON.
  * @author Nicolas Fortin
  */
 public class ST_MPolyFromText extends DeterministicScalarFunction {
@@ -42,7 +42,7 @@ public class ST_MPolyFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_MPolyFromText() {
-        addProperty(PROP_REMARKS, "Convert String into a MultiPolygon type.");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a MULTIPOLYGON");
     }
 
     @Override
@@ -59,7 +59,7 @@ public class ST_MPolyFromText extends DeterministicScalarFunction {
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
         if(!geometry.getGeometryType().equalsIgnoreCase("MULTIPOLYGON")) {
-            throw new SQLException("Provided Well Known Text geometry is not a multi polygon");
+            throw new SQLException("The provided WKT Geometry is not a MULTIPOLYGON.");
         }
         return geometry;
     }

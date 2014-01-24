@@ -33,7 +33,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert WKT into a LinearRing
+ * Convert Well Known Binary into a LINESTRING.
  * @author Nicolas Fortin
  */
 public class ST_LineFromWKB extends DeterministicScalarFunction {
@@ -42,7 +42,7 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_LineFromWKB() {
-        addProperty(PROP_REMARKS, "Convert WKT into a LinearRing.");
+        addProperty(PROP_REMARKS, "Convert Well Known Binary into a LINESTRING");
     }
 
     @Override
@@ -64,7 +64,7 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
         WKBReader wkbReader = new WKBReader();
         try {
             if(!SC_LineString.isLineString(bytes)) {
-                throw new SQLException("Provided WKB is not a LinearString.");
+                throw new SQLException("Provided WKB is not a LINESTRING.");
             }
             Geometry geometry = wkbReader.read(bytes);
             geometry.setSRID(srid);

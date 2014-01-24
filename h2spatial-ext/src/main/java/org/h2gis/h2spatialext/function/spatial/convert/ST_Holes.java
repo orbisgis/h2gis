@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 /**
- * ST_Holes returns the given geometry's or geometry collection's holes as a
+ * ST_Holes returns the given geometry or geometry collection's holes as a
  * GeometryCollection. Returns GEOMETRYCOLLECTION EMPTY for geometries of
  * dimension less than 2.
  *

@@ -29,7 +29,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute the symmetric difference between two geometries
+ * Compute the symmetric difference between two Geometries.
  * @author Nicolas Fortin
  */
 public class ST_SymDifference extends DeterministicScalarFunction {
@@ -38,7 +38,7 @@ public class ST_SymDifference extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_SymDifference() {
-        addProperty(PROP_REMARKS, "Compute the symmetric difference between two geometries.");
+        addProperty(PROP_REMARKS, "Compute the symmetric difference between two Geometries");
     }
 
     @Override
