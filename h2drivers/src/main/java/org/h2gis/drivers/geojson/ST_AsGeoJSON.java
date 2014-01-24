@@ -41,9 +41,9 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  *
  * @author Erwan Bocher
  */
-public class ST_AsGeoJson extends DeterministicScalarFunction {
+public class ST_AsGeoJSON extends DeterministicScalarFunction {
 
-    public ST_AsGeoJson() {
+    public ST_AsGeoJSON() {
         addProperty(PROP_REMARKS, "Return the geometry as a Geometry Javascript Object Notation (GeoJSON 1.0) element. \n"
                 + "2D and 3D Geometries are both supported. \n"
                 + "GeoJSON only support SFS 1.1 geometry type (POINT, LINESTRING, POLYGON and COLLECTION).");
