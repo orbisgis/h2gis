@@ -20,8 +20,8 @@ H2GIS adds support for
 
 ## Get help
 
-If you get stuck or just have a question, send us a line on our [user][] or
-[developer][] mailing lists.
+If you get stuck or just have a question, send us a line on our H2GIS [user][]
+or [developer][] mailing list. There is also the [H2 Google Group][].
 
 ## Check back soon!
 
@@ -40,3 +40,4 @@ please [file an issue][] and we'll potentially include it in this guide.
 [file an issue]: http://github.com/irstv/H2GIS/issues/new
 [user]: http://h2gis.1099522.n5.nabble.com/H2GIS-users-f2.html
 [developer]: http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html
+[H2 Google Group]: https://groups.google.com/forum/#!forum/h2-database
