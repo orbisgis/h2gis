@@ -67,6 +67,38 @@ SELECT ST_Touches(geomA, geomB) FROM input_table;
 
 <img class="displayed" src="../ST_Touches_5.png"/>
 
+| geomA POLYGON | geomB MULTIPOLYGON |
+| ----|---- |
+| POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | MULTIPOLYGON (((4 2, 7 2, 7 6, 4 6, 4 2)), ((0 6, 1 6, 1 7, 0 7, 0 6))) |
+
+<img class="displayed" src="../ST_Touches_6.png"/>
+
+| geomA POLYGON | geomB MULTILINESTRING |
+| ----|---- |
+| POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | MULTILINESTRING ((2 5, 7 5), (6 1, 6 4)) |
+
+<img class="displayed" src="../ST_Touches_7.png"/>
+
+| geomA POLYGON | geomB MULTIPOINT |
+| ----|---- |
+| POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | MULTIPOINT ((4 3), (6 2)) |
+
+<img class="displayed" src="../ST_Touches_8.png"/>
+
+| geomA POLYGON | geomB POLYGON |
+| ----|---- |
+| POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | POLYGON ((4 5, 7 5, 7 6, 4 6, 4 5)) |
+
+<img class="displayed" src="../ST_Touches_9.png"/>
+
+##### Cases where `ST_Touches` is false
+
+| geomA POLYGON | geomB POLYGON |
+| ----|---- |
+| POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | POLYGON ((3 4, 7 4, 7 6, 3 6, 3 4)) |
+
+<img class="displayed" src="../ST_Touches_10.png"/>
+
 ##### See also
 
 * [`ST_Intersects`](../ST_Intersects)
