@@ -37,5 +37,6 @@ SELECT ST_SRID(ST_SETSRID(the_geom,5321)) trans,
 {% endhighlight %}
 
 ##### See also
-* <a href="http://www.h2gis.org/docs/dev/ST_Transform" target="_blank">ST_Transform</a>
+
+* [`ST_Transform`](../ST_Transform)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/crs/ST_SetSRID.java" target="_blank">Source code</a>
