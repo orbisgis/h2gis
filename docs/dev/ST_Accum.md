@@ -41,5 +41,5 @@ SELECT ST_Accum(geom) FROM input_table;
 
 ##### See also
 
-* [`ST_Explode`](../ST_Explode)
+* [`ST_Explode`](../ST_Explode), [`ST_Union`](../ST_Union)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/aggregate/ST_Accum.java" target="_blank">Source code</a>
