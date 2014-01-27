@@ -47,7 +47,8 @@ Description and Example(s).
 
 1. Global comments:
     1. When refering to geometries in a global sense (and not as WKT), write
-       Geometry or Geometries (and not `GEOMETRY`).
+       Geometry or Geometries (and not `GEOMETRY`). But we still write
+       `GEOMETRY` in case 1.ii.
     1. WKT geometries should be in UPPERCASE (`POLYGON` and not `Polygon` or
        `polygon`).
     1. Function names should be written as `ST_CompactnessRatio` and not
