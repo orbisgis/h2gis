@@ -10,6 +10,10 @@
 {% assign pages = site.pages | sort: 'name' %}
 {% for p in pages %}
     {% if p.title contains 'ST_' %}
+        {% if p.description %}
+            {% capture described %}{{ described | plus:1 }}{% endcapture %}
+        {% endif %}
+        {% capture total %}{{ total | plus:1 }}{% endcapture %}
         <tr>
         <td><a href="{{ p.url }}"><code>{{ p.title }}</code></a></td>
         <td>{{ p.description }}</td>
@@ -18,3 +22,5 @@
 {% endfor %}
 </tbody>
 </table>
+
+Documented functions: {{ described }}/{{ total }}.
