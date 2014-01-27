@@ -47,5 +47,5 @@ SELECT ST_Extent('POINT(5 6)'::Geometry);
 {% endhighlight %}
 
 ##### See also
-* <a href="http://www.h2gis.org/docs/dev/ST_Envelope/" target="_blank">ST_Envelope</a>
+* [`ST_Envelope`](../ST_Envelope)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_Extent.java" target="_blank">Source code</a>
