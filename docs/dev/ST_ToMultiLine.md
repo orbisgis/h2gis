@@ -2,7 +2,7 @@
 layout: docs
 title: ST_ToMultiLine
 category: h2spatial-ext/geometry-conversion
-description: Construct a <code>MultiLineString</code> from the given Geometry's coordinates
+description: Construct a <code>MULTILINESTRING</code> from the given Geometry's coordinates
 prev_section: ST_Holes
 next_section: ST_ToMultiPoint
 permalink: /docs/dev/ST_ToMultiLine/
