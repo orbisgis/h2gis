@@ -26,7 +26,7 @@ This function accepts only `POLYGON`s.
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE input_table(geom Geometry);
+CREATE TABLE input_table(geom GEOMETRY);
 INSERT INTO input_table VALUES
     ('POLYGON ((9 0, 9 11, 10 11, 10 0, 9 0))'),
     ('POLYGON ((1 1, 1 7, 7 7, 7 1, 1 1))');
@@ -45,15 +45,15 @@ SELECT ST_CompactnessRatio(geom) ratio FROM input_table;
 {% highlight mysql %}
 SELECT ST_CompactnessRatio(ST_Buffer(('POINT(1 2)'), 10));
 -- Answer: 0.9983912919723259
---    Note : That a buffer is not a circle. It's an
---    approximation, ST_Buffer create 32 segments to arc of a
---    cercle. That's why the compactness ratio is not equal to 1.
+--    Note: A buffer is not a circle. It's an approximation. 
+--    ST_Buffer create 32 line segments. That's why the 
+--    compactness ratio is not equal to 1.
 
 SELECT ST_CompactnessRatio(ST_MakeEllipse('POINT(1 2)', 10, 10));
 -- Answer: 0.9998354822360185
---    Note : ST_MaketEllipse create 100 segments to arc of a
---    cercle. That's why the compactness ratio is not equal to 1
---    but is more precise than ST_Buffer.
+--    Note: ST_MakeEllipse creates 100 line segments.
+--    That's why the compactness ratio is not equal to 1 but is 
+--    more precise than ST_Buffer.
 
 SELECT ST_CompactnessRatio(
     'POLYGON ((4 12, 1 6, 6 3, 15 2, 17 5, 16 10, 9 14, 4 12), 
