@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Explode
 category: h2spatial-ext/properties
-description: Explode <CODE>GEOMETRYCOLLECTION</CODE> into multiple Geometries
+description: Explode <CODE>GEOMETRYCOLLECTION</CODE>s into multiple Geometries
 prev_section: ST_CoordDim
 next_section: ST_Extent
 permalink: /docs/dev/ST_Explode/
@@ -16,7 +16,7 @@ tableName[*, explod_id] ST_Explode('tableName', 'fieldName');
 {% endhighlight %}
 
 ### Description
-Explodes the `GEOMETRYCOLLECTION` in the `fieldName` column of table `tableName` into multiple Geometries. 
+Explodes the `GEOMETRYCOLLECTION`s in the `fieldName` column of table `tableName` into multiple Geometries. 
 If no field name is specified, the first Geometry column is used. 
 
 ### Examples
