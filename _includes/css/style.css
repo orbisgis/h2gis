@@ -673,6 +673,7 @@ strong {
 
 p {
   line-height: 1.5em;
+  text-align: justify;
 }
 
 .left { float: left; }
