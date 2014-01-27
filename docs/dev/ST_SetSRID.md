@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_SetSRID/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_setSRID(Geometry geom, int srid);
+GEOMETRY ST_setSRID(GEOMETRY geom, int srid);
 {% endhighlight %}
 
 ### Description
@@ -25,17 +25,17 @@ This function can take at first argument an instance of Geometry or Envelope.
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE testSrid(the_geom Geometry);
+CREATE TABLE testSrid(the_geom GEOMETRY);
 INSERT INTO testSrid VALUES (
     ST_GeomFromText('POINT(15 25)',27572));
 SELECT ST_SRID(ST_SETSRID(the_geom,5321)) trans,
     ST_SRID(the_geom) original FROM testSrid;
--- Answer :
+-- Answer:
 --    | TRANS | ORIGINAL |
 --    |-------|----------|
 --    |  5321 |  27572   |
 {% endhighlight %}
 
 ##### See also
-
+* <a href="http://www.h2gis.org/docs/dev/ST_Transform" target="_blank">ST_Transform</a>
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/crs/ST_SetSRID.java" target="_blank">Source code</a>
