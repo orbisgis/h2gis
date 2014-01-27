@@ -11,11 +11,11 @@ permalink: /docs/dev/ST_ToMultiLine/
 ### Signature
 
 {% highlight mysql %}
-MULTILINESTRING ST_ToMultiLine(Geometry geom);
+MULTILINESTRING ST_ToMultiLine(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
- `ST_ToMultiLine` constructs a `MULTILINESTRING` from the given `Geometry`'s coordinates. Returns `MULTILINESTRING EMPTY` for geometries of dimension 0.
+ `ST_ToMultiLine` constructs a `MULTILINESTRING` from the given `GEOMETRY`'s coordinates. Returns `MULTILINESTRING EMPTY` for geometries of dimension 0.
 
 ### Examples
 
