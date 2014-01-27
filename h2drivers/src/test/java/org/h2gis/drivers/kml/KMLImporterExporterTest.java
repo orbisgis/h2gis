@@ -42,7 +42,7 @@ import org.junit.Test;
  *
  * @author Erwan Bocher
  */
-public class KMLExporterTest {
+public class KMLImporterExporterTest {
 
     private static Connection connection;
     private static final String DB_NAME = "KMLExportTest";
@@ -53,6 +53,7 @@ public class KMLExporterTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new KMLWrite(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new KMLRead(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsKml(), "");
     }
 
@@ -62,7 +63,7 @@ public class KMLExporterTest {
     }
 
     @Test
-    public void exportKMLPoints() throws SQLException {
+    public void exportImportKMLPoints() throws SQLException {
         Statement stat = connection.createStatement();
         File kmlFile = new File("target/kml_points.kml");
         stat.execute("DROP TABLE IF EXISTS KML_POINTS");

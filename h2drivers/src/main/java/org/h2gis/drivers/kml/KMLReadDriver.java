@@ -21,9 +21,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
+import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
@@ -66,19 +70,51 @@ public class KMLReadDriver {
     }
 
     /**
+     * Read the KML file.
+     *
+     * @param progress
+     * @return <code>true</code> if success.
+     */
+    public boolean read(ProgressVisitor progress) throws SQLException, IOException {
+        String path = fileName.getAbsolutePath();
+        String extension = "";
+        int i = path.lastIndexOf('.');
+        if (i >= 0) {
+            extension = path.substring(i + 1);
+        }
+        if (extension.equalsIgnoreCase("kml")) {
+            return parseKML(progress);
+        } else {
+            throw new SQLException("Please kml extension.");
+        }
+    }
+
+    /**
      * Parses the KML file.
      *
      * @return <code>true</code> if success.
      */
-    public boolean read() throws ParserConfigurationException, SAXException, IOException {
-        SAXParser parser = sParserFactory.newSAXParser();        
-        sParserFactory.setNamespaceAware(true);
-
+    private boolean parseKML(ProgressVisitor progress) throws IOException, SQLException {
+        FileInputStream fis = null;
         KMLHandler kHandler = new KMLHandler(connection, tableReference);
-
-        parser.parse(new BufferedInputStream(new FileInputStream(fileName)),
-                kHandler);
-
+        try {
+            SAXParser parser = sParserFactory.newSAXParser();
+            sParserFactory.setNamespaceAware(true);
+            parser.parse(new BufferedInputStream(new FileInputStream(fileName)),
+                    kHandler);
+        } catch (ParserConfigurationException ex) {
+            throw new SQLException(ex);
+        } catch (SAXException ex) {
+            throw new SQLException(ex);
+        } finally {
+            try {
+                if (fis != null) {
+                    fis.close();
+                }
+            } catch (IOException ex) {
+                throw new IOException(ex);
+            }
+        }
         return kHandler.IsSucess();
     }
 }
