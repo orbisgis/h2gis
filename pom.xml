@@ -26,6 +26,7 @@
         <module>h2drivers</module>
         <module>h2spatial-osgi</module>
         <module>h2spatial-ext-osgi</module>
+        <module>h2topology</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -36,10 +37,12 @@
         <h2-package>org.orbisgis</h2-package> <!-- com.h2database -->
         <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
         <jts-version>1.13</jts-version>
+        <jgrapht-version>0.8.3</jgrapht-version>
         <sl4j-version>1.6.0</sl4j-version>
         <cts-version>1.3.2</cts-version>
-         <jdelaunay-version>0.5.2</jdelaunay-version>
+        <jdelaunay-version>0.5.2</jdelaunay-version>
         <junit-version>4.11</junit-version>
+        <java-network-analyzer-version>0.1.3</java-network-analyzer-version>
     </properties>
     <scm>
         <connection>scm:git:https://github.com/irstv/H2GIS.git</connection>
