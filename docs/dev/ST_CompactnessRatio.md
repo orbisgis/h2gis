@@ -70,6 +70,5 @@ SELECT ST_CompactnessRatio('POINT(1 2)');
 
 ##### See also
 
-* <a href="http://www.h2gis.org/docs/dev/ST_Buffer" target="_blank">ST_Buffer</a>
-* <a href="http://www.h2gis.org/docs/dev/ST_MakeEllipse" target="_blank">ST_MakeEllipse</a>
+* [`ST_Buffer`](../ST_Buffer), [`ST_MakeEllipse`](../ST_MakeEllipse)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_CompactnessRatio.java" target="_blank">Source code</a>
