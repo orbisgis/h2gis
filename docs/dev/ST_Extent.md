@@ -26,16 +26,22 @@ SELECT ST_Extent('MULTIPOINT((5 6), (1 2), (3 4), (10 3))'::Geometry);
 -- Answer: POLYGON ((1 2, 1 6, 10 6, 10 2, 1 2))
 {% endhighlight %}
 
-<img class="displayed" src="../ST_Extent.png"/>
+<img class="displayed" src="../ST_Extent1.png"/>
 
 {% highlight mysql %}
-CREATE TABLE input_table(geom POLYGON);
-INSERT INTO input_table
-    VALUES ('POLYGON ((0 0, 3 -1, 1.5 2, 0 0))'),
-           ('POLYGON ((2 0, 3 3, 4 2, 2 0))');
+CREATE TABLE input_table(geom GEOMETRY);
+INSERT INTO input_table VALUES 
+     ('POLYGON ((0 0, 3 -1, 1.5 2, 0 0))'), 
+     ('POLYGON ((2 0, 3 3, 4 2, 2 0))'), 
+     ('POINT(5 6)'), 
+     ('LINESTRING(1 1, 1 6)');
 SELECT ST_EXTENT(geom) FROM input_table;
--- Answer: POLYGON ((0 -1, 0 3, 4 3, 4 -1, 0 -1))
+-- Answer: POLYGON ((0 -1, 0 6, 5 6, 5 -1, 0 -1))
+{% endhighlight %}
 
+<img class="displayed" src="../ST_Extent2.png"/>
+
+{% highlight mysql %}
 SELECT ST_Extent('POINT(5 6)'::Geometry);
 -- Answer: POINT(5 6)
 {% endhighlight %}
