@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Extent
 category: h2spatial-ext/properties
-description: Return the minimum bounding box of the <code>GEOMETRYCOLLECTION</code>
+description: Return the minimum bounding box of a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_Explode
 next_section: ST_XMax
 permalink: /docs/dev/ST_Extent/
@@ -12,10 +12,12 @@ permalink: /docs/dev/ST_Extent/
 
 {% highlight mysql %}
 GEOMETRY ST_Extent(GEOMETRY geom);
+GEOMETRY ST_Extent(GEOMETRYCOLLECTION geom);
 {% endhighlight %}
 
 ### Description
-Returns the minimum bounding box that encloses the `GEOMETRYCOLLECTION`.
+
+Returns the minimum bounding box that encloses `geom` as a `GEOMETRY`.
 
 ### Examples
 
@@ -23,7 +25,20 @@ Returns the minimum bounding box that encloses the `GEOMETRYCOLLECTION`.
 SELECT ST_Extent('MULTIPOINT((5 6), (1 2), (3 4), (10 3))'::Geometry);
 -- Answer: POLYGON ((1 2, 1 6, 10 6, 10 2, 1 2))
 {% endhighlight %}
+
 <img class="displayed" src="../ST_Extent.png"/>
+
+{% highlight mysql %}
+CREATE TABLE input_table(geom POLYGON);
+INSERT INTO input_table
+    VALUES ('POLYGON ((0 0, 3 -1, 1.5 2, 0 0))'),
+           ('POLYGON ((2 0, 3 3, 4 2, 2 0))');
+SELECT ST_EXTENT(geom) FROM input_table;
+-- Answer: POLYGON ((0 -1, 0 3, 4 3, 4 -1, 0 -1))
+
+SELECT ST_Extent('POINT(5 6)'::Geometry);
+-- Answer: POINT(5 6)
+{% endhighlight %}
 
 ##### See also
 * <a href="http://www.h2gis.org/docs/dev/ST_Envelope/" target="_blank">ST_Envelope</a>
