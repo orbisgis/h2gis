@@ -11,13 +11,17 @@ permalink: /docs/dev/ST_Transform/
 ### Signatures
 
 {% highlight mysql %}
-Geometry ST_Transform(Geometry geom, int codeEpsg)
+Geometry ST_Transform(Geometry geom, int SRID)
 {% endhighlight %}
 
 ### Description
 
 This function is used to transform a `Geometry` from one CRS coordinate reference system to another.
 Only integer codes available in the spatial_ref_sys table are allowed.
+
+If you want know the `SRID` of a CRS go to h2gis and type: SELECT * FROM spatial_ref_sys;
+The `SRID` is principaly CodeEPSG but the spatial_ref_sys table can be enriched by other CRS.
+The other CRS are not recognized by the EPSG but they have a `SRID`.
 
 {% include sfs-1-2-1.html %}
 
@@ -32,5 +36,5 @@ SELECT ST_TRANSFORM(the_geom, 4326) from init;
 {% endhighlight %}
 
 ##### See also
-* <a href="http://www.h2gis.org/docs/dev/ST_SetSRID" target="_blank">ST_SetSRID</a>
+
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/crs/ST_Transform.java" target="_blank">Source code</a>
