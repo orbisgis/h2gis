@@ -93,6 +93,11 @@ SELECT ST_Touches(geomA, geomB) FROM input_table;
 
 ##### Cases where `ST_Touches` is false
 
+{% highlight mysql %}
+SELECT ST_Touches(geomA, geomB) FROM input_table;
+-- Answer:    False
+{% endhighlight %}
+
 | geomA POLYGON | geomB POLYGON |
 | ----|---- |
 | POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | POLYGON ((3 4, 7 4, 7 6, 3 6, 3 4)) |
