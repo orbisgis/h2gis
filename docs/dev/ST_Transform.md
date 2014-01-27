@@ -19,7 +19,7 @@ Geometry ST_Transform(Geometry geom, int SRID)
 This function is used to transform a `Geometry` from one CRS coordinate reference system to another.
 Only integer codes available in the spatial_ref_sys table are allowed.
 
-If you want know the `SRID` of a CRS go to h2gis and type: SELECT * FROM spatial_ref_sys;
+*Note:* If you want know the `SRID` of a CRS go to h2gis and type: SELECT * FROM spatial_ref_sys;
 The `SRID` is principaly CodeEPSG but the spatial_ref_sys table can be enriched by other CRS.
 The other CRS are not recognized by the EPSG but they have a `SRID`.
 
@@ -28,10 +28,10 @@ The other CRS are not recognized by the EPSG but they have a `SRID`.
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE init as SELECT 
+CREATE TABLE init AS SELECT 
     ST_GeomFromText('POINT(584173.736059813 2594514.82833411)',
-    27572) as the_geom;
-SELECT ST_TRANSFORM(the_geom, 4326) from init;
+    27572) As the_geom;
+SELECT ST_TRANSFORM(the_geom, 4326) FROM init;
 -- Answer: POINT (2.114551398096724 50.34560979151726)
 {% endhighlight %}
 
