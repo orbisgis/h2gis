@@ -11,17 +11,24 @@ permalink: /docs/dev/ST_AsText/
 ### Signatures
 
 {% highlight mysql %}
+String ST_AsText(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
 
+`ST_AsText` is an alias for ST_AsWKT.
+Can you see <a href="/docs/dev/ST_AsWKT">`ST_AsWKT`</a>.
 
+Convert a `GEOMETRY` value into a Well Known Text value.
 
 {% include sfs-1-2-1.html %}
 
-### Examples
+### Example
 
 {% highlight mysql %}
+SELECT ST_AsText('POLYGON((0 0,0 1,1 1,1 0,0 0))');
+-- Answer: POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))
+
 {% endhighlight %}
 
 ##### See also
