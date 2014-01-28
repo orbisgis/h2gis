@@ -21,7 +21,8 @@ H2GIS adds support for
 ## Get help
 
 If you get stuck or just have a question, send us a line on our H2GIS [user][]
-or [developer][] mailing list. There is also the [H2 Google Group][].
+or [developer][] mailing list. There is also the [H2 Google Group][]. And
+developers can check out our [Javadoc page][].
 
 ## Check back soon!
 
@@ -41,3 +42,4 @@ please [file an issue][] and we'll potentially include it in this guide.
 [user]: http://h2gis.1099522.n5.nabble.com/H2GIS-users-f2.html
 [developer]: http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html
 [H2 Google Group]: https://groups.google.com/forum/#!forum/h2-database
+[Javadoc page]: http://javadoc.orbisgis.org/latest/h2gis/classes.html
