@@ -26,6 +26,7 @@ package org.h2gis.h2spatial;
 
 import org.h2.api.AggregateAlias;
 import org.h2gis.h2spatial.internal.function.HexToVarBinary;
+import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsWKT;
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_SetSRID;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Contains;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Crosses;
@@ -107,6 +108,7 @@ public class CreateSpatialExtension {
                 new ST_MPolyFromText(),
                 new ST_Dimension(),
                 new ST_AsText(),
+                new ST_AsWKT(),
                 new ST_PolyFromWKB(),
                 new ST_IsEmpty(),
                 new ST_IsSimple(),
