@@ -248,8 +248,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.70710682"
-     inkscape:cx="396.23169"
-     inkscape:cy="370.09927"
+     inkscape:cx="365.86048"
+     inkscape:cy="263.85628"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -282,8 +282,8 @@
      id="layer1"
      style="display:inline">
     <rect
-       inkscape:export-ydpi="99.89669"
-       inkscape:export-xdpi="99.89669"
+       inkscape:export-ydpi="104.45953"
+       inkscape:export-xdpi="104.45953"
        inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_ToMultiPoint2.png"
        y="689.94806"
        x="-138.47115"
@@ -1199,6 +1199,16 @@
        d="m -100.82573,724.67884 448.45534,0"
        id="path4647"
        inkscape:connector-curvature="0" />
+    <path
+       sodipodi:type="arc"
+       style="opacity:0.8;fill:#006f00;fill-opacity:1;stroke:#006f00;stroke-width:1.5;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       id="path4488-5-0-8-8"
+       sodipodi:cx="399.51532"
+       sodipodi:cy="440.71484"
+       sodipodi:rx="4.2426405"
+       sodipodi:ry="4.2426405"
+       d="m 403.75796,440.71484 a 4.2426405,4.2426405 0 1 1 -8.48528,0 4.2426405,4.2426405 0 1 1 8.48528,0 z"
+       transform="translate(142.12845,404.46506)" />
   </g>
   <g
      inkscape:groupmode="layer"
