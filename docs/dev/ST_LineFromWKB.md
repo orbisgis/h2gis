@@ -16,7 +16,7 @@ GEOMETRY ST_LineFromWKB(binary bytes, int srid);
 
 ### Description
 
-Converts Well Known Binary into a `LINESTRING`.
+Converts a Well Known Binary into a `LINESTRING`.
 
 {% include sfs-1-2-1.html %}
 
