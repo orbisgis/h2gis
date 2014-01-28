@@ -11,8 +11,8 @@ permalink: /docs/dev/ST_GeomFromText/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_GeomFromText(string wkt);
-GEOMETRY ST_GeomFromText(string wkt, int srid);
+GEOMETRY ST_GeomFromText(varchar wkt);
+GEOMETRY ST_GeomFromText(varchar wkt, int srid);
 {% endhighlight %}
 
 ### Description
