@@ -162,4 +162,17 @@ public class SpatialFunctionTest {
         assertEquals(2, rs.getInt(1));
         st.execute("DROP TABLE input_table;");
     }
+
+    @Test
+    public void test_ST_ASWkt() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_ASWKT('POINT(1 1 1)')");
+        try {
+            assertTrue(rs.next());
+            assertEquals("POINT (1 1)",rs.getString(1));
+        } finally {
+           rs.close();
+        }
+
+    }
 }
