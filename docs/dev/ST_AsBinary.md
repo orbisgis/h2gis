@@ -11,12 +11,12 @@ permalink: /docs/dev/ST_AsBinary/
 ### Signatures
 
 {% highlight mysql %}
-byte ST_AsBinary(GEOMETRY geom)
+byte ST_AsBinary(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
 
-Converts a Geometry into binary value = Well Known Binary
+Converts a `GEOMETRY` into binary value = Well Known Binary.
 
 {% include sfs-1-2-1.html %}
 
