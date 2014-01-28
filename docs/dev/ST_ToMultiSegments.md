@@ -2,7 +2,7 @@
 layout: docs
 title: ST_ToMultiSegments
 category: h2spatial-ext/geometry-conversion
-description: Convert a <code>GEOMETRY</code> into a set of distinct segments stored in a <code>MULTILINESTRING</code>.
+description: Convert a GEOMETRY into a set of distinct segments stored in a <code>MULTILINESTRING</code>.
 prev_section: ST_ToMultiPoint
 next_section: h2spatial-ext/geometry-creation
 permalink: /docs/dev/ST_ToMultiSegments/
