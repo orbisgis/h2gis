@@ -25,9 +25,13 @@
 
 package org.h2gis.topology.graph_creator;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSet;
 
 import java.sql.*;
 import java.util.List;
@@ -41,6 +45,7 @@ import java.util.List;
 public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     private static Integer spatialFieldIndex;
+    private static final GeometryFactory GF = new GeometryFactory();
 
     public ST_Graph() {
         addProperty(PROP_REMARKS, "produces two tables (nodes and edges) "
@@ -60,34 +65,85 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     public static boolean createGraph(Connection connection,
                                String tableName,
                                String spatialFieldName) throws SQLException {
-        Statement st = connection.createStatement();
 
+        Connection wrappedConnection = SFSUtilities.wrapConnection(connection);
+        Statement st = wrappedConnection.createStatement();
+
+        getSpatialFieldIndex(connection, tableName, spatialFieldName, st);
+        setupOutputTables(tableName, st);
+
+        updateTables(wrappedConnection, tableName, st);
+
+        // If we made it this far, the output tables were successfully created.
+        return true;
+    }
+
+    private static void getSpatialFieldIndex(Connection connection, String tableName, String spatialFieldName, Statement st) throws SQLException {
         // OBTAIN THE SPATIAL FIELD INDEX.
-        ResultSet tableQuery = st.executeQuery("SELECT * FROM " + tableName);
-        ResultSetMetaData metaData = tableQuery.getMetaData();
-        int columnCount = metaData.getColumnCount();
-        // Find the name of the first geometry column if not provided by the user.
-        if (spatialFieldName == null) {
-            List<String> geomFields = SFSUtilities.getGeometryFields(
-                    connection, SFSUtilities.splitCatalogSchemaTableName(tableName));
-            if (!geomFields.isEmpty()) {
-                spatialFieldName = geomFields.get(0);
-            } else {
-                throw new SQLException("Table " + tableName + " does not contain a geometry field.");
+        ResultSet tableQuery = st.executeQuery("SELECT * FROM " + tableName + " LIMIT 0;");
+        try {
+            ResultSetMetaData metaData = tableQuery.getMetaData();
+            int columnCount = metaData.getColumnCount();
+            // Find the name of the first geometry column if not provided by the user.
+            if (spatialFieldName == null) {
+                List<String> geomFields = SFSUtilities.getGeometryFields(
+                        connection, SFSUtilities.splitCatalogSchemaTableName(tableName));
+                if (!geomFields.isEmpty()) {
+                    spatialFieldName = geomFields.get(0);
+                } else {
+                    throw new SQLException("Table " + tableName + " does not contain a geometry field.");
+                }
             }
-        }
-        // Find the index of the spatial field.
-        for (int i = 1; i <= columnCount; i++) {
-            if (metaData.getColumnName(i).equalsIgnoreCase(spatialFieldName)) {
-                spatialFieldIndex = i;
-                break;
+            // Find the index of the spatial field.
+            for (int i = 1; i <= columnCount; i++) {
+                if (metaData.getColumnName(i).equalsIgnoreCase(spatialFieldName)) {
+                    spatialFieldIndex = i;
+                    break;
+                }
             }
+        } finally {
+            tableQuery.close();
         }
         if (spatialFieldIndex == null) {
             throw new SQLException("Geometry field " + spatialFieldName + " of table " + tableName + " not found");
         }
+    }
 
-        // If we made it this far, the output tables were successfully created.
-        return true;
+    private static void setupOutputTables(String tableName, Statement st) throws SQLException {
+        final String nodesName = tableName + "_nodes";
+        final String edgesName = tableName + "_edges";
+        st.execute("CREATE TABLE " + nodesName + " (node_id INT PRIMARY KEY, the_geom POINT);");
+        st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + " LIMIT 0;" +
+                "ALTER TABLE " + edgesName + " ADD COLUMN edge_id INTEGER NOT NULL AUTO_INCREMENT;" +
+                "ALTER TABLE " + edgesName + " ADD COLUMN start_node INTEGER;" +
+                "ALTER TABLE " + edgesName + " ADD COLUMN end_node INTEGER;");
+    }
+
+    private static void updateTables(Connection conn, String tableName, Statement st) throws SQLException {
+        SpatialResultSet inputTableResultSet = st.executeQuery("SELECT * FROM " + tableName).unwrap(SpatialResultSet.class);
+        final String nodesName = tableName + "_nodes";
+        SpatialResultSet nodesTable =
+                conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
+                        executeQuery("SELECT * FROM " + nodesName).
+                        unwrap(SpatialResultSet.class);
+        try {
+            int node_id = 0;
+            while (inputTableResultSet.next()) {
+                nodesTable.moveToInsertRow();
+                final Geometry geom = inputTableResultSet.getGeometry(spatialFieldIndex);
+                final GeometryFactory factory = geom.getFactory();
+                final Coordinate[] coordinates = geom.getCoordinates();
+                nodesTable.updateInt("node_id", ++node_id);
+                nodesTable.updateGeometry("the_geom", factory.createPoint(coordinates[0]));
+                nodesTable.insertRow();
+                nodesTable.moveToInsertRow();
+                nodesTable.updateInt("node_id", ++node_id);
+                nodesTable.updateGeometry("the_geom", factory.createPoint(coordinates[coordinates.length - 1]));
+                nodesTable.insertRow();
+            }
+        } finally {
+            inputTableResultSet.close();
+            nodesTable.close();
+        }
     }
 }
