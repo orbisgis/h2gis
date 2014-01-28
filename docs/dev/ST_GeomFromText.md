@@ -17,7 +17,7 @@ GEOMETRY ST_GeomFromText(varchar wkt, int srid);
 
 ### Description
 
-Converts well known text parameter into a `GEOMETRY`.
+Converts a well known text parameter into a `GEOMETRY`.
 If you don't specify a SRID the value by default is 0.
 
 {% include sfs-1-2-1.html %}
