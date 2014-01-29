@@ -22,15 +22,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 import org.h2gis.h2spatialapi.ProgressVisitor;
-import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
 
 /**
  * The KMLReader driver reads a KML file and imports the result into tables.
@@ -99,7 +95,6 @@ public class KMLReadDriver {
         KMLHandler kHandler = new KMLHandler(connection, tableReference);
         try {
             SAXParser parser = sParserFactory.newSAXParser();
-            sParserFactory.setNamespaceAware(true);
             parser.parse(new BufferedInputStream(new FileInputStream(fileName)),
                     kHandler);
         } catch (ParserConfigurationException ex) {

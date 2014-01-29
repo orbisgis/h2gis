@@ -30,8 +30,22 @@ public class KMLHandler extends DefaultHandler {
 
     private final Connection connection;
     private final String tableReference;
+    private String DESCRIPTION = "description";
+    private String NAME = "name";
+    private String SIMPLEFIELD = "SimpleField";
+    private String TYPE = "type";
     private String DOCUMENT = "document";
     private String FOLDER = "folder";
+    private String SCHEMA = "schema";
+    private String PLACEMARK = "placemark";
+    private String SIMPLEDATA = "SimpleData";
+    private String POINT = "point";
+    private String EXTENDEDDATA = "ExtendedData";
+    private String SCHEMADATA = "SchemaData";
+    private String SCHEMAURL = "schemaUrl";
+    private String LINESTRING = "LineString";
+    private String COORDINATES ="coordinates";
+    
     private boolean kmlSucess = true;
 
     public KMLHandler(Connection connection, String tableReference) {
@@ -42,11 +56,27 @@ public class KMLHandler extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName,
             String name, Attributes attributes) throws SAXException {
+        if (name.equalsIgnoreCase(DOCUMENT)) {
+            System.out.println(DOCUMENT);
+        } else if (name.equalsIgnoreCase(FOLDER)) {
+            System.out.println(attributes.getValue(name));
+        } else if (name.equalsIgnoreCase(SCHEMA)) {
+            String schemaName = attributes.getValue("name");
+            System.out.println("Schema name " + schemaName);
+            String schemaId = attributes.getValue("id");
+            System.out.println("Schema id " + schemaId);
+        } else if (name.equalsIgnoreCase(SIMPLEFIELD)) {
+        }
     }
 
     @Override
     public void endElement(String uri, String localName, String name)
             throws SAXException {
+        if (name.equalsIgnoreCase(PLACEMARK)) {
+            System.out.println("Placemark");
+        } else if (name.equalsIgnoreCase(SCHEMA)) {
+            System.out.println("End " + SCHEMA);
+        }
     }
 
     @Override
@@ -58,12 +88,13 @@ public class KMLHandler extends DefaultHandler {
     public void fatalError(SAXParseException e) throws SAXException {
         kmlSucess = false;
     }
-    
+
     /**
      * Returns true is the KML file is parsed without any problems.
-     * @return 
+     *
+     * @return
      */
-    public boolean IsSucess(){
+    public boolean IsSucess() {
         return kmlSucess;
     }
 }

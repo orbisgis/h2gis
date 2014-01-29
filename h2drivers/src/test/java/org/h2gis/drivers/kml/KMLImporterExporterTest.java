@@ -73,6 +73,7 @@ public class KMLImporterExporterTest {
         // Create a KML file
         stat.execute("CALL KMLWrite('target/kml_points.kml', 'KML_POINTS')");
         assertTrue(kmlFile.exists());
+        stat.execute("CALL KMLRead('target/kml_points.kml', 'KML_POINTS_READ')");
         stat.close();
     }
 

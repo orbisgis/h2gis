@@ -177,21 +177,21 @@ public class KMLWriterDriver {
             xmlOut.writeNamespace("xal", "urn:oasis:names:tc:ciq:xsdschema:xAL:2.0");
 
             xmlOut.writeStartElement("Document");
-            xmlOut.writeStartElement("Folder");
-            xmlOut.writeStartElement("name");
-            xmlOut.writeCharacters(tableName);
-            xmlOut.writeEndElement();//Name
 
             // Read table content
             Statement st = connection.createStatement();
             try {
                 ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
-                //TODO : We must apply a projection to the data to WGS84
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
 
                     writeSchema(xmlOut, resultSetMetaData);
+                    xmlOut.writeStartElement("Folder");
+                    xmlOut.writeStartElement("name");
+                    xmlOut.writeCharacters(tableName);
+                    xmlOut.writeEndElement();//Name
+
                     while (rs.next()) {
                         writePlacemark(xmlOut, rs, geoFieldIndex, spatialFieldNames.get(0));
                     }
@@ -318,10 +318,10 @@ public class KMLWriterDriver {
         if (inputSRID == 0) {
             throw new SQLException("A coordinate reference system must be set to save the KML file");
         } else if (inputSRID != 4326) {
-             throw new SQLException("The kml format supports only the WGS84 projection. \n"
-                     + "Please use ST_Transform("+ spatialFieldName + ","+ inputSRID+ ")");            
+            throw new SQLException("The kml format supports only the WGS84 projection. \n"
+                    + "Please use ST_Transform(" + spatialFieldName + "," + inputSRID + ")");
         }
-        KMLGeometry.toKMLGeometry(geom,ExtrudeMode.NONE,AltitudeMode.NONE, sb);
+        KMLGeometry.toKMLGeometry(geom, ExtrudeMode.NONE, AltitudeMode.NONE, sb);
         //Write geometry
         xmlOut.writeCharacters(sb.toString());
         xmlOut.writeEndElement();//Write Placemark
