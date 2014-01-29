@@ -18,15 +18,18 @@ boolean ST_Within(GEOMETRY geomA, GEOMETRY geomB);
 
 Returns true if `geomA` is within `geomB`.
 
-Within means that `geomA` is completely inside `geomB`. Every point of `geomA` is a point of `geomB`, and the interiors of the two geometries have at least one point in common.
+Within means that every point of `geomA` is a point of `geomB`, and the
+interiors of the two geometries have at least one point in common.
 
-As a consequence, if `ST_Within(geomA, geomB)` is TRUE and `ST_Within(geomB, geomA)` is TRUE, `geomA` and `geomB` are considered to be equal (in the sense of `ST_Equals`).
+As a consequence, the following are equivalent:
+* `ST_Within(geomA, geomB)` and `ST_Within(geomB, geomA)` are true.
+* `ST_Equals(geomA, geomB)` is true.
+
+<div class="note warning">
+    <h5>This function does not work on <code>GEOMETRYCOLLECTION</code>s.</h5>
+</div>
 
 {% include sfs-1-2-1.html %}
-
-##### Remark
-   * `GEOMETRYCOLLECTION`s are not taken into account,
-   * Within is the inverse of contains (See `ST_Contains`).
 
 ### Examples
 
