@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_AsBinary/
 ### Signatures
 
 {% highlight mysql %}
-byte ST_AsBinary(GEOMETRY geom);
+binary ST_AsBinary(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
