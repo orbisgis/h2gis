@@ -40,8 +40,6 @@ SELECT ST_ToMultiLine('GEOMETRYCOLLECTION(
 
 <img class="displayed" src="../ST_ToMultiLine2.png"/>
 
-##### Stupid cases
-
 {% highlight mysql %}
 SELECT ST_ToMultiLine('POINT(2 4)');
 -- Answer: MULTILINESTRING EMPTY
