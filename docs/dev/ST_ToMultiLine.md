@@ -15,7 +15,7 @@ MULTILINESTRING ST_ToMultiLine(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
- `ST_ToMultiLine` constructs a `MULTILINESTRING` from the given `GEOMETRY`'s coordinates. Returns `MULTILINESTRING EMPTY` for geometries of dimension 0.
+ `ST_ToMultiLine` constructs a `MULTILINESTRING` from the given `GEOMETRY`'s coordinates. Returns `MULTILINESTRING EMPTY` for Geometries of dimension 0.
 
 ### Examples
 
