@@ -45,19 +45,19 @@ SELECT ST_CompactnessRatio(geom) ratio FROM input_table;
 {% highlight mysql %}
 SELECT ST_CompactnessRatio(ST_Buffer(('POINT(1 2)'), 10));
 -- Answer: 0.9983912919723259
---    Note: A buffer is not a circle. It's an approximation. 
---    ST_Buffer create 32 line segments. That's why the 
---    compactness ratio is not equal to 1.
+--    Note: A buffer is a polygonal approximation to a circle.
+--    ST_Buffer uses 32 line segments. That explains why the
+--    compactness ratio is slightly less than 1.
 
 SELECT ST_CompactnessRatio(ST_MakeEllipse('POINT(1 2)', 10, 10));
 -- Answer: 0.9998354822360185
---    Note: ST_MakeEllipse creates 100 line segments.
---    That's why the compactness ratio is not equal to 1 but is 
---    more precise than ST_Buffer.
+--    Note: ST_MakeEllipse approximates using 100 line segments.
+--    So the approximation is more precise, explaining why this
+--    result is closer to 1 than the result from ST_Buffer.
 
 SELECT ST_CompactnessRatio(
     'POLYGON ((4 12, 1 6, 6 3, 15 2, 17 5, 16 10, 9 14, 4 12), 
-    (7 9, 6 7, 10 6, 10 8, 7 9))');
+              (7 9, 6 7, 10 6, 10 8, 7 9))');
 -- Answer: 0.7142366622175312
 
 SELECT ST_CompactnessRatio(
