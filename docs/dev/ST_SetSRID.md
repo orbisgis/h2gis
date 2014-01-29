@@ -2,7 +2,7 @@
 layout: docs
 title: ST_SetSRID
 category: h2spatial/projections
-description: Return a new Geometry with a replaced spatial reference id
+description: Return a copy of a Geometry with a new SRID
 prev_section: h2spatial/projections
 next_section: ST_Transform
 permalink: /docs/dev/ST_SetSRID/
@@ -11,25 +11,28 @@ permalink: /docs/dev/ST_SetSRID/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_setSRID(GEOMETRY geom, int srid);
+GEOMETRY ST_SetSRID(GEOMETRY geom, int srid);
 {% endhighlight %}
 
 ### Description
 
-Returns a new Geometry with a replaced spatial reference id `srid`. 
-Warning, use `ST_Transform` if you want to change the coordinate reference system as this method does not update the coordinates.
-This function can take at first argument an instance of Geometry or Envelope.
+Returns a copy of `geom` with spatial reference id set to `srid`.
+
+<div class="note warning">
+  <h5>ST_SetSRID does not  to actually change the SRID of <code>geom</code>.
+  For this purpose, use <a href="/docs/dev/ST_Transform">ST_Transform</a>.</h5>
+</div>
 
 {% include sfs-1-2-1.html %}
 
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE testSrid(the_geom GEOMETRY);
-INSERT INTO testSrid VALUES (
-    ST_GeomFromText('POINT(15 25)',27572));
-SELECT ST_SRID(ST_SETSRID(the_geom,5321)) trans,
-    ST_SRID(the_geom) original FROM testSrid;
+CREATE TABLE test_srid(the_geom GEOMETRY);
+INSERT INTO test_srid VALUES (
+    ST_GeomFromText('POINT(15 25)', 27572));
+SELECT ST_SRID(ST_SETSRID(the_geom, 5321)) trans,
+    ST_SRID(the_geom) original FROM test_srid;
 -- Answer:
 --    | TRANS | ORIGINAL |
 --    |-------|----------|
@@ -38,5 +41,5 @@ SELECT ST_SRID(ST_SETSRID(the_geom,5321)) trans,
 
 ##### See also
 
-* [`ST_Transform`](../ST_Transform)
+* [`ST_Transform`](../ST_Transform), [`ST_SRID`](../ST_SRID)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/crs/ST_SetSRID.java" target="_blank">Source code</a>
