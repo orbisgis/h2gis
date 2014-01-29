@@ -11,12 +11,12 @@ permalink: /docs/dev/ST_Transform/
 ### Signatures
 
 {% highlight mysql %}
-Geometry ST_Transform(Geometry geom, int SRID)
+GEOMETRY ST_Transform(GEOMETRY geom, int SRID);
 {% endhighlight %}
 
 ### Description
 
-This function is used to transform a `Geometry` from one CRS coordinate reference system to another.
+This function is used to transform a `GEOMETRY` from one CRS coordinate reference system to another.
 Only integer codes available in the spatial_ref_sys table are allowed.
 
 *Note:* If you want know the `SRID` of a CRS go to h2gis and type: SELECT * FROM spatial_ref_sys;
