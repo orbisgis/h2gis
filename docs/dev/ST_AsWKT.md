@@ -16,14 +16,14 @@ varchar ST_AsWKT(GEOMETRY geom);
 
 ### Description
 
-Convert a `GEOMETRY` value into a Well Known Text value.
+Converts a `GEOMETRY` into its Well Known Text value.
 
 {% include sfs-1-2-1.html %}
 
 ### Example
 
 {% highlight mysql %}
-SELECT ST_AsWKT('POLYGON((0 0,0 1,1 1,1 0,0 0))');
+SELECT ST_AsWKT('POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))');
 -- Answer: POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))
 {% endhighlight %}
 

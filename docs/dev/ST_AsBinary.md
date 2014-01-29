@@ -16,7 +16,7 @@ binary ST_AsBinary(GEOMETRY geom);
 
 ### Description
 
-Converts a `GEOMETRY` into binary value = Well Known Binary.
+Converts a `GEOMETRY` into its Well Known Binary value.
 
 {% include sfs-1-2-1.html %}
 
@@ -24,11 +24,11 @@ Converts a `GEOMETRY` into binary value = Well Known Binary.
 
 {% highlight mysql %}
 SELECT ST_AsBinary(ST_GeomFromText(
-    'POLYGON((0 0,0 1,1 1,1 0,0 0))',4326));
+    'POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))', 4326));
 -- Answer: 0020000003000010e600000001000000050000000000000000
---  000000000000000000000000000000003ff00000000000003ff000000
---  00000003ff00000000000003ff0000000000000000000000000000000
---  000000000000000000000000000000
+--    000000000000000000000000000000003ff00000000000003ff0000
+--    0000000003ff00000000000003ff000000000000000000000000000
+--    0000000000000000000000000000000000
 {% endhighlight %}
 
 ##### See also

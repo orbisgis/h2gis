@@ -11,27 +11,26 @@ permalink: /docs/dev/ST_LineFromText/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_LineFromText(varchar WKT, int srid);
+GEOMETRY ST_LineFromText(varchar wkt, int srid);
 {% endhighlight %}
 
 ### Description
 
-Converts a Well Know Text `WKT` String into a `LINESTRING`.
-
+{% include from-wkt-desc.html type='LINESTRING' %}
+{% include z-coord-warning.html %}
 {% include sfs-1-2-1.html %}
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_LineFromText('LINESTRING EMPTY', 2154);
--- Answer: LINESTRING EMPTY
-
 SELECT ST_LineFromText('LINESTRING(5 5, 1 2, 3 4, 99 3)', 2154);
 -- Answer: LINESTRING(5 5, 1 2, 3 4, 99 3)
 
-SELECT ST_LineFromText(
-    'LINESTRING(0 18, 10 21, 16 23, 28 26, 44 31 )', 101);
--- Answer: LINESTRING(0 18, 10 21, 16 23, 28 26, 44 31)
+SELECT ST_LineFromText('LINESTRING(0 0 -1, 2 0 2, 2 1 3)', 2154);
+-- Answer: LINESTRING(0 0, 2 0, 2 1)
+
+SELECT ST_LineFromText('POINT(2 3)', 2154);
+-- Answer: The provided WKT Geometry is not a LINESTRING.
 {% endhighlight %}
 
 ##### See also

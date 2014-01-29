@@ -11,22 +11,22 @@ permalink: /docs/dev/ST_LineFromWKB/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_LineFromWKB(binary WKB, int srid);
+GEOMETRY ST_LineFromWKB(binary wkb, int srid);
 {% endhighlight %}
 
 ### Description
 
-Converts a Well Known Binary `WKB` into a `LINESTRING`.
-
+{% include from-wkb-desc.html type='LINESTRING' %}
 {% include sfs-1-2-1.html %}
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_LineFromWKB('0000000002000000044014000000000000401400
-    00000000003ff0000000000000400000000000000040080000000000004
-    0100000000000004058c000000000004008000000000000', 4326);
+SELECT ST_LineFromWKB('000000000200000004401400000000000040140000000000003ff00000000000004000000000000000400800000000000040100000000000004058c000000000004008000000000000', 4326);
 -- Answer: LINESTRING(5 5, 1 2, 3 4, 99 3)
+
+SELECT ST_LineFromWKB(ST_AsBinary('POINT(2 3)'::Geometry), 2154);
+-- Answer: Provided WKB is not a LINESTRING.
 {% endhighlight %}
 
 ##### See also

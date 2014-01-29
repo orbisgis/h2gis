@@ -11,21 +11,23 @@ permalink: /docs/dev/ST_MPointFromText/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_MPointFromText(varchar WKT, int srid);
+GEOMETRY ST_MPointFromText(varchar wkt, int srid);
 {% endhighlight %}
 
 ### Description
 
-Converts a Well Known Text `WKT` String into a `MULTIPOINT`.
-
+{% include from-wkt-desc.html type='MULTIPOINT' %}
+{% include z-coord-warning.html %}
 {% include sfs-1-2-1.html %}
 
 ### Example
 
 {% highlight mysql %}
-SELECT ST_MPointFromText(
-    'MULTIPOINT(5 5, 1 2, 3 4, 20 3)',2154);
+SELECT ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 20 3)', 2154);
 -- Answer: MULTIPOINT((5 5), (1 2), (3 4), (20 3))
+
+SELECT ST_MPointFromText('POINT(2 3)', 2154);
+-- Answer: The provided WKT Geometry is not a MULTIPOINT.
 {% endhighlight %}
 
 ##### See also
