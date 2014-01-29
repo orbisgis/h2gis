@@ -239,6 +239,34 @@
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
          transform="matrix(0.8,0,0,0.8,10,0)" />
     </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3919"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Mend-8"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3919-2"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="scale(-0.6,-0.6)" />
+    </marker>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -249,7 +277,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.70710682"
      inkscape:cx="365.86048"
-     inkscape:cy="263.85628"
+     inkscape:cy="659.83606"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -463,13 +491,13 @@
     <text
        sodipodi:linespacing="125%"
        id="text7064"
-       y="514.52582"
-       x="-109.12994"
+       y="655.94714"
+       x="-114.78679"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
        xml:space="preserve"><tspan
          style="font-size:22px"
-         y="514.52582"
-         x="-109.12994"
+         y="655.94714"
+         x="-114.78679"
          id="tspan7066"
          sodipodi:role="line">Case2</tspan></text>
     <path
@@ -1209,6 +1237,22 @@
        sodipodi:ry="4.2426405"
        d="m 403.75796,440.71484 a 4.2426405,4.2426405 0 1 1 -8.48528,0 4.2426405,4.2426405 0 1 1 8.48528,0 z"
        transform="translate(142.12845,404.46506)" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2.54155779;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend);display:inline"
+       d="m 360.39426,860.05357 40.79156,0"
+       id="path4290-5"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Holes_1.png"
+       inkscape:export-xdpi="84"
+       inkscape:export-ydpi="84" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2.54155779;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Mend);display:inline"
+       d="m 353.32319,281.64025 40.79156,0"
+       id="path4290-5-4"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Holes_1.png"
+       inkscape:export-xdpi="84"
+       inkscape:export-ydpi="84" />
   </g>
   <g
      inkscape:groupmode="layer"
