@@ -18,7 +18,7 @@ boolean ST_Intersects(GEOMETRY geomA, GEOMETRY geomB);
 
 Returns true if `geomA` intersects `geomB`.
 
-Overlaps means that `geomA` and `geomB` share any portion of space.
+Intersects means that `geomA` and `geomB` have at least one point in common.
 
 {% include sfs-1-2-1.html %}
 
@@ -91,7 +91,7 @@ SELECT ST_Intersects(geomA, geomB) FROM input_table;
 
 | geomA POLYGON | geomB POLYGON |
 | ----|---- |
-| POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | POLYGON ((6 3, 7 3, 7 6, 6 6, 6 )) |
+| POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | POLYGON ((6 3, 7 3, 7 6, 6 6, 6 3)) |
 
 <img class="displayed" src="../ST_Intersects_9.png"/>
 
