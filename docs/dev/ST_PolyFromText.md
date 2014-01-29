@@ -8,20 +8,24 @@ next_section: ST_PolyFromWKB
 permalink: /docs/dev/ST_PolyFromText/
 ---
 
-### Signatures
+### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_PolyFromText(varchar WKT, int srid);
 {% endhighlight %}
 
 ### Description
 
-
+Converts a Well Known Text `WKT` String into a `POLYGON`.
 
 {% include sfs-1-2-1.html %}
 
-### Examples
+### Example
 
 {% highlight mysql %}
+SELECT ST_PolyFromText(
+    'POLYGON((50 31, 54 31, 54 29, 50 29, 50 31))', 2154);
+-- Answer: POLYGON((50 31, 54 31, 54 29, 50 29, 50 31))
 {% endhighlight %}
 
 ##### See also

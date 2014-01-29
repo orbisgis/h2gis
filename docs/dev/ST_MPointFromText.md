@@ -8,20 +8,24 @@ next_section: ST_MPolyFromText
 permalink: /docs/dev/ST_MPointFromText/
 ---
 
-### Signatures
+### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_MPointFromText(varchar WKT, int srid);
 {% endhighlight %}
 
 ### Description
 
-
+Converts a Well Known Text `WKT` String into a `MULTIPOINT`.
 
 {% include sfs-1-2-1.html %}
 
-### Examples
+### Example
 
 {% highlight mysql %}
+SELECT ST_MPointFromText(
+    'MULTIPOINT(5 5, 1 2, 3 4, 20 3)',2154);
+-- Answer: MULTIPOINT((5 5), (1 2), (3 4), (20 3))
 {% endhighlight %}
 
 ##### See also

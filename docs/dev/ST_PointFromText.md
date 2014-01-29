@@ -8,20 +8,23 @@ next_section: ST_PolyFromText
 permalink: /docs/dev/ST_PointFromText/
 ---
 
-### Signatures
+### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_PointFromText(varchar WKT, int srid);
 {% endhighlight %}
 
 ### Description
 
-
+Converts a Well Known Text `WKT` String into a `POINT`.
 
 {% include sfs-1-2-1.html %}
 
-### Examples
+### Example
 
 {% highlight mysql %}
+SELECT ST_PointFromText('POINT(44 31)', 101);
+-- Answer: POINT(44 31)
 {% endhighlight %}
 
 ##### See also
