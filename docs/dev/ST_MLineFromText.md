@@ -11,17 +11,22 @@ permalink: /docs/dev/ST_MLineFromText/
 ### Signatures
 
 {% highlight mysql %}
+GEOMETRY ST_MLineFromText(varchar WKT, int srid);
 {% endhighlight %}
 
 ### Description
 
-
+Converts a Well Known Text `WKT` String into a `MULTILINESTRING`.
 
 {% include sfs-1-2-1.html %}
 
-### Examples
+### Example
 
 {% highlight mysql %}
+SELECT ST_MLineFromText('MULTILINESTRING((10 48,10 21,10 0), 
+    (16 0,16 23,16 48))', 101);
+-- Answer: MULTILINESTRING((10 48, 10 21, 10 0), 
+--  (16 0, 16 23, 16 48))
 {% endhighlight %}
 
 ##### See also
