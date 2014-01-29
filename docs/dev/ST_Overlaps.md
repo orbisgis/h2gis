@@ -18,15 +18,17 @@ boolean ST_Overlaps(GEOMETRY geomA, GEOMETRY geomB);
 
 Returns true if `geomA` overlaps `geomB`.
 
-Overlaps means that:
-  * `geomA` and `geomB` have some but not all points in common, 
-  * `geomA` and `geomB` have the same dimension, 
-  * The intersection of the interiors of `geomA` and `geomB` has the same dimension as the geometries themselves.
+Overlaps means that the two geometries:
+  * have some but not all points in common,
+  * have the same dimension, and
+  * the intersection of their interiors has the same dimension as the
+    geometries themselves.
+
+<div class="note warning">
+    <h5>This function does not work on <code>GEOMETRYCOLLECTION</code>s.</h5>
+</div>
 
 {% include sfs-1-2-1.html %}
-
-##### Remark
-   * `GEOMETRYCOLLECTION`s are not taken into account.
 
 ### Examples
 
