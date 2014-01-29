@@ -63,7 +63,7 @@ public class ST_FurthestCoordinate extends DeterministicScalarFunction {
      * @return The furthest coordinate(s) contained in the given geometry starting from
      *         the given point, using the 2D distance
      */
-    public static Puntal getFurthestCoordinate(Point point, Geometry geom) {
+    public static Geometry getFurthestCoordinate(Point point, Geometry geom) {
         if (point == null || geom == null) {
             return null;
         }
