@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_AsText/
 ### Signatures
 
 {% highlight mysql %}
-String ST_AsText(GEOMETRY geom);
+varchar ST_AsText(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

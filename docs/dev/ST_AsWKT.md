@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_AsWKT/
 ### Signatures
 
 {% highlight mysql %}
-String ST_AsWKT(GEOMETRY geom);
+varchar ST_AsWKT(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
