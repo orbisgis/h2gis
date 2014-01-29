@@ -8,20 +8,28 @@ next_section: ST_PointFromText
 permalink: /docs/dev/ST_MPolyFromText/
 ---
 
-### Signatures
+### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_MPolyFromText(varchar WKT, int srid);
 {% endhighlight %}
 
 ### Description
 
-
+Converts a Well Known Text `WKT` String into a `MULTIPOLYGON`.
 
 {% include sfs-1-2-1.html %}
 
-### Examples
+### Example
 
 {% highlight mysql %}
+SELECT ST_MPolyFromText(
+    'MULTIPOLYGON(((28 26,28 0,84 0,84 42,28 26), 
+    (52 18,66 23,73 9,48 6,52 18)),
+    ((59 18,67 18,67 13,59 13,59 18)))', 101);
+-- Answer: MULTIPOLYGON(((28 26, 28 0, 84 0, 84 42, 28 26), 
+    (52 18, 66 23, 73 9, 48 6, 52 18)), 
+    ((59 18, 67 18, 67 13, 59 13, 59 18)))
 {% endhighlight %}
 
 ##### See also
