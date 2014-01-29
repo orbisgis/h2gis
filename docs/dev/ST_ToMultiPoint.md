@@ -15,7 +15,7 @@ MULTIPOINT ST_ToMultiPoint(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-`ST_ToMultiPoint` constructs a `MULTIPOINT` from the given Geometry's coordinates.
+`ST_ToMultiPoint` constructs a `MULTIPOINT` from the given `Geometry`'s coordinates.
 
 ### Examples
 
