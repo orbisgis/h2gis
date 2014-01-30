@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Disjoint
 category: h2spatial/predicates
-description: Return true if the two Geometries are disjoint
+description: Return true Geometries A and B are disjoint
 prev_section: ST_Crosses
 next_section: ST_EnvelopesIntersect
 permalink: /docs/dev/ST_Disjoint/
@@ -16,14 +16,11 @@ boolean ST_Disjoint(GEOMETRY geomA, GEOMETRY geomB);
 
 ### Description
 
-Returns true if `geomA` and `geomB` are disjointed.
+Returns true if `geomA` and `geomB` are disjoint.
 
-Disjoint means that `geomA` and `geomB`have no point in common.
+Disjoint means that the two geometries have no point in common.
 
-<div class="note warning">
-    <h5>This function does not work on <code>GEOMETRYCOLLECTION</code>s.</h5>
-</div>
-
+{% include geom-coll-warning.html %}
 {% include sfs-1-2-1.html %}
 
 ### Examples
