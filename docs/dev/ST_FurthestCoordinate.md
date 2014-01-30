@@ -2,7 +2,7 @@
 layout: docs
 title: ST_FurthestCoordinate
 category: h2spatial-ext/distance-functions
-description: Compute the furthest coordinate(s) contained in the given Geometry starting from the given <code>point</code>.
+description: Compute the furthest coordinate(s) contained in the given Geometry starting from the given <code>POINT</code>.
 prev_section: ST_ClosestPoint
 next_section: ST_LocateAlong
 permalink: /docs/dev/ST_FurthestCoordinate/
@@ -30,7 +30,7 @@ SELECT ST_FurthestCoordinate('POINT(0 0)',
 
 {% highlight mysql %}
 SELECT ST_FurthestCoordinate('POINT(5 2.5)', 
-    'LINESTRING (3 1, 2 2, 2 4, 4 5)');
+    'LINESTRING(3 1, 2 2, 2 4, 4 5)');
 -- Answer: POINT(2 4)
 {% endhighlight %}
 
