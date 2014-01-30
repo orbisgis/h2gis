@@ -290,7 +290,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="0.70710682"
      inkscape:cx="433.43972"
-     inkscape:cy="509.34835"
+     inkscape:cy="169.93711"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -309,7 +309,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1949,15 +1949,15 @@
        xml:space="preserve"
        id="flowRoot7710"
        style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       transform="translate(80.610169,8.4852809)"><flowRegion
+       transform="translate(76.610169,8.4852809)"><flowRegion
          id="flowRegion7712"><rect
            id="rect7714"
-           width="236.17365"
-           height="36.769539"
+           width="254.55841"
+           height="36.769531"
            x="50.911686"
            y="834.5733"
            style="font-size:24px" /></flowRegion><flowPara
-         id="flowPara7716">ST_ToMultiSegments</flowPara></flowRoot>    <flowRoot
+         id="flowPara7716">ST_ToMultiSegmentss</flowPara></flowRoot>    <flowRoot
        transform="translate(611.89118,7.8317782)"
        xml:space="preserve"
        id="flowRoot7710-9"
@@ -1972,12 +1972,6 @@
            y="834.5733"
            style="font-size:24px" /></flowRegion><flowPara
          id="flowPara7716-5">ST_ToMultiLine</flowPara></flowRoot>    <path
-       style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;marker-mid:none;marker-end:url(#Arrow1Mend)"
-       d="m 475.17573,995.08654 44.54773,-0.70711"
-       id="path3278"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cc" />
-    <path
        style="fill:none;stroke:#000000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-mid:none;marker-end:url(#Arrow1Mend);display:inline"
        d="m 481.85047,596.0879 44.54773,-0.7071"
        id="path3278-7"
