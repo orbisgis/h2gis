@@ -15,7 +15,7 @@ Point ST_ClosestPoint(GEOMETRY geomA, GEOMETRY geomB);
 {% endhighlight %}
 
 ### Description
-`ST_ClosestPoint` returns the 2D point on `geomA` that is closest to `geomB`. If the closest POINT is not unique, it returns the first one it finds. This means that the POINT returned depends on the order of the Geometry's coordinates.
+`ST_ClosestPoint` returns the 2D point on `geomA` that is closest to `geomB`. If the closest `POINT` is not unique, it returns the first one it finds. This means that the `POINT` returned depends on the order of the Geometry's coordinates.
 
 ### Examples
 
