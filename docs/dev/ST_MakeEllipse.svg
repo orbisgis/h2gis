@@ -117,6 +117,34 @@
          style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
          transform="matrix(0.8,0,0,0.8,10,0)" />
     </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-1"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-3"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-3"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-0"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
   </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
@@ -128,16 +156,26 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1440"
-     inkscape:window-height="872"
+     inkscape:window-height="824"
      id="namedview3057"
      showgrid="false"
      inkscape:zoom="1.0414013"
-     inkscape:cx="285.77946"
-     inkscape:cy="178.60399"
-     inkscape:window-x="1440"
-     inkscape:window-y="0"
+     inkscape:cx="19.693441"
+     inkscape:cy="514.13257"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg3055" />
+  <rect
+     y="-460.31012"
+     x="-31.368107"
+     height="420.80872"
+     width="347.91434"
+     id="rect4679-3"
+     style="opacity:0.8;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.9837544;stroke-opacity:1"
+     inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_MakeEllipse_1.png"
+     inkscape:export-xdpi="99"
+     inkscape:export-ydpi="99" />
   <rect
      y="-10.195287"
      x="-35.380329"
@@ -145,7 +183,7 @@
      width="722.34393"
      id="rect4679"
      style="opacity:0.8;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:1.35964823;stroke-opacity:1"
-     inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_MakeEllipse.png"
+     inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_MakeEllipse_2.png"
      inkscape:export-xdpi="99"
      inkscape:export-ydpi="99" />
   <image
@@ -573,4 +611,391 @@
          width="113.30887"
          id="rect3069" /></flowRegion><flowPara
        style="font-size:20px"
-       id="flowPara3071">ST_Buffer</flowPara></flowRoot></svg>
+       id="flowPara3071">ST_Buffer</flowPara></flowRoot>  <path
+     style="fill:none;stroke:#000000;stroke-width:1.20697594px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline"
+     d="m 0.063555,-449.67898 0,401.37174"
+     id="path2985-8-0"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cc"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.11578512px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline"
+     d="m -20.447103,-389.2586 328.023123,0"
+     id="path2987-8-3"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cc"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path2989-7-9"
+     d="m 40.1222,-451.1507 0,399.83371"
+     style="fill:none;stroke:#000000;stroke-width:0.51728928;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.06915722, 4.13831444;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <image
+     y="-301.70709"
+     x="106.63342"
+     id="image3334"
+     xlink:href="data:image/png;base64,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
+RK5CYII=
+"
+     height="207.98622"
+     width="91.154442" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.51728928;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.06915722, 4.13831444;stroke-dashoffset:0;display:inline"
+     d="m 78.10266,-451.1507 0,399.83371"
+     id="path2991-5-2"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path2993-8-5"
+     d="m 116.08311,-451.1507 0,399.83371"
+     style="fill:none;stroke:#000000;stroke-width:0.51728928;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.06915722, 4.13831444;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.51728928;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.06915722, 4.13831444;stroke-dashoffset:0;display:inline"
+     d="m 154.06356,-451.1507 0,399.83371"
+     id="path2995-9-7"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path2997-6-1"
+     d="m 192.04401,-451.1507 0,399.83371"
+     style="fill:none;stroke:#000000;stroke-width:0.51728928;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.06915722, 4.13831444;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path2999-7-4"
+     d="m 0.088582,-429.23331 289.974948,0"
+     style="fill:none;stroke:#000000;stroke-width:0.45005405;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.80021604, 3.60043209;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.45005405;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.80021604, 3.60043209;stroke-dashoffset:0;display:inline"
+     d="m 0.088582,-229.2646 289.974948,0"
+     id="path3001-2-2"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path3003-6-0"
+     d="m 0.088582,-269.25833 289.974948,0"
+     style="fill:none;stroke:#000000;stroke-width:0.45005405;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.80021604, 3.60043209;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.45005405;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.80021604, 3.60043209;stroke-dashoffset:0;display:inline"
+     d="m 0.088582,-309.25207 289.974948,0"
+     id="path3005-4-2"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path3007-2-3"
+     d="m 0.088582,-349.24582 289.974948,0"
+     style="fill:none;stroke:#000000;stroke-width:0.45005405;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.80021604, 3.60043209;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <flowRoot
+     xml:space="preserve"
+     id="flowRoot3804-2-4"
+     style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     transform="matrix(0.61674087,0,0,0.61674087,-22.506045,-778.94665)"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669"><flowRegion
+       id="flowRegion3806-7-9"><rect
+         id="rect3808-6-2"
+         width="121.21831"
+         height="48.487324"
+         x="487.39859"
+         y="626.07782" /></flowRegion><flowPara
+       id="flowPara3810-2-5"
+       style="font-style:italic">x</flowPara></flowRoot>  <flowRoot
+     transform="matrix(0.61674087,0,0,0.61674087,-322.27008,-825.4366)"
+     style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     id="flowRoot3812-8-8"
+     xml:space="preserve"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669"><flowRegion
+       id="flowRegion3814-8-2"><rect
+         y="626.07782"
+         x="487.39859"
+         height="48.487324"
+         width="121.21831"
+         id="rect3816-1-5" /></flowRegion><flowPara
+       style="font-style:italic"
+       id="flowPara3818-8-8">y</flowPara></flowRoot>  <flowRoot
+     transform="matrix(0.26110367,0,0,0.26110367,-149.71672,-548.65397)"
+     style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     id="flowRoot4814-7-5"
+     xml:space="preserve"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669"><flowRegion
+       id="flowRegion4816-0-4"><rect
+         y="626.07782"
+         x="487.39859"
+         height="48.487324"
+         width="121.21831"
+         id="rect4818-9-3" /></flowRegion><flowPara
+       style="font-style:italic"
+       id="flowPara4820-5-1">0,0</flowPara></flowRoot>  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:connector-curvature="0"
+     id="path3439-3"
+     d="m 0.088582,-109.28336 289.974948,0"
+     style="fill:none;stroke:#000000;stroke-width:0.45005405;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.80021604, 3.60043209;stroke-dashoffset:0;display:inline" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.45005405;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.80021604, 3.60043209;stroke-dashoffset:0;display:inline"
+     d="m 0.088582,-149.2771 289.974948,0"
+     id="path3441-7"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:connector-curvature="0"
+     id="path3443-48"
+     d="m 0.088582,-189.27084 289.974948,0"
+     style="fill:none;stroke:#000000;stroke-width:0.45005405;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.80021604, 3.60043209;stroke-dashoffset:0;display:inline" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:connector-curvature="0"
+     id="path3462-2"
+     d="m 230.02446,-451.1507 0,399.83371"
+     style="fill:none;stroke:#000000;stroke-width:0.51728928;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.06915722, 4.13831444;stroke-dashoffset:0;display:inline" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.51728928;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.06915722, 4.13831444;stroke-dashoffset:0;display:inline"
+     d="m 268.00491,-451.1507 0,399.83371"
+     id="path3464-4"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.45005405;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.80021604, 3.60043209;stroke-dashoffset:0;display:inline"
+     d="m 0.088582,-69.28336 289.974948,0"
+     id="path3337"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+</svg>
