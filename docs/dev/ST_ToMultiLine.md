@@ -2,21 +2,22 @@
 layout: docs
 title: ST_ToMultiLine
 category: h2spatial-ext/geometry-conversion
-description: Construct a <code>MULTILINESTRING</code> from a Geometry's coordinates
+description: Geometry's coordinates &rarr; <code>MULTILINESTRING</code>
 prev_section: ST_Holes
 next_section: ST_ToMultiPoint
 permalink: /docs/dev/ST_ToMultiLine/
 ---
 
-### Signature
+### Signatures
 
 {% highlight mysql %}
 MULTILINESTRING ST_ToMultiLine(GEOMETRY geom);
+MULTILINESTRING ST_ToMultiLine(GEOMETRYCOLLECTION geom);
 {% endhighlight %}
 
 ### Description
 
-Constructs a `MULTILINESTRING` from the given Geometry's coordinates. Returns
+Constructs a `MULTILINESTRING` from `geom`'s coordinates. Returns
 `MULTILINESTRING EMPTY` for Geometries of dimension 0.
 
 ### Examples
@@ -45,6 +46,11 @@ SELECT ST_ToMultiLine('POINT(2 4)');
 -- Answer: MULTILINESTRING EMPTY
 {% endhighlight %}
 
+##### Comparison with [`ST_ToMultiSegments`](../ST_ToMultiSegments)
+
+{% include multiline-multiseg-cf.html %}
+
 ##### See also
 
+* [`ST_ToMultiSegments`](../ST_ToMultiSegments)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_ToMultiLine.java" target="_blank">Source code</a>
