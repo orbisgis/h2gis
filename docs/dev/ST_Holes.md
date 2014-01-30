@@ -8,7 +8,7 @@ next_section: ST_ToMultiLine
 permalink: /docs/dev/ST_Holes/
 ---
 
-### Signature
+### Signatures
 
 {% highlight mysql %}
 GEOMETRYCOLLECTION ST_Holes(GEOMETRY geom)
@@ -17,19 +17,13 @@ GEOMETRYCOLLECTION ST_Holes(GEOMETRYCOLLECTION geom)
 
 ### Description
 
-Returns the given `GEOMETRY` or `GEOMETRYCOLLECTION`'s holes as a
-`GEOMETRYCOLLECTION`. Returns `GEOMETRYCOLLECTION EMPTY` for Geometries of
-dimension less than 2.
+Returns `geom`'s holes as a `GEOMETRYCOLLECTION`.
+
+Returns `GEOMETRYCOLLECTION EMPTY` for Geometries of dimension less than 2.
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_Holes('LINESTRING EMPTY');
--- Answer: GEOMETRYCOLLECTION EMPTY
-
-SELECT ST_Holes('LINESTRING(5 5, 1 2, 3 4, 99 3)');
--- Answer: GEOMETRYCOLLECTION EMPTY
-
 SELECT ST_Holes('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))');
 -- Answer: GEOMETRYCOLLECTION EMPTY
 
@@ -51,6 +45,11 @@ SELECT ST_Holes('GEOMETRYCOLLECTION(
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Holes_2.png"/>
+
+{% highlight mysql %}
+SELECT ST_Holes('LINESTRING(5 5, 1 2, 3 4, 9 3)');
+-- Answer: GEOMETRYCOLLECTION EMPTY
+{% endhighlight %}
 
 ##### See also
 
