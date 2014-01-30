@@ -11,28 +11,31 @@ permalink: /docs/dev/ST_Transform/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_Transform(GEOMETRY geom, int SRID);
+GEOMETRY ST_Transform(GEOMETRY geom, int srid);
 {% endhighlight %}
 
 ### Description
 
-This function is used to transform a `GEOMETRY` from one CRS coordinate reference system to another.
-Only integer codes available in the spatial_ref_sys table are allowed.
+Transforms `geom` from its original coordinate reference system (CRS) to the
+CRS specified by `srid`.
 
-*Note:* If you want know the `SRID` of a CRS go to h2gis and type: SELECT * FROM spatial_ref_sys;
-The `SRID` is principaly CodeEPSG but the spatial_ref_sys table can be enriched by other CRS.
-The other CRS are not recognized by the EPSG but they have a `SRID`.
+<div class="note">
+    <h5>Find the SRID you're looking for.</h5>
+    <p> All available CRS SRIDs may be found by executing
+    <code> SELECT * FROM SPATIAL_REF_SYS; </code>
+    Most SRIDs are EPSG, but the <code>SPATIAL_REF_SYS</code> table may be
+    enriched by other CRSes.</p>
+</div>
+
 
 {% include sfs-1-2-1.html %}
 
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE init AS SELECT 
-    ST_GeomFromText('POINT(584173.736059813 2594514.82833411)',
-    27572) As the_geom;
-SELECT ST_TRANSFORM(the_geom, 4326) FROM init;
--- Answer: POINT (2.114551398096724 50.34560979151726)
+SELECT ST_Transform(ST_GeomFromText(
+    'POINT(584173 2594514)', 27572), 4326);
+-- Answer: POINT (2.1145411092971056 50.345602339855326)
 {% endhighlight %}
 
 ##### See also
