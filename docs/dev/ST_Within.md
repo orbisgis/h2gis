@@ -25,10 +25,7 @@ As a consequence, the following are equivalent:
 * `ST_Within(geomA, geomB)` and `ST_Within(geomB, geomA)` are true.
 * `ST_Equals(geomA, geomB)` is true.
 
-<div class="note warning">
-    <h5>This function does not work on <code>GEOMETRYCOLLECTION</code>s.</h5>
-</div>
-
+{% include geom-coll-warning.html %}
 {% include sfs-1-2-1.html %}
 
 ### Examples

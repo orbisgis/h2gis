@@ -20,10 +20,7 @@ Returns true if `geomA` intersects `geomB`.
 
 Intersects means that `geomA` and `geomB` have at least one point in common.
 
-<div class="note warning">
-    <h5>This function does not work on <code>GEOMETRYCOLLECTION</code>s.</h5>
-</div>
-
+{% include geom-coll-warning.html %}
 {% include sfs-1-2-1.html %}
 
 ### Examples

@@ -24,10 +24,7 @@ Overlaps means that the two geometries:
   * the intersection of their interiors has the same dimension as the
     geometries themselves.
 
-<div class="note warning">
-    <h5>This function does not work on <code>GEOMETRYCOLLECTION</code>s.</h5>
-</div>
-
+{% include geom-coll-warning.html %}
 {% include sfs-1-2-1.html %}
 
 ### Examples
