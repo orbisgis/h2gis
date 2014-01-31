@@ -289,8 +289,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4142136"
-     inkscape:cx="115.42316"
-     inkscape:cy="583.6197"
+     inkscape:cx="170.94127"
+     inkscape:cy="506.1736"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -506,8 +506,8 @@
        x="-1.6481193"
        y="424.87839"
        inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_Boundary_2.png"
-       inkscape:export-xdpi="85.640556"
-       inkscape:export-ydpi="85.640556" />
+       inkscape:export-xdpi="80.288025"
+       inkscape:export-ydpi="80.288025" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.9856891;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline"
        d="m 32.141751,436.95046 0,321.19932"
@@ -771,7 +771,7 @@
        inkscape:export-ydpi="84"
        sodipodi:nodetypes="ccccc" />
     <path
-       style="fill:none;stroke:#f8f300;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:8, 8;stroke-dashoffset:0"
+       style="fill:none;stroke:#f86713;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:8, 8;stroke-dashoffset:0"
        d="M 432.66094,734.69448 432.18585,494.7588 32.179688,494.7762 32.504815,734.25247 z"
        id="path4187"
        inkscape:connector-curvature="0" />
