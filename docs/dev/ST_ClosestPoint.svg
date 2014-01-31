@@ -666,8 +666,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1.1920529"
-     inkscape:cx="1261.9284"
-     inkscape:cy="862.33788"
+     inkscape:cx="407.90037"
+     inkscape:cy="1178.723"
      inkscape:document-units="px"
      inkscape:current-layer="layer6"
      showgrid="false"
@@ -903,7 +903,7 @@
        y="64.27285" />
     <path
        sodipodi:type="arc"
-       style="fill:#d40000;fill-opacity:0.32549020000000001;stroke:#e07400;stroke-width:0.45225078000000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.35675229999999991, 1.35675229999999991;stroke-dashoffset:0;display:inline"
+       style="fill:#d40000;fill-opacity:0.32549020000000001;stroke:#d40000;stroke-width:0.45225078000000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.35675229999999991, 1.35675229999999991;stroke-dashoffset:0;display:inline"
        id="path3691-8-0-2-7-0"
        sodipodi:cx="135.32256"
        sodipodi:cy="827.41382"
@@ -1179,7 +1179,7 @@
        sodipodi:cy="827.41382"
        sodipodi:cx="135.32256"
        id="path10561"
-       style="fill:#d40000;fill-opacity:0.32549020000000001;stroke:#0648f3;stroke-width:0.45225078000000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.35675229999999991, 1.35675229999999991;stroke-dashoffset:0;display:inline"
+       style="fill:#d40000;fill-opacity:0.32549020000000001;stroke:#d40000;stroke-width:0.45225078000000002;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.35675229999999991, 1.35675229999999991;stroke-dashoffset:0;display:inline"
        sodipodi:type="arc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.23688672;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:0.94754701, 1.89509402;stroke-dashoffset:0;display:inline"
@@ -1293,31 +1293,7 @@
            x="179.60512"
            y="-249.42136"
            style="font-size:28px" /></flowRegion><flowPara
-         id="flowPara9934-5">B'</flowPara></flowRoot>    <flowRoot
-       xml:space="preserve"
-       id="flowRoot9928-9"
-       style="font-size:28px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
-       transform="translate(89.292711,1021.7289)"><flowRegion
-         id="flowRegion9930-9"><rect
-           id="rect9932-4"
-           width="34.648232"
-           height="35.355331"
-           x="179.60512"
-           y="-249.42136"
-           style="font-size:28px" /></flowRegion><flowPara
-         id="flowPara9934-9">A'</flowPara></flowRoot>    <flowRoot
-       xml:space="preserve"
-       id="flowRoot9928-9-8"
-       style="font-size:28px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans;-inkscape-font-specification:Sans"
-       transform="translate(-7.1598142,871.67962)"><flowRegion
-         id="flowRegion9930-9-5"><rect
-           id="rect9932-4-9"
-           width="34.648232"
-           height="35.355331"
-           x="179.60512"
-           y="-249.42136"
-           style="font-size:28px;font-weight:normal;fill:#000000;fill-opacity:1;-inkscape-font-specification:Sans" /></flowRegion><flowPara
-         id="flowPara9934-9-0">A'</flowPara></flowRoot>    <rect
+         id="flowPara9934-5">B'</flowPara></flowRoot>    <rect
        style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
        id="rect3590-3-2-2"
        width="712.64154"
@@ -2274,33 +2250,7 @@
        id="path10569-2"
        d="m 1159.398,55.111401 0,289.308639"
        style="fill:none;stroke:#000000;stroke-width:0.87636095;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
-    <flowRoot
-       xml:space="preserve"
-       id="flowRoot9928-1"
-       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
-       transform="translate(785.57052,535.30334)"
-       inkscape:transform-center-x="-16.777779"
-       inkscape:transform-center-y="-53.688892"><flowRegion
-         id="flowRegion9930-1"><rect
-           id="rect9932-96"
-           width="34.648232"
-           height="35.355331"
-           x="179.60512"
-           y="-249.42136"
-           style="font-size:24px" /></flowRegion><flowPara
-         id="flowPara9934-0">A'</flowPara></flowRoot>    <flowRoot
-       xml:space="preserve"
-       id="flowRoot9928-6-5"
-       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
-       transform="translate(998.4186,325.87245)"><flowRegion
-         id="flowRegion9930-8-7"><rect
-           id="rect9932-9-7"
-           width="34.648232"
-           height="35.355331"
-           x="179.60512"
-           y="-249.42136"
-           style="font-size:24px" /></flowRegion><flowPara
-         id="flowPara9934-5-4">A'</flowPara></flowRoot>    <path
+    <path
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path4925"
@@ -2841,11 +2791,6 @@
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
        inkscape:export-xdpi="111"
        inkscape:export-ydpi="111" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1.51975143;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:6.0790058, 6.0790058;stroke-dashoffset:0"
-       d="m 203.59013,554.32204 -22.13024,79.17469"
-       id="path10030"
-       inkscape:connector-curvature="0" />
     <path
        sodipodi:type="arc"
        style="fill:#d40000;fill-opacity:0.53333285;stroke:#d40000;stroke-width:0.45225078;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.3567523, 1.3567523;stroke-dashoffset:0;display:inline"
