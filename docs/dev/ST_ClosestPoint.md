@@ -2,7 +2,7 @@
 layout: docs
 title: ST_ClosestPoint
 category: h2spatial-ext/distance-functions
-description: Return the 2D point on Geometry A that is closest to Geometry B.
+description: Return the point of Geometry A closest to Geometry B
 prev_section: ST_ClosestCoordinate
 next_section: ST_FurthestCoordinate
 permalink: /docs/dev/ST_ClosestPoint/
@@ -11,11 +11,23 @@ permalink: /docs/dev/ST_ClosestPoint/
 ### Signature
 
 {% highlight mysql %}
-Point ST_ClosestPoint(GEOMETRY geomA, GEOMETRY geomB);
+POINT ST_ClosestPoint(GEOMETRY geomA, GEOMETRY geomB);
 {% endhighlight %}
 
 ### Description
-`ST_ClosestPoint` returns the 2D point on `geomA` that is closest to `geomB`. If the closest `POINT` is not unique, it returns the first one it finds. This means that the `POINT` returned depends on the order of the Geometry's coordinates.
+
+Returns the point of `geomA` closest to `geomB` using 2D distances
+(z-coordinates are ignored).
+
+<div class="note">
+  <h5>What if the closest point is not unique?</h5>
+  <p> Then the first one found is returned.</p>
+</div>
+
+<div class="note warning">
+  <h5>The point returned depends on the order of the Geometry's
+  coordinates.</h5>
+</div>
 
 ### Examples
 
@@ -50,30 +62,41 @@ SELECT  ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
 <img class="displayed" src="../ST_ClosestPoint_3.png"/>
 
 {% highlight mysql %}
-SELECT ST_ClosestPoint('LINESTRING(1 1, 1 5))', 
-    'LINESTRING(2 1, 2 5))'),
-  ST_ClosestPoint('LINESTRING(1 1, 1 5))', 
-    'LINESTRING(2 5, 2 1))');
--- Answer: POINT(1 1)
---  POINT(1 5)
+-- This example shows that the POINT returned by ST_ClosestPoint
+-- depends on the orientations of Geometries A and B. If they have the
+-- same orientation, the POINT returned is the first POINT found in A.
+-- If they have opposite orientation, the POINT returned is the POINT
+-- of A closest to the first POINT found in B.
+SELECT ST_ClosestPoint('LINESTRING(1 1, 1 5))',
+                       'LINESTRING(2 1, 2 5))') A,
+       ST_ClosestPoint('LINESTRING(1 1, 1 5))',
+                       'LINESTRING(2 5, 2 1))') B;
+-- Answer:
+-- |      A      |      B      |
+-- |-------------|-------------|
+-- | POINT (1 1) | POINT (1 5) |
 {% endhighlight %}
 
-This example shows that the `POINT` returned by `ST_ClosestPoint` depends on the orientations of Geometries A and B. If they have the same orientation, the `POINT` returned is the first `POINT` found in A. If they have opposite orientation, the `POINT` returned is the `POINT` of A closest to the first `POINT` found in B.
 <img class="displayed" src="../ST_ClosestPoint_5.png"/>
 
 {% highlight mysql %}
+-- In this example, there are infinitely many closest points, but
+-- ST_ClosestPoint returns the first one it finds. The POLYGON listed
+-- as the second parameter remains the same, but its coordinates are
+-- listed in a different order.
 SELECT ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
-    'POLYGON((13 2, 15 0, 13 4, 13 2))'),
-  ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
-    'POLYGON((13 4, 13 2, 15 0, 13 4))');
--- Answer: POINT(10 2)
---  POINT(10 4)
+                       'POLYGON((13 2, 15 0, 13 4, 13 2))') A,
+       ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
+                       'POLYGON((13 4, 13 2, 15 0, 13 4))') B;
+-- Answer:
+-- |      A       |      B       |
+-- |--------------|--------------|
+-- | POINT (10 2) | POINT (10 4) |
 {% endhighlight %}
 
-In this example, there are infinitely many closest points, but `ST_ClosestPoint` returns the first one it finds. The `POLYGON` listed as the second parameter remains the same, but its coordinates are listed in a different order.
 <img class="displayed" src="../ST_ClosestPoint_4.png"/>
-
 
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_ClosestPoint.java" target="_blank">Source code</a>
+* Added: <a href="https://github.com/irstv/H2GIS/pull/62" target="_blank">#62</a>
