@@ -34,6 +34,8 @@ import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.List;
@@ -46,6 +48,7 @@ import java.util.List;
  */
 public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ST_Graph.class);
     private static Integer spatialFieldIndex;
     private static final GeometryFactory GF = new GeometryFactory();
     private static String nodesName;
@@ -142,8 +145,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
                 final Coordinate[] coordinates = geom.getCoordinates();
 
-                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[0], quadtree, "start_node");
-                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], quadtree, "end_node");
+                node_id = insertNode(conn, nodesTable, edgesTable, node_id, coordinates[0], quadtree, "start_node");
+                node_id = insertNode(conn, nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], quadtree, "end_node");
                 edgesTable.updateRow();
             }
         } finally {
@@ -152,7 +155,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
     }
 
-    private static int insertNode(SpatialResultSet nodesTable,
+    private static int insertNode(Connection conn,
+                                  SpatialResultSet nodesTable,
                                   SpatialResultSet edgesTable,
                                   int node_id,
                                   Coordinate coord,
@@ -160,7 +164,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                   String edgeColumnName) throws SQLException {
         Envelope envelope = new Envelope(coord);
         final List nearbyNodes = quadtree.query(envelope);
-        if (nearbyNodes.size() > 0) {
+
+        if (envelopeIntersects(conn, envelope, nearbyNodes)) {
             edgesTable.updateInt(edgeColumnName, (Integer) nearbyNodes.get(0));
         } else {
             nodesTable.moveToInsertRow();
@@ -171,5 +176,24 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             edgesTable.updateInt(edgeColumnName, node_id);
         }
         return node_id;
+    }
+
+
+    private static boolean envelopeIntersects(Connection conn, Envelope envelope, List nearbyNodes) throws SQLException {
+        if (nearbyNodes.size() == 0) {
+            return false;
+        }
+        if (nearbyNodes.size() > 1) {
+            LOGGER.warn("Found {} nearby nodes.", nearbyNodes.size());
+        }
+
+        final Integer firstFoundNode = (Integer) nearbyNodes.get(0);
+        SpatialResultSet matchingNodeRS =
+                conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
+                        executeQuery("SELECT the_geom FROM " + nodesName + " WHERE node_id=" + firstFoundNode).
+                        unwrap(SpatialResultSet.class);
+        matchingNodeRS.next();
+        final Geometry nodePoint = matchingNodeRS.getGeometry(1);
+        return envelope.contains(nodePoint.getEnvelopeInternal());
     }
 }
