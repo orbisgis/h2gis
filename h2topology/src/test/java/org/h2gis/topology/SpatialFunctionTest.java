@@ -37,9 +37,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.Arrays;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Adam Gouge
@@ -69,31 +67,70 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Graph() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("CREATE TABLE test(road LINESTRING);" +
+
+        // Prepare the input table.
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0, 1 2)'),"
-                + "('LINESTRING (1 2, 2 3, 4 3)'),"
-                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)'),"
-                + "('LINESTRING (4 3, 5 2)');");
+                + "('LINESTRING (0 0, 1 2)', 'road1'),"
+                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2'),"
+                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3'),"
+                + "('LINESTRING (4 3, 5 2)', 'road4');");
+
+        // Make sure everything went OK.
         ResultSet rs = st.executeQuery("SELECT ST_Graph('test')");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
+
         // Test nodes table.
-        // TODO: Remove duplicate nodes using RTree or something similar.
         ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
-        assertEquals(1, nodesResult.getInt(1));
-        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(2));
+        assertEquals(1, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes("the_geom"));
         assertTrue(nodesResult.next());
-        assertEquals(2, nodesResult.getInt(1));
-        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(2));
+        assertEquals(2, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes("the_geom"));
         assertTrue(nodesResult.next());
-        assertEquals(3, nodesResult.getInt(1));
-        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(2));
+        assertEquals(3, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes("the_geom"));
         assertTrue(nodesResult.next());
-        assertEquals(4, nodesResult.getInt(1));
-        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(2));
+        assertEquals(4, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes("the_geom"));
+        assertFalse(nodesResult.next());
+
+        // Test edges table.
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        // This is a copy of the original table with three columns added.
+        assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (0 0, 1 2)", edgesResult.getBytes("road"));
+        assertEquals("road1", edgesResult.getString("description"));
+        assertEquals(1, edgesResult.getInt("edge_id"));
+        assertEquals(1, edgesResult.getInt("start_node"));
+        assertEquals(2, edgesResult.getInt("end_node"));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (1 2, 2 3, 4 3)", edgesResult.getBytes("road"));
+        assertEquals("road2", edgesResult.getString("description"));
+        assertEquals(2, edgesResult.getInt("edge_id"));
+        assertEquals(2, edgesResult.getInt("start_node"));
+        assertEquals(3, edgesResult.getInt("end_node"));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (4 3, 4 4, 1 4, 1 2)", edgesResult.getBytes("road"));
+        assertEquals("road3", edgesResult.getString("description"));
+        assertEquals(3, edgesResult.getInt("edge_id"));
+        assertEquals(3, edgesResult.getInt("start_node"));
+        assertEquals(2, edgesResult.getInt("end_node"));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (4 3, 5 2)", edgesResult.getBytes("road"));
+        assertEquals("road4", edgesResult.getString("description"));
+        assertEquals(4, edgesResult.getInt("edge_id"));
+        assertEquals(3, edgesResult.getInt("start_node"));
+        assertEquals(4, edgesResult.getInt("end_node"));
+        assertFalse(edgesResult.next());
+
         st.execute("DROP TABLE test");
+        st.execute("DROP TABLE test_nodes");
+        st.execute("DROP TABLE test_edges");
     }
 }

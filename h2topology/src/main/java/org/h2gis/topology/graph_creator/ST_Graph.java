@@ -48,6 +48,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     private static Integer spatialFieldIndex;
     private static final GeometryFactory GF = new GeometryFactory();
+    private static String nodesName;
+    private static String edgesName;
 
     public ST_Graph() {
         addProperty(PROP_REMARKS, "produces two tables (nodes and edges) "
@@ -67,6 +69,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     public static boolean createGraph(Connection connection,
                                String tableName,
                                String spatialFieldName) throws SQLException {
+
+        nodesName = tableName + "_nodes";
+        edgesName = tableName + "_edges";
 
         Connection wrappedConnection = SFSUtilities.wrapConnection(connection);
         Statement st = wrappedConnection.createStatement();
@@ -113,31 +118,35 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     private static void setupOutputTables(String tableName, Statement st) throws SQLException {
-        final String nodesName = tableName + "_nodes";
-        final String edgesName = tableName + "_edges";
         st.execute("CREATE TABLE " + nodesName + " (node_id INT PRIMARY KEY, the_geom POINT);");
-        st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + " LIMIT 0;" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN edge_id INTEGER NOT NULL AUTO_INCREMENT;" +
+
+        st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + ";" +
+                "ALTER TABLE " + edgesName + " ADD COLUMN edge_id INT IDENTITY;" +
                 "ALTER TABLE " + edgesName + " ADD COLUMN start_node INTEGER;" +
                 "ALTER TABLE " + edgesName + " ADD COLUMN end_node INTEGER;");
     }
 
     private static void updateTables(Connection conn, String tableName, Statement st, Quadtree quadtree) throws SQLException {
         SpatialResultSet inputTableResultSet = st.executeQuery("SELECT * FROM " + tableName).unwrap(SpatialResultSet.class);
-        final String nodesName = tableName + "_nodes";
         SpatialResultSet nodesTable =
                 conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
                         executeQuery("SELECT * FROM " + nodesName).
+                        unwrap(SpatialResultSet.class);
+        SpatialResultSet edgesTable =
+                conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
+                        executeQuery("SELECT * FROM " + edgesName).
                         unwrap(SpatialResultSet.class);
         try {
             int node_id = 0;
             while (inputTableResultSet.next()) {
                 final Geometry geom = inputTableResultSet.getGeometry(spatialFieldIndex);
-                final GeometryFactory factory = geom.getFactory();
                 final Coordinate[] coordinates = geom.getCoordinates();
 
-                node_id = insertNode(nodesTable, node_id, coordinates[0], quadtree);
-                node_id = insertNode(nodesTable, node_id, coordinates[coordinates.length - 1], quadtree);
+                if (edgesTable.absolute(inputTableResultSet.getRow())) {
+                    node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[0], quadtree, "start_node");
+                    node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], quadtree, "end_node");
+                    edgesTable.updateRow();
+                }
             }
         } finally {
             inputTableResultSet.close();
@@ -145,15 +154,23 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
     }
 
-    private static int insertNode(SpatialResultSet nodesTable, int node_id, Coordinate coord, Quadtree quadtree) throws SQLException {
+    private static int insertNode(SpatialResultSet nodesTable,
+                                  SpatialResultSet edgesTable,
+                                  int node_id,
+                                  Coordinate coord,
+                                  Quadtree quadtree,
+                                  String edgeColumnName) throws SQLException {
         Envelope envelope = new Envelope(coord);
         final List nearbyNodes = quadtree.query(envelope);
-        if (nearbyNodes.size() == 0) {
+        if (nearbyNodes.size() > 0) {
+            edgesTable.updateInt(edgeColumnName, (Integer) nearbyNodes.get(0));
+        } else {
             nodesTable.moveToInsertRow();
             nodesTable.updateInt("node_id", ++node_id);
             nodesTable.updateGeometry("the_geom", GF.createPoint(coord));
             nodesTable.insertRow();
             quadtree.insert(envelope, node_id);
+            edgesTable.updateInt(edgeColumnName, node_id);
         }
         return node_id;
     }
