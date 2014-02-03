@@ -170,7 +170,7 @@ public class SpatialFunctionTest {
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES " +
                 "('LINESTRING (0 0 0, 1 0 0)', 'road1');");
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1, true)");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
@@ -201,7 +201,7 @@ public class SpatialFunctionTest {
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES " +
                 "('LINESTRING (0 0 1, 1 0 0)', 'road1');");
-        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1, true)");
+        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
@@ -232,7 +232,7 @@ public class SpatialFunctionTest {
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES " +
                 "('LINESTRING (0 0 0, 1 0 1)', 'road1');");
-        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1, true)");
+        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
