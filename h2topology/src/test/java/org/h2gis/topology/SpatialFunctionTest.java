@@ -75,10 +75,11 @@ public class SpatialFunctionTest {
                 + "('LINESTRING (1 2, 2 3, 4 3)', 'road2'),"
                 + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3'),"
                 + "('LINESTRING (4 3, 5 2)', 'road4'),"
-                + "('LINESTRING (4.05 4.1, 7 5)', 'road5');");
+                + "('LINESTRING (4.05 4.1, 7 5)', 'road5'),"
+                + "('LINESTRING (7.1 5, 8 4)', 'road6');");
 
         // Make sure everything went OK.
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test')");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
@@ -104,6 +105,9 @@ public class SpatialFunctionTest {
         assertTrue(nodesResult.next());
         assertEquals(6, nodesResult.getInt("node_id"));
         assertGeometryEquals("POINT (7 5)", nodesResult.getBytes("the_geom"));
+        assertTrue(nodesResult.next());
+        assertEquals(7, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (8 4)", nodesResult.getBytes("the_geom"));
         assertFalse(nodesResult.next());
 
         // Test edges table.
@@ -140,6 +144,12 @@ public class SpatialFunctionTest {
         assertEquals(5, edgesResult.getInt("edge_id"));
         assertEquals(5, edgesResult.getInt("start_node"));
         assertEquals(6, edgesResult.getInt("end_node"));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (7.1 5, 8 4)", edgesResult.getBytes("road"));
+        assertEquals("road6", edgesResult.getString("description"));
+        assertEquals(6, edgesResult.getInt("edge_id"));
+        assertEquals(6, edgesResult.getInt("start_node"));
+        assertEquals(7, edgesResult.getInt("end_node"));
         assertFalse(edgesResult.next());
 
         st.execute("DROP TABLE test");

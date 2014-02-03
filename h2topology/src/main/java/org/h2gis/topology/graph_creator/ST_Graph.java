@@ -38,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -51,10 +52,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static final Logger LOGGER = LoggerFactory.getLogger(ST_Graph.class);
     private static Integer spatialFieldIndex;
     private static final GeometryFactory GF = new GeometryFactory();
+    private static Quadtree quadtree;
     private static Connection connection;
     private static String tableName;
     private static String nodesName;
     private static String edgesName;
+    private static double tolerance;
 
     public ST_Graph() {
         addProperty(PROP_REMARKS, "produces two tables (nodes and edges) "
@@ -67,17 +70,28 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return "createGraph";
     }
 
-    public static boolean createGraph(Connection connection, String inputTable) throws SQLException {
+    public static boolean createGraph(Connection connection,
+                                      String inputTable) throws SQLException {
         return createGraph(connection, inputTable, null);
     }
 
     public static boolean createGraph(Connection connection,
                                       String tableName,
                                       String spatialFieldName) throws SQLException {
+        // The default tolerance is zero.
+        return createGraph(connection, tableName, spatialFieldName, 0.0);
+    }
+
+    public static boolean createGraph(Connection connection,
+                                      String tableName,
+                                      String spatialFieldName,
+                                      double tolerance) throws SQLException {
         ST_Graph.tableName = tableName;
         nodesName = tableName + "_nodes";
         edgesName = tableName + "_edges";
         ST_Graph.connection = SFSUtilities.wrapConnection(connection);
+        ST_Graph.quadtree = new Quadtree();
+        ST_Graph.tolerance = tolerance;
 
         getSpatialFieldIndex(spatialFieldName);
         setupOutputTables();
@@ -146,8 +160,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
                 final Coordinate[] coordinates = geom.getCoordinates();
 
-                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[0], quadtree, "start_node");
-                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], quadtree, "end_node");
+                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[0], "start_node");
+                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], "end_node");
                 edgesTable.updateRow();
             }
         } finally {
@@ -160,13 +174,13 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                   SpatialResultSet edgesTable,
                                   int node_id,
                                   Coordinate coord,
-                                  Quadtree quadtree,
                                   String edgeColumnName) throws SQLException {
         Envelope envelope = new Envelope(coord);
-        final List nearbyNodes = quadtree.query(envelope);
+        envelope.expandBy(tolerance);
 
-        if (envelopeIntersects(envelope, nearbyNodes)) {
-            edgesTable.updateInt(edgeColumnName, (Integer) nearbyNodes.get(0));
+        final List<Integer> nearbyIntersectingNodes = findNearbyIntersectingNodes(envelope);
+        if (nearbyIntersectingNodes.size() == 1) {
+            edgesTable.updateInt(edgeColumnName, nearbyIntersectingNodes.get(0));
         } else {
             nodesTable.moveToInsertRow();
             nodesTable.updateInt("node_id", ++node_id);
@@ -179,21 +193,22 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
 
-    private static boolean envelopeIntersects(Envelope envelope, List nearbyNodes) throws SQLException {
-        if (nearbyNodes.size() == 0) {
-            return false;
+    private static List<Integer> findNearbyIntersectingNodes(Envelope envelope) throws SQLException {
+        final List<Integer> nearbyNodes = quadtree.query(envelope);
+        final List<Integer> nearbyIntersectingNodes = new ArrayList<Integer>();
+        for (Integer id : nearbyNodes) {
+            SpatialResultSet matchingNodeRS =
+                    connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
+                            executeQuery("SELECT the_geom FROM " + nodesName + " WHERE node_id=" + id).
+                            unwrap(SpatialResultSet.class);
+            matchingNodeRS.next();
+            if (envelope.contains(matchingNodeRS.getGeometry(1).getEnvelopeInternal())) {
+                nearbyIntersectingNodes.add(id);
+            }
         }
-        if (nearbyNodes.size() > 1) {
-            LOGGER.warn("Found {} nearby nodes.", nearbyNodes.size());
+        if (nearbyIntersectingNodes.size() > 1) {
+            LOGGER.warn("Found {} nearby intersecting nodes.", nearbyNodes.size());
         }
-
-        final Integer firstFoundNode = (Integer) nearbyNodes.get(0);
-        SpatialResultSet matchingNodeRS =
-                connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
-                        executeQuery("SELECT the_geom FROM " + nodesName + " WHERE node_id=" + firstFoundNode).
-                        unwrap(SpatialResultSet.class);
-        matchingNodeRS.next();
-        final Geometry nodePoint = matchingNodeRS.getGeometry(1);
-        return envelope.contains(nodePoint.getEnvelopeInternal());
+        return nearbyIntersectingNodes;
     }
 }
