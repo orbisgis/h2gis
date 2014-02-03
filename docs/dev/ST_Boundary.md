@@ -57,4 +57,5 @@ SELECT ST_Boundary('POLYGON((5 4, 1 1, 3 4, 4 5, 5 4))');
 
 ##### See also
 
+* [`ST_ExteriorRing`](../ST_ExteriorRing)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Boundary.java" target="_blank">Source code</a>
