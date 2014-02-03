@@ -163,6 +163,40 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
     }
 
+
+    @Test
+    public void test_ST_GeometryTypeCode() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('POINT(1 1)'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('LINESTRING(1 1, 2 2)'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('POLYGON((1 1, 2 2, 5 3, 1 1))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(3, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('MULTIPOINT(1 1,2 2)'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(4, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('MULTILINESTRING((1 1, 2 2),(3 3, 5 4))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(5, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('MULTIPOLYGON(((1 1, 2 2, 5 3, 1 1)),((0 0, 2 2, 5 3, 0 0)))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(6, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(7, rs.getInt(1));
+    }
+
     @Test
     public void test_ST_ASWkt() throws SQLException {
         Statement st = connection.createStatement();

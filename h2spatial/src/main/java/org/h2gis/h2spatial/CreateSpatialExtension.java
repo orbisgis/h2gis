@@ -69,6 +69,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_Transform;
+import org.h2gis.utilities.GeometryTypeCodes;
 
 /**
  * Add spatial features to an H2 database
@@ -154,7 +155,8 @@ public class CreateSpatialExtension {
                 new ST_Accum(),
                 new ST_Transform(),
                 new ST_SetSRID(),
-                new ST_CoordDim()};
+                new ST_CoordDim(),
+                new ST_GeometryTypeCode()};
     }
 
     /**
@@ -162,13 +164,13 @@ public class CreateSpatialExtension {
      */
     public static DomainInfo[] getBuiltInsType() {
         return new DomainInfo[] {
-                new DomainInfo("POINT", new SC_Point()),
-                new DomainInfo("LINESTRING", new SC_LineString()),
-                new DomainInfo("POLYGON", new SC_Polygon()),
-                new DomainInfo("GEOMCOLLECTION", new SC_GeomCollection()),
-                new DomainInfo("MULTIPOINT", new SC_MultiPoint()),
-                new DomainInfo("MULTILINESTRING", new SC_MultiLineString()),
-                new DomainInfo("MULTIPOLYGON", new SC_MultiPolygon())
+                new DomainInfo("POINT", GeometryTypeCodes.POINT),
+                new DomainInfo("LINESTRING", GeometryTypeCodes.LINESTRING),
+                new DomainInfo("POLYGON", GeometryTypeCodes.POLYGON),
+                new DomainInfo("GEOMCOLLECTION", GeometryTypeCodes.GEOMCOLLECTION),
+                new DomainInfo("MULTIPOINT", GeometryTypeCodes.MULTIPOINT),
+                new DomainInfo("MULTILINESTRING", GeometryTypeCodes.MULTILINESTRING),
+                new DomainInfo("MULTIPOLYGON", GeometryTypeCodes.MULTIPOLYGON)
         };
     }
 
@@ -180,8 +182,8 @@ public class CreateSpatialExtension {
      */
     public static void initSpatialExtension(Connection connection, String BundleSymbolicName, String BundleVersion) throws SQLException {
         String packagePrepend = BundleSymbolicName+":"+BundleVersion+":";
-        registerGeometryType(connection,packagePrepend);
         addSpatialFunctions(connection,packagePrepend);
+        registerGeometryType(connection);
         connection.commit();
     }
 
@@ -190,24 +192,21 @@ public class CreateSpatialExtension {
      * @param connection Active H2 connection
      */
     public static void initSpatialExtension(Connection connection) throws SQLException {
-        registerGeometryType(connection,"");
         addSpatialFunctions(connection,"");
+        registerGeometryType(connection);
         registerSpatialTables(connection);
     }
 
     /**
      * Register geometry type in an OSGi environment
      * @param connection Active H2 connection
-     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version:
      * @throws SQLException
      */
-    public static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
+    public static void registerGeometryType(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         for(DomainInfo domainInfo : getBuiltInsType()) {
-            // Do not drop constraint function as some table may use this constraint in CHECK statement
-            registerFunction(st,domainInfo.getDomainConstraint(),packagePrepend,false);
             // Check for byte array first, to not throw an enigmatic error CastException
-            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+" CHECK ("+getAlias(domainInfo.getDomainConstraint())+"(VALUE));");
+            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+" CHECK (ST_GeometryTypeCode(VALUE) = "+domainInfo.getGeometryTypeCode()+");");
         }
     }
 
@@ -239,12 +238,7 @@ public class CreateSpatialExtension {
         Statement st = connection.createStatement();
         DomainInfo[] domainInfos = getBuiltInsType();
         for(DomainInfo domainInfo : domainInfos) {
-            st.execute("DROP DOMAIN IF EXISTS "+domainInfo.getDomainName());
-        }
-        // Same constraint may be used by multiple domains
-        // Removal must be done in another loop
-        for(DomainInfo domainInfo : domainInfos) {
-            unRegisterFunction(st,domainInfo.getDomainConstraint());
+            st.execute("DROP DOMAIN IF EXISTS " + domainInfo.getDomainName());
         }
     }
 

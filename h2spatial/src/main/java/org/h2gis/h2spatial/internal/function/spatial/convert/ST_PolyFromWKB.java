@@ -28,9 +28,11 @@ package org.h2gis.h2spatial.internal.function.spatial.convert;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
-
-import org.h2gis.h2spatial.internal.type.SC_Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.jts_utils.GeometryMetaData;
+
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -57,13 +59,13 @@ public class ST_PolyFromWKB extends DeterministicScalarFunction {
      * @return Geometry instance of null if bytes are null
      * @throws SQLException Wkb parse exception
      */
-    public static Geometry toPolygon(byte[] bytes, int srid) throws SQLException {
+    public static Geometry toPolygon(byte[] bytes, int srid) throws SQLException, IOException {
         if(bytes==null) {
             return null;
         }
         WKBReader wkbReader = new WKBReader();
         try {
-            if(!SC_Polygon.isPolygon(bytes)) {
+            if(GeometryMetaData.getMetaDataFromWKB(bytes).geometryType != GeometryTypeCodes.POLYGON) {
                 throw new SQLException("Provided WKB is not a Polygon.");
             }
             Geometry geometry = wkbReader.read(bytes);
