@@ -51,6 +51,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static final Logger LOGGER = LoggerFactory.getLogger(ST_Graph.class);
     private static Integer spatialFieldIndex;
     private static final GeometryFactory GF = new GeometryFactory();
+    private static Connection connection;
+    private static String tableName;
     private static String nodesName;
     private static String edgesName;
 
@@ -72,25 +74,23 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     public static boolean createGraph(Connection connection,
                                       String tableName,
                                       String spatialFieldName) throws SQLException {
-
+        ST_Graph.tableName = tableName;
         nodesName = tableName + "_nodes";
         edgesName = tableName + "_edges";
+        ST_Graph.connection = SFSUtilities.wrapConnection(connection);
 
-        Connection wrappedConnection = SFSUtilities.wrapConnection(connection);
-
-        Statement st = wrappedConnection.createStatement();
-        getSpatialFieldIndex(connection, tableName, spatialFieldName, st);
-        setupOutputTables(tableName, st);
-
-        updateTables(wrappedConnection);
+        getSpatialFieldIndex(spatialFieldName);
+        setupOutputTables();
+        updateTables();
 
         // If we made it this far, the output tables were successfully created.
         return true;
     }
 
-    private static void getSpatialFieldIndex(Connection connection, String tableName, String spatialFieldName, Statement st) throws SQLException {
+    private static void getSpatialFieldIndex(String spatialFieldName) throws SQLException {
         // OBTAIN THE SPATIAL FIELD INDEX.
-        ResultSet tableQuery = st.executeQuery("SELECT * FROM " + tableName + " LIMIT 0;");
+        ResultSet tableQuery = connection.createStatement().
+                executeQuery("SELECT * FROM " + tableName + " LIMIT 0;");
         try {
             ResultSetMetaData metaData = tableQuery.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -119,7 +119,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
     }
 
-    private static void setupOutputTables(String tableName, Statement st) throws SQLException {
+    private static void setupOutputTables() throws SQLException {
+        final Statement st = connection.createStatement();
         st.execute("CREATE TABLE " + nodesName + " (node_id INT PRIMARY KEY, the_geom POINT);");
 
         st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + ";" +
@@ -128,15 +129,15 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 "ALTER TABLE " + edgesName + " ADD COLUMN end_node INTEGER;");
     }
 
-    private static void updateTables(Connection conn) throws SQLException {
+    private static void updateTables() throws SQLException {
         final Quadtree quadtree = new Quadtree();
 
         SpatialResultSet nodesTable =
-                conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
+                connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
                         executeQuery("SELECT * FROM " + nodesName).
                         unwrap(SpatialResultSet.class);
         SpatialResultSet edgesTable =
-                conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
+                connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
                         executeQuery("SELECT * FROM " + edgesName).
                         unwrap(SpatialResultSet.class);
         try {
@@ -145,8 +146,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
                 final Coordinate[] coordinates = geom.getCoordinates();
 
-                node_id = insertNode(conn, nodesTable, edgesTable, node_id, coordinates[0], quadtree, "start_node");
-                node_id = insertNode(conn, nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], quadtree, "end_node");
+                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[0], quadtree, "start_node");
+                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], quadtree, "end_node");
                 edgesTable.updateRow();
             }
         } finally {
@@ -155,8 +156,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
     }
 
-    private static int insertNode(Connection conn,
-                                  SpatialResultSet nodesTable,
+    private static int insertNode(SpatialResultSet nodesTable,
                                   SpatialResultSet edgesTable,
                                   int node_id,
                                   Coordinate coord,
@@ -165,7 +165,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         Envelope envelope = new Envelope(coord);
         final List nearbyNodes = quadtree.query(envelope);
 
-        if (envelopeIntersects(conn, envelope, nearbyNodes)) {
+        if (envelopeIntersects(envelope, nearbyNodes)) {
             edgesTable.updateInt(edgeColumnName, (Integer) nearbyNodes.get(0));
         } else {
             nodesTable.moveToInsertRow();
@@ -179,7 +179,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
 
-    private static boolean envelopeIntersects(Connection conn, Envelope envelope, List nearbyNodes) throws SQLException {
+    private static boolean envelopeIntersects(Envelope envelope, List nearbyNodes) throws SQLException {
         if (nearbyNodes.size() == 0) {
             return false;
         }
@@ -189,7 +189,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
         final Integer firstFoundNode = (Integer) nearbyNodes.get(0);
         SpatialResultSet matchingNodeRS =
-                conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
+                connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
                         executeQuery("SELECT the_geom FROM " + nodesName + " WHERE node_id=" + firstFoundNode).
                         unwrap(SpatialResultSet.class);
         matchingNodeRS.next();
