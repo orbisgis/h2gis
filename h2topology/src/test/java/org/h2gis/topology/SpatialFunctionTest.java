@@ -90,21 +90,9 @@ public class SpatialFunctionTest {
         assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(2));
         assertTrue(nodesResult.next());
         assertEquals(3, nodesResult.getInt(1));
-        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(2));
+        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(2));
         assertTrue(nodesResult.next());
         assertEquals(4, nodesResult.getInt(1));
-        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(2));
-        assertTrue(nodesResult.next());
-        assertEquals(5, nodesResult.getInt(1));
-        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(2));
-        assertTrue(nodesResult.next());
-        assertEquals(6, nodesResult.getInt(1));
-        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(2));
-        assertTrue(nodesResult.next());
-        assertEquals(7, nodesResult.getInt(1));
-        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(2));
-        assertTrue(nodesResult.next());
-        assertEquals(8, nodesResult.getInt(1));
         assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(2));
         st.execute("DROP TABLE test");
     }

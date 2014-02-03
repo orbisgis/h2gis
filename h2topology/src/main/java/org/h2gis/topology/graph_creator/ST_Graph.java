@@ -26,8 +26,10 @@
 package org.h2gis.topology.graph_creator;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.index.quadtree.Quadtree;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
@@ -72,7 +74,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         getSpatialFieldIndex(connection, tableName, spatialFieldName, st);
         setupOutputTables(tableName, st);
 
-        updateTables(wrappedConnection, tableName, st);
+        Quadtree quadtree = new Quadtree();
+        updateTables(wrappedConnection, tableName, st, quadtree);
 
         // If we made it this far, the output tables were successfully created.
         return true;
@@ -119,7 +122,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 "ALTER TABLE " + edgesName + " ADD COLUMN end_node INTEGER;");
     }
 
-    private static void updateTables(Connection conn, String tableName, Statement st) throws SQLException {
+    private static void updateTables(Connection conn, String tableName, Statement st, Quadtree quadtree) throws SQLException {
         SpatialResultSet inputTableResultSet = st.executeQuery("SELECT * FROM " + tableName).unwrap(SpatialResultSet.class);
         final String nodesName = tableName + "_nodes";
         SpatialResultSet nodesTable =
@@ -129,21 +132,29 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         try {
             int node_id = 0;
             while (inputTableResultSet.next()) {
-                nodesTable.moveToInsertRow();
                 final Geometry geom = inputTableResultSet.getGeometry(spatialFieldIndex);
                 final GeometryFactory factory = geom.getFactory();
                 final Coordinate[] coordinates = geom.getCoordinates();
-                nodesTable.updateInt("node_id", ++node_id);
-                nodesTable.updateGeometry("the_geom", factory.createPoint(coordinates[0]));
-                nodesTable.insertRow();
-                nodesTable.moveToInsertRow();
-                nodesTable.updateInt("node_id", ++node_id);
-                nodesTable.updateGeometry("the_geom", factory.createPoint(coordinates[coordinates.length - 1]));
-                nodesTable.insertRow();
+
+                node_id = insertNode(nodesTable, node_id, coordinates[0], quadtree);
+                node_id = insertNode(nodesTable, node_id, coordinates[coordinates.length - 1], quadtree);
             }
         } finally {
             inputTableResultSet.close();
             nodesTable.close();
         }
+    }
+
+    private static int insertNode(SpatialResultSet nodesTable, int node_id, Coordinate coord, Quadtree quadtree) throws SQLException {
+        Envelope envelope = new Envelope(coord);
+        final List nearbyNodes = quadtree.query(envelope);
+        if (nearbyNodes.size() == 0) {
+            nodesTable.moveToInsertRow();
+            nodesTable.updateInt("node_id", ++node_id);
+            nodesTable.updateGeometry("the_geom", GF.createPoint(coord));
+            nodesTable.insertRow();
+            quadtree.insert(envelope, node_id);
+        }
+        return node_id;
     }
 }
