@@ -67,20 +67,19 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     public static boolean createGraph(Connection connection,
-                               String tableName,
-                               String spatialFieldName) throws SQLException {
+                                      String tableName,
+                                      String spatialFieldName) throws SQLException {
 
         nodesName = tableName + "_nodes";
         edgesName = tableName + "_edges";
 
         Connection wrappedConnection = SFSUtilities.wrapConnection(connection);
-        Statement st = wrappedConnection.createStatement();
 
+        Statement st = wrappedConnection.createStatement();
         getSpatialFieldIndex(connection, tableName, spatialFieldName, st);
         setupOutputTables(tableName, st);
 
-        Quadtree quadtree = new Quadtree();
-        updateTables(wrappedConnection, tableName, st, quadtree);
+        updateTables(wrappedConnection);
 
         // If we made it this far, the output tables were successfully created.
         return true;
@@ -126,8 +125,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 "ALTER TABLE " + edgesName + " ADD COLUMN end_node INTEGER;");
     }
 
-    private static void updateTables(Connection conn, String tableName, Statement st, Quadtree quadtree) throws SQLException {
-        SpatialResultSet inputTableResultSet = st.executeQuery("SELECT * FROM " + tableName).unwrap(SpatialResultSet.class);
+    private static void updateTables(Connection conn) throws SQLException {
+        final Quadtree quadtree = new Quadtree();
+
         SpatialResultSet nodesTable =
                 conn.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
                         executeQuery("SELECT * FROM " + nodesName).
@@ -138,19 +138,17 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                         unwrap(SpatialResultSet.class);
         try {
             int node_id = 0;
-            while (inputTableResultSet.next()) {
-                final Geometry geom = inputTableResultSet.getGeometry(spatialFieldIndex);
+            while (edgesTable.next()) {
+                final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
                 final Coordinate[] coordinates = geom.getCoordinates();
 
-                if (edgesTable.absolute(inputTableResultSet.getRow())) {
-                    node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[0], quadtree, "start_node");
-                    node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], quadtree, "end_node");
-                    edgesTable.updateRow();
-                }
+                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[0], quadtree, "start_node");
+                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], quadtree, "end_node");
+                edgesTable.updateRow();
             }
         } finally {
-            inputTableResultSet.close();
             nodesTable.close();
+            edgesTable.close();
         }
     }
 
