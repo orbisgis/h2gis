@@ -8,7 +8,7 @@ next_section: ST_Dimension
 permalink: /docs/dev/ST_Centroid/
 ---
 
-### Signatures
+### Signature
 
 {% highlight mysql %}
 POINT ST_Centroid(GEOMETRY geom);
