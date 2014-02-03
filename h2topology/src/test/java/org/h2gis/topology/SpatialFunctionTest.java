@@ -156,4 +156,107 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE test_nodes");
         st.execute("DROP TABLE test_edges");
     }
+
+    @Test
+    public void test_ST_GraphOrientation() throws Exception {
+        Statement st = connection.createStatement();
+
+        // This test proves that orientation by slope works. Three cases:
+        // 1. first.z == last.z -- Orient first --> last
+        // 2. first.z > last.z -- Orient first --> last
+        // 3. first.z < last.z -- Orient last --> first
+
+        // Case 1.
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+                "INSERT INTO test VALUES " +
+                "('LINESTRING (0 0 0, 1 0 0)', 'road1');");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1, true)");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+        assertFalse(rs.next());
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        assertEquals(2, nodesResult.getMetaData().getColumnCount());
+        assertTrue(nodesResult.next());
+        assertEquals(1, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (0 0 0)", nodesResult.getBytes("the_geom"));
+        assertTrue(nodesResult.next());
+        assertEquals(2, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes("the_geom"));
+        assertFalse(nodesResult.next());
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (0 0 0, 1 0 0)", edgesResult.getBytes("road"));
+        assertEquals("road1", edgesResult.getString("description"));
+        assertEquals(1, edgesResult.getInt("edge_id"));
+        // Orient first --> last
+        assertEquals(1, edgesResult.getInt("start_node"));
+        assertEquals(2, edgesResult.getInt("end_node"));
+        assertFalse(edgesResult.next());
+        st.execute("DROP TABLE test");
+        st.execute("DROP TABLE test_nodes");
+        st.execute("DROP TABLE test_edges");
+
+        // Case 2.
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+                "INSERT INTO test VALUES " +
+                "('LINESTRING (0 0 1, 1 0 0)', 'road1');");
+        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1, true)");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+        assertFalse(rs.next());
+        nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        assertEquals(2, nodesResult.getMetaData().getColumnCount());
+        assertTrue(nodesResult.next());
+        assertEquals(1, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (0 0 1)", nodesResult.getBytes("the_geom"));
+        assertTrue(nodesResult.next());
+        assertEquals(2, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes("the_geom"));
+        assertFalse(nodesResult.next());
+        edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (0 0 1, 1 0 0)", edgesResult.getBytes("road"));
+        assertEquals("road1", edgesResult.getString("description"));
+        assertEquals(1, edgesResult.getInt("edge_id"));
+        // Orient first --> last
+        assertEquals(1, edgesResult.getInt("start_node"));
+        assertEquals(2, edgesResult.getInt("end_node"));
+        assertFalse(edgesResult.next());
+        st.execute("DROP TABLE test");
+        st.execute("DROP TABLE test_nodes");
+        st.execute("DROP TABLE test_edges");
+
+        // Case 3.
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+                "INSERT INTO test VALUES " +
+                "('LINESTRING (0 0 0, 1 0 1)', 'road1');");
+        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1, true)");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+        assertFalse(rs.next());
+        nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        assertEquals(2, nodesResult.getMetaData().getColumnCount());
+        assertTrue(nodesResult.next());
+        assertEquals(1, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (0 0 0)", nodesResult.getBytes("the_geom"));
+        assertTrue(nodesResult.next());
+        assertEquals(2, nodesResult.getInt("node_id"));
+        assertGeometryEquals("POINT (1 0 1)", nodesResult.getBytes("the_geom"));
+        assertFalse(nodesResult.next());
+        edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (0 0 0, 1 0 1)", edgesResult.getBytes("road"));
+        assertEquals("road1", edgesResult.getString("description"));
+        assertEquals(1, edgesResult.getInt("edge_id"));
+        // Orient last --> first
+        assertEquals(2, edgesResult.getInt("start_node"));
+        assertEquals(1, edgesResult.getInt("end_node"));
+        assertFalse(edgesResult.next());
+        st.execute("DROP TABLE test");
+        st.execute("DROP TABLE test_nodes");
+        st.execute("DROP TABLE test_edges");
+    }
 }

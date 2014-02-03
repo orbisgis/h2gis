@@ -58,6 +58,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static String nodesName;
     private static String edgesName;
     private static double tolerance;
+    private static boolean orientBySlope;
 
     public ST_Graph() {
         addProperty(PROP_REMARKS, "produces two tables (nodes and edges) "
@@ -86,12 +87,22 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       String tableName,
                                       String spatialFieldName,
                                       double tolerance) throws SQLException {
+        // By default we do not orient by slope.
+        return createGraph(connection, tableName, spatialFieldName, tolerance, false);
+    }
+
+    public static boolean createGraph(Connection connection,
+                                      String tableName,
+                                      String spatialFieldName,
+                                      double tolerance,
+                                      boolean orientBySlope) throws SQLException {
         ST_Graph.tableName = tableName;
         nodesName = tableName + "_nodes";
         edgesName = tableName + "_edges";
         ST_Graph.connection = SFSUtilities.wrapConnection(connection);
         ST_Graph.quadtree = new Quadtree();
         ST_Graph.tolerance = tolerance;
+        ST_Graph.orientBySlope = orientBySlope;
 
         getSpatialFieldIndex(spatialFieldName);
         setupOutputTables();
@@ -144,8 +155,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     private static void updateTables() throws SQLException {
-        final Quadtree quadtree = new Quadtree();
-
         SpatialResultSet nodesTable =
                 connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
                         executeQuery("SELECT * FROM " + nodesName).
@@ -160,8 +169,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
                 final Coordinate[] coordinates = geom.getCoordinates();
 
-                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[0], "start_node");
-                node_id = insertNode(nodesTable, edgesTable, node_id, coordinates[coordinates.length - 1], "end_node");
+                final Coordinate firstCoord = coordinates[0];
+                final Coordinate lastCoord = coordinates[coordinates.length - 1];
+                final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z)? true : false;
+
+                node_id = insertNode(nodesTable, edgesTable, node_id, firstCoord, switchCoords ? "end_node" : "start_node");
+                node_id = insertNode(nodesTable, edgesTable, node_id, lastCoord, switchCoords ? "start_node" : "end_node");
                 edgesTable.updateRow();
             }
         } finally {
