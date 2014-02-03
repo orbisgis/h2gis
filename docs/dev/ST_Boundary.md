@@ -51,6 +51,10 @@ SELECT ST_Boundary('POLYGON((5 4, 1 1, 3 4, 4 5, 5 4))');
 -- Answer: LINEARRING(5 4, 1 1, 3 4, 4 5, 5 4)
 {% endhighlight %}
 
+##### Comparison with [`ST_ExteriorRing`](../ST_ExteriorRing)
+
+{% include exteriorring-boundary-cf.html %}
+
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Boundary.java" target="_blank">Source code</a>
