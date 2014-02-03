@@ -16,7 +16,7 @@ POINT ST_EndPoint(GEOMETRY geom);
 
 ### Description
 
-Returns the last point of a `LINESTRING` Geometry as a `POINT`.
+Returns the last `POINT` of a `LINESTRING` Geometry as a `POINT`.
 If the input parameter is not a `LINESTRING` this function returns `null`.
 
 {% include sfs-1-2-1.html %}
