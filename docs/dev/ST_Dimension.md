@@ -8,7 +8,7 @@ next_section: ST_Distance
 permalink: /docs/dev/ST_Dimension/
 ---
 
-### Signatures
+### Signature
 
 {% highlight mysql %}
 integer ST_Dimension(GEOMETRY geom);
@@ -16,7 +16,7 @@ integer ST_Dimension(GEOMETRY geom);
 
 ### Description
 
-Return dimension of a Geometry. 0 for a `(MULTI)POINT`, 1 for a `(MULTI)LINESTRING` and 2 for a `(MULTI)POLYGON`.
+Return dimension of a Geometry. 0 for a `(MULTI)POINT`, 1 for a `(MULTI)LINESTRING` and 2 for a `(MULTI)POLYGON` or `GEOMETRYCOLLECTION`.
 
 {% include sfs-1-2-1.html %}
 
@@ -25,6 +25,7 @@ Return dimension of a Geometry. 0 for a `(MULTI)POINT`, 1 for a `(MULTI)LINESTRI
 {% highlight mysql %}
 SELECT ST_dimension('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: 0
+
 SELECT ST_dimension('LINESTRING(2 1, 1 3, 5 2)');
 -- Answer: 1
 
