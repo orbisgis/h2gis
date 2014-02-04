@@ -2,7 +2,7 @@
 layout: docs
 title: ST_EndPoint
 category: h2spatial/properties
-description: Return the last point of a <code>LINESTRING</code> Geometry as a <code>POINT</code>
+description: Return the last point of a <code>LINESTRING</code>
 prev_section: ST_Distance
 next_section: ST_Envelope
 permalink: /docs/dev/ST_EndPoint/
@@ -16,7 +16,7 @@ POINT ST_EndPoint(GEOMETRY geom);
 
 ### Description
 
-Returns the last `POINT` of a `LINESTRING` Geometry as a `POINT`.
+Returns the last `POINT` of a `LINESTRING` as a `POINT`.
 If the input parameter is not a `LINESTRING` this function returns `null`.
 
 {% include sfs-1-2-1.html %}
