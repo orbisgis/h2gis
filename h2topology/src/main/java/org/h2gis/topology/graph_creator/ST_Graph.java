@@ -179,8 +179,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       double tolerance,
                                       boolean orientBySlope) throws SQLException {
         ST_Graph.tableName = tableName;
-        nodesName = tableName + "_nodes";
-        edgesName = tableName + "_edges";
+        ST_Graph.nodesName = tableName + "_nodes";
+        ST_Graph.edgesName = tableName + "_edges";
         ST_Graph.connection = SFSUtilities.wrapConnection(connection);
         ST_Graph.quadtree = new Quadtree();
         ST_Graph.tolerance = tolerance;
@@ -191,6 +191,13 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return updateTables();
     }
 
+    /**
+     * Get the column index of the given spatial field, or the first one found
+     * if none is given (specified by null).
+     *
+     * @param spatialFieldName Spatial field name
+     * @throws SQLException
+     */
     private static void getSpatialFieldIndex(String spatialFieldName) throws SQLException {
         // OBTAIN THE SPATIAL FIELD INDEX.
         ResultSet tableQuery = connection.createStatement().
@@ -223,6 +230,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
     }
 
+    /**
+     * Create the nodes and edges tables.
+     *
+     * @throws SQLException
+     */
     private static void setupOutputTables() throws SQLException {
         final Statement st = connection.createStatement();
         st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
@@ -233,6 +245,16 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
     }
 
+    /**
+     * Go through the input table, identify nodes and edges,
+     * and update the values in the nodes and edges tables appropriately.
+     *
+     * If a Geometry is found which is not a LINESTRING or a MULTILINESTRING,
+     * then the nodes and edges tables that were being constructed are deleted.
+     *
+     * @return True if the tables were updated.
+     * @throws SQLException
+     */
     private static boolean updateTables() throws SQLException {
         SpatialResultSet nodesTable =
                 connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
@@ -276,6 +298,18 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return true;
     }
 
+    /**
+     * Insert the node in the nodes table if it is a new node, and update the
+     * edges table appropriately.
+     *
+     * @param nodesTable Nodes table
+     * @param edgesTable Edges table
+     * @param nodeID Current node ID
+     * @param coord Current coordinate
+     * @param edgeColumnName Name of column to update in edges table
+     * @return Node ID
+     * @throws SQLException
+     */
     private static int insertNode(SpatialResultSet nodesTable,
                                   SpatialResultSet edgesTable,
                                   int nodeID,
@@ -298,7 +332,13 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return nodeID;
     }
 
-
+    /**
+     * Return a list of nodes that intersect the given Envelope.
+     *
+     * @param envelope Envelope
+     * @return A list of nodes that intersect the given Envelope
+     * @throws SQLException
+     */
     private static List<Integer> findNearbyIntersectingNodes(Envelope envelope) throws SQLException {
         final List<Integer> nearbyNodes = quadtree.query(envelope);
         final List<Integer> nearbyIntersectingNodes = new ArrayList<Integer>();
