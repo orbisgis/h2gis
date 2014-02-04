@@ -1,0 +1,22 @@
+{% highlight mysql %}
+CREATE TABLE input_table(geom GEOMETRY);
+INSERT INTO input_table VALUES 
+     ('POLYGON ((0 0, 3 -1, 1.5 2, 0 0))'), 
+     ('POLYGON ((2 0, 3 3, 4 2, 2 0))'), 
+     ('POINT(5 6)'), 
+     ('LINESTRING(1 1, 1 6)');
+
+SELECT ST_Envelope(geom, 2154) FROM input_table;
+SELECT ST_Extent(geom) FROM input_table;
+-- Answer: 
+-- |              Envelope                  |                  Extent                |
+-- |----------------------------------------|----------------------------------------|
+-- | POLYGON ((0 -1, 0 6, 5 6, 5 -1, 0 -1)) | POLYGON ((0 -1, 0 2, 3 2, 3 -1, 0 -1)) |
+-- | POLYGON ((2 0, 2 3, 4 3, 4 0, 2 0))    |                                        |
+-- | POINT (5 6)                            |                                        |
+-- | LINESTRING (1 1, 1 6)                  |                                        |
+{% endhighlight %}
+
+Note: This example shows ST_Extent is a aggregate function and ST_Envelope is scalar function. ST_Envelope returns a minimum bounding box to each Geometry. Whereas ST_Extent returns a minimum bounding box of set Geometry.
+
+<img class="displayed" src="../ST_Envelope_3.png"/>

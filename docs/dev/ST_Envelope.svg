@@ -144,9 +144,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="1.3518404"
-     inkscape:cx="448.17682"
-     inkscape:cy="932.54579"
+     inkscape:zoom="0.95589551"
+     inkscape:cx="333.84514"
+     inkscape:cy="228.59884"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -737,7 +737,31 @@
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
-  </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3150"
+       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(83.691155,-464.48591)"><flowRegion
+         id="flowRegion3152"><rect
+           id="rect3154"
+           width="167.38231"
+           height="34.522644"
+           x="29.291904"
+           y="1079.5618"
+           style="font-size:24px" /></flowRegion><flowPara
+         id="flowPara3156">ST_Envelope</flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3150-5"
+       style="font-size:24px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="translate(441.38483,-465.38324)"><flowRegion
+         id="flowRegion3152-4"><rect
+           id="rect3154-0"
+           width="167.38231"
+           height="34.522644"
+           x="29.291904"
+           y="1079.5618"
+           style="font-size:24px" /></flowRegion><flowPara
+         id="flowPara3156-3">ST_Extent</flowPara></flowRoot>  </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
