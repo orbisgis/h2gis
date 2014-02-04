@@ -78,7 +78,7 @@ public class SpatialFunctionTest {
                 + "('LINESTRING (7.1 5, 8 4)', 'road6');");
 
         // Make sure everything went OK.
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1)");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1, false)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
@@ -555,5 +555,52 @@ public class SpatialFunctionTest {
         assertFalse(connection.getMetaData().getTables(null, null, "TEST_EDGES", null).last());
 
         st.execute("DROP TABLE test");
+    }
+
+    @Test
+    public void test_ST_Graph_MULTILINESTRING() throws Exception {
+        Statement st = connection.createStatement();
+
+        // This test shows that the coordinate (1 2) is not considered to be
+        // a node, even though it would be if we had used ST_Explode to split
+        // the MULTILINESTRINGs into LINESTRINGs.
+        st.execute("CREATE TABLE test(road MULTILINESTRING, description VARCHAR);" +
+                "INSERT INTO test VALUES "
+                + "('MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1'),"
+                + "('MULTILINESTRING ((4 3, 4 4, 1 4, 1 2), (4 3, 5 2))', 'road2');");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('test')");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+        assertFalse(rs.next());
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        assertEquals(2, nodesResult.getMetaData().getColumnCount());
+        assertTrue(nodesResult.next());
+        assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
+        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertTrue(nodesResult.next());
+        assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
+        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertTrue(nodesResult.next());
+        assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
+        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertFalse(nodesResult.next());
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))", edgesResult.getBytes("road"));
+        assertEquals("road1", edgesResult.getString("description"));
+        assertEquals(1, edgesResult.getInt(ST_Graph.EDGE_ID));
+        assertEquals(1, edgesResult.getInt(ST_Graph.START_NODE));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("MULTILINESTRING ((4 3, 4 4, 1 4, 1 2), (4 3, 5 2))", edgesResult.getBytes("road"));
+        assertEquals("road2", edgesResult.getString("description"));
+        assertEquals(2, edgesResult.getInt(ST_Graph.EDGE_ID));
+        assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
+        assertEquals(3, edgesResult.getInt(ST_Graph.END_NODE));
+        assertFalse(edgesResult.next());
+
+        st.execute("DROP TABLE test");
+        st.execute("DROP TABLE test_nodes");
+        st.execute("DROP TABLE test_edges");
     }
 }
