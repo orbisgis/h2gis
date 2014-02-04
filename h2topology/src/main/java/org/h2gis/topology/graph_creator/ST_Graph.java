@@ -52,18 +52,18 @@ import java.util.List;
 public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ST_Graph.class);
-    private static Integer spatialFieldIndex;
     private static final GeometryFactory GF = new GeometryFactory();
-    private static Quadtree quadtree;
-    private static Connection connection;
-    private static String tableName;
-    private static String nodesName;
-    private static String edgesName;
     public static final String THE_GEOM = "the_geom";
     public static final String NODE_ID = "node_id";
     public static final String EDGE_ID = "edge_id";
     public static final String START_NODE = "start_node";
     public static final String END_NODE = "end_node";
+    private static Connection connection;
+    private static Quadtree quadtree;
+    private static Integer spatialFieldIndex;
+    private static String tableName;
+    private static String nodesName;
+    private static String edgesName;
     private static double tolerance;
     private static boolean orientBySlope;
 
@@ -126,7 +126,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      *
      * The tolerance value is used specify the side length of a square Envelope
      * around each node used to snap together other nodes within the same
-     * Envelope.
+     * Envelope. Note, however, that edge geometries are left untouched.
+     * Note also that coordinates within a given tolerance of each
+     * other are not necessarily snapped together. Only the first and last
+     * coordinates of a geometry are considered to be potential nodes, and
+     * only nodes within a given tolerance of each other are snapped
+     * together. The tolerance works only in metric units.
      *
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
@@ -154,7 +159,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      *
      * The tolerance value is used specify the side length of a square Envelope
      * around each node used to snap together other nodes within the same
-     * Envelope.
+     * Envelope. Note, however, that edge geometries are left untouched.
+     * Note also that coordinates within a given tolerance of each
+     * other are not necessarily snapped together. Only the first and last
+     * coordinates of a geometry are considered to be potential nodes, and
+     * only nodes within a given tolerance of each other are snapped
+     * together. The tolerance works only in metric units.
      *
      * The boolean orientBySlope is set to true if edges should be oriented by
      * the z-value of their first and last coordinates (decreasing)
