@@ -51,10 +51,10 @@ import java.util.List;
  * geometry representing each node. The edges table is a copy of the input
  * table with three extra columns: edge_id, start_node, and end_node. The
  * start_node and end_node correspond to the node_ids in the nodes table.
- *
+ * <p/>
  * If the specified geometry column of the input table contains geometries
  * other than LINESTRINGs or MULTILINESTRINGs, the operation will fail.
- *
+ * <p/>
  * A tolerance value may be given to specify the side length of a square
  * Envelope around each node used to snap together other nodes within the same
  * Envelope. Note, however, that edge geometries are left untouched.  Note also
@@ -62,7 +62,7 @@ import java.util.List;
  * snapped together. Only the first and last coordinates of a geometry are
  * considered to be potential nodes, and only nodes within a given tolerance of
  * each other are snapped together. The tolerance works only in metric units.
- *
+ * <p/>
  * A boolean value may be set to true to specify that edges should be oriented
  * by the z-value of their first and last coordinates (decreasing).
  *
@@ -121,15 +121,15 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     /**
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs or MULTILINESTRINGs.
-     *
+     * <p/>
      * Since no column is specified in this signature, we take the first
      * geometry column we find.
-     *
+     * <p/>
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *
      * @param connection Connection
-     * @param tableName Input table containing LINESTRINGs or MULTILINESTRINGs
+     * @param tableName  Input table containing LINESTRINGs or MULTILINESTRINGs
      * @return true if both output tables were created
      * @throws SQLException
      */
@@ -141,14 +141,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     /**
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs or MULTILINESTRINGs in the given column.
-     *
+     * <p/>
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *
-     * @param connection Connection
-     * @param tableName Input table
+     * @param connection       Connection
+     * @param tableName        Input table
      * @param spatialFieldName Name of column containing LINESTRINGs or
-     * MULTILINESTRINGs
+     *                         MULTILINESTRINGs
      * @return true if both output tables were created
      * @throws SQLException
      */
@@ -163,7 +163,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs or MULTILINESTRINGs in the given column and using the given
      * tolerance.
-     *
+     * <p/>
      * The tolerance value is used specify the side length of a square Envelope
      * around each node used to snap together other nodes within the same
      * Envelope. Note, however, that edge geometries are left untouched.
@@ -172,15 +172,15 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * coordinates of a geometry are considered to be potential nodes, and
      * only nodes within a given tolerance of each other are snapped
      * together. The tolerance works only in metric units.
-     *
+     * <p/>
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *
-     * @param connection Connection
-     * @param tableName Input table
+     * @param connection       Connection
+     * @param tableName        Input table
      * @param spatialFieldName Name of column containing LINESTRINGs or
-     * MULTILINESTRINGs
-     * @param tolerance Tolerance
+     *                         MULTILINESTRINGs
+     * @param tolerance        Tolerance
      * @return true if both output tables were created
      * @throws SQLException
      */
@@ -196,7 +196,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs or MULTILINESTRINGs in the given column and using the given
      * tolerance, and potentially orienting edges by slope.
-     *
+     * <p/>
      * The tolerance value is used specify the side length of a square Envelope
      * around each node used to snap together other nodes within the same
      * Envelope. Note, however, that edge geometries are left untouched.
@@ -205,20 +205,20 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * coordinates of a geometry are considered to be potential nodes, and
      * only nodes within a given tolerance of each other are snapped
      * together. The tolerance works only in metric units.
-     *
+     * <p/>
      * The boolean orientBySlope is set to true if edges should be oriented by
      * the z-value of their first and last coordinates (decreasing).
-     *
+     * <p/>
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *
-     * @param connection Connection
-     * @param tableName Input table
+     * @param connection       Connection
+     * @param tableName        Input table
      * @param spatialFieldName Name of column containing LINESTRINGs or
-     * MULTILINESTRINGs
-     * @param tolerance Tolerance
-     * @param orientBySlope True if edges should be oriented by the z-value of
-     * their first and last coordinates (decreasing)
+     *                         MULTILINESTRINGs
+     * @param tolerance        Tolerance
+     * @param orientBySlope    True if edges should be oriented by the z-value of
+     *                         their first and last coordinates (decreasing)
      * @return true if both output tables were created
      * @throws SQLException
      */
@@ -297,7 +297,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     /**
      * Go through the input table, identify nodes and edges,
      * and update the values in the nodes and edges tables appropriately.
-     *
+     * <p/>
      * If a Geometry is found which is not a LINESTRING or a MULTILINESTRING,
      * then the nodes and edges tables that were being constructed are deleted.
      *
@@ -328,7 +328,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
                     final Coordinate firstCoord = coordinates[0];
                     final Coordinate lastCoord = coordinates[coordinates.length - 1];
-                    final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z)? true : false;
+                    final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z) ? true : false;
 
                     nodeID = insertNode(nodesTable, edgesTable, nodeID, firstCoord, switchCoords ? END_NODE : START_NODE);
                     nodeID = insertNode(nodesTable, edgesTable, nodeID, lastCoord, switchCoords ? START_NODE : END_NODE);
@@ -351,10 +351,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Insert the node in the nodes table if it is a new node, and update the
      * edges table appropriately.
      *
-     * @param nodesTable Nodes table
-     * @param edgesTable Edges table
-     * @param nodeID Current node ID
-     * @param coord Current coordinate
+     * @param nodesTable     Nodes table
+     * @param edgesTable     Edges table
+     * @param nodeID         Current node ID
+     * @param coord          Current coordinate
      * @param edgeColumnName Name of column to update in edges table
      * @return Node ID
      * @throws SQLException
