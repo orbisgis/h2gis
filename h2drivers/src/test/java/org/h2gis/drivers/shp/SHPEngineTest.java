@@ -31,6 +31,9 @@ import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -177,7 +180,7 @@ public class SHPEngineTest {
         while(rs.next()) {
             sumLength+=((Geometry)rs.getObject("the_geom")).getLength();
         }
-        assertEquals(28469.778049948833,sumLength,1e-12);
+        assertEquals(28469.778049948833, sumLength, 1e-12);
         rs.close();
         st.execute("drop table shptable");
     }
@@ -239,5 +242,14 @@ public class SHPEngineTest {
             rs.close();
         }
         st.execute("drop table if exists shptable");
+    }
+
+    @Test
+    public void readSHPConstraintTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        assertEquals(GeometryTypeCodes.MULTILINESTRING, SFSUtilities.getGeometryType(connection, TableLocation.parse("SHPTABLE"), ""));
+        st.execute("drop table shptable");
     }
 }

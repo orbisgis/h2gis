@@ -40,7 +40,7 @@ public class GeometryTypeNameFromConstraint extends DeterministicScalarFunction 
      * @return Geometry type
      */
     public static String getGeometryTypeNameFromConstraint(String constraint) {
-        int geometryTypeCode = GeometryTypeFromConstraint.GeometryTypeFromConstraint(constraint);
+        int geometryTypeCode = GeometryTypeFromConstraint.geometryTypeFromConstraint(constraint);
         return TYPE_MAP.get(geometryTypeCode);
     }
 }

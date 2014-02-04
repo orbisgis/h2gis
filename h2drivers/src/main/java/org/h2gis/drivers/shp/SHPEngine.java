@@ -25,12 +25,15 @@
 
 package org.h2gis.drivers.shp;
 
+import org.h2.command.Parser;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.table.Column;
 import org.h2.value.Value;
 import org.h2gis.drivers.dbf.DBFEngine;
 import org.h2gis.drivers.file_table.FileEngine;
 import org.h2gis.drivers.shp.internal.SHPDriver;
+import org.h2gis.drivers.shp.internal.ShapeType;
+import org.h2gis.utilities.GeometryTypeCodes;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,10 +52,23 @@ public class SHPEngine extends FileEngine<SHPDriver> {
         return driver;
     }
 
+    private static int getGeometryTypeCodeFromShapeType(ShapeType shapeType) {
+        if(shapeType.isPointType()) {
+            return GeometryTypeCodes.MULTIPOINT;
+        } else if(shapeType.isLineType()) {
+            return GeometryTypeCodes.MULTILINESTRING;
+        } else {
+            return GeometryTypeCodes.MULTIPOLYGON;
+        }
+    }
+
     @Override
     protected void feedCreateTableData(SHPDriver driver, CreateTableData data) throws IOException {
         if(data.columns.isEmpty()) {
             Column geometryColumn = new Column("THE_GEOM", Value.GEOMETRY);
+            Parser parser = new Parser(data.session);
+            geometryColumn.addCheckConstraint(data.session,
+                    parser.parseExpression("ST_GeometryTypeCode(THE_GEOM) = "+getGeometryTypeCodeFromShapeType(driver.getShapeFileHeader().getShapeType())));
             data.columns.add(geometryColumn);
             DBFEngine.feedTableDataFromHeader(driver.getDbaseFileHeader(), data);
         }

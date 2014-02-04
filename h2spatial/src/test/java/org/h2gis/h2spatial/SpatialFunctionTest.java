@@ -25,6 +25,7 @@
 package org.h2gis.h2spatial;
 
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -161,6 +162,40 @@ public class SpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals(2, rs.getInt(1));
         st.execute("DROP TABLE input_table;");
+    }
+
+
+    @Test
+    public void test_ST_GeometryTypeCode() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('POINT(1 1)'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(GeometryTypeCodes.POINT, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('LINESTRING(1 1, 2 2)'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(GeometryTypeCodes.LINESTRING, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('POLYGON((1 1, 2 2, 5 3, 1 1))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(GeometryTypeCodes.POLYGON, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('MULTIPOINT(1 1,2 2)'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(GeometryTypeCodes.MULTIPOINT, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('MULTILINESTRING((1 1, 2 2),(3 3, 5 4))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(GeometryTypeCodes.MULTILINESTRING, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('MULTIPOLYGON(((1 1, 2 2, 5 3, 1 1)),((0 0, 2 2, 5 3, 0 0)))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(GeometryTypeCodes.MULTIPOLYGON, rs.getInt(1));
+        rs = st.executeQuery(
+                "SELECT ST_GeometryTypeCode('GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals(GeometryTypeCodes.GEOMCOLLECTION, rs.getInt(1));
     }
 
     @Test

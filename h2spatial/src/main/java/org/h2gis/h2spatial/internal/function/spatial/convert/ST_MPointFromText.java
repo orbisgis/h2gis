@@ -26,8 +26,6 @@
 package org.h2gis.h2spatial.internal.function.spatial.convert;
 
 import com.vividsolutions.jts.geom.Geometry;
-
-import org.h2gis.h2spatial.internal.type.SC_MultiPoint;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.SQLException;

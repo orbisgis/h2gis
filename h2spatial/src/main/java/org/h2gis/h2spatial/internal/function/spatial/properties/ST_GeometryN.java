@@ -30,7 +30,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Returns a Geometry instance or Null if parameter is not a GeometryCollection.
+ * Returns an element of a Geometry Collection. {@link org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumGeometries} to retrieve element count.
  * @author Nicolas Fortin
  */
 public class ST_GeometryN extends DeterministicScalarFunction {
@@ -40,7 +40,7 @@ public class ST_GeometryN extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_GeometryN() {
-        addProperty(PROP_REMARKS, "Returns a Geometry instance or Null if parameter is not a GeometryCollection.");
+        addProperty(PROP_REMARKS, "Returns an element of a Geometry Collection.Use ST_NumGeometries in order to retrieve element count");
     }
 
     @Override
@@ -50,8 +50,8 @@ public class ST_GeometryN extends DeterministicScalarFunction {
 
     /**
      * @param geometry Instance of Polygon
-     * @param i Index of Interior ring [1-N]
-     * @return LinearRing instance or Null if parameter is not a Geometry.
+     * @param i Index of Geometry element [1-N]
+     * @return Geometry instance or Null if parameter is null.
      */
     public static Geometry getGeometryN(Geometry geometry,Integer i) throws SQLException {
         if(geometry==null) {

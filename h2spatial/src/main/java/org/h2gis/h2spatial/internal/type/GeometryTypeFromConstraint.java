@@ -29,11 +29,18 @@ import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
 
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Convert H2 constraint string into a OGC geometry type index.
  * @author Nicolas Fortin
  */
 public class GeometryTypeFromConstraint extends DeterministicScalarFunction {
+    private static final Pattern TYPE_CODE_PATTERN = Pattern.compile(
+            "ST_GeometryTypeCode\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d)+", Pattern.CASE_INSENSITIVE);
+    private static final int CODE_GROUP_ID = 5;
 
     /**
      * Default constructor
@@ -45,21 +52,23 @@ public class GeometryTypeFromConstraint extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
-        return "GeometryTypeFromConstraint";
+        return "geometryTypeFromConstraint";
     }
 
-    public static int GeometryTypeFromConstraint(String constraint) {
+    /**
+     * Convert H2 constraint string into a OGC geometry type index.
+     * @param constraint SQL Constraint ex: ST_GeometryTypeCode(the_geom) = 5
+     * @return Geometry type code {@link org.h2gis.utilities.GeometryTypeCodes}
+     */
+    public static int geometryTypeFromConstraint(String constraint) {
         if(constraint.isEmpty()) {
             return GeometryTypeCodes.GEOMETRY;
         }
-        constraint = constraint.toUpperCase();
-        for(DomainInfo domainsInfo : CreateSpatialExtension.getBuiltInsType()) {
-            // Like SC_Point(
-            String constraintFunction = CreateSpatialExtension.getAlias(domainsInfo.getDomainConstraint()).toUpperCase()+"(";
-            if(domainsInfo.getDomainConstraint() instanceof GeometryConstraint && constraint.contains(constraintFunction)) {
-                return ((GeometryConstraint) domainsInfo.getDomainConstraint()).getGeometryTypeCode();
-            }
+        Matcher matcher = TYPE_CODE_PATTERN.matcher(constraint);
+        if(matcher.find()) {
+            return Integer.valueOf(matcher.group(CODE_GROUP_ID));
+        } else {
+            return GeometryTypeCodes.GEOMETRY;
         }
-        return GeometryTypeCodes.GEOMETRY;
     }
 }
