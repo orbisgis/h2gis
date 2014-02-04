@@ -2,26 +2,29 @@
 layout: docs
 title: ST_PointN
 category: h2spatial/properties
-description: 
+description: Return the i POINT of a <code>LINESTRING</code>
 prev_section: ST_NumPoints
 next_section: ST_PointOnSurface
 permalink: /docs/dev/ST_PointN/
 ---
 
-### Signatures
+### Signature
 
 {% highlight mysql %}
+POINT ST_PointN(Geometry geometry,integer i);
 {% endhighlight %}
 
 ### Description
 
-
+Returns the `POINT` number `i` of a `LINESTRING` or Null if the input parameter is not a `LINESTRING`.
 
 {% include sfs-1-2-1.html %}
 
-### Examples
+### Example
 
 {% highlight mysql %}
+SELECT ST_PointN('LINESTRING (1 1, 1 6, 2 2, -1 2))', 2);
+-- Answer: POINT (1 6)
 {% endhighlight %}
 
 ##### See also
