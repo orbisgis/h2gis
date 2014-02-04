@@ -172,15 +172,17 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             int nodeID = 0;
             while (edgesTable.next()) {
                 final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
-                final Coordinate[] coordinates = geom.getCoordinates();
+                if (geom != null) {
+                    final Coordinate[] coordinates = geom.getCoordinates();
 
-                final Coordinate firstCoord = coordinates[0];
-                final Coordinate lastCoord = coordinates[coordinates.length - 1];
-                final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z)? true : false;
+                    final Coordinate firstCoord = coordinates[0];
+                    final Coordinate lastCoord = coordinates[coordinates.length - 1];
+                    final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z)? true : false;
 
-                nodeID = insertNode(nodesTable, edgesTable, nodeID, firstCoord, switchCoords ? END_NODE : START_NODE);
-                nodeID = insertNode(nodesTable, edgesTable, nodeID, lastCoord, switchCoords ? START_NODE : END_NODE);
-                edgesTable.updateRow();
+                    nodeID = insertNode(nodesTable, edgesTable, nodeID, firstCoord, switchCoords ? END_NODE : START_NODE);
+                    nodeID = insertNode(nodesTable, edgesTable, nodeID, lastCoord, switchCoords ? START_NODE : END_NODE);
+                    edgesTable.updateRow();
+                }
             }
         } finally {
             nodesTable.close();
