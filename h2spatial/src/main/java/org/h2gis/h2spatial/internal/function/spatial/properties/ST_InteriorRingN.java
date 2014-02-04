@@ -26,13 +26,14 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Returns a LinearRing instance or Null if parameter is not a Geometry.
+ * Returns a LinearRing instance or Null if parameter is not a Polygon. {@link org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumInteriorRings}
  * @author Nicolas Fortin
  */
 public class ST_InteriorRingN extends DeterministicScalarFunction {
@@ -42,7 +43,7 @@ public class ST_InteriorRingN extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_InteriorRingN() {
-        addProperty(PROP_REMARKS, "Returns a LinearRing instance or Null if parameter is not a Geometry.");
+        addProperty(PROP_REMARKS, "Returns a LinearRing instance or Null if parameter is not a Polygon.Use ST_NumInteriorRings to retrieve the number of interior rings.");
     }
 
     @Override
@@ -53,9 +54,9 @@ public class ST_InteriorRingN extends DeterministicScalarFunction {
     /**
      * @param geometry Instance of Polygon
      * @param i Index of Interior ring [1-N]
-     * @return LinearRing instance or Null if parameter is not a Geometry.
+     * @return Returns a LinearRing instance or Null if parameter is not a Polygon.
      */
-    public static Geometry getInteriorRing(Geometry geometry,Integer i) throws SQLException {
+    public static LineString getInteriorRing(Geometry geometry,Integer i) throws SQLException {
         if(geometry instanceof Polygon) {
             Polygon polygon = (Polygon) geometry;
             if(i>=1 && i<=polygon.getNumInteriorRing()) {
