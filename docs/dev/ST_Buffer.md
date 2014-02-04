@@ -24,6 +24,10 @@ permalink: /docs/dev/ST_Buffer/
 {% highlight mysql %}
 {% endhighlight %}
 
-##### See also
+##### Comparison with [`ST_MakeEllipse`](../ST_MakeEllipse)
 
+{% include makeellipse-buffer-cf.html %}
+
+##### See also
+* [`ST_MakeEllipse`](../ST_MakeEllipse)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/operators/ST_Buffer.java" target="_blank">Source code</a>
