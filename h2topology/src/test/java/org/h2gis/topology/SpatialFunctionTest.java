@@ -564,6 +564,10 @@ public class SpatialFunctionTest {
         // This test shows that the coordinate (1 2) is not considered to be
         // a node, even though it would be if we had used ST_Explode to split
         // the MULTILINESTRINGs into LINESTRINGs.
+        // Note also that the last coordinate of the first LINESTRING of road2 (1 2)
+        // is not equal to the first coordinate of the second LINESTRING of road2 (4 3),
+        // so this MULTILINESTRING is considered to be an edge from node 2=(4 3) to
+        // node 3=(5 2).
         st.execute("CREATE TABLE test(road MULTILINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES "
                 + "('MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1'),"
