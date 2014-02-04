@@ -44,7 +44,7 @@ import java.util.List;
 
 /**
  * ST_Graph produces two tables (nodes and edges) from an input table
- * containing a column of one-dimensional geometries.
+ * containing a column of LINESTRINGs or MULTILINESTRINGs.
  *
  * @author Adam Gouge
  * @author Erwan Bocher
@@ -69,8 +69,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     public ST_Graph() {
         addProperty(PROP_REMARKS, "produces two tables (nodes and edges) "
-                + "from an input table containing a column of one-dimensional "
-                + "geometries");
+                + "from an input table containing a column of LINESTRINGs "
+                + "or MULTILINESTRINGs");
     }
 
     @Override
@@ -78,11 +78,40 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return "createGraph";
     }
 
+    /**
+     * Create the nodes and edges tables from the input table containing
+     * LINESTRINGs or MULTILINESTRINGs.
+     *
+     * Since no column is specified in this signature, we take the first
+     * geometry column we find.
+     *
+     * If the input table has name 'input', then the output tables are named
+     * 'input_nodes' and 'input_edges'.
+     *
+     * @param connection Connection
+     * @param tableName Input table containing LINESTRINGs or MULTILINESTRINGs
+     * @return true if both output tables were created
+     * @throws SQLException
+     */
     public static boolean createGraph(Connection connection,
-                                      String inputTable) throws SQLException {
-        return createGraph(connection, inputTable, null);
+                                      String tableName) throws SQLException {
+        return createGraph(connection, tableName, null);
     }
 
+    /**
+     * Create the nodes and edges tables from the input table containing
+     * LINESTRINGs or MULTILINESTRINGs in the given column.
+     *
+     * If the input table has name 'input', then the output tables are named
+     * 'input_nodes' and 'input_edges'.
+     *
+     * @param connection Connection
+     * @param tableName Input table
+     * @param spatialFieldName Name of column containing LINESTRINGs or
+     * MULTILINESTRINGs
+     * @return true if both output tables were created
+     * @throws SQLException
+     */
     public static boolean createGraph(Connection connection,
                                       String tableName,
                                       String spatialFieldName) throws SQLException {
@@ -90,6 +119,26 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return createGraph(connection, tableName, spatialFieldName, 0.0);
     }
 
+    /**
+     * Create the nodes and edges tables from the input table containing
+     * LINESTRINGs or MULTILINESTRINGs in the given column and using the given
+     * tolderance.
+     *
+     * The tolerance value is used specify the side length of a square Envelope
+     * around each node used to snap together other nodes within the same
+     * Envelope.
+     *
+     * If the input table has name 'input', then the output tables are named
+     * 'input_nodes' and 'input_edges'.
+     *
+     * @param connection Connection
+     * @param tableName Input table
+     * @param spatialFieldName Name of column containing LINESTRINGs or
+     * MULTILINESTRINGs
+     * @param tolerance Tolerance
+     * @return true if both output tables were created
+     * @throws SQLException
+     */
     public static boolean createGraph(Connection connection,
                                       String tableName,
                                       String spatialFieldName,
@@ -98,6 +147,32 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return createGraph(connection, tableName, spatialFieldName, tolerance, false);
     }
 
+    /**
+     * Create the nodes and edges tables from the input table containing
+     * LINESTRINGs or MULTILINESTRINGs in the given column and using the given
+     * tolderance, and potentially orienting edges by slope.
+     *
+     * The tolerance value is used specify the side length of a square Envelope
+     * around each node used to snap together other nodes within the same
+     * Envelope.
+     *
+     * The boolean orientBySlope is set to true if edges should be oriented by
+     * the z-value of their first and last coordinates (decreasing)
+
+     *
+     * If the input table has name 'input', then the output tables are named
+     * 'input_nodes' and 'input_edges'.
+     *
+     * @param connection Connection
+     * @param tableName Input table
+     * @param spatialFieldName Name of column containing LINESTRINGs or
+     * MULTILINESTRINGs
+     * @param tolerance Tolerance
+     * @param orientBySlope True if edges should be oriented by the z-value of
+     * their first and last coordinates (decreasing)
+     * @return true if both output tables were created
+     * @throws SQLException
+     */
     public static boolean createGraph(Connection connection,
                                       String tableName,
                                       String spatialFieldName,
