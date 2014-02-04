@@ -191,7 +191,7 @@ public class SpatialFunctionTest {
         rs = st.executeQuery(
                 "SELECT ST_GeometryTypeCode('MULTIPOLYGON(((1 1, 2 2, 5 3, 1 1)),((0 0, 2 2, 5 3, 0 0)))'::geometry)");
         assertTrue(rs.next());
-        assertEquals(GeometryTypeCodes.POLYGON, rs.getInt(1));
+        assertEquals(GeometryTypeCodes.MULTIPOLYGON, rs.getInt(1));
         rs = st.executeQuery(
                 "SELECT ST_GeometryTypeCode('GEOMETRYCOLLECTION(POINT(4 6),LINESTRING(4 6,7 10))'::geometry)");
         assertTrue(rs.next());
