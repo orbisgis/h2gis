@@ -46,7 +46,6 @@ public class SpatialFunctionTest {
 
     private static Connection connection;
     private static final String DB_NAME = "SpatialFunctionTest";
-    public static final double TOLERANCE = 10E-10;
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -536,5 +535,25 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE test");
         st.execute("DROP TABLE test_nodes");
         st.execute("DROP TABLE test_edges");
+    }
+
+    @Test
+    public void test_ST_Graph_ErrorWithNoLINESTRINGOrMULTILINESTRING() throws Exception {
+        Statement st = connection.createStatement();
+
+        // Prepare the input table.
+        st.execute("CREATE TABLE test(road POINT, description VARCHAR);" +
+                "INSERT INTO test VALUES "
+                + "('POINT (0 0)', 'road1');");
+
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('test')");
+        assertTrue(rs.next());
+        assertFalse(rs.getBoolean(1));
+        assertFalse(rs.next());
+
+        assertFalse(connection.getMetaData().getTables(null, null, "TEST_NODES", null).last());
+        assertFalse(connection.getMetaData().getTables(null, null, "TEST_EDGES", null).last());
+
+        st.execute("DROP TABLE test");
     }
 }

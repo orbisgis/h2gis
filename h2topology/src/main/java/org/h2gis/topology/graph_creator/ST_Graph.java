@@ -32,6 +32,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ import java.util.List;
  * containing a column of one-dimensional geometries.
  *
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
@@ -111,10 +113,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
         getSpatialFieldIndex(spatialFieldName);
         setupOutputTables();
-        updateTables();
-
-        // If we made it this far, the output tables were successfully created.
-        return true;
+        return updateTables();
     }
 
     private static void getSpatialFieldIndex(String spatialFieldName) throws SQLException {
@@ -159,7 +158,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
     }
 
-    private static void updateTables() throws SQLException {
+    private static boolean updateTables() throws SQLException {
         SpatialResultSet nodesTable =
                 connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
                         executeQuery("SELECT * FROM " + nodesName).
@@ -173,6 +172,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             while (edgesTable.next()) {
                 final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
                 if (geom != null) {
+                    final int type = SFSUtilities.getGeometryTypeFromGeometry(geom);
+                    if (type != GeometryTypeCodes.LINESTRING
+                            && type != GeometryTypeCodes.MULTILINESTRING) {
+                        throw new SQLException("Only LINESTRINGS and MULTILINESTRINGS are accepted. " +
+                                "Found: " + geom.getGeometryType());
+                    }
                     final Coordinate[] coordinates = geom.getCoordinates();
 
                     final Coordinate firstCoord = coordinates[0];
@@ -184,10 +189,16 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     edgesTable.updateRow();
                 }
             }
+        } catch (SQLException e) {
+            final Statement statement = connection.createStatement();
+            statement.execute("DROP TABLE " + nodesName);
+            statement.execute("DROP TABLE " + edgesName);
+            return false;
         } finally {
             nodesTable.close();
             edgesTable.close();
         }
+        return true;
     }
 
     private static int insertNode(SpatialResultSet nodesTable,
