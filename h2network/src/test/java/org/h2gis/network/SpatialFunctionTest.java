@@ -22,12 +22,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.topology;
+package org.h2gis.network;
 
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.topology.graph_creator.ST_Graph;
+import org.h2gis.network.graph_creator.ST_Graph;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;

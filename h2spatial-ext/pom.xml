@@ -68,7 +68,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2topology</artifactId>
+            <artifactId>h2network</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

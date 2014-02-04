@@ -7,8 +7,8 @@
         <version>1.0.3-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>h2topology</artifactId>
-    <name>h2topology</name>
+    <artifactId>h2network</artifactId>
+    <name>h2network</name>
     <packaging>bundle</packaging>
     <description>Graph functions</description>
     <build>

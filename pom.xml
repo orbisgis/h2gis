@@ -26,7 +26,7 @@
         <module>h2drivers</module>
         <module>h2spatial-osgi</module>
         <module>h2spatial-ext-osgi</module>
-        <module>h2topology</module>
+        <module>h2network</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
