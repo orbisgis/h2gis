@@ -50,7 +50,7 @@ public class ST_GeometryN extends DeterministicScalarFunction {
 
     /**
      * @param geometry Instance of Polygon
-     * @param i Index of Interior ring [1-N]
+     * @param i Index of Geometry element [1-N]
      * @return Geometry instance or Null if parameter is null.
      */
     public static Geometry getGeometryN(Geometry geometry,Integer i) throws SQLException {
