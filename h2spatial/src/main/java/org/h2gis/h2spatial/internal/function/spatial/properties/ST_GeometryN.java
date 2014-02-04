@@ -51,7 +51,7 @@ public class ST_GeometryN extends DeterministicScalarFunction {
     /**
      * @param geometry Instance of Polygon
      * @param i Index of Interior ring [1-N]
-     * @return LinearRing instance or Null if parameter is not a Geometry.
+     * @return Geometry instance or Null if parameter is null.
      */
     public static Geometry getGeometryN(Geometry geometry,Integer i) throws SQLException {
         if(geometry==null) {
