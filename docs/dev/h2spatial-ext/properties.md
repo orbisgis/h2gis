@@ -3,6 +3,7 @@ layout: docs
 title: Properties
 category: h2spatial-ext/properties
 prev_section: h2spatial-ext/predicates
+next_section: h2network/graph-creation
 permalink: /docs/dev/h2spatial-ext/properties/
 ---
 
