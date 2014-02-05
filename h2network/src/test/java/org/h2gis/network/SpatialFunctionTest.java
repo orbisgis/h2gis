@@ -435,6 +435,80 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_Graph_BigTolerance() throws Exception {
+        Statement st = connection.createStatement();
+        // This test shows that the results from using a large tolerance value
+        // (3.1 rather than 0.1) can be very different.
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+                "INSERT INTO test VALUES "
+                + "('LINESTRING (0 0, 1 2)', 'road1'),"
+                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2'),"
+                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3'),"
+                + "('LINESTRING (4 3, 5 2)', 'road4'),"
+                + "('LINESTRING (4.05 4.1, 7 5)', 'road5'),"
+                + "('LINESTRING (7.1 5, 8 4)', 'road6');");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 3.1, false)");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+        assertFalse(rs.next());
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        assertEquals(2, nodesResult.getMetaData().getColumnCount());
+        assertTrue(nodesResult.next());
+        assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
+        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertTrue(nodesResult.next());
+        assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
+        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertTrue(nodesResult.next());
+        assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
+        assertGeometryEquals("POINT (8 4)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertFalse(nodesResult.next());
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (0 0, 1 2)", edgesResult.getBytes("road"));
+        assertEquals("road1", edgesResult.getString("description"));
+        assertEquals(1, edgesResult.getInt(ST_Graph.EDGE_ID));
+        assertEquals(1, edgesResult.getInt(ST_Graph.START_NODE));
+        assertEquals(1, edgesResult.getInt(ST_Graph.END_NODE));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (1 2, 2 3, 4 3)", edgesResult.getBytes("road"));
+        assertEquals("road2", edgesResult.getString("description"));
+        assertEquals(2, edgesResult.getInt(ST_Graph.EDGE_ID));
+        assertEquals(1, edgesResult.getInt(ST_Graph.START_NODE));
+        assertEquals(2, edgesResult.getInt(ST_Graph.END_NODE));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (4 3, 4 4, 1 4, 1 2)", edgesResult.getBytes("road"));
+        assertEquals("road3", edgesResult.getString("description"));
+        assertEquals(3, edgesResult.getInt(ST_Graph.EDGE_ID));
+        assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
+        assertEquals(1, edgesResult.getInt(ST_Graph.END_NODE));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (4 3, 5 2)", edgesResult.getBytes("road"));
+        assertEquals("road4", edgesResult.getString("description"));
+        assertEquals(4, edgesResult.getInt(ST_Graph.EDGE_ID));
+        assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
+        assertEquals(2, edgesResult.getInt(ST_Graph.END_NODE));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (4.05 4.1, 7 5)", edgesResult.getBytes("road"));
+        assertEquals("road5", edgesResult.getString("description"));
+        assertEquals(5, edgesResult.getInt(ST_Graph.EDGE_ID));
+        assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
+        assertEquals(2, edgesResult.getInt(ST_Graph.END_NODE));
+        assertTrue(edgesResult.next());
+        assertGeometryEquals("LINESTRING (7.1 5, 8 4)", edgesResult.getBytes("road"));
+        assertEquals("road6", edgesResult.getString("description"));
+        assertEquals(6, edgesResult.getInt(ST_Graph.EDGE_ID));
+        assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
+        assertEquals(3, edgesResult.getInt(ST_Graph.END_NODE));
+        assertFalse(edgesResult.next());
+
+        st.execute("DROP TABLE test");
+        st.execute("DROP TABLE test_nodes");
+        st.execute("DROP TABLE test_edges");
+    }
+
+    @Test
     public void test_ST_Graph_OrienteBySlope() throws Exception {
         Statement st = connection.createStatement();
 

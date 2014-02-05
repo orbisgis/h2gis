@@ -86,6 +86,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static String edgesName;
     private static double tolerance;
     private static boolean orientBySlope;
+    private static final List<Node> nearbyIntersectingNodes = new ArrayList<Node>();
 
     public ST_Graph() {
         addProperty(PROP_REMARKS, "ST_Graph produces two tables (nodes and edges) from an input table " +
@@ -367,15 +368,15 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         Envelope envelope = new Envelope(coord);
         envelope.expandBy(tolerance);
 
-        final List<Integer> nearbyIntersectingNodes = findNearbyIntersectingNodes(envelope);
-        if (nearbyIntersectingNodes.size() == 1) {
-            edgesTable.updateInt(edgeColumnName, nearbyIntersectingNodes.get(0));
+        final Node nodeToSnapTo = findNodeToSnapTo(coord, envelope);
+        if (nodeToSnapTo != null) {
+            edgesTable.updateInt(edgeColumnName, nodeToSnapTo.getId());
         } else {
             nodesTable.moveToInsertRow();
             nodesTable.updateInt(NODE_ID, ++nodeID);
             nodesTable.updateGeometry(THE_GEOM, GF.createPoint(coord));
             nodesTable.insertRow();
-            quadtree.insert(envelope, nodeID);
+            quadtree.insert(envelope, new Node(nodeID, coord));
             edgesTable.updateInt(edgeColumnName, nodeID);
         }
         return nodeID;
@@ -388,22 +389,73 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @return A list of nodes that intersect the given Envelope
      * @throws SQLException
      */
-    private static List<Integer> findNearbyIntersectingNodes(Envelope envelope) throws SQLException {
-        final List<Integer> nearbyNodes = quadtree.query(envelope);
-        final List<Integer> nearbyIntersectingNodes = new ArrayList<Integer>();
-        for (Integer id : nearbyNodes) {
-            SpatialResultSet matchingNodeRS =
-                    connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
-                            executeQuery("SELECT " + THE_GEOM + " FROM " + nodesName + " WHERE " + NODE_ID + "=" + id).
-                            unwrap(SpatialResultSet.class);
-            matchingNodeRS.next();
-            if (envelope.contains(matchingNodeRS.getGeometry(1).getEnvelopeInternal())) {
-                nearbyIntersectingNodes.add(id);
+    private static Node findNodeToSnapTo(Coordinate coord, Envelope envelope) throws SQLException {
+        final List<Node> nearbyNodes = quadtree.query(envelope);
+        nearbyIntersectingNodes.clear();
+        for (Node node : nearbyNodes) {
+            if (envelope.contains(node.getCoordinate())) {
+                nearbyIntersectingNodes.add(node);
             }
         }
-        if (nearbyIntersectingNodes.size() > 1) {
-            LOGGER.warn("Found {} nearby intersecting nodes.", nearbyNodes.size());
+        // If there is only one intersecting node, then snap this coordinate
+        // to that node and return it.
+        if (nearbyIntersectingNodes.size() == 1) {
+            final Node nodeToSnapTo = nearbyIntersectingNodes.get(0);
+            nodeToSnapTo.setSnappedCoordinate(coord);
+            return nodeToSnapTo;
         }
-        return nearbyIntersectingNodes;
+        // If there is more than one, then return the first intersecting
+        // node which has a snapped coordinate equal to this coordinate.
+        for (Node node : nearbyIntersectingNodes) {
+            Coordinate snappedCoordinate = node.getSnappedCoordinate();
+            if (snappedCoordinate != null) {
+                if (snappedCoordinate.equals3D(coord)) {
+                    return node;
+                }
+            }
+        }
+        // Either there were no intersecting nodes, or none which had a snapped
+        // coordinate equal to this coordinate.
+        return null;
+    }
+
+    /**
+     * Node class for snapping nodes.
+     *
+     * @author Adam Gouge
+     */
+    private static class Node {
+
+        private int id;
+        private Coordinate coordinate;
+        private Coordinate snappedCoordinate;
+
+        /**
+         * Constructor
+         *
+         * @param id         ID
+         * @param coordinate Coordinate
+         */
+        public Node(int id, Coordinate coordinate) {
+            this.id = id;
+            this.coordinate = coordinate;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public Coordinate getCoordinate() {
+            return coordinate;
+        }
+
+        public Coordinate getSnappedCoordinate() {
+            return snappedCoordinate;
+        }
+
+        public void setSnappedCoordinate(Coordinate snappedCoordinate) {
+            this.snappedCoordinate = snappedCoordinate;
+        }
+
     }
 }
