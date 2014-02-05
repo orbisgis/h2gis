@@ -31,33 +31,33 @@ import org.h2gis.drivers.dbf.DBFWrite;
 import org.h2gis.drivers.gpx.GPXRead;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
-import org.h2gis.h2spatialext.function.spatial.convert.*;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeEllipse;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakePoint;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_Holes;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiPoint;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiSegments;
+import org.h2gis.h2spatialext.function.spatial.create.*;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_LocateAlong;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeLine;
+import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
+import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsRectangle;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsValid;
 import org.h2gis.h2spatialext.function.spatial.properties.*;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
-import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
+import org.h2gis.network.graph_creator.ST_Graph;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -110,7 +110,9 @@ public class CreateSpatialExtension {
                 new ST_MakeGridPoints(),
                 new ST_TriangleAspect(),
                 new ST_TriangleSlope(),
-                new ST_TriangleDirection()};
+                new ST_TriangleDirection(),
+                // h2network functions
+                new ST_Graph()};
     }
 
     /**
