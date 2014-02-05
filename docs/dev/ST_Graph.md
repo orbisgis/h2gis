@@ -255,6 +255,38 @@ SELECT * FROM test_edges;
 -- | LINESTRING (0 0, 1 0) | road1 |    1    |      2     |    1     |
 {% endhighlight %}
 
+##### Example with `MULTILINESTRING`s
+
+{% highlight mysql %}
+-- This example shows that the coordinate (1 2) is not considered to
+-- be a node, even though it would be if we had first used ST_Explode
+-- to split the MULTILINESTRINGs into LINESTRINGs.
+-- Note that in road2, since (1 2) != (4 3), this MULTILINESTRING is
+-- considered to be an edge from node 2=(4 3) to node 3=(5 2).
+CREATE TABLE test(road MULTILINESTRING, description VARCHAR);
+INSERT INTO test VALUES
+    ('MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1'),
+    ('MULTILINESTRING ((4 3, 4 4, 1 4, 1 2), (4 3, 5 2))', 'road2');
+SELECT ST_Graph('test');
+-- Answer: true
+SELECT * FROM test_nodes;
+-- Answer:
+--     | NODE_ID |  THE_GEOM   |
+--     |---------|-------------|
+--     |    1    | POINT (0 0) |
+--     |    2    | POINT (4 3) |
+--     |    3    | POINT (5 2) |
+SELECT * FROM test_edges;
+-- Answer:
+-- |      ROAD    |  DESCRIPTION   | EDGE_ID | START_NODE | END_NODE |
+-- |--------------|----------------|---------|------------|----------|
+-- | MULTILINESTRING       | road1 |    1    |     1      |    2     |
+-- | ((0 0, 1 2),          |       |         |            |          |
+-- |  (1 2, 2 3, 4 3))     |       |         |            |          |
+-- | MULTILINESTRING       | road2 |    2    |     2      |    3     |
+-- | ((4 3, 4 4, 1 4, 1 2),|       |         |            |          |
+-- |  (4 3, 5 2))          |       |         |            |          |
+{% endhighlight %}
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_Graph.java" target="_blank">Source code</a>
