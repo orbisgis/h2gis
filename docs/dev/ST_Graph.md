@@ -86,8 +86,65 @@ Geometry column is used. Returns `true` if the operation is successful.
 
 ### Examples
 
+##### Automatic Geometry column detection
+
+Input table (called `test`):
+
+| road LINESTRING | description VARCHAR | way LINESTRING |
+| - | - | - |
+| 'LINESTRING (0 0, 1 2)' | 'road1' | 'LINESTRING (1 1, 2 2, 3 1)' |
+| 'LINESTRING (1 2, 2 3, 4 3)' | 'road2' | 'LINESTRING (3 1, 2 0, 1 1)' |
+| 'LINESTRING (4 3, 4 4, 1 4, 1 2)' | 'road3' | 'LINESTRING (1 1, 2 1)' |
+| 'LINESTRING (4 3, 5 2)' | 'road4' | 'LINESTRING (2 1, 3 1)' |
+
 {% highlight mysql %}
+SELECT ST_Graph('test');
+-- Answer: True
+
+SELECT * FROM test_nodes;
+-- Answer:
+--     | NODE_ID |   THE_GEOM  |
+--     |---------|-------------|
+--     |    1    | POINT (0 0) |
+--     |    2    | POINT (1 2) |
+--     |    3    | POINT (4 3) |
+--     |    4    | POINT (5 2) |
+
+SELECT * FROM test_edges;
+-- Answer:
 {% endhighlight %}
+
+| ROAD                            | DESCRIPTION   | WAY | EDGE_ID |START_NODE  |   END_NODE  |
+|---------------------------------|---------------|-----|---------|------------|-------------|
+| LINESTRING (0 0, 1 2)           | road1 | LINESTRING (1 1, 2 2, 3 1) | 1 | 1 | 2 |
+| LINESTRING (1 2, 2 3, 4 3)      | road2 | LINESTRING (3 1, 2 0, 1 1) | 2 | 2 | 3 |
+| LINESTRING (4 3, 4 4, 1 4, 1 2) | road3 | LINESTRING (1 1, 2 1)      | 3 | 3 | 2 |
+| LINESTRING (4 3, 5 2)           | road4 | LINESTRING (2 1, 3 1)      | 4 | 3 | 4 |
+
+Here we specify the `way` column.
+
+{% highlight mysql %}
+SELECT ST_Graph('test', 'way');
+-- Answer: True
+
+SELECT * FROM test_nodes;
+-- Answer:
+--     | NODE_ID |   THE_GEOM  |
+--     |---------|-------------|
+--     |    1    | POINT (1 1) |
+--     |    2    | POINT (3 1) |
+--     |    3    | POINT (2 1) |
+
+SELECT * FROM test_edges;
+-- Answer: 
+{% endhighlight %}
+
+| ROAD                            | DESCRIPTION   | WAY | EDGE_ID |START_NODE  |   END_NODE  |
+|---------------------------------|---------------|-----|---------|------------|-------------|
+| LINESTRING (0 0, 1 2) | road1 | LINESTRING (1 1, 2 2, 3 1) | 1 | 1 | 2 |
+| LINESTRING (1 2, 2 3, 4 3) |road2 | LINESTRING (3 1, 2 0, 1 1) | 2 | 2 | 1 |
+| LINESTRING (4 3, 4 4, 1 4, 1 2) |oad3 | LINESTRING (1 1, 2 1) |  3|  1|  3 |
+| LINESTRING (4 3, 5 2) | road4 | LINESTRING (2 1, 3 1) |  4|  3|  2 |
 
 ##### See also
 
