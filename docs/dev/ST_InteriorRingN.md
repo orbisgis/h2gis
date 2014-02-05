@@ -2,7 +2,7 @@
 layout: docs
 title: ST_InteriorRingN
 category: h2spatial/properties
-description: Return the interior ring of a `POLYGON`
+description: Return the interior ring of a <code>POLYGON</code>
 prev_section: ST_GeometryType
 next_section: ST_IsClosed
 permalink: /docs/dev/ST_InteriorRingN/
@@ -31,4 +31,5 @@ SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
 
 ##### See also
 
+* [`ST_ExteriorRing`](../ST_ExteriorRing)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_InteriorRingN.java" target="_blank">Source code</a>

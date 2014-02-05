@@ -31,6 +31,9 @@ SELECT ST_GeometryN('MULTILINESTRING((1 1, 1 6, 2 2, -1 2),
                      (1 2, 4 2, 4 6))', 2);
 -- Answer: LINESTRING(1 2, 4 2, 4 6)
 
+SELECT ST_GeometryN('MULTIPOINT((0 0), (1 6), (2 2), (1 2))', 2);
+-- Answer: POINT(1 6)
+
 SELECT ST_GeometryN('GEOMETRYCOLLECTION(
                      MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
                      LINESTRING(2 6, 6 2), POINT(4 4), 
