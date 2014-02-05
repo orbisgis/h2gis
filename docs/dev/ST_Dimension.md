@@ -42,4 +42,5 @@ SELECT ST_dimension('GEOMETRYCOLLECTION(
 
 ##### See also
 
+* [`ST_GeometryType`](../ST_GeometryType)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Dimension.java" target="_blank">Source code</a>
