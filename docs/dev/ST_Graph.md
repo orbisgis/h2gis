@@ -41,7 +41,7 @@ Geometry column is used. Returns `true` if the operation is successful.
 <div class="note info">
   <h5>If the input table is named <code>input</code>, then the output tables
   will be named <code>input_nodes</code> and <code>input_edges</code></h5>
-  <p>The <code>input_nodes</code> contains:</p>
+  <p>The <code>input_nodes</code> table contains:</p>
   <ul>
   <li>an integer id <code>node_id</code></li>
   <li>a <code>POINT</code> Geometry representing each node</li>
@@ -97,7 +97,8 @@ INSERT INTO test VALUES
 ('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING (1 1, 2 1)'),
 ('LINESTRING (4 3, 5 2)', 'road4', 'LINESTRING (2 1, 3 1)');
 
--- We first demonstrate automatic Geometry column detection.
+-- We first demonstrate automatic Geometry column detection. ST_Graph
+-- finds and uses the 'road' column.
 SELECT ST_Graph('test');
 -- Answer: True
 
@@ -122,7 +123,8 @@ SELECT * FROM test_edges;
 -- |            1 4, 1 2) |       |                      |   |   |   |
 -- | LINESTRING(4 3, 5 2) | road4 | LINESTRING(2 1, 3 1) | 4 | 3 | 4 |
 
--- We may also specify the 'way' column.
+-- We may also choose which Geometry column we want to use. Here we
+-- specify the 'way' column.
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
 SELECT ST_Graph('test', 'way');
@@ -159,9 +161,9 @@ INSERT INTO test VALUES ('LINESTRING (0 0, 1 0)', 'road1'),
                         ('LINESTRING (1 0.1, 1 1)', 'road4'),
                         ('LINESTRING (2 0.05, 2 1)', 'road5');
 
--- This test shows that nodes within a tolerance of 0.05 of each other
--- are considered to be a single node. Note, however, that edge
--- geometries are left untouched.
+-- This example shows that coordinates within a tolerance of 0.05 of
+-- each other are considered to be a single node. Note, however, that
+-- edge geometries are left untouched.
 SELECT ST_Graph('test', 'road', 0.05);
 -- Answer: true
 
@@ -190,14 +192,13 @@ SELECT * FROM test_edges;
 
 ##### Orienting by z-values
 
-
 {% highlight mysql %}
 -- This test proves that orientation by slope works. Three cases:
 --     1. first.z == last.z -- Orient first --> last
 --     2. first.z > last.z -- Orient first --> last
 --     3. first.z < last.z -- Orient last --> first
 
--- CASE 1.
+-- CASE 1: 0 == 0.
 CREATE TABLE test(road LINESTRING, description VARCHAR);
 INSERT INTO test VALUES ('LINESTRING (0 0 0, 1 0 0)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
@@ -214,7 +215,7 @@ SELECT * FROM test_edges;
 -- |--------------|----------------|---------|------------|----------|
 -- | LINESTRING (0 0, 1 0) | road1 |    1    |      1     |    2     |
 
--- CASE 2.
+-- CASE 2: 1 > 0.
 DROP TABLE test;
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
@@ -234,7 +235,7 @@ SELECT * FROM test_edges;
 -- |--------------|----------------|---------|------------|----------|
 -- | LINESTRING (0 0, 1 0) | road1 |    1    |      1     |    2     |
 
--- CASE 3.
+-- CASE 3: 0 < 1.
 DROP TABLE test;
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
@@ -261,8 +262,8 @@ SELECT * FROM test_edges;
 -- This example shows that the coordinate (1 2) is not considered to
 -- be a node, even though it would be if we had first used ST_Explode
 -- to split the MULTILINESTRINGs into LINESTRINGs.
--- Note that in road2, since (1 2) != (4 3), this MULTILINESTRING is
--- considered to be an edge from node 2=(4 3) to node 3=(5 2).
+-- Note that road2 is considered to be an edge from node 2=(4 3) to
+-- node 3=(5 2) even though its first LINESTRING ends on (1 2).
 CREATE TABLE test(road MULTILINESTRING, description VARCHAR);
 INSERT INTO test VALUES
     ('MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1'),
@@ -287,6 +288,7 @@ SELECT * FROM test_edges;
 -- | ((4 3, 4 4, 1 4, 1 2),|       |         |            |          |
 -- |  (4 3, 5 2))          |       |         |            |          |
 {% endhighlight %}
+
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_Graph.java" target="_blank">Source code</a>
