@@ -855,7 +855,7 @@ code.option, code.flag, code.filter, code.output {
   height: 0;
 }
 
-.note h5, .note p {
+.note h5, .note p, .note ul {
   margin: 0;
   color: #fff;
 }
@@ -867,6 +867,11 @@ code.option, code.flag, code.filter, code.output {
 }
 
 .note p {
+  font-weight: 400;
+  font-size: .75em;
+}
+
+.note ul {
   font-weight: 400;
   font-size: .75em;
 }

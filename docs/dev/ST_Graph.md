@@ -22,9 +22,8 @@ boolean ST_Graph(inputTable varchar, columnName varchar,
 ### Description
 
 Produces two tables (nodes and edges) from the geometries contained in column
-`columnName` of `inputTable` using the specified `tolerance` and orienting
-edges by slope if `orientBySlope` is true. Returns `true` if the operation
-is successful.
+`columnName` of table `inputTable`. If no column is specified, then the first
+Geometry column is used. Returns `true` if the operation is successful.
 
 | Variable | Default value |
 | - | - |
@@ -32,32 +31,58 @@ is successful.
 | `tolerance` | `0.0` |
 | `orientBySlope` | `false` |
 
-<div class="note">
+<div class="note warning">
+  <h5>The column must only contain <code>LINESTRING</code>s or
+  <code>MULTILINESTRING</code>s.</h5>
+  <p>Otherwise, the operation will fail and <code>ST_Graph</code> will return
+  <code>false</code>.</p>
+</div>
+
+<div class="note info">
   <h5>If the input table is named <code>input</code>, then the output tables
-  will be named <code>input_nodes</code> and <code>input_edges</code>.</h5>
-  <p>The nodes table consists of an integer <code>node_id</code> and a
-  <code>POINT</code> geometry representing each node. The edges table is a copy
-  of the input table with three extra columns: <code>edge_id,</code>
-  <code>start_node,</code> and <code>end_node.</code> The
-  <code>start_node</code> and <code>end_node</code> correspond to the
-  <code>node_id</code>s in the nodes table.</p>
+  will be named <code>input_nodes</code> and <code>input_edges</code></h5>
+  <p>The <code>input_nodes</code> contains:</p>
+  <ul>
+  <li>an integer id <code>node_id</code></li>
+  <li>a <code>POINT</code> Geometry representing each node</li>
+  </ul>
+  <p>The <code>input_edges</code> table is a copy of the input table with three
+  extra integer id columns:</p>
+  <ul>
+  <li><code>edge_id</code></li>
+  <li><code>start_node</code></li>
+  <li><code>end_node</code></li>
+  </ul>
+  <p>The last two columns correspond to the <code>node_id</code>s in the
+  <code>input_nodes</code> table.</p>
+</div>
+
+<div class="note">
+  <h5>Correct data inaccuracies automatically.</h5>
+  <p>When the endpoints of certain <code>LINESTRINGs</code> are very close together, we
+  often wish to snap them together. The <code>tolerance</code> value allows us to do that.
+  It specifies the side length of a square Envelope around each node used to
+  snap together other nodes within the same Envelope. <i>Note</i>:
+  <ul>
+  <li>Edge geometries are left untouched.</li>
+  <li> <i>Coordinates</i> within a given tolerance of each other are not
+  necessarily snapped together. Only the first and last coordinates of a
+  Geometry are considered to be nodes, and only <i>nodes</i> within a given
+  tolerance of each other are snapped together.</li>
+  </ul>
+  </p>
 </div>
 
 <div class="note warning">
-  <h5>The column can only contain <code>LINESTRING</code>s or <code>MULTILINESTRING</code>s.</h5>
-  <p>Otherwise, the operation will fail and <code>ST_Graph</code> will return <code>false</code>.</p>
+  <h5>The tolerance works only in metric units.</h5>
 </div>
 
-A tolerance value may be given to specify the side length of a square Envelope
-around each node used to snap together other nodes within the same Envelope.
-Note, however, that edge geometries are left untouched.  Note also that
-coordinates within a given tolerance of each other are not necessarily snapped
-together. Only the first and last coordinates of a geometry are considered to
-be potential nodes, and only nodes within a given tolerance of each other are
-snapped together. The tolerance works only in metric units.
-
-A boolean value may be set to true to specify that edges should be oriented the
-z-value of their first and last coordinates (decreasing).
+<div class="note">
+  <h5>Hydrologists, watch out!</h5>
+  <p>By setting <code>orientBySlope</code> to <code>true</code>, you can
+  specify that edges should be oriented from the endpoint with greatest
+  <i>z</i>-value to the endpoint with least <i>z</i>-value.</p>
+</div>
 
 ### Examples
 
