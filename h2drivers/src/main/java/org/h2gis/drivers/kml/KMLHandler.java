@@ -17,6 +17,8 @@
 package org.h2gis.drivers.kml;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.util.HashMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
@@ -44,9 +46,12 @@ public class KMLHandler extends DefaultHandler {
     private String SCHEMADATA = "SchemaData";
     private String SCHEMAURL = "schemaUrl";
     private String LINESTRING = "LineString";
-    private String COORDINATES ="coordinates";
-    
+    private String COORDINATES = "coordinates";
     private boolean kmlSucess = true;
+    private StringBuilder sqlStatement;
+    //Store the preparedStatement corresponding to the schema
+    private HashMap<String, PreparedStatement> psts = new HashMap<String, PreparedStatement>();
+    private String currentSchemaName;
 
     public KMLHandler(Connection connection, String tableReference) {
         this.connection = connection;
@@ -59,13 +64,21 @@ public class KMLHandler extends DefaultHandler {
         if (name.equalsIgnoreCase(DOCUMENT)) {
             System.out.println(DOCUMENT);
         } else if (name.equalsIgnoreCase(FOLDER)) {
-            System.out.println(attributes.getValue(name));
+            System.out.println("Folder " + FOLDER);
         } else if (name.equalsIgnoreCase(SCHEMA)) {
-            String schemaName = attributes.getValue("name");
-            System.out.println("Schema name " + schemaName);
+            currentSchemaName = attributes.getValue("name");
+            System.out.println("Schema name " + currentSchemaName);
             String schemaId = attributes.getValue("id");
             System.out.println("Schema id " + schemaId);
+            sqlStatement = new StringBuilder();
         } else if (name.equalsIgnoreCase(SIMPLEFIELD)) {
+            System.out.println("Name " + attributes.getValue(NAME));
+            System.out.println("Type " + attributes.getValue(TYPE));
+        } else if (name.equalsIgnoreCase(PLACEMARK)) {
+            System.out.println("PLACEMARK " + attributes.getValue(COORDINATES));
+        } else if (name.equalsIgnoreCase(SCHEMADATA)) {
+            System.out.println("SCHEMADATA " + attributes.getValue(SCHEMAURL));
+        } else if (name.equalsIgnoreCase(NAME)) {
         }
     }
 
