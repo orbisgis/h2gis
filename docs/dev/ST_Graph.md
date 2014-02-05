@@ -88,16 +88,16 @@ Geometry column is used. Returns `true` if the operation is successful.
 
 ##### Automatic Geometry column detection
 
-Input table (called `test`):
-
-| road LINESTRING | description VARCHAR | way LINESTRING |
-| - | - | - |
-| 'LINESTRING (0 0, 1 2)' | 'road1' | 'LINESTRING (1 1, 2 2, 3 1)' |
-| 'LINESTRING (1 2, 2 3, 4 3)' | 'road2' | 'LINESTRING (3 1, 2 0, 1 1)' |
-| 'LINESTRING (4 3, 4 4, 1 4, 1 2)' | 'road3' | 'LINESTRING (1 1, 2 1)' |
-| 'LINESTRING (4 3, 5 2)' | 'road4' | 'LINESTRING (2 1, 3 1)' |
-
 {% highlight mysql %}
+CREATE TABLE test(road LINESTRING, description VARCHAR,
+                  way LINESTRING);
+INSERT INTO test VALUES
+('LINESTRING (0 0, 1 2)', 'road1', 'LINESTRING (1 1, 2 2, 3 1)'),
+('LINESTRING (1 2, 2 3, 4 3)', 'road2', 'LINESTRING (3 1, 2 0, 1 1)'),
+('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING (1 1, 2 1)'),
+('LINESTRING (4 3, 5 2)', 'road4', 'LINESTRING (2 1, 3 1)');
+
+-- We first demonstrate automatic Geometry column detection.
 SELECT ST_Graph('test');
 -- Answer: True
 
@@ -112,18 +112,19 @@ SELECT * FROM test_nodes;
 
 SELECT * FROM test_edges;
 -- Answer:
-{% endhighlight %}
+-- | ROAD  |  DESCRIPTION   | WAY | EDGE_ID | START_NODE | END_NODE  |
+-- |-------|----------------|-----|---------|------------|-----------|
+-- | LINESTRING(0 0, 1 2) | road1 | LINESTRING(1 1, 2 2, | 1 | 1 | 2 |
+-- |                      |       |            3 1)      |   |   |   |
+-- | LINESTRING(1 2, 2 3, | road2 | LINESTRING(3 1, 2 0, | 2 | 2 | 3 |
+-- |            4 3)      |       |            1 1)      |   |   |   |
+-- | LINESTRING(4 3, 4 4, | road3 | LINESTRING(1 1, 2 1) | 3 | 3 | 2 |
+-- |            1 4, 1 2) |       |                      |   |   |   |
+-- | LINESTRING(4 3, 5 2) | road4 | LINESTRING(2 1, 3 1) | 4 | 3 | 4 |
 
-| ROAD                            | DESCRIPTION   | WAY | EDGE_ID |START_NODE  |   END_NODE  |
-|---------------------------------|---------------|-----|---------|------------|-------------|
-| LINESTRING (0 0, 1 2)           | road1 | LINESTRING (1 1, 2 2, 3 1) | 1 | 1 | 2 |
-| LINESTRING (1 2, 2 3, 4 3)      | road2 | LINESTRING (3 1, 2 0, 1 1) | 2 | 2 | 3 |
-| LINESTRING (4 3, 4 4, 1 4, 1 2) | road3 | LINESTRING (1 1, 2 1)      | 3 | 3 | 2 |
-| LINESTRING (4 3, 5 2)           | road4 | LINESTRING (2 1, 3 1)      | 4 | 3 | 4 |
-
-Here we specify the `way` column.
-
-{% highlight mysql %}
+-- We may also specify the 'way' column.
+DROP TABLE test_nodes;
+DROP TABLE test_edges;
 SELECT ST_Graph('test', 'way');
 -- Answer: True
 
@@ -137,14 +138,122 @@ SELECT * FROM test_nodes;
 
 SELECT * FROM test_edges;
 -- Answer: 
+-- | ROAD  |  DESCRIPTION   | WAY | EDGE_ID | START_NODE | END_NODE  |
+-- |-------|----------------|-----|---------|------------|-----------|
+-- | LINESTRING(0 0, 1 2) | road1 | LINESTRING(1 1, 2 2, | 1 | 1 | 2 |
+-- |                      |       |            3 1)      |   |   |   |
+-- | LINESTRING(1 2, 2 3, | road2 | LINESTRING(3 1, 2 0, | 2 | 2 | 1 |
+-- |            4 3)      |       |            1 1)      |   |   |   |
+-- | LINESTRING(4 3, 4 4, | road3 | LINESTRING(1 1, 2 1) | 3 | 1 | 3 |
+-- |            1 4, 1 2) |       |                      |   |   |   |
+-- | LINESTRING(4 3, 5 2) | road4 | LINESTRING(2 1, 3 1) | 4 | 3 | 2 |
 {% endhighlight %}
 
-| ROAD                            | DESCRIPTION   | WAY | EDGE_ID |START_NODE  |   END_NODE  |
-|---------------------------------|---------------|-----|---------|------------|-------------|
-| LINESTRING (0 0, 1 2) | road1 | LINESTRING (1 1, 2 2, 3 1) | 1 | 1 | 2 |
-| LINESTRING (1 2, 2 3, 4 3) |road2 | LINESTRING (3 1, 2 0, 1 1) | 2 | 2 | 1 |
-| LINESTRING (4 3, 4 4, 1 4, 1 2) |oad3 | LINESTRING (1 1, 2 1) |  3|  1|  3 |
-| LINESTRING (4 3, 5 2) | road4 | LINESTRING (2 1, 3 1) |  4|  3|  2 |
+##### Using a tolerance
+
+{% highlight mysql %}
+CREATE TABLE test(road LINESTRING, description VARCHAR);
+INSERT INTO test VALUES ('LINESTRING (0 0, 1 0)', 'road1'),
+                        ('LINESTRING (1.05 0, 2 0)', 'road2'),
+                        ('LINESTRING (2.05 0, 3 0)', 'road3'),
+                        ('LINESTRING (1 0.1, 1 1)', 'road4'),
+                        ('LINESTRING (2 0.05, 2 1)', 'road5');
+
+-- This test shows that nodes within a tolerance of 0.05 of each other
+-- are considered to be a single node. Note, however, that edge
+-- geometries are left untouched.
+SELECT ST_Graph('test', 'road', 0.05);
+-- Answer: true
+
+SELECT * FROM test_nodes;
+-- Answer:
+--     | NODE_ID |  THE_GEOM     |
+--     |---------|---------------|
+--     |    1    | POINT (0 0)   |
+--     |    2    | POINT (1 0)   |
+--     |    3    | POINT (2 0)   |
+--     |    4    | POINT (3 0)   |
+--     |    5    | POINT (1 0.1) |
+--     |    6    | POINT (1 1)   |
+--     |    7    | POINT (2 1)   |
+
+SELECT * FROM test_edges;
+-- Answer:
+-- |      ROAD       | DESCRIPTION | EDGE_ID | START_NODE | END_NODE |
+-- |-----------------|-------------|---------|------------|----------|
+-- | LINESTRING (0 0, 1 0)    | road1 | 1 | 1 | 2 |
+-- | LINESTRING (1.05 0, 2 0) | road2 | 2 | 2 | 3 |
+-- | LINESTRING (2.05 0, 3 0) | road3 | 3 | 3 | 4 |
+-- | LINESTRING (1 0.1, 1 1)  | road4 | 4 | 5 | 6 |
+-- | LINESTRING (2 0.05, 2 1) | road5 | 5 | 3 | 7 |
+{% endhighlight %}
+
+##### Orienting by z-values
+
+
+{% highlight mysql %}
+-- This test proves that orientation by slope works. Three cases:
+--     1. first.z == last.z -- Orient first --> last
+--     2. first.z > last.z -- Orient first --> last
+--     3. first.z < last.z -- Orient last --> first
+
+-- CASE 1.
+CREATE TABLE test(road LINESTRING, description VARCHAR);
+INSERT INTO test VALUES ('LINESTRING (0 0 0, 1 0 0)', 'road1');
+SELECT ST_Graph('test', 'road', 0.0, true);
+-- Answer: true
+SELECT * FROM test_nodes;
+-- Answer:
+--     | NODE_ID |  THE_GEOM   |
+--     |---------|-------------|
+--     |    1    | POINT (0 0) |
+--     |    2    | POINT (1 0) |
+SELECT * FROM test_edges;
+-- Answer:
+-- |      ROAD    |  DESCRIPTION   | EDGE_ID | START_NODE | END_NODE |
+-- |--------------|----------------|---------|------------|----------|
+-- | LINESTRING (0 0, 1 0) | road1 |    1    |      1     |    2     |
+
+-- CASE 2.
+DROP TABLE test;
+DROP TABLE test_nodes;
+DROP TABLE test_edges;
+CREATE TABLE test(road LINESTRING, description VARCHAR);
+INSERT INTO test VALUES ('LINESTRING (0 0 1, 1 0 0)', 'road1');
+SELECT ST_Graph('test', 'road', 0.0, true);
+-- Answer: true
+SELECT * FROM test_nodes;
+-- Answer:
+--     | NODE_ID |  THE_GEOM   |
+--     |---------|-------------|
+--     |    1    | POINT (0 0) |
+--     |    2    | POINT (1 0) |
+SELECT * FROM test_edges;
+-- Answer:
+-- |      ROAD    |  DESCRIPTION   | EDGE_ID | START_NODE | END_NODE |
+-- |--------------|----------------|---------|------------|----------|
+-- | LINESTRING (0 0, 1 0) | road1 |    1    |      1     |    2     |
+
+-- CASE 3.
+DROP TABLE test;
+DROP TABLE test_nodes;
+DROP TABLE test_edges;
+CREATE TABLE test(road LINESTRING, description VARCHAR);
+INSERT INTO test VALUES ('LINESTRING (0 0 0, 1 0 1)', 'road1');
+SELECT ST_Graph('test', 'road', 0.0, true);
+-- Answer: true
+SELECT * FROM test_nodes;
+-- Answer:
+--     | NODE_ID |  THE_GEOM   |
+--     |---------|-------------|
+--     |    1    | POINT (0 0) |
+--     |    2    | POINT (1 0) |
+SELECT * FROM test_edges;
+-- Answer:
+-- |      ROAD    |  DESCRIPTION   | EDGE_ID | START_NODE | END_NODE |
+-- |--------------|----------------|---------|------------|----------|
+-- | LINESTRING (0 0, 1 0) | road1 |    1    |      2     |    1     |
+{% endhighlight %}
 
 ##### See also
 
