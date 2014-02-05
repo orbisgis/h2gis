@@ -12,6 +12,8 @@ import java.util.StringTokenizer;
  */
 public class TableLocation {
     private String catalog,schema,table;
+    /** Recognized by H2 and Postgres */
+    private static final String ESCAPE_CHAR = "\"";
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -55,20 +57,35 @@ public class TableLocation {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            sb.append("`");
+            boolean containSpace = catalog.contains(" ");
+            if(containSpace) {
+                sb.append(ESCAPE_CHAR);
+            }
             sb.append(catalog);
-            sb.append("`");
+            if(containSpace) {
+                sb.append(ESCAPE_CHAR);
+            }
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            sb.append("`");
+            boolean containSpace = schema.contains(" ");
+            if(containSpace) {
+                sb.append(ESCAPE_CHAR);
+            }
             sb.append(schema);
-            sb.append("`");
+            if(containSpace) {
+                sb.append(ESCAPE_CHAR);
+            }
             sb.append(".");
         }
-        sb.append("`");
+        boolean containSpace = table.contains(" ");
+        if(containSpace) {
+            sb.append(ESCAPE_CHAR);
+        }
         sb.append(table);
-        sb.append("`");
+        if(containSpace) {
+            sb.append(ESCAPE_CHAR);
+        }
         return sb.toString();
     }
 
@@ -89,12 +106,12 @@ public class TableLocation {
         List<String> parts = new LinkedList<String>();
         String catalog,schema,table;
         catalog = schema = table = "";
-        StringTokenizer st = new StringTokenizer(concatenatedTableLocation, ".`", true);
+        StringTokenizer st = new StringTokenizer(concatenatedTableLocation, ".`\"", true);
         boolean openQuote = false;
         StringBuilder sb = new StringBuilder();
         while(st.hasMoreTokens()) {
             String token = st.nextToken();
-            if(token.equals("`")) {
+            if(token.equals("`") || token.equals("\"")) {
                 openQuote = !openQuote;
             } else if(token.equals(".")) {
                 if(openQuote) {

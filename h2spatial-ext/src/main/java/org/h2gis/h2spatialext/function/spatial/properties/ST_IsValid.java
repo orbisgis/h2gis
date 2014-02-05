@@ -23,34 +23,34 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatialext.function.spatial.predicates;
+package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * ST_IsRectangle returns true if the given geometry is a rectangle.
+ * ST_IsValid returns true if the given geometry is valid.
  *
  * @author Adam Gouge
  */
-public class ST_IsRectangle extends DeterministicScalarFunction {
+public class ST_IsValid extends DeterministicScalarFunction {
 
-    public ST_IsRectangle() {
-        addProperty(PROP_REMARKS, "Returns true if the given geometry is a rectangle.");
+    public ST_IsValid() {
+        addProperty(PROP_REMARKS, "Returns true if the given geometry is valid.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "isRectangle";
+        return "isValid";
     }
 
     /**
-     * Returns true if the given geometry is a rectangle.
+     * Returns true if the given geometry is valid.
      *
      * @param geometry Geometry
-     * @return True if the given geometry is a rectangle
+     * @return True if the given geometry is valid
      */
-    public static Boolean isRectangle(Geometry geometry) {
-        return geometry.isRectangle();
+    public static Boolean isValid(Geometry geometry) {
+        return geometry.isValid();
     }
 }

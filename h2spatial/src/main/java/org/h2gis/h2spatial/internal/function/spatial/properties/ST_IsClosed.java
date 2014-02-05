@@ -31,7 +31,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Test if the provided geometry is closed.
+ * Test if the provided (Multi)LineString is closed.
  * @author Nicolas Fortin
  */
 public class ST_IsClosed extends DeterministicScalarFunction {
@@ -40,7 +40,7 @@ public class ST_IsClosed extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_IsClosed() {
-        addProperty(PROP_REMARKS, "Check if the provided geometry is closed.");
+        addProperty(PROP_REMARKS, "Check if the provided (Multi)LineString is closed.");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ST_IsClosed extends DeterministicScalarFunction {
 
     /**
      * @param geometry Geometry instance
-     * @return True if the provided geometry is closed
+     * @return True if the provided (Multi)LineString is closed
      */
     public static Boolean isClosed(Geometry geometry) {
         if (geometry instanceof MultiLineString) {

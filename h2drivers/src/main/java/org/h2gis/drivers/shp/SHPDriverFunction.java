@@ -150,8 +150,17 @@ public class SHPDriverFunction implements DriverFunction {
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
-            st.execute(String.format("CREATE TABLE %s (the_geom %s, %s)", TableLocation.parse(tableReference),
+            if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+                //H2 Syntax
+                st.execute(String.format("CREATE TABLE %s (the_geom %s, %s)", TableLocation.parse(tableReference),
                     getSFSGeometryType(shpHeader), DBFDriverFunction.getSQLColumnTypes(dbfHeader)));
+            } else {
+                // PostgreSQL Syntax
+                int srid = 0;
+                st.execute(String.format("CREATE TABLE %s (the_geom GEOMETRY(%s, %d), %s)", TableLocation.parse(tableReference),
+                        getSFSGeometryType(shpHeader),srid, DBFDriverFunction.getSQLColumnTypes(dbfHeader)));
+
+            }
             st.close();
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(

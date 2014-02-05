@@ -31,7 +31,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Test if the provided geometry is closed and simple.
+ * Test if the provided (Multi)LineString is closed and simple.
  * @author Nicolas Fortin
  */
 public class ST_IsRing extends DeterministicScalarFunction {
@@ -40,7 +40,7 @@ public class ST_IsRing extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_IsRing() {
-        addProperty(PROP_REMARKS, "Test if the provided geometry is closed and simple.");
+        addProperty(PROP_REMARKS, "Test if the provided (Multi)LineString is closed and simple.");
     }
 
     @Override
@@ -50,7 +50,7 @@ public class ST_IsRing extends DeterministicScalarFunction {
 
     /**
      * @param geometry Geometry instance
-     * @return True if the provided geometry is ring
+     * @return True if the provided (Multi)LineString is closed and simple.
      */
     public static Boolean isRing(Geometry geometry) {
         if (geometry instanceof MultiLineString) {
