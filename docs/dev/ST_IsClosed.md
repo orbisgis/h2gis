@@ -28,13 +28,17 @@ SELECT ST_IsClosed('LINESTRING(2 1, 1 3, 5 2)');
 
 SELECT ST_IsClosed('LINESTRING(2 1, 1 3, 5 2, 2 1)');
 -- Answer: TRUE
+{% endhighlight %}
 
+<img class="displayed" src="../ST_IsClosed.png"/>
+
+{% highlight mysql %}
 SELECT ST_IsClosed('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 1), 
-                                     (5 0, 7 0, 7 1, 5 1, 5 0))');
+                                    (5 0, 7 0, 7 1, 5 1, 5 0))');
 -- Answer: FALSE
 
 SELECT ST_IsClosed('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 2), 
-                                     (5 0, 7 0, 7 1, 5 1, 5 0))');
+                                    (5 0, 7 0, 7 1, 5 1, 5 0))');
 -- Answer: TRUE
 {% endhighlight %}
 

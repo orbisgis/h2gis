@@ -32,7 +32,7 @@ SELECT ST_IsEmpty('GEOMETRYCOLLECTION(
                       POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: FALSE
 
-SELECT ST_IsEmpty('LINESTRING empty');
+SELECT ST_IsEmpty('POLYGON EMPTY');
 -- Answer: TRUE
 {% endhighlight %}
 
