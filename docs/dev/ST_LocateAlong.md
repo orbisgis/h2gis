@@ -22,6 +22,14 @@ Returns a `MULTIPOINT` containing points along the line segments of the given Ge
 ### Examples
 
 {% highlight mysql %}
+SELECT  ST_LocateAlong('LINESTRING(1 1, 5 4)', 
+        0.5, 2);
+-- Anwser: MULTIPOINT((1.8 4.1))
+{% endhighlight %}
+
+<img class="displayed" src="../ST_LocateAlong_0.png"/>
+
+{% highlight mysql %}
 SELECT  ST_LocateAlong('LINESTRING(1 1, 5 1, 5 3)', 
         0.5, 1);
 -- Anwser: MULTIPOINT((3 2), (4 2))
@@ -39,8 +47,8 @@ SELECT  ST_LocateAlong('POLYGON((1 1, 4 1, 4 3, 1 3, 1 1))',
 
 {% highlight mysql %}
 SELECT ST_LocateAlong('GEOMETRYCOLLECTION(
-                       LINESTRING(1 4, 5 4, 5 2),
-                       POLYGON((1 1, 4 1, 4 3, 1 3, 1 1)))', 
+                           LINESTRING(1 4, 5 4, 5 2),
+                           POLYGON((1 1, 4 1, 4 3, 1 3, 1 1)))', 
        2, 1);
 -- Anwser: MULTIPOINT((2 -1), (-2 2), (6 0), (9 5), (7 2),
 --         (3 5))
