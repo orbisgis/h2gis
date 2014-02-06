@@ -88,9 +88,14 @@ public class SFSUtilities {
             fieldName = geometryFields.get(0);
         }
         ResultSet geomResultSet = getGeometryColumnsView(connection,location.getCatalog(),location.getSchema(),location.getTable());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         while(geomResultSet.next()) {
             if(fieldName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(fieldName)) {
-                return geomResultSet.getInt("GEOMETRY_TYPE");
+                if(isH2) {
+                    return geomResultSet.getInt("GEOMETRY_TYPE");
+                } else {
+                    return GEOM_TYPE_TO_SFS_CODE.get(geomResultSet.getString("type").toLowerCase());
+                }
             }
         }
         throw new SQLException("Field not found "+fieldName);
