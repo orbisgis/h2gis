@@ -4,7 +4,7 @@ title: ST_Disjoint
 category: h2spatial/predicates
 description: Return true Geometries A and B are disjoint
 prev_section: ST_Crosses
-next_section: ST_EnvelopesIntersect
+next_section: ST_Equals
 permalink: /docs/dev/ST_Disjoint/
 ---
 
