@@ -137,7 +137,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -962,7 +962,55 @@
        width="16.607464"
        id="rect4109"
        style="fill:#008aff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
-  </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3141"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(339.99532,-26.153486)"><flowRegion
+         id="flowRegion3143"><rect
+           id="rect3145"
+           width="196.67421"
+           height="30.338043"
+           x="-499.00851"
+           y="-169.52869"
+           style="font-size:20px" /></flowRegion><flowPara
+         id="flowPara3147">Closed and simple</flowPara></flowRoot>    <flowRoot
+       transform="translate(688.67234,-26.153486)"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3149"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3151"><rect
+           style="font-size:20px"
+           y="-169.52869"
+           x="-499.00851"
+           height="31.384182"
+           width="251.07347"
+           id="rect3153" /></flowRegion><flowPara
+         id="flowPara3155">Simple and not closed </flowPara></flowRoot>    <flowRoot
+       transform="translate(323.25709,314.80037)"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3157"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3159"><rect
+           style="font-size:20px"
+           y="-169.52869"
+           x="-499.00851"
+           height="25.107346"
+           width="230.15068"
+           id="rect3161" /></flowRegion><flowPara
+         id="flowPara3163">Closed and not simple </flowPara></flowRoot>    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3165"
+       style="font-size:20px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="translate(666.67234,313.84651)"><flowRegion
+         id="flowRegion3167"><rect
+           id="rect3169"
+           width="270.95013"
+           height="29.291906"
+           x="-499.00851"
+           y="-169.52869"
+           style="font-size:20px" /></flowRegion><flowPara
+         id="flowPara3171">Not simple and not closed </flowPara></flowRoot>  </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
