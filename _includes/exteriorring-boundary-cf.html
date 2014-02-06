@@ -1,0 +1,13 @@
+{% highlight mysql %}
+SELECT ST_ExteriorRing('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0), 
+                        (1 1, 2 1, 2 5, 1 5, 1 1))');
+SELECT ST_Boundary('POLYGON ((0 0, 10 0, 10 6, 0 6, 0 0), 
+                    (1 1, 2 1, 2 5, 1 5, 1 1))');
+-- Answer: 
+-- |           ExteriorRing                |                   Boundary                   |
+-- |---------------------------------------|----------------------------------------------|
+-- | LINEARRING(0 0, 10 0, 10 6, 0 6, 0 0) | MULTILINESTRING((0 0, 10 0, 10 6, 0 6, 0 0), |
+-- |                                       |                 (1 1, 2 1, 2 5, 1 5, 1 1))   |
+{% endhighlight %}
+
+<img class="displayed" src="../ST_ExteriorRing_2.png"/>
