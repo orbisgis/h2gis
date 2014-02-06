@@ -19,11 +19,20 @@ MULTIPOINT ST_LocateAlong(GEOMETRY geom,
 
 ### Description
 
-Returns a `MULTIPOINT` containing points along the line segments of `geom`
-matching the specified `segmentLengthFraction` and `offsetDistance`. A positive
-offset places points to the left of the segment (with the ordering given
-by Coordinate traversal); a negative offset to the right. For areal elements,
-only exterior rings are supported.
+Places points along the line segments composing `geom` at a distance of
+`segmentLengthFraction` along the segment and at an offset distance of
+`offsetDistance`. Returns them as a `MULTIPOINT`.
+
+<div class="note">
+  <h5>What about orientation?</h5>
+  <p>Line segment orientation is determined by the order of the coordinates. A
+  positive offset places the point to the left of the segment; a negative
+  offset to the right.</p>
+</div>
+
+<div class="note warning">
+  <h5>Only exterior rings are supported for <code>POLYGON</code>s.</h5>
+</div>
 
 ### Examples
 
