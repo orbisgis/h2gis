@@ -61,11 +61,14 @@ import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MinimumRectangle;
 import org.h2gis.h2spatialext.function.spatial.create.ST_OctogonalEnvelope;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_AddPoint;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Densify;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Interpolate3DLine;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_RemoveHoles;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse3DLine;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_Snap;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_Split;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
@@ -134,7 +137,10 @@ public class CreateSpatialExtension {
                 new ST_MakeEnvelope(),
                 new ST_Interpolate3DLine(), 
                 new ST_Reverse(), 
-                new ST_Reverse3DLine()};
+                new ST_Reverse3DLine(),
+                new ST_Snap(),
+                new ST_Split(),
+                new ST_AddPoint()};
     }
 
     /**
