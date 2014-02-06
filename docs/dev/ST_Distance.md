@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Distance
 category: h2spatial/properties
-description: Return distance between two Geometries
+description: Return the distance between two Geometries
 prev_section: ST_Dimension
 next_section: ST_EndPoint
 permalink: /docs/dev/ST_Distance/
@@ -11,12 +11,13 @@ permalink: /docs/dev/ST_Distance/
 ### Signature
 
 {% highlight mysql %}
-double ST_Distance(GEOMETRY geomA,GEOMETRY geomB);
+double ST_Distance(GEOMETRY geomA, GEOMETRY geomB);
 {% endhighlight %}
 
 ### Description
 
-Returns the 2-dimensional minimum Cartesian distance between two Geometries in projected units (spatial ref units).
+Returns the 2-dimensional minimum Cartesian distance between two Geometries in
+projected units (spatial reference units).
 
 {% include sfs-1-2-1.html %}
 
@@ -24,7 +25,7 @@ Returns the 2-dimensional minimum Cartesian distance between two Geometries in p
 
 {% highlight mysql %}
 SELECT ST_Distance('POINT(11 4)', 
-    'LINESTRING(1 4, 8 4, 3 2, 6 1)');
+                   'LINESTRING(1 4, 8 4, 3 2, 6 1)');
 -- Answer: 3.0
 {% endhighlight %}
 
@@ -32,7 +33,7 @@ SELECT ST_Distance('POINT(11 4)',
 
 {% highlight mysql %}
 SELECT ST_Distance('LINESTRING(11 4, 9 1)', 
-    'LINESTRING(1 4, 8 4, 3 2, 6 1)');
+                   'LINESTRING(1 4, 8 4, 3 2, 6 1)');
 -- Answer: 2.496150883013531
 {% endhighlight %}
 
@@ -40,7 +41,7 @@ SELECT ST_Distance('LINESTRING(11 4, 9 1)',
 
 {% highlight mysql %}
 SELECT ST_Distance('LINESTRING(10 7, 11 1)', 
-    'POLYGON((1 0, 1 4, 5 4, 5 0, 1 0))');
+                   'POLYGON((1 0, 1 4, 5 4, 5 0, 1 0))');
 -- Answer: 5.42516658107679
 {% endhighlight %}
 
@@ -48,7 +49,7 @@ SELECT ST_Distance('LINESTRING(10 7, 11 1)',
 
 {% highlight mysql %}
 SELECT ST_Distance('POLYGON((8 0, 8 4, 10 4, 10 0, 8 0))', 
-    'POLYGON((1 0, 1 4, 5 4, 5 0, 1 0))');
+                   'POLYGON((1 0, 1 4, 5 4, 5 0, 1 0))');
 -- Answer: 3.0
 {% endhighlight %}
 
