@@ -20,7 +20,7 @@ Returns the last point of `geom` as a `POINT`, given that `geom` is a
 `LINESTRING` or a `MULTILINESTRING`s containing only one `LINESTRING`. For all
 other Geometries, returns `NULL`.
 
-<!-- This function does not seem to be SFS. Is it SQL-MM? !-->
+<!-- This function does not seem to be SFS. Is it SQL-MM? -->
 
 ### Examples
 

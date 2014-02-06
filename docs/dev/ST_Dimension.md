@@ -22,7 +22,7 @@ Return the dimension of `geom`:
 * 2 for `POLYGON`s
 * The largest dimension of the components of a `GEOMETRYCOLLECTION`
 
-<!-- This function does not seem to be SFS. Is it SQL-MM? !-->
+<!-- This function does not seem to be SFS. Is it SQL-MM? -->
 
 ### Examples
 

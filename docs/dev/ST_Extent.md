@@ -46,6 +46,11 @@ SELECT ST_Extent('POINT(5 6)'::Geometry);
 -- Answer: POINT(5 6)
 {% endhighlight %}
 
+##### Comparison with [`ST_Envelope`](../ST_Envelope)
+
+{% include extent-envelope-cf.html %}
+
 ##### See also
+
 * [`ST_Envelope`](../ST_Envelope)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_Extent.java" target="_blank">Source code</a>
