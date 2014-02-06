@@ -11,8 +11,8 @@ permalink: /docs/dev/ST_NumGeometries/
 ### Signatures
 
 {% highlight mysql %}
-integer ST_NumGeometries(GEOMETRY geom);
-integer ST_NumGeometries(GEOMETRYCOLLECTION geom);
+int ST_NumGeometries(GEOMETRY geom);
+int ST_NumGeometries(GEOMETRYCOLLECTION geom);
 {% endhighlight %}
 
 ### Description
