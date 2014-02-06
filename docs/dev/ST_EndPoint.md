@@ -16,10 +16,11 @@ POINT ST_EndPoint(GEOMETRY geom);
 
 ### Description
 
-Returns the last `POINT` of a `LINESTRING` as a `POINT`.
-If the input parameter is not a `LINESTRING` this function returns `null`.
+Returns the last point of `geom` as a `POINT`, given that `geom` is a
+`LINESTRING` or a `MULTILINESTRING`s containing only one `LINESTRING`. For all
+other Geometries, returns `NULL`.
 
-{% include sfs-1-2-1.html %}
+<!-- This function does not seem to be SFS. Is it SQL-MM? !-->
 
 ### Examples
 
@@ -31,9 +32,12 @@ SELECT ST_EndPoint('LINESTRING(1 2, 5 3, 2 6)');
 <img class="displayed" src="../ST_EndPoint.png"/>
 
 {% highlight mysql %}
+SELECT ST_EndPoint('MULTILINESTRING((1 1, 3 2, 3 1))');
+-- Answer: POINT(3 1)
+
 SELECT ST_EndPoint('MULTILINESTRING((1 1, 3 2, 3 1),
-                    (1 2, 5 3, 2 6))');
--- Answer: null
+                                    (1 2, 5 3, 2 6))');
+-- Answer: NULL
 {% endhighlight %}
 
 ##### See also
