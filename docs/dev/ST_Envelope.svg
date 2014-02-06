@@ -144,16 +144,16 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.95589551"
-     inkscape:cx="333.84514"
-     inkscape:cy="228.59884"
+     inkscape:zoom="1.3518404"
+     inkscape:cx="233.74991"
+     inkscape:cy="266.38232"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:window-width="1440"
-     inkscape:window-height="824"
-     inkscape:window-x="0"
-     inkscape:window-y="24"
+     inkscape:window-height="872"
+     inkscape:window-x="1440"
+     inkscape:window-y="0"
      inkscape:window-maximized="1"
      showguides="true"
      inkscape:guide-bbox="true" />
@@ -165,7 +165,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -866,7 +866,7 @@
          id="flowPara3131"
          style="font-size:24px">Case3</flowPara></flowRoot>    <path
        style="fill:none;stroke:#007d00;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
-       d="M 431.68393,886.87105 470.98202,686.98719"
+       d="M 431.68393,886.87105 431.40634,686.98719"
        id="path3133"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -1086,7 +1086,7 @@
        inkscape:export-ydpi="99" />
     <path
        style="fill:none;stroke:#007d00;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
-       d="m 92.64892,886.21421 39.2981,-199.88389"
+       d="m 92.64892,886.21421 0.09229,-199.14416"
        id="path3133-7"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
@@ -1121,7 +1121,7 @@
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path4091"
-       d="m 92.64892,886.21421 39.2981,-199.88389"
+       d="M 92.64892,886.21421 92.869994,687.07005"
        style="fill:none;stroke:#f00000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:16, 16;stroke-dashoffset:0;display:inline" />
     <path
        inkscape:export-ydpi="99"
