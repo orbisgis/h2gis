@@ -24,6 +24,8 @@
  */
 package org.h2gis.h2spatial;
 
+import org.h2.value.ValueGeometry;
+import org.h2gis.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.AfterClass;
@@ -209,5 +211,25 @@ public class SpatialFunctionTest {
            rs.close();
         }
 
+    }
+
+    @Test
+    public void test_ST_Envelope() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Envelope(ST_GeomFromText('LINESTRING(1 1,5 5)', 27572))");
+        try {
+            assertTrue(rs.next());
+            assertEquals(ValueGeometry.getFromGeometry(ST_GeomFromText.toGeometry("POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1))", 27572)),
+                    ValueGeometry.getFromGeometry(rs.getObject(1)));
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT ST_SRID(ST_Envelope(ST_GeomFromText('LINESTRING(1 1,5 5)', 27572)))");
+        try {
+            assertTrue(rs.next());
+            assertEquals(27572,rs.getInt(1));
+        } finally {
+            rs.close();
+        }
     }
 }
