@@ -142,16 +142,6 @@ public class SFSUtilities {
     }
 
     /**
-     * Convert catalog.schema.table, schema.table or table into TableLocation instance.
-     * Not specified schema or catalog are converted into an empty string.
-     * @param concatenatedTableLocation Table location
-     * @return Java beans for table location
-     */
-    public static TableLocation splitCatalogSchemaTableName(String concatenatedTableLocation) {
-        return TableLocation.parse(concatenatedTableLocation);
-    }
-
-    /**
      * Merge the bounding box of all geometries inside the provided table.
      * @param connection Active connection (not closed by this function)
      * @param location Location of the table

@@ -13,7 +13,7 @@ import java.util.StringTokenizer;
 public class TableLocation {
     private String catalog,schema,table;
     /** Recognized by H2 and Postgres */
-    private static final String ESCAPE_CHAR = "\"";
+    private static final String QUOTE_CHAR = "\"";
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -57,34 +57,34 @@ public class TableLocation {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            boolean containSpace = catalog.contains(" ");
-            if(containSpace) {
-                sb.append(ESCAPE_CHAR);
+            boolean doQuote = catalog.contains(" ");
+            if(doQuote) {
+                sb.append(QUOTE_CHAR);
             }
             sb.append(catalog);
-            if(containSpace) {
-                sb.append(ESCAPE_CHAR);
+            if(doQuote) {
+                sb.append(QUOTE_CHAR);
             }
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            boolean containSpace = schema.contains(" ");
-            if(containSpace) {
-                sb.append(ESCAPE_CHAR);
+            boolean doQuote = schema.contains(" ");
+            if(doQuote) {
+                sb.append(QUOTE_CHAR);
             }
             sb.append(schema);
-            if(containSpace) {
-                sb.append(ESCAPE_CHAR);
+            if(doQuote) {
+                sb.append(QUOTE_CHAR);
             }
             sb.append(".");
         }
-        boolean containSpace = table.contains(" ");
-        if(containSpace) {
-            sb.append(ESCAPE_CHAR);
+        boolean doQuote= table.contains(" ") || !table.equals(table.toLowerCase());
+        if(doQuote) {
+            sb.append(QUOTE_CHAR);
         }
         sb.append(table);
-        if(containSpace) {
-            sb.append(ESCAPE_CHAR);
+        if(doQuote) {
+            sb.append(QUOTE_CHAR);
         }
         return sb.toString();
     }

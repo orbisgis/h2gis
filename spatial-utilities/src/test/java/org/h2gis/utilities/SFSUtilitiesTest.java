@@ -78,6 +78,11 @@ public class SFSUtilitiesTest {
         assertEquals("my schema",location.getSchema());
         assertEquals("my table",location.getTable());
         assertEquals("mydb.\"my schema\".\"my table\"", location.toString());
+        location = TableLocation.parse("public.MYTABLE");
+        assertEquals("",location.getCatalog());
+        assertEquals("public",location.getSchema());
+        assertEquals("MYTABLE",location.getTable());
+        assertEquals("public.\"MYTABLE\"", location.toString());
     }
 
     @Test
