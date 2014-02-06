@@ -98,5 +98,6 @@ SELECT ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
 
 ##### See also
 
+* [`ST_ClosestCoordinate`](../ST_ClosestCoordinate)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_ClosestPoint.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/62" target="_blank">#62</a>
