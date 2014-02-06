@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Area
 category: h2spatial/properties
-description: Compute Geometry area
+description: Return a Geometry's area
 prev_section: h2spatial/properties
 next_section: ST_Boundary
 permalink: /docs/dev/ST_Area/
@@ -12,12 +12,12 @@ permalink: /docs/dev/ST_Area/
 
 {% highlight mysql %}
 double ST_Area(GEOMETRY geom);
+double ST_Area(GEOMETRYCOLLECTION geom);
 {% endhighlight %}
 
 ### Description
 
-Computes `GEOMETRY` area. If a `GEOMETRY` has no area (like `POINT` or `LINESTRING`) return 0.
-The compute area for `GEOMETRYCOLLECTION` is add to each Geometry area.
+Returns the area of `geom`.
 
 {% include sfs-1-2-1.html %}
 
@@ -25,22 +25,23 @@ The compute area for `GEOMETRYCOLLECTION` is add to each Geometry area.
 
 {% highlight mysql %}
 SELECT ST_Area('POINT(0 12)');
+-- Answer: 0.0
+
 SELECT ST_Area('LINESTRING(5 4, 1 1, 3 4, 4 5)');
 -- Answer: 0.0
---         0.0
 
 SELECT ST_Area('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))');
 -- Answer: 100.0
 
 SELECT ST_Area('MULTIPOLYGON(((0 0, 10 0, 10 10, 0 10, 0 0), 
-                (5 4, 1 1, 3 4, 4 5, 5 4)))');
+                              (5 4, 1 1, 3 4, 4 5, 5 4)))');
 -- Answer: 96.0
 
 SELECT ST_Area('GEOMETRYCOLLECTION(
-                LINESTRING(5 4, 1 1, 3 4, 4 5), 
-                POINT(0 12), 
-                POLYGON((0 0, 10 0, 10 10, 0 10, 0 0)), 
-                POLYGON((5 4, 1 1, 3 4, 4 5, 5 4)))');
+                  LINESTRING(5 4, 1 1, 3 4, 4 5), 
+                  POINT(0 12), 
+                  POLYGON((0 0, 10 0, 10 10, 0 10, 0 0)), 
+                  POLYGON((5 4, 1 1, 3 4, 4 5, 5 4)))');
 -- Answer: 104.0
 {% endhighlight %}
 

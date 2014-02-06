@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Boundary
 category: h2spatial/properties
-description: Return Geometry boundary as <code>GEOMETRY</code>
+description: Return a Geometry's boundary
 prev_section: ST_Area
 next_section: ST_Centroid
 permalink: /docs/dev/ST_Boundary/
@@ -17,22 +17,14 @@ GEOMETRY ST_Boundary(GEOMETRY geom, int srid);
 
 ### Description
 
-Returns boundary of a `GEOMETRY`.
+Returns the boundary of `geom`, optionally setting its SRID to `srid`.
 
-<div class="note">
-
-  <h8>ST_Boundary does not support <code>GEOMETRYCOLLECTION</code> arguments.</h8>
-
-</div>
-
+{% include geom-coll-warning.html %}
 {% include sfs-1-2-1.html %}
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_Boundary('POINT(2 2)');
--- Answer: GEOMETRYCOLLECTION EMPTY
-
 SELECT ST_Boundary('LINESTRING(4 6, 1 1, 5 5)');
 -- Answer: MULTIPOINT((4 6), (5 5))
 {% endhighlight %}
@@ -47,10 +39,8 @@ SELECT ST_Boundary('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))', 2154);
 <img class="displayed" src="../ST_Boundary_2.png"/>
 
 {% highlight mysql %}
-SELECT ST_Boundary('POLYGON((5 4, 5 1, 3 1, 3 4, 4 5, 5 4), 
-                    (3 2, 3 3, 4 3, 4 2, 3 2))');
--- Answer: MULTILINESTRING ((5 4, 5 1, 3 1, 3 4, 4 5, 5 4), 
---         (3 2, 3 3, 4 3, 4 2, 3 2))
+SELECT ST_Boundary('POINT(2 2)');
+-- Answer: GEOMETRYCOLLECTION EMPTY
 {% endhighlight %}
 
 ##### Comparison with [`ST_ExteriorRing`](../ST_ExteriorRing)
