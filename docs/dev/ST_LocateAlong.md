@@ -24,3 +24,4 @@ permalink: /docs/dev/ST_LocateAlong/
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_LocateAlong.java" target="_blank">Source code</a>
+* Added: <a href="https://github.com/irstv/H2GIS/pull/62" target="_blank">#62</a>
