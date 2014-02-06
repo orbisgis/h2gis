@@ -667,7 +667,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="1.1920529"
      inkscape:cx="407.90037"
-     inkscape:cy="1178.723"
+     inkscape:cy="-499.05489"
      inkscape:document-units="px"
      inkscape:current-layer="layer6"
      showgrid="false"
@@ -686,7 +686,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -1407,7 +1407,7 @@
        xml:space="preserve"
        id="flowRoot4057-2-7-6-6"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
-       transform="matrix(0.61674087,0,0,0.61674087,152.76288,1023.6015)"
+       transform="matrix(0.61674087,0,0,0.61674087,348.76288,1023.6015)"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_4.png"
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669"><flowRegion
@@ -1730,7 +1730,7 @@
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_4.png"
-       transform="matrix(0.61674087,0,0,0.61674087,151.45106,1346.3937)"
+       transform="matrix(0.61674087,0,0,0.61674087,347.45106,1346.3937)"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
        id="flowRoot4542"
        xml:space="preserve"><flowRegion
