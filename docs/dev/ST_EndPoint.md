@@ -17,7 +17,7 @@ POINT ST_EndPoint(GEOMETRY geom);
 ### Description
 
 Returns the last coordinate of `geom` as a `POINT`, given that `geom` is a
-`LINESTRING` or a `MULTILINESTRING`s containing only one `LINESTRING`. Returns
+`LINESTRING` or a `MULTILINESTRING` containing only one `LINESTRING`. Returns
 `NULL` for all other Geometries.
 
 <!-- This function does not seem to be SFS. Is it SQL-MM? -->

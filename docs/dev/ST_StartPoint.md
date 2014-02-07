@@ -2,7 +2,7 @@
 layout: docs
 title: ST_StartPoint
 category: h2spatial/properties
-description: Return the first point of a <code>LINESTRING</code>
+description: Return the first coordinate of a <code>LINESTRING</code>
 prev_section: ST_SRID
 next_section: ST_X
 permalink: /docs/dev/ST_StartPoint/
@@ -16,8 +16,9 @@ POINT ST_StartPoint(GEOMETRY geom);
 
 ### Description
 
-Returns the first `POINT` of a `LINESTRING` as a `POINT`.
-If the input parameter is not a `LINESTRING` this function returns `null`.
+Returns the first coordinate of `geom` as a `POINT`, given that `geom` is a
+`LINESTRING` or a `MULTILINESTRING` containing only one `LINESTRING`. Returns
+`NULL` for all other Geometries.
 
 {% include sfs-1-2-1.html %}
 
@@ -29,6 +30,15 @@ SELECT ST_StartPoint('LINESTRING(1 2, 5 3, 2 6)');
 {% endhighlight %}
 
 <img class="displayed" src="../ST_StartPoint.png"/>
+
+{% highlight mysql %}
+SELECT ST_StartPoint('MULTILINESTRING((1 1, 3 2, 3 1))');
+-- Answer: POINT(1 1)
+
+SELECT ST_StartPoint('MULTILINESTRING((1 1, 3 2, 3 1),
+                                      (1 2, 5 3, 2 6))');
+-- Answer: NULL
+{% endhighlight %}
 
 ##### See also
 
