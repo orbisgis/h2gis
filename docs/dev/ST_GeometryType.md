@@ -29,14 +29,14 @@ SELECT ST_GeometryType('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 SELECT ST_GeometryType('LINESTRING(2 1, 1 3, 5 2)');
 -- Answer: LineString
 
-SELECT ST_GeometryType('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)), 
-                    ((5 0, 7 0, 7 1, 5 1, 5 0)))');
+SELECT ST_GeometryType('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
+                                     ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: MultiPolygon
 
 SELECT ST_GeometryType('GEOMETRYCOLLECTION(
-                      MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                      LINESTRING(2 6, 6 2), 
-                      POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
+                          MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
+                          LINESTRING(2 6, 6 2),
+                          POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: GeometryCollection
 {% endhighlight %}
 
