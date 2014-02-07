@@ -64,12 +64,10 @@ public class ST_StartPoint extends DeterministicScalarFunction {
     public static Geometry getStartPoint(Geometry geometry) {
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {
-                LineString line = (LineString) geometry.getGeometryN(0);
-                return line.getStartPoint();
+                return ((LineString) geometry.getGeometryN(0)).getStartPoint();
             }
         } else if (geometry instanceof LineString) {
-            LineString line = (LineString) geometry;
-            return line.getStartPoint();
+            return ((LineString) geometry).getStartPoint();
 
         }
         return null;
