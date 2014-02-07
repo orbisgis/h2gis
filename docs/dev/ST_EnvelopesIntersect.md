@@ -15,9 +15,7 @@ permalink: /docs/dev/ST_EnvelopesIntersect/
 
 ### Description
 
-
-
-{% include sfs-1-2-1.html %}
+<!-- This function does not seem to be SFS. Is it SQL-MM? -->
 
 ### Examples
 
