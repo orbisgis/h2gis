@@ -16,7 +16,8 @@ boolean ST_IsRing(GEOMETRY geom);
 
 ### Description
 
-Returns true if a `LINESTRING` is closed and simple. If the input parameter is not a `LINESTRING` returns Null.
+Return `TRUE` if `geom` is a closed and simple `LINESTRING` or
+`MULTILINESTRING`; `NULL` otherwise.
 
 {% include sfs-1-2-1.html %}
 
@@ -50,5 +51,6 @@ SELECT ST_IsRing('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 1),
 
 ##### See also
 
-* [`ST_IsSimple`](../ST_IsSimple), [`ST_IsClosed`](../ST_IsClosed)
+* [`ST_IsClosed`](../ST_IsClosed), [`ST_IsSimple`](../ST_IsSimple),
+  [`ST_StartPoint`](../ST_StartPoint), [`ST_EndPoint`](../ST_EndPoint)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_IsRing.java" target="_blank">Source code</a>
