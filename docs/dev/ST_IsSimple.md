@@ -16,8 +16,22 @@ boolean ST_IsSimple(GEOMETRY geom);
 
 ### Description
 
-Returns true if a `GEOMETRY` is simple. A `GEOMETRY` is not simple if 
-it has a self intersection, self tangency or other anomalous.
+Returns true if `geom` is simple.
+
+The SFS definition of simplicity follows the general rule that a Geometry is
+simple if it has no points of self-tangency, self-intersection or other
+anomalous points.
+
+Simplicity is defined for each Geometry subclass as follows:
+
+* Valid polygonal geometries are simple, since their rings must not
+  self-intersect.
+* Linear rings have the same semantics.
+* Linear geometries are simple iff they do not self-intersect at points other
+  than boundary points.
+* Zero-dimensional geometries (points) are simple iff they have no repeated
+  points.
+* Empty Geometries are always simple.
 
 {% include sfs-1-2-1.html %}
 
@@ -50,4 +64,5 @@ SELECT ST_IsSimple('LINESTRING(2 1, 1 3, 6 6, 5 7, 5 2)');
 
 ##### See also
 
+* [`ST_IsValid`](../ST_IsValid)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_IsSimple.java" target="_blank">Source code</a>
