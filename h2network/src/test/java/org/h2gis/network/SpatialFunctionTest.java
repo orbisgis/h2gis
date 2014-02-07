@@ -270,7 +270,7 @@ public class SpatialFunctionTest {
     public void test_ST_Graph_Tolerance() throws Exception {
         Statement st = connection.createStatement();
 
-        // This first test shows that nodes within a tolerance of 0.5 of each
+        // This first test shows that nodes within a tolerance of 0.05 of each
         // other are considered to be a single node.
         // Note, however, that edge geometries are left untouched.
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
@@ -509,7 +509,7 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_Graph_OrienteBySlope() throws Exception {
+    public void test_ST_Graph_OrientBySlope() throws Exception {
         Statement st = connection.createStatement();
 
         // This test proves that orientation by slope works. Three cases:
