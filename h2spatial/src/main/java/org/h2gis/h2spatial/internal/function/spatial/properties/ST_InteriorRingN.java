@@ -40,7 +40,7 @@ import java.sql.SQLException;
  */
 public class ST_InteriorRingN extends DeterministicScalarFunction {
     private static final String OUT_OF_BOUNDS_ERR_MESSAGE =
-            "Geometry index out of range. Must be between 1 and ST_NumInteriorRings.";
+            "Interior ring index out of range. Must be between 1 and ST_NumInteriorRings.";
 
     /**
      * Default constructor
