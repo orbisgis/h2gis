@@ -17,7 +17,7 @@ GEOMETRY ST_GeomFromText(varchar wkt, int srid);
 
 ### Description
 
-Converts the Well Known Text `wkt` into a `GEOMETRY` with spatial reference id
+Converts the Well Known Text `wkt` into a Geometry with spatial reference id
 `srid`.  The default value of `srid` is 0.
 
 {% include z-coord-warning.html %}

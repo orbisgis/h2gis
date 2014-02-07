@@ -16,7 +16,7 @@ double ST_Length(GEOMETRY geom);
 
 ### Description
 
-Computes the `GEOMETRY` length.  Linear Geometries returns their length. Areal Geometries returns their perimeter. 
+Computes the Geometry length.  Linear Geometries returns their length. Areal Geometries returns their perimeter. 
 Returns the cartesian 2D length of the Geometry.
 The units of length is the units of the spatial reference system of the Geometry.
 

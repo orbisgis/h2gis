@@ -16,7 +16,7 @@ varchar ST_AsWKT(GEOMETRY geom);
 
 ### Description
 
-Converts a `GEOMETRY` into its Well Known Text value.
+Converts a Geometry into its Well Known Text value.
 
 {% include sfs-1-2-1.html %}
 

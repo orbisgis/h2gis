@@ -16,7 +16,7 @@ int ST_NumInteriorRings(GEOMETRY geom);
 
 ### Description
 
-Returns the number of holes in a `GEOMETRY`.
+Returns the number of holes in a Geometry.
 
 {% include sfs-1-2-1.html %}
 

@@ -16,7 +16,7 @@ binary ST_AsBinary(GEOMETRY geom);
 
 ### Description
 
-Converts a `GEOMETRY` into its Well Known Binary value.
+Converts a Geometry into its Well Known Binary value.
 
 {% include sfs-1-2-1.html %}
 

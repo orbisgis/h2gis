@@ -19,7 +19,7 @@ GEOMETRY ST_Envelope(GEOMETRYCOLLECTION geom, int srid);
 
 ### Description
 
-Returns the envelope of `geom` as a `GEOMETRY`, optionally setting its SRID to
+Returns the envelope of `geom` as a Geometry, optionally setting its SRID to
 `srid`. The default SRID is the same as that of `geom`.
 <!-- If `geom` is empty, returns an empty `POINT`. -->
 

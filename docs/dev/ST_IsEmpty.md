@@ -16,7 +16,7 @@ boolean ST_IsEmpty(GEOMETRY geom);
 
 ### Description
 
-Returns true if a `GEOMETRY` is empty.
+Returns true if a Geometry is empty.
 
 {% include sfs-1-2-1.html %}
 

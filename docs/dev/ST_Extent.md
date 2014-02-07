@@ -17,7 +17,7 @@ GEOMETRY ST_Extent(GEOMETRYCOLLECTION geom);
 
 ### Description
 
-Returns the minimum bounding box that encloses `geom` as a `GEOMETRY`.
+Returns the minimum bounding box that encloses `geom` as a Geometry.
 
 ### Examples
 
