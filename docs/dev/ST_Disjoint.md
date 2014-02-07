@@ -20,7 +20,7 @@ Returns true if `geomA` and `geomB` are disjoint.
 
 Disjoint means that the two geometries have no point in common.
 
-{% include geom-coll-warning.html %}
+{% include type-warning.html type='GEOMETRYCOLLECTION' %}
 {% include sfs-1-2-1.html %}
 
 ### Examples

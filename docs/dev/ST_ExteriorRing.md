@@ -2,7 +2,7 @@
 layout: docs
 title: ST_ExteriorRing
 category: h2spatial/properties
-description: <code>POLYGON</code> &rarr; <code>LinearRing</code>
+description: Return the exterior ring of a <code>POLYGON</code>
 prev_section: ST_Envelope
 next_section: ST_GeometryN
 permalink: /docs/dev/ST_ExteriorRing/
@@ -11,13 +11,15 @@ permalink: /docs/dev/ST_ExteriorRing/
 ### Signature
 
 {% highlight mysql %}
-LinearRing ST_ExteriorRing(GEOMETRY geom);
+LINEARRING ST_ExteriorRing(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
 
-Returns a `LinearRing` instance or Null if parameter is not a `POLYGON`.
+Returns the exterior ring of `geom` as a `LINEARRING`, or `NULL` if `geom` is
+not a `POLYGON`.
 
+{% include type-warning.html type='MULTIPOLYGON' %}
 {% include sfs-1-2-1.html %}
 
 ### Examples
@@ -28,6 +30,15 @@ SELECT ST_ExteriorRing('POLYGON((0 -1, 0 2, 3 2, 3 -1, 0 -1))');
 {% endhighlight %}
 
 <img class="displayed" src="../ST_ExteriorRing_1.png"/>
+
+{% highlight mysql %}
+SELECT ST_ExteriorRing('MULTIPOLYGON (((0 0, 10 0, 5 5, 0 0)),
+                                      ((10 0, 5 5, 10 10, 10 0)))');
+-- Answer: NULL
+
+SELECT ST_ExteriorRing('POINT(1 2)');
+-- Answer: NULL
+{% endhighlight %}
 
 ##### Comparison with [`ST_Boundary`](../ST_Boundary)
 
