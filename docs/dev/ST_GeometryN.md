@@ -18,7 +18,7 @@ GEOMETRY ST_GeometryN(GEOMETRY geom, integer n);
 
 Returns the *n*th Geometry of `geom` if `geom` is a `GEOMETRYCOLLECTION`,
 `MULTIPOINT`, `MULTILINESTRING` or `MULTIPOLYGON`. Returns `NULL` if `geom` is
-a simple Geometry.
+a single Geometry.
 
 {% include one-to-n.html %}
 {% include sfs-1-2-1.html %}
@@ -51,7 +51,7 @@ SELECT ST_GeometryN(
                            LINESTRING(2 6, 6 2))', 1), 4);
 -- Answer: POINT(0 3)
 
--- Returns NULL for simple Geometries.
+-- Returns NULL for single Geometries.
 SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 1);
 -- Answer: NULL
 

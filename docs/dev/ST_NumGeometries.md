@@ -2,7 +2,7 @@
 layout: docs
 title: ST_NumGeometries
 category: h2spatial/properties
-description: Returns the number of Geometries inside a <code>GEOMETRYCOLLECTION</code>
+description: Return the number of Geometries in a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_M
 next_section: ST_NumInteriorRing
 permalink: /docs/dev/ST_NumGeometries/
@@ -17,9 +17,10 @@ int ST_NumGeometries(GEOMETRYCOLLECTION geom);
 
 ### Description
 
-Returns the number of Geometries inside a `GEOMETRYCOLLECTION` and MultiGeometry.
+Returns the number of Geometries in a `GEOMETRYCOLLECTION` (or
+`MULTI*`). Returns 1 for single Geometries.
 
-{% include sfs-1-2-1.html %}
+<!-- This function does not seem to be SFS. Is it SQL-MM? -->
 
 ### Examples
 
