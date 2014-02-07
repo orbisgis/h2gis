@@ -2,7 +2,7 @@
 layout: docs
 title: ST_NumInteriorRings
 category: h2spatial/properties
-description: Return the number of holes in a Geometry
+description: Return the number of interior rings of a Geometry
 prev_section: ST_NumInteriorRing
 next_section: ST_NumPoints
 permalink: /docs/dev/ST_NumInteriorRings/
@@ -16,9 +16,9 @@ int ST_NumInteriorRings(GEOMETRY geom);
 
 ### Description
 
-Returns the number of holes in a Geometry.
+Returns the number of interior rings of `geom`.
 
-{% include sfs-1-2-1.html %}
+<!-- This function does not seem to be SFS. Is it SQL-MM? -->
 
 ### Examples
 

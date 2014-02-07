@@ -16,7 +16,7 @@ int ST_NumInteriorRing(GEOMETRY geom);
 
 ### Description
 
-Alias for [`ST_NumInteriorRings`](../ST_NumInteriorRings)
+Alias for [`ST_NumInteriorRings`](../ST_NumInteriorRings).
 
 ##### See also
 
