@@ -32,8 +32,10 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Returns the first point of a LINESTRING geometry as a POINT or NULL if the
- * input parameter is not a LINESTRING.
+ * Returns the first coordinate of a Geometry as a POINT, given that the
+ * Geometry is a LINESTRING or a MULTILINESTRING containing only one
+ * LINESTRING; Returns NULL for all other Geometries. 
+ *
  * @author Nicolas Fortin
  */
 public class ST_StartPoint extends DeterministicScalarFunction {
@@ -42,8 +44,10 @@ public class ST_StartPoint extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_StartPoint() {
-        addProperty(PROP_REMARKS, "Returns the first point of a LINESTRING geometry as a POINT or NULL if the input" +
-                " parameter is not a LINESTRING.");
+        addProperty(PROP_REMARKS, "Returns the first coordinate of a Geometry as a " +
+                "POINT, given that the Geometry is a LINESTRING or a " +
+                "MULTILINESTRING containing only one LINESTRING. " +
+                "Returns NULL for all other Geometries. ");
     }
 
     @Override
@@ -52,8 +56,10 @@ public class ST_StartPoint extends DeterministicScalarFunction {
     }
 
     /**
-     * @param geometry LineString instance
-     * @return The first point of the linestring or null if geometry is not a linestring
+     * @param geometry Geometry
+     * @return The first coordinate of a Geometry as a POINT, given that the
+     * Geometry is a LINESTRING or a MULTILINESTRING containing only one
+     * LINESTRING; Returns NULL for all other Geometries. 
      */
     public static Geometry getStartPoint(Geometry geometry) {
         if (geometry instanceof MultiLineString) {

@@ -31,8 +31,10 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Returns the last point of a LINESTRING geometry as a POINT or NULL if the
- * input parameter is not a LINESTRING.
+ * Returns the last coordinate of a Geometry as a POINT, given that the
+ * Geometry is a LINESTRING or a MULTILINESTRING containing only one
+ * LINESTRING; Returns NULL for all other Geometries.
+ *
  * @author Nicolas Fortin
  */
 public class ST_EndPoint extends DeterministicScalarFunction {
@@ -41,8 +43,10 @@ public class ST_EndPoint extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_EndPoint() {
-        addProperty(PROP_REMARKS, "Returns the last point of a LINESTRING geometry as a POINT or NULL if the input" +
-                " parameter is not a LINESTRING.");
+        addProperty(PROP_REMARKS, "Returns the last coordinate of a Geometry as a " +
+                "POINT, given that the Geometry is a LINESTRING or a " +
+                "MULTILINESTRING containing only one LINESTRING. " +
+                "Returns NULL for all other Geometries. ");
     }
 
     @Override
@@ -51,10 +55,10 @@ public class ST_EndPoint extends DeterministicScalarFunction {
     }
 
     /**
-     * Returns the last point of a LINESTRING geometry as a POINT or NULL if the
-     * input parameter is not a LINESTRING.
      * @param geometry Geometry
-     * @return Point instance or NULL if geometry is not a linestring instance
+     * @return The last coordinate of a Geometry as a POINT, given that the
+     * Geometry is a LINESTRING or a MULTILINESTRING containing only one
+     * LINESTRING; Returns NULL for all other Geometries.
      */
     public static Geometry getEndPoint(Geometry geometry) {
         if (geometry instanceof MultiLineString) {
