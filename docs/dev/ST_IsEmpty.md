@@ -27,9 +27,9 @@ SELECT ST_IsEmpty('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: FALSE
 
 SELECT ST_IsEmpty('GEOMETRYCOLLECTION(
-                      MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                      LINESTRING(2 6, 6 2), 
-                      POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
+                     MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
+                     LINESTRING(2 6, 6 2), 
+                     POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: FALSE
 
 SELECT ST_IsEmpty('POLYGON EMPTY');

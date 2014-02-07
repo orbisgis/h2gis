@@ -39,9 +39,9 @@ SELECT ST_Length('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
 -- Answer: 20.0
 
 SELECT ST_Length('GEOMETRYCOLLECTION(
-                      MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                      LINESTRING(2 1, 1 3, 5 2), 
-                      POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
+                    MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
+                    LINESTRING(2 1, 1 3, 5 2), 
+                    POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: 20.35917360311745
 {% endhighlight %}
 

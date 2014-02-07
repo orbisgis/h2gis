@@ -46,9 +46,10 @@ SELECT ST_ToMultiPoint(
 --                     (52 18), (66 23), (73 9), (48 6), (52 18),
 --                     (59 18), (67 18), (67 13), (59 13), (59 18))
 
-SELECT ST_ToMultiPoint('GEOMETRYCOLLECTION(
-    POLYGON((0 0, 10 0, 10 6, 0 6, 0 0)), 
-    LINESTRING(5 5, 1 2, 3 4, 1 5))');
+SELECT ST_ToMultiPoint(
+    'GEOMETRYCOLLECTION(
+       POLYGON((0 0, 10 0, 10 6, 0 6, 0 0)), 
+       LINESTRING(5 5, 1 2, 3 4, 1 5))');
 -- Answer: MULTIPOINT ((0 0), (10 0), (10 6), (0 6), (0 0), 
 --                     (5 5), (1 2), (3 4), (99 3))
 {% endhighlight %}

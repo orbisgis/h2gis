@@ -56,9 +56,9 @@ SELECT ST_Y('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
 -- Answer: 2.0
 
 SELECT ST_Y('GEOMETRYCOLLECTION(
-                MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                LINESTRING(2 1, 1 3, 5 2), 
-                POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
+               MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
+               LINESTRING(2 1, 1 3, 5 2), 
+               POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: 4.0
 {% endhighlight %}
 

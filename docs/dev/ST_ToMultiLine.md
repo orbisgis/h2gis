@@ -32,9 +32,10 @@ SELECT ST_ToMultiLine('POLYGON ((0 0, 10 0, 10 6, 0 6, 0 0),
 <img class="displayed" src="../ST_ToMultiLine1.png"/>
 
 {% highlight mysql %}
-SELECT ST_ToMultiLine('GEOMETRYCOLLECTION(
-   LINESTRING(1 4 3, 10 7 9, 12 9 22), 
-   POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))');
+SELECT ST_ToMultiLine(
+    'GEOMETRYCOLLECTION(
+       LINESTRING(1 4 3, 10 7 9, 12 9 22), 
+       POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))');
 -- Answer: MULTILINESTRING ((1 4, 10 7, 12 9),
 --                          (1 1, 3 1, 3 2, 1 2, 1 1))
 {% endhighlight %}

@@ -42,16 +42,18 @@ SELECT ST_NumInteriorRings('MULTIPOLYGON(
 -- Answer: 1
 
 SELECT ST_NumInteriorRings(
-     'GEOMETRYCOLLECTION(MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                         LINESTRING(2 6, 6 2), 
-                         POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
+     'GEOMETRYCOLLECTION(
+        MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
+        LINESTRING(2 6, 6 2), 
+        POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: 0
 
 SELECT ST_NumInteriorRings(
-     'GEOMETRYCOLLECTION(MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                         LINESTRING(2 6, 6 2), 
-                         POLYGON((1 2, 4 2, 4 6, 1 6, 1 2),
-                                 (2 4, 3 4, 3 5, 2 5, 2 4)))');
+     'GEOMETRYCOLLECTION(
+        MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
+        LINESTRING(2 6, 6 2), 
+        POLYGON((1 2, 4 2, 4 6, 1 6, 1 2),
+                (2 4, 3 4, 3 5, 2 5, 2 4)))');
 -- Answer: 1
 {% endhighlight %}
 

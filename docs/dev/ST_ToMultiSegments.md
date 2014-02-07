@@ -47,12 +47,13 @@ SELECT ST_ToMultiSegments(
 <img class="displayed" src="../ST_ToMultiSegments2.png"/>
 
 {% highlight mysql %}
-SELECT ST_ToMultiSegments('GEOMETRYCOLLECTION(
-    POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0), 
-             (1 1, 2 1, 2 4, 1 4, 1 1),
-             (7 1, 8 1, 8 3, 7 3, 7 1)), 
-    POINT (2 3), 
-    LINESTRING (8 7, 9 5, 11 3))');
+SELECT ST_ToMultiSegments(
+    'GEOMETRYCOLLECTION(
+       POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0), 
+                (1 1, 2 1, 2 4, 1 4, 1 1),
+                (7 1, 8 1, 8 3, 7 3, 7 1)), 
+       POINT (2 3), 
+       LINESTRING (8 7, 9 5, 11 3))');
 -- Answer:MULTILINESTRING ((0 0, 10 0), (10 0, 10 5), (10 5, 0 5),
 --                         (0 5, 0 0), (1 1, 2 1), (2 1, 2 4), 
 --                         (2 4, 1 4), (1 4, 1 1), (7 1, 8 1),

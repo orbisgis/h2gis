@@ -43,8 +43,9 @@ SELECT ST_3DLength('MULTIPOLYGON(((0 0 0, 3 2 0, 3 2 2, 0 0 2, 0 0 0),
                                   (-1 1 0, -1 3 0, -1 3 4, -1 1 4, -1 1 0)))');
 -- Answer:    23.21110255092798 = 16 + 2 * SQRT(13)
 
-SELECT ST_3DLength('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),
-                                       POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))');
+SELECT ST_3DLength('GEOMETRYCOLLECTION(
+                      LINESTRING(1 4 3, 15 7 9, 16 17 22),
+                      POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))');
 -- Answer:    41.004478598956055 = SQRT(241) + SQRT(270) + SQRT(2) + 2 * SQRT(5) + SQRT(10)
 {% endhighlight %}
 

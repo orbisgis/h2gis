@@ -16,7 +16,9 @@ GEOMETRY ST_ConvexHull(GEOMETRY geom)
 
 ### Description
 
-Computes the smallest convex `POLYGON` that contains all the points of `geom`. `geom` can be a set of `POINT`s, `LINESTRING`s, `POLYGON`s or a `GEOMETRYCOLLECTION`.
+Computes the smallest convex `POLYGON` that contains all the points of `geom`.
+`geom` can be a set of `POINT`s, `LINESTRING`s, `POLYGON`s or a
+`GEOMETRYCOLLECTION`.
 
 {% include sfs-1-2-1.html %}
 
@@ -24,9 +26,9 @@ Computes the smallest convex `POLYGON` that contains all the points of `geom`. `
 
 {% highlight mysql %}
 SELECT ST_ConvexHull('GEOMETRYCOLLECTION (
-    POINT (1 2),
-    LINESTRING (1 4, 4 7),
-    POLYGON ((3 1, 7 1, 7 6, 3 1)))');
+                        POINT (1 2),
+                        LINESTRING (1 4, 4 7),
+                        POLYGON ((3 1, 7 1, 7 6, 3 1)))');
 
 -- Answer: POLYGON((3 1, 7 1, 7 6, 4 7, 1 4, 1 2, 3 1))
 {% endhighlight %}

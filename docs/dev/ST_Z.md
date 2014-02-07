@@ -37,9 +37,9 @@ DROP TABLE temp, temp1;
 -- Answer: 3.0
 
 SELECT ST_Z('GEOMETRYCOLLECTION(
-                 LINESTRING(2 1 0, 1 3 3, 5 2 1), 
-                 MULTIPOINT((4 4 3), (1 1 1), (1 0 2), (0 3 6)), 
-                 POLYGON((1 2 2, 4 2 5, 4 6 3, 1 6 1, 1 2 1)))');
+               LINESTRING(2 1 0, 1 3 3, 5 2 1), 
+               MULTIPOINT((4 4 3), (1 1 1), (1 0 2), (0 3 6)), 
+               POLYGON((1 2 2, 4 2 5, 4 6 3, 1 6 1, 1 2 1)))');
 -- Answer: 0.0
 {% endhighlight %}
 

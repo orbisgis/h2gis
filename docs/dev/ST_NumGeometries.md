@@ -43,9 +43,9 @@ SELECT ST_NumGeometries('MULTIPOLYGON(((0 0, 10 0, 10 6, 0 6, 0 0)),
 -- Answer: 3
 
 SELECT ST_NumGeometries('GEOMETRYCOLLECTION(
-                             MULTIPOINT((4 4), (1 1), (1 0), (0 3)),  
-                             LINESTRING(2 6, 6 2), 
-                             POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
+                           MULTIPOINT((4 4), (1 1), (1 0), (0 3)),  
+                           LINESTRING(2 6, 6 2), 
+                           POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: 3
 
 SELECT ST_NumGeometries('MULTIPOINT((0 2), (3 2), (3 6), (0 6), 

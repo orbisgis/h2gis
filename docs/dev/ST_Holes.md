@@ -35,13 +35,15 @@ SELECT ST_Holes('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0),
 <img class="displayed" src="../ST_Holes_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_Holes('GEOMETRYCOLLECTION(
-                POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0),
-                         (1 1, 2 1, 2 4, 1 4, 1 1)),
-                POLYGON ((11 6, 14 6, 14 9, 11 9, 11 6),
-                         (12 7, 14 7, 14 8, 12 8, 12 7)))');
--- Answer: GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)),
---                            POLYGON((12 7, 14 7, 14 8, 12 8, 12 7)))
+SELECT ST_Holes(
+    'GEOMETRYCOLLECTION(
+       POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0),
+                (1 1, 2 1, 2 4, 1 4, 1 1)),
+       POLYGON ((11 6, 14 6, 14 9, 11 9, 11 6),
+                (12 7, 14 7, 14 8, 12 8, 12 7)))');
+-- Answer: GEOMETRYCOLLECTION(
+--           POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)),
+--           POLYGON((12 7, 14 7, 14 8, 12 8, 12 7)))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Holes_2.png"/>
