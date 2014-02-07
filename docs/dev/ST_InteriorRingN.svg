@@ -252,7 +252,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -268,7 +268,7 @@
        height="378.12845"
        x="-289.43402"
        y="-21.801483"
-       inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_ExteriorRing_3.png"
+       inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_InteriorRingN.png"
        inkscape:export-xdpi="82.201691"
        inkscape:export-ydpi="82.201691" />
     <path
