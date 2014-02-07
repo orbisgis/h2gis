@@ -52,7 +52,7 @@ DROP TABLE temp, temp1;
 -- Answer: 7.0
 
 SELECT ST_X('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)), 
-              ((5 0, 7 0, 7 1, 5 1, 5 0)))');
+                          ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: 0.0
 
 SELECT ST_X('GEOMETRYCOLLECTION(
