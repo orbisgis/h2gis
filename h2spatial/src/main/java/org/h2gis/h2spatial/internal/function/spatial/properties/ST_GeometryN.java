@@ -26,7 +26,6 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.SQLException;
@@ -68,11 +67,7 @@ public class ST_GeometryN extends DeterministicScalarFunction {
             return null;
         }
         if (n >= 1 && n <= geometry.getNumGeometries()) {
-            if (geometry instanceof GeometryCollection) {
-                return geometry.getGeometryN(n - 1);
-            } else {
-                return null;
-            }
+            return geometry.getGeometryN(n - 1);
         } else {
             throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
         }

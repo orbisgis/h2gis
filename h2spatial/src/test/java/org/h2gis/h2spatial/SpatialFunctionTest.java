@@ -207,7 +207,7 @@ public class SpatialFunctionTest {
         assertFalse(rs.next());
         rs = st.executeQuery("SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 1);");
         assertTrue(rs.next());
-        assertEquals(null, rs.getObject(1));
+        assertGeometryEquals("LINESTRING(1 1, 1 6, 2 2, -1 2)", rs.getBytes(1));
         assertFalse(rs.next());
     }
 
