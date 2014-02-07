@@ -20,11 +20,7 @@ Returns the *n*th Geometry of `geom` if `geom` is a `GEOMETRYCOLLECTION`,
 `MULTIPOINT`, `MULTILINESTRING` or `MULTIPOLYGON`. Returns `NULL` if `geom` is
 a simple Geometry.
 
-<div class="note">
-  <h5>Do I start counting from 0 or 1?</h5>
-  <p>Geometries are indexed from 1 to <i>N</i>.</p>
-</div>
-
+{% include one-to-n.html %}
 {% include sfs-1-2-1.html %}
 
 ### Examples

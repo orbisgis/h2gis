@@ -11,22 +11,38 @@ permalink: /docs/dev/ST_InteriorRingN/
 ### Signature
 
 {% highlight mysql %}
-LINESTRING ST_InteriorRing(GEOMETRY geom,integer i);
+LINESTRING ST_InteriorRing(GEOMETRY geom, int n);
 {% endhighlight %}
 
 ### Description
 
-Returns the hole number`i` of a `POLYGON` or Null if parameter is not a `POLYGON`.
+Returns the *n*th interior ring of `geom` if `geom` is a `POLYGON`. Returns
+`NULL` otherwise.
 
+{% include one-to-n.html %}
 {% include sfs-1-2-1.html %}
 
 ### Example
 
 {% highlight mysql %}
-SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0), 
-                         (1 1, 2 1, 2 5, 1 5, 1 1), 
-                         (8 5, 8 4, 9 4, 9 5, 8 5))',2);
+SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                                 (1 1, 2 1, 2 5, 1 5, 1 1),
+                                 (8 5, 8 4, 9 4, 9 5, 8 5))', 1);
+-- Answer: LINEARRING(1 1, 2 1, 2 5, 1 5, 1 1)
+
+SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                                 (1 1, 2 1, 2 5, 1 5, 1 1),
+                                 (8 5, 8 4, 9 4, 9 5, 8 5))', 2);
 -- Answer: LINEARRING(8 5, 8 4, 9 4, 9 5, 8 5)
+
+SELECT ST_InteriorRingN('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                                 (1 1, 2 1, 2 5, 1 5, 1 1),
+                                 (8 5, 8 4, 9 4, 9 5, 8 5))', 3);
+-- Answer: Interior ring index out of range. Must be between 1 and
+-- ST_NumInteriorRings.
+
+SELECT ST_InteriorRingN('POINT(1 2)', 1);
+-- Answer: NULL
 {% endhighlight %}
 
 ##### See also
