@@ -2,7 +2,7 @@
 layout: docs
 title: ST_GeometryType
 category: h2spatial/properties
-description: Return the type of Geometry
+description: Return the type of a Geometry
 prev_section: ST_GeometryN
 next_section: ST_InteriorRingN
 permalink: /docs/dev/ST_GeometryType/
@@ -16,7 +16,7 @@ varchar ST_GeometryType(GEOMETRY geom);
 
 ### Description
 
-Returns the type of Geometry : `POINT`, `LINESTRING`, `POLYGON`...
+Returns `geom`'s type.
 
 {% include sfs-1-2-1.html %}
 
