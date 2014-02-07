@@ -6,3 +6,4 @@ Gemfile
 Gemfile.lock
 site/
 _site/
+*.swp
