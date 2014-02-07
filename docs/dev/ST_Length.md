@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Length
 category: h2spatial/properties
-description: Return the length of this given Geometry
+description: Return the length of a Geometry
 prev_section: ST_IsSimple
 next_section: ST_M
 permalink: /docs/dev/ST_Length/
@@ -16,9 +16,12 @@ double ST_Length(GEOMETRY geom);
 
 ### Description
 
-Computes the Geometry length.  Linear Geometries returns their length. Areal Geometries returns their perimeter. 
-Returns the cartesian 2D length of the Geometry.
-The units of length is the units of the spatial reference system of the Geometry.
+Returns the length of `geom`:
+* Linear geometries return their length.
+* Areal geometries return their perimeter.
+* Others return 0.0.
+
+Length is measured in the units of the spatial reference system.
 
 {% include sfs-1-2-1.html %}
 
