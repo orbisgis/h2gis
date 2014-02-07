@@ -2,7 +2,7 @@
 layout: docs
 title: ST_EndPoint
 category: h2spatial/properties
-description: Return the last point of a <code>LINESTRING</code>
+description: Return the last coordinate of a <code>LINESTRING</code>
 prev_section: ST_Distance
 next_section: ST_Envelope
 permalink: /docs/dev/ST_EndPoint/
@@ -16,9 +16,9 @@ POINT ST_EndPoint(GEOMETRY geom);
 
 ### Description
 
-Returns the last point of `geom` as a `POINT`, given that `geom` is a
-`LINESTRING` or a `MULTILINESTRING`s containing only one `LINESTRING`. For all
-other Geometries, returns `NULL`.
+Returns the last coordinate of `geom` as a `POINT`, given that `geom` is a
+`LINESTRING` or a `MULTILINESTRING`s containing only one `LINESTRING`. Returns
+`NULL` for all other Geometries.
 
 <!-- This function does not seem to be SFS. Is it SQL-MM? -->
 
