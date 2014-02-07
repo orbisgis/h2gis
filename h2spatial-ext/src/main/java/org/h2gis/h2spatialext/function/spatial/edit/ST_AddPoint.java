@@ -46,6 +46,16 @@ public class ST_AddPoint extends DeterministicScalarFunction {
         return "addPoint";
     }
 
+    /**
+     * Returns a new geometry based on an existing one, with a specific point as
+     * a new vertex.
+     * A default distance 10E-6 is used to snap the input point.
+     * 
+     * @param geometry
+     * @param point
+     * @return
+     * @throws SQLException 
+     */
     public static Geometry addPoint(Geometry geometry, Point point) throws SQLException {
         return addPoint(geometry, point, PRECISION);
     }
@@ -105,6 +115,9 @@ public class ST_AddPoint extends DeterministicScalarFunction {
             } else {
                 return null;
             }
+        }
+        else if(geometry instanceof Point){
+            return null;
         }
         throw new SQLException("Unknown geometry type" + " : " + geometry.getGeometryType());
     }

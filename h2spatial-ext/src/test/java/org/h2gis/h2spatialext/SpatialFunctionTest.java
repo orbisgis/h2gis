@@ -534,12 +534,12 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_MakeLine() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT " +
-                "ST_MakeLine('POINT(1 2 3)'::Geometry, 'POINT(4 5 6)'::Geometry), " +
-                "ST_MakeLine('POINT(1 2)'::Geometry, 'POINT(4 5)'::Geometry), " +
-                "ST_MakeLine('POINT(1 2)'::Geometry, 'MULTIPOINT(4 5, 12 9)'::Geometry), " +
-                "ST_MakeLine('MULTIPOINT(1 2, 17 6)'::Geometry, 'MULTIPOINT(4 5, 7 9, 18 -1)'::Geometry), " +
-                "ST_MakeLine('POINT(1 2)'::Geometry, 'POINT(4 5)'::Geometry, 'POINT(7 8)'::Geometry);");
+        ResultSet rs = st.executeQuery("SELECT "
+                + "ST_MakeLine('POINT(1 2 3)'::Geometry, 'POINT(4 5 6)'::Geometry), "
+                + "ST_MakeLine('POINT(1 2)'::Geometry, 'POINT(4 5)'::Geometry), "
+                + "ST_MakeLine('POINT(1 2)'::Geometry, 'MULTIPOINT(4 5, 12 9)'::Geometry), "
+                + "ST_MakeLine('MULTIPOINT(1 2, 17 6)'::Geometry, 'MULTIPOINT(4 5, 7 9, 18 -1)'::Geometry), "
+                + "ST_MakeLine('POINT(1 2)'::Geometry, 'POINT(4 5)'::Geometry, 'POINT(7 8)'::Geometry);");
         assertTrue(rs.next());
         assertGeometryEquals("LINESTRING(1 2 3, 4 5 6)", rs.getBytes(1));
         assertGeometryEquals("LINESTRING(1 2, 4 5)", rs.getBytes(2));
@@ -547,45 +547,45 @@ public class SpatialFunctionTest {
         assertGeometryEquals("LINESTRING(1 2, 17 6, 4 5, 7 9, 18 -1)", rs.getBytes(4));
         assertGeometryEquals("LINESTRING(1 2, 4 5, 7 8)", rs.getBytes(5));
         assertFalse(rs.next());
-        rs = st.executeQuery("SELECT " +
-                "ST_MakeLine('MULTIPOINT(1 2, 3 4)'::Geometry);");
+        rs = st.executeQuery("SELECT "
+                + "ST_MakeLine('MULTIPOINT(1 2, 3 4)'::Geometry);");
         assertTrue(rs.next());
         assertGeometryEquals("LINESTRING(1 2, 3 4)", rs.getBytes(1));
         assertFalse(rs.next());
-        st.execute("DROP TABLE IF EXISTS input_table;" +
-                "CREATE TABLE input_table(point Point);" +
-                "INSERT INTO input_table VALUES" +
-                "('POINT(1 2)'::Geometry)," +
-                "('POINT(3 4)'::Geometry)," +
-                "('POINT(5 6)'::Geometry)," +
-                "('POINT(7 8)'::Geometry)," +
-                "('POINT(9 10)'::Geometry);");
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(point Point);"
+                + "INSERT INTO input_table VALUES"
+                + "('POINT(1 2)'::Geometry),"
+                + "('POINT(3 4)'::Geometry),"
+                + "('POINT(5 6)'::Geometry),"
+                + "('POINT(7 8)'::Geometry),"
+                + "('POINT(9 10)'::Geometry);");
         rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;");
         assertTrue(rs.next());
         assertGeometryEquals("LINESTRING(1 2, 3 4, 5 6, 7 8, 9 10)", rs.getBytes(1));
         assertFalse(rs.next());
-        st.execute("DROP TABLE IF EXISTS input_table;" +
-                "CREATE TABLE input_table(point Geometry);" +
-                "INSERT INTO input_table VALUES" +
-                "('POINT(5 5)'::Geometry)," +
-                "('MULTIPOINT(1 2, 7 9, 18 -4)'::Geometry)," +
-                "('POINT(3 4)'::Geometry)," +
-                "('POINT(99 3)'::Geometry);");
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(point Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "('POINT(5 5)'::Geometry),"
+                + "('MULTIPOINT(1 2, 7 9, 18 -4)'::Geometry),"
+                + "('POINT(3 4)'::Geometry),"
+                + "('POINT(99 3)'::Geometry);");
         rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(point)) FROM input_table;");
         assertTrue(rs.next());
         assertGeometryEquals("LINESTRING(5 5, 1 2, 7 9, 18 -4, 3 4, 99 3)", rs.getBytes(1));
         assertFalse(rs.next());
-        st.execute("DROP TABLE IF EXISTS input_table;" +
-                "CREATE TABLE input_table(multi_point MultiPoint);" +
-                "INSERT INTO input_table VALUES" +
-                "('MULTIPOINT(5 5, 1 2, 3 4, 99 3)'::Geometry), " +
-                "('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)'::Geometry)," +
-                "('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)'::Geometry);");
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(multi_point MultiPoint);"
+                + "INSERT INTO input_table VALUES"
+                + "('MULTIPOINT(5 5, 1 2, 3 4, 99 3)'::Geometry), "
+                + "('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)'::Geometry),"
+                + "('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)'::Geometry);");
         rs = st.executeQuery("SELECT ST_MakeLine(ST_Accum(multi_point)) FROM input_table;");
         assertTrue(rs.next());
-        assertGeometryEquals("LINESTRING(5 5, 1 2, 3 4, 99 3, " +
-                "-5 12, 11 22, 34 41, 65 124, " +
-                "1 12, 5 -21, 9 41, 32 124)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRING(5 5, 1 2, 3 4, 99 3, "
+                + "-5 12, 11 22, 34 41, 65 124, "
+                + "1 12, 5 -21, 9 41, 32 124)", rs.getBytes(1));
         assertFalse(rs.next());
         rs.close();
         st.execute("DROP TABLE input_table;");
@@ -1922,12 +1922,12 @@ public class SpatialFunctionTest {
 
         Geometry walls = outputGeom.getGeometryN(1);
         //Test if the walls are created
-        assertTrue(walls.getCoordinates().length == 20);        
+        assertTrue(walls.getCoordinates().length == 20);
         Geometry wallTarget = WKT_READER.read("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
                 + "((0 1 0, 0 1 10, 1 1 0, 1 1 10, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), "
                 + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))");
         assertTrue(CoordinateArrays.equals(walls.getCoordinates(), wallTarget.getCoordinates()));
-       
+
         //Test the roof
         assertTrue(outputGeom.getGeometryN(2).equalsTopo(WKT_READER.read("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))")));
 
@@ -2008,11 +2008,10 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
-    
+
     @Test
     public void test_ST_MakeEnvelope() throws Exception {
-        Statement st = connection.createStatement();        
+        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MakeEnvelope(0,0, 1, 1);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equalsExact(
@@ -2020,32 +2019,104 @@ public class SpatialFunctionTest {
         rs.close();
         st.close();
     }
-    
+
     @Test
     public void test_ST_MakeEnvelopeSRID() throws Exception {
-        Statement st = connection.createStatement();        
+        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MakeEnvelope(0,0, 1, 1, 4326);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equalsExact(
                 WKT_READER.read("POLYGON((0 0, 1 0 0, 1 1 , 0 1, 0 0))")));
-        assertTrue(((Geometry) rs.getObject(1)).getSRID()==4326);
+        assertTrue(((Geometry) rs.getObject(1)).getSRID() == 4326);
         rs.close();
         st.close();
     }
-    
-    
-     @Test
+
+    @Test
+    public void test_ST_InterpolateLineWithoutZ() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(0 8, 1 8 , 3 8)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 8, 1 8 , 3 8)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
     public void test_ST_InterpolateLine1() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom LINESTRING);"
                 + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (60 290, 67 300, 67 300, 140 330, 136 319,136 319, 127 314, "
-                + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_InterpolateLine(the_geom) FROM input_table;");
+                + "(ST_GeomFromText('LINESTRING(0 0 0, 5 0 , 10 0 10)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine(the_geom) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (60 290, 67 300, 140 330, 136 319, 127 314, "
-                + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)")));
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_InterpolateLine2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT(0 0 0)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)) == null);
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_InterpolateLine3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTILINESTRING((0 0 0, 5 0 , 10 0 10),(0 0 0, 50 0, 100 0 100))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTILINESTRING((0 0 0, 5 0 , 10 0 10),(0 0 0, 50 0 50, 100 0 100))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT(0 0 0)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint(the_geom, 'POINT(1 1)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)) == null);
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTIPOINT((0 0 0))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint(the_geom, 'POINT(1 1)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT((0 0 0), (1 1))")));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
