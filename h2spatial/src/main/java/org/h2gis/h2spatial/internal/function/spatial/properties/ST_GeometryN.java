@@ -26,21 +26,29 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+
 import java.sql.SQLException;
 
 /**
- * Returns an element of a Geometry Collection. {@link org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumGeometries} to retrieve element count.
+ * Return Geometry number n from the given GeometryCollection. Use {@link
+ * org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumGeometries}
+ * to retrieve the total number of Geometries.
+ *
  * @author Nicolas Fortin
+ * @author Adam Gouge
  */
 public class ST_GeometryN extends DeterministicScalarFunction {
-    private static final String OUT_OF_BOUNDS_ERR_MESSAGE = "ST_GeometryN index > ST_NumGeometries or index <= 0, Geometry index must be in the range [1-NbGeometry]";
+    private static final String OUT_OF_BOUNDS_ERR_MESSAGE =
+            "Geometry index out of range. Must be between 1 and ST_NumGeometries.";
 
     /**
      * Default constructor
      */
     public ST_GeometryN() {
-        addProperty(PROP_REMARKS, "Returns an element of a Geometry Collection.Use ST_NumGeometries in order to retrieve element count");
+        addProperty(PROP_REMARKS, "Returns Geometry number n from a GeometryCollection. " +
+                "Use ST_NumGeometries to retrieve the total number of Geometries.");
     }
 
     @Override
@@ -49,16 +57,22 @@ public class ST_GeometryN extends DeterministicScalarFunction {
     }
 
     /**
-     * @param geometry Instance of Polygon
-     * @param i Index of Geometry element [1-N]
-     * @return Geometry instance or Null if parameter is null.
+     * Return Geometry number n from the given GeometryCollection.
+     *
+     * @param geometry GeometryCollection
+     * @param n        Index of Geometry number n in [1-N]
+     * @return Geometry number n or Null if parameter is null.
      */
-    public static Geometry getGeometryN(Geometry geometry,Integer i) throws SQLException {
-        if(geometry==null) {
+    public static Geometry getGeometryN(Geometry geometry, Integer n) throws SQLException {
+        if (geometry == null) {
             return null;
         }
-        if(i>=1 && i<=geometry.getNumGeometries()) {
-            return geometry.getGeometryN(i-1);
+        if (n >= 1 && n <= geometry.getNumGeometries()) {
+            if (geometry instanceof GeometryCollection) {
+                return geometry.getGeometryN(n - 1);
+            } else {
+                return null;
+            }
         } else {
             throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
         }
