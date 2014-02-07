@@ -2121,4 +2121,51 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_AddPoint3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint(the_geom, 'POINT(1.5 4 )'::GEOMETRY, 4) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 8, 1 8 , 1.5 8, 3 8,  8  8, 10 8, 20 8)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint4() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint(the_geom, 'POINT(1.5 4 )'::GEOMETRY) FROM input_table;");
+        rs.next();
+        //The geometry is not modified
+        assertTrue(((Geometry) rs.getObject(1)) == null);
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint5() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((118 134, 118 278, 266 278, 266 134, 118 134 ))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint(the_geom, 'POINT(196 278 )'::GEOMETRY, 4) FROM input_table;");
+        rs.next();
+        //The geometry is not modified
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((118 134, 118 278,196 278, 266 278, 266 134, 118 134 ))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }
