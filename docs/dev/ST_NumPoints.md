@@ -2,7 +2,7 @@
 layout: docs
 title: ST_NumPoints
 category: h2spatial/properties
-description: Return the Geometry's point number
+description: Return the number of points in a Geometry
 prev_section: ST_NumInteriorRings
 next_section: ST_PointN
 permalink: /docs/dev/ST_NumPoints/
@@ -16,7 +16,7 @@ int ST_NumPoints(GEOMETRY geom);
 
 ### Description
 
-Returns the Geometry's point number.
+Returns the number of points in `geom`.
 
 {% include sfs-1-2-1.html %}
 
@@ -26,7 +26,14 @@ Returns the Geometry's point number.
 SELECT ST_NumPoints('POINT (2 2)');
 -- Answer: 1
 
-SELECT ST_NumPoints('MULTILINESTRING((2 2, 4 4),(3 1, 6 3))');
+SELECT ST_NumPoints('MULTIPOINT(2 2, 4 4)');
+-- Answer: 2
+
+-- ST_NumPoints includes duplicate points in the count.
+SELECT ST_NumPoints('MULTIPOINT(2 2, 4 4, 4 4)');
+-- Answer: 3
+
+SELECT ST_NumPoints('MULTILINESTRING((2 2, 4 4), (3 1, 6 3))');
 -- Answer: 4
 
 SELECT ST_NumPoints('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
