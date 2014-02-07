@@ -35,7 +35,7 @@ SELECT ST_Length('POLYGON((1 2, 4 2, 4 6, 1 6, 1 2))');
 -- Answer: 14.0
 
 SELECT ST_Length('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)), 
-                   ((5 0, 7 0, 7 1, 5 1, 5 0)))');
+                               ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: 20.0
 
 SELECT ST_Length('GEOMETRYCOLLECTION(
