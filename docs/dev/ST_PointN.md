@@ -2,7 +2,7 @@
 layout: docs
 title: ST_PointN
 category: h2spatial/properties
-description: Return the <code>POINT</code> i of a <code>LINESTRING</code>
+description: Return the <i>n</i>th point of a <code>LINESTRING</code>
 prev_section: ST_NumPoints
 next_section: ST_PointOnSurface
 permalink: /docs/dev/ST_PointN/
@@ -11,13 +11,15 @@ permalink: /docs/dev/ST_PointN/
 ### Signature
 
 {% highlight mysql %}
-POINT ST_PointN(Geometry geometry,integer i);
+POINT ST_PointN(Geometry geometry, int n);
 {% endhighlight %}
 
 ### Description
 
-Returns the `POINT` number `i` of a `LINESTRING` or Null if the input parameter is not a `LINESTRING`.
+Returns the <i>n</i>th point of `geom` if `geom` is a `LINESTRING` or a
+`MULTILINESTRING` containing exactly one `LINESTRING`; `NULL` otherwise.
 
+{% include one-to-n.html %}
 {% include sfs-1-2-1.html %}
 
 ### Example
@@ -25,6 +27,21 @@ Returns the `POINT` number `i` of a `LINESTRING` or Null if the input parameter 
 {% highlight mysql %}
 SELECT ST_PointN('LINESTRING(1 1, 1 6, 2 2, -1 2))', 2);
 -- Answer: POINT(1 6)
+
+SELECT ST_PointN('MULTILINESTRING((1 1, 1 6, 2 2, -1 2))', 3);
+-- Answer: POINT(2 2)
+
+SELECT ST_PointN('MULTIPOINT(1 1, 1 6, 2 2, -1 2)', 3);
+-- Answer: NULL
+
+-- This MULTILINESTRING contains two LINESTRINGs.
+SELECT ST_PointN('MULTILINESTRING((1 1, 1 6, 2 2, -1 2),
+                                  (0 1, 2 4))', 3);
+-- Answer: NULL
+
+SELECT ST_PointN('LINESTRING(1 1, 1 6, 2 2, -1 2))', 0);
+-- Answer: Point index out of range. Must be between 1 and
+-- ST_NumPoints.
 {% endhighlight %}
 
 ##### See also
