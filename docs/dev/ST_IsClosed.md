@@ -2,7 +2,7 @@
 layout: docs
 title: ST_IsClosed
 category: h2spatial/properties
-description: Return true if a <code>LINESTRING</code> is closed
+description: Return true if a Geometry is a closed `LINESTRING` or `MULTILINESTRING`
 prev_section: ST_InteriorRingN
 next_section: ST_IsEmpty
 permalink: /docs/dev/ST_IsClosed/
@@ -16,7 +16,8 @@ boolean ST_IsClosed(GEOMETRY geom);
 
 ### Description
 
-Returns true if a `LINESTRING` is closed. If the input parameter is not a `LINESTRING` returns Null.
+Returns `TRUE` if `geom` is a closed `LINESTRING` or `MULTILINESTRING`, null
+otherwise. A `MULTILINESTRING` is closed if all its `LINESTRING`s are closed.
 
 {% include sfs-1-2-1.html %}
 
@@ -44,4 +45,5 @@ SELECT ST_IsClosed('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 2),
 
 ##### See also
 
+* [`ST_IsRing`](../ST_IsRing)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_IsClosed.java" target="_blank">Source code</a>
