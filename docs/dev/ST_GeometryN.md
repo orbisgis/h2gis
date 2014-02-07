@@ -2,7 +2,7 @@
 layout: docs
 title: ST_GeometryN
 category: h2spatial/properties
-description: Return a element of a <code>GEOMETRYCOLLECTION</code>
+description: Return the <i>n</i>th Geometry of a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_ExteriorRing
 next_section: ST_GeometryType
 permalink: /docs/dev/ST_GeometryN/
@@ -11,12 +11,19 @@ permalink: /docs/dev/ST_GeometryN/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_GeometryN(GEOMETRY geom,integer i);
+GEOMETRY ST_GeometryN(GEOMETRY geom, integer n);
 {% endhighlight %}
 
 ### Description
 
-Returns a element number `i` of a `GEOMETRYCOLLECTION`.
+Returns the *n*th Geometry of `geom` if `geom` is a `GEOMETRYCOLLECTION`,
+`MULTIPOINT`, `MULTILINESTRING` or `MULTIPOLYGON`. Returns `NULL` if `geom` is
+a simple Geometry.
+
+<div class="note">
+  <h5>Do I start counting from 0 or 1?</h5>
+  <p>Geometries are indexed from 1 to <i>N</i>.</p>
+</div>
 
 {% include sfs-1-2-1.html %}
 
@@ -24,21 +31,37 @@ Returns a element number `i` of a `GEOMETRYCOLLECTION`.
 
 {% highlight mysql %}
 SELECT ST_GeometryN('MULTIPOLYGON(((0 0, 3 -1, 1.5 2, 0 0)), 
-                     ((1 2, 4 2, 4 6, 1 6, 1 2)))', 1);
+                                  ((1 2, 4 2, 4 6, 1 6, 1 2)))', 1);
 -- Answer: POLYGON((0 0, 3 -1, 1.5 2, 0 0))
 
 SELECT ST_GeometryN('MULTILINESTRING((1 1, 1 6, 2 2, -1 2),
-                     (1 2, 4 2, 4 6))', 2);
+                                     (1 2, 4 2, 4 6))', 2);
 -- Answer: LINESTRING(1 2, 4 2, 4 6)
 
 SELECT ST_GeometryN('MULTIPOINT((0 0), (1 6), (2 2), (1 2))', 2);
 -- Answer: POINT(1 6)
 
 SELECT ST_GeometryN('GEOMETRYCOLLECTION(
-                     MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                     LINESTRING(2 6, 6 2), POINT(4 4), 
-                     POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))',3);
+                       MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
+                       LINESTRING(2 6, 6 2),
+                       POINT(4 4),
+                       POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))', 3);
 -- Answer: POINT(4 4)
+
+-- Select Geometry 4 of the first Geometry in this GEOMETRYCOLLECTION.
+SELECT ST_GeometryN(
+           ST_GeometryN('GEOMETRYCOLLECTION(
+                           MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
+                           LINESTRING(2 6, 6 2))', 1), 4);
+-- Answer: POINT(0 3)
+
+-- Returns NULL for simple Geometries.
+SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 1);
+-- Answer: NULL
+
+SELECT ST_GeometryN('MULTIPOINT((0 0), (1 6), (2 2), (1 2))', 0);
+-- Answer: Geometry index out of range. Must be between 1 and
+-- ST_NumGeometries.
 {% endhighlight %}
 
 ##### See also
