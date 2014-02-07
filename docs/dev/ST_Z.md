@@ -4,7 +4,7 @@ title: ST_Z
 category: h2spatial/properties
 description: Return the z-value of the first coordinate of a Geometry
 prev_section: ST_Y
-next_section: h2spatial-ext/affine-transformations
+next_section: h2spatial/aggregates
 permalink: /docs/dev/ST_Z/
 ---
 
