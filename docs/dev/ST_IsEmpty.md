@@ -2,7 +2,7 @@
 layout: docs
 title: ST_IsEmpty
 category: h2spatial/properties
-description: Return true if a <code>GEOMETRY</code> is empty
+description: Return true if a Geometry is empty
 prev_section: ST_IsClosed
 next_section: ST_IsRing
 permalink: /docs/dev/ST_IsEmpty/

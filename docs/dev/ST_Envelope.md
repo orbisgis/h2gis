@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Envelope
 category: h2spatial/properties
-description: Return a Geometry's envelope as a <code>GEOMETRY</code>
+description: Return a Geometry's envelope as a Geometry
 prev_section: ST_EndPoint
 next_section: ST_ExteriorRing
 permalink: /docs/dev/ST_Envelope/
