@@ -32,20 +32,20 @@ SELECT ST_Disjoint(geomA, geomB) FROM input_table;
 -- Answer:    True
 {% endhighlight %}
 
-| geomA POLYGON | geomB POLYGON |
-| ----|---- |
+| geomA POLYGON                       | geomB POLYGON                       |
+|-------------------------------------|-------------------------------------|
 | POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | POLYGON ((6 3, 7 3, 7 6, 6 6, 6 3)) |
 
 <img class="displayed" src="../ST_Disjoint_1.png"/>
 
-| geomA LINESTRING | geomB LINESTRING |
-| ----|---- |
+| geomA LINESTRING           | geomB LINESTRING      |
+|----------------------------|-----------------------|
 | LINESTRING (2 1, 5 3, 2 6) | LINESTRING (6 2, 6 6) |
 
 <img class="displayed" src="../ST_Disjoint_2.png"/>
 
-| geomA LINESTRING | geomB POINT |
-| ----|---- |
+| geomA LINESTRING           | geomB POINT |
+|----------------------------|-------------|
 | LINESTRING (2 1, 5 3, 2 6) | POINT (4 5) |
 
 <img class="displayed" src="../ST_Disjoint_3.png"/>
@@ -57,14 +57,14 @@ SELECT ST_Disjoint(geomA, geomB) FROM input_table;
 -- Answer:    False
 {% endhighlight %}
 
-| geomA POLYGON | geomB POLYGON |
-| ----|---- |
+| geomA POLYGON                       | geomB POLYGON                       |
+|-------------------------------------|-------------------------------------|
 | POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | POLYGON ((3 2, 6 2, 6 6, 3 6, 3 2)) |
 
 <img class="displayed" src="../ST_Disjoint_4.png"/>
 
-| geomA POLYGON | geomB MULTIPOLYGON |
-| ----|---- |
+| geomA POLYGON                       | geomB MULTIPOLYGON                                                      |
+|-------------------------------------|-------------------------------------------------------------------------|
 | POLYGON ((1 1, 4 1, 4 5, 1 5, 1 1)) | MULTIPOLYGON (((4 2, 7 2, 7 6, 4 6, 4 2)), ((0 6, 1 6, 1 7, 0 7, 0 6))) |
 
 <img class="displayed" src="../ST_Disjoint_5.png"/>

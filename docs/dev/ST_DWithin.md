@@ -21,8 +21,8 @@ Returns true if `geomA` is within `distance` of `geomB`.
 ### Examples
 
 
-| geomA POLYGON | geomB POLYGON |
-| ----|---- |
+| geomA POLYGON                        | geomB POLYGON                           |
+|--------------------------------------|-----------------------------------------|
 | POLYGON((0 0, 10 0, 10 5, 0 5, 0 0)) | POLYGON((12 0, 14 0, 14 6, 12 6, 12 0)) |
 
 <img class="displayed" src="../ST_DWithin.png"/>

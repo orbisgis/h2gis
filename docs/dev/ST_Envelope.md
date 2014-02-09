@@ -23,11 +23,11 @@ Returns the envelope of `geom` as a Geometry, optionally setting its SRID to
 `srid`. The default SRID is the same as that of `geom`.
 <!-- If `geom` is empty, returns an empty `POINT`. -->
 
-| Input type | Return type |
-|------------|-------------|
-| A `POINT` | `POINT` |
-| A line parallel to an axis | A two-vertex `LINESTRING` |
-| Otherwise | A `POLYGON` whose vertices are `(minx miny, maxx miny, maxx maxy, minx maxy, minx miny)` |
+| Input type                 | Return type                                                                              |
+|----------------------------|------------------------------------------------------------------------------------------|
+| A `POINT`                  | `POINT`                                                                                  |
+| A line parallel to an axis | A two-vertex `LINESTRING`                                                                |
+| Otherwise                  | A `POLYGON` whose vertices are `(minx miny, maxx miny, maxx maxy, minx maxy, minx miny)` |
 
 {% include sfs-1-2-1.html %}
 <!-- Is this function also SQL-MM? -->

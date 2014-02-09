@@ -39,44 +39,44 @@ SELECT ST_Crosses(geomA, geomB) FROM input_table;
 -- Answer:    True
 {% endhighlight %}
 
-| geomA MULTIPOINT | geomB LINESTRING |
-| ----|---- |
+| geomA MULTIPOINT                 | geomB LINESTRING           |
+|----------------------------------|----------------------------|
 | MULTIPOINT ((1 3), (4 1), (4 3)) | LINESTRING (1 1, 5 2, 2 5) |
 
 <img class="displayed" src="../ST_Crosses_1.png"/>
 
-| geomA MULTIPOINT | geomB POLYGON |
-| ----|---- |
+| geomA MULTIPOINT                 | geomB POLYGON                       |
+|----------------------------------|-------------------------------------|
 | MULTIPOINT ((1 3), (4 1), (4 3)) | POLYGON ((2 2, 5 2, 5 5, 2 5, 2 2)) |
 
 <img class="displayed" src="../ST_Crosses_2.png"/>
 
-| geomA LINESTRING | geomB LINESTRING |
-| ----|---- |
+| geomA LINESTRING      | geomB LINESTRING           |
+|-----------------------|----------------------------|
 | LINESTRING (1 3, 5 3) | LINESTRING (1 1, 5 2, 2 5) |
 
 <img class="displayed" src="../ST_Crosses_3.png"/>
 
-| geomA LINESTRING | geomB POLYGON |
-| ----|---- |
+| geomA LINESTRING      | geomB POLYGON                       |
+|-----------------------|-------------------------------------|
 | LINESTRING (1 3, 5 3) | POLYGON ((2 2, 5 2, 5 5, 2 5, 2 2)) |
 
 <img class="displayed" src="../ST_Crosses_4.png"/>
 
-| geomA POLYGON | geomB LINESTRING |
-| ----|---- |
+| geomA POLYGON                       | geomB LINESTRING      |
+|-------------------------------------|-----------------------|
 | POLYGON ((1 1, 4 1, 4 4, 1 4, 1 1)) | LINESTRING (1 5, 5 1) |
 
 <img class="displayed" src="../ST_Crosses_5.png"/>
 
-| geomA POLYGON | geomB MULTIPOINT |
-| ----|---- |
+| geomA POLYGON                       | geomB MULTIPOINT                 |
+|-------------------------------------|----------------------------------|
 | POLYGON ((1 1, 4 1, 4 4, 1 4, 1 1)) | MULTIPOINT ((2 3), (4 5), (5 1)) |
 
 <img class="displayed" src="../ST_Crosses_6.png"/>
 
-| geomA LINESTRING | geomB MULTIPOINT |
-| ----|---- |
+| geomA LINESTRING           | geomB MULTIPOINT                 |
+|----------------------------|----------------------------------|
 | LINESTRING (2 1, 1 3, 3 4) | MULTIPOINT ((1 3), (4 1), (4 3)) |
 
 <img class="displayed" src="../ST_Crosses_7.png"/>
@@ -88,14 +88,14 @@ SELECT ST_Crosses(geomA, geomB) FROM input_table;
 -- Answer:    False
 {% endhighlight %}
 
-| geomA POLYGON | geomB POLYGON |
-| ----|---- |
+| geomA POLYGON                       | geomB POLYGON                       |
+|-------------------------------------|-------------------------------------|
 | POLYGON ((1 1, 4 1, 4 4, 1 4, 1 1)) | POLYGON ((2 2, 5 2, 5 5, 2 5, 2 2)) |
 
 <img class="displayed" src="../ST_Crosses_9.png"/>
 
-| geomA POLYGON | geomB POLYGON |
-| ----|---- |
+| geomA POLYGON              | geomB POLYGON         |
+|----------------------------|-----------------------|
 | LINESTRING (1 1, 5 2, 2 5) | LINESTRING (3 4, 5 2) |
 
 <img class="displayed" src="../ST_Crosses_8.png"/>
