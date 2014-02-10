@@ -4,7 +4,7 @@ title: ST_Extent
 category: h2spatial-ext/properties
 description: Return the minimum bounding box of a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_Explode
-next_section: ST_XMax
+next_section: ST_IsRectangle
 permalink: /docs/dev/ST_Extent/
 ---
  

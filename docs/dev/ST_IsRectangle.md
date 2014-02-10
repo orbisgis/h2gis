@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_IsRectangle
-category: h2spatial-ext/predicates
+category: h2spatial-ext/properties
 description: Return true if the Geometry is a rectangle
-prev_section: ST_DWithin
+prev_section: ST_Extent
 next_section: ST_IsValid
 permalink: /docs/dev/ST_IsRectangle/
 ---
