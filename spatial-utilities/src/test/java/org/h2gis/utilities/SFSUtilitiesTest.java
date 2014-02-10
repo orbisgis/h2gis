@@ -67,7 +67,22 @@ public class SFSUtilitiesTest {
         assertEquals("mydb",location.getCatalog());
         assertEquals("myschema",location.getSchema());
         assertEquals("mytable.hello",location.getTable());
-        assertEquals("`mydb`.`myschema`.`mytable.hello`", location.toString());
+        assertEquals("mydb.myschema.mytable.hello", location.toString());
+        location = TableLocation.parse("`mydb`.`my schema`.`my table`");
+        assertEquals("mydb",location.getCatalog());
+        assertEquals("my schema",location.getSchema());
+        assertEquals("my table",location.getTable());
+        assertEquals("mydb.\"my schema\".\"my table\"", location.toString());
+        location = TableLocation.parse(location.toString());
+        assertEquals("mydb",location.getCatalog());
+        assertEquals("my schema",location.getSchema());
+        assertEquals("my table",location.getTable());
+        assertEquals("mydb.\"my schema\".\"my table\"", location.toString());
+        location = TableLocation.parse("public.MYTABLE");
+        assertEquals("",location.getCatalog());
+        assertEquals("public",location.getSchema());
+        assertEquals("MYTABLE",location.getTable());
+        assertEquals("public.\"MYTABLE\"", location.toString());
     }
 
     @Test

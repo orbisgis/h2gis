@@ -35,6 +35,7 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
+import org.h2gis.utilities.TableLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -258,7 +259,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             // Find the name of the first geometry column if not provided by the user.
             if (spatialFieldName == null) {
                 List<String> geomFields = SFSUtilities.getGeometryFields(
-                        connection, SFSUtilities.splitCatalogSchemaTableName(tableName));
+                        connection, TableLocation.parse(tableName));
                 if (!geomFields.isEmpty()) {
                     spatialFieldName = geomFields.get(0);
                 } else {

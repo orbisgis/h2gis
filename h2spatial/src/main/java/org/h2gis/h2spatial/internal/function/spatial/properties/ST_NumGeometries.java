@@ -48,7 +48,7 @@ public class ST_NumGeometries extends DeterministicScalarFunction {
 
     /**
      * @param geometry Geometry instance or null
-     * @return Number of points or null if Geometry is null.
+     * @return Number of geometries or null if Geometry is null.
      */
     public static Integer getNumGeometries(Geometry geometry) {
         if(geometry==null) {

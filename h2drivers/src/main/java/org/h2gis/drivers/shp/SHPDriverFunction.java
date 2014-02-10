@@ -145,18 +145,35 @@ public class SHPDriverFunction implements DriverFunction {
         SHPDriver shpDriver = new SHPDriver();
         shpDriver.initDriverFromFile(fileName);
         ProgressVisitor copyProgress = progress.subProcess((int)(shpDriver.getRowCount() / BATCH_MAX_SIZE));
+        // PostGIS does not show sql
+        String lastSql = "";
         try {
             DbaseFileHeader dbfHeader = shpDriver.getDbaseFileHeader();
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
-            st.execute(String.format("CREATE TABLE %s (the_geom %s, %s)", TableLocation.parse(tableReference),
-                    getSFSGeometryType(shpHeader), DBFDriverFunction.getSQLColumnTypes(dbfHeader)));
+            String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader);
+            if(!types.isEmpty()) {
+                types = ", " + types;
+            }
+            if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+                //H2 Syntax
+                st.execute(String.format("CREATE TABLE %s (the_geom %s %s)", TableLocation.parse(tableReference),
+                    getSFSGeometryType(shpHeader), types));
+            } else {
+                // PostgreSQL Syntax
+                int srid = 0;
+                lastSql = String.format("CREATE TABLE %s (the_geom GEOMETRY(%s, %d) %s)", TableLocation.parse(tableReference),
+                        getPostGISSFSGeometryType(shpHeader),srid, types);
+                st.execute(lastSql);
+
+            }
             st.close();
             try {
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                        String.format("INSERT INTO %s VALUES ( %s )", TableLocation.parse(tableReference),
-                                DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1)));
+                        lastSql =
+                                String.format("INSERT INTO %s VALUES ( %s )", TableLocation.parse(tableReference),
+                                        DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
+                        PreparedStatement preparedStatement = connection.prepareStatement(lastSql);
                 try {
                     long batchSize = 0;
                     for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
@@ -184,6 +201,8 @@ public class SHPDriverFunction implements DriverFunction {
                 connection.createStatement().execute("DROP TABLE IF EXISTS " + tableReference);
                 throw new SQLException(ex.getLocalizedMessage(), ex);
             }
+        } catch (SQLException ex) {
+            throw new SQLException(lastSql+"\n"+ex.getLocalizedMessage(), ex);
         } finally {
             shpDriver.close();
             copyProgress.endOfProgress();
@@ -255,6 +274,33 @@ public class SHPDriverFunction implements DriverFunction {
             case 18:
             case 28:
                 return "MULTIPOINT";
+            default:
+                return "GEOMETRY";
+        }
+    }
+
+    private static String getPostGISSFSGeometryType(ShapefileHeader header) {
+        switch(header.getShapeType().id) {
+            case 1:
+                return "POINT";
+            case 11:
+            case 21:
+                return "POINTZ";
+            case 3:
+                return "MULTILINESTRING";
+            case 13:
+            case 23:
+                return "MULTILINESTRINGZ";
+            case 5:
+                return "MULTIPOLYGON";
+            case 15:
+            case 25:
+                return "MULTIPOLYGONZ";
+            case 8:
+                return "MULTIPOINT";
+            case 18:
+            case 28:
+                return "MULTIPOINTZ";
             default:
                 return "GEOMETRY";
         }

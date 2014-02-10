@@ -50,8 +50,6 @@ import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
-import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsRectangle;
-import org.h2gis.h2spatialext.function.spatial.predicates.ST_IsValid;
 import org.h2gis.h2spatialext.function.spatial.properties.*;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
