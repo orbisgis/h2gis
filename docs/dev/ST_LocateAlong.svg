@@ -357,9 +357,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="2"
-     inkscape:cx="619.73891"
-     inkscape:cy="416.07874"
+     inkscape:zoom="1"
+     inkscape:cx="-18.371702"
+     inkscape:cy="274.02667"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -874,7 +874,7 @@
            x="157"
            y="1545.3622" /></flowRegion><flowPara
          id="flowPara4695"
-         style="font-size:13px">0.5*√(X<flowSpan
+         style="font-size:13px">0.5*  (X<flowSpan
    style="font-size:13px;baseline-shift:sub"
    id="flowSpan3230">2</flowSpan>-X<flowSpan
    style="font-size:13px;baseline-shift:sub"
@@ -948,7 +948,7 @@
        xml:space="preserve"
        id="flowRoot4689-8"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
-       transform="translate(419.65966,-976.31664)"><flowRegion
+       transform="translate(418.24545,-976.67019)"><flowRegion
          id="flowRegion4691-1"><rect
            id="rect4693-0"
            width="157.77817"
@@ -956,7 +956,7 @@
            x="157"
            y="1545.3622" /></flowRegion><flowPara
          id="flowPara4695-2"
-         style="font-size:13px">0.5*√(X<flowSpan
+         style="font-size:13px">0.5*  (X<flowSpan
    style="font-size:65.00091553%;baseline-shift:sub"
    id="flowSpan4554">4</flowSpan>-X<flowSpan
    style="font-size:65.00091553%;baseline-shift:sub"
@@ -1258,15 +1258,7 @@
            x="157"
            y="1545.3622" /></flowRegion><flowPara
          id="flowPara4695-2-2"
-         style="font-size:16px">2*√(X<flowSpan
-   style="font-size:16px;baseline-shift:sub"
-   id="flowSpan3222">2</flowSpan>-X<flowSpan
-   style="font-size:16px;baseline-shift:sub"
-   id="flowSpan3224">1</flowSpan>)²+(Y<flowSpan
-   style="font-size:16px;baseline-shift:sub"
-   id="flowSpan3226">2</flowSpan>-Y<flowSpan
-   style="font-size:16px;baseline-shift:sub"
-   id="flowSpan3228">1</flowSpan>)²</flowPara></flowRoot>    <rect
+         style="font-size:16px">2*√</flowPara></flowRoot>    <rect
        y="201.26727"
        x="209.13562"
        height="7.5"
@@ -1827,7 +1819,7 @@
            x="157"
            y="1545.3622" /></flowRegion><flowPara
          id="flowPara4695-4"
-         style="font-size:13px">0.5*√(X<flowSpan
+         style="font-size:13px">0.5*  (X<flowSpan
    style="font-size:13px;baseline-shift:sub"
    id="flowSpan3230-7">2</flowSpan>-X<flowSpan
    style="font-size:13px;baseline-shift:sub"
@@ -1859,7 +1851,82 @@
            width="21.32843"
            id="rect3289-8-5" /></flowRegion><flowPara
          style="font-size:12px"
-         id="flowPara3291-5-3">2</flowPara></flowRoot>  </g>
+         id="flowPara3291-5-3">2</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:0.61381984;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 611.51685,569.21988 105.18,-0.25"
+       id="path3328"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.61400002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 107.87797,918.89578 116.31907,0"
+       id="path4236"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.614;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="M 207.25417,87.211077 341.26182,86.846609"
+       id="path4238"
+       inkscape:connector-curvature="0" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="207.73506"
+       y="102.14745"
+       id="text4240"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4242"
+         x="207.73506"
+         y="102.14745">(X<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4244">2</tspan>-X<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4246">1</tspan>)²+(Y<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4248">2</tspan>-Y<tspan
+   style="font-size:65.00091553%;baseline-shift:sub"
+   id="tspan4250">1</tspan>)²</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="602.80853"
+       y="581.87097"
+       id="text4264"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4266"
+         x="602.80853"
+         y="581.87097">√</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="99.290451"
+       y="931.42731"
+       id="text4268"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan4270"
+         x="99.290451"
+         y="931.42731">√</tspan></text>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot4689-2-5"
+       style="font-size:15.99999998px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+       transform="matrix(0.22609051,-0.9741063,0.9741063,0.22609051,-1827.0012,412.54279)"><flowRegion
+         id="flowRegion4691-7-3"><rect
+           id="rect4693-7-3"
+           width="20.650305"
+           height="25.826168"
+           x="157"
+           y="1545.3622"
+           style="font-size:15.99999998px" /></flowRegion><flowPara
+         id="flowPara4695-4-0"
+         style="font-size:15.99999998px">√</flowPara></flowRoot>    <path
+       style="fill:none;stroke:#000000;stroke-width:0.61400002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m -281.03075,600.69772 27.04683,-111.89965"
+       id="path4311"
+       inkscape:connector-curvature="0" />
+  </g>
   <g
      inkscape:groupmode="layer"
      id="layer2"
