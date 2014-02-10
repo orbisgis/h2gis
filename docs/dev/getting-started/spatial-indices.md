@@ -52,9 +52,9 @@ SELECT idarea, COUNT(idroad) roadscount
 Result:
 
 | IDAREA | ROADSCOUNT |
-| - | - |
-| 1 | 2 |
-| 2 | 1 |
+|--------|------------|
+|      1 |          2 |
+|      2 |          1 |
 
 Note that [`ST_Intersects`](../ST_Intersects) does not yet support spatial
 indices, but it will in a future release.

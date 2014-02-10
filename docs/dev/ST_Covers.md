@@ -20,8 +20,8 @@ Returns true if no point in `geomB` is outside `geomA`.
 
 ### Examples
 
-| smallc POLYGON | bigc POLYGON |
-| ----|---- |
+| smallc POLYGON                     | bigc POLYGON                         |
+|------------------------------------|--------------------------------------|
 | POLYGON((1 1, 5 1, 5 4, 1 4, 1 1)) | POLYGON((0 0, 10 0, 10 5, 0 5, 0 0)) |
 
 <img class="displayed" src="../ST_Covers.png"/>

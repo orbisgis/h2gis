@@ -25,11 +25,11 @@ Produces two tables (nodes and edges) from the geometries contained in column
 `columnName` of table `inputTable`. If no column is specified, then the first
 Geometry column is used. Returns `true` if the operation is successful.
 
-| Variable | Default value |
-| - | - |
-| `columnName` | The first geometry column found |
-| `tolerance` | `0.0` |
-| `orientBySlope` | `false` |
+| Variable        | Default value                   |
+|-----------------|---------------------------------|
+| `columnName`    | The first geometry column found |
+| `tolerance`     | `0.0`                           |
+| `orientBySlope` | `false`                         |
 
 <div class="note warning">
   <h5>The column must only contain <code>LINESTRING</code>s or

@@ -31,9 +31,9 @@ Returns the point of `geomA` closest to `geomB` using 2D distances
 
 ### Examples
 
-| geomA Point | geomB Polygon |
-| ----|---- |
-| POINT(4 8) | LINESTRING(1 2, 3 6, 5 7, 4 1) |
+| geomA Point | geomB Polygon                  |
+|-------------|--------------------------------|
+| POINT(4 8)  | LINESTRING(1 2, 3 6, 5 7, 4 1) |
 
 {% highlight mysql %}
 SELECT  ST_ClosestPoint(geomA, geomB);

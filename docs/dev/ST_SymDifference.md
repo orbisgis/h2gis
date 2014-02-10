@@ -22,8 +22,8 @@ Computes the symmetric difference between `geomA` and `geomB`.
 
 ### Example
 
-| geomA Polygon | geomB Polygon |
-| ----|---- |
+| geomA Polygon                      | geomB Polygon                      |
+|------------------------------------|------------------------------------|
 | POLYGON((1 1, 7 1, 7 6, 1 6, 1 1)) | POLYGON((3 2, 8 2, 8 8, 3 8, 3 2)) |
 
 {% highlight mysql %}
