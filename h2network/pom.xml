@@ -7,10 +7,10 @@
         <version>1.0.3-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>h2spatial-ext</artifactId>
-    <name>h2spatial-ext</name>
+    <artifactId>h2network</artifactId>
+    <name>h2network</name>
     <packaging>bundle</packaging>
-    <description>Extends h2spatial with non-SFS functions</description>
+    <description>Graph functions</description>
     <build>
         <plugins>
             <plugin>
@@ -21,6 +21,7 @@
                 <configuration>
                     <instructions>
                         <Fragment-Host>org.h2</Fragment-Host>
+                        <Import-Package>!org.h2.command.ddl,!org.h2.engine,!org.h2.message,!org.h2.index,!org.h2.table,!org.h2.result,*</Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -31,25 +32,10 @@
     </properties>
     <dependencies>
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit-version}</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2spatial</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>jdelaunay</artifactId>
-            <version>${jdelaunay-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
-            <version>${jts-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${h2-package}</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2-version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -57,19 +43,21 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial</artifactId>
-            <version>${project.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.8.2</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2drivers</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${sl4j-version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2network</artifactId>
-            <version>${project.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${sl4j-version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

@@ -24,22 +24,27 @@
  */
 package org.h2gis.h2spatial;
 
+import org.h2.value.ValueGeometry;
+import org.h2gis.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import java.util.Arrays;
+
+import static org.junit.Assert.*;
 
 /**
  *
  * @author Nicolas Fortin
+ * @author Adam Gouge
  */
 public class SpatialFunctionTest {
     private static Connection connection;
@@ -60,6 +65,10 @@ public class SpatialFunctionTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+
+    private static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
+        assertTrue(Arrays.equals(ValueGeometry.get(expectedWKT).getBytes(), valueWKB));
     }
 
     @Test
@@ -164,6 +173,49 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
     }
 
+    @Test
+    public void test_ST_GeometryN() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryN('MULTIPOLYGON(((0 0, 3 -1, 1.5 2, 0 0)), " +
+                "((1 2, 4 2, 4 6, 1 6, 1 2)))', 1);");
+        assertTrue(rs.next());
+        assertGeometryEquals("POLYGON((0 0, 3 -1, 1.5 2, 0 0))", rs.getBytes(1));
+        assertFalse(rs.next());
+        rs = st.executeQuery("SELECT ST_GeometryN('MULTILINESTRING((1 1, 1 6, 2 2, -1 2), " +
+                "(1 2, 4 2, 4 6))', 2);");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(1 2, 4 2, 4 6)", rs.getBytes(1));
+        assertFalse(rs.next());
+        rs = st.executeQuery("SELECT ST_GeometryN('MULTIPOINT((0 0), (1 6), (2 2), (1 2))', 2);");
+        assertTrue(rs.next());
+        assertGeometryEquals("POINT(1 6)", rs.getBytes(1));
+        assertFalse(rs.next());
+        rs = st.executeQuery("SELECT ST_GeometryN('GEOMETRYCOLLECTION(" +
+                "MULTIPOINT((4 4), (1 1), (1 0), (0 3)), " +
+                "LINESTRING(2 6, 6 2), " +
+                "POINT(4 4), " +
+                "POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))', 3);");
+        assertTrue(rs.next());
+        assertGeometryEquals("POINT(4 4)", rs.getBytes(1));
+        assertFalse(rs.next());
+        rs = st.executeQuery("SELECT ST_GeometryN(" +
+                "ST_GeometryN('GEOMETRYCOLLECTION(" +
+                "MULTIPOINT((4 4), (1 1), (1 0), (0 3))," +
+                "LINESTRING(2 6, 6 2))', 1), 4);");
+        assertTrue(rs.next());
+        assertGeometryEquals("POINT(0 3)", rs.getBytes(1));
+        assertFalse(rs.next());
+        rs = st.executeQuery("SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 1);");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING(1 1, 1 6, 2 2, -1 2)", rs.getBytes(1));
+        assertFalse(rs.next());
+    }
+
+    @Test(expected = SQLException.class)
+    public void test_ST_GeometryNIndexOutOfRange() throws Exception {
+        Statement st = connection.createStatement();
+        st.executeQuery("SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 0);");
+    }
 
     @Test
     public void test_ST_GeometryTypeCode() throws Exception {
@@ -209,5 +261,25 @@ public class SpatialFunctionTest {
            rs.close();
         }
 
+    }
+
+    @Test
+    public void test_ST_Envelope() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Envelope(ST_GeomFromText('LINESTRING(1 1,5 5)', 27572))");
+        try {
+            assertTrue(rs.next());
+            assertEquals(ValueGeometry.getFromGeometry(ST_GeomFromText.toGeometry("POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1))", 27572)),
+                    ValueGeometry.getFromGeometry(rs.getObject(1)));
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT ST_SRID(ST_Envelope(ST_GeomFromText('LINESTRING(1 1,5 5)', 27572)))");
+        try {
+            assertTrue(rs.next());
+            assertEquals(27572,rs.getInt(1));
+        } finally {
+            rs.close();
+        }
     }
 }

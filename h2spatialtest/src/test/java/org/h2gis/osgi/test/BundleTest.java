@@ -91,6 +91,7 @@ public class BundleTest {
                 mavenBundle("org.orbisgis", "h2drivers").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-osgi"),
                 mavenBundle("org.orbisgis", "h2spatial-ext-osgi"),
+                mavenBundle("org.orbisgis", "h2network").noStart(),
                 junitBundles());
     }
     /**
