@@ -28,6 +28,9 @@ package org.h2gis.h2spatialext;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.dbf.DBFRead;
 import org.h2gis.drivers.dbf.DBFWrite;
+import org.h2gis.drivers.geojson.GeoJsonRead;
+import org.h2gis.drivers.geojson.GeoJsonWrite;
+import org.h2gis.drivers.geojson.ST_AsGeoJSON;
 import org.h2gis.drivers.gpx.GPXRead;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
@@ -112,12 +115,15 @@ public class CreateSpatialExtension {
                 new ST_TriangleSlope(),
                 new ST_TriangleDirection(),
                 // h2network functions
-                new ST_Graph()};
+                new ST_Graph(),
+                new ST_AsGeoJSON(),
+                new GeoJsonRead(),
+                new GeoJsonWrite()};
     }
 
     /**
      * Init H2 DataBase with extended spatial functions
-     * @param connection
+     * @param connection Active connection
      * @throws SQLException
      */
     public static void initSpatialExtension(Connection connection) throws SQLException {
