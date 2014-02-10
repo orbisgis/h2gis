@@ -12,6 +12,7 @@ permalink: /docs/dev/ST_Buffer/
 
 {% highlight mysql %}
 GEOMETRY ST_Buffer(GEOMETRY geom, double bufferSize);
+GEOMETRY ST_Buffer(GEOMETRY geom, double bufferSize, varchar figureEnd);
 {% endhighlight %}
 
 ### Description
@@ -40,6 +41,20 @@ SELECT ST_Buffer('LINESTRING(1 4, 3 3, 1 1, 3 1)', 1);
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Buffer_2.png"/>
+
+{% highlight mysql %} 
+SELECT ST_Buffer('LINESTRING(1 4, 3 1)', 0.5, butt); 
+Answer: 
+{% endhighlight %} 
+
+<img class="displayed" src="../ST_Buffer_3.png"/> 
+
+{% highlight mysql %} 
+SELECT ST_Buffer('LINESTRING(1 4, 3 1)', 0.5, square); 
+Answer: 
+{% endhighlight %} 
+
+<img class="displayed" src="../ST_Buffer_4.png"/> 
 
 {% highlight mysql %}
 SELECT ST_Buffer('GEOMETRYCOLLECTION(
