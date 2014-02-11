@@ -36,13 +36,19 @@ SELECT ST_PointOnSurface('LINESTRING(-1 5, 0 10)');
 
 SELECT ST_PointOnSurface('POLYGON((0 0, 0 5, 5 5, 5 0, 0 0))');
 -- Answer: POINT(2.5 2.5)
+{% endhighlight %}
 
+<img class="displayed" src="../ST_PointOnSurface_1.png"/>
+
+{% highlight mysql %}
 SELECT ST_PointOnSurface('GEOMETRYCOLLECTION(
                               POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)), 
                               LINESTRING(2 6, 6 2), 
                               MULTIPOINT((4 4), (1 1), (0 3)))');
 -- Answer: POINT(2.5 4)
 {% endhighlight %}
+
+<img class="displayed" src="../ST_PointOnSurface_2.png"/>
 
 ##### Comparison with [`ST_Centroid`](../ST_Centroid)
 
