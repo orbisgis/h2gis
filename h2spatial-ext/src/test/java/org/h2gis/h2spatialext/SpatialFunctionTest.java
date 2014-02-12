@@ -2229,4 +2229,19 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+    
+    @Test
+    public void test_ST_RemovePoint5() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (100 200, 153 255, 169 175, 200 240, 250 190, 264 236, 304 236, 320 240, 340 250, 345 265, 354 295)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint(the_geom, 'POINT (230 250)'::GEOMETRY, 100) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (100 200, 340 250, 345 265, 354 295)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }
