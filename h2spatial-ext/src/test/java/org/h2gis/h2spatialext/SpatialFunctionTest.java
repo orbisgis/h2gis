@@ -2168,4 +2168,65 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_RemovePoint1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT(1 1)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint(the_geom, 'POINT(1 1)'::GEOMETRY, 10) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(1 1)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_RemovePoint2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTIPOINT ((5 5), (10 10))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint(the_geom, 'POINT(10 10)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT((5 5)))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    
+    @Test
+    public void test_ST_RemovePoint3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTIPOINT ((5 5), (10 10), (100 1000))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint(the_geom, 'POINT(10 10)'::GEOMETRY, 10) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT((100 1000)))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_RemovePoint4() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((150 250, 220 250, 220 170, 150 170, 150 250))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint(the_geom, 'POINT (230 250)'::GEOMETRY, 10) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((150 250, 220 170, 150 170, 150 250))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }

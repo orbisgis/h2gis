@@ -20,6 +20,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.util.GeometryEditor;
@@ -80,10 +81,32 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
      * @throws SQLException
      */
     private static Geometry removePointEnvelope(Geometry geometry, Envelope envelope) throws SQLException {
+        Geometry localGeometry1 = deleteComponents(geometry, envelope);
+        if (localGeometry1 != null) {
+            return localGeometry1;
+        }
+        Geometry localGeometry2 = deleteVertices(geometry, envelope);
+        if (localGeometry2 != null) {
+            return localGeometry2;
+        }
+        return geometry;
+    }
+
+    private static Geometry deleteComponents(Geometry paramGeometry, Envelope paramEnvelope) {
         GeometryEditor localGeometryEditor = new GeometryEditor();
-        BoxDeleteVertexOperation boxDeleteVertexOperation = new BoxDeleteVertexOperation(envelope);
-        Geometry localGeometry = localGeometryEditor.edit(geometry, boxDeleteVertexOperation);
-        if (boxDeleteVertexOperation.isEdited()) {
+        BoxDeleteComponentOperation localBoxDeleteComponentOperation = new BoxDeleteComponentOperation(paramEnvelope);
+        Geometry localGeometry = localGeometryEditor.edit(paramGeometry, localBoxDeleteComponentOperation);
+        if (localBoxDeleteComponentOperation.isModified()) {
+            return localGeometry;
+        }
+        return null;
+    }
+
+    private static Geometry deleteVertices(Geometry paramGeometry, Envelope paramEnvelope) {
+        GeometryEditor localGeometryEditor = new GeometryEditor();
+        BoxDeleteVertexOperation localBoxDeleteVertexOperation = new BoxDeleteVertexOperation(paramEnvelope);
+        Geometry localGeometry = localGeometryEditor.edit(paramGeometry, localBoxDeleteVertexOperation);
+        if (localBoxDeleteVertexOperation.isModified()) {
             return localGeometry;
         }
         return null;
@@ -96,20 +119,26 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
      */
     private static class BoxDeleteVertexOperation extends GeometryEditor.CoordinateOperation {
 
+        //The envelope used to select the coordinates to removed
         private Envelope env;
-        private boolean isEdited = false;
+        private boolean isModified = false;
 
         public BoxDeleteVertexOperation(Envelope paramEnvelope) {
             this.env = paramEnvelope;
         }
 
-        public boolean isEdited() {
-            return this.isEdited;
+        /**
+         * Return true is the geometry has been modified
+         *
+         * @return
+         */
+        public boolean isModified() {
+            return this.isModified;
         }
 
         @Override
         public Coordinate[] edit(Coordinate[] paramArrayOfCoordinate, Geometry paramGeometry) {
-            if (this.isEdited) {
+            if (this.isModified) {
                 return paramArrayOfCoordinate;
             }
             if (!hasVertexInBox(paramArrayOfCoordinate)) {
@@ -121,11 +150,12 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
             }
             Coordinate[] arrayOfCoordinate1 = new Coordinate[paramArrayOfCoordinate.length];
             int j = 0;
-            for (int k = 0; k < paramArrayOfCoordinate.length; k++) {
-                if (!this.env.contains(paramArrayOfCoordinate[k])) {
-                    arrayOfCoordinate1[(j++)] = paramArrayOfCoordinate[k];
+            for (Coordinate coordinate : paramArrayOfCoordinate) {
+                if (!this.env.contains(coordinate)) {
+                    arrayOfCoordinate1[(j++)] = coordinate;
                 }
             }
+
             Coordinate[] arrayOfCoordinate2 = CoordinateArrays.removeNull(arrayOfCoordinate1);
             Coordinate[] localObject = arrayOfCoordinate2;
             if (((paramGeometry instanceof LinearRing)) && (arrayOfCoordinate2.length > 1) && (!arrayOfCoordinate2[(arrayOfCoordinate2.length - 1)].equals2D(arrayOfCoordinate2[0]))) {
@@ -137,17 +167,57 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
             if (localObject.length < i) {
                 return paramArrayOfCoordinate;
             }
-            this.isEdited = true;
+            this.isModified = true;
             return localObject;
         }
 
+        /**
+         * Return true if there is one coordinate in the input box
+         *
+         * @param paramArrayOfCoordinate
+         * @return
+         */
         private boolean hasVertexInBox(Coordinate[] paramArrayOfCoordinate) {
-            for (int i = 0; i < paramArrayOfCoordinate.length; i++) {
-                if (this.env.contains(paramArrayOfCoordinate[i])) {
+            for (Coordinate coordinate : paramArrayOfCoordinate) {
+                if (this.env.contains(coordinate)) {
                     return true;
                 }
             }
             return false;
+        }
+    }
+
+    /**
+     * This class is used to remove component that are contained in an envelope.
+     * This class has been imported from the JTS test builder UI. It's usefull
+     * to remove coordinates in a multi geometry.
+     *
+     */
+    private static class BoxDeleteComponentOperation implements GeometryEditor.GeometryEditorOperation {
+
+        private Envelope env;
+        private boolean isEdited = false;
+
+        public BoxDeleteComponentOperation(Envelope paramEnvelope) {
+            this.env = paramEnvelope;
+        }
+
+        /**
+         * Return true is the geometry has been modified
+         *
+         * @return
+         */
+        public boolean isModified() {
+            return this.isEdited;
+        }
+
+        @Override
+        public Geometry edit(Geometry paramGeometry, GeometryFactory paramGeometryFactory) {
+            if (this.env.contains(paramGeometry.getEnvelopeInternal())) {
+                this.isEdited = true;
+                return null;
+            }
+            return paramGeometry;
         }
     }
 }
