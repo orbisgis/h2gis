@@ -1926,7 +1926,7 @@ public class SpatialFunctionTest {
         //Test if the walls are created
         assertTrue(walls.getCoordinates().length == 20);
         Geometry wallTarget = WKT_READER.read("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
-                + "((0 1 0, 0 1 10, 1 1 0, 1 1 10, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), "
+                + "((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), "
                 + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))");
         assertTrue(CoordinateArrays.equals(walls.getCoordinates(), wallTarget.getCoordinates()));
 
@@ -2377,7 +2377,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_Split8() throws Exception {
         Statement st = connection.createStatement();
@@ -2390,15 +2390,14 @@ public class SpatialFunctionTest {
         Geometry pols = (Geometry) rs.getObject(1);
         for (int i = 0; i < pols.getNumGeometries(); i++) {
             Geometry pol = pols.getGeometryN(i);
-            assertTrue(ST_CoordDim.getCoordinateDimension(pol)==3);
+            assertTrue(ST_CoordDim.getCoordinateDimension(pol) == 3);
         }
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
-    
-     @Test
+
+    @Test
     public void test_ST_Translate1() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
@@ -2407,14 +2406,13 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('POINT(-71.01 42.37)'));");
         ResultSet rs = st.executeQuery("SELECT ST_Translate(the_geom, 1, 0) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(-70.01 42.37)")));        
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(-70.01 42.37)")));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-     
-      
-     @Test
+
+    @Test
     public void test_ST_Translate2() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
@@ -2423,7 +2421,54 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('LINESTRING(-71.01 42.37,-71.11 42.38)'));");
         ResultSet rs = st.executeQuery("SELECT ST_Translate(the_geom, 1, 0.5) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(-70.01 42.87,-70.11 42.88)")));        
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(-70.01 42.87,-70.11 42.88)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Reverse1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (105 353, 150 180, 300 280)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (300 280, 150 180, 105 353)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Reverse2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((190 300, 140 180, 300 110, 313 117, 430 270, 380 430, 190 300))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((190 300, 380 430, 430 270, 313 117, 300 110, 140 180, 190 300))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Reverse3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTILINESTRING ((10 260, 150 290, 186 406, 286 286), \n"
+                + "  (120 120, 130 125, 142 129, 360 160, 357 170, 380 340))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTILINESTRING ((380 340, 357 170, 360 160, 142 129, 130 125, 120 120), \n"
+                + "  (286 286, 186 406, 150 290, 10 260))")));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
