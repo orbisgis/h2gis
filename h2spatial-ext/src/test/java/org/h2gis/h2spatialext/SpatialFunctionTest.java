@@ -1918,16 +1918,16 @@ public class SpatialFunctionTest {
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
-        assertTrue(outputGeom.getGeometryN(0).equalsTopo(WKT_READER.read("POLYGON(( 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))")));
+        assertTrue(outputGeom.getGeometryN(0).equalsTopo(WKT_READER.read("POLYGON(( 0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))")));
 
         Geometry walls = outputGeom.getGeometryN(1);
         //Test if the walls are created
-        assertTrue(walls.getCoordinates().length == 20);
+        assertTrue(walls.getCoordinates().length == 20);        
         Geometry wallTarget = WKT_READER.read("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
                 + "((0 1 0, 0 1 10, 1 1 0, 1 1 10, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), "
                 + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))");
         assertTrue(CoordinateArrays.equals(walls.getCoordinates(), wallTarget.getCoordinates()));
-
+       
         //Test the roof
         assertTrue(outputGeom.getGeometryN(2).equalsTopo(WKT_READER.read("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))")));
 
@@ -2030,6 +2030,24 @@ public class SpatialFunctionTest {
                 WKT_READER.read("POLYGON((0 0, 1 0 0, 1 1 , 0 1, 0 0))")));
         assertTrue(((Geometry) rs.getObject(1)).getSRID()==4326);
         rs.close();
+        st.close();
+    }
+    
+    
+     @Test
+    public void test_ST_InterpolateLine1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (60 290, 67 300, 67 300, 140 330, 136 319,136 319, 127 314, "
+                + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_InterpolateLine(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (60 290, 67 300, 140 330, 136 319, 127 314, "
+                + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
         st.close();
     }
 }

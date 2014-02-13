@@ -23,35 +23,32 @@
  */
 package org.h2gis.h2spatialext.function.spatial.edit;
 
-import com.vividsolutions.jts.densify.Densifier;
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Densifies a geometry using the given distance tolerance.
+ * Returns the geometry with vertex order reversed.
  *
- * @see com.vividsolutions.jts.densify.Densifier
  * @author Erwan Bocher
  */
-public class ST_Densify extends DeterministicScalarFunction {
+public class ST_Reverse extends DeterministicScalarFunction {
 
-    public ST_Densify() {
-        addProperty(PROP_REMARKS, "Densifies a geometry using the given distance tolerance");
+    public ST_Reverse() {
+        addProperty(PROP_REMARKS, "Returns the geometry with vertex order reversed.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "densify";
+        return "reverse";
     }
 
     /**
-     * Densify a geometry using the given distance tolerance.
+     * Returns the geometry with vertex order reversed.
      *
-     * @param geometry  Geometry
-     * @param tolerance Distance tolerance
-     * @return Densified geometry
+     * @param geometry
+     * @return
      */
-    public static Geometry densify(Geometry geometry, double tolerance) {
-        return Densifier.densify(geometry, tolerance);
+    public static Geometry reverse(Geometry geometry) {
+        return geometry.reverse();
     }
 }
