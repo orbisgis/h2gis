@@ -102,7 +102,6 @@ public class ST_AddZToExtremities extends DeterministicScalarFunction {
                     seq.setOrdinate(i, 1, y);
                     seq.setOrdinate(i, 2, endZ);
                 } else {
-
                     double smallD = seq.getCoordinate(i).distance(coordEnd);
                     double factor = smallD / bigD;
                     seq.setOrdinate(i, 0, x);
