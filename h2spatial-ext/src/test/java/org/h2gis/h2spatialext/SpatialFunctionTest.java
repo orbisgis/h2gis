@@ -37,6 +37,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_CoordDim;
+import org.h2gis.utilities.jts_utils.GeometryEdit;
 
 import static org.junit.Assert.*;
 
@@ -2320,7 +2322,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_Split5() throws Exception {
         Statement st = connection.createStatement();
@@ -2330,7 +2332,66 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'));");
         ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 1, 5 8)'::GEOMETRY) FROM input_table;");
         rs.next();
-        assertNull((Geometry) rs.getObject(1));        
+        assertNull((Geometry) rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Split6() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 1, 5 12)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        assertNull((Geometry) rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Split7() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0), (2 2, 7 2, 7 7, 2 7, 2 2))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 0, 5 10)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        Geometry pols = (Geometry) rs.getObject(1);
+        assertTrue(pols.getNumGeometries() == 2);
+        Polygon pol1 = (Polygon) WKT_READER.read("POLYGON (( 0 0, 5 0, 5 2 ,2 2, 2 7, 5 7,  5 10, 0 10, 0 0))");
+        Polygon pol2 = (Polygon) WKT_READER.read("POLYGON ((5 0, 5 2, 7 2, 7 7 , 5 7, 5 10, 10 10, 10 0, 5 0))");
+        for (int i = 0; i < pols.getNumGeometries(); i++) {
+            Geometry pol = pols.getGeometryN(i);
+            if (!pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())
+                    && !pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())) {
+                fail();
+            }
+        }
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Split8() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON (( 0 0 1, 10 0 5, 10 10 8 , 0 10 12, 0 0 12))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 0, 5 10)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        Geometry pols = (Geometry) rs.getObject(1);
+        for (int i = 0; i < pols.getNumGeometries(); i++) {
+            Geometry pol = pols.getGeometryN(i);
+            assertTrue(ST_CoordDim.getCoordinateDimension(pol)==3);
+        }
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
