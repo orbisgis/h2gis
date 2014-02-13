@@ -2322,25 +2322,15 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_Split4() throws Exception {
+    public void test_ST_Split5() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom POLYGON);"
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 0, 5 10)'::GEOMETRY) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 1, 5 8)'::GEOMETRY) FROM input_table;");
         rs.next();
-        Geometry geom = (Geometry) rs.getObject(1);
-        assertTrue(geom.getNumGeometries() == 2);
-        Polygon pol1 = (Polygon) WKT_READER.read("POLYGON (( 0 0, 5 0, 5 10 , 0 10, 0 0))");
-        Polygon pol2 = (Polygon) WKT_READER.read("POLYGON ((5 0, 10 0 , 10 10, 5 10, 5 0))");
-        for (int i = 0; i < geom.getNumGeometries(); i++) {
-            Geometry pol = geom.getGeometryN(i);
-            if (!pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())
-                    && !pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())) {
-                fail();
-            }
-        }
+        assertNull((Geometry) rs.getObject(1));        
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();

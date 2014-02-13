@@ -43,18 +43,7 @@ public class GeometryEditTest {
 
     public WKTReader wKTReader = new WKTReader();
 
-    @Test
-    public void testLinearInterpolation() throws Exception {
-        LineString line = (LineString) wKTReader.read("LINESTRING(0 8, 1 8 , 3 8)");
-        LineString result = GeometryEdit.linearZInterpolation(line);
-        assertTrue(Double.isNaN(result.getStartPoint().getCoordinate().z));
-        assertTrue(Double.isNaN(result.getEndPoint().getCoordinate().z));
-        line = (LineString) wKTReader.read("LINESTRING(0 0 0, 5 0 , 10 0 10)");
-        result = GeometryEdit.linearZInterpolation(line);
-        assertTrue(result.getStartPoint().getCoordinate().z == 0);
-        assertTrue(result.getEndPoint().getCoordinate().z == 10);
-        assertTrue(result.getCoordinates()[1].z == 5);
-    }
+  
 
     /**
      * Test to split a linestring according a point
@@ -129,62 +118,9 @@ public class GeometryEditTest {
         assertTrue(geomLocation.getCoordinate().equals2D(new Coordinate(243.56500711237555, 204.7044096728307)));
     }
 
-    /**
-     * Insert a vertex into a lineString
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testInsertVertexInLineString() throws Exception {
-        LineString lineString = (LineString) wKTReader.read("LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8)");
-        Point point = (Point) wKTReader.read("POINT(1.5 4 )");
-        //Test a point in a segment
-        LineString result = GeometryEdit.insertVertexInLineString(lineString, point, 4);
-        assertEquals(result, wKTReader.read("LINESTRING(0 8, 1 8 , 1.5 8, 3 8,  8  8, 10 8, 20 8)"));
-        //Test a point on an existing coordinate
-        point = (Point) wKTReader.read("POINT(1 4 )");
-        result = GeometryEdit.insertVertexInLineString(lineString, point, 4);
-        //Because the geometry is not modified
-        assertNull(result);
-    }
+   
 
-    /**
-     * Insert a vertex into a linearring
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testInsertVertexInLinearRing() throws Exception {
-        LinearRing linearRing = (LinearRing) wKTReader.read("LINEARRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 0 8)");
-        Point point = (Point) wKTReader.read("POINT(1.5 4 )");
-        //Test a point in a segment
-        LinearRing result = GeometryEdit.insertVertexInLinearRing(linearRing, point, 4);
-        assertEquals(result, wKTReader.read("LINEARRING(0 8, 1 8 , 1.5 8, 3 8,  8  8, 10 8, 20 8, 0 8)"));
-        //Test a point on an existing coordinate
-        point = (Point) wKTReader.read("POINT(1 4 )");
-        result = GeometryEdit.insertVertexInLinearRing(linearRing, point, 4);
-        //Because the geometry is not modified
-        assertNull(result);
-    }
-
-    /**
-     * Insert a vertex into a linearring
-     *
-     * @throws Exception
-     */
-    @Test
-    public void testInsertVertexInPolygon() throws Exception {
-        Polygon polygon = (Polygon) wKTReader.read("POLYGON ((118 134, 118 278, 266 278, 266 134, 118 134 ))");
-        Point point = (Point) wKTReader.read("POINT(196 278 )");
-        //Test a point in a segment
-        Polygon result = GeometryEdit.insertVertexInPolygon(polygon, point, 4);
-        assertEquals(result, wKTReader.read("POLYGON ((118 134, 118 278,196 278, 266 278, 266 134, 118 134 ))"));
-        //Test a point on an existing coordinate
-        point = (Point) wKTReader.read("POINT(196 300 )");
-        result = GeometryEdit.insertVertexInPolygon(polygon, point, 4);
-        //Because the geometry is not modified
-        assertNull(result);
-    }
+   
 
     /**
      * Test to split a polygon with a linestring
@@ -278,36 +214,5 @@ public class GeometryEditTest {
         result = GeometryEdit.cutPolygonWithPolygon(polygon, cutter);
         assertEquals(result.get(0), wKTReader.read("POLYGON (( 2 0, 0 0, 0 10, 10 10, 10 0, 7.177873563218391 0, 7.177873563218391 7, 2 7, 2 0 ))"));
     }
-
-    @Test
-    public void testST_RemoveHoles() throws Exception {
-        Polygon polygon = (Polygon) wKTReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ), "
-                + "( 184 169, 247 197, 242 247, 167 258, 184 169 ))");
-        Polygon expected = (Polygon) wKTReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ))");
-        Geometry result = GeometryEdit.removeHoles(polygon);
-        assertTrue(result.equals(expected));
-    }
-
-    @Test
-    public void testST_Remove3Holes() throws Exception {
-        Polygon polygon = (Polygon) wKTReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ), "
-                + "( 184 169, 247 197, 242 247, 167 258, 184 169 ), "
-                + "( 235 107, 277 120, 267 167, 221 161, 235 107 ), "
-                + "( 277 280, 266 255, 281 249, 300 270, 277 280 ))");
-        Polygon expected = (Polygon) wKTReader.read("POLYGON (( 112 68, 112 307, 318 307, 318 68, 112 68 ))");
-        Geometry result = GeometryEdit.removeHoles(polygon);
-        assertTrue(result.equals(expected));
-    }
-
-    /**
-     * Returns true is a geometry contains at least one z value.
-     *
-     * @param geometry
-     * @return
-     */
-    private boolean is25Geometry(Geometry geom) {
-        CoordinateSequenceDimensionFilter cf = new CoordinateSequenceDimensionFilter();
-        geom.apply(cf);
-        return cf.getDimension() >= CoordinateSequenceDimensionFilter.XYZ;
-    }
+    
 }
