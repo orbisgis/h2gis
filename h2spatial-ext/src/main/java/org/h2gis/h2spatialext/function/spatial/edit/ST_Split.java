@@ -31,18 +31,18 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import org.h2gis.drivers.utility.CoordinatesUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.GeometryConvert;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiSegments;
 
 /**
  * This function split a line by a line a line by a point a polygon by a line
@@ -65,30 +65,66 @@ public class ST_Split extends DeterministicScalarFunction {
     }
 
     /**
-     * Split a geometry a according a geometry b.
-     * Supported operations are : split a line by a line a line by a point a polygon by a line
-     * 
+     * Split a geometry a according a geometry b. Supported operations are :
+     * split a line by a line a line by a point a polygon by a line.
+     *
+     * A default tolerance of 10E-6 is used to snap the cutter point.
+     *
      * @param geomA
      * @param geomB
-     * @return 
+     * @return
+     * @throws SQLException
      */
-    public static Geometry split(Geometry geomA, Geometry geomB) {
+    public static Geometry split(Geometry geomA, Geometry geomB) throws SQLException {
         if (geomA instanceof Polygon) {
             return splitPolygonWithLine((Polygon) geomA, (LineString) geomB);
         } else if (geomA instanceof LineString) {
             if (geomB instanceof LineString) {
                 return splitLineStringWithLine((LineString) geomA, (LineString) geomB);
             } else if (geomB instanceof Point) {
-                return splitLineWithPoint((LineString) geomA, (Point) geomB);
+                return splitLineWithPoint((LineString) geomA, (Point) geomB, PRECISION);
             }
         } else if (geomA instanceof MultiLineString) {
             if (geomB instanceof LineString) {
                 return splitMultiLineStringWithLine((MultiLineString) geomA, (LineString) geomB);
             } else if (geomB instanceof Point) {
-                return splitMultiLineStringWithPoint((MultiLineString) geomA, (Point) geomB);
+                return splitMultiLineStringWithPoint((MultiLineString) geomA, (Point) geomB, PRECISION);
             }
         }
-        return null;
+        throw new SQLException("Split a " + geomA.getGeometryType() + " by a " + geomB.getGeometryType() + " is not supported.");
+    }
+
+    /**
+     * Split a geometry a according a geometry b using a snapping tolerance.
+     *
+     * This function support only the operations :
+     *
+     * - split a line or a multiline with a point.
+     *
+     * @param geomA
+     * @param geomB
+     * @return
+     */
+    public static Geometry split(Geometry geomA, Geometry geomB, double tolerance) throws SQLException {
+        if (geomA instanceof Polygon) {
+            throw new SQLException("Split a Polygon by a line is not supported using a tolerance. \n"
+                    + "Please used ST_Split(geom1, geom2)");
+        } else if (geomA instanceof LineString) {
+            if (geomB instanceof LineString) {
+                throw new SQLException("Split a line by a line is not supported using a tolerance. \n"
+                        + "Please used ST_Split(geom1, geom2)");
+            } else if (geomB instanceof Point) {
+                return splitLineWithPoint((LineString) geomA, (Point) geomB, tolerance);
+            }
+        } else if (geomA instanceof MultiLineString) {
+            if (geomB instanceof LineString) {
+                throw new SQLException("Split a multiline by a line is not supported using a tolerance. \n"
+                        + "Please used ST_Split(geom1, geom2)");
+            } else if (geomB instanceof Point) {
+                return splitMultiLineStringWithPoint((MultiLineString) geomA, (Point) geomB, tolerance);
+            }
+        }
+        throw new SQLException("Split a " + geomA.getGeometryType() + " by a " + geomB.getGeometryType() + " is not supported.");
     }
 
     /**
@@ -98,9 +134,9 @@ public class ST_Split extends DeterministicScalarFunction {
      * @param pointToSplit
      * @return
      */
-    private static MultiLineString splitLineWithPoint(LineString line, Point pointToSplit) {
-        return FACTORY.createMultiLineString(splitLineStringWithPoint(line, pointToSplit, PRECISION));
-    }   
+    private static MultiLineString splitLineWithPoint(LineString line, Point pointToSplit, double tolerance) {
+        return FACTORY.createMultiLineString(splitLineStringWithPoint(line, pointToSplit, tolerance));
+    }
 
     /**
      * Splits a LineString using a Point, with a distance tolerance.
@@ -154,17 +190,6 @@ public class ST_Split extends DeterministicScalarFunction {
      *
      * @param multiLineString
      * @param pointToSplit
-     * @return
-     */
-    private static MultiLineString splitMultiLineStringWithPoint(MultiLineString multiLineString, Point pointToSplit) {
-        return splitMultiLineStringWithPoint(multiLineString, pointToSplit, PRECISION);
-    }
-
-    /**
-     * Splits a MultilineString using a point.
-     *
-     * @param multiLineString
-     * @param pointToSplit
      * @param tolerance
      * @return
      */
@@ -195,16 +220,16 @@ public class ST_Split extends DeterministicScalarFunction {
      * @param lineString
      * @return
      */
-    private static Collection<Polygon> splitPolygonizer(Polygon polygon, LineString lineString) {
-        Set<LineString> segments = GeometryConvert.toSegmentsLineString(polygon.getExteriorRing());
-        segments.add(lineString);
+    private static Collection<Polygon> splitPolygonizer(Polygon polygon, LineString lineString) throws SQLException {
+        LinkedList<LineString> result = new LinkedList<LineString>();
+        ST_ToMultiSegments.createSegments(polygon.getExteriorRing(), result);
+        result.add(lineString);
         int holes = polygon.getNumInteriorRing();
         for (int i = 0; i < holes; i++) {
-            segments.addAll(GeometryConvert.toSegmentsLineString(polygon.getInteriorRingN(i)));
+            ST_ToMultiSegments.createSegments(polygon.getInteriorRingN(i), result);
         }
-
         // Perform union of all extracted LineStrings (the edge-noding process)  
-        UnaryUnionOp uOp = new UnaryUnionOp(segments);
+        UnaryUnionOp uOp = new UnaryUnionOp(result);
         Geometry union = uOp.union();
 
         // Create polygons from unioned LineStrings  
@@ -225,7 +250,7 @@ public class ST_Split extends DeterministicScalarFunction {
      * @param lineString
      * @return
      */
-    private static Geometry splitPolygonWithLine(Polygon polygon, LineString lineString) {
+    private static Geometry splitPolygonWithLine(Polygon polygon, LineString lineString) throws SQLException {
         Collection<Polygon> pols = polygonWithLineSplitter(polygon, lineString);
         if (pols != null) {
             return FACTORY.buildGeometry(polygonWithLineSplitter(polygon, lineString));
@@ -240,7 +265,7 @@ public class ST_Split extends DeterministicScalarFunction {
      * @param lineString
      * @return
      */
-    private static Collection<Polygon> polygonWithLineSplitter(Polygon polygon, LineString lineString) {
+    private static Collection<Polygon> polygonWithLineSplitter(Polygon polygon, LineString lineString) throws SQLException {
         Collection<Polygon> polygons = splitPolygonizer(polygon, lineString);
         if (polygons != null && polygons.size() > 1) {
             List<Polygon> pols = new ArrayList<Polygon>();
@@ -261,7 +286,7 @@ public class ST_Split extends DeterministicScalarFunction {
      * @param lineString
      * @return
      */
-    private static Geometry splitMultiPolygonWithLine(MultiPolygon multiPolygon, LineString lineString) {
+    private static Geometry splitMultiPolygonWithLine(MultiPolygon multiPolygon, LineString lineString) throws SQLException {
         ArrayList<Polygon> allPolygons = new ArrayList<Polygon>();
         for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
             Collection<Polygon> polygons = splitPolygonizer((Polygon) multiPolygon.getGeometryN(i), lineString);
@@ -301,6 +326,4 @@ public class ST_Split extends DeterministicScalarFunction {
         }
         return FACTORY.createMultiLineString(geometries.toArray(new LineString[geometries.size()]));
     }
-
-    
 }

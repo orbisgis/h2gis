@@ -2198,8 +2198,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
-    
+
     @Test
     public void test_ST_RemovePoint3() throws Exception {
         Statement st = connection.createStatement();
@@ -2214,7 +2213,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_RemovePoint4() throws Exception {
         Statement st = connection.createStatement();
@@ -2229,7 +2228,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_RemovePoint5() throws Exception {
         Statement st = connection.createStatement();
@@ -2240,6 +2239,108 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint(the_geom, 'POINT (230 250)'::GEOMETRY, 100) FROM input_table;");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (100 200, 340 250, 345 265, 354 295)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Split1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'POINT(1.5 4 )'::GEOMETRY, 4) FROM input_table;");
+        rs.next();
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertTrue(geom.getNumGeometries() == 2);
+        assertTrue(geom.getGeometryN(0).equals(WKT_READER.read("LINESTRING(0 8, 1 8 , 1.5 8)")));
+        assertTrue(geom.getGeometryN(1).equals(WKT_READER.read("LINESTRING(1.5 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Split2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(0 0, 100 0)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING(50 -50, 50 50)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertTrue(geom.getNumGeometries() == 2);
+        assertTrue(geom.equals(WKT_READER.read("MULTILINESTRING((0 0, 50 0), (50 0 , 100 0))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Split3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(50 0, 100 0)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING(50 50, 100 50)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertTrue(geom.getNumGeometries() == 1);
+        assertTrue(geom.equals(WKT_READER.read("LINESTRING(50 0, 100 0)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Split4() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 0, 5 10)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertTrue(geom.getNumGeometries() == 2);
+        Polygon pol1 = (Polygon) WKT_READER.read("POLYGON (( 0 0, 5 0, 5 10 , 0 10, 0 0))");
+        Polygon pol2 = (Polygon) WKT_READER.read("POLYGON ((5 0, 10 0 , 10 10, 5 10, 5 0))");
+        for (int i = 0; i < geom.getNumGeometries(); i++) {
+            Geometry pol = geom.getGeometryN(i);
+            if (!pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())
+                    && !pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())) {
+                fail();
+            }
+        }
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Split4() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 0, 5 10)'::GEOMETRY) FROM input_table;");
+        rs.next();
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertTrue(geom.getNumGeometries() == 2);
+        Polygon pol1 = (Polygon) WKT_READER.read("POLYGON (( 0 0, 5 0, 5 10 , 0 10, 0 0))");
+        Polygon pol2 = (Polygon) WKT_READER.read("POLYGON ((5 0, 10 0 , 10 10, 5 10, 5 0))");
+        for (int i = 0; i < geom.getNumGeometries(); i++) {
+            Geometry pol = geom.getGeometryN(i);
+            if (!pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())
+                    && !pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())) {
+                fail();
+            }
+        }
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
