@@ -2396,4 +2396,36 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+    
+    
+     @Test
+    public void test_ST_Translate1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT(-71.01 42.37)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Translate(the_geom, 1, 0) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(-70.01 42.37)")));        
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+     
+      
+     @Test
+    public void test_ST_Translate2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(-71.01 42.37,-71.11 42.38)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Translate(the_geom, 1, 0.5) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(-70.01 42.87,-70.11 42.88)")));        
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }

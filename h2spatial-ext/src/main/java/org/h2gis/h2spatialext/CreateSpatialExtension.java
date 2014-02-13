@@ -50,6 +50,7 @@ import org.h2gis.h2spatialext.function.spatial.properties.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
 import org.h2gis.h2spatialext.function.spatial.clean.ST_RemoveRepeatedPoints;
 import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircle;
 import org.h2gis.h2spatialext.function.spatial.create.ST_Expand;
@@ -148,7 +149,8 @@ public class CreateSpatialExtension {
                 new ST_RemovePoint(),
                 new ST_PrecisionReducer(),
                 new ST_Simplify(),
-                new ST_SimplifyPreserveTopology()};
+                new ST_SimplifyPreserveTopology(),
+                new ST_Translate()};
     }
 
     /**
