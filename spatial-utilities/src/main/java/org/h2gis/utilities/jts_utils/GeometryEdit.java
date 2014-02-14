@@ -995,7 +995,6 @@ public final class GeometryEdit extends GeometryUtils {
         for (int i = 0; i < geom.getNumGeometries(); i++) {
             Polygon subGeom = (Polygon) geom.getGeometryN(i);
             polygons.add(subGeom);
-
         }
         return polygons;
     }
