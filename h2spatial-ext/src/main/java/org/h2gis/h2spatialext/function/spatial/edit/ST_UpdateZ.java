@@ -28,29 +28,32 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  *
  * @author Erwan Bocher
  */
-public class ST_AddZ extends DeterministicScalarFunction {
+public class ST_UpdateZ extends DeterministicScalarFunction {
 
-    public ST_AddZ() {
+    public ST_UpdateZ() {
         addProperty(PROP_REMARKS, "This function replace the z value of (each vertex of) the\n"
                 + " geometric parameter to the corresponding value given by a field.\n"
                 + "The first argument is used to replace all existing z values.\n"
-                + "The second argument could ne used to force NaN z.");
+                + "The second argument is a int value. \n Set 1 to replace all z values.\n"
+                + "Set 2 to replace all z values excepted the NaN values.\n"
+                + "Set 3 to replace only the NaN z values.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "addZ";
+        return "updateZ";
     }
 
     /**
-     * Add the z value
+     * Replace the z with same value.
+     * NaN values are also updated.
      *
      * @param geometry
      * @param z
      * @return
      */
-    public static Geometry addZ(Geometry geometry, double z) {
-        geometry.apply(new UpdateZCoordinateSequenceFilter(z, Double.NaN));
+    public static Geometry updateZ(Geometry geometry, double z) {
+        geometry.apply(new UpdateZCoordinateSequenceFilter(z, UpdateCondition.REPLACE_ALL));
         return geometry;
     }
 
@@ -59,10 +62,11 @@ public class ST_AddZ extends DeterministicScalarFunction {
      *
      * @param geometry
      * @param z
+     * @param updateCondition set if the NaN value must be updated or not
      * @return
      */
-    public static Geometry updateZ(Geometry geometry, double z, double zNaN) {
-        geometry.apply(new UpdateZCoordinateSequenceFilter(z, zNaN));
+    public static Geometry updateZ(Geometry geometry, double z, int updateCondition) {
+        geometry.apply(new UpdateZCoordinateSequenceFilter(z, updateCondition));
         return geometry;
     }
 
@@ -109,5 +113,5 @@ public class ST_AddZ extends DeterministicScalarFunction {
                 done = true;
             }
         }
-    }
+    }   
 }

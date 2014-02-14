@@ -2552,13 +2552,13 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_AddZ1() throws Exception {
+    public void test_ST_UpdateZ1() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom POINT);"
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('POINT (190 300)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_AddZ(the_geom, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ(the_geom, 10) FROM input_table;");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT (190 300 10)")));
         rs.close();
@@ -2567,13 +2567,13 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_AddZ2() throws Exception {
+    public void test_ST_UpdateZ2() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom MULTIPOINT);"
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11 2))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_AddZ(the_geom, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ(the_geom, 10) FROM input_table;");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 10), (10 11 10))")));
         rs.close();
@@ -2582,13 +2582,13 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_AddZ3() throws Exception {
+    public void test_ST_UpdateZ3() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom MULTIPOINT);"
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11 2))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_AddZ(the_geom, 10, -10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ(the_geom, 10, -10) FROM input_table;");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 -10), (10 11 10))")));
         rs.close();
@@ -2597,13 +2597,13 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_AddZ4() throws Exception {
+    public void test_ST_UpdateZ4() throws Exception {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom MULTIPOINT);"
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_AddZ(the_geom, 10, -10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ(the_geom, 10, -10) FROM input_table;");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 -10), (10 11 -10))")));
         rs.close();
