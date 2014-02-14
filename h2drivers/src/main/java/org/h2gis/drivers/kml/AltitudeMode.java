@@ -89,7 +89,6 @@ public final class AltitudeMode {
                 return;
             case GX_RELATIVETOSEAFLOOR:
                 sb.append("<kml:altitudeMode>").append("relativeToSeaFloor").append("</kml:altitudeMode>");
-                return;
             default:
         }
     }
