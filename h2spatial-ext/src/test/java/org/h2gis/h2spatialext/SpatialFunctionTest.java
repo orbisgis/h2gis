@@ -40,6 +40,7 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.h2gis.h2spatialext.function.spatial.properties.ST_CoordDim;
+import org.h2gis.h2spatialext.function.spatial.simplify.ST_PrecisionReducer;
 
 import static org.junit.Assert.*;
 
@@ -2659,7 +2660,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_AddZ3() throws Exception {
         Statement st = connection.createStatement();
@@ -2674,7 +2675,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_MultiplyZ1() throws Exception {
         Statement st = connection.createStatement();
@@ -2689,8 +2690,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
-    
+
     @Test
     public void test_ST_MultiplyZ2() throws Exception {
         Statement st = connection.createStatement();
@@ -2705,7 +2705,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_MultiplyZ3() throws Exception {
         Statement st = connection.createStatement();
@@ -2716,6 +2716,51 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ(the_geom, 0.1) FROM input_table;");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 1), (10 11 0.5))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_PrecisionReducer1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTIPOINT( (190 300 100), (10 11 50))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer(the_geom, 0.1) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 100), (10 11 50))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_PrecisionReducer2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTIPOINT( (190.005 300 100), (10.534 11 50))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer(the_geom, 1) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 100), (10.5 11 50))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_PrecisionReducer3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTIPOINT( (190.005 300 100), (10.534 11 50))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer(the_geom, 4) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190.005 300 100), (10.534 11 50))")));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
