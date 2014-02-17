@@ -20,11 +20,12 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
+import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * This function replace the z component of (each vertex of) the
- * geometric parameter to the corresponding value given by a field.
+ * This function replace the z component of (each vertex of) the geometric
+ * parameter to the corresponding value given by a field.
  *
  * @author Erwan Bocher
  */
@@ -45,44 +46,50 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
     }
 
     /**
-     * Replace the z with same value.
-     * NaN values are also updated.
+     * Replace the z with same value. NaN values are also updated.
      *
      * @param geometry
      * @param z
      * @return
      */
-    public static Geometry updateZ(Geometry geometry, double z) {
-        geometry.apply(new UpdateZCoordinateSequenceFilter(z, UpdateCondition.REPLACE_ALL));
-        return geometry;
+    public static Geometry updateZ(Geometry geometry, double z) throws SQLException {
+        return updateZ(geometry, z, 1);
     }
 
     /**
-     * Add the z value. NaN z can be replaced with a new z value
+     * Replace the z value depending on the condition.
      *
      * @param geometry
      * @param z
      * @param updateCondition set if the NaN value must be updated or not
      * @return
      */
-    public static Geometry updateZ(Geometry geometry, double z, int updateCondition) {
-        geometry.apply(new UpdateZCoordinateSequenceFilter(z, updateCondition));
-        return geometry;
+    public static Geometry updateZ(Geometry geometry, double z, int updateCondition) throws SQLException {
+        if (updateCondition == 1 || updateCondition == 2 || updateCondition == 3) {
+            geometry.apply(new UpdateZCoordinateSequenceFilter(z, updateCondition));
+            return geometry;
+        } else {
+            throw new SQLException("Available values are 1, 2 or 3.\n"
+                    + "Please read the description of the function to use it.");
+        }
     }
 
     /**
-     * Replaces the z value to each vertex of the Geometry. A second z value could
-     * be used to force NaN z with a new value.
+     * Replaces the z value to each vertex of the Geometry. 
+     * If the condition is equal to 1, replace all z. 
+     * If the consition is equal to 2 replace only not NaN z. 
+     * If the condition is equal to 3 replace only NaN z.
+     *
      */
     public static class UpdateZCoordinateSequenceFilter implements CoordinateSequenceFilter {
 
         private boolean done = false;
         private final double z;
-        private final double zNaN;
+        private final int condition;
 
-        public UpdateZCoordinateSequenceFilter(double z, double zNaN) {
+        public UpdateZCoordinateSequenceFilter(double z, int condition) {
             this.z = z;
-            this.zNaN = zNaN;
+            this.condition = condition;
         }
 
         @Override
@@ -97,21 +104,28 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
 
         @Override
         public void filter(CoordinateSequence seq, int i) {
-            Coordinate coord = seq.getCoordinate(i);
-            double currentZ = coord.z;
-            if (!Double.isNaN(zNaN)) {
+            if (condition == 1) {
+                seq.setOrdinate(i, 2, z);
+            } else if (condition == 2) {
+                Coordinate coord = seq.getCoordinate(i);
+                double currentZ = coord.z;
+                if (!Double.isNaN(currentZ)) {
+                    seq.setOrdinate(i, 2, z);
+                }
+            } else if (condition == 3) {
+                Coordinate coord = seq.getCoordinate(i);
+                double currentZ = coord.z;
                 if (Double.isNaN(currentZ)) {
-                    seq.setOrdinate(i, 2, zNaN);
+                    seq.setOrdinate(i, 2, z);
                 } else {
                     seq.setOrdinate(i, 2, z);
                 }
             } else {
-                seq.setOrdinate(i, 2, z);
-
+                done = true;
             }
             if (i == seq.size()) {
                 done = true;
             }
         }
-    }   
+    }
 }

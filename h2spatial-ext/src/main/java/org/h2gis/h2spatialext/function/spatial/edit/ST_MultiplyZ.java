@@ -22,49 +22,45 @@ import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 
 /**
- * This function add a z value to the z component of (each vertex of) the
- * geometric parameter to the corresponding value given by a field.
  *
- * @author Erwan Bocher
+ * @author ebocher
  */
-public class ST_AddZ extends DeterministicScalarFunction {
-
-    public ST_AddZ() {
-        addProperty(PROP_REMARKS, "This function do a sum with the z value of (each vertex of) the\n"
+public class ST_MultiplyZ extends DeterministicScalarFunction{
+     public ST_MultiplyZ() {
+        addProperty(PROP_REMARKS, "This function do a multiplication with the z value of (each vertex of) the\n"
                 + " geometric parameter to the corresponding value given by a field.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "addZ";
+        return "multiplyZ";
     }
 
     /**
-     * Add a z with to the existing value (do the sum). NaN values are not
-     * updated.
+     * Multiply the z values of the geometry by another double value.
+     * NaN values are not updated.
      *
      * @param geometry
      * @param z
      * @return
      */
-    public static Geometry addZ(Geometry geometry, double z) throws SQLException {
-        geometry.apply(new AddZCoordinateSequenceFilter(z));
+    public static Geometry multiplyZ(Geometry geometry, double z) throws SQLException {
+        geometry.apply(new MultiplyZCoordinateSequenceFilter(z));
         return geometry;
     }
 
     /**
-     * Add a z value to each vertex of the Geometry.
+     * Multiply the z value of each vertex of the Geometry by a double value.
      *
      */
-    public static class AddZCoordinateSequenceFilter implements CoordinateSequenceFilter {
+    public static class MultiplyZCoordinateSequenceFilter implements CoordinateSequenceFilter {
 
         private boolean done = false;
         private final double z;
 
-        public AddZCoordinateSequenceFilter(double z) {
+        public MultiplyZCoordinateSequenceFilter(double z) {
             this.z = z;
         }
 
@@ -83,7 +79,7 @@ public class ST_AddZ extends DeterministicScalarFunction {
             Coordinate coord = seq.getCoordinate(i);
             double currentZ = coord.z;
             if (!Double.isNaN(currentZ)) {
-                seq.setOrdinate(i, 2, currentZ + z);
+                seq.setOrdinate(i, 2, currentZ * z);
             }
             if (i == seq.size()) {
                 done = true;

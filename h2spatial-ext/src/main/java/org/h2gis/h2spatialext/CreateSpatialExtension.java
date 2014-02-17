@@ -63,9 +63,11 @@ import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MinimumRectangle;
 import org.h2gis.h2spatialext.function.spatial.create.ST_OctogonalEnvelope;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_AddPoint;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_AddZ;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_UpdateZ;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Densify;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Interpolate3DLine;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_MultiplyZ;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_RemoveHoles;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_RemovePoint;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse;
@@ -152,7 +154,9 @@ public class CreateSpatialExtension {
                 new ST_Simplify(),
                 new ST_SimplifyPreserveTopology(),
                 new ST_Translate(),
-                new ST_UpdateZ()};
+                new ST_UpdateZ(),
+                new ST_AddZ(),
+                new ST_MultiplyZ()};
     }
 
     /**
