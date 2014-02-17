@@ -21,7 +21,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly: info_at_ orbisgis.org
  */
-package org.h2gis.h2spatialext.function.spatial.clean;
+package org.h2gis.h2spatialext.function.spatial.edit;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateArrays;
