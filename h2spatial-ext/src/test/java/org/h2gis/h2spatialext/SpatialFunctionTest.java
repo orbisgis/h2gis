@@ -41,6 +41,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.h2gis.h2spatialext.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatialext.function.spatial.simplify.ST_PrecisionReducer;
+import org.h2gis.h2spatialext.function.spatial.simplify.ST_SimplifyPreserveTopology;
 
 import static org.junit.Assert.*;
 
@@ -2761,6 +2762,96 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer(the_geom, 4) FROM input_table;");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190.005 300 100), (10.534 11 50))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Simplify1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11 50))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Simplify(the_geom, 4) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300), (10 11 50))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Simplify2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Simplify(the_geom, 40) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (250 250, 280 290, 300 230, 470 360, 604 286)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Simplify3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((250 250, 248 240, 250 180, 290 150, 332 165, 350 190, 330 200, 340 220, 360 260, 360 300, 330 310, 319 310, 300 310, 280 280, 256 284, 250 250))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Simplify(the_geom, 40) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((250 250, 360 300, 332 165, 250 180, 250 250))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_SimplifyPreserveTopology1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11 50))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology(the_geom, 4) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300), (10 11 50))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_SimplifyPreserveTopology2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology(the_geom, 40) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (250 250, 280 290, 300 230, 470 360, 604 286)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_SimplifyPreserveTopology3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((250 250, 248 240, 250 180, 290 150, 332 165, 350 190, 330 200, 340 220, 360 260, 360 300, 330 310, 319 310, 300 310, 280 280, 256 284, 250 250))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology(the_geom, 40) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((250 250, 360 300, 332 165, 250 180, 250 250))")));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
