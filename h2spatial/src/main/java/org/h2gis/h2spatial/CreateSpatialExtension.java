@@ -24,7 +24,7 @@
  */
 package org.h2gis.h2spatial;
 
-import org.h2.api.AggregateAlias;
+import org.h2.api.Aggregate;
 import org.h2gis.h2spatial.internal.function.HexToVarBinary;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsWKT;
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_SetSRID;
@@ -298,7 +298,7 @@ public class CreateSpatialExtension {
                 ps.setString(1, functionRemarks);
                 ps.execute();
             }
-        } else if(function instanceof AggregateAlias) {
+        } else if(function instanceof Aggregate) {
                 st.execute("CREATE AGGREGATE IF NOT EXISTS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "\"");
         } else {
                 throw new SQLException("Unsupported function "+functionClass);

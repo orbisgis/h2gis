@@ -28,12 +28,11 @@ package org.h2gis.h2spatial.internal.function.spatial.aggregate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.h2.api.AggregateTypeFunction;
+import org.h2.api.Aggregate;
 import org.h2.value.Value;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -41,7 +40,7 @@ import java.util.List;
  * Construct an array of Geometry.
  * @author Nicolas Fortin
  */
-public class ST_Accum extends AbstractFunction implements AggregateTypeFunction {
+public class ST_Accum extends AbstractFunction implements Aggregate {
     private List<Geometry> toUnite = new LinkedList<Geometry>();
 
     public ST_Accum() {
