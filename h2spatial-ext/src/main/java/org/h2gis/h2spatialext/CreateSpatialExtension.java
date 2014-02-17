@@ -74,6 +74,7 @@ import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse3DLine;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Snap;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Split;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_ZUpdateExtremities;
 import org.h2gis.h2spatialext.function.spatial.simplify.ST_PrecisionReducer;
 import org.h2gis.h2spatialext.function.spatial.simplify.ST_Simplify;
 import org.h2gis.h2spatialext.function.spatial.simplify.ST_SimplifyPreserveTopology;
@@ -156,7 +157,8 @@ public class CreateSpatialExtension {
                 new ST_Translate(),
                 new ST_UpdateZ(),
                 new ST_AddZ(),
-                new ST_MultiplyZ()};
+                new ST_MultiplyZ(),
+                new ST_ZUpdateExtremities()};
     }
 
     /**

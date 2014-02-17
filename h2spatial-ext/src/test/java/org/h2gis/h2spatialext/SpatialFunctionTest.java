@@ -2811,7 +2811,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_SimplifyPreserveTopology1() throws Exception {
         Statement st = connection.createStatement();
@@ -2855,5 +2855,52 @@ public class SpatialFunctionTest {
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
+    }
+
+    @Test
+    public void test_ST_ZUpdateExtremities1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (250 250, 280 290)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities(the_geom, 40, 10) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (250 250 40, 280 290 10)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_ZUpdateExtremities2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(0 0, 5 0 , 10 0)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities(the_geom, 0, 10) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_ZUpdateExtremities3() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = null;
+        try {
+            rs = st.executeQuery("SELECT ST_ZUpdateExtremities('POINT (190 300 10)'::GEOMETRY, 10, 9999);");
+            rs.next();
+        } catch (SQLException ex) {
+            assertTrue(true);
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            st.close();
+        }
     }
 }
