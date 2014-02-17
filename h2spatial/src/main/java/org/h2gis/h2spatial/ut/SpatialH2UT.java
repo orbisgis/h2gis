@@ -43,7 +43,7 @@ import java.util.Properties;
  */
 public class SpatialH2UT {
 
-    private static final String H2_PARAMETERS = ";LOCK_MODE=0;LOG=0"; //;DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
+    private static final String H2_PARAMETERS = ";LOCK_MODE=0;LOG=0;DB_CLOSE_DELAY=5"; //;DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
     //private static final String H2_PARAMETERS = ";DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
     private SpatialH2UT() {
         // utility

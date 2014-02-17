@@ -28,19 +28,18 @@ package org.h2gis.h2spatialext.function.spatial.properties;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.h2.api.AggregateTypeFunction;
+import org.h2.api.Aggregate;
 import org.h2.value.Value;
 import org.h2gis.h2spatialapi.AbstractFunction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Types;
 
 /**
  * ST_Extent returns an {@link com.vividsolutions.jts.geom.Envelope} that cover all aggregated geometries.
  * @author Nicolas Fortin
  */
-public class ST_Extent extends AbstractFunction implements AggregateTypeFunction {
+public class ST_Extent extends AbstractFunction implements Aggregate {
     private Envelope aggregatedEnvelope;
 
     public ST_Extent() {
