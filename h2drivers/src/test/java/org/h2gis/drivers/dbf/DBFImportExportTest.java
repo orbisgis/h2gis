@@ -50,7 +50,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class DBFImportExportTest {
     private static Connection connection;
-    private static final String DB_NAME = "SHPImportTest";
+    private static final String DB_NAME = "DBFImportExportTest";
 
     @BeforeClass
     public static void tearUp() throws Exception {

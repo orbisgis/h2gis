@@ -201,6 +201,7 @@ public class SHPEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('" + dst + "', 'SHPTABLE');");
+        st.execute("SHUTDOWN");
         // Close database
         connection.close();
         try {

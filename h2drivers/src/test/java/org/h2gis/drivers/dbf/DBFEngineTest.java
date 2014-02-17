@@ -47,7 +47,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class  DBFEngineTest {
     private static Connection connection;
-    private static final String DB_NAME = "SHPTest";
+    private static final String DB_NAME = "DBFEngineTest";
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -166,6 +166,7 @@ public class  DBFEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE('" + dstDbf + "', 'DBFTABLE');");
+        st.execute("SHUTDOWN");
         // Close database
         connection.close();
         try {
