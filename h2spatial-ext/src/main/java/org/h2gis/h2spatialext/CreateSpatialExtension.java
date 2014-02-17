@@ -68,16 +68,18 @@ import org.h2gis.h2spatialext.function.spatial.edit.ST_UpdateZ;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Densify;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Interpolate3DLine;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_MultiplyZ;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_Normalize;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_RemoveHoles;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_RemovePoint;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse3DLine;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_Snap;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_Split;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_Snap;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_Split;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_ZUpdateExtremities;
-import org.h2gis.h2spatialext.function.spatial.simplify.ST_PrecisionReducer;
-import org.h2gis.h2spatialext.function.spatial.simplify.ST_Simplify;
-import org.h2gis.h2spatialext.function.spatial.simplify.ST_SimplifyPreserveTopology;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_Polygonize;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_PrecisionReducer;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_Simplify;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_SimplifyPreserveTopology;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
@@ -158,7 +160,9 @@ public class CreateSpatialExtension {
                 new ST_UpdateZ(),
                 new ST_AddZ(),
                 new ST_MultiplyZ(),
-                new ST_ZUpdateExtremities()};
+                new ST_ZUpdateExtremities(),
+                new ST_Normalize(),
+                new ST_Polygonize()};
     }
 
     /**

@@ -21,7 +21,7 @@
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly: info_at_ orbisgis.org
  */
-package org.h2gis.h2spatialext.function.spatial.edit;
+package org.h2gis.h2spatialext.function.spatial.processing;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -43,6 +43,7 @@ import java.util.List;
 import org.h2gis.drivers.utility.CoordinatesUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiSegments;
+import org.h2gis.h2spatialext.function.spatial.edit.EditUtilities;
 
 /**
  * This function split a line by a line a line by a point a polygon by a line

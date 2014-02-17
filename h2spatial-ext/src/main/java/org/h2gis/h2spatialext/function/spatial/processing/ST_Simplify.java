@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.h2spatialext.function.spatial.simplify;
+package org.h2gis.h2spatialext.function.spatial.processing;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;

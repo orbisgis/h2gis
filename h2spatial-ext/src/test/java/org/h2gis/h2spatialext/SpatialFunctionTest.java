@@ -40,8 +40,8 @@ import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.h2gis.h2spatialext.function.spatial.properties.ST_CoordDim;
-import org.h2gis.h2spatialext.function.spatial.simplify.ST_PrecisionReducer;
-import org.h2gis.h2spatialext.function.spatial.simplify.ST_SimplifyPreserveTopology;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_PrecisionReducer;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_SimplifyPreserveTopology;
 
 import static org.junit.Assert.*;
 
@@ -2886,7 +2886,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_ZUpdateExtremities3() throws SQLException {
         Statement st = connection.createStatement();
@@ -2902,5 +2902,83 @@ public class SpatialFunctionTest {
             }
             st.close();
         }
+    }
+
+    @Test
+    public void test_ST_Normalize1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(0 0, 5 0 , 10 0)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities(the_geom, 0, 10) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Normalize2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((170 180, 310 180, 308 190, 310 206, 340 320, 135 333, 140 260, 170 180))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Normalize(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((135 333, 340 320, 310 206, 308 190, 310 180, 170 180, 140 260, 135 333))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Polygonize1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTILINESTRING ((130 190, 80 370, 290 380), \n"
+                + "  (290 380, 270 270, 130 190))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Polygonize(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON ( ((130 190, 80 370, 290 380, 270 270, 130 190)))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Polygonize2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTILINESTRING ((50 240, 62 250, 199 425, 250 240), \n"
+                + "  (50 340, 170 250, 300 370))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Polygonize(the_geom) FROM input_table;");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Polygonize3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('MULTILINESTRING ((50 240, 62 250, 199 425, 250 240), \n"
+                + "  (50 340, 170 250, 300 370))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Polygonize(st_union(the_geom)) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON( ((231.5744116672191 306.8379184620484, 170 250, 101.95319531953196 301.03510351035106, 199 425, 231.5744116672191 306.8379184620484)))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
     }
 }

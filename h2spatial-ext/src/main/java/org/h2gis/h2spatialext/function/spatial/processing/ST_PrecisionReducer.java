@@ -22,37 +22,54 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.h2spatialext.function.spatial.simplify;
+package org.h2gis.h2spatialext.function.spatial.processing;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
+import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.precision.GeometryPrecisionReducer;
+import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  *
  * @author Erwan Bocher
  */
-public class ST_SimplifyPreserveTopology extends DeterministicScalarFunction {
+public class ST_PrecisionReducer extends DeterministicScalarFunction {
 
-    public ST_SimplifyPreserveTopology() {
-        addProperty(PROP_REMARKS, "Simplifies a geometry and ensures that the result is a valid geometry.");
+    public ST_PrecisionReducer() {
+        addProperty(PROP_REMARKS, "Reduce the geometry precision. Decimal_Place is the number of decimals to keep.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "simplyPreserve";
+        return "precisionReducer";
     }
 
     /**
-     * Simplifies a geometry and ensures that the result is a valid geometry
-     * having the same dimension and number of components as the input, and with
-     * the components having the same topological relationship.
+     * Reduce the geometry precision. Decimal_Place is the number of decimals to
+     * keep.
      *
      * @param geometry
-     * @param distance
+     * @param nbDec
      * @return
+     * @throws SQLException
      */
-    public static Geometry simplyPreserve(Geometry geometry, double distance) {
-        return TopologyPreservingSimplifier.simplify(geometry, distance);
+    public static Geometry precisionReducer(Geometry geometry, int nbDec) throws SQLException {
+        if (nbDec < 0) {
+            throw new SQLException("Decimal_places has to be >= 0.");
+        }
+        PrecisionModel pm = new PrecisionModel(scaleFactorForDecimalPlaces(nbDec));
+        GeometryPrecisionReducer geometryPrecisionReducer = new GeometryPrecisionReducer(pm);
+        return geometryPrecisionReducer.reduce(geometry);
+    }
+
+    /**
+     * Computes the scale factor for a given number of decimal places.
+     *
+     * @param decimalPlaces
+     * @return the scale factor
+     */
+    public static double scaleFactorForDecimalPlaces(int decimalPlaces) {
+        return Math.pow(10.0, decimalPlaces);
     }
 }
