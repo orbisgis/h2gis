@@ -17,7 +17,6 @@
 package org.h2gis.drivers.kml;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.util.HashMap;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
@@ -49,9 +48,10 @@ public class KMLHandler extends DefaultHandler {
     private String COORDINATES = "coordinates";
     private boolean kmlSucess = true;
     private StringBuilder sqlStatement;
+    private int schemaCounter = 0;
     //Store the preparedStatement corresponding to the schema
-    private HashMap<String, PreparedStatement> psts = new HashMap<String, PreparedStatement>();
     private String currentSchemaName;
+    private HashMap<String, String> kmlFields;
 
     public KMLHandler(Connection connection, String tableReference) {
         this.connection = connection;
@@ -66,14 +66,13 @@ public class KMLHandler extends DefaultHandler {
         } else if (name.equalsIgnoreCase(FOLDER)) {
             System.out.println("Folder " + FOLDER);
         } else if (name.equalsIgnoreCase(SCHEMA)) {
+            schemaCounter++;
             currentSchemaName = attributes.getValue("name");
             System.out.println("Schema name " + currentSchemaName);
             String schemaId = attributes.getValue("id");
             System.out.println("Schema id " + schemaId);
-            sqlStatement = new StringBuilder();
         } else if (name.equalsIgnoreCase(SIMPLEFIELD)) {
-            System.out.println("Name " + attributes.getValue(NAME));
-            System.out.println("Type " + attributes.getValue(TYPE));
+            kmlFields.put(attributes.getValue(NAME), attributes.getValue(TYPE));
         } else if (name.equalsIgnoreCase(PLACEMARK)) {
             System.out.println("PLACEMARK " + attributes.getValue(COORDINATES));
         } else if (name.equalsIgnoreCase(SCHEMADATA)) {
@@ -88,6 +87,11 @@ public class KMLHandler extends DefaultHandler {
         if (name.equalsIgnoreCase(PLACEMARK)) {
             System.out.println("Placemark");
         } else if (name.equalsIgnoreCase(SCHEMA)) {
+            if (schemaCounter > 1) {
+                throw new SAXException("Only support one schema");
+            } else {
+                kmlFields = new HashMap<Integer, String>();
+            }
             System.out.println("End " + SCHEMA);
         }
     }
