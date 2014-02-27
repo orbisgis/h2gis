@@ -27,14 +27,15 @@ Additional spatial SQL functions that are not in [Simple Features for SQL](http:
 Ex: `ST_Extent`, `ST_Explode`
 
 #### H2Drivers
-H2Drivers add H2 read/write support for file formats such as .shp, .dbf and .mif
+H2Drivers add H2 read/write support for file formats such as .shp, .dbf, .geojson, .gpx
 
 This package include 2 implementation of TableEngine that allow you to immediatly 'link' a table with a shape file.
 
 It include also file copy functions:
 * SHPREAD( ) and SHPWRITE( ) to read and write Esri shape files.
 * DBFREAD( ) and DBFWRITE( ) to read and write DBase III files.
-
+* GeoJsonRead() and GeoJsonWrite() to read and write GeoJSON files.
+* GPXRead() to read GPX files.
 ### Usage
 
 For now, H2GIS requires Java 6. Run `maven clean install -P standalone` in the H2GIS's root directory.
