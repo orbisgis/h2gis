@@ -39,8 +39,8 @@ public class GeometryTypeNameFromConstraint extends DeterministicScalarFunction 
      * @param constraint Constraint on geometry type
      * @return Geometry type
      */
-    public static String getGeometryTypeNameFromConstraint(String constraint) {
-        int geometryTypeCode = GeometryTypeFromConstraint.geometryTypeFromConstraint(constraint);
+    public static String getGeometryTypeNameFromConstraint(String constraint, int numericPrecision) {
+        int geometryTypeCode = GeometryTypeFromConstraint.geometryTypeFromConstraint(constraint, numericPrecision);
         return TYPE_MAP.get(geometryTypeCode);
     }
 }
