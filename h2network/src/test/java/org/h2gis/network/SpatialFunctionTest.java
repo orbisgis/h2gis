@@ -28,6 +28,7 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.network.graph_creator.ST_Graph;
+import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,6 +53,7 @@ public class SpatialFunctionTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, true);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
     }
 
     @AfterClass
@@ -680,5 +682,21 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE test");
         st.execute("DROP TABLE test_nodes");
         st.execute("DROP TABLE test_edges");
+    }
+
+    @Test
+    public void test_ST_ShortestPathLength() throws Exception {
+        Statement st = connection.createStatement();
+
+        // Prepare the input table.
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+                "INSERT INTO test VALUES "
+                + "('LINESTRING (0 0, 1 2)', 'road1'),"
+                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2'),"
+                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3'),"
+                + "('LINESTRING (4 3, 5 2)', 'road4'),");
+        st.executeQuery("SELECT ST_Graph('test', 'road')");
+        ResultSet rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('test_edges', 1, 2)");
+        assertTrue(rs.next());
     }
 }

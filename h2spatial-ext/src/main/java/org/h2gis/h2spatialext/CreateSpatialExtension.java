@@ -55,6 +55,7 @@ import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.network.graph_creator.ST_Graph;
+import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -112,11 +113,12 @@ public class CreateSpatialExtension {
                 new ST_TriangleAspect(),
                 new ST_TriangleSlope(),
                 new ST_TriangleDirection(),
-                // h2network functions
-                new ST_Graph(),
                 new ST_AsGeoJSON(),
                 new GeoJsonRead(),
-                new GeoJsonWrite()};
+                new GeoJsonWrite(),
+                // h2network functions
+                new ST_Graph(),
+                new ST_ShortestPathLength()};
     }
 
     /**
