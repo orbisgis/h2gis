@@ -25,12 +25,13 @@
 
 package org.h2gis.network.graph_creator;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.javanetworkanalyzer.alg.Dijkstra;
+import org.javanetworkanalyzer.data.VWCent;
+import org.javanetworkanalyzer.model.DirectedWeightedPseudoG;
+import org.javanetworkanalyzer.model.Edge;
 
 import java.sql.*;
 
@@ -41,12 +42,20 @@ import java.sql.*;
  */
 public class ST_ShortestPathLength extends AbstractFunction implements ScalarFunction {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ST_ShortestPathLength.class);
-    private static final GeometryFactory GF = new GeometryFactory();
+//    private static final Logger LOGGER = LoggerFactory.getLogger(ST_ShortestPathLength.class);
+//    private static final GeometryFactory GF = new GeometryFactory();
     private static Connection connection;
     private static int startNodeIndex = -1;
     private static int endNodeIndex = -1;
     private static int edgeIDIndex = -1;
+    private static int weightColumnIndex = -1;
+
+    private static String inputTable;
+    private static String weightColumn;
+
+    public static final int SOURCE_INDEX = 1;
+    public static final int DESTINATION_INDEX = 2;
+    public static final int DISTANCE_INDEX = 3;
 
     public ST_ShortestPathLength() {
         addProperty(PROP_REMARKS, "ST_ShortestPathLength ");
@@ -66,17 +75,37 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
      * @throws SQLException
      */
     public static ResultSet getShortestPathLength(Connection connection, String inputTable,
+                                                  String weightColumn,
                                                 int source, int destination) throws SQLException {
-        initIndices(connection, inputTable);
+        ST_ShortestPathLength.connection = connection;
+        ST_ShortestPathLength.inputTable = inputTable;
+        ST_ShortestPathLength.weightColumn = weightColumn;
+
+        initIndices();
+
         SimpleResultSet output = new SimpleResultSet();
         output.addColumn("SOURCE", Types.INTEGER, 10, 0);
         output.addColumn("DESTINATION", Types.INTEGER, 10, 0);
         output.addColumn("DISTANCE", Types.DOUBLE, 10, 0);
-        output.addRow(source, destination, -1.0);
+
+        DirectedWeightedPseudoG<VWCent, Edge> graph =
+                new DirectedWeightedPseudoG<VWCent, Edge>(VWCent.class, Edge.class);
+        final ResultSet edges = connection.createStatement().executeQuery("SELECT * FROM " + inputTable);
+        while (edges.next()) {
+            final Edge edge = graph.addEdge(edges.getInt(startNodeIndex),
+                    edges.getInt(endNodeIndex),
+                    edges.getInt(edgeIDIndex));
+            edge.setWeight(edges.getDouble(weightColumnIndex));
+        }
+
+        Dijkstra<VWCent, Edge> dijkstra = new Dijkstra<VWCent, Edge>(graph);
+        final double distance = dijkstra.oneToOne(graph.getVertex(source), graph.getVertex(destination));
+
+        output.addRow(source, destination, distance);
         return output;
     }
 
-    private static void initIndices(Connection connection, String inputTable) throws SQLException {
+    private static void initIndices() throws SQLException {
         final Statement st= connection.createStatement();
         final ResultSet edgesTable = st.executeQuery("SELECT * FROM " + inputTable);
         try {
@@ -86,6 +115,7 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                 if (columnName.equalsIgnoreCase(ST_Graph.START_NODE)) startNodeIndex = i;
                 if (columnName.equalsIgnoreCase(ST_Graph.END_NODE)) endNodeIndex = i;
                 if (columnName.equalsIgnoreCase(ST_Graph.EDGE_ID)) edgeIDIndex = i;
+                if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
             }
             verifyIndex(startNodeIndex, ST_Graph.START_NODE);
             verifyIndex(endNodeIndex, ST_Graph.START_NODE);

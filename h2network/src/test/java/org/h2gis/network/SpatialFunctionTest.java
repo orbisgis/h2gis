@@ -35,6 +35,7 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
@@ -47,6 +48,7 @@ public class SpatialFunctionTest {
 
     private static Connection connection;
     private static final String DB_NAME = "SpatialFunctionTest";
+    private static final double TOLERANCE = 0.0;
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -54,6 +56,57 @@ public class SpatialFunctionTest {
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, true);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
+        registerCormenGraph();
+    }
+
+    private static void registerCormenGraph() throws SQLException {
+        final Statement st = connection.createStatement();
+//                   1
+//           >2 ------------>3
+//          / |^           ->|^
+//       10/ / |      9   / / |
+//        / 2| |3    -----  | |
+//       /   | |    /      4| |6
+//      1<---------------   | |
+//       \   | |  /     7\  | |
+//       5\  | / /        \ | /
+//         \ v| /    2     \v|
+//          > 4 -----------> 5
+//               CORMEN
+        st.execute("CREATE TABLE cormen(road LINESTRING, weight DOUBLE);" +
+                "INSERT INTO cormen VALUES "
+                + "('LINESTRING (0 1, 1 2)', 10.0),"
+                + "('LINESTRING (1 2, 2 2)', 1.0),"
+                + "('LINESTRING (1 2, 1 0)', 2.0),"
+                + "('LINESTRING (1 0, 1 2)', 3.0),"
+                + "('LINESTRING (0 1, 1 0)', 5.0),"
+                + "('LINESTRING (1 0, 2 2)', 9.0),"
+                + "('LINESTRING (1 0, 2 0)', 2.0),"
+                + "('LINESTRING (2 2, 2 0)', 4.0),"
+                + "('LINESTRING (2 0, 2 2)', 6.0),"
+                + "('LINESTRING (2 0, 0 1)', 7.0);");
+//        input_nodes
+//        NODE_ID  THE_GEOM
+//        1        POINT (0 1)
+//        2        POINT (1 2)
+//        3        POINT (2 2)
+//        4        POINT (1 0)
+//        5        POINT (2 0)
+//
+//        input_edges:
+//        ROAD                   WEIGHT  EDGE_ID   START_NODE   END_NODE
+//        LINESTRING (0 1, 1 2)  10.0    1         1            2
+//        LINESTRING (1 2, 2 2)  1.0     2         2            3
+//        LINESTRING (1 2, 1 0)  2.0     3         2            4
+//        LINESTRING (1 0, 1 2)  3.0     4         4            2
+//        LINESTRING (0 1, 1 0)  5.0     5         1            4
+//        LINESTRING (1 0, 2 2)  9.0     6         4            3
+//        LINESTRING (1 0, 2 0)  2.0     7         4            5
+//        LINESTRING (2 2, 2 0)  4.0     8         3            5
+//        LINESTRING (2 0, 2 2)  6.0     9         5            3
+//        LINESTRING (2 0, 0 1)  7.0     10        5            1
+
+        st.executeQuery("SELECT ST_Graph('cormen', 'road')");
     }
 
     @AfterClass
@@ -685,18 +738,65 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_ShortestPathLength() throws Exception {
+    public void test_ST_ShortestPathLength_WDOneToOne() throws Exception {
         Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 1, 1)");
+        checkValues(rs, 1, 1, 0.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 1, 2)");
+        checkValues(rs, 1, 2, 8.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 1, 3)");
+        checkValues(rs, 1, 3, 9.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 1, 4)");
+        checkValues(rs, 1, 4, 5.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 1, 5)");
+        checkValues(rs, 1, 5, 7.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 2, 1)");
+        checkValues(rs, 2, 1, 11.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 2, 2)");
+        checkValues(rs, 2, 2, 0.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 2, 3)");
+        checkValues(rs, 2, 3, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 2, 4)");
+        checkValues(rs, 2, 4, 2.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 2, 5)");
+        checkValues(rs, 2, 5, 4.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 3, 1)");
+        checkValues(rs, 3, 1, 11.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 3, 2)");
+        checkValues(rs, 3, 2, 19.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 3, 3)");
+        checkValues(rs, 3, 3, 0.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 3, 4)");
+        checkValues(rs, 3, 4, 16.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 3, 5)");
+        checkValues(rs, 3, 5, 4.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 4, 1)");
+        checkValues(rs, 4, 1, 9.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 4, 2)");
+        checkValues(rs, 4, 2, 3.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 4, 3)");
+        checkValues(rs, 4, 3, 4.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 4, 4)");
+        checkValues(rs, 4, 4, 0.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 4, 5)");
+        checkValues(rs, 4, 5, 2.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 5, 1)");
+        checkValues(rs, 5, 1, 7.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 5, 2)");
+        checkValues(rs, 5, 2, 15.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 5, 3)");
+        checkValues(rs, 5, 3, 6.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 5, 4)");
+        checkValues(rs, 5, 4, 12.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'weight', 5, 5)");
+        checkValues(rs, 5, 5, 0.0);
+    }
 
-        // Prepare the input table.
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
-                "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0, 1 2)', 'road1'),"
-                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2'),"
-                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3'),"
-                + "('LINESTRING (4 3, 5 2)', 'road4'),");
-        st.executeQuery("SELECT ST_Graph('test', 'road')");
-        ResultSet rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('test_edges', 1, 2)");
+    private void checkValues(ResultSet rs, int source, int destination, double distance) throws SQLException {
         assertTrue(rs.next());
+        assertEquals(source, rs.getInt(ST_ShortestPathLength.SOURCE_INDEX));
+        assertEquals(destination, rs.getInt(ST_ShortestPathLength.DESTINATION_INDEX));
+        assertEquals(distance, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
+        assertFalse(rs.next());
     }
 }
