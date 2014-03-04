@@ -26,6 +26,7 @@
 package org.h2gis.network.graph_creator;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.h2.tools.SimpleResultSet;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.slf4j.Logger;
@@ -60,19 +61,24 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
      * Get the SPL
      *
      * @param connection Connection
-     * @param tableName  Input table containing LINESTRINGs or MULTILINESTRINGs
+     * @param inputTable  Input table containing LINESTRINGs or MULTILINESTRINGs
      * @return true if both output tables were created
      * @throws SQLException
      */
-    public static ResultSet getShortestPathLength(Connection connection, String tableName,
+    public static ResultSet getShortestPathLength(Connection connection, String inputTable,
                                                 int source, int destination) throws SQLException {
-        initIndices(connection, tableName);
-        return null;
+        initIndices(connection, inputTable);
+        SimpleResultSet output = new SimpleResultSet();
+        output.addColumn("SOURCE", Types.INTEGER, 10, 0);
+        output.addColumn("DESTINATION", Types.INTEGER, 10, 0);
+        output.addColumn("DISTANCE", Types.DOUBLE, 10, 0);
+        output.addRow(source, destination, -1.0);
+        return output;
     }
 
-    private static void initIndices(Connection connection, String tableName) throws SQLException {
+    private static void initIndices(Connection connection, String inputTable) throws SQLException {
         final Statement st= connection.createStatement();
-        final ResultSet edgesTable = st.executeQuery("SELECT * FROM " + tableName);
+        final ResultSet edgesTable = st.executeQuery("SELECT * FROM " + inputTable);
         try {
             ResultSetMetaData metaData = edgesTable.getMetaData();
             for (int i = 1; i <= metaData.getColumnCount(); i++) {
