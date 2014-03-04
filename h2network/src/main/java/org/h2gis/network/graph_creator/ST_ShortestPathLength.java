@@ -30,12 +30,13 @@ import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
-import org.javanetworkanalyzer.model.DirectedPseudoG;
-import org.javanetworkanalyzer.model.DirectedWeightedPseudoG;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 
 /**
  * ST_ShortestPathLength
@@ -46,13 +47,12 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
 
     private Connection connection;
 
-    private int startNodeIndex = -1;
-    private int endNodeIndex = -1;
-    private int edgeIDIndex = -1;
-    private int weightColumnIndex = -1;
+    private GraphFunctionParser parser = new GraphFunctionParser();
 
     private String inputTable;
     private String weightColumn;
+    private String globalOrientation;
+    private String edgeOrientation;
 
     public static final int SOURCE_INDEX = 1;
     public static final int DESTINATION_INDEX = 2;
@@ -70,10 +70,10 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     /**
      * Unweighted Directed One-to-One
      *
-     * @param connection   Connection
-     * @param inputTable   Input table name
-     * @param source       Source vertex ID
-     * @param destination  Destination vertex ID
+     * @param connection  Connection
+     * @param inputTable  Input table name
+     * @param source      Source vertex ID
+     * @param destination Destination vertex ID
      * @return Source-Destination distance table
      * @throws SQLException
      */
@@ -81,7 +81,7 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String inputTable,
                                                   int source,
                                                   int destination) throws SQLException {
-        return getShortestPathLength(connection, inputTable, source, destination, null);
+        return getShortestPathLength(connection, inputTable, source, destination, null, null);
     }
 
     /**
@@ -99,67 +99,44 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String inputTable,
                                                   int source,
                                                   int destination,
-                                                  String weightColumn) throws SQLException {
+                                                  String weightColumn,
+                                                  String globalOrientationString) throws SQLException {
         ST_ShortestPathLength function = new ST_ShortestPathLength();
         function.connection = connection;
         function.inputTable = inputTable;
-        function.weightColumn = weightColumn;
-        function.initIndices();
+        function.weightColumn = function.parser.parseWeight(weightColumn);
+
+        function.parser.parseOrientation(globalOrientationString);
+        function.globalOrientation = function.parser.getGlobalOrientation();
+        function.edgeOrientation = function.parser.getEdgeOrientationColumnName();
 
         SimpleResultSet output = new SimpleResultSet();
         output.addColumn("SOURCE", Types.INTEGER, 10, 0);
         output.addColumn("DESTINATION", Types.INTEGER, 10, 0);
         output.addColumn("DISTANCE", Types.DOUBLE, 10, 0);
 
-        KeyedGraph<VDijkstra, Edge> graph = function.prepareGraph();
+
+        // Determine the graph type. We check for directed and reversed.
+        // Default case is undirected.
+        final GraphCreator.Orientation graphType = (function.globalOrientation != null) ?
+                function.globalOrientation.equalsIgnoreCase(GraphFunctionParser.DIRECTED) ?
+                        GraphCreator.Orientation.DIRECTED :
+                        function.globalOrientation.equalsIgnoreCase(GraphFunctionParser.REVERSED) ?
+                                GraphCreator.Orientation.REVERSED : GraphCreator.Orientation.UNDIRECTED : GraphCreator.Orientation.UNDIRECTED;
+
+        GraphCreator<VDijkstra, Edge> graphCreator =
+                new GraphCreator<VDijkstra, Edge>(connection,
+                        function.inputTable,
+                        graphType,
+                        function.edgeOrientation,
+                        VDijkstra.class,
+                        Edge.class);
+        KeyedGraph<VDijkstra, Edge> graph = graphCreator.prepareGraph();
 
         Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         final double distance = dijkstra.oneToOne(graph.getVertex(source), graph.getVertex(destination));
 
         output.addRow(source, destination, distance);
         return output;
-    }
-
-    private KeyedGraph<VDijkstra, Edge> prepareGraph() throws SQLException {
-        KeyedGraph<VDijkstra, Edge> graph =
-                (weightColumnIndex == -1)
-                        ? new DirectedPseudoG<VDijkstra, Edge>(VDijkstra.class, Edge.class)
-                        : new DirectedWeightedPseudoG<VDijkstra, Edge>(VDijkstra.class, Edge.class);
-        final ResultSet edges = connection.createStatement().executeQuery("SELECT * FROM " + inputTable);
-        while (edges.next()) {
-            final Edge edge = graph.addEdge(edges.getInt(startNodeIndex),
-                    edges.getInt(endNodeIndex),
-                    edges.getInt(edgeIDIndex));
-            if (weightColumnIndex != -1) {
-                edge.setWeight(edges.getDouble(weightColumnIndex));
-            }
-        }
-        return graph;
-    }
-
-    private void initIndices() throws SQLException {
-        final Statement st = connection.createStatement();
-        final ResultSet edgesTable = st.executeQuery("SELECT * FROM " + inputTable);
-        try {
-            ResultSetMetaData metaData = edgesTable.getMetaData();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                final String columnName = metaData.getColumnName(i);
-                if (columnName.equalsIgnoreCase(ST_Graph.START_NODE)) startNodeIndex = i;
-                if (columnName.equalsIgnoreCase(ST_Graph.END_NODE)) endNodeIndex = i;
-                if (columnName.equalsIgnoreCase(ST_Graph.EDGE_ID)) edgeIDIndex = i;
-                if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
-            }
-            verifyIndex(startNodeIndex, ST_Graph.START_NODE);
-            verifyIndex(endNodeIndex, ST_Graph.START_NODE);
-            verifyIndex(edgeIDIndex, ST_Graph.START_NODE);
-        } finally {
-            edgesTable.close();
-        }
-    }
-
-    private static void verifyIndex(int index, String missingField) {
-        if (index == -1) {
-            throw new IndexOutOfBoundsException("Column " + missingField + " not found.");
-        }
     }
 }
