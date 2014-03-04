@@ -36,14 +36,12 @@ import org.javanetworkanalyzer.model.Edge;
 import java.sql.*;
 
 /**
- * ST_ShortestPathLength 
+ * ST_ShortestPathLength
  *
  * @author Adam Gouge
  */
 public class ST_ShortestPathLength extends AbstractFunction implements ScalarFunction {
 
-//    private static final Logger LOGGER = LoggerFactory.getLogger(ST_ShortestPathLength.class);
-//    private static final GeometryFactory GF = new GeometryFactory();
     private static Connection connection;
     private static int startNodeIndex = -1;
     private static int endNodeIndex = -1;
@@ -70,13 +68,15 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
      * Get the SPL
      *
      * @param connection Connection
-     * @param inputTable  Input table containing LINESTRINGs or MULTILINESTRINGs
+     * @param inputTable Input table containing LINESTRINGs or MULTILINESTRINGs
      * @return true if both output tables were created
      * @throws SQLException
      */
-    public static ResultSet getShortestPathLength(Connection connection, String inputTable,
-                                                  String weightColumn,
-                                                int source, int destination) throws SQLException {
+    public static ResultSet getShortestPathLength(Connection connection,
+                                                  String inputTable,
+                                                  int source,
+                                                  int destination,
+                                                  String weightColumn) throws SQLException {
         ST_ShortestPathLength.connection = connection;
         ST_ShortestPathLength.inputTable = inputTable;
         ST_ShortestPathLength.weightColumn = weightColumn;
@@ -95,7 +95,9 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
             final Edge edge = graph.addEdge(edges.getInt(startNodeIndex),
                     edges.getInt(endNodeIndex),
                     edges.getInt(edgeIDIndex));
-            edge.setWeight(edges.getDouble(weightColumnIndex));
+            if (weightColumnIndex != -1) {
+                edge.setWeight(edges.getDouble(weightColumnIndex));
+            }
         }
 
         Dijkstra<VWCent, Edge> dijkstra = new Dijkstra<VWCent, Edge>(graph);
@@ -106,7 +108,7 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     }
 
     private static void initIndices() throws SQLException {
-        final Statement st= connection.createStatement();
+        final Statement st = connection.createStatement();
         final ResultSet edgesTable = st.executeQuery("SELECT * FROM " + inputTable);
         try {
             ResultSetMetaData metaData = edgesTable.getMetaData();
