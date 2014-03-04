@@ -29,9 +29,11 @@ import org.h2.tools.SimpleResultSet;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.javanetworkanalyzer.alg.Dijkstra;
-import org.javanetworkanalyzer.data.VWCent;
+import org.javanetworkanalyzer.data.VDijkstra;
+import org.javanetworkanalyzer.model.DirectedPseudoG;
 import org.javanetworkanalyzer.model.DirectedWeightedPseudoG;
 import org.javanetworkanalyzer.model.Edge;
+import org.javanetworkanalyzer.model.KeyedGraph;
 
 import java.sql.*;
 
@@ -42,14 +44,15 @@ import java.sql.*;
  */
 public class ST_ShortestPathLength extends AbstractFunction implements ScalarFunction {
 
-    private static Connection connection;
-    private static int startNodeIndex = -1;
-    private static int endNodeIndex = -1;
-    private static int edgeIDIndex = -1;
-    private static int weightColumnIndex = -1;
+    private Connection connection;
 
-    private static String inputTable;
-    private static String weightColumn;
+    private int startNodeIndex = -1;
+    private int endNodeIndex = -1;
+    private int edgeIDIndex = -1;
+    private int weightColumnIndex = -1;
+
+    private String inputTable;
+    private String weightColumn;
 
     public static final int SOURCE_INDEX = 1;
     public static final int DESTINATION_INDEX = 2;
@@ -65,11 +68,31 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     }
 
     /**
-     * Get the SPL
+     * Unweighted Directed One-to-One
      *
-     * @param connection Connection
-     * @param inputTable Input table containing LINESTRINGs or MULTILINESTRINGs
-     * @return true if both output tables were created
+     * @param connection   Connection
+     * @param inputTable   Input table name
+     * @param source       Source vertex ID
+     * @param destination  Destination vertex ID
+     * @return Source-Destination distance table
+     * @throws SQLException
+     */
+    public static ResultSet getShortestPathLength(Connection connection,
+                                                  String inputTable,
+                                                  int source,
+                                                  int destination) throws SQLException {
+        return getShortestPathLength(connection, inputTable, source, destination, null);
+    }
+
+    /**
+     * Weighted Directed One-to-One
+     *
+     * @param connection   Connection
+     * @param inputTable   Input table name
+     * @param source       Source vertex ID
+     * @param destination  Destination vertex ID
+     * @param weightColumn Weight column name
+     * @return Source-Destination distance table
      * @throws SQLException
      */
     public static ResultSet getShortestPathLength(Connection connection,
@@ -77,19 +100,31 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   int source,
                                                   int destination,
                                                   String weightColumn) throws SQLException {
-        ST_ShortestPathLength.connection = connection;
-        ST_ShortestPathLength.inputTable = inputTable;
-        ST_ShortestPathLength.weightColumn = weightColumn;
-
-        initIndices();
+        ST_ShortestPathLength function = new ST_ShortestPathLength();
+        function.connection = connection;
+        function.inputTable = inputTable;
+        function.weightColumn = weightColumn;
+        function.initIndices();
 
         SimpleResultSet output = new SimpleResultSet();
         output.addColumn("SOURCE", Types.INTEGER, 10, 0);
         output.addColumn("DESTINATION", Types.INTEGER, 10, 0);
         output.addColumn("DISTANCE", Types.DOUBLE, 10, 0);
 
-        DirectedWeightedPseudoG<VWCent, Edge> graph =
-                new DirectedWeightedPseudoG<VWCent, Edge>(VWCent.class, Edge.class);
+        KeyedGraph<VDijkstra, Edge> graph = function.prepareGraph();
+
+        Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
+        final double distance = dijkstra.oneToOne(graph.getVertex(source), graph.getVertex(destination));
+
+        output.addRow(source, destination, distance);
+        return output;
+    }
+
+    private KeyedGraph<VDijkstra, Edge> prepareGraph() throws SQLException {
+        KeyedGraph<VDijkstra, Edge> graph =
+                (weightColumnIndex == -1)
+                        ? new DirectedPseudoG<VDijkstra, Edge>(VDijkstra.class, Edge.class)
+                        : new DirectedWeightedPseudoG<VDijkstra, Edge>(VDijkstra.class, Edge.class);
         final ResultSet edges = connection.createStatement().executeQuery("SELECT * FROM " + inputTable);
         while (edges.next()) {
             final Edge edge = graph.addEdge(edges.getInt(startNodeIndex),
@@ -99,15 +134,10 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                 edge.setWeight(edges.getDouble(weightColumnIndex));
             }
         }
-
-        Dijkstra<VWCent, Edge> dijkstra = new Dijkstra<VWCent, Edge>(graph);
-        final double distance = dijkstra.oneToOne(graph.getVertex(source), graph.getVertex(destination));
-
-        output.addRow(source, destination, distance);
-        return output;
+        return graph;
     }
 
-    private static void initIndices() throws SQLException {
+    private void initIndices() throws SQLException {
         final Statement st = connection.createStatement();
         final ResultSet edgesTable = st.executeQuery("SELECT * FROM " + inputTable);
         try {

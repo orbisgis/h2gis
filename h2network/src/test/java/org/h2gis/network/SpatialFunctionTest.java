@@ -85,7 +85,9 @@ public class SpatialFunctionTest {
                 + "('LINESTRING (2 2, 2 0)', 4.0),"
                 + "('LINESTRING (2 0, 2 2)', 6.0),"
                 + "('LINESTRING (2 0, 0 1)', 7.0);");
-//        input_nodes
+
+        st.executeQuery("SELECT ST_Graph('cormen', 'road')");
+//        cormen_nodes
 //        NODE_ID  THE_GEOM
 //        1        POINT (0 1)
 //        2        POINT (1 2)
@@ -93,7 +95,7 @@ public class SpatialFunctionTest {
 //        4        POINT (1 0)
 //        5        POINT (2 0)
 //
-//        input_edges:
+//        cormen_edges:
 //        ROAD                   WEIGHT  EDGE_ID   START_NODE   END_NODE
 //        LINESTRING (0 1, 1 2)  10.0    1         1            2
 //        LINESTRING (1 2, 2 2)  1.0     2         2            3
@@ -105,8 +107,6 @@ public class SpatialFunctionTest {
 //        LINESTRING (2 2, 2 0)  4.0     8         3            5
 //        LINESTRING (2 0, 2 2)  6.0     9         5            3
 //        LINESTRING (2 0, 0 1)  7.0     10        5            1
-
-        st.executeQuery("SELECT ST_Graph('cormen', 'road')");
     }
 
     @AfterClass
@@ -789,6 +789,61 @@ public class SpatialFunctionTest {
         rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 5, 4, 'weight')");
         checkValues(rs, 5, 4, 12.0);
         rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 5, 5, 'weight')");
+        checkValues(rs, 5, 5, 0.0);
+    }
+
+    @Test
+    public void test_ST_ShortestPathLength_DOneToOne() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 1, 1)");
+        checkValues(rs, 1, 1, 0.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 1, 2)");
+        checkValues(rs, 1, 2, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 1, 3)");
+        checkValues(rs, 1, 3, 2.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 1, 4)");
+        checkValues(rs, 1, 4, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 1, 5)");
+        checkValues(rs, 1, 5, 2.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 2, 1)");
+        checkValues(rs, 2, 1, 3.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 2, 2)");
+        checkValues(rs, 2, 2, 0.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 2, 3)");
+        checkValues(rs, 2, 3, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 2, 4)");
+        checkValues(rs, 2, 4, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 2, 5)");
+        checkValues(rs, 2, 5, 2.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 3, 1)");
+        checkValues(rs, 3, 1, 2.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 3, 2)");
+        checkValues(rs, 3, 2, 3.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 3, 3)");
+        checkValues(rs, 3, 3, 0.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 3, 4)");
+        checkValues(rs, 3, 4, 3.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 3, 5)");
+        checkValues(rs, 3, 5, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 4, 1)");
+        checkValues(rs, 4, 1, 2.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 4, 2)");
+        checkValues(rs, 4, 2, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 4, 3)");
+        checkValues(rs, 4, 3, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 4, 4)");
+        checkValues(rs, 4, 4, 0.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 4, 5)");
+        checkValues(rs, 4, 5, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 5, 1)");
+        checkValues(rs, 5, 1, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 5, 2)");
+        checkValues(rs, 5, 2, 2.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 5, 3)");
+        checkValues(rs, 5, 3, 1.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 5, 4)");
+        checkValues(rs, 5, 4, 2.0);
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 5, 5)");
         checkValues(rs, 5, 5, 0.0);
     }
 
