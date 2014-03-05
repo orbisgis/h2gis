@@ -1,17 +1,9 @@
 package org.h2gis.network.graph_creator;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * Created by adam on 3/4/14.
  */
 public class GraphFunctionParser {
-
-    private final Logger LOGGER = LoggerFactory.getLogger(GraphFunctionParser.class);
 
     public static final String SEPARATOR = "-";
     public static final String DIRECTED = "directed";
@@ -37,27 +29,7 @@ public class GraphFunctionParser {
         if (v == null) {
             return null;
         }
-        String name = v.trim();
-        checkForIllegalCharacters(name);
-        LOGGER.info("Weights column name = '{}'.", name);
-        return name;
-    }
-
-    /**
-     * Makes sure the given string contains only letters, numbers and
-     * underscores.
-     *
-     * @param v String
-     */
-    private void checkForIllegalCharacters(String v) {
-        Matcher m = Pattern.compile("[^_0-9A-Za-z]").matcher(v);
-        String illegalCharacters = "";
-        while (m.find()) {
-            illegalCharacters += "\"" + m.group() + "\", ";
-        }
-        if (!illegalCharacters.isEmpty()) {
-            throw new IllegalArgumentException("Illegal character: " + illegalCharacters);
-        }
+        return v.trim();
     }
 
     /**

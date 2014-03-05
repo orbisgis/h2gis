@@ -69,7 +69,8 @@ public class GraphFunctionParserTest {
 
     @Test
     public void testNullOrientation() {
-        checkOrientation(null, null, null);
+        assertEquals(null, parser.parseGlobalOrientation(null));
+        assertEquals(null, parser.parseEdgeOrientation(null));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -85,5 +86,18 @@ public class GraphFunctionParserTest {
     @Test(expected = IllegalArgumentException.class)
     public void testEdgeOrientationUndirectedGraphError() {
         parser.parseEdgeOrientation("undirected");
+    }
+
+    @Test
+    public void testNonNullWeights() {
+        assertEquals("weight", parser.parseWeight("weight"));
+        assertEquals("weight", parser.parseWeight("  weight     "));
+        assertEquals("weight_column", parser.parseWeight("weight_column"));
+        assertEquals("weight column", parser.parseWeight("weight column"));
+    }
+
+    @Test
+    public void testNullWeight() {
+        assertEquals(null, parser.parseWeight(null));
     }
 }
