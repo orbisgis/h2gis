@@ -77,12 +77,13 @@ public class GraphCreatorTest {
         SpatialFunctionTest.registerCormenGraph(connection);
     }
 
-    private void checkEdge(KeyedGraph<VDijkstra, Edge> graph, int source, int dest) {
-        checkEdge(graph, source, dest, 1.0);
+    private void checkEdge(KeyedGraph<VDijkstra, Edge> graph, int id, int source, int dest) {
+        checkEdge(graph, id, source, dest, 1.0);
     }
 
-    private void checkEdge(KeyedGraph<VDijkstra, Edge> graph, int source, int dest, double weight) {
+    private void checkEdge(KeyedGraph<VDijkstra, Edge> graph, int id, int source, int dest, double weight) {
         final Edge edge = graph.getEdge(graph.getVertex(source), graph.getVertex(dest));
+        assertEquals(id, edge.getID());
         assertTrue(graph.containsEdge(edge));
         assertEquals(weight, graph.getEdgeWeight(edge), TOLERANCE);
     }
@@ -105,16 +106,16 @@ public class GraphCreatorTest {
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedPseudoG);
         checkVertices(graph, 1, 2, 3, 4, 5);
-        checkEdge(graph, 1, 2);
-        checkEdge(graph, 2, 3);
-        checkEdge(graph, 2, 4);
-        checkEdge(graph, 4, 2);
-        checkEdge(graph, 1, 4);
-        checkEdge(graph, 4, 3);
-        checkEdge(graph, 4, 5);
-        checkEdge(graph, 3, 5);
-        checkEdge(graph, 5, 3);
-        checkEdge(graph, 5, 1);
+        checkEdge(graph, 1, 1, 2);
+        checkEdge(graph, 2, 2, 3);
+        checkEdge(graph, 3, 2, 4);
+        checkEdge(graph, 4, 4, 2);
+        checkEdge(graph, 5, 1, 4);
+        checkEdge(graph, 6, 4, 3);
+        checkEdge(graph, 7, 4, 5);
+        checkEdge(graph, 8, 3, 5);
+        checkEdge(graph, 9, 5, 3);
+        checkEdge(graph, 10, 5, 1);
     }
 
     @Test
@@ -129,15 +130,15 @@ public class GraphCreatorTest {
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedPseudoG);
         checkVertices(graph, 1, 2, 3, 4, 5);
-        checkEdge(graph, 1, 2, 10.0);
-        checkEdge(graph, 2, 3, 1.0);
-        checkEdge(graph, 2, 4, 2.0);
-        checkEdge(graph, 4, 2, 3.0);
-        checkEdge(graph, 1, 4, 5.0);
-        checkEdge(graph, 4, 3, 9.0);
-        checkEdge(graph, 4, 5, 2.0);
-        checkEdge(graph, 3, 5, 4.0);
-        checkEdge(graph, 5, 3, 6.0);
-        checkEdge(graph, 5, 1, 7.0);
+        checkEdge(graph, 1, 1, 2, 10.0);
+        checkEdge(graph, 2, 2, 3, 1.0);
+        checkEdge(graph, 3, 2, 4, 2.0);
+        checkEdge(graph, 4, 4, 2, 3.0);
+        checkEdge(graph, 5, 1, 4, 5.0);
+        checkEdge(graph, 6, 4, 3, 9.0);
+        checkEdge(graph, 7, 4, 5, 2.0);
+        checkEdge(graph, 8, 3, 5, 4.0);
+        checkEdge(graph, 9, 5, 3, 6.0);
+        checkEdge(graph, 10, 5, 1, 7.0);
     }
 }
