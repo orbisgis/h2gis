@@ -1,7 +1,10 @@
 package org.h2gis.network.graph_creator;
 
 import org.javanetworkanalyzer.data.VId;
-import org.javanetworkanalyzer.model.*;
+import org.javanetworkanalyzer.model.DirectedPseudoG;
+import org.javanetworkanalyzer.model.Edge;
+import org.javanetworkanalyzer.model.KeyedGraph;
+import org.javanetworkanalyzer.model.PseudoG;
 
 import java.sql.*;
 
@@ -13,6 +16,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
     private final Connection connection;
     private final Class<? extends V> vertexClass;
     private final Class<? extends E> edgeClass;
+    private final ResultSet edges;
 
     private int startNodeIndex = -1;
     private int endNodeIndex = -1;
@@ -21,6 +25,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
     private int edgeOrientationIndex = -1;
 
     private final String inputTable;
+    private final String weightColumn;
     private final Orientation globalOrientation;
     private final String edgeOrientationColumnName;
 
@@ -32,21 +37,43 @@ public class GraphCreator<V extends VId, E extends Edge> {
         DIRECTED, REVERSED, UNDIRECTED
     }
 
+
     /**
      * Constructs a new {@link GraphCreator}.
      */
     public GraphCreator(Connection connection,
                         String inputTable,
-                        Orientation globalOrientation,
+                        String weightColumn,
+                        String globalOrientationString,
                         String edgeOrientationColumnName,
                         Class<? extends V> vertexClass,
-                        Class<? extends E> edgeClass) {
+                        Class<? extends E> edgeClass) throws SQLException {
         this.connection = connection;
         this.inputTable = inputTable;
-        this.globalOrientation = globalOrientation;
+        this.weightColumn = weightColumn;
+        this.globalOrientation = getGlobalOrientation(globalOrientationString);
         this.edgeOrientationColumnName = edgeOrientationColumnName;
         this.vertexClass = vertexClass;
         this.edgeClass = edgeClass;
+        this.edges = connection.createStatement().executeQuery("SELECT * FROM " + inputTable);
+    }
+
+    private Orientation getGlobalOrientation(String globalOrientationString) {
+        // Determine the graph type. We check for directed and reversed.
+        // Default case is directed.
+        final GraphCreator.Orientation globalOrientation;
+        if (globalOrientationString != null) {
+            if (globalOrientationString.equalsIgnoreCase(GraphFunctionParser.REVERSED)) {
+                globalOrientation = GraphCreator.Orientation.REVERSED;
+            } else if (globalOrientationString.equalsIgnoreCase(GraphFunctionParser.UNDIRECTED)) {
+                globalOrientation = GraphCreator.Orientation.UNDIRECTED;
+            } else {
+                globalOrientation = GraphCreator.Orientation.DIRECTED;
+            }
+        } else {
+            globalOrientation = GraphCreator.Orientation.DIRECTED;
+        }
+        return globalOrientation;
     }
 
     /**
@@ -66,9 +93,8 @@ public class GraphCreator<V extends VId, E extends Edge> {
                         ? new DirectedPseudoG<V, E>(vertexClass, edgeClass)
                         : new PseudoG<V, E>(vertexClass, edgeClass);
         // Add the edges.
-        final ResultSet edges = connection.createStatement().executeQuery("SELECT * FROM " + inputTable);
         while (edges.next()) {
-            Edge edge = loadEdge(edges, graph);
+            Edge edge = loadEdge(graph);
             if (weightColumnIndex != -1) {
                 edge.setWeight(edges.getDouble(weightColumnIndex));
             }
@@ -87,7 +113,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
                 if (columnName.equalsIgnoreCase(ST_Graph.END_NODE)) endNodeIndex = i;
                 if (columnName.equalsIgnoreCase(ST_Graph.EDGE_ID)) edgeIDIndex = i;
                 if (columnName.equalsIgnoreCase(edgeOrientationColumnName)) edgeOrientationIndex = i;
-//                if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
+                if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
             }
             verifyIndex(startNodeIndex, ST_Graph.START_NODE);
             verifyIndex(endNodeIndex, ST_Graph.START_NODE);
@@ -103,14 +129,15 @@ public class GraphCreator<V extends VId, E extends Edge> {
         }
     }
 
-    protected E loadEdge(ResultSet edges, KeyedGraph<V, E> graph) throws SQLException {
+    protected E loadEdge(KeyedGraph<V, E> graph) throws SQLException {
         final int startNode = edges.getInt(startNodeIndex);
         final int endNode = edges.getInt(endNodeIndex);
         final int edgeID = edges.getInt(edgeIDIndex);
+        E edge;
         // Undirected graphs are either pseudographs or weighted pseudographs,
         // so there is no need to add edges in both directions.
         if (globalOrientation == Orientation.UNDIRECTED) {
-            return graph.addEdge(endNode, startNode, edgeID);
+            edge = graph.addEdge(endNode, startNode, edgeID);
         } else {
             // Directed graphs are either directed pseudographs or directed
             // weighted pseudographs and must specify an orientation for each
@@ -122,29 +149,31 @@ public class GraphCreator<V extends VId, E extends Edge> {
                     : edges.getInt(edgeOrientationIndex);
             if (edgeOrientation == UNDIRECTED_EDGE) {
                 // Note: row is ignored since we only need it for weighted graphs.
-                return loadDoubleEdge(graph, startNode, endNode, edgeID);
+                edge = loadDoubleEdge(graph, startNode, endNode, edgeID);
             } else if (edgeOrientation == DIRECTED_EDGE) {
                 // Reverse a directed edge (global).
                 if (globalOrientation == Orientation.REVERSED) {
-                    return graph.addEdge(endNode, startNode, edgeID);
+                    edge = graph.addEdge(endNode, startNode, edgeID);
                 } // No reversal.
                 else {
-                    return graph.addEdge(startNode, endNode, edgeID);
+                    edge = graph.addEdge(startNode, endNode, edgeID);
                 }
             } else if (edgeOrientation == REVERSED_EDGE) {
                 // Reversing twice is the same as no reversal.
                 if (globalOrientation == Orientation.REVERSED) {
-                    return graph.addEdge(startNode, endNode, edgeID);
+                    edge = graph.addEdge(startNode, endNode, edgeID);
                 } // Otherwise reverse just once (local).
                 else {
-                    return graph.addEdge(endNode, startNode, edgeID);
+                    edge = graph.addEdge(endNode, startNode, edgeID);
                 }
             } else {
 //                LOGGER.warn("Edge ({},{}) ignored since {} is not a valid "
 //                        + "edge orientation.", startNode, endNode, edgeOrientation);
-                return null;
+                edge = null;
             }
         }
+        setEdgeWeight(edge);
+        return edge;
     }
 
     /**
@@ -162,11 +191,19 @@ public class GraphCreator<V extends VId, E extends Edge> {
     protected E loadDoubleEdge(KeyedGraph<V, E> graph,
                                final int startNode,
                                final int endNode,
-                               final int edgeID) {
+                               final int edgeID) throws SQLException {
 
         // Note: row is ignored since we only need it for weighted graphs.
         final E edgeTo = graph.addEdge(startNode, endNode, edgeID);
+        setEdgeWeight(edgeTo);
         final E edgeFrom = graph.addEdge(endNode, startNode, -edgeID);
+        setEdgeWeight(edgeFrom);
         return edgeFrom;
+    }
+
+    private void setEdgeWeight(E edge) throws SQLException {
+        if (edge != null && weightColumnIndex != -1) {
+            edge.setWeight(edges.getDouble(weightColumnIndex));
+        }
     }
 }

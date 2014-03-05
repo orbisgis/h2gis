@@ -87,6 +87,24 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     /**
      * Weighted Directed One-to-One
      *
+     * @param connection  Connection
+     * @param inputTable  Input table name
+     * @param source      Source vertex ID
+     * @param destination Destination vertex ID
+     * @return Source-Destination distance table
+     * @throws SQLException
+     */
+    public static ResultSet getShortestPathLength(Connection connection,
+                                                  String inputTable,
+                                                  int source,
+                                                  int destination,
+                                                  String weightColumn) throws SQLException {
+        return getShortestPathLength(connection, inputTable, source, destination, weightColumn, null);
+    }
+
+    /**
+     * Weighted Directed One-to-One
+     *
      * @param connection   Connection
      * @param inputTable   Input table name
      * @param source       Source vertex ID
@@ -106,32 +124,22 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         function.inputTable = inputTable;
         function.weightColumn = function.parser.parseWeight(weightColumn);
 
-        function.parser.parseOrientation(globalOrientationString);
-        function.globalOrientation = function.parser.getGlobalOrientation();
-        function.edgeOrientation = function.parser.getEdgeOrientationColumnName();
+        function.globalOrientation = function.parser.parseGlobalOrientation(globalOrientationString);
+        function.edgeOrientation = function.parser.parseEdgeOrientation(globalOrientationString);
 
         SimpleResultSet output = new SimpleResultSet();
         output.addColumn("SOURCE", Types.INTEGER, 10, 0);
         output.addColumn("DESTINATION", Types.INTEGER, 10, 0);
         output.addColumn("DISTANCE", Types.DOUBLE, 10, 0);
 
-
-        // Determine the graph type. We check for directed and reversed.
-        // Default case is undirected.
-        final GraphCreator.Orientation graphType = (function.globalOrientation != null) ?
-                function.globalOrientation.equalsIgnoreCase(GraphFunctionParser.DIRECTED) ?
-                        GraphCreator.Orientation.DIRECTED :
-                        function.globalOrientation.equalsIgnoreCase(GraphFunctionParser.REVERSED) ?
-                                GraphCreator.Orientation.REVERSED : GraphCreator.Orientation.UNDIRECTED : GraphCreator.Orientation.UNDIRECTED;
-
-        GraphCreator<VDijkstra, Edge> graphCreator =
+        KeyedGraph<VDijkstra, Edge> graph =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         function.inputTable,
-                        graphType,
+                        function.weightColumn,
+                        function.globalOrientation,
                         function.edgeOrientation,
                         VDijkstra.class,
-                        Edge.class);
-        KeyedGraph<VDijkstra, Edge> graph = graphCreator.prepareGraph();
+                        Edge.class).prepareGraph();
 
         Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         final double distance = dijkstra.oneToOne(graph.getVertex(source), graph.getVertex(destination));

@@ -56,10 +56,10 @@ public class SpatialFunctionTest {
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, true);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
-        registerCormenGraph();
+        registerCormenGraph(connection);
     }
 
-    private static void registerCormenGraph() throws SQLException {
+    public static void registerCormenGraph(Connection connection) throws SQLException {
         final Statement st = connection.createStatement();
 //                   1
 //           >2 ------------>3
