@@ -37,6 +37,7 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.network.SpatialFunctionTest;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.DirectedPseudoG;
+import org.javanetworkanalyzer.model.DirectedWeightedPseudoG;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 import org.junit.BeforeClass;
@@ -152,7 +153,7 @@ public class GraphCreatorTest {
                         null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
-        assertTrue(graph instanceof DirectedPseudoG);
+        assertTrue(graph instanceof DirectedWeightedPseudoG);
         checkVertices(graph, 1, 2, 3, 4, 5);
         checkEdge(graph, 1, 1, 2, 10.0);
         checkEdge(graph, 2, 2, 3, 1.0);
@@ -176,7 +177,7 @@ public class GraphCreatorTest {
                         null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
-        assertTrue(graph instanceof DirectedPseudoG);
+        assertTrue(graph instanceof DirectedWeightedPseudoG);
         checkVertices(graph, 1, 2, 3, 4, 5);
         checkEdge(graph, 1, 2, 1, 10.0);
         checkEdge(graph, 2, 3, 2, 1.0);
