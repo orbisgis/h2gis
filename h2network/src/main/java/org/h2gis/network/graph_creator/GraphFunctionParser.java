@@ -17,14 +17,14 @@ public class GraphFunctionParser {
     public static final String DIRECTED = "directed";
     public static final String REVERSED = "reversed";
     public static final String UNDIRECTED = "undirected";
+
     public static final String EDGE_ORIENTATION_COLUMN = "edge_orientation_column";
     public static final String POSSIBLE_ORIENTATIONS =
             "'" + DIRECTED + " - " + EDGE_ORIENTATION_COLUMN + "' "
                     + "| '" + REVERSED + " - " + EDGE_ORIENTATION_COLUMN + "' "
                     + "| '" + UNDIRECTED + "'";
-
-    private String globalOrientation;
-    private String edgeOrientationColumnName;
+    public static final String ORIENTATION_ERROR =
+            "Bad orientation format. Enter " + POSSIBLE_ORIENTATIONS + ".";
 
     /**
      * Recovers the weight column name from the given string.
@@ -68,30 +68,19 @@ public class GraphFunctionParser {
      * @return True if the orientations were correctly parsed.
      * @throws IllegalArgumentException
      */
-    protected boolean parseOrientation(String v) throws IllegalArgumentException {
-        if (v != null) {
-            if (isDirectedString(v) || isReversedString(v)) {
-                if (isDirectedString(v)) {
-                    globalOrientation = DIRECTED;
-                } else if (isReversedString(v)) {
-                    globalOrientation = REVERSED;
-                }
-                edgeOrientationColumnName = getEdgeOrientationColumnName(v);
-                LOGGER.info("Global orientation = '{}'.", globalOrientation);
-                LOGGER.info("Edge orientation column name = '{}'.", edgeOrientationColumnName);
-                return true;
-            } else if (isUndirectedString(v)) {
-                globalOrientation = UNDIRECTED;
-                if (!v.trim().equalsIgnoreCase(UNDIRECTED)) {
-                    LOGGER.warn("Edge orientations are ignored for undirected graphs.");
-                }
-                LOGGER.info("Global orientation = '{}'.", globalOrientation);
-                return true;
-            } else {
-                throw new IllegalArgumentException("Invalid orientation String.");
-            }
+    protected String parseGlobalOrientation(String v) throws IllegalArgumentException {
+        if (v == null) {
+            return null;
         }
-        return false;
+        if (isDirectedString(v)) {
+            return DIRECTED;
+        } else if (isReversedString(v)) {
+            return REVERSED;
+        } else if (isUndirectedString(v)) {
+            return UNDIRECTED;
+        } else {
+            throw new IllegalArgumentException(ORIENTATION_ERROR);
+        }
     }
 
     private boolean isDirectedString(String s) {
@@ -116,42 +105,22 @@ public class GraphFunctionParser {
         return false;
     }
 
-    private String getEdgeOrientationColumnName(String v) {
-        if (!v.contains(SEPARATOR)) {
-            throw new IllegalArgumentException("Bad orientation format. Enter "
-                    + POSSIBLE_ORIENTATIONS + ".");
-        } else {
-            // Extract the global and edge orientations.
-            String[] s = v.split(SEPARATOR);
-            if (s.length == 2) {
-                // Return just the edge orientation column name and not the
-                // global orientation.
-                return s[1].trim();
-            } else {
-                throw new IllegalArgumentException(
-                        "You must specify both global and edge orientations for "
-                                + "directed or reversed graphs. Separate them by "
-                                + "a '" + SEPARATOR + "'.");
-            }
+    protected String parseEdgeOrientation(String v) {
+        if (v == null) {
+            return null;
         }
-    }
-
-    /**
-     * Returns the global orientation string.
-     *
-     * @return The global orientation string
-     */
-    public String getGlobalOrientation() {
-        return globalOrientation;
-    }
-
-    /**
-     * Returns the edge orientation string.
-     *
-     * @return The edge orientation string
-     */
-    public String getEdgeOrientationColumnName() {
-        return edgeOrientationColumnName;
+        if (!v.contains(SEPARATOR)) {
+            throw new IllegalArgumentException(ORIENTATION_ERROR);
+        }
+        // Extract the global and edge orientations.
+        String[] s = v.split(SEPARATOR);
+        if (s.length == 2) {
+            // Return just the edge orientation column name and not the
+            // global orientation.
+            return s[1].trim();
+        } else {
+            throw new IllegalArgumentException(ORIENTATION_ERROR);
+        }
     }
 }
 
