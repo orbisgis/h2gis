@@ -1,7 +1,5 @@
 package org.h2gis.utilities;
 
-import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -77,7 +75,7 @@ public class TableLocation {
     public static String quoteIdentifier(String identifier, boolean isH2DataBase) {
         if((isH2DataBase && H2_SPECIAL_NAME_PATTERN.matcher(identifier).find()) ||
                 (!isH2DataBase && POSTGRE_SPECIAL_NAME_PATTERN.matcher(identifier).find())) {
-            return QUOTE_CHAR+identifier+QUOTE_CHAR;
+            return quoteIdentifier(identifier);
         } else {
             return identifier;
         }
