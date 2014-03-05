@@ -60,6 +60,7 @@ public class SHPDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        TableLocation location = TableLocation.parse(tableReference);
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         ProgressVisitor copyProgress = progress.subProcess(recordCount);
         //
@@ -73,7 +74,7 @@ public class SHPDriverFunction implements DriverFunction {
         // Read table content
         Statement st = connection.createStatement();
         try {
-            ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableReference));
+            ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
             try {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData);
