@@ -33,11 +33,13 @@ import org.junit.Test;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -126,5 +128,24 @@ public class SerializationTest {
                 "WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Goose Island'");
         assertTrue(rs.next());
         assertEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
+    }
+
+    @Test
+    public void testViewInGeometryColumns() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP VIEW IF EXISTS lakes_view");
+        st.execute("CREATE VIEW lakes_view as select * from lakes");
+        try {
+            ResultSet rs = st.executeQuery("SELECT * FROM geometry_columns where F_TABLE_NAME = 'LAKES_VIEW';");
+            try {
+                assertTrue(rs.next());
+                assertEquals("POLYGON", rs.getString("TYPE"));
+                assertFalse(rs.next());
+            } finally {
+                rs.close();
+            }
+        } finally {
+            st.execute("DROP VIEW IF EXISTS lakes_view");
+        }
     }
 }
