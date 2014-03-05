@@ -68,10 +68,10 @@ public class GraphCreator<V extends VId, E extends Edge> {
                 globalOrientation = GraphCreator.Orientation.REVERSED;
             } else if (globalOrientationString.equalsIgnoreCase(GraphFunctionParser.UNDIRECTED)) {
                 globalOrientation = GraphCreator.Orientation.UNDIRECTED;
-            } else {
+            } else { // default
                 globalOrientation = GraphCreator.Orientation.DIRECTED;
             }
-        } else {
+        } else { // default
             globalOrientation = GraphCreator.Orientation.DIRECTED;
         }
         return globalOrientation;
