@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * Just a class used to split Catalog Schema and Table. Theses components are a unique table identifier.
@@ -14,6 +15,7 @@ public class TableLocation {
     private String catalog,schema,table;
     /** Recognized by H2 and Postgres */
     private static final String QUOTE_CHAR = "\"";
+    private static final Pattern SPECIAL_NAME_PATTERN = Pattern.compile("[^a-z0-9_]");
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -53,39 +55,30 @@ public class TableLocation {
         this("", table);
     }
 
+    /**
+     * @param identifier Catalog,Schema,Table or Field name
+     * @return Identifier if only lower case name or quoted identifier
+     */
+    public static String escapeIdentifier(String identifier) {
+        if(SPECIAL_NAME_PATTERN.matcher(identifier).find()) {
+            return QUOTE_CHAR+identifier+QUOTE_CHAR;
+        } else {
+            return identifier;
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            boolean doQuote = catalog.contains(" ");
-            if(doQuote) {
-                sb.append(QUOTE_CHAR);
-            }
-            sb.append(catalog);
-            if(doQuote) {
-                sb.append(QUOTE_CHAR);
-            }
+            sb.append(escapeIdentifier(catalog));
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            boolean doQuote = schema.contains(" ");
-            if(doQuote) {
-                sb.append(QUOTE_CHAR);
-            }
-            sb.append(schema);
-            if(doQuote) {
-                sb.append(QUOTE_CHAR);
-            }
+            sb.append(escapeIdentifier(schema));
             sb.append(".");
         }
-        boolean doQuote= table.contains(" ") || !table.equals(table.toLowerCase());
-        if(doQuote) {
-            sb.append(QUOTE_CHAR);
-        }
-        sb.append(table);
-        if(doQuote) {
-            sb.append(QUOTE_CHAR);
-        }
+        sb.append(escapeIdentifier(table));
         return sb.toString();
     }
 
