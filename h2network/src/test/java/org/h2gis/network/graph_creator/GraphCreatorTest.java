@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Set;
 
 import static junit.framework.Assert.assertTrue;
@@ -382,5 +383,34 @@ public class GraphCreatorTest {
             }
         }
         checkEdge(graph, 10, 5, 1, 7.0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNullOrientation() throws SQLException {
+        testOrientation("NULL");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testInvalidOrientation() throws SQLException {
+        testOrientation("2");
+    }
+
+    private void testOrientation(String newOrientation) throws SQLException {
+        final Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS copy; CREATE TABLE copy AS SELECT * FROM cormen_edges");
+        st.execute("UPDATE copy SET edge_orientation=" + newOrientation + " WHERE edge_id=1");
+        GraphCreator<VDijkstra, Edge> graphCreator =
+                new GraphCreator<VDijkstra, Edge>(connection,
+                        "copy",
+                        "weight",
+                        GraphFunctionParser.DIRECTED,
+                        "edge_orientation",
+                        VDijkstra.class, Edge.class);
+        try {
+            graphCreator.prepareGraph();
+        } finally {
+            st.execute("DROP TABLE copy");
+            st.close();
+        }
     }
 }

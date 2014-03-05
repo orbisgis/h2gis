@@ -104,10 +104,8 @@ public class GraphCreator<V extends VId, E extends Edge> {
         }
         // Add the edges.
         while (edges.next()) {
-            Edge edge = loadEdge(graph);
-            if (weightColumnIndex != -1) {
-                edge.setWeight(edges.getDouble(weightColumnIndex));
-            }
+            E edge = loadEdge(graph);
+            setEdgeWeight(edge);
         }
         return graph;
     }
@@ -157,6 +155,9 @@ public class GraphCreator<V extends VId, E extends Edge> {
             int edgeOrientation = (edgeOrientationIndex == -1)
                     ? DIRECTED_EDGE
                     : edges.getInt(edgeOrientationIndex);
+            if (edges.wasNull()) {
+                throw new IllegalArgumentException("Invalid edge orientation: NULL.");
+            }
             if (edgeOrientation == UNDIRECTED_EDGE) {
                 if (globalOrientation == Orientation.DIRECTED) {
                     edge = loadDoubleEdge(graph, startNode, endNode, edgeID);
@@ -181,9 +182,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
                     edge = graph.addEdge(endNode, startNode, edgeID);
                 }
             } else {
-                LOGGER.warn("Edge ({},{}) ignored since {} is not a valid edge orientation.",
-                        new int[]{startNode, endNode, edgeOrientation});
-                edge = null;
+                throw new IllegalArgumentException("Invalid edge orientation: " + edgeOrientation);
             }
         }
         setEdgeWeight(edge);
