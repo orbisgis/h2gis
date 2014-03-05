@@ -272,7 +272,7 @@ public class GraphCreatorTest {
                         "edge_orientation",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
-        assertTrue(graph instanceof DirectedPseudoG);
+        assertTrue(graph instanceof DirectedWeightedPseudoG);
         assertEquals(5, graph.vertexSet().size());
         Assert.assertEquals(11, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
@@ -325,7 +325,7 @@ public class GraphCreatorTest {
                         "edge_orientation",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
-        assertTrue(graph instanceof DirectedPseudoG);
+        assertTrue(graph instanceof DirectedWeightedPseudoG);
         assertEquals(5, graph.vertexSet().size());
         Assert.assertEquals(11, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
@@ -352,7 +352,7 @@ public class GraphCreatorTest {
                         null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
-        assertTrue(graph instanceof PseudoG);
+        assertTrue(graph instanceof WeightedPseudoG);
         assertEquals(5, graph.vertexSet().size());
         Assert.assertEquals(10, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
