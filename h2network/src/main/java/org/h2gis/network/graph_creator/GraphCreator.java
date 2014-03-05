@@ -158,8 +158,12 @@ public class GraphCreator<V extends VId, E extends Edge> {
                     ? DIRECTED_EDGE
                     : edges.getInt(edgeOrientationIndex);
             if (edgeOrientation == UNDIRECTED_EDGE) {
-                // Note: row is ignored since we only need it for weighted graphs.
-                edge = loadDoubleEdge(graph, startNode, endNode, edgeID);
+                if (globalOrientation == Orientation.DIRECTED) {
+                    edge = loadDoubleEdge(graph, startNode, endNode, edgeID);
+                } // globalOrientation == Orientation.REVERSED
+                else {
+                    edge = loadDoubleEdge(graph, endNode, startNode, edgeID);
+                }
             } else if (edgeOrientation == DIRECTED_EDGE) {
                 // Reverse a directed edge (global).
                 if (globalOrientation == Orientation.REVERSED) {
