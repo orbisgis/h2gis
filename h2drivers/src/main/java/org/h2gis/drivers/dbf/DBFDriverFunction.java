@@ -189,7 +189,7 @@ public class DBFDriverFunction implements DriverFunction {
             if(idColumn > 0) {
                 stringBuilder.append(", ");
             }
-            stringBuilder.append(header.getFieldName(idColumn));
+            stringBuilder.append(TableLocation.escapeIdentifier(header.getFieldName(idColumn)));
             stringBuilder.append(" ");
             switch (header.getFieldType(idColumn)) {
                 // (L)logical (T,t,F,f,Y,y,N,n)

@@ -67,7 +67,7 @@ public class SFSUtilitiesTest {
         assertEquals("mydb",location.getCatalog());
         assertEquals("myschema",location.getSchema());
         assertEquals("mytable.hello",location.getTable());
-        assertEquals("mydb.myschema.mytable.hello", location.toString());
+        assertEquals("mydb.myschema.\"mytable.hello\"", location.toString());
         location = TableLocation.parse("`mydb`.`my schema`.`my table`");
         assertEquals("mydb",location.getCatalog());
         assertEquals("my schema",location.getSchema());
