@@ -32,14 +32,12 @@
  */
 package org.h2gis.network.graph_creator;
 
+import junit.framework.Assert;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.network.SpatialFunctionTest;
 import org.javanetworkanalyzer.data.VDijkstra;
-import org.javanetworkanalyzer.model.DirectedPseudoG;
-import org.javanetworkanalyzer.model.DirectedWeightedPseudoG;
-import org.javanetworkanalyzer.model.Edge;
-import org.javanetworkanalyzer.model.KeyedGraph;
+import org.javanetworkanalyzer.model.*;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -47,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Set;
 
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
@@ -144,6 +143,40 @@ public class GraphCreatorTest {
     }
 
     @Test
+    public void testU() throws SQLException {
+        GraphCreator<VDijkstra, Edge> graphCreator =
+                new GraphCreator<VDijkstra, Edge>(connection,
+                        "cormen_edges",
+                        null,
+                        GraphFunctionParser.UNDIRECTED,
+                        null,
+                        VDijkstra.class, Edge.class);
+        final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
+        assertTrue(graph instanceof PseudoG);
+        checkVertices(graph, 1, 2, 3, 4, 5);
+        checkEdge(graph, 1, 1, 2);
+        checkEdge(graph, 2, 2, 3);
+        final Set<Edge> edges24 = graph.getAllEdges(graph.getVertex(2), graph.getVertex(4));
+        Assert.assertEquals(2, edges24.size());
+        for (Edge e : edges24) {
+            if (e.getID() != 3) {
+                assertEquals(4, e.getID());
+            }
+        }
+        checkEdge(graph, 5, 1, 4);
+        checkEdge(graph, 6, 4, 3);
+        checkEdge(graph, 7, 4, 5);
+        final Set<Edge> edges35 = graph.getAllEdges(graph.getVertex(3), graph.getVertex(5));
+        Assert.assertEquals(2, edges24.size());
+        for (Edge e : edges35) {
+            if (e.getID() != 8) {
+                assertEquals(9, e.getID());
+            }
+        }
+        checkEdge(graph, 10, 5, 1);
+    }
+
+    @Test
     public void testWD() throws SQLException {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
@@ -189,5 +222,45 @@ public class GraphCreatorTest {
         checkEdge(graph, 8, 5, 3, 4.0);
         checkEdge(graph, 9, 3, 5, 6.0);
         checkEdge(graph, 10, 1, 5, 7.0);
+    }
+
+    @Test
+    public void testWU() throws SQLException {
+        GraphCreator<VDijkstra, Edge> graphCreator =
+                new GraphCreator<VDijkstra, Edge>(connection,
+                        "cormen_edges",
+                        "weight",
+                        GraphFunctionParser.UNDIRECTED,
+                        null,
+                        VDijkstra.class, Edge.class);
+        final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
+        assertTrue(graph instanceof PseudoG);
+        checkVertices(graph, 1, 2, 3, 4, 5);
+        checkEdge(graph, 1, 1, 2, 10.0);
+        checkEdge(graph, 2, 2, 3, 1.0);
+        final Set<Edge> edges24 = graph.getAllEdges(graph.getVertex(2), graph.getVertex(4));
+        Assert.assertEquals(2, edges24.size());
+        for (Edge e : edges24) {
+            if (e.getID() == 3) {
+                assertEquals(2.0, graph.getEdgeWeight(e), TOLERANCE);
+            } else {
+                assertEquals(4, e.getID());
+                assertEquals(3.0, graph.getEdgeWeight(e), TOLERANCE);
+            }
+        }
+        checkEdge(graph, 5, 1, 4, 5.0);
+        checkEdge(graph, 6, 4, 3, 9.0);
+        checkEdge(graph, 7, 4, 5, 2.0);
+        final Set<Edge> edges35 = graph.getAllEdges(graph.getVertex(3), graph.getVertex(5));
+        Assert.assertEquals(2, edges24.size());
+        for (Edge e : edges35) {
+            if (e.getID() == 8) {
+                assertEquals(4.0, graph.getEdgeWeight(e), TOLERANCE);
+            } else {
+                assertEquals(9, e.getID());
+                assertEquals(6.0, graph.getEdgeWeight(e), TOLERANCE);
+            }
+        }
+        checkEdge(graph, 10, 5, 1, 7.0);
     }
 }
