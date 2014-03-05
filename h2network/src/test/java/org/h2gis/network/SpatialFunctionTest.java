@@ -73,18 +73,18 @@ public class SpatialFunctionTest {
 //         \ v| /    2     \v|
 //          > 4 -----------> 5
 //               CORMEN
-        st.execute("CREATE TABLE cormen(road LINESTRING, weight DOUBLE);" +
+        st.execute("CREATE TABLE cormen(road LINESTRING, weight DOUBLE, edge_orientation INT);" +
                 "INSERT INTO cormen VALUES "
-                + "('LINESTRING (0 1, 1 2)', 10.0),"
-                + "('LINESTRING (1 2, 2 2)', 1.0),"
-                + "('LINESTRING (1 2, 1 0)', 2.0),"
-                + "('LINESTRING (1 0, 1 2)', 3.0),"
-                + "('LINESTRING (0 1, 1 0)', 5.0),"
-                + "('LINESTRING (1 0, 2 2)', 9.0),"
-                + "('LINESTRING (1 0, 2 0)', 2.0),"
-                + "('LINESTRING (2 2, 2 0)', 4.0),"
-                + "('LINESTRING (2 0, 2 2)', 6.0),"
-                + "('LINESTRING (2 0, 0 1)', 7.0);");
+                + "('LINESTRING (0 1, 1 2)', 10.0, 1),"
+                + "('LINESTRING (1 2, 2 2)', 1.0, -1),"
+                + "('LINESTRING (1 2, 1 0)', 2.0, 1),"
+                + "('LINESTRING (1 0, 1 2)', 3.0, 1),"
+                + "('LINESTRING (0 1, 1 0)', 5.0, 1),"
+                + "('LINESTRING (1 0, 2 2)', 9.0, 1),"
+                + "('LINESTRING (1 0, 2 0)', 2.0, 1),"
+                + "('LINESTRING (2 2, 2 0)', 4.0, 1),"
+                + "('LINESTRING (2 0, 2 2)', 6.0, 1),"
+                + "('LINESTRING (2 0, 0 1)', 7.0, 0);");
 
         st.executeQuery("SELECT ST_Graph('cormen', 'road')");
 //        cormen_nodes
