@@ -57,7 +57,7 @@ public class JDBCUtilitiesTest {
         connection.createStatement().execute("INSERT INTO testschema.testRowCount VALUES (2, 0.2)");
         connection.createStatement().execute("INSERT INTO testschema.testRowCount VALUES (3, 0.5)");
         connection.createStatement().execute("INSERT INTO testschema.testRowCount VALUES (4, 0.6)");
-        assertEquals(4, JDBCUtilities.getRowCount(connection, "testschema.TESTROWCOUNT"));
+        assertEquals(4, JDBCUtilities.getRowCount(connection, "TESTSCHEMA.TESTROWCOUNT"));
     }
 
     @Test

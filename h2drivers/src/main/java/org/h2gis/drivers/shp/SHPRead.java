@@ -74,6 +74,6 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      */
     public static void readShape(Connection connection, String fileName) throws IOException, SQLException {
         final String name = new File(fileName).getName();
-        readShape(connection, fileName, name.substring(0, name.lastIndexOf(".")));
+        readShape(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
     }
 }
