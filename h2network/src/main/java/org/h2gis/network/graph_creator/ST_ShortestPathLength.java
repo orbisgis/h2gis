@@ -47,8 +47,6 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
 
     private Connection connection;
 
-    private GraphFunctionParser parser = new GraphFunctionParser();
-
     private String inputTable;
     private String weightColumn;
     private String globalOrientation;
@@ -68,8 +66,6 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     }
 
     /**
-     * Unweighted Directed One-to-One
-     *
      * @param connection  Connection
      * @param inputTable  Input table name
      * @param source      Source vertex ID
@@ -81,16 +77,15 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String inputTable,
                                                   int source,
                                                   int destination) throws SQLException {
-        return getShortestPathLength(connection, inputTable, source, destination, null, null);
+        return getShortestPathLength(connection, inputTable, source, destination, null);
     }
 
     /**
-     * Weighted Directed One-to-One
-     *
      * @param connection  Connection
      * @param inputTable  Input table name
      * @param source      Source vertex ID
      * @param destination Destination vertex ID
+     * @param arg1
      * @return Source-Destination distance table
      * @throws SQLException
      */
@@ -98,18 +93,17 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String inputTable,
                                                   int source,
                                                   int destination,
-                                                  String weightColumn) throws SQLException {
-        return getShortestPathLength(connection, inputTable, source, destination, weightColumn, null);
+                                                  String arg1) throws SQLException {
+        return getShortestPathLength(connection, inputTable, source, destination, arg1, null);
     }
 
     /**
-     * Weighted Directed One-to-One
-     *
      * @param connection   Connection
      * @param inputTable   Input table name
      * @param source       Source vertex ID
      * @param destination  Destination vertex ID
-     * @param weightColumn Weight column name
+     * @param arg1         First arg
+     * @param arg2         Second arg
      * @return Source-Destination distance table
      * @throws SQLException
      */
@@ -117,14 +111,13 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String inputTable,
                                                   int source,
                                                   int destination,
-                                                  String weightColumn,
-                                                  String globalOrientationString) throws SQLException {
+                                                  String arg1,
+                                                  String arg2) throws SQLException {
         ST_ShortestPathLength function = new ST_ShortestPathLength();
         function.connection = connection;
         function.inputTable = inputTable;
-        function.weightColumn = function.parser.parseWeight(weightColumn);
-        function.globalOrientation = function.parser.parseGlobalOrientation(globalOrientationString);
-        function.edgeOrientation = function.parser.parseEdgeOrientation(globalOrientationString);
+
+        GraphFunctionParser.parseWeightAndOrientation(function, arg1, arg2);
 
         SimpleResultSet output = new SimpleResultSet();
         output.addColumn("SOURCE", Types.INTEGER, 10, 0);
@@ -145,5 +138,27 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
 
         output.addRow(source, destination, distance);
         return output;
+    }
+
+    protected static void setWeightAndOrientation(ST_ShortestPathLength function, String weight, String orient) {
+        function.weightColumn = GraphFunctionParser.parseWeight(weight);
+        function.globalOrientation = GraphFunctionParser.parseGlobalOrientation(orient);
+        if (function.globalOrientation != null) {
+            if (!function.globalOrientation.equals(GraphFunctionParser.UNDIRECTED)) {
+                function.edgeOrientation = GraphFunctionParser.parseEdgeOrientation(orient);
+            }
+        }
+    }
+
+    public String getWeightColumn() {
+        return weightColumn;
+    }
+
+    public String getGlobalOrientation() {
+        return globalOrientation;
+    }
+
+    public String getEdgeOrientation() {
+        return edgeOrientation;
     }
 }

@@ -25,7 +25,7 @@ public class GraphFunctionParser {
      *
      * @return True if the weight column name was correctly parsed.
      */
-    protected String parseWeight(String v) {
+    public static String parseWeight(String v) {
         if (v == null) {
             return null;
         }
@@ -40,7 +40,7 @@ public class GraphFunctionParser {
      * @return True if the orientations were correctly parsed.
      * @throws IllegalArgumentException
      */
-    protected String parseGlobalOrientation(String v) throws IllegalArgumentException {
+    public static String parseGlobalOrientation(String v) throws IllegalArgumentException {
         if (v == null) {
             return null;
         }
@@ -55,7 +55,10 @@ public class GraphFunctionParser {
         }
     }
 
-    private boolean isDirectedString(String s) {
+    public static boolean isDirectedString(String s) {
+        if (s == null) {
+            return false;
+        }
         if (s.toLowerCase().contains(DIRECTED)
                 && !isUndirectedString(s)) {
             return true;
@@ -63,21 +66,38 @@ public class GraphFunctionParser {
         return false;
     }
 
-    private boolean isReversedString(String s) {
+    public static boolean isReversedString(String s) {
+        if (s == null) {
+            return false;
+        }
         if (s.toLowerCase().contains(REVERSED)) {
             return true;
         }
         return false;
     }
 
-    private boolean isUndirectedString(String s) {
+    public static boolean isUndirectedString(String s) {
+        if (s == null) {
+            return false;
+        }
         if (s.toLowerCase().contains(UNDIRECTED)) {
             return true;
         }
         return false;
     }
 
-    protected String parseEdgeOrientation(String v) {
+    public static boolean isOrientationString(String s) {
+       return isDirectedString(s) || isReversedString(s) || isUndirectedString(s);
+    }
+
+    public static boolean isWeightString(String s) {
+        if (s == null) {
+            return false;
+        }
+        return !isOrientationString(s);
+    }
+
+    public static String parseEdgeOrientation(String v) {
         if (v == null) {
             return null;
         }
@@ -92,6 +112,25 @@ public class GraphFunctionParser {
             return s[1].trim();
         } else {
             throw new IllegalArgumentException(ORIENTATION_ERROR);
+        }
+    }
+
+    static void parseWeightAndOrientation(ST_ShortestPathLength function, String arg1, String arg2) {
+        if (isWeightString(arg1)
+                && isWeightString(arg2)) {
+            throw new IllegalArgumentException("Cannot specify the weight column twice.");
+        }
+        if (isOrientationString(arg1)
+                && isOrientationString(arg2)) {
+            throw new IllegalArgumentException("Cannot specify the orientation twice.");
+        }
+        if (isWeightString(arg1)
+                || isOrientationString(arg2)) {
+            ST_ShortestPathLength.setWeightAndOrientation(function, arg1, arg2);
+        }
+        if (isWeightString(arg2)
+                || isOrientationString(arg1)) {
+            ST_ShortestPathLength.setWeightAndOrientation(function, arg2, arg1);
         }
     }
 }
