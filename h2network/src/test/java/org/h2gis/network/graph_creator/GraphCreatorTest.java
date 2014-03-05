@@ -119,6 +119,30 @@ public class GraphCreatorTest {
     }
 
     @Test
+    public void testR() throws SQLException {
+        GraphCreator<VDijkstra, Edge> graphCreator =
+                new GraphCreator<VDijkstra, Edge>(connection,
+                        "cormen_edges",
+                        null,
+                        GraphFunctionParser.REVERSED,
+                        null,
+                        VDijkstra.class, Edge.class);
+        final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
+        assertTrue(graph instanceof DirectedPseudoG);
+        checkVertices(graph, 1, 2, 3, 4, 5);
+        checkEdge(graph, 1, 2, 1);
+        checkEdge(graph, 2, 3, 2);
+        checkEdge(graph, 3, 4, 2);
+        checkEdge(graph, 4, 2, 4);
+        checkEdge(graph, 5, 4, 1);
+        checkEdge(graph, 6, 3, 4);
+        checkEdge(graph, 7, 5, 4);
+        checkEdge(graph, 8, 5, 3);
+        checkEdge(graph, 9, 3, 5);
+        checkEdge(graph, 10, 1, 5);
+    }
+
+    @Test
     public void testWD() throws SQLException {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,

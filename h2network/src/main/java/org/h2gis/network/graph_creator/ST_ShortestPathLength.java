@@ -123,7 +123,6 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         function.connection = connection;
         function.inputTable = inputTable;
         function.weightColumn = function.parser.parseWeight(weightColumn);
-
         function.globalOrientation = function.parser.parseGlobalOrientation(globalOrientationString);
         function.edgeOrientation = function.parser.parseEdgeOrientation(globalOrientationString);
 

@@ -1,10 +1,9 @@
 package org.h2gis.network.graph_creator;
 
 import org.javanetworkanalyzer.data.VId;
-import org.javanetworkanalyzer.model.DirectedPseudoG;
-import org.javanetworkanalyzer.model.Edge;
-import org.javanetworkanalyzer.model.KeyedGraph;
-import org.javanetworkanalyzer.model.PseudoG;
+import org.javanetworkanalyzer.model.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
@@ -12,6 +11,8 @@ import java.sql.*;
  * Created by adam on 3/4/14.
  */
 public class GraphCreator<V extends VId, E extends Edge> {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphCreator.class);
 
     private final Connection connection;
     private final Class<? extends V> vertexClass;
@@ -84,14 +85,23 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * @throws java.sql.SQLException
      */
     protected KeyedGraph<V, E> prepareGraph() throws SQLException {
-
         // Initialize the indices.
         initIndices();
         // Initialize the graph.
-        KeyedGraph<V, E> graph =
-                (globalOrientation != Orientation.UNDIRECTED)
-                        ? new DirectedPseudoG<V, E>(vertexClass, edgeClass)
-                        : new PseudoG<V, E>(vertexClass, edgeClass);
+        KeyedGraph<V, E> graph;
+        if (globalOrientation != Orientation.UNDIRECTED) {
+            if (weightColumn != null) {
+               graph = new DirectedWeightedPseudoG<V, E>(vertexClass, edgeClass);
+            } else {
+                graph = new DirectedPseudoG<V, E>(vertexClass, edgeClass);
+            }
+        } else {
+            if (weightColumn != null) {
+                graph = new WeightedPseudoG<V, E>(vertexClass, edgeClass);
+            } else {
+                graph = new PseudoG<V, E>(vertexClass, edgeClass);
+            }
+        }
         // Add the edges.
         while (edges.next()) {
             Edge edge = loadEdge(graph);
@@ -167,8 +177,8 @@ public class GraphCreator<V extends VId, E extends Edge> {
                     edge = graph.addEdge(endNode, startNode, edgeID);
                 }
             } else {
-//                LOGGER.warn("Edge ({},{}) ignored since {} is not a valid "
-//                        + "edge orientation.", startNode, endNode, edgeOrientation);
+                LOGGER.warn("Edge ({},{}) ignored since {} is not a valid edge orientation.",
+                        new int[]{startNode, endNode, edgeOrientation});
                 edge = null;
             }
         }
