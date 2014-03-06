@@ -5,6 +5,10 @@ package org.h2gis.network.graph_creator;
  */
 public class GraphFunctionParser {
 
+    private String weightColumn;
+    private String globalOrientation;
+    private String edgeOrientation;
+
     public static final String SEPARATOR = "-";
     public static final String DIRECTED = "directed";
     public static final String REVERSED = "reversed";
@@ -25,7 +29,7 @@ public class GraphFunctionParser {
      *
      * @return True if the weight column name was correctly parsed.
      */
-    public static String parseWeight(String v) {
+    protected String parseWeight(String v) {
         if (v == null) {
             return null;
         }
@@ -40,7 +44,7 @@ public class GraphFunctionParser {
      * @return True if the orientations were correctly parsed.
      * @throws IllegalArgumentException
      */
-    public static String parseGlobalOrientation(String v) throws IllegalArgumentException {
+    protected String parseGlobalOrientation(String v) throws IllegalArgumentException {
         if (v == null) {
             return null;
         }
@@ -55,7 +59,7 @@ public class GraphFunctionParser {
         }
     }
 
-    public static boolean isDirectedString(String s) {
+    protected boolean isDirectedString(String s) {
         if (s == null) {
             return false;
         }
@@ -66,7 +70,7 @@ public class GraphFunctionParser {
         return false;
     }
 
-    public static boolean isReversedString(String s) {
+    protected boolean isReversedString(String s) {
         if (s == null) {
             return false;
         }
@@ -76,7 +80,7 @@ public class GraphFunctionParser {
         return false;
     }
 
-    public static boolean isUndirectedString(String s) {
+    protected boolean isUndirectedString(String s) {
         if (s == null) {
             return false;
         }
@@ -86,18 +90,18 @@ public class GraphFunctionParser {
         return false;
     }
 
-    public static boolean isOrientationString(String s) {
+    protected boolean isOrientationString(String s) {
        return isDirectedString(s) || isReversedString(s) || isUndirectedString(s);
     }
 
-    public static boolean isWeightString(String s) {
+    protected boolean isWeightString(String s) {
         if (s == null) {
             return false;
         }
         return !isOrientationString(s);
     }
 
-    public static String parseEdgeOrientation(String v) {
+    protected String parseEdgeOrientation(String v) {
         if (v == null) {
             return null;
         }
@@ -115,23 +119,40 @@ public class GraphFunctionParser {
         }
     }
 
-    static void parseWeightAndOrientation(ST_ShortestPathLength function, String arg1, String arg2) {
-        if (isWeightString(arg1)
-                && isWeightString(arg2)) {
+    public void parseWeightAndOrientation(String arg1, String arg2) {
+        if (isWeightString(arg1) && isWeightString(arg2)) {
             throw new IllegalArgumentException("Cannot specify the weight column twice.");
         }
-        if (isOrientationString(arg1)
-                && isOrientationString(arg2)) {
+        if (isOrientationString(arg1) && isOrientationString(arg2)) {
             throw new IllegalArgumentException("Cannot specify the orientation twice.");
         }
-        if (isWeightString(arg1)
-                || isOrientationString(arg2)) {
-            ST_ShortestPathLength.setWeightAndOrientation(function, arg1, arg2);
+        if (isWeightString(arg1) || isOrientationString(arg2)) {
+            setWeightAndOrientation(arg1, arg2);
         }
-        if (isWeightString(arg2)
-                || isOrientationString(arg1)) {
-            ST_ShortestPathLength.setWeightAndOrientation(function, arg2, arg1);
+        if (isWeightString(arg2) || isOrientationString(arg1)) {
+            setWeightAndOrientation(arg2, arg1);
         }
     }
-}
 
+    private void setWeightAndOrientation(String weight, String orient) {
+        weightColumn = parseWeight(weight);
+        globalOrientation = parseGlobalOrientation(orient);
+        if (globalOrientation != null) {
+            if (!globalOrientation.equals(UNDIRECTED)) {
+                edgeOrientation = parseEdgeOrientation(orient);
+            }
+        }
+    }
+
+    public String getWeightColumn() {
+        return weightColumn;
+    }
+
+    public String getGlobalOrientation() {
+        return globalOrientation;
+    }
+
+    public String getEdgeOrientation() {
+        return edgeOrientation;
+    }
+}

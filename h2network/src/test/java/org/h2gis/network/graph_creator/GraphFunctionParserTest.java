@@ -32,7 +32,7 @@
  */
 package org.h2gis.network.graph_creator;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
@@ -44,10 +44,10 @@ import static org.junit.Assert.assertEquals;
  */
 public class GraphFunctionParserTest {
 
-    private static GraphFunctionParser parser;
+    private GraphFunctionParser parser;
 
-    @BeforeClass
-    public static void setUp() {
+    @Before
+    public void setUp() {
         parser = new GraphFunctionParser();
     }
 
@@ -101,85 +101,82 @@ public class GraphFunctionParserTest {
         assertEquals(null, parser.parseWeight(null));
     }
 
-    private void checkWeightAndOrientation(ST_ShortestPathLength function, String weight,
-                                           String global, String local) {
-        assertEquals(weight, function.getWeightColumn());
-        assertEquals(global, function.getGlobalOrientation());
-        assertEquals(local, function.getEdgeOrientation());
+    private void checkWeightAndOrientation(GraphFunctionParser p, String weight, String global, String local) {
+        assertEquals(weight, p.getWeightColumn());
+        assertEquals(global, p.getGlobalOrientation());
+        assertEquals(local, p.getEdgeOrientation());
     }
 
     @Test
     public void testWeightOrientationParser() {
-        ST_ShortestPathLength function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, null, null);
-        checkWeightAndOrientation(function, null, null, null);
+        GraphFunctionParser p = new GraphFunctionParser();
+        p.parseWeightAndOrientation(null, null);
+        checkWeightAndOrientation(p, null, null, null);
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "weight", null);
-        checkWeightAndOrientation(function, "weight", null, null);
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("weight", null);
+        checkWeightAndOrientation(p, "weight", null, null);
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "directed - edge_orientation", null);
-        checkWeightAndOrientation(function, null, "directed", "edge_orientation");
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("directed - edge_orientation", null);
+        checkWeightAndOrientation(p, null, "directed", "edge_orientation");
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "reversed - edge_orientation", null);
-        checkWeightAndOrientation(function, null, "reversed", "edge_orientation");
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("reversed - edge_orientation", null);
+        checkWeightAndOrientation(p, null, "reversed", "edge_orientation");
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, null, "undirected");
-        checkWeightAndOrientation(function, null, "undirected", null);
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation(null, "undirected");
+        checkWeightAndOrientation(p, null, "undirected", null);
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, null, "weight");
-        checkWeightAndOrientation(function, "weight", null, null);
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation(null, "weight");
+        checkWeightAndOrientation(p, "weight", null, null);
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, null, "directed - edge_orientation");
-        checkWeightAndOrientation(function, null, "directed", "edge_orientation");
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation(null, "directed - edge_orientation");
+        checkWeightAndOrientation(p, null, "directed", "edge_orientation");
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, null, "reversed - edge_orientation");
-        checkWeightAndOrientation(function, null, "reversed", "edge_orientation");
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation(null, "reversed - edge_orientation");
+        checkWeightAndOrientation(p, null, "reversed", "edge_orientation");
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, null, "undirected");
-        checkWeightAndOrientation(function, null, "undirected", null);
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation(null, "undirected");
+        checkWeightAndOrientation(p, null, "undirected", null);
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "weight", "directed - edge_orientation");
-        checkWeightAndOrientation(function, "weight", "directed", "edge_orientation");
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("weight", "directed - edge_orientation");
+        checkWeightAndOrientation(p, "weight", "directed", "edge_orientation");
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "weight", "reversed - edge_orientation");
-        checkWeightAndOrientation(function, "weight", "reversed", "edge_orientation");
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("weight", "reversed - edge_orientation");
+        checkWeightAndOrientation(p, "weight", "reversed", "edge_orientation");
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "weight", "undirected");
-        checkWeightAndOrientation(function, "weight", "undirected", null);
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("weight", "undirected");
+        checkWeightAndOrientation(p, "weight", "undirected", null);
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "directed - edge_orientation", "weight");
-        checkWeightAndOrientation(function, "weight", "directed", "edge_orientation");
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("directed - edge_orientation", "weight");
+        checkWeightAndOrientation(p, "weight", "directed", "edge_orientation");
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "reversed - edge_orientation", "weight");
-        checkWeightAndOrientation(function, "weight", "reversed", "edge_orientation");
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("reversed - edge_orientation", "weight");
+        checkWeightAndOrientation(p, "weight", "reversed", "edge_orientation");
 
-        function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "undirected", "weight");
-        checkWeightAndOrientation(function, "weight", "undirected", null);
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("undirected", "weight");
+        checkWeightAndOrientation(p, "weight", "undirected", null);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDoubleWeight() {
-        ST_ShortestPathLength function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "weight", "distance");
+        parser.parseWeightAndOrientation("weight", "distance");
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testDoubleOrientation() {
-        ST_ShortestPathLength function = new ST_ShortestPathLength();
-        GraphFunctionParser.parseWeightAndOrientation(function, "undirected", "undirected");
+        parser.parseWeightAndOrientation("undirected", "undirected");
     }
 }

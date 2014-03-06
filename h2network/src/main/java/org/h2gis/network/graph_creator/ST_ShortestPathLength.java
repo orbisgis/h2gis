@@ -45,13 +45,6 @@ import java.sql.Types;
  */
 public class ST_ShortestPathLength extends AbstractFunction implements ScalarFunction {
 
-    private Connection connection;
-
-    private String inputTable;
-    private String weightColumn;
-    private String globalOrientation;
-    private String edgeOrientation;
-
     public static final int SOURCE_INDEX = 1;
     public static final int DESTINATION_INDEX = 2;
     public static final int DISTANCE_INDEX = 3;
@@ -113,23 +106,20 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   int destination,
                                                   String arg1,
                                                   String arg2) throws SQLException {
-        ST_ShortestPathLength function = new ST_ShortestPathLength();
-        function.connection = connection;
-        function.inputTable = inputTable;
-
-        GraphFunctionParser.parseWeightAndOrientation(function, arg1, arg2);
-
         SimpleResultSet output = new SimpleResultSet();
         output.addColumn("SOURCE", Types.INTEGER, 10, 0);
         output.addColumn("DESTINATION", Types.INTEGER, 10, 0);
         output.addColumn("DISTANCE", Types.DOUBLE, 10, 0);
 
+        GraphFunctionParser parser = new GraphFunctionParser();
+        parser.parseWeightAndOrientation(arg1, arg2);
+
         KeyedGraph<VDijkstra, Edge> graph =
                 new GraphCreator<VDijkstra, Edge>(connection,
-                        function.inputTable,
-                        function.weightColumn,
-                        function.globalOrientation,
-                        function.edgeOrientation,
+                        inputTable,
+                        parser.getWeightColumn(),
+                        parser.getGlobalOrientation(),
+                        parser.getEdgeOrientation(),
                         VDijkstra.class,
                         Edge.class).prepareGraph();
 
@@ -138,27 +128,5 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
 
         output.addRow(source, destination, distance);
         return output;
-    }
-
-    protected static void setWeightAndOrientation(ST_ShortestPathLength function, String weight, String orient) {
-        function.weightColumn = GraphFunctionParser.parseWeight(weight);
-        function.globalOrientation = GraphFunctionParser.parseGlobalOrientation(orient);
-        if (function.globalOrientation != null) {
-            if (!function.globalOrientation.equals(GraphFunctionParser.UNDIRECTED)) {
-                function.edgeOrientation = GraphFunctionParser.parseEdgeOrientation(orient);
-            }
-        }
-    }
-
-    public String getWeightColumn() {
-        return weightColumn;
-    }
-
-    public String getGlobalOrientation() {
-        return globalOrientation;
-    }
-
-    public String getEdgeOrientation() {
-        return edgeOrientation;
     }
 }
