@@ -261,7 +261,7 @@ public class SHPDriverFunction implements DriverFunction {
             case 1:
             case 11:
             case 21:
-                return "MULTIPOINT";
+                return "POINT";
             case 3:
             case 13:
             case 23:
