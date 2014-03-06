@@ -136,7 +136,7 @@ public class GraphFunctionParserTest {
         checkWeightAndOrientation(p, null, "reversed", "edge_orientation");
         // U
         p = new GraphFunctionParser();
-        p.parseWeightAndOrientation(null, "undirected");
+        p.parseWeightAndOrientation("undirected", null);
         checkWeightAndOrientation(p, null, "undirected", null);
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation(null, "undirected");
