@@ -26,6 +26,9 @@
 package org.h2gis.network.graph_creator;
 
 import org.h2.tools.SimpleResultSet;
+import org.h2.value.Value;
+import org.h2.value.ValueInt;
+import org.h2.value.ValueString;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.javanetworkanalyzer.alg.Dijkstra;
@@ -37,6 +40,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.Map;
 
 /**
  * ST_ShortestPathLength
@@ -58,39 +62,85 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         return "getShortestPathLength";
     }
 
-    /**
-     * 4. One-to-One unweighted
-     */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
                                                   String orientation,
-                                                  int source,
-                                                  int destination) throws SQLException {
-        return getShortestPathLength(connection, inputTable, orientation, null, source, destination);
+                                                  Value sourceOrTable) throws SQLException {
+        if (sourceOrTable instanceof ValueInt) {
+            int source = sourceOrTable.getInt();
+            // 1: (o, s) = 5(null)
+            return oneToAll(connection, inputTable, orientation, null, source);
+        } else if (sourceOrTable instanceof ValueString) {
+            String table = sourceOrTable.getString();
+            // 2: (o, sdt) = 6(null)
+        }
+        return null;
     }
 
-    /**
-     * 5. One-to-One weighted
-     */
+    public static ResultSet getShortestPathLength(Connection connection,
+                                                  String inputTable,
+                                                  String orientation,
+                                                  Value sourceOrWeight,
+                                                  Value destinationOrSource) throws SQLException {
+        if (sourceOrWeight instanceof ValueInt) {
+            int source = sourceOrWeight.getInt();
+            if (destinationOrSource instanceof ValueInt) {
+                int destination = destinationOrSource.getInt();
+                // 3: (o, s, d) = 7(null)
+                return oneToOne(connection, inputTable, orientation, null, source, destination);
+            } // TODO: else.
+        } else if (sourceOrWeight instanceof ValueString) {
+            String weight = sourceOrWeight.getString();
+            if (destinationOrSource instanceof ValueInt) {
+                int source = destinationOrSource.getInt();
+                // 5: (o, w, s)
+                return oneToAll(connection, inputTable, orientation, weight, source);
+            } // TODO: else.
+        } else {
+            throw new IllegalArgumentException("Unrecognized argument.");
+        }
+        return null;
+    }
+
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
                                                   String orientation,
                                                   String weight,
                                                   int source,
                                                   int destination) throws SQLException {
+        // 7: (o, w, s, d)
+        return oneToOne(connection, inputTable, orientation, weight, source, destination);
+    }
+
+    private static ResultSet oneToOne(Connection connection,
+                                     String inputTable,
+                                     String orientation,
+                                     String weight,
+                                     int source,
+                                     int destination) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
         final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
         final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
-        return oneToOne(graph, dijkstra, output, source, destination);
-    }
-
-    private static ResultSet oneToOne(KeyedGraph<VDijkstra, Edge> graph,
-                                      Dijkstra<VDijkstra, Edge> dijkstra,
-                                      SimpleResultSet output,
-                                      int source,
-                                      int destination) {
+        // 7: (o, w, s, d)
         final double distance = dijkstra.oneToOne(graph.getVertex(source), graph.getVertex(destination));
         output.addRow(source, destination, distance);
+        return output;
+    }
+
+    private static ResultSet oneToAll(Connection connection,
+                                      String inputTable,
+                                      String orientation,
+                                      String weight,
+                                      int source) throws SQLException {
+        final SimpleResultSet output = prepareResultSet();
+        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
+        // 5: (o, w, s)
+        final Map<VDijkstra,Double> distances =
+                dijkstra.oneToMany(graph.getVertex(source), graph.vertexSet());
+        for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
+            output.addRow(source, e.getKey().getID(), e.getValue());
+        }
         return output;
     }
 
