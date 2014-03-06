@@ -101,12 +101,6 @@ public class GraphFunctionParserTest {
         assertEquals(null, parser.parseWeight(null));
     }
 
-    private void checkWeightAndOrientation(GraphFunctionParser p, String weight, String global, String local) {
-        assertEquals(weight, p.getWeightColumn());
-        assertEquals(global, p.getGlobalOrientation());
-        assertEquals(local, p.getEdgeOrientation());
-    }
-
     @Test
     public void testWeightOrientationParser() {
         // D. TODO: Remove
@@ -162,6 +156,12 @@ public class GraphFunctionParserTest {
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("undirected", "weight");
         checkWeightAndOrientation(p, "weight", "undirected", null);
+    }
+
+    private void checkWeightAndOrientation(GraphFunctionParser p, String weight, String global, String local) {
+        assertEquals(weight, p.getWeightColumn());
+        assertEquals(global, p.getGlobalOrientation());
+        assertEquals(local, p.getEdgeOrientation());
     }
 
     @Test(expected = IllegalArgumentException.class)
