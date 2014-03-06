@@ -109,62 +109,56 @@ public class GraphFunctionParserTest {
 
     @Test
     public void testWeightOrientationParser() {
+        // D. TODO: Remove
         GraphFunctionParser p = new GraphFunctionParser();
         p.parseWeightAndOrientation(null, null);
         checkWeightAndOrientation(p, null, null, null);
-
+        // WD. TODO: Remove
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("weight", null);
         checkWeightAndOrientation(p, "weight", null, null);
-
-        p = new GraphFunctionParser();
-        p.parseWeightAndOrientation("directed - edge_orientation", null);
-        checkWeightAndOrientation(p, null, "directed", "edge_orientation");
-
-        p = new GraphFunctionParser();
-        p.parseWeightAndOrientation("reversed - edge_orientation", null);
-        checkWeightAndOrientation(p, null, "reversed", "edge_orientation");
-
-        p = new GraphFunctionParser();
-        p.parseWeightAndOrientation(null, "undirected");
-        checkWeightAndOrientation(p, null, "undirected", null);
-
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation(null, "weight");
         checkWeightAndOrientation(p, "weight", null, null);
-
+        // DO
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("directed - edge_orientation", null);
+        checkWeightAndOrientation(p, null, "directed", "edge_orientation");
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation(null, "directed - edge_orientation");
         checkWeightAndOrientation(p, null, "directed", "edge_orientation");
-
+        // RO
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("reversed - edge_orientation", null);
+        checkWeightAndOrientation(p, null, "reversed", "edge_orientation");
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation(null, "reversed - edge_orientation");
         checkWeightAndOrientation(p, null, "reversed", "edge_orientation");
-
+        // U
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation(null, "undirected");
         checkWeightAndOrientation(p, null, "undirected", null);
-
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation(null, "undirected");
+        checkWeightAndOrientation(p, null, "undirected", null);
+        // WDO
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("weight", "directed - edge_orientation");
         checkWeightAndOrientation(p, "weight", "directed", "edge_orientation");
-
-        p = new GraphFunctionParser();
-        p.parseWeightAndOrientation("weight", "reversed - edge_orientation");
-        checkWeightAndOrientation(p, "weight", "reversed", "edge_orientation");
-
-        p = new GraphFunctionParser();
-        p.parseWeightAndOrientation("weight", "undirected");
-        checkWeightAndOrientation(p, "weight", "undirected", null);
-
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("directed - edge_orientation", "weight");
         checkWeightAndOrientation(p, "weight", "directed", "edge_orientation");
-
+        // WRO
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("weight", "reversed - edge_orientation");
+        checkWeightAndOrientation(p, "weight", "reversed", "edge_orientation");
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("reversed - edge_orientation", "weight");
         checkWeightAndOrientation(p, "weight", "reversed", "edge_orientation");
-
+        // WU
+        p = new GraphFunctionParser();
+        p.parseWeightAndOrientation("weight", "undirected");
+        checkWeightAndOrientation(p, "weight", "undirected", null);
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("undirected", "weight");
         checkWeightAndOrientation(p, "weight", "undirected", null);
