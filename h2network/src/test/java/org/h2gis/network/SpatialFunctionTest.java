@@ -887,6 +887,36 @@ public class SpatialFunctionTest {
         checkU(st, 5, 5, 0.0);
     }
 
+    @Test
+    public void test_ST_ShortestPathLength_1To1_WDO() throws Exception {
+        Statement st = connection.createStatement();
+        checkWDO(st, 1, 1, 0.0);
+        checkWDO(st, 1, 2, 8.0);
+        checkWDO(st, 1, 3, 13.0);
+        checkWDO(st, 1, 4, 5.0);
+        checkWDO(st, 1, 5, 7.0);
+        checkWDO(st, 2, 1, 11.0);
+        checkWDO(st, 2, 2, 0.0);
+        checkWDO(st, 2, 3, 10.0);
+        checkWDO(st, 2, 4, 2.0);
+        checkWDO(st, 2, 5, 4.0);
+        checkWDO(st, 3, 1, 11.0);
+        checkWDO(st, 3, 2, 1.0);
+        checkWDO(st, 3, 3, 0.0);
+        checkWDO(st, 3, 4, 3.0);
+        checkWDO(st, 3, 5, 4.0);
+        checkWDO(st, 4, 1, 9.0);
+        checkWDO(st, 4, 2, 3.0);
+        checkWDO(st, 4, 3, 8.0);
+        checkWDO(st, 4, 4, 0.0);
+        checkWDO(st, 4, 5, 2.0);
+        checkWDO(st, 5, 1, 7.0);
+        checkWDO(st, 5, 2, 7.0);
+        checkWDO(st, 5, 3, 6.0);
+        checkWDO(st, 5, 4, 9.0);
+        checkWDO(st, 5, 5, 0.0);
+    }
+
     private void check(String request, Statement st, int source, int destination, double distance) throws SQLException {
         ResultSet rs = st.executeQuery(
                 "SELECT * FROM ST_ShortestPathLength('cormen_edges', "
