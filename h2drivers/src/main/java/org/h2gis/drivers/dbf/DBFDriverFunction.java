@@ -200,7 +200,7 @@ public class DBFDriverFunction implements DriverFunction {
                 // (C)character (String)
                 case 'c':
                 case 'C':
-                    stringBuilder.append("CHAR(");
+                    stringBuilder.append("VARCHAR(");
                     // Append size
                     int length = header.getFieldLength(idColumn);
                     stringBuilder.append(String.valueOf(length));
