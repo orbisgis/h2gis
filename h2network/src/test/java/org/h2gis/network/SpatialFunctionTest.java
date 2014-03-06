@@ -738,7 +738,7 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_ShortestPathLength_WDOneToOne() throws Exception {
+    public void test_ST_ShortestPathLength_1To1_WD() throws Exception {
         Statement st = connection.createStatement();
         checkWD(st, 1, 1, 0.0);
         checkWD(st, 1, 2, 8.0);
@@ -768,7 +768,7 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_ShortestPathLength_DOneToOne() throws Exception {
+    public void test_ST_ShortestPathLength_1To1_D() throws Exception {
         Statement st = connection.createStatement();
         checkD(st, 1, 1, 0.0);
         checkD(st, 1, 2, 1.0);
@@ -798,13 +798,13 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_ShortestPathLength_DOOneToOne() throws Exception {
+    public void test_ST_ShortestPathLength_1To1_DO() throws Exception {
         Statement st = connection.createStatement();
         checkDO(st, 1, 1, 0.0);
         checkDO(st, 1, 2, 1.0);
         checkDO(st, 1, 3, 2.0);
         checkDO(st, 1, 4, 1.0);
-        checkDO(st, 1, 5, 1.0); // (1,5) now bidirectional
+        checkDO(st, 1, 5, 1.0); // (1,5) bidirectional
         checkDO(st, 2, 1, 3.0);
         checkDO(st, 2, 2, 0.0);
         checkDO(st, 2, 3, 2.0); // (2,3) reversed
@@ -825,6 +825,36 @@ public class SpatialFunctionTest {
         checkDO(st, 5, 3, 1.0);
         checkDO(st, 5, 4, 2.0);
         checkDO(st, 5, 5, 0.0);
+    }
+
+    @Test
+    public void test_ST_ShortestPathLength_1To1_RO() throws Exception {
+        Statement st = connection.createStatement();
+        checkRO(st, 1, 1, 0.0);
+        checkRO(st, 2, 1, 1.0);
+        checkRO(st, 3, 1, 2.0);
+        checkRO(st, 4, 1, 1.0);
+        checkRO(st, 5, 1, 1.0); // (1,5) bidirectional
+        checkRO(st, 1, 2, 3.0);
+        checkRO(st, 2, 2, 0.0);
+        checkRO(st, 3, 2, 2.0); // (2,3) reversed
+        checkRO(st, 4, 2, 1.0);
+        checkRO(st, 5, 2, 2.0);
+        checkRO(st, 1, 3, 2.0);
+        checkRO(st, 2, 3, 1.0); // (2,3) reversed
+        checkRO(st, 3, 3, 0.0);
+        checkRO(st, 4, 3, 2.0); // (2,3) reversed
+        checkRO(st, 5, 3, 1.0);
+        checkRO(st, 1, 4, 2.0);
+        checkRO(st, 2, 4, 1.0);
+        checkRO(st, 3, 4, 1.0);
+        checkRO(st, 4, 4, 0.0);
+        checkRO(st, 5, 4, 1.0);
+        checkRO(st, 1, 5, 1.0);
+        checkRO(st, 2, 5, 2.0);
+        checkRO(st, 3, 5, 1.0);
+        checkRO(st, 4, 5, 2.0);
+        checkRO(st, 5, 5, 0.0);
     }
 
     private void check(String request, Statement st, int source, int destination, double distance) throws SQLException {
