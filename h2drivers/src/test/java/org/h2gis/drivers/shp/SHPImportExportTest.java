@@ -147,7 +147,7 @@ public class SHPImportExportTest {
         assertEquals("GEOMETRY", rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("CHAR", rs.getString("TYPE_NAME"));
+        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID",rs.getString("COLUMN_NAME"));
