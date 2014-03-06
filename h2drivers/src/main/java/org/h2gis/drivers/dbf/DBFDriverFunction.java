@@ -111,7 +111,7 @@ public class DBFDriverFunction implements DriverFunction {
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
             st.execute(String.format("CREATE TABLE %s (%s)", TableLocation.parse(tableReference),
-                    getSQLColumnTypes(dbfHeader)));
+                    getSQLColumnTypes(dbfHeader, JDBCUtilities.isH2DataBase(connection.getMetaData()))));
             st.close();
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(
@@ -183,13 +183,18 @@ public class DBFDriverFunction implements DriverFunction {
      * @param header DBAse file header
      * @return Array of columns ex: ["id INTEGER", "len DOUBLE"]
      */
-    public static String getSQLColumnTypes(DbaseFileHeader header) throws IOException {
+    public static String getSQLColumnTypes(DbaseFileHeader header, boolean isH2Database) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         for(int idColumn = 0; idColumn < header.getNumFields(); idColumn++) {
             if(idColumn > 0) {
                 stringBuilder.append(", ");
             }
-            stringBuilder.append(TableLocation.escapeIdentifier(header.getFieldName(idColumn)));
+            String fieldName = header.getFieldName(idColumn);
+            if(isH2Database) {
+                //In h2 all field must be upper case in order to avoid user have to use double quotes
+                fieldName = fieldName.toUpperCase();
+            }
+            stringBuilder.append(TableLocation.quoteIdentifier(fieldName,isH2Database));
             stringBuilder.append(" ");
             switch (header.getFieldType(idColumn)) {
                 // (L)logical (T,t,F,f,Y,y,N,n)

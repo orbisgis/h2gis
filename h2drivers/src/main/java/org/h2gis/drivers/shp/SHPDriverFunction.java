@@ -32,6 +32,7 @@ import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.drivers.shp.internal.ShapeType;
 import org.h2gis.drivers.shp.internal.ShapefileHeader;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
@@ -59,6 +60,7 @@ public class SHPDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        TableLocation location = TableLocation.parse(tableReference);
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         ProgressVisitor copyProgress = progress.subProcess(recordCount);
         //
@@ -72,7 +74,7 @@ public class SHPDriverFunction implements DriverFunction {
         // Read table content
         Statement st = connection.createStatement();
         try {
-            ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableReference));
+            ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
             try {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData);
@@ -152,7 +154,7 @@ public class SHPDriverFunction implements DriverFunction {
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
-            String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader);
+            String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, JDBCUtilities.isH2DataBase(connection.getMetaData()));
             if(!types.isEmpty()) {
                 types = ", " + types;
             }

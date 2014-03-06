@@ -97,7 +97,7 @@ public class DBFImportExportTest {
         final String path = SHPEngineTest.class.getResource("waternetwork.dbf").getPath();
         DriverFunction driver = new DBFDriverFunction();
         st.execute("DROP TABLE IF EXISTS waternetwork");
-        driver.importFile(connection, "waternetwork", new File(path), new EmptyProgressVisitor());
+        driver.importFile(connection, "WATERNETWORK", new File(path), new EmptyProgressVisitor());
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
