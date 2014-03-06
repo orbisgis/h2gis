@@ -857,6 +857,36 @@ public class SpatialFunctionTest {
         checkRO(st, 5, 5, 0.0);
     }
 
+    @Test
+    public void test_ST_ShortestPathLength_1To1_U() throws Exception {
+        Statement st = connection.createStatement();
+        checkU(st, 1, 1, 0.0);
+        checkU(st, 1, 2, 1.0);
+        checkU(st, 1, 3, 2.0);
+        checkU(st, 1, 4, 1.0);
+        checkU(st, 1, 5, 1.0);
+        checkU(st, 2, 1, 1.0);
+        checkU(st, 2, 2, 0.0);
+        checkU(st, 2, 3, 1.0);
+        checkU(st, 2, 4, 1.0);
+        checkU(st, 2, 5, 2.0);
+        checkU(st, 3, 1, 2.0);
+        checkU(st, 3, 2, 1.0);
+        checkU(st, 3, 3, 0.0);
+        checkU(st, 3, 4, 1.0);
+        checkU(st, 3, 5, 1.0);
+        checkU(st, 4, 1, 1.0);
+        checkU(st, 4, 2, 1.0);
+        checkU(st, 4, 3, 1.0);
+        checkU(st, 4, 4, 0.0);
+        checkU(st, 4, 5, 1.0);
+        checkU(st, 5, 1, 1.0);
+        checkU(st, 5, 2, 2.0);
+        checkU(st, 5, 3, 1.0);
+        checkU(st, 5, 4, 1.0);
+        checkU(st, 5, 5, 0.0);
+    }
+
     private void check(String request, Statement st, int source, int destination, double distance) throws SQLException {
         ResultSet rs = st.executeQuery(
                 "SELECT * FROM ST_ShortestPathLength('cormen_edges', "
