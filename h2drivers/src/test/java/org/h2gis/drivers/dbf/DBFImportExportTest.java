@@ -24,7 +24,6 @@
  */
 package org.h2gis.drivers.dbf;
 
-import org.h2.util.StringUtils;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.shp.SHPEngineTest;
 import org.h2gis.h2spatial.CreateSpatialExtension;
@@ -102,7 +101,7 @@ public class DBFImportExportTest {
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("CHAR", rs.getString("TYPE_NAME"));
+        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID",rs.getString("COLUMN_NAME"));
