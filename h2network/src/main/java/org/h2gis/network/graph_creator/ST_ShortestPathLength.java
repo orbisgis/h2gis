@@ -58,75 +58,63 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         return "getShortestPathLength";
     }
 
-//    /**
-//     * @param connection  Connection
-//     * @param inputTable  Input table name
-//     * @param source      Source vertex ID
-//     * @param destination Destination vertex ID
-//     * @return Source-Destination distance table
-//     * @throws SQLException
-//     */
-//    public static ResultSet getShortestPathLength(Connection connection,
-//                                                  String inputTable,
-//                                                  int source,
-//                                                  int destination) throws SQLException {
-//        return getShortestPathLength(connection, inputTable, source, destination, null);
-//    }
-
     /**
-     * @param connection  Connection
-     * @param inputTable  Input table name
-     * @param source      Source vertex ID
-     * @param destination Destination vertex ID
-     * @param arg1
-     * @return Source-Destination distance table
-     * @throws SQLException
+     * 4. One-to-One unweighted
      */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
+                                                  String orientation,
                                                   int source,
-                                                  int destination,
-                                                  String arg1) throws SQLException {
-        return getShortestPathLength(connection, inputTable, source, destination, arg1, null);
+                                                  int destination) throws SQLException {
+        return getShortestPathLength(connection, inputTable, orientation, null, source, destination);
     }
 
     /**
-     * @param connection   Connection
-     * @param inputTable   Input table name
-     * @param source       Source vertex ID
-     * @param destination  Destination vertex ID
-     * @param arg1         First arg
-     * @param arg2         Second arg
-     * @return Source-Destination distance table
-     * @throws SQLException
+     * 5. One-to-One weighted
      */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
+                                                  String orientation,
+                                                  String weight,
                                                   int source,
-                                                  int destination,
-                                                  String arg1,
-                                                  String arg2) throws SQLException {
+                                                  int destination) throws SQLException {
+        final SimpleResultSet output = prepareResultSet();
+        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
+        return oneToOne(graph, dijkstra, output, source, destination);
+    }
+
+    private static ResultSet oneToOne(KeyedGraph<VDijkstra, Edge> graph,
+                                      Dijkstra<VDijkstra, Edge> dijkstra,
+                                      SimpleResultSet output,
+                                      int source,
+                                      int destination) {
+        final double distance = dijkstra.oneToOne(graph.getVertex(source), graph.getVertex(destination));
+        output.addRow(source, destination, distance);
+        return output;
+    }
+
+    private static SimpleResultSet prepareResultSet() {
         SimpleResultSet output = new SimpleResultSet();
         output.addColumn("SOURCE", Types.INTEGER, 10, 0);
         output.addColumn("DESTINATION", Types.INTEGER, 10, 0);
         output.addColumn("DISTANCE", Types.DOUBLE, 10, 0);
-
-        GraphFunctionParser parser = new GraphFunctionParser();
-        parser.parseWeightAndOrientation(arg1, arg2);
-
-        KeyedGraph<VDijkstra, Edge> graph =
-                new GraphCreator<VDijkstra, Edge>(connection,
-                        inputTable,
-                        parser.getWeightColumn(),
-                        parser.getGlobalOrientation(),
-                        parser.getEdgeOrientation(),
-                        VDijkstra.class,
-                        Edge.class).prepareGraph();
-
-        Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
-        final double distance = dijkstra.oneToOne(graph.getVertex(source), graph.getVertex(destination));
-
-        output.addRow(source, destination, distance);
         return output;
+    }
+
+    private static KeyedGraph<VDijkstra, Edge> prepareGraph(Connection connection,
+                                                            String inputTable,
+                                                            String orientation,
+                                                            String weight) throws SQLException {
+        GraphFunctionParser parser = new GraphFunctionParser();
+        parser.parseWeightAndOrientation(orientation, weight);
+
+        return new GraphCreator<VDijkstra, Edge>(connection,
+                inputTable,
+                parser.getWeightColumn(),
+                parser.getGlobalOrientation(),
+                parser.getEdgeOrientation(),
+                VDijkstra.class,
+                Edge.class).prepareGraph();
     }
 }

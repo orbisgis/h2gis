@@ -217,11 +217,15 @@ public class ST_ShortestPathLengthTest {
         checkWU(st, 5, 5, 0.0);
     }
 
-    private void check(String request, Statement st, int source, int destination, double distance) throws SQLException {
+    private void check(String orientation, Statement st, int source, int destination, double distance) throws SQLException {
+        check(orientation, "", st, source, destination, distance);
+    }
+
+    private void check(String orientation, String weight, Statement st, int source, int destination, double distance) throws SQLException {
         ResultSet rs = st.executeQuery(
                 "SELECT * FROM ST_ShortestPathLength('cormen_edges', "
-                        + source + ", " + destination
-                        + request + ")");
+                        + orientation + ((!weight.isEmpty()) ? ", " + weight : "")
+                        + ", " + source + ", " + destination + ")");
         assertTrue(rs.next());
         assertEquals(source, rs.getInt(ST_ShortestPathLength.SOURCE_INDEX));
         assertEquals(destination, rs.getInt(ST_ShortestPathLength.DESTINATION_INDEX));
@@ -230,29 +234,29 @@ public class ST_ShortestPathLengthTest {
     }
 
     private void checkDO(Statement st, int source, int destination, double distance) throws SQLException {
-        check(", 'directed - edge_orientation'", st, source, destination, distance);
+        check("'directed - edge_orientation'", st, source, destination, distance);
     }
 
     private void checkRO(Statement st, int source, int destination, double distance) throws SQLException {
-        check(", 'reversed - edge_orientation'", st, source, destination, distance);
+        check("'reversed - edge_orientation'", st, source, destination, distance);
     }
 
     private void checkU(Statement st, int source, int destination, double distance) throws SQLException {
-        check(", 'undirected'", st, source, destination, distance);
+        check("'undirected'", st, source, destination, distance);
     }
 
     private void checkWDO(Statement st, int source, int destination, double distance) throws SQLException {
-        check(", 'weight', 'directed - edge_orientation'", st, source, destination, distance);
-        check(", 'directed - edge_orientation', 'weight'", st, source, destination, distance);
+        check("'directed - edge_orientation'", "'weight'", st, source, destination, distance);
+        check("'weight'", "'directed - edge_orientation'", st, source, destination, distance);
     }
 
     private void checkWRO(Statement st, int source, int destination, double distance) throws SQLException {
-        check(", 'weight', 'reversed - edge_orientation'", st, source, destination, distance);
-        check(", 'reversed - edge_orientation', 'weight'", st, source, destination, distance);
+        check("'reversed - edge_orientation'", "'weight'", st, source, destination, distance);
+        check("'weight'", "'reversed - edge_orientation'", st, source, destination, distance);
     }
 
     private void checkWU(Statement st, int source, int destination, double distance) throws SQLException {
-        check(", 'weight', 'undirected'", st, source, destination, distance);
-        check(", 'undirected', 'weight'", st, source, destination, distance);
+        check("'undirected'", "'weight'", st, source, destination, distance);
+        check("'weight'", "'undirected'", st, source, destination, distance);
     }
 }
