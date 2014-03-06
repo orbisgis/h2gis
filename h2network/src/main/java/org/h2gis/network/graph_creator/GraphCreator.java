@@ -52,29 +52,27 @@ public class GraphCreator<V extends VId, E extends Edge> {
         this.connection = connection;
         this.inputTable = inputTable;
         this.weightColumn = weightColumn;
-        this.globalOrientation = getGlobalOrientation(globalOrientationString);
+        this.globalOrientation = parseGlobalOrientation(globalOrientationString);
         this.edgeOrientationColumnName = edgeOrientationColumnName;
         this.vertexClass = vertexClass;
         this.edgeClass = edgeClass;
         this.edges = connection.createStatement().executeQuery("SELECT * FROM " + inputTable);
     }
 
-    private Orientation getGlobalOrientation(String globalOrientationString) {
-        // Determine the graph type. We check for directed and reversed.
-        // Default case is directed.
-        final GraphCreator.Orientation globalOrientation;
-        if (globalOrientationString != null) {
-            if (globalOrientationString.equalsIgnoreCase(GraphFunctionParser.REVERSED)) {
-                globalOrientation = GraphCreator.Orientation.REVERSED;
-            } else if (globalOrientationString.equalsIgnoreCase(GraphFunctionParser.UNDIRECTED)) {
-                globalOrientation = GraphCreator.Orientation.UNDIRECTED;
-            } else { // default
-                globalOrientation = GraphCreator.Orientation.DIRECTED;
-            }
-        } else { // default
-            globalOrientation = GraphCreator.Orientation.DIRECTED;
+    private Orientation parseGlobalOrientation(String globalOrientationString) {
+        // Determine the global orientation. No default cases allowed.
+        if (globalOrientationString == null) {
+            throw new IllegalArgumentException("You must specify the global orientation.");
         }
-        return globalOrientation;
+        if (globalOrientationString.equalsIgnoreCase(GraphFunctionParser.DIRECTED)) {
+            return GraphCreator.Orientation.DIRECTED;
+        } else if (globalOrientationString.equalsIgnoreCase(GraphFunctionParser.REVERSED)) {
+            return GraphCreator.Orientation.REVERSED;
+        } else if (globalOrientationString.equalsIgnoreCase(GraphFunctionParser.UNDIRECTED)) {
+            return GraphCreator.Orientation.UNDIRECTED;
+        } else {
+            throw new IllegalArgumentException("Unrecognized global orientation.");
+        }
     }
 
     /**

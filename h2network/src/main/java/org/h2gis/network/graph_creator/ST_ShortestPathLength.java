@@ -58,20 +58,20 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         return "getShortestPathLength";
     }
 
-    /**
-     * @param connection  Connection
-     * @param inputTable  Input table name
-     * @param source      Source vertex ID
-     * @param destination Destination vertex ID
-     * @return Source-Destination distance table
-     * @throws SQLException
-     */
-    public static ResultSet getShortestPathLength(Connection connection,
-                                                  String inputTable,
-                                                  int source,
-                                                  int destination) throws SQLException {
-        return getShortestPathLength(connection, inputTable, source, destination, null);
-    }
+//    /**
+//     * @param connection  Connection
+//     * @param inputTable  Input table name
+//     * @param source      Source vertex ID
+//     * @param destination Destination vertex ID
+//     * @return Source-Destination distance table
+//     * @throws SQLException
+//     */
+//    public static ResultSet getShortestPathLength(Connection connection,
+//                                                  String inputTable,
+//                                                  int source,
+//                                                  int destination) throws SQLException {
+//        return getShortestPathLength(connection, inputTable, source, destination, null);
+//    }
 
     /**
      * @param connection  Connection

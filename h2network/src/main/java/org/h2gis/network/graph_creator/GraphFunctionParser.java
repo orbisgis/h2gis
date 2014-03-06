@@ -120,6 +120,12 @@ public class GraphFunctionParser {
     }
 
     public void parseWeightAndOrientation(String arg1, String arg2) {
+        if ((arg1 == null && arg2 == null)
+                || (isWeightString(arg1) && arg2 == null)
+                || (arg1 == null && isWeightString(arg2))) {
+            // Disable default orientations (D and WD).
+            throw new IllegalArgumentException("You must specify the orientation.");
+        }
         if (isWeightString(arg1) && isWeightString(arg2)) {
             throw new IllegalArgumentException("Cannot specify the weight column twice.");
         }
@@ -129,7 +135,7 @@ public class GraphFunctionParser {
         if (isWeightString(arg1) || isOrientationString(arg2)) {
             setWeightAndOrientation(arg1, arg2);
         }
-        if (isWeightString(arg2) || isOrientationString(arg1)) {
+        if (isOrientationString(arg1) || isWeightString(arg2)) {
             setWeightAndOrientation(arg2, arg1);
         }
     }

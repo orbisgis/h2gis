@@ -103,19 +103,8 @@ public class GraphFunctionParserTest {
 
     @Test
     public void testWeightOrientationParser() {
-        // D. TODO: Remove
-        GraphFunctionParser p = new GraphFunctionParser();
-        p.parseWeightAndOrientation(null, null);
-        checkWeightAndOrientation(p, null, null, null);
-        // WD. TODO: Remove
-        p = new GraphFunctionParser();
-        p.parseWeightAndOrientation("weight", null);
-        checkWeightAndOrientation(p, "weight", null, null);
-        p = new GraphFunctionParser();
-        p.parseWeightAndOrientation(null, "weight");
-        checkWeightAndOrientation(p, "weight", null, null);
         // DO
-        p = new GraphFunctionParser();
+        GraphFunctionParser p = new GraphFunctionParser();
         p.parseWeightAndOrientation("directed - edge_orientation", null);
         checkWeightAndOrientation(p, null, "directed", "edge_orientation");
         p = new GraphFunctionParser();
@@ -162,6 +151,21 @@ public class GraphFunctionParserTest {
         assertEquals(weight, p.getWeightColumn());
         assertEquals(global, p.getGlobalOrientation());
         assertEquals(local, p.getEdgeOrientation());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDFail() {
+        parser.parseWeightAndOrientation(null, null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWDFail1() {
+        parser.parseWeightAndOrientation("weight", null);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testWDFail2() {
+        parser.parseWeightAndOrientation(null, "weight");
     }
 
     @Test(expected = IllegalArgumentException.class)

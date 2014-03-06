@@ -38,66 +38,6 @@ public class ST_ShortestPathLengthTest {
     }
 
     @Test
-    public void WD() throws Exception {
-        Statement st = connection.createStatement();
-        checkWD(st, 1, 1, 0.0);
-        checkWD(st, 1, 2, 8.0);
-        checkWD(st, 1, 3, 9.0);
-        checkWD(st, 1, 4, 5.0);
-        checkWD(st, 1, 5, 7.0);
-        checkWD(st, 2, 1, 11.0);
-        checkWD(st, 2, 2, 0.0);
-        checkWD(st, 2, 3, 1.0);
-        checkWD(st, 2, 4, 2.0);
-        checkWD(st, 2, 5, 4.0);
-        checkWD(st, 3, 1, 11.0);
-        checkWD(st, 3, 2, 19.0);
-        checkWD(st, 3, 3, 0.0);
-        checkWD(st, 3, 4, 16.0);
-        checkWD(st, 3, 5, 4.0);
-        checkWD(st, 4, 1, 9.0);
-        checkWD(st, 4, 2, 3.0);
-        checkWD(st, 4, 3, 4.0);
-        checkWD(st, 4, 4, 0.0);
-        checkWD(st, 4, 5, 2.0);
-        checkWD(st, 5, 1, 7.0);
-        checkWD(st, 5, 2, 15.0);
-        checkWD(st, 5, 3, 6.0);
-        checkWD(st, 5, 4, 12.0);
-        checkWD(st, 5, 5, 0.0);
-    }
-
-    @Test
-    public void D() throws Exception {
-        Statement st = connection.createStatement();
-        checkD(st, 1, 1, 0.0);
-        checkD(st, 1, 2, 1.0);
-        checkD(st, 1, 3, 2.0);
-        checkD(st, 1, 4, 1.0);
-        checkD(st, 1, 5, 2.0);
-        checkD(st, 2, 1, 3.0);
-        checkD(st, 2, 2, 0.0);
-        checkD(st, 2, 3, 1.0);
-        checkD(st, 2, 4, 1.0);
-        checkD(st, 2, 5, 2.0);
-        checkD(st, 3, 1, 2.0);
-        checkD(st, 3, 2, 3.0);
-        checkD(st, 3, 3, 0.0);
-        checkD(st, 3, 4, 3.0);
-        checkD(st, 3, 5, 1.0);
-        checkD(st, 4, 1, 2.0);
-        checkD(st, 4, 2, 1.0);
-        checkD(st, 4, 3, 1.0);
-        checkD(st, 4, 4, 0.0);
-        checkD(st, 4, 5, 1.0);
-        checkD(st, 5, 1, 1.0);
-        checkD(st, 5, 2, 2.0);
-        checkD(st, 5, 3, 1.0);
-        checkD(st, 5, 4, 2.0);
-        checkD(st, 5, 5, 0.0);
-    }
-
-    @Test
     public void DO() throws Exception {
         Statement st = connection.createStatement();
         checkDO(st, 1, 1, 0.0);
@@ -289,10 +229,6 @@ public class ST_ShortestPathLengthTest {
         assertFalse(rs.next());
     }
 
-    private void checkD(Statement st, int source, int destination, double distance) throws SQLException {
-        check("", st, source, destination, distance);
-    }
-
     private void checkDO(Statement st, int source, int destination, double distance) throws SQLException {
         check(", 'directed - edge_orientation'", st, source, destination, distance);
     }
@@ -303,10 +239,6 @@ public class ST_ShortestPathLengthTest {
 
     private void checkU(Statement st, int source, int destination, double distance) throws SQLException {
         check(", 'undirected'", st, source, destination, distance);
-    }
-
-    private void checkWD(Statement st, int source, int destination, double distance) throws SQLException {
-        check(", 'weight'", st, source, destination, distance);
     }
 
     private void checkWDO(Statement st, int source, int destination, double distance) throws SQLException {
