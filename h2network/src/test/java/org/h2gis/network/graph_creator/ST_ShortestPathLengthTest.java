@@ -347,6 +347,54 @@ public class ST_ShortestPathLengthTest {
         oneToAll(W, DO, st, 5, new double[]{7.0, 7.0, 6.0, 9.0, 0.0});
     }
 
+    @Test
+    public void oneToAllRO() throws Exception {
+        oneToAll(RO, st, 1, new double[]{0.0, 3.0, 2.0, 2.0, 1.0});
+        oneToAll(RO, st, 2, new double[]{1.0, 0.0, 1.0, 1.0, 2.0});
+        oneToAll(RO, st, 3, new double[]{2.0, 2.0, 0.0, 1.0, 1.0});
+        oneToAll(RO, st, 4, new double[]{1.0, 1.0, 2.0, 0.0, 2.0});
+        oneToAll(RO, st, 5, new double[]{1.0, 2.0, 1.0, 1.0, 0.0});
+    }
+
+    @Test
+    public void oneToAllWRO() throws Exception {
+        oneToAll(RO, W, st, 1, new double[]{0.0, 11.0, 11.0, 9.0, 7.0});
+        oneToAll(RO, W, st, 2, new double[]{8.0, 0.0, 1.0, 3.0, 7.0});
+        oneToAll(RO, W, st, 3, new double[]{13.0, 10.0, 0.0, 8.0, 6.0});
+        oneToAll(RO, W, st, 4, new double[]{5.0, 2.0, 3.0, 0.0, 9.0});
+        oneToAll(RO, W, st, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+
+        oneToAll(W, RO, st, 1, new double[]{0.0, 11.0, 11.0, 9.0, 7.0});
+        oneToAll(W, RO, st, 2, new double[]{8.0, 0.0, 1.0, 3.0, 7.0});
+        oneToAll(W, RO, st, 3, new double[]{13.0, 10.0, 0.0, 8.0, 6.0});
+        oneToAll(W, RO, st, 4, new double[]{5.0, 2.0, 3.0, 0.0, 9.0});
+        oneToAll(W, RO, st, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+    }
+
+    @Test
+    public void oneToAllU() throws Exception {
+        oneToAll(U, st, 1, new double[]{0.0,  1.0,  2.0,  1.0,  1.0});
+        oneToAll(U, st, 2, new double[]{1.0,  0.0,  1.0,  1.0,  2.0});
+        oneToAll(U, st, 3, new double[]{2.0,  1.0,  0.0,  1.0,  1.0});
+        oneToAll(U, st, 4, new double[]{1.0,  1.0,  1.0,  0.0,  1.0});
+        oneToAll(U, st, 5, new double[]{1.0,  2.0,  1.0,  1.0,  0.0});
+    }
+
+    @Test
+    public void oneToAllWU() throws Exception {
+        oneToAll(U, W, st, 1, new double[]{0.0, 7.0, 8.0, 5.0, 7.0});
+        oneToAll(U, W, st, 2, new double[]{7.0, 0.0, 1.0, 2.0, 4.0});
+        oneToAll(U, W, st, 3, new double[]{8.0, 1.0, 0.0, 3.0, 4.0});
+        oneToAll(U, W, st, 4, new double[]{5.0, 2.0, 3.0, 0.0, 2.0});
+        oneToAll(U, W, st, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+
+        oneToAll(W, U, st, 1, new double[]{0.0, 7.0, 8.0, 5.0, 7.0});
+        oneToAll(W, U, st, 2, new double[]{7.0, 0.0, 1.0, 2.0, 4.0});
+        oneToAll(W, U, st, 3, new double[]{8.0, 1.0, 0.0, 3.0, 4.0});
+        oneToAll(W, U, st, 4, new double[]{5.0, 2.0, 3.0, 0.0, 2.0});
+        oneToAll(W, U, st, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+    }
+
     private void oneToAll(String orientation, String weight, Statement st, int source, double[] distances) throws SQLException {
         ResultSet rs = st.executeQuery(
                 "SELECT * FROM ST_ShortestPathLength('cormen_edges', "
