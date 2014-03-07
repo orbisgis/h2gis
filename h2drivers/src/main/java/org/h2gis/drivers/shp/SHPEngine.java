@@ -48,7 +48,7 @@ public class SHPEngine extends FileEngine<SHPDriver> {
     @Override
     protected SHPDriver createDriver(File filePath, List<String> args) throws IOException {
         SHPDriver driver = new SHPDriver();
-        driver.initDriverFromFile(filePath);
+        driver.initDriverFromFile(filePath, args.size() > 1 ? args.get(1) : null);
         return driver;
     }
 

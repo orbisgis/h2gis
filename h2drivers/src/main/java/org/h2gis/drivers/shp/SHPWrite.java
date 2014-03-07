@@ -48,8 +48,29 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
         return "exportTable";  //To change body of implemented methods use File | Settings | File Templates.
     }
 
+    /**
+     * Read a table and write it into a shape file.
+     * @param connection Active connection
+     * @param fileName Shape file name
+     * @param tableReference Table name
+     * @throws IOException
+     * @throws SQLException
+     */
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+        exportTable(connection, fileName, tableReference, null);
+    }
+
+    /**
+     * Read a table and write it into a shape file.
+     * @param connection Active connection
+     * @param fileName Shape file name
+     * @param tableReference Table name
+     * @param encoding File encoding
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void exportTable(Connection connection, String fileName, String tableReference,String encoding) throws IOException, SQLException {
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        shpDriverFunction.exportTable(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
+        shpDriverFunction.exportTable(connection, tableReference, new File(fileName), new EmptyProgressVisitor(), encoding);
     }
 }

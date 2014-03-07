@@ -80,7 +80,7 @@ public class SHPImportExportTest {
         // Read this shape file to check values
         assertTrue(shpFile.exists());
         SHPDriver shpDriver = new SHPDriver();
-        shpDriver.initDriverFromFile(shpFile);
+        shpDriver.initDriverFromFile(shpFile, null);
         shpDriver.setGeometryFieldIndex(1);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
@@ -106,7 +106,7 @@ public class SHPImportExportTest {
         // Read this shape file to check values
         assertTrue(shpFile.exists());
         SHPDriver shpDriver = new SHPDriver();
-        shpDriver.initDriverFromFile(shpFile);
+        shpDriver.initDriverFromFile(shpFile, null);
         shpDriver.setGeometryFieldIndex(0);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
@@ -189,7 +189,7 @@ public class SHPImportExportTest {
         // Read this shape file to check values
         assertTrue(shpFile.exists());
         SHPDriver shpDriver = new SHPDriver();
-        shpDriver.initDriverFromFile(shpFile);
+        shpDriver.initDriverFromFile(shpFile, null);
         shpDriver.setGeometryFieldIndex(0);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());

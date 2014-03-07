@@ -119,9 +119,10 @@ public class SHPDriver implements FileDriver {
     /**
      * Init this driver from existing files, then open theses files.
      * @param shpFile Shape file path.
+     * @param enforceEncoding If defined use this encoding instead of the one defined in dbf header.
      * @throws IOException
      */
-    public void initDriverFromFile(File shpFile) throws IOException {             // Read columns from files metadata
+    public void initDriverFromFile(File shpFile, String enforceEncoding) throws IOException {             // Read columns from files metadata
         this.shpFile = shpFile;
         File dbfFile = null;
         // Find appropriate file extension for shx and dbf, maybe SHX or Shx..
@@ -142,7 +143,7 @@ public class SHPDriver implements FileDriver {
             }
         }
         if(dbfFile != null) {
-            dbfDriver.initDriverFromFile(dbfFile, null);
+            dbfDriver.initDriverFromFile(dbfFile, enforceEncoding);
         } else {
             throw new IllegalArgumentException("DBF File not found");
         }
