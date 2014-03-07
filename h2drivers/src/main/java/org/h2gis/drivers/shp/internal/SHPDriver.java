@@ -122,7 +122,7 @@ public class SHPDriver implements FileDriver {
      * @throws IOException
      */
     public void initDriverFromFile(File shpFile) throws IOException {
-        initDriverFromFile(shpFile);
+        initDriverFromFile(shpFile, null);
     }
 
     /**
