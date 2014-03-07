@@ -78,6 +78,7 @@ public class DbaseFileHeader {
     /** @see "https://github.com/infused/dbf/blob/master/lib/dbf/encodings.rb" */
     private static Map<Byte,String> CODE_PAGE_ENCODING = new HashMap<Byte, String>();
     static {
+        CODE_PAGE_ENCODING.put((byte) 0x00,"UTF-8");          // UTF-8
         CODE_PAGE_ENCODING.put((byte) 0x01,"cp437");          // U.S. MS–DOS
         CODE_PAGE_ENCODING.put((byte) 0x02,"cp850");          // International MS–DOS
         CODE_PAGE_ENCODING.put((byte) 0x03, DEFAULT_ENCODING);// Windows ANSI
