@@ -26,6 +26,7 @@ public class ST_ShortestPathLengthTest {
     private static final String RO = "'reversed - edge_orientation'";
     private static final String U = "'undirected'";
     private static final String W = "'weight'";
+    private static final String SOURCE_DEST_TABLE = "'source_dest'";
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -34,6 +35,7 @@ public class ST_ShortestPathLengthTest {
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
         GraphCreatorTest.registerCormenGraph(connection);
+        registerSourceDestinationTable(connection);
     }
 
     @Before
@@ -49,6 +51,21 @@ public class ST_ShortestPathLengthTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+
+    private static void registerSourceDestinationTable(Connection connection) throws SQLException {
+        final Statement st = connection.createStatement();
+        try {
+            st.execute("CREATE TABLE source_dest(source INT, destination INT);" +
+                    "INSERT INTO source_dest VALUES "
+                    + "(1, 1), (1, 2), (1, 3), (1, 4), (1, 5),"
+                    + "(2, 1), (2, 2), (2, 3), (2, 4), (2, 5),"
+                    + "(3, 1), (3, 2), (3, 3), (3, 4), (3, 5),"
+                    + "(4, 1), (4, 2), (4, 3), (4, 4), (4, 5),"
+                    + "(5, 1), (5, 2), (5, 3), (5, 4), (5, 5);");
+        } finally {
+            st.close();
+        }
     }
 
     // ************************** One-to-One ****************************************
@@ -448,5 +465,41 @@ public class ST_ShortestPathLengthTest {
 
     private void oneToAll(String orientation, Statement st, int source, double[] distances) throws SQLException {
         oneToAll(orientation, null, st, source, distances);
+    }
+
+    // ************************** Many-to-Many ****************************************
+
+    @Test
+    public void manyToManyDO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'directed - edge_orientation', 'source_dest')
+        final double[][] distances = {{0.0, 1.0, 2.0, 1.0, 1.0},
+                                      {3.0, 0.0, 2.0, 1.0, 2.0},
+                                      {2.0, 1.0, 0.0, 2.0, 1.0},
+                                      {2.0, 1.0, 1.0, 0.0, 1.0},
+                                      {1.0, 2.0, 1.0, 2.0, 0.0}};
+        manyToMany(DO, st, SOURCE_DEST_TABLE, distances);
+    }
+
+    private void manyToMany(String orientation, String weight, Statement st,
+                            String sourceDestinationTable, double[][] distances) throws SQLException {
+        ResultSet rs = st.executeQuery(
+                "SELECT * FROM ST_ShortestPathLength('cormen_edges', "
+                        + orientation + ((weight != null) ? ", " + weight : "")
+                        + ", " + sourceDestinationTable + ")");
+        int count = 0;
+        while (rs.next()) {
+            final int source = rs.getInt(ST_ShortestPathLength.SOURCE_INDEX);
+            final int destination = rs.getInt(ST_ShortestPathLength.DESTINATION_INDEX);
+            final double distance = rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX);
+            Assert.assertEquals(distances[source - 1][destination - 1], distance, TOLERANCE);
+            count++;
+        }
+        Assert.assertEquals(25, count);
+    }
+
+    private void manyToMany(String orientation, Statement st,
+                            String sourceDestinationTable, double[][] distances) throws SQLException {
+        manyToMany(orientation, null, st, sourceDestinationTable, distances);
     }
 }

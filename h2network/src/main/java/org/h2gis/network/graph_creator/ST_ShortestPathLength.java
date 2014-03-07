@@ -36,11 +36,11 @@ import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * ST_ShortestPathLength
@@ -52,6 +52,9 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     public static final int SOURCE_INDEX = 1;
     public static final int DESTINATION_INDEX = 2;
     public static final int DISTANCE_INDEX = 3;
+    public static final String SOURCE  = "SOURCE";
+    public static final String DESTINATION  = "DESTINATION";
+    public static final String DISTANCE  = "DISTANCE";
 
     public ST_ShortestPathLength() {
         addProperty(PROP_REMARKS, "ST_ShortestPathLength ");
@@ -73,6 +76,7 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         } else if (sourceOrTable instanceof ValueString) {
             String table = sourceOrTable.getString();
             // 2: (o, sdt) = 6(null)
+            return manyToMany(connection, inputTable, orientation, null, table);
         }
         return null;
     }
@@ -81,20 +85,24 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String inputTable,
                                                   String orientation,
                                                   Value sourceOrWeight,
-                                                  Value destinationOrSource) throws SQLException {
+                                                  Value destinationOrSourceOrTable) throws SQLException {
         if (sourceOrWeight instanceof ValueInt) {
             int source = sourceOrWeight.getInt();
-            if (destinationOrSource instanceof ValueInt) {
-                int destination = destinationOrSource.getInt();
+            if (destinationOrSourceOrTable instanceof ValueInt) {
+                int destination = destinationOrSourceOrTable.getInt();
                 // 3: (o, s, d) = 7(null)
                 return oneToOne(connection, inputTable, orientation, null, source, destination);
             } // TODO: else.
         } else if (sourceOrWeight instanceof ValueString) {
             String weight = sourceOrWeight.getString();
-            if (destinationOrSource instanceof ValueInt) {
-                int source = destinationOrSource.getInt();
+            if (destinationOrSourceOrTable instanceof ValueInt) {
+                int source = destinationOrSourceOrTable.getInt();
                 // 5: (o, w, s)
                 return oneToAll(connection, inputTable, orientation, weight, source);
+            } else if (destinationOrSourceOrTable instanceof ValueString) {
+                String table = destinationOrSourceOrTable.getString();
+                // 6: (o, w, sdt).
+                return manyToMany(connection, inputTable, orientation, weight, table);
             } // TODO: else.
         } else {
             throw new IllegalArgumentException("Unrecognized argument.");
@@ -143,11 +151,74 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         return output;
     }
 
+    private static ResultSet manyToMany(Connection connection,
+                                        String inputTable,
+                                        String orientation,
+                                        String weight,
+                                        String sourceDestinationTable) throws SQLException {
+        final SimpleResultSet output = prepareResultSet();
+        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final Statement st = connection.createStatement();
+        try {
+            final ResultSet sourceDestinationRS =
+                    st.executeQuery("SELECT * FROM " + sourceDestinationTable);
+            // Make sure the source-destination table has columns named
+            // SOURCE and DESTINATION. An SQLException is thrown if not.
+            final int sourceIndex = sourceDestinationRS.findColumn(SOURCE);
+            final int destinationIndex = sourceDestinationRS.findColumn(DESTINATION);
+
+            // Prepare the source-destination map from the source-destination table.
+            Map<VDijkstra, Set<VDijkstra>> sourceDestinationMap =
+                    prepareSourceDestinationMap(sourceDestinationRS,
+                            graph,
+                            sourceIndex,
+                            destinationIndex);
+            if (sourceDestinationMap.isEmpty()) {
+                throw new IllegalArgumentException("No sources/destinations requested.");
+            }
+
+            // 6: (o, w, sdt).
+            // Do One-to-Many many times and store the results.
+            for (Map.Entry<VDijkstra, Set<VDijkstra>> sourceToDestSetMap : sourceDestinationMap.entrySet()) {
+                Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
+                        .oneToMany(sourceToDestSetMap.getKey(), sourceToDestSetMap.getValue());
+                for (Map.Entry<VDijkstra, Double> destToDistMap : distances.entrySet()) {
+                    output.addRow(sourceToDestSetMap.getKey().getID(),
+                            destToDistMap.getKey().getID(), destToDistMap.getValue());
+                }
+            }
+        } finally {
+            st.close();
+        }
+        return output;
+    }
+
+    private static Map<VDijkstra, Set<VDijkstra>> prepareSourceDestinationMap(
+            ResultSet sourceDestinationRS,
+            KeyedGraph<VDijkstra, Edge> graph,
+            int sourceIndex,
+            int destinationIndex) throws SQLException {
+        Map<VDijkstra, Set<VDijkstra>> map = new HashMap<VDijkstra, Set<VDijkstra>>();
+        while (sourceDestinationRS.next()) {
+            final VDijkstra source = graph.getVertex(sourceDestinationRS.getInt(sourceIndex));
+            final VDijkstra destination = graph.getVertex(sourceDestinationRS.getInt(destinationIndex));
+            Set<VDijkstra> targets = map.get(source);
+            // Lazy initialize if the destinations set is null.
+            if (targets == null) {
+                targets = new HashSet<VDijkstra>();
+                map.put(source, targets);
+            }
+            // Add the destination.
+            targets.add(destination);
+        }
+        return map;
+    }
+
     private static SimpleResultSet prepareResultSet() {
         SimpleResultSet output = new SimpleResultSet();
-        output.addColumn("SOURCE", Types.INTEGER, 10, 0);
-        output.addColumn("DESTINATION", Types.INTEGER, 10, 0);
-        output.addColumn("DISTANCE", Types.DOUBLE, 10, 0);
+        output.addColumn(SOURCE, Types.INTEGER, 10, 0);
+        output.addColumn(DESTINATION, Types.INTEGER, 10, 0);
+        output.addColumn(DISTANCE, Types.DOUBLE, 10, 0);
         return output;
     }
 
