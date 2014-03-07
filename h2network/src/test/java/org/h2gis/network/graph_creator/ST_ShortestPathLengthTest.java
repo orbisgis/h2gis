@@ -1,6 +1,5 @@
 package org.h2gis.network.graph_creator;
 
-import junit.framework.Assert;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.*;
@@ -457,10 +456,10 @@ public class ST_ShortestPathLengthTest {
         while (rs.next()) {
             final int destination = rs.getInt(ST_ShortestPathLength.DESTINATION_INDEX);
             final double distance = rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX);
-            Assert.assertEquals(distances[destination - 1], distance, TOLERANCE);
+            assertEquals(distances[destination - 1], distance, TOLERANCE);
             count++;
         }
-        Assert.assertEquals(5, count);
+        assertEquals(5, count);
     }
 
     private void oneToAll(String orientation, Statement st, int source, double[] distances) throws SQLException {
@@ -481,6 +480,75 @@ public class ST_ShortestPathLengthTest {
         manyToMany(DO, st, SOURCE_DEST_TABLE, distances);
     }
 
+    @Test
+    public void manyToManyWDO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'directed - edge_orientation', 'weight', 'source_dest')
+        final double[][] distances = {{0.0, 8.0, 13.0, 5.0, 7.0},
+                                      {11.0, 0.0, 10.0, 2.0, 4.0},
+                                      {11.0, 1.0, 0.0, 3.0, 4.0},
+                                      {9.0, 3.0, 8.0, 0.0, 2.0},
+                                      {7.0, 7.0, 6.0, 9.0, 0.0}};
+        manyToMany(DO, W, st, SOURCE_DEST_TABLE, distances);
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'weight', 'directed - edge_orientation', 'source_dest')
+        manyToMany(W, DO, st, SOURCE_DEST_TABLE, distances);
+    }
+
+    @Test
+    public void manyToManyRO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'reversed - edge_orientation', 'source_dest')
+        final double[][] distances = {{0.0, 3.0, 2.0, 2.0, 1.0},
+                                      {1.0, 0.0, 1.0, 1.0, 2.0},
+                                      {2.0, 2.0, 0.0, 1.0, 1.0},
+                                      {1.0, 1.0, 2.0, 0.0, 2.0},
+                                      {1.0, 2.0, 1.0, 1.0, 0.0}};
+        manyToMany(RO, st, SOURCE_DEST_TABLE, distances);
+    }
+
+    @Test
+    public void manyToManyWRO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'reversed - edge_orientation', 'weight', 'source_dest')
+        final double[][] distances = {{0.0, 11.0, 11.0, 9.0, 7.0},
+                                      {8.0, 0.0, 1.0, 3.0, 7.0},
+                                      {13.0, 10.0, 0.0, 8.0, 6.0},
+                                      {5.0, 2.0, 3.0, 0.0, 9.0},
+                                      {7.0, 4.0, 4.0, 2.0, 0.0}};
+        manyToMany(RO, W, st, SOURCE_DEST_TABLE, distances);
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'weight', 'reversed - edge_orientation', 'source_dest')
+        manyToMany(W, RO, st, SOURCE_DEST_TABLE, distances);
+    }
+
+    @Test
+    public void manyToManyU() throws Exception {
+        // SELECT * FUM ST_ShortestPathLength('cormen_edges',
+        //     'undirected', 'source_dest')
+        final double[][] distances = {{0.0,  1.0,  2.0,  1.0,  1.0},
+                                      {1.0,  0.0,  1.0,  1.0,  2.0},
+                                      {2.0,  1.0,  0.0,  1.0,  1.0},
+                                      {1.0,  1.0,  1.0,  0.0,  1.0},
+                                      {1.0,  2.0,  1.0,  1.0,  0.0}};
+        manyToMany(U, st, SOURCE_DEST_TABLE, distances);
+    }
+
+    @Test
+    public void manyToManyWU() throws Exception {
+        // SELECT * FUM ST_ShortestPathLength('cormen_edges',
+        //     'undirected', 'weight', 'source_dest')
+        final double[][] distances = {{0.0, 7.0, 8.0, 5.0, 7.0},
+                                      {7.0, 0.0, 1.0, 2.0, 4.0},
+                                      {8.0, 1.0, 0.0, 3.0, 4.0},
+                                      {5.0, 2.0, 3.0, 0.0, 2.0},
+                                      {7.0, 4.0, 4.0, 2.0, 0.0}};
+        manyToMany(U, W, st, SOURCE_DEST_TABLE, distances);
+        // SELECT * FUM ST_ShortestPathLength('cormen_edges',
+        //     'weight', 'undirected', 'source_dest')
+        manyToMany(W, U, st, SOURCE_DEST_TABLE, distances);
+    }
+
     private void manyToMany(String orientation, String weight, Statement st,
                             String sourceDestinationTable, double[][] distances) throws SQLException {
         ResultSet rs = st.executeQuery(
@@ -492,10 +560,10 @@ public class ST_ShortestPathLengthTest {
             final int source = rs.getInt(ST_ShortestPathLength.SOURCE_INDEX);
             final int destination = rs.getInt(ST_ShortestPathLength.DESTINATION_INDEX);
             final double distance = rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX);
-            Assert.assertEquals(distances[source - 1][destination - 1], distance, TOLERANCE);
+            assertEquals(distances[source - 1][destination - 1], distance, TOLERANCE);
             count++;
         }
-        Assert.assertEquals(25, count);
+        assertEquals(25, count);
     }
 
     private void manyToMany(String orientation, Statement st,
