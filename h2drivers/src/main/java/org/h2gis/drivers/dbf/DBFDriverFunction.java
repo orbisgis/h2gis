@@ -132,13 +132,13 @@ public class DBFDriverFunction implements DriverFunction {
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
-     * @param enforceFileEncoding File encoding to use, null will use the provided file encoding in file header.
+     * @param forceFileEncoding File encoding to use, null will use the provided file encoding in file header.
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String enforceFileEncoding) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceFileEncoding) throws SQLException, IOException {
         DBFDriver dbfDriver = new DBFDriver();
-        dbfDriver.initDriverFromFile(fileName, enforceFileEncoding);
+        dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
         try {
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             // Build CREATE TABLE sql request

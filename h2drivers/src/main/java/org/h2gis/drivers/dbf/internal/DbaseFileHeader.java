@@ -483,9 +483,9 @@ public class DbaseFileHeader {
          * @throws java.io.IOException
 	 *             If errors occur while reading.
 	 */
-	public void readHeader(FileChannel channel,String enforceEncoding) throws IOException {
-        if(enforceEncoding != null) {
-            fileEncoding = enforceEncoding;
+	public void readHeader(FileChannel channel,String forceEncoding) throws IOException {
+        if(forceEncoding != null) {
+            fileEncoding = forceEncoding;
         }
 		// we'll read in chunks of 1K
 		ReadBufferManager in = new ReadBufferManager(channel);
@@ -533,7 +533,7 @@ public class DbaseFileHeader {
         // read Language driver
         byte lngDriver = in.get();
         String encoding = CODE_PAGE_ENCODING.get(lngDriver);
-        if(encoding!=null && enforceEncoding == null) {
+        if(encoding!=null && forceEncoding == null) {
             this.fileEncoding = encoding;
         }
         // skip reserved

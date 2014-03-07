@@ -49,18 +49,18 @@ public class DBFDriver implements FileDriver {
     public void initDriverFromFile(File dbfFile) throws IOException {
         initDriverFromFile(dbfFile, null);
     }
-    
+
     /**
      * Init file header for DBF File
      * @param dbfFile DBF File path
-     * @param enforceEncoding File encoding to use, null will use the file encoding provided in the file header
+     * @param forceEncoding File encoding to use, null will use the file encoding provided in the file header
      * @throws IOException
      */
-    public void initDriverFromFile(File dbfFile, String enforceEncoding) throws IOException {
+    public void initDriverFromFile(File dbfFile, String forceEncoding) throws IOException {
         // Read columns from files metadata
         this.dbfFile = dbfFile;
         FileInputStream fis = new FileInputStream(dbfFile);
-        dbaseFileReader = new DbaseFileReader(fis.getChannel(), enforceEncoding);
+        dbaseFileReader = new DbaseFileReader(fis.getChannel(), forceEncoding);
     }
 
     public void initDriver(File dbfFile, DbaseFileHeader dbaseHeader) throws IOException {

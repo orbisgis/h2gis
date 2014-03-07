@@ -167,13 +167,13 @@ public class SHPDriverFunction implements DriverFunction {
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
-     * @param enforceEncoding If defined use this encoding instead of the one defined in dbf header.
+     * @param forceEncoding If defined use this encoding instead of the one defined in dbf header.
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String enforceEncoding) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceEncoding) throws SQLException, IOException {
         SHPDriver shpDriver = new SHPDriver();
-        shpDriver.initDriverFromFile(fileName, enforceEncoding);
+        shpDriver.initDriverFromFile(fileName, forceEncoding);
         ProgressVisitor copyProgress = progress.subProcess((int)(shpDriver.getRowCount() / BATCH_MAX_SIZE));
         // PostGIS does not show sql
         String lastSql = "";

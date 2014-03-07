@@ -103,12 +103,12 @@ public class DbaseFileReader {
          * @throws java.io.IOException
          *             If an error occurs while initializing.
          */
-        public DbaseFileReader(FileChannel channel,String enforceEncoding)
+        public DbaseFileReader(FileChannel channel,String forceEncoding)
                 throws IOException {
                 this.channel = channel;
 
                 header = new DbaseFileHeader();
-                header.readHeader(channel, enforceEncoding);
+                header.readHeader(channel, forceEncoding);
 
                 init();
         }
