@@ -50,4 +50,9 @@ public class DBFRead  extends AbstractFunction implements ScalarFunction {
         DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();
         dbfDriverFunction.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
     }
+
+    public static void read(Connection connection, String fileName, String tableReference, String fileEncoding) throws IOException, SQLException {
+        DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();
+        dbfDriverFunction.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor(), fileEncoding);
+    }
 }

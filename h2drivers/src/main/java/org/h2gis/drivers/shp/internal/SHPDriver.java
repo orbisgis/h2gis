@@ -142,7 +142,7 @@ public class SHPDriver implements FileDriver {
             }
         }
         if(dbfFile != null) {
-            dbfDriver.initDriverFromFile(dbfFile);
+            dbfDriver.initDriverFromFile(dbfFile, null);
         } else {
             throw new IllegalArgumentException("DBF File not found");
         }

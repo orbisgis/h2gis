@@ -54,6 +54,7 @@ public class  DBFEngineTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DriverManager(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFRead(), "");
     }
 
     @AfterClass
@@ -188,5 +189,41 @@ public class  DBFEngineTest {
             rs.close();
         }
         st.execute("drop table if exists dbftable");
+    }
+
+    @Test
+    public void readDBFRussianEncodingTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists sotchi");
+        st.execute("CALL DBFREAD("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("sotchi.dbf").getPath())+", 'SOTCHI', 'cp1251');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM sotchi");
+        // Check if fields name are OK
+        ResultSetMetaData meta = rs.getMetaData();
+        assertEquals("B_ДНА",meta.getColumnName(4));
+        assertEquals("ИМЕНА_УЧАС",meta.getColumnName(7));
+        assertEquals("ДЛИНА_КАНА",meta.getColumnName(8));
+        assertEquals("ДЛИНА_КАН_",meta.getColumnName(9));
+        assertEquals("ИМЯ_МУООС",meta.getColumnName(10));
+        assertTrue(rs.next());
+        assertEquals("ВП-2", rs.getString("NAMESHEME"));
+        assertEquals("Дубовский канал",rs.getString("NAME10000"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-1", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("drop table sotchi");
+    }
+
+
+
+    @Test
+    public void readDBFRussianWrongEncodingThenWriteThenRead() throws SQLException
     }
 }
