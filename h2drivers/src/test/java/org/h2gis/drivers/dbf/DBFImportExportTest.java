@@ -77,7 +77,7 @@ public class DBFImportExportTest {
         // Read this shape file to check values
         assertTrue(dbfFile.exists());
         DBFDriver dbfDriver = new DBFDriver();
-        dbfDriver.initDriverFromFile(dbfFile, null);
+        dbfDriver.initDriverFromFile(dbfFile);
         assertEquals(3, dbfDriver.getFieldCount());
         assertEquals(2, dbfDriver.getRowCount());
         Object[] row = dbfDriver.getRow(0);
