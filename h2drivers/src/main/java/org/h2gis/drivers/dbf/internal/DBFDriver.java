@@ -44,6 +44,15 @@ public class DBFDriver implements FileDriver {
     /**
      * Init file header for DBF File
      * @param dbfFile DBF File path
+     * @throws IOException
+     */
+    public void initDriverFromFile(File dbfFile) throws IOException {
+        initDriverFromFile(dbfFile, null);
+    }
+    
+    /**
+     * Init file header for DBF File
+     * @param dbfFile DBF File path
      * @param enforceEncoding File encoding to use, null will use the file encoding provided in the file header
      * @throws IOException
      */
