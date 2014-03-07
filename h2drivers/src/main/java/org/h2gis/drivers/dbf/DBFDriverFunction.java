@@ -28,6 +28,7 @@ import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileException;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -48,17 +49,34 @@ import java.sql.Types;
 public class DBFDriverFunction implements DriverFunction {
     public static String DESCRIPTION = "dBase III format";
     private static final int BATCH_MAX_SIZE = 100;
-
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName, progress, null);
+    }
+
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         // Read table content
         Statement st = connection.createStatement();
+        ProgressVisitor lineProgress = null;
+        if(!(progress instanceof EmptyProgressVisitor)) {
+            ResultSet rs = st.executeQuery(String.format("select count(*) from %s", TableLocation.parse(tableReference)));
+            try {
+                if(rs.next()) {
+                    lineProgress = progress.subProcess(rs.getInt(1));
+                }
+            } finally {
+                rs.close();
+            }
+        }
         try {
-            ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableReference));
+            ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference)));
             try {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
+                if(encoding != null) {
+                    header.setEncoding(encoding);
+                }
                 header.setNumRecords(recordCount);
                 DBFDriver dbfDriver = new DBFDriver();
                 dbfDriver.initDriver(fileName, header);
@@ -68,6 +86,9 @@ public class DBFDriverFunction implements DriverFunction {
                         row[columnId] = rs.getObject(columnId + 1);
                     }
                     dbfDriver.insertRow(row);
+                    if(lineProgress != null) {
+                        lineProgress.endStep();
+                    }
                 }
                 dbfDriver.close();
             } finally {
@@ -104,8 +125,20 @@ public class DBFDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress, null);
+    }
+
+    /**
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path to read
+     * @param forceFileEncoding File encoding to use, null will use the provided file encoding in file header.
+     * @throws SQLException Table write error
+     * @throws IOException File read error
+     */
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceFileEncoding) throws SQLException, IOException {
         DBFDriver dbfDriver = new DBFDriver();
-        dbfDriver.initDriverFromFile(fileName);
+        dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
         try {
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             // Build CREATE TABLE sql request
@@ -277,6 +310,7 @@ public class DBFDriverFunction implements DriverFunction {
                 return new DBFType('d', 8, 0);
             case Types.DOUBLE:
             case Types.FLOAT:
+            case Types.NUMERIC:
                 return new DBFType('f', Math.min(20, length), Math.min(18,
                         precision));
             case Types.INTEGER:

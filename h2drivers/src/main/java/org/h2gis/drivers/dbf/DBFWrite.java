@@ -50,4 +50,9 @@ public class DBFWrite  extends AbstractFunction implements ScalarFunction {
         DBFDriverFunction driverFunction = new DBFDriverFunction();
         driverFunction.exportTable(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
     }
+
+    public static void exportTable(Connection connection, String fileName, String tableReference,String encoding) throws IOException, SQLException {
+        DBFDriverFunction driverFunction = new DBFDriverFunction();
+        driverFunction.exportTable(connection, tableReference, new File(fileName), new EmptyProgressVisitor(), encoding);
+    }
 }

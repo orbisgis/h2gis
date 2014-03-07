@@ -44,7 +44,7 @@ public class DBFEngine extends FileEngine<DBFDriver> {
     @Override
     protected DBFDriver createDriver(File filePath, List<String> args) throws IOException {
         DBFDriver driver = new DBFDriver();
-        driver.initDriverFromFile(filePath);
+        driver.initDriverFromFile(filePath,  args.size() > 1 ? args.get(1) : null);
         return driver;
     }
 
