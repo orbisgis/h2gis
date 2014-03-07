@@ -120,9 +120,9 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                      int destination) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
         final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
-        final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         // 7: (o, w, s, d)
-        final double distance = dijkstra.oneToOne(graph.getVertex(source), graph.getVertex(destination));
+        final double distance = new Dijkstra<VDijkstra, Edge>(graph)
+                .oneToOne(graph.getVertex(source), graph.getVertex(destination));
         output.addRow(source, destination, distance);
         return output;
     }
@@ -134,10 +134,9 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                       int source) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
         final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
-        final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         // 5: (o, w, s)
-        final Map<VDijkstra,Double> distances =
-                dijkstra.oneToMany(graph.getVertex(source), graph.vertexSet());
+        final Map<VDijkstra,Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
+                        .oneToMany(graph.getVertex(source), graph.vertexSet());
         for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
             output.addRow(source, e.getKey().getID(), e.getValue());
         }
