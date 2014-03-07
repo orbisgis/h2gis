@@ -55,6 +55,8 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToOneDO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'directed - edge_orientation', i, j)
         oneToOne(DO, st, 1, 1, 0.0);
         oneToOne(DO, st, 1, 2, 1.0);
         oneToOne(DO, st, 1, 3, 2.0);
@@ -84,6 +86,8 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToOneWDO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'weight', 'directed - edge_orientation', i, j)
         oneToOne(DO, W, st, 1, 1, 0.0);
         oneToOne(DO, W, st, 1, 2, 8.0);
         oneToOne(DO, W, st, 1, 3, 13.0);
@@ -110,6 +114,8 @@ public class ST_ShortestPathLengthTest {
         oneToOne(DO, W, st, 5, 4, 9.0);
         oneToOne(DO, W, st, 5, 5, 0.0);
 
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'directed - edge_orientation', 'weight', i, j)
         oneToOne(W, DO, st, 1, 1, 0.0);
         oneToOne(W, DO, st, 1, 2, 8.0);
         oneToOne(W, DO, st, 1, 3, 13.0);
@@ -139,6 +145,8 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToOneRO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'reversed - edge_orientation', i, j)
         oneToOne(RO, st, 1, 1, 0.0);
         oneToOne(RO, st, 2, 1, 1.0);
         oneToOne(RO, st, 3, 1, 2.0);
@@ -168,6 +176,8 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToOneWRO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'reversed - edge_orientation', 'weight', i, j)
         oneToOne(RO, W, st, 1, 1, 0.0);
         oneToOne(RO, W, st, 2, 1, 8.0);
         oneToOne(RO, W, st, 3, 1, 13.0);
@@ -194,6 +204,8 @@ public class ST_ShortestPathLengthTest {
         oneToOne(RO, W, st, 4, 5, 9.0);
         oneToOne(RO, W, st, 5, 5, 0.0);
 
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'weight', 'reversed - edge_orientation', i, j)
         oneToOne(W, RO, st, 1, 1, 0.0);
         oneToOne(W, RO, st, 2, 1, 8.0);
         oneToOne(W, RO, st, 3, 1, 13.0);
@@ -223,6 +235,8 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToOneU() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'undirected', i, j)
         oneToOne(U, st, 1, 1, 0.0);
         oneToOne(U, st, 1, 2, 1.0);
         oneToOne(U, st, 1, 3, 2.0);
@@ -252,6 +266,8 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToOneWU() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'undirected', 'weight', i, j)
         oneToOne(U, W, st, 1, 1, 0.0);
         oneToOne(U, W, st, 1, 2, 7.0);
         oneToOne(U, W, st, 1, 3, 8.0);
@@ -278,6 +294,8 @@ public class ST_ShortestPathLengthTest {
         oneToOne(U, W, st, 5, 4, 2.0);
         oneToOne(U, W, st, 5, 5, 0.0);
 
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'weight', 'undirected', i, j)
         oneToOne(W, U, st, 1, 1, 0.0);
         oneToOne(W, U, st, 1, 2, 7.0);
         oneToOne(W, U, st, 1, 3, 8.0);
@@ -325,6 +343,8 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToAllDO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'directed - edge_orientation', i)
         oneToAll(DO, st, 1, new double[]{0.0, 1.0, 2.0, 1.0, 1.0});
         oneToAll(DO, st, 2, new double[]{3.0, 0.0, 2.0, 1.0, 2.0});
         oneToAll(DO, st, 3, new double[]{2.0, 1.0, 0.0, 2.0, 1.0});
@@ -334,12 +354,16 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToAllWDO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'directed - edge_orientation', 'weight', i)
         oneToAll(DO, W, st, 1, new double[]{0.0, 8.0, 13.0, 5.0, 7.0});
         oneToAll(DO, W, st, 2, new double[]{11.0, 0.0, 10.0, 2.0, 4.0});
         oneToAll(DO, W, st, 3, new double[]{11.0, 1.0, 0.0, 3.0, 4.0});
         oneToAll(DO, W, st, 4, new double[]{9.0, 3.0, 8.0, 0.0, 2.0});
         oneToAll(DO, W, st, 5, new double[]{7.0, 7.0, 6.0, 9.0, 0.0});
 
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'weight', 'directed - edge_orientation', i)
         oneToAll(W, DO, st, 1, new double[]{0.0, 8.0, 13.0, 5.0, 7.0});
         oneToAll(W, DO, st, 2, new double[]{11.0, 0.0, 10.0, 2.0, 4.0});
         oneToAll(W, DO, st, 3, new double[]{11.0, 1.0, 0.0, 3.0, 4.0});
@@ -349,6 +373,8 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToAllRO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'reversed - edge_orientation', i)
         oneToAll(RO, st, 1, new double[]{0.0, 3.0, 2.0, 2.0, 1.0});
         oneToAll(RO, st, 2, new double[]{1.0, 0.0, 1.0, 1.0, 2.0});
         oneToAll(RO, st, 3, new double[]{2.0, 2.0, 0.0, 1.0, 1.0});
@@ -358,12 +384,16 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToAllWRO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'reversed - edge_orientation', 'weight', i)
         oneToAll(RO, W, st, 1, new double[]{0.0, 11.0, 11.0, 9.0, 7.0});
         oneToAll(RO, W, st, 2, new double[]{8.0, 0.0, 1.0, 3.0, 7.0});
         oneToAll(RO, W, st, 3, new double[]{13.0, 10.0, 0.0, 8.0, 6.0});
         oneToAll(RO, W, st, 4, new double[]{5.0, 2.0, 3.0, 0.0, 9.0});
         oneToAll(RO, W, st, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
 
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'weight', 'reversed - edge_orientation', i)
         oneToAll(W, RO, st, 1, new double[]{0.0, 11.0, 11.0, 9.0, 7.0});
         oneToAll(W, RO, st, 2, new double[]{8.0, 0.0, 1.0, 3.0, 7.0});
         oneToAll(W, RO, st, 3, new double[]{13.0, 10.0, 0.0, 8.0, 6.0});
@@ -373,6 +403,8 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToAllU() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'undirected', i)
         oneToAll(U, st, 1, new double[]{0.0,  1.0,  2.0,  1.0,  1.0});
         oneToAll(U, st, 2, new double[]{1.0,  0.0,  1.0,  1.0,  2.0});
         oneToAll(U, st, 3, new double[]{2.0,  1.0,  0.0,  1.0,  1.0});
@@ -382,12 +414,16 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void oneToAllWU() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'undirected', 'weight', i)
         oneToAll(U, W, st, 1, new double[]{0.0, 7.0, 8.0, 5.0, 7.0});
         oneToAll(U, W, st, 2, new double[]{7.0, 0.0, 1.0, 2.0, 4.0});
         oneToAll(U, W, st, 3, new double[]{8.0, 1.0, 0.0, 3.0, 4.0});
         oneToAll(U, W, st, 4, new double[]{5.0, 2.0, 3.0, 0.0, 2.0});
         oneToAll(U, W, st, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
 
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'weight', 'undirected', i)
         oneToAll(W, U, st, 1, new double[]{0.0, 7.0, 8.0, 5.0, 7.0});
         oneToAll(W, U, st, 2, new double[]{7.0, 0.0, 1.0, 2.0, 4.0});
         oneToAll(W, U, st, 3, new double[]{8.0, 1.0, 0.0, 3.0, 4.0});
