@@ -85,22 +85,26 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String inputTable,
                                                   String orientation,
                                                   Value sourceOrWeight,
-                                                  Value destinationOrSourceOrTable) throws SQLException {
+                                                  Value destinationOrSourceOrTableOrDestString) throws SQLException {
         if (sourceOrWeight instanceof ValueInt) {
             int source = sourceOrWeight.getInt();
-            if (destinationOrSourceOrTable instanceof ValueInt) {
-                int destination = destinationOrSourceOrTable.getInt();
+            if (destinationOrSourceOrTableOrDestString instanceof ValueInt) {
+                int destination = destinationOrSourceOrTableOrDestString.getInt();
                 // 3: (o, s, d) = 7(null)
                 return oneToOne(connection, inputTable, orientation, null, source, destination);
-            } // TODO: else.
+            } else if (destinationOrSourceOrTableOrDestString instanceof ValueString) {
+                String destinationString = destinationOrSourceOrTableOrDestString.getString();
+                // 2: (o, s, ds) = 8(null)
+                return oneToSeveral(connection, inputTable, orientation, null, source, destinationString);
+            }
         } else if (sourceOrWeight instanceof ValueString) {
             String weight = sourceOrWeight.getString();
-            if (destinationOrSourceOrTable instanceof ValueInt) {
-                int source = destinationOrSourceOrTable.getInt();
+            if (destinationOrSourceOrTableOrDestString instanceof ValueInt) {
+                int source = destinationOrSourceOrTableOrDestString.getInt();
                 // 5: (o, w, s)
                 return oneToAll(connection, inputTable, orientation, weight, source);
-            } else if (destinationOrSourceOrTable instanceof ValueString) {
-                String table = destinationOrSourceOrTable.getString();
+            } else if (destinationOrSourceOrTableOrDestString instanceof ValueString) {
+                String table = destinationOrSourceOrTableOrDestString.getString();
                 // 6: (o, w, sdt).
                 return manyToMany(connection, inputTable, orientation, weight, table);
             } // TODO: else.
@@ -115,9 +119,17 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String orientation,
                                                   String weight,
                                                   int source,
-                                                  int destination) throws SQLException {
-        // 7: (o, w, s, d)
-        return oneToOne(connection, inputTable, orientation, weight, source, destination);
+                                                  Value destinationOrDestString) throws SQLException {
+        if (destinationOrDestString instanceof ValueInt) {
+            int destination = destinationOrDestString.getInt();
+            // 7: (o, w, s, d)
+            return oneToOne(connection, inputTable, orientation, weight, source, destination);
+        } else if (destinationOrDestString instanceof ValueString) {
+            String destinationString = destinationOrDestString.getString();
+            // 8: (o, w, s, ds)
+            return oneToSeveral(connection, inputTable, orientation, weight, source, destinationString);
+        }
+        return null;
     }
 
     private static ResultSet oneToOne(Connection connection,
@@ -189,6 +201,29 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
             }
         } finally {
             st.close();
+        }
+        return output;
+    }
+
+    private static ResultSet oneToSeveral(Connection connection,
+                                          String inputTable,
+                                          String orientation,
+                                          String weight,
+                                          int source,
+                                          String destString) throws SQLException {
+        final SimpleResultSet output = prepareResultSet();
+        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+
+        final String[] destinations = destString.split(",");
+
+        for (String d : destinations) {
+            graph.getVertex(Integer.valueOf(d.trim()));
+        }
+        // 8: (o, w, s, ds)
+        final Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
+                .oneToMany(graph.getVertex(source), graph.vertexSet());
+        for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
+            output.addRow(source, e.getKey().getID(), e.getValue());
         }
         return output;
     }

@@ -454,6 +454,8 @@ public class ST_ShortestPathLengthTest {
                         + ", " + source + ")");
         int count = 0;
         while (rs.next()) {
+            final int returnedSource = rs.getInt(ST_ShortestPathLength.SOURCE_INDEX);
+            assertEquals(source, returnedSource);
             final int destination = rs.getInt(ST_ShortestPathLength.DESTINATION_INDEX);
             final double distance = rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX);
             assertEquals(distances[destination - 1], distance, TOLERANCE);
@@ -524,7 +526,7 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void manyToManyU() throws Exception {
-        // SELECT * FUM ST_ShortestPathLength('cormen_edges',
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
         //     'undirected', 'source_dest')
         final double[][] distances = {{0.0,  1.0,  2.0,  1.0,  1.0},
                                       {1.0,  0.0,  1.0,  1.0,  2.0},
@@ -536,7 +538,7 @@ public class ST_ShortestPathLengthTest {
 
     @Test
     public void manyToManyWU() throws Exception {
-        // SELECT * FUM ST_ShortestPathLength('cormen_edges',
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
         //     'undirected', 'weight', 'source_dest')
         final double[][] distances = {{0.0, 7.0, 8.0, 5.0, 7.0},
                                       {7.0, 0.0, 1.0, 2.0, 4.0},
@@ -544,7 +546,7 @@ public class ST_ShortestPathLengthTest {
                                       {5.0, 2.0, 3.0, 0.0, 2.0},
                                       {7.0, 4.0, 4.0, 2.0, 0.0}};
         manyToMany(U, W, st, SOURCE_DEST_TABLE, distances);
-        // SELECT * FUM ST_ShortestPathLength('cormen_edges',
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
         //     'weight', 'undirected', 'source_dest')
         manyToMany(W, U, st, SOURCE_DEST_TABLE, distances);
     }
@@ -569,5 +571,39 @@ public class ST_ShortestPathLengthTest {
     private void manyToMany(String orientation, Statement st,
                             String sourceDestinationTable, double[][] distances) throws SQLException {
         manyToMany(orientation, null, st, sourceDestinationTable, distances);
+    }
+
+    // ************************** Many-to-Many ****************************************
+
+    @Test
+    public void oneToSeveralDO() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('cormen_edges',
+        //     'directed - edge_orientation', i, '1, 2, 3, 4, 5')
+        oneToSeveral(DO, st, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 1.0, 2.0, 1.0, 1.0});
+        oneToSeveral(DO, st, 2, "'1, 2, 3, 4, 5'", new double[]{3.0, 0.0, 2.0, 1.0, 2.0});
+        oneToSeveral(DO, st, 3, "'1, 2, 3, 4, 5'", new double[]{2.0, 1.0, 0.0, 2.0, 1.0});
+        oneToSeveral(DO, st, 4, "'1, 2, 3, 4, 5'", new double[]{2.0, 1.0, 1.0, 0.0, 1.0});
+        oneToSeveral(DO, st, 5, "'1, 2, 3, 4, 5'", new double[]{1.0, 2.0, 1.0, 2.0, 0.0});
+    }
+
+    private void oneToSeveral(String orientation, String weight, Statement st, int source, String destinationString, double[] distances) throws SQLException {
+        ResultSet rs = st.executeQuery(
+                "SELECT * FROM ST_ShortestPathLength('cormen_edges', "
+                        + orientation + ((weight != null) ? ", " + weight : "")
+                        + ", " + source + ", " + destinationString + ")");
+        int count = 0;
+        while (rs.next()) {
+            final int returnedSource = rs.getInt(ST_ShortestPathLength.SOURCE_INDEX);
+            assertEquals(source, returnedSource);
+            final int destination = rs.getInt(ST_ShortestPathLength.DESTINATION_INDEX);
+            final double distance = rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX);
+            assertEquals(distances[destination - 1], distance, TOLERANCE);
+            count++;
+        }
+        assertEquals(distances.length, count);
+    }
+
+    private void oneToSeveral(String orientation, Statement st, int source, String destinationString, double[] distances) throws SQLException {
+        oneToSeveral(orientation, null, st, source, destinationString, distances);
     }
 }
