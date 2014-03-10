@@ -14,7 +14,6 @@ public class GraphCreator<V extends VId, E extends Edge> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(GraphCreator.class);
 
-    private final Connection connection;
     private final Class<? extends V> vertexClass;
     private final Class<? extends E> edgeClass;
     private final Statement st;
@@ -38,18 +37,25 @@ public class GraphCreator<V extends VId, E extends Edge> {
         DIRECTED, REVERSED, UNDIRECTED
     }
 
-
     /**
-     * Constructs a new {@link GraphCreator}.
+     * Constructor.
+     *
+     * @param connection                Connection
+     * @param inputTable                Name of edges table from {@link org.h2gis.network.graph_creator.ST_Graph}
+     * @param globalOrientationString   Global orientation
+     * @param edgeOrientationColumnName Edge orientation
+     * @param weightColumn              Weight column name
+     * @param vertexClass               Vertex class
+     * @param edgeClass                 Edge class
+     * @throws SQLException If the input table is not found
      */
     public GraphCreator(Connection connection,
                         String inputTable,
-                        String weightColumn,
                         String globalOrientationString,
                         String edgeOrientationColumnName,
+                        String weightColumn,
                         Class<? extends V> vertexClass,
                         Class<? extends E> edgeClass) throws SQLException {
-        this.connection = connection;
         this.weightColumn = weightColumn;
         this.globalOrientation = parseGlobalOrientation(globalOrientationString);
         this.edgeOrientationColumnName = edgeOrientationColumnName;
@@ -113,6 +119,9 @@ public class GraphCreator<V extends VId, E extends Edge> {
         }
     }
 
+    /**
+     * Recovers the indices from the metadata.
+     */
     private void initIndices() throws SQLException {
         ResultSetMetaData metaData = edges.getMetaData();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
@@ -134,13 +143,27 @@ public class GraphCreator<V extends VId, E extends Edge> {
         }
     }
 
+    /**
+     * Verifies that the given index is not equal to -1; if it is, then throws
+     * an exception saying that the given field is missing.
+     *
+     * @param index        The index.
+     * @param missingField The field.
+     */
     private static void verifyIndex(int index, String missingField) {
         if (index == -1) {
             throw new IndexOutOfBoundsException("Column \"" + missingField + "\" not found.");
         }
     }
 
-    protected E loadEdge(KeyedGraph<V, E> graph) throws SQLException {
+    /**
+     * Loads an edge into the graph from the current row.
+     *
+     * @param graph The graph to which the edges will be added.
+     *
+     * @return The newly loaded edge.
+     */
+    private E loadEdge(KeyedGraph<V, E> graph) throws SQLException {
         final int startNode = edges.getInt(startNodeIndex);
         final int endNode = edges.getInt(endNodeIndex);
         final int edgeID = edges.getInt(edgeIDIndex);
@@ -197,17 +220,17 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * in both directions. The edges are assigned ids with opposite signs.
      *
      * @param graph     The graph to which the edges will be added.
-     * @param startNode Start node
-     * @param endNode   End Node
+     * @param startNode Start node id
+     * @param endNode   End Node id
      * @param edgeID    Edge id
      *
      * @return One of the two directed edges used to represent an undirected
      * edge in a directed graph (the one with a negative id).
      */
-    protected E loadDoubleEdge(KeyedGraph<V, E> graph,
-                               final int startNode,
-                               final int endNode,
-                               final int edgeID) throws SQLException {
+    private E loadDoubleEdge(KeyedGraph<V, E> graph,
+                             final int startNode,
+                             final int endNode,
+                             final int edgeID) throws SQLException {
 
         // Note: row is ignored since we only need it for weighted graphs.
         final E edgeTo = graph.addEdge(startNode, endNode, edgeID);
@@ -217,6 +240,12 @@ public class GraphCreator<V extends VId, E extends Edge> {
         return edgeFrom;
     }
 
+    /**
+     * Set this edge's weight to the weight contained in the current row.
+     *
+     * @param edge Edge
+     * @throws SQLException If the weight cannot be retrieved
+     */
     private void setEdgeWeight(E edge) throws SQLException {
         if (edge != null && weightColumnIndex != -1) {
             edge.setWeight(edges.getDouble(weightColumnIndex));

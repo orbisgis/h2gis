@@ -269,9 +269,7 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
 
         return new GraphCreator<VDijkstra, Edge>(connection,
                 inputTable,
-                parser.getWeightColumn(),
-                parser.getGlobalOrientation(),
-                parser.getEdgeOrientation(),
+                parser.getGlobalOrientation(), parser.getEdgeOrientation(), parser.getWeightColumn(),
                 VDijkstra.class,
                 Edge.class).prepareGraph();
     }
