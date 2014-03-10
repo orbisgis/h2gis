@@ -665,6 +665,12 @@ public class ST_ShortestPathLengthTest {
         oneToSeveral(W, U, st, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
     }
 
+    @Test(expected = Exception.class)
+    public void oneToSeveralFail() throws SQLException {
+        // The graph does not contain vertex 7.
+        st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'undirected', 1, '2, 7')");
+    }
+
     private void oneToSeveral(String orientation, String weight, Statement st, int source, String destinationString, double[] distances) throws SQLException {
         ResultSet rs = st.executeQuery(
                 "SELECT * FROM ST_ShortestPathLength('cormen_edges', "

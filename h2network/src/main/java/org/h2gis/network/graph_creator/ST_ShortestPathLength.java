@@ -217,7 +217,11 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         final int[] destIDs = GraphFunctionParser.parseDestinationsString(destString);
         Set<VDijkstra> destSet = new HashSet<VDijkstra>();
         for (int d : destIDs)  {
-            destSet.add(graph.getVertex(d));
+            final VDijkstra dest = graph.getVertex(d);
+            if (dest == null) {
+                throw new IllegalArgumentException("The graph does not contain vertex " + d);
+            }
+            destSet.add(dest);
         }
         // 8: (o, w, s, ds)
         final Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
