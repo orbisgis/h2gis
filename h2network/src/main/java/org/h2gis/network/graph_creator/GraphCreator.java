@@ -17,6 +17,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
     private final Connection connection;
     private final Class<? extends V> vertexClass;
     private final Class<? extends E> edgeClass;
+    private final Statement st;
     private final ResultSet edges;
 
     private int startNodeIndex = -1;
@@ -25,7 +26,6 @@ public class GraphCreator<V extends VId, E extends Edge> {
     private int weightColumnIndex = -1;
     private int edgeOrientationIndex = -1;
 
-    private final String inputTable;
     private final String weightColumn;
     private final Orientation globalOrientation;
     private final String edgeOrientationColumnName;
@@ -50,13 +50,13 @@ public class GraphCreator<V extends VId, E extends Edge> {
                         Class<? extends V> vertexClass,
                         Class<? extends E> edgeClass) throws SQLException {
         this.connection = connection;
-        this.inputTable = inputTable;
         this.weightColumn = weightColumn;
         this.globalOrientation = parseGlobalOrientation(globalOrientationString);
         this.edgeOrientationColumnName = edgeOrientationColumnName;
         this.vertexClass = vertexClass;
         this.edgeClass = edgeClass;
-        this.edges = connection.createStatement().executeQuery("SELECT * FROM " + inputTable);
+        this.st = connection.createStatement();
+        this.edges = st.executeQuery("SELECT * FROM " + inputTable);
     }
 
     private Orientation parseGlobalOrientation(String globalOrientationString) {
@@ -83,55 +83,60 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * @throws java.sql.SQLException
      */
     protected KeyedGraph<V, E> prepareGraph() throws SQLException {
-        // Initialize the indices.
-        initIndices();
-        // Initialize the graph.
-        KeyedGraph<V, E> graph;
-        if (globalOrientation != Orientation.UNDIRECTED) {
-            if (weightColumn != null) {
-               graph = new DirectedWeightedPseudoG<V, E>(vertexClass, edgeClass);
+        try {
+            // Initialize the indices.
+            initIndices();
+            // Initialize the graph.
+            KeyedGraph<V, E> graph;
+            if (globalOrientation != Orientation.UNDIRECTED) {
+                if (weightColumn != null) {
+                    graph = new DirectedWeightedPseudoG<V, E>(vertexClass, edgeClass);
+                } else {
+                    graph = new DirectedPseudoG<V, E>(vertexClass, edgeClass);
+                }
             } else {
-                graph = new DirectedPseudoG<V, E>(vertexClass, edgeClass);
+                if (weightColumn != null) {
+                    graph = new WeightedPseudoG<V, E>(vertexClass, edgeClass);
+                } else {
+                    graph = new PseudoG<V, E>(vertexClass, edgeClass);
+                }
             }
-        } else {
-            if (weightColumn != null) {
-                graph = new WeightedPseudoG<V, E>(vertexClass, edgeClass);
-            } else {
-                graph = new PseudoG<V, E>(vertexClass, edgeClass);
+            // Add the edges.
+            while (edges.next()) {
+                E edge = loadEdge(graph);
+                setEdgeWeight(edge);
             }
+            return graph;
+        } finally {
+            edges.close();
+            st.close();
         }
-        // Add the edges.
-        while (edges.next()) {
-            E edge = loadEdge(graph);
-            setEdgeWeight(edge);
-        }
-        return graph;
     }
 
     private void initIndices() throws SQLException {
-        final Statement st = connection.createStatement();
-        final ResultSet edgesTable = st.executeQuery("SELECT * FROM " + inputTable);
-        try {
-            ResultSetMetaData metaData = edgesTable.getMetaData();
-            for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                final String columnName = metaData.getColumnName(i);
-                if (columnName.equalsIgnoreCase(ST_Graph.START_NODE)) startNodeIndex = i;
-                if (columnName.equalsIgnoreCase(ST_Graph.END_NODE)) endNodeIndex = i;
-                if (columnName.equalsIgnoreCase(ST_Graph.EDGE_ID)) edgeIDIndex = i;
-                if (columnName.equalsIgnoreCase(edgeOrientationColumnName)) edgeOrientationIndex = i;
-                if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
-            }
-            verifyIndex(startNodeIndex, ST_Graph.START_NODE);
-            verifyIndex(endNodeIndex, ST_Graph.START_NODE);
-            verifyIndex(edgeIDIndex, ST_Graph.START_NODE);
-        } finally {
-            edgesTable.close();
+        ResultSetMetaData metaData = edges.getMetaData();
+        for (int i = 1; i <= metaData.getColumnCount(); i++) {
+            final String columnName = metaData.getColumnName(i);
+            if (columnName.equalsIgnoreCase(ST_Graph.START_NODE)) startNodeIndex = i;
+            if (columnName.equalsIgnoreCase(ST_Graph.END_NODE)) endNodeIndex = i;
+            if (columnName.equalsIgnoreCase(ST_Graph.EDGE_ID)) edgeIDIndex = i;
+            if (columnName.equalsIgnoreCase(edgeOrientationColumnName)) edgeOrientationIndex = i;
+            if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
+        }
+        verifyIndex(startNodeIndex, ST_Graph.START_NODE);
+        verifyIndex(endNodeIndex, ST_Graph.START_NODE);
+        verifyIndex(edgeIDIndex, ST_Graph.START_NODE);
+        if (globalOrientation != Orientation.UNDIRECTED) {
+            verifyIndex(edgeOrientationIndex, edgeOrientationColumnName);
+        }
+        if (weightColumn != null) {
+            verifyIndex(weightColumnIndex, weightColumn);
         }
     }
 
     private static void verifyIndex(int index, String missingField) {
         if (index == -1) {
-            throw new IndexOutOfBoundsException("Column " + missingField + " not found.");
+            throw new IndexOutOfBoundsException("Column \"" + missingField + "\" not found.");
         }
     }
 
