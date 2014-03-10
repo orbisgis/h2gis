@@ -161,4 +161,25 @@ public class GraphFunctionParser {
     public String getEdgeOrientation() {
         return edgeOrientation;
     }
+
+    /**
+     * Returns an array of destination ids from a comma-separated
+     * list of destinations.
+     *
+     * @param s Comma-separated list of destinations
+     *
+     * @return An array of destination ids
+     */
+    public static int[] parseDestinationsString(String s) {
+        String[] array = s.split(",");
+        int[] destinations = new int[array.length];
+        for (int i = 0; i < destinations.length; i++) {
+            final String stringWithNoWhiteSpaces = array[i].replaceAll("\\s", "");
+            if (stringWithNoWhiteSpaces.isEmpty()) {
+                throw new IllegalArgumentException("Empty destination. Too many commas?");
+            }
+            destinations[i] = Integer.valueOf(stringWithNoWhiteSpaces);
+        }
+        return destinations;
+    }
 }

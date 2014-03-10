@@ -214,14 +214,14 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         final SimpleResultSet output = prepareResultSet();
         final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
 
-        final String[] destinations = destString.split(",");
-
-        for (String d : destinations) {
-            graph.getVertex(Integer.valueOf(d.trim()));
+        final int[] destIDs = GraphFunctionParser.parseDestinationsString(destString);
+        Set<VDijkstra> destSet = new HashSet<VDijkstra>();
+        for (int d : destIDs)  {
+            destSet.add(graph.getVertex(d));
         }
         // 8: (o, w, s, ds)
         final Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
-                .oneToMany(graph.getVertex(source), graph.vertexSet());
+                .oneToMany(graph.getVertex(source), destSet);
         for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
             output.addRow(source, e.getKey().getID(), e.getValue());
         }

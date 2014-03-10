@@ -35,6 +35,9 @@ package org.h2gis.network.graph_creator;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
+
+import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -176,5 +179,21 @@ public class GraphFunctionParserTest {
     @Test(expected = IllegalArgumentException.class)
     public void testDoubleOrientation() {
         parser.parseWeightAndOrientation("undirected", "undirected");
+    }
+
+    @Test
+    public void testDestinationsString() {
+        assertTrue(Arrays.equals(new int[]{1, 2, 3, 4, 5},
+                parser.parseDestinationsString("1, 2, 3, 4, 5")));
+        assertTrue(Arrays.equals(new int[]{2343, 637, 1, 345},
+                parser.parseDestinationsString("2343   ,    637,1, 345")));
+        assertTrue(Arrays.equals(new int[]{1, 2},
+                parser.parseDestinationsString("1, 2,,,,,,,,")));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testDestinationsStringFail() {
+        assertTrue(Arrays.equals(new int[]{1, 2, 3},
+                parser.parseDestinationsString("1, 2,,3")));
     }
 }
