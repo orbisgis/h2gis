@@ -65,6 +65,10 @@ public class JDBCUtilitiesTest {
         connection.createStatement().execute("DROP TABLE IF EXISTS TEMPTABLE");
         connection.createStatement().execute("CREATE TABLE TEMPTABLE(id integer primary key)");
         assertEquals(1, JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), "TEMPTABLE"));
+        connection.createStatement().execute("DROP SCHEMA IF EXISTS SCHEM");
+        connection.createStatement().execute("CREATE SCHEMA SCHEM");
+        connection.createStatement().execute("DROP TABLE IF EXISTS SCHEM.TEMPTABLE");
+        connection.createStatement().execute("CREATE TABLE SCHEM.TEMPTABLE(id integer primary key)");
         connection.createStatement().execute("DROP TABLE IF EXISTS TEMPTABLE");
         connection.createStatement().execute("CREATE TABLE TEMPTABLE(id varchar primary key)");
         assertEquals(0, JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), "TEMPTABLE"));

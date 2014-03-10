@@ -17,6 +17,7 @@ public class TableLocation {
     private static final String QUOTE_CHAR = "\"";
     private static final Pattern POSTGRE_SPECIAL_NAME_PATTERN = Pattern.compile("[^a-z0-9_]");
     private static final Pattern H2_SPECIAL_NAME_PATTERN = Pattern.compile("[^A-Z0-9_]");
+    private static final String DEFAULT_SCHEMA = "PUBLIC";
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -37,7 +38,7 @@ public class TableLocation {
             throw new IllegalArgumentException("Cannot construct table location with null table");
         }
         this.catalog = catalog == null ? "" : catalog;
-        this.schema = schema  == null ? "" : schema;
+        this.schema = schema  == null || schema.isEmpty() ? DEFAULT_SCHEMA : schema;
         this.table = table;
     }
 
