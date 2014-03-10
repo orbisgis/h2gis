@@ -1,5 +1,6 @@
 package org.h2gis.network.graph_creator;
 
+import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.*;
@@ -665,10 +666,14 @@ public class ST_ShortestPathLengthTest {
         oneToSeveral(W, U, st, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
     }
 
-    @Test(expected = Exception.class)
-    public void oneToSeveralFail() throws SQLException {
-        // The graph does not contain vertex 7.
-        st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'undirected', 1, '2, 7')");
+    @Test(expected = IllegalArgumentException.class)
+    public void oneToSeveralFail() throws Throwable {
+        try {
+            // The graph does not contain vertex 7.
+            st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'undirected', 1, '2, 7')");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
     }
 
     private void oneToSeveral(String orientation, String weight, Statement st, int source, String destinationString, double[] distances) throws SQLException {
@@ -690,5 +695,32 @@ public class ST_ShortestPathLengthTest {
 
     private void oneToSeveral(String orientation, Statement st, int source, String destinationString, double[] distances) throws SQLException {
         oneToSeveral(orientation, null, st, source, destinationString, distances);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void arg3Fail() throws Throwable {
+        try {
+            st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'undirected', 2.0)");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void arg4Fail() throws Throwable {
+        try {
+            st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'undirected', 1, 2.0)");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void arg5Fail() throws Throwable {
+        try {
+            st.executeQuery("SELECT * FROM ST_ShortestPathLength('cormen_edges', 'undirected', 'weight', 1, 2.0)");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
     }
 }

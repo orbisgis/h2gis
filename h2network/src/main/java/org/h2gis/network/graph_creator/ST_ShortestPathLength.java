@@ -56,6 +56,8 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     public static final String DESTINATION  = "DESTINATION";
     public static final String DISTANCE  = "DISTANCE";
 
+    private static final String ARG_ERROR  = "Unrecognized argument: ";
+
     public ST_ShortestPathLength() {
         addProperty(PROP_REMARKS, "ST_ShortestPathLength ");
     }
@@ -68,50 +70,48 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
                                                   String orientation,
-                                                  Value sourceOrTable) throws SQLException {
-        if (sourceOrTable instanceof ValueInt) {
-            int source = sourceOrTable.getInt();
-            // 1: (o, s) = 5(null)
+                                                  Value arg3) throws SQLException {
+        if (arg3 instanceof ValueInt) {
+            int source = arg3.getInt();
             return oneToAll(connection, inputTable, orientation, null, source);
-        } else if (sourceOrTable instanceof ValueString) {
-            String table = sourceOrTable.getString();
-            // 2: (o, sdt) = 6(null)
+        } else if (arg3 instanceof ValueString) {
+            String table = arg3.getString();
             return manyToMany(connection, inputTable, orientation, null, table);
+        } else {
+            throw new IllegalArgumentException(ARG_ERROR + arg3);
         }
-        return null;
     }
 
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
                                                   String orientation,
-                                                  Value sourceOrWeight,
-                                                  Value destinationOrSourceOrTableOrDestString) throws SQLException {
-        if (sourceOrWeight instanceof ValueInt) {
-            int source = sourceOrWeight.getInt();
-            if (destinationOrSourceOrTableOrDestString instanceof ValueInt) {
-                int destination = destinationOrSourceOrTableOrDestString.getInt();
-                // 3: (o, s, d) = 7(null)
+                                                  Value arg3,
+                                                  Value arg4) throws SQLException {
+        if (arg3 instanceof ValueInt) {
+            int source = arg3.getInt();
+            if (arg4 instanceof ValueInt) {
+                int destination = arg4.getInt();
                 return oneToOne(connection, inputTable, orientation, null, source, destination);
-            } else if (destinationOrSourceOrTableOrDestString instanceof ValueString) {
-                String destinationString = destinationOrSourceOrTableOrDestString.getString();
-                // 2: (o, s, ds) = 8(null)
+            } else if (arg4 instanceof ValueString) {
+                String destinationString = arg4.getString();
                 return oneToSeveral(connection, inputTable, orientation, null, source, destinationString);
+            } else {
+                throw new IllegalArgumentException(ARG_ERROR + arg4);
             }
-        } else if (sourceOrWeight instanceof ValueString) {
-            String weight = sourceOrWeight.getString();
-            if (destinationOrSourceOrTableOrDestString instanceof ValueInt) {
-                int source = destinationOrSourceOrTableOrDestString.getInt();
-                // 5: (o, w, s)
+        } else if (arg3 instanceof ValueString) {
+            String weight = arg3.getString();
+            if (arg4 instanceof ValueInt) {
+                int source = arg4.getInt();
                 return oneToAll(connection, inputTable, orientation, weight, source);
-            } else if (destinationOrSourceOrTableOrDestString instanceof ValueString) {
-                String table = destinationOrSourceOrTableOrDestString.getString();
-                // 6: (o, w, sdt).
+            } else if (arg4 instanceof ValueString) {
+                String table = arg4.getString();
                 return manyToMany(connection, inputTable, orientation, weight, table);
-            } // TODO: else.
+            } else {
+                throw new IllegalArgumentException(ARG_ERROR + arg4);
+            }
         } else {
-            throw new IllegalArgumentException("Unrecognized argument.");
+            throw new IllegalArgumentException(ARG_ERROR + arg3);
         }
-        return null;
     }
 
     public static ResultSet getShortestPathLength(Connection connection,
@@ -119,17 +119,16 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String orientation,
                                                   String weight,
                                                   int source,
-                                                  Value destinationOrDestString) throws SQLException {
-        if (destinationOrDestString instanceof ValueInt) {
-            int destination = destinationOrDestString.getInt();
-            // 7: (o, w, s, d)
+                                                  Value arg5) throws SQLException {
+        if (arg5 instanceof ValueInt) {
+            int destination = arg5.getInt();
             return oneToOne(connection, inputTable, orientation, weight, source, destination);
-        } else if (destinationOrDestString instanceof ValueString) {
-            String destinationString = destinationOrDestString.getString();
-            // 8: (o, w, s, ds)
+        } else if (arg5 instanceof ValueString) {
+            String destinationString = arg5.getString();
             return oneToSeveral(connection, inputTable, orientation, weight, source, destinationString);
+        } else {
+            throw new IllegalArgumentException(ARG_ERROR + arg5);
         }
-        return null;
     }
 
     private static ResultSet oneToOne(Connection connection,
