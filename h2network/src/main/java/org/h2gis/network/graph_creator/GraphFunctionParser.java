@@ -1,7 +1,9 @@
 package org.h2gis.network.graph_creator;
 
 /**
- * Created by adam on 3/4/14.
+ * A helper class for parsing String arguments to h2network graph functions.
+ *
+ * @author Adam Gouge
  */
 public class GraphFunctionParser {
 
@@ -23,11 +25,11 @@ public class GraphFunctionParser {
             "Bad orientation format. Enter " + POSSIBLE_ORIENTATIONS + ".";
 
     /**
-     * Recovers the weight column name from the given string.
+     * Recovers the weight column name from a string.
      *
      * @param v String
      *
-     * @return True if the weight column name was correctly parsed.
+     * @return the weight column name
      */
     protected String parseWeight(String v) {
         if (v == null) {
@@ -37,14 +39,12 @@ public class GraphFunctionParser {
     }
 
     /**
-     * Recovers the global (and edge) orientation(s) from the given string,
-     * making sure the edge orientation column exists in the given data set.
+     * Recovers the global orientation from a string.
      *
-     * @param v     String
-     * @return True if the orientations were correctly parsed.
-     * @throws IllegalArgumentException
+     * @param v String
+     * @return The global orientation
      */
-    protected String parseGlobalOrientation(String v) throws IllegalArgumentException {
+    protected String parseGlobalOrientation(String v) {
         if (v == null) {
             return null;
         }
@@ -59,7 +59,7 @@ public class GraphFunctionParser {
         }
     }
 
-    protected boolean isDirectedString(String s) {
+    private boolean isDirectedString(String s) {
         if (s == null) {
             return false;
         }
@@ -70,7 +70,7 @@ public class GraphFunctionParser {
         return false;
     }
 
-    protected boolean isReversedString(String s) {
+    private boolean isReversedString(String s) {
         if (s == null) {
             return false;
         }
@@ -80,7 +80,7 @@ public class GraphFunctionParser {
         return false;
     }
 
-    protected boolean isUndirectedString(String s) {
+    private boolean isUndirectedString(String s) {
         if (s == null) {
             return false;
         }
@@ -90,17 +90,23 @@ public class GraphFunctionParser {
         return false;
     }
 
-    protected boolean isOrientationString(String s) {
+    private boolean isOrientationString(String s) {
        return isDirectedString(s) || isReversedString(s) || isUndirectedString(s);
     }
 
-    protected boolean isWeightString(String s) {
+    private boolean isWeightString(String s) {
         if (s == null) {
             return false;
         }
         return !isOrientationString(s);
     }
 
+    /**
+     * Recovers the edge orientation from a string.
+     *
+     * @param v String
+     * @return The edge orientation
+     */
     protected String parseEdgeOrientation(String v) {
         if (v == null) {
             return null;
@@ -119,6 +125,13 @@ public class GraphFunctionParser {
         }
     }
 
+    /**
+     * Parse the weight and orientation(s) from two strings, given in arbitrary
+     * order.
+     *
+     * @param arg1 Weight or orientation
+     * @param arg2 Weight or orientation
+     */
     public void parseWeightAndOrientation(String arg1, String arg2) {
         if ((arg1 == null && arg2 == null)
                 || (isWeightString(arg1) && arg2 == null)
@@ -150,21 +163,36 @@ public class GraphFunctionParser {
         }
     }
 
+    /**
+     * Get the weight column name.
+     *
+     * @return weight column name
+     */
     public String getWeightColumn() {
         return weightColumn;
     }
 
+    /**
+     * Get the global orientation string.
+     *
+     * @return global orientation string
+     */
     public String getGlobalOrientation() {
         return globalOrientation;
     }
 
+    /**
+     * Get the edge orientation column name.
+     *
+     * @return edge orientation column name
+     */
     public String getEdgeOrientation() {
         return edgeOrientation;
     }
 
     /**
-     * Returns an array of destination ids from a comma-separated
-     * list of destinations.
+     * Returns an array of destination ids from a comma-separated list of
+     * destinations.
      *
      * @param s Comma-separated list of destinations
      *
