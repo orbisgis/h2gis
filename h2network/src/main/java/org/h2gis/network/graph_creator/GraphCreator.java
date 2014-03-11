@@ -2,17 +2,18 @@ package org.h2gis.network.graph_creator;
 
 import org.javanetworkanalyzer.data.VId;
 import org.javanetworkanalyzer.model.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
 /**
- * Created by adam on 3/4/14.
+ * Creates a JGraphT graph from an edges table produced by {@link
+ * org.h2gis.network.graph_creator.ST_Graph}. The graph has the vertex and edge
+ * classes passed to the constructor. Its global and edge orientations and
+ * weights are specified by the strings passed to the constructor.
+ *
+ * @author Adam Gouge
  */
 public class GraphCreator<V extends VId, E extends Edge> {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(GraphCreator.class);
 
     private final Class<? extends V> vertexClass;
     private final Class<? extends E> edgeClass;
