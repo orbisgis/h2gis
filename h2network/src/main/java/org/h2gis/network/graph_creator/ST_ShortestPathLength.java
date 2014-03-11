@@ -278,25 +278,11 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
         final Statement st = connection.createStatement();
         try {
-            final ResultSet sourceDestinationRS =
-                    st.executeQuery("SELECT * FROM " + sourceDestinationTable);
-            // Make sure the source-destination table has columns named
-            // SOURCE and DESTINATION. An SQLException is thrown if not.
-            final int sourceIndex = sourceDestinationRS.findColumn(SOURCE);
-            final int destinationIndex = sourceDestinationRS.findColumn(DESTINATION);
-
             // Prepare the source-destination map from the source-destination table.
             Map<VDijkstra, Set<VDijkstra>> sourceDestinationMap =
-                    prepareSourceDestinationMap(sourceDestinationRS,
-                            graph,
-                            sourceIndex,
-                            destinationIndex);
-            if (sourceDestinationMap.isEmpty()) {
-                throw new IllegalArgumentException("No sources/destinations requested.");
-            }
+                    prepareSourceDestinationMap(st, sourceDestinationTable, graph);
 
-            // 6: (o, w, sdt).
-            // Do One-to-Many many times and store the results.
+            // 6: (o, w, sdt). Do One-to-Many many times and store the results.
             for (Map.Entry<VDijkstra, Set<VDijkstra>> sourceToDestSetMap : sourceDestinationMap.entrySet()) {
                 Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
                         .oneToMany(sourceToDestSetMap.getKey(), sourceToDestSetMap.getValue());
@@ -338,11 +324,25 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         return output;
     }
 
+    /**
+     * Prepare the source-destination map (to which we will apply Dijkstra) from
+     * the source-destination table.
+     *
+     * @param sourceDestinationTable Source-Destination table name
+     * @param graph                  Graph
+     * @return Source-Destination map
+     * @throws SQLException
+     */
     private static Map<VDijkstra, Set<VDijkstra>> prepareSourceDestinationMap(
-            ResultSet sourceDestinationRS,
-            KeyedGraph<VDijkstra, Edge> graph,
-            int sourceIndex,
-            int destinationIndex) throws SQLException {
+            Statement st,
+            String sourceDestinationTable,
+            KeyedGraph<VDijkstra, Edge> graph) throws SQLException {
+        final ResultSet sourceDestinationRS =
+                st.executeQuery("SELECT * FROM " + sourceDestinationTable);
+        // Make sure the source-destination table has columns named
+        // SOURCE and DESTINATION. An SQLException is thrown if not.
+        final int sourceIndex = sourceDestinationRS.findColumn(SOURCE);
+        final int destinationIndex = sourceDestinationRS.findColumn(DESTINATION);
         Map<VDijkstra, Set<VDijkstra>> map = new HashMap<VDijkstra, Set<VDijkstra>>();
         while (sourceDestinationRS.next()) {
             final VDijkstra source = graph.getVertex(sourceDestinationRS.getInt(sourceIndex));
@@ -356,9 +356,18 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
             // Add the destination.
             targets.add(destination);
         }
+        if (map.isEmpty()) {
+            throw new IllegalArgumentException("No sources/destinations requested.");
+        }
         return map;
     }
 
+    /**
+     * Return a new {@link org.h2.tools.SimpleResultSet} with SOURCE,
+     * DESTINATION and DISTANCE columns.
+     * @return a new {@link org.h2.tools.SimpleResultSet} with SOURCE,
+     * DESTINATION and DISTANCE columns
+     */
     private static SimpleResultSet prepareResultSet() {
         SimpleResultSet output = new SimpleResultSet();
         output.addColumn(SOURCE, Types.INTEGER, 10, 0);
@@ -367,6 +376,16 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         return output;
     }
 
+    /**
+     * Return a JGraphT graph from the input edges table.
+     *
+     * @param connection  Connection
+     * @param inputTable  Input table name
+     * @param orientation Orientation string
+     * @param weight      Weight column name, null for unweighted graphs
+     * @return Graph
+     * @throws SQLException
+     */
     private static KeyedGraph<VDijkstra, Edge> prepareGraph(Connection connection,
                                                             String inputTable,
                                                             String orientation,
