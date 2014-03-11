@@ -47,6 +47,30 @@ import java.util.Set;
  * vertices in a JGraphT graph produced from an edges table produced by {@link
  * org.h2gis.network.graph_creator.ST_Graph}.
  *
+ * <p>Possible signatures:
+ * <ol>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s) </code> - One-to-All</li>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'sdt') </code> - Many-to-Many</li>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, d) </code> - One-to-One</li>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'ds') </code> - One-to-Several</li>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s) </code> - One-to-All weighted</li>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'sdt') </code> - Many-to-Many weighted</li>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'w', d) </code> - One-to-One weighted</li>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'w', 'ds') </code> - One-to-Several weighted</li>
+ * </ol>
+ * where
+ * <ul>
+ * <li><code>input_edges</code> = Edges table produced by <code>ST_Graph</code> from table <code>input</code></li>
+ * <li><code>o</code> = Global orientation (directed, reversed or undirected)</li>
+ * <li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 =
+ * undirected). Required if global orientation is directed or reversed.</li>
+ * <li><code>s</code> = Source vertex id</li>
+ * <li><code>d</code> = Destination vertex id</li>
+ * <li><code>sdt</code> = Source-Destination table name (must contain columns
+ * SOURCE and DESTINATION containing integer vertex ids)</li>
+ * <li><code>ds</code> = Comma-separated Destination string ("dest1, dest2, ...")</li>
+ * </ul>
+ *
  * @author Adam Gouge
  */
 public class ST_ShortestPathLength extends AbstractFunction implements ScalarFunction {
@@ -59,9 +83,36 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     public static final String DISTANCE  = "DISTANCE";
 
     private static final String ARG_ERROR  = "Unrecognized argument: ";
+    public static final String REMARKS =
+            "ST_ShortestPathLength calculates the length(s) of shortest path(s) among " +
+            "vertices in a JGraphT graph produced from an edges table produced by {@link " +
+            "org.h2gis.network.graph_creator.ST_Graph}. " +
+            "<p>Possible signatures: " +
+            "<ol> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s) </code> - One-to-All</li> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'sdt') </code> - Many-to-Many</li> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, d) </code> - One-to-One</li> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'ds') </code> - One-to-Several</li> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s) </code> - One-to-All weighted</li> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'sdt') </code> - Many-to-Many weighted</li> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'w', d) </code> - One-to-One weighted</li> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'w', 'ds') </code> - One-to-Several weighted</li> " +
+            "</ol> " +
+            "where " +
+            "<ul> " +
+            "<li><code>input_edges</code> = Edges table produced by <code>ST_Graph</code> from table <code>input</code></li> " +
+            "<li><code>o</code> = Global orientation (directed, reversed or undirected)</li> " +
+            "<li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 = " +
+            "undirected). Required if global orientation is directed or reversed.</li> " +
+            "<li><code>s</code> = Source vertex id</li> " +
+            "<li><code>d</code> = Destination vertex id</li> " +
+            "<li><code>sdt</code> = Source-Destination table name (must contain columns " +
+            "SOURCE and DESTINATION containing integer vertex ids)</li> " +
+            "<li><code>ds</code> = Comma-separated Destination string ('dest1, dest2, ...')</li> " +
+            "</ul> ";
 
     public ST_ShortestPathLength() {
-        addProperty(PROP_REMARKS, "ST_ShortestPathLength ");
+        addProperty(PROP_REMARKS, REMARKS);
     }
 
     @Override
@@ -72,12 +123,11 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     /**
      * Calculate distances for
      * <ol>
-     * <li> One-to-All: Source -> ALL </li>
-     * <li> Many-to-Many: Source-Destination table -> same table with distances </li>
+     * <li> One-to-All: <code>arg3 = s</code>,</li>
+     * <li> Many-to-Many: <code>arg3 = sdt</code>.</li>
      * </ol>
-     * The items before the "->" represent the possible values of arg3.
      *
-     * The Source-Destination table must contain a column named SOURCE and a
+     * <p>The Source-Destination table must contain a column named SOURCE and a
      * column named DESTINATION, both consisting of integer IDs.
      *
      * @param connection  Connection
@@ -105,15 +155,13 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     /**
      * Calculate distances for
      * <ol>
-     * <li> One-to-One: (Source, Destination) -> distance </li>
-     * <li> One-to-Several: (Source, "dest1, dest2, ...") -> distances </li>
-     * <li> One-to-All weighted: (weight, Source) -> ALL </li>
-     * <li> Many-to-Many weighted: (weight, Source-Destination table) -> same
-     * table with distances </li>
+     * <li> One-to-One: <code>(arg3, arg4) = (s, d)</code>,</li>
+     * <li> One-to-Several: <code>(arg3, arg4) = (s, ds)</code>,</li>
+     * <li> One-to-All weighted: <code>(arg3, arg4) = (w, s)</code>,</li>
+     * <li> Many-to-Many weighted: <code>(arg3, arg4) = (w, sdt)</code>.</li>
      * </ol>
-     * The items before the "->" represent the possible values of (arg3, arg4).
      *
-     * The Source-Destination table must contain a column named SOURCE and a
+     * <p>The Source-Destination table must contain a column named SOURCE and a
      * column named DESTINATION, both consisting of integer IDs.
      *
      * @param connection  connection
@@ -160,10 +208,9 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     /**
      * Calculate distances for
      * <ol>
-     * <li> One-to-One weighted: Destination -> distance </li>
-     * <li> One-to-Several weighted: "dest1, dest2, ..." -> distances </li>
+     * <li> One-to-One weighted: <code>arg5 = d</code>,</li>
+     * <li> One-to-Several weighted: <code>arg5 = ds</code>.</li>
      * </ol>
-     * The items before the "->" represent the possible values of arg5.
      *
      * @param connection  Connection
      * @param inputTable  Input table
