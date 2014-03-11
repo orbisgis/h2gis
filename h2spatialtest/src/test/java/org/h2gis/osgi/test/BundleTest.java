@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import javax.inject.Inject;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -43,23 +42,15 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
+
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.junit.Assert.*;
+import static org.ops4j.pax.exam.CoreOptions.*;
 
 /**
  * {@see http://felix.apache.org/site/apache-felix-ipojo-junit4osgi-tutorial.html}
@@ -91,6 +82,8 @@ public class BundleTest {
                 mavenBundle("org.orbisgis", "h2drivers").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-osgi"),
                 mavenBundle("org.orbisgis", "h2spatial-ext-osgi"),
+                mavenBundle("org.orbisgis", "java-network-analyzer").version("0.1.5"),
+                mavenBundle("org.jgrapht", "jgrapht-core").version("0.9.0"),
                 mavenBundle("org.orbisgis", "h2network").noStart(),
                 junitBundles());
     }
