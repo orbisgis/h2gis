@@ -43,7 +43,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * ST_ShortestPathLength
+ * ST_ShortestPathLength calculates the length(s) of shortest path(s) among
+ * vertices in a JGraphT graph produced from an edges table produced by {@link
+ * org.h2gis.network.graph_creator.ST_Graph}.
  *
  * @author Adam Gouge
  */
@@ -67,6 +69,23 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         return "getShortestPathLength";
     }
 
+    /**
+     * Calculate distances for
+     * <ol>
+     * <li> One-to-All: Source -> ALL </li>
+     * <li> Many-to-Many: Source-Destination table </li>
+     * </ol>
+     *
+     * The Source-Destination table must contain a column named SOURCE and a
+     * column named DESTINATION, both consisting of integer IDs.
+     *
+     * @param connection  Connection
+     * @param inputTable  Input table
+     * @param orientation Orientation string
+     * @param arg3        Source vertex id -OR- Source-Destination table
+     * @return Distances table
+     * @throws SQLException
+     */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
                                                   String orientation,
@@ -82,6 +101,27 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         }
     }
 
+    /**
+     * Calculate distances for
+     * <ol>
+     * <li> One-to-One: Source -> Destination </li>
+     * <li> One-to-Several: Source -> "dest1, dest2, ..." </li>
+     * <li> One-to-All weighted: Source -> ALL </li>
+     * <li> Many-to-Many weighted: Source-Destination table </li>
+     * </ol>
+     *
+     * The Source-Destination table must contain a column named SOURCE and a
+     * column named DESTINATION, both consisting of integer IDs.
+     *
+     * @param connection  connection
+     * @param inputTable  Input table
+     * @param orientation Orientation string
+     * @param arg3        Source vertex id -OR- Weight column name
+     * @param arg4        Destination vertex id -OR- Destination string -OR-
+     *                    Source vertex id -OR- Source-Destination table
+     * @return Distances table
+     * @throws SQLException
+     */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
                                                   String orientation,
@@ -114,6 +154,22 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         }
     }
 
+    /**
+     * Calculate distances for
+     * <ol>
+     * <li> One-to-One weighted: Source -> Destination </li>
+     * <li> One-to-Several weighted: Source -> "dest1, dest2, ..." </li>
+     * </ol>
+     *
+     * @param connection  Connection
+     * @param inputTable  Input table
+     * @param orientation Orientation string
+     * @param weight      Weight column name, null for unweighted graphs
+     * @param source      Source vertex id
+     * @param arg5        Destination vertex id -OR- Destination string
+     * @return Distances table
+     * @throws SQLException
+     */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
                                                   String orientation,
