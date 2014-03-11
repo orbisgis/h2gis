@@ -73,8 +73,9 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
      * Calculate distances for
      * <ol>
      * <li> One-to-All: Source -> ALL </li>
-     * <li> Many-to-Many: Source-Destination table </li>
+     * <li> Many-to-Many: Source-Destination table -> same table with distances </li>
      * </ol>
+     * The items before the "->" represent the possible values of arg3.
      *
      * The Source-Destination table must contain a column named SOURCE and a
      * column named DESTINATION, both consisting of integer IDs.
@@ -104,11 +105,13 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     /**
      * Calculate distances for
      * <ol>
-     * <li> One-to-One: Source -> Destination </li>
-     * <li> One-to-Several: Source -> "dest1, dest2, ..." </li>
-     * <li> One-to-All weighted: Source -> ALL </li>
-     * <li> Many-to-Many weighted: Source-Destination table </li>
+     * <li> One-to-One: (Source, Destination) -> distance </li>
+     * <li> One-to-Several: (Source, "dest1, dest2, ...") -> distances </li>
+     * <li> One-to-All weighted: (weight, Source) -> ALL </li>
+     * <li> Many-to-Many weighted: (weight, Source-Destination table) -> same
+     * table with distances </li>
      * </ol>
+     * The items before the "->" represent the possible values of (arg3, arg4).
      *
      * The Source-Destination table must contain a column named SOURCE and a
      * column named DESTINATION, both consisting of integer IDs.
@@ -157,9 +160,10 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     /**
      * Calculate distances for
      * <ol>
-     * <li> One-to-One weighted: Source -> Destination </li>
-     * <li> One-to-Several weighted: Source -> "dest1, dest2, ..." </li>
+     * <li> One-to-One weighted: Destination -> distance </li>
+     * <li> One-to-Several weighted: "dest1, dest2, ..." -> distances </li>
      * </ol>
+     * The items before the "->" represent the possible values of arg5.
      *
      * @param connection  Connection
      * @param inputTable  Input table
