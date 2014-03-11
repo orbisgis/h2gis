@@ -8,13 +8,17 @@ package org.h2gis.network.graph_creator;
 public class GraphFunctionParser {
 
     private String weightColumn;
-    private String globalOrientation;
+    private Orientation globalOrientation;
     private String edgeOrientation;
 
     public static final String SEPARATOR = "-";
     public static final String DIRECTED = "directed";
     public static final String REVERSED = "reversed";
     public static final String UNDIRECTED = "undirected";
+
+    public enum Orientation {
+        DIRECTED, REVERSED, UNDIRECTED
+    }
 
     public static final String EDGE_ORIENTATION_COLUMN = "edge_orientation_column";
     public static final String POSSIBLE_ORIENTATIONS =
@@ -41,25 +45,26 @@ public class GraphFunctionParser {
     /**
      * Recovers the global orientation from a string.
      *
+     *
      * @param v String
      * @return The global orientation
      */
-    protected String parseGlobalOrientation(String v) {
+    protected static Orientation parseGlobalOrientation(String v) {
         if (v == null) {
             return null;
         }
         if (isDirectedString(v)) {
-            return DIRECTED;
+            return Orientation.DIRECTED;
         } else if (isReversedString(v)) {
-            return REVERSED;
+            return Orientation.REVERSED;
         } else if (isUndirectedString(v)) {
-            return UNDIRECTED;
+            return Orientation.UNDIRECTED;
         } else {
             throw new IllegalArgumentException(ORIENTATION_ERROR);
         }
     }
 
-    private boolean isDirectedString(String s) {
+    private static boolean isDirectedString(String s) {
         if (s == null) {
             return false;
         }
@@ -70,7 +75,7 @@ public class GraphFunctionParser {
         return false;
     }
 
-    private boolean isReversedString(String s) {
+    private static boolean isReversedString(String s) {
         if (s == null) {
             return false;
         }
@@ -80,7 +85,7 @@ public class GraphFunctionParser {
         return false;
     }
 
-    private boolean isUndirectedString(String s) {
+    private static boolean isUndirectedString(String s) {
         if (s == null) {
             return false;
         }
@@ -157,7 +162,7 @@ public class GraphFunctionParser {
         weightColumn = parseWeight(weight);
         globalOrientation = parseGlobalOrientation(orient);
         if (globalOrientation != null) {
-            if (!globalOrientation.equals(UNDIRECTED)) {
+            if (!globalOrientation.equals(Orientation.UNDIRECTED)) {
                 edgeOrientation = parseEdgeOrientation(orient);
             }
         }
@@ -177,7 +182,7 @@ public class GraphFunctionParser {
      *
      * @return global orientation string
      */
-    public String getGlobalOrientation() {
+    public Orientation getGlobalOrientation() {
         return globalOrientation;
     }
 

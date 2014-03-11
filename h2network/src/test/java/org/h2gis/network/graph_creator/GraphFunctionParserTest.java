@@ -54,20 +54,20 @@ public class GraphFunctionParserTest {
         parser = new GraphFunctionParser();
     }
 
-    private void checkOrientation(String input, String global, String local) {
+    private void checkOrientation(String input, GraphFunctionParser.Orientation global, String local) {
         assertEquals(global, parser.parseGlobalOrientation(input));
         assertEquals(local, parser.parseEdgeOrientation(input));
     }
 
     @Test
     public void testNonNullOrientations() {
-        checkOrientation("directed - edge_orientation", GraphFunctionParser.DIRECTED, "edge_orientation");
-        checkOrientation("directed- edge_orientation", GraphFunctionParser.DIRECTED, "edge_orientation");
-        checkOrientation("directed-edge_orientation", GraphFunctionParser.DIRECTED, "edge_orientation");
-        checkOrientation(" directed-edge_orientation   ", GraphFunctionParser.DIRECTED, "edge_orientation");
-        checkOrientation("diRecTEd - name", GraphFunctionParser.DIRECTED, "name");
-        checkOrientation("rEVersEd - rname", GraphFunctionParser.REVERSED, "rname");
-        checkOrientation("UnDiRecTEd - q w98 er2", GraphFunctionParser.UNDIRECTED, "q w98 er2");
+        checkOrientation("directed - edge_orientation", GraphFunctionParser.Orientation.DIRECTED, "edge_orientation");
+        checkOrientation("directed- edge_orientation", GraphFunctionParser.Orientation.DIRECTED, "edge_orientation");
+        checkOrientation("directed-edge_orientation", GraphFunctionParser.Orientation.DIRECTED, "edge_orientation");
+        checkOrientation(" directed-edge_orientation   ", GraphFunctionParser.Orientation.DIRECTED, "edge_orientation");
+        checkOrientation("diRecTEd - name", GraphFunctionParser.Orientation.DIRECTED, "name");
+        checkOrientation("rEVersEd - rname", GraphFunctionParser.Orientation.REVERSED, "rname");
+        checkOrientation("UnDiRecTEd - q w98 er2", GraphFunctionParser.Orientation.UNDIRECTED, "q w98 er2");
     }
 
     @Test
@@ -109,48 +109,49 @@ public class GraphFunctionParserTest {
         // DO
         GraphFunctionParser p = new GraphFunctionParser();
         p.parseWeightAndOrientation("directed - edge_orientation", null);
-        checkWeightAndOrientation(p, null, "directed", "edge_orientation");
+        checkWeightAndOrientation(p, null, GraphFunctionParser.Orientation.DIRECTED, "edge_orientation");
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation(null, "directed - edge_orientation");
-        checkWeightAndOrientation(p, null, "directed", "edge_orientation");
+        checkWeightAndOrientation(p, null, GraphFunctionParser.Orientation.DIRECTED, "edge_orientation");
         // RO
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("reversed - edge_orientation", null);
-        checkWeightAndOrientation(p, null, "reversed", "edge_orientation");
+        checkWeightAndOrientation(p, null, GraphFunctionParser.Orientation.REVERSED, "edge_orientation");
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation(null, "reversed - edge_orientation");
-        checkWeightAndOrientation(p, null, "reversed", "edge_orientation");
+        checkWeightAndOrientation(p, null, GraphFunctionParser.Orientation.REVERSED, "edge_orientation");
         // U
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("undirected", null);
-        checkWeightAndOrientation(p, null, "undirected", null);
+        checkWeightAndOrientation(p, null, GraphFunctionParser.Orientation.UNDIRECTED, null);
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation(null, "undirected");
-        checkWeightAndOrientation(p, null, "undirected", null);
+        checkWeightAndOrientation(p, null, GraphFunctionParser.Orientation.UNDIRECTED, null);
         // WDO
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("weight", "directed - edge_orientation");
-        checkWeightAndOrientation(p, "weight", "directed", "edge_orientation");
+        checkWeightAndOrientation(p, "weight", GraphFunctionParser.Orientation.DIRECTED, "edge_orientation");
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("directed - edge_orientation", "weight");
-        checkWeightAndOrientation(p, "weight", "directed", "edge_orientation");
+        checkWeightAndOrientation(p, "weight", GraphFunctionParser.Orientation.DIRECTED, "edge_orientation");
         // WRO
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("weight", "reversed - edge_orientation");
-        checkWeightAndOrientation(p, "weight", "reversed", "edge_orientation");
+        checkWeightAndOrientation(p, "weight", GraphFunctionParser.Orientation.REVERSED, "edge_orientation");
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("reversed - edge_orientation", "weight");
-        checkWeightAndOrientation(p, "weight", "reversed", "edge_orientation");
+        checkWeightAndOrientation(p, "weight", GraphFunctionParser.Orientation.REVERSED, "edge_orientation");
         // WU
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("weight", "undirected");
-        checkWeightAndOrientation(p, "weight", "undirected", null);
+        checkWeightAndOrientation(p, "weight", GraphFunctionParser.Orientation.UNDIRECTED, null);
         p = new GraphFunctionParser();
         p.parseWeightAndOrientation("undirected", "weight");
-        checkWeightAndOrientation(p, "weight", "undirected", null);
+        checkWeightAndOrientation(p, "weight", GraphFunctionParser.Orientation.UNDIRECTED, null);
     }
 
-    private void checkWeightAndOrientation(GraphFunctionParser p, String weight, String global, String local) {
+    private void checkWeightAndOrientation(GraphFunctionParser p, String weight,
+                                           GraphFunctionParser.Orientation global, String local) {
         assertEquals(weight, p.getWeightColumn());
         assertEquals(global, p.getGlobalOrientation());
         assertEquals(local, p.getEdgeOrientation());

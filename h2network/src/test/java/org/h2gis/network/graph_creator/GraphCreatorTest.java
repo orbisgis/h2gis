@@ -121,7 +121,7 @@ public class GraphCreatorTest {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "cormen_edges",
-                        GraphFunctionParser.DIRECTED, "edge_orientation", null,
+                        GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedPseudoG);
@@ -146,7 +146,7 @@ public class GraphCreatorTest {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "cormen_edges",
-                        GraphFunctionParser.DIRECTED, "edge_orientation", "weight",
+                        GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", "weight",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedWeightedPseudoG);
@@ -171,7 +171,7 @@ public class GraphCreatorTest {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "cormen_edges",
-                        GraphFunctionParser.REVERSED, "edge_orientation", null,
+                        GraphFunctionParser.Orientation.REVERSED, "edge_orientation", null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedPseudoG);
@@ -196,7 +196,7 @@ public class GraphCreatorTest {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "cormen_edges",
-                        GraphFunctionParser.REVERSED, "edge_orientation", "weight",
+                        GraphFunctionParser.Orientation.REVERSED, "edge_orientation", "weight",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedWeightedPseudoG);
@@ -221,7 +221,7 @@ public class GraphCreatorTest {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "cormen_edges",
-                        GraphFunctionParser.UNDIRECTED, null, null,
+                        GraphFunctionParser.Orientation.UNDIRECTED, null, null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof PseudoG);
@@ -255,7 +255,7 @@ public class GraphCreatorTest {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "cormen_edges",
-                        GraphFunctionParser.UNDIRECTED, null, "weight",
+                        GraphFunctionParser.Orientation.UNDIRECTED, null, "weight",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof WeightedPseudoG);
@@ -324,7 +324,7 @@ public class GraphCreatorTest {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "copy",
-                        GraphFunctionParser.DIRECTED, "edge_orientation", "weight",
+                        GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", "weight",
                         VDijkstra.class, Edge.class);
         try {
             graphCreator.prepareGraph();
