@@ -55,8 +55,8 @@ import java.util.Set;
  * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'ds') </code> - One-to-Several</li>
  * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s) </code> - One-to-All weighted</li>
  * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'sdt') </code> - Many-to-Many weighted</li>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'w', d) </code> - One-to-One weighted</li>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'w', 'ds') </code> - One-to-Several weighted</li>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, d) </code> - One-to-One weighted</li>
+ * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, 'ds') </code> - One-to-Several weighted</li>
  * </ol>
  * where
  * <ul>
@@ -95,8 +95,8 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
             "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'ds') </code> - One-to-Several</li> " +
             "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s) </code> - One-to-All weighted</li> " +
             "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'sdt') </code> - Many-to-Many weighted</li> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'w', d) </code> - One-to-One weighted</li> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'w', 'ds') </code> - One-to-Several weighted</li> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, d) </code> - One-to-One weighted</li> " +
+            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, 'ds') </code> - One-to-Several weighted</li> " +
             "</ol> " +
             "where " +
             "<ul> " +
