@@ -69,6 +69,7 @@ public class BundleTest {
     @Configuration
     public Option[] config() {
         return options(systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("WARN"),
+                repository("file:/~/.m2/").id("local"),
                 mavenBundle("org.osgi", "org.osgi.compendium"),
                 mavenBundle("org.orbisgis", "h2spatial-api"),
                 mavenBundle("org.orbisgis", "spatial-utilities"),
