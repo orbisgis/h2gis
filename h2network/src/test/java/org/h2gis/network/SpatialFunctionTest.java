@@ -27,7 +27,9 @@ package org.h2gis.network;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.network.graph_creator.GraphCreatorTest;
 import org.h2gis.network.graph_creator.ST_Graph;
+import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -52,6 +54,8 @@ public class SpatialFunctionTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, true);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
+        GraphCreatorTest.registerCormenGraph(connection);
     }
 
     @AfterClass
