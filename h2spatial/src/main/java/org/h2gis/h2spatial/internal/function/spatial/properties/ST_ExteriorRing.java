@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Returns a LinearRing instance or Null if parameter is not a Geometry.
+ * Returns a LinearRing instance or Null if parameter is not a Polygon.
  * @author Nicolas Fortin
  */
 public class ST_ExteriorRing extends DeterministicScalarFunction {
@@ -39,7 +39,7 @@ public class ST_ExteriorRing extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_ExteriorRing() {
-        addProperty(PROP_REMARKS, "Returns a LinearRing instance or Null if parameter is not a Geometry.");
+        addProperty(PROP_REMARKS, "Returns a LinearRing instance or Null if parameter is not a Polygon.");
     }
 
     @Override
@@ -49,7 +49,7 @@ public class ST_ExteriorRing extends DeterministicScalarFunction {
 
     /**
      * @param geometry Instance of Polygon
-     * @return LinearRing instance or Null if parameter is not a Geometry.
+     * @return LinearRing instance or Null if parameter is not a Polygon.
      */
     public static Geometry getExteriorRing(Geometry geometry) {
         if(geometry instanceof Polygon) {

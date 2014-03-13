@@ -32,6 +32,7 @@ import java.util.List;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 
 /**
  * GridRowSet is used to populate a result set with all grid cells. A cell could
@@ -203,7 +204,7 @@ public class GridRowSet implements SimpleRowSource {
      */
     private static String getFirstGeometryField(String tableName, Connection connection) throws SQLException {
         // Find first geometry column
-        List<String> geomFields = SFSUtilities.getGeometryFields(connection, SFSUtilities.splitCatalogSchemaTableName(tableName));
+        List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
         if (!geomFields.isEmpty()) {
             return geomFields.get(0);
         } else {

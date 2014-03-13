@@ -26,12 +26,11 @@
 package org.h2gis.h2spatial.internal.function.spatial.convert;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatial.internal.type.SC_LineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert String into a Line type.
+ * Convert a WKT String into a LINESTRING.
  * @author Nicolas Fortin
  */
 public class ST_LineFromText extends DeterministicScalarFunction {
@@ -39,7 +38,7 @@ public class ST_LineFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_LineFromText() {
-        addProperty(PROP_REMARKS, "Convert String into a Line type.");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a LINESTRING");
     }
 
     @Override
@@ -59,7 +58,7 @@ public class ST_LineFromText extends DeterministicScalarFunction {
         }
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
         if(!geometry.getGeometryType().equalsIgnoreCase("linestring")) {
-            throw new SQLException("Provided Well Known Text geometry is not a line string");
+            throw new SQLException("The provided WKT Geometry is not a LINESTRING.");
         }
         return geometry;
     }

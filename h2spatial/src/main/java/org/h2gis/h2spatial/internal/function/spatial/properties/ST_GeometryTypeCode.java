@@ -22,49 +22,38 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.h2gis.h2spatial.internal.function.spatial.properties;
 
-package org.h2gis.h2spatial.internal.type;
-
-import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatialapi.AbstractFunction;
-import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;
 
 import java.io.IOException;
 
 /**
- * Constraint for MultiLineString field type.
+ * Returns the OGC SFS {@link org.h2gis.utilities.GeometryTypeCodes} of a Geometry. This function does not take account of Z nor M.
+ * This function is not part of SFS; see {@link org.h2gis.h2spatial.internal.function.spatial.properties.ST_GeometryType}
+ * It is used in constraints.
  * @author Nicolas Fortin
  */
-public class SC_MultiLineString extends AbstractFunction implements ScalarFunction , GeometryConstraint {
-
-    public SC_MultiLineString() {
-        addProperty(PROP_REMARKS, "Return true if the geometry is a MultiLineString.");
-    }
-
-    @Override
-    public int getGeometryTypeCode() {
-        return GeometryTypeCodes.MULTILINESTRING;
+public class ST_GeometryTypeCode extends DeterministicScalarFunction {
+    public ST_GeometryTypeCode() {
+        addProperty(PROP_REMARKS, "Returns the OGC SFS geometry type code from a Geometry");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "isMultiLineString";
+        return "getTypeCode";
     }
 
     /**
-     * @param bytes Geometry WKB or NULL
-     * @return True if null or if the field type fit with the constraint.
+     * @param geometry Geometry WKB.
+     * @return Returns the OGC SFS {@link org.h2gis.utilities.GeometryTypeCodes} of a Geometry. This function does not take account of Z nor M.
+     * @throws IOException WKB is not valid.
      */
-    public static boolean isMultiLineString(byte[] bytes) {
-        if(bytes==null) {
-            return true;
+    public static Integer getTypeCode(byte[] geometry) throws IOException {
+        if(geometry == null) {
+            return null;
         }
-        try {
-            return GeometryMetaData.getMetaDataFromWKB(bytes).geometryType == GeometryTypeCodes.MULTILINESTRING;
-        } catch (IOException ex) {
-            return false;
-        }
+        return GeometryMetaData.getMetaDataFromWKB(geometry).geometryType;
     }
 }

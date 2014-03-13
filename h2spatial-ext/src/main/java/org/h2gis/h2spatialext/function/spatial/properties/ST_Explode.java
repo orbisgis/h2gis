@@ -194,7 +194,7 @@ public class ST_Explode extends DeterministicScalarFunction {
             columnCount = meta.getColumnCount();
             if(spatialFieldName==null) {
                 // Find first geometry column
-                List<String> geomFields = SFSUtilities.getGeometryFields(connection,SFSUtilities.splitCatalogSchemaTableName(tableName));
+                List<String> geomFields = SFSUtilities.getGeometryFields(connection,TableLocation.parse(tableName));
                 if(!geomFields.isEmpty()) {
                     spatialFieldName = geomFields.get(0);
                 } else {

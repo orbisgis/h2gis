@@ -26,7 +26,7 @@
 package org.h2gis.h2spatial.internal.function.spatial.convert;
 
 /**
- * Same function that {@link ST_AsWKT}
+ * Alias for {@link ST_AsWKT}
  * @author Nicolas Fortin
  */
 public class ST_AsText extends ST_AsWKT {

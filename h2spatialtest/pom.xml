@@ -13,7 +13,6 @@
     <packaging>jar</packaging>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <junit.version>4.11</junit.version>
         <logback.version>1.0.13</logback.version>
         <pax.exam.version>3.3.0</pax.exam.version>
     </properties>
@@ -46,7 +45,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${junit.version}</version>
+            <version>${junit-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

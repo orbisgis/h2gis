@@ -23,9 +23,8 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.drivers.dbf;
+package org.h2gis.drivers.file_table;
 
-import org.h2.command.ddl.CreateTableData;
 import org.h2.constant.ErrorCode;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
@@ -41,19 +40,19 @@ import org.h2.table.Table;
 import org.h2.table.TableFilter;
 import org.h2.value.DataType;
 import org.h2.value.Value;
-import org.h2gis.drivers.dbf.internal.DBFDriver;
-import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
+import org.h2.value.ValueLong;
+import org.h2gis.drivers.FileDriver;
 
 import java.io.IOException;
 
 /**
- * ScanIndex of SHPTable, the key is the row index.
+ * ScanIndex of {@link org.h2gis.drivers.FileDriver}, the key is the row index [1-n].
  * @author Nicolas Fortin
  */
-public class DBFTableIndex extends BaseIndex {
-    DBFDriver driver;
+public class H2TableIndex extends BaseIndex {
+    private FileDriver driver;
 
-    public DBFTableIndex(DBFDriver driver, Table table, int id) {
+    public H2TableIndex(FileDriver driver, Table table, int id) {
         this.driver = driver;
         IndexColumn indexColumn = new IndexColumn();
         indexColumn.columnName = "key";
@@ -66,16 +65,23 @@ public class DBFTableIndex extends BaseIndex {
         // Nothing to check
     }
 
+    public FileDriver getDriver() {
+        return driver;
+    }
+
     @Override
     public Row getRow(Session session, long key) {
         try {
-            Object[] row = driver.getRow(key);
-            Value[] values = new Value[row.length];
+            Object[] driverRow = driver.getRow(key - 1);
+            Value[] values = new Value[driverRow.length];
             Column[] columns = table.getColumns();
-            for(int idField=0;idField<row.length;idField++) {
-                values[idField] = DataType.convertToValue(session, row[idField], columns[idField].getType());
+            for(int idField=0;idField<driverRow.length;idField++) {
+                // TODO in H2, switch on type parameter instead of if elseif
+                values[idField] = DataType.convertToValue(session, driverRow[idField], columns[idField].getType());
             }
-            return new Row(values, Row.MEMORY_CALCULATE);
+            Row row =  new Row(values, Row.MEMORY_CALCULATE);
+            row.setKey(key);
+            return row;
         } catch (IOException ex) {
             throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
         }
@@ -98,7 +104,7 @@ public class DBFTableIndex extends BaseIndex {
 
     @Override
     public Cursor find(Session session, SearchRow first, SearchRow last) {
-        return new SHPCursor(this,first != null ? first.getKey() : 0,session);
+        return new SHPCursor(this, first, last, session);
     }
 
     @Override
@@ -123,7 +129,7 @@ public class DBFTableIndex extends BaseIndex {
 
     @Override
     public Cursor findFirstOrLast(Session session, boolean first) {
-        return new SHPCursor(this,first ? 0 : getRowCount(session) - 1,session);
+        return new SHPCursor(this,first ? 0 : getRowCount(session),session);
     }
 
     @Override
@@ -146,71 +152,29 @@ public class DBFTableIndex extends BaseIndex {
         return 0;
     }
 
-    /**
-     * Parse the SHP and DBF files then init the provided data structure
-     * @param data Data to initialise
-     * @throws java.io.IOException
-     */
-    public static void feedCreateTableData(DbaseFileHeader header,CreateTableData data) throws IOException {
-        for (int i = 0; i < header.getNumFields(); i++) {
-            String fieldsName = header.getFieldName(i);
-            final int type = dbfTypeToH2Type(header,i);
-            Column column = new Column(fieldsName.toUpperCase(), type);
-            column.setPrecision(header.getFieldLength(i)); // set string length
-            data.columns.add(column);
-        }
+    @Override
+    public boolean isRowIdIndex() {
+        return true;
     }
 
-    /**
-     * @see "http://www.clicketyclick.dk/databases/xbase/format/data_types.html"
-     * @param header DBF File Header
-     * @param i DBF Type identifier
-     * @return H2 {@see Value}
-     * @throws java.io.IOException
-     */
-    private static int dbfTypeToH2Type(DbaseFileHeader header, int i) throws IOException {
-        switch (header.getFieldType(i)) {
-            // (L)logical (T,t,F,f,Y,y,N,n)
-            case 'l':
-            case 'L':
-                return Value.BOOLEAN;
-            // (C)character (String)
-            case 'c':
-            case 'C':
-                return Value.STRING_FIXED;
-            // (D)date (Date)
-            case 'd':
-            case 'D':
-                return Value.DATE;
-            // (F)floating (Double)
-            case 'n':
-            case 'N':
-                if ((header.getFieldDecimalCount(i) == 0)) {
-                    if ((header.getFieldLength(i) >= 0)
-                            && (header.getFieldLength(i) < 10)) {
-                        return Value.INT;
-                    } else {
-                        return Value.LONG;
-                    }
-                }
-            case 'f':
-            case 'F': // floating point number
-            case 'o':
-            case 'O': // floating point number
-                return Value.DOUBLE;
-            default:
-                throw new IOException("Unknown DBF field type "+header.getFieldType(i));
-        }
-    }
     private static class SHPCursor implements Cursor {
-        private DBFTableIndex tIndex;
+        private H2TableIndex tIndex;
         private long rowIndex;
         private Session session;
+        private SearchRow begin, end;
 
-        private SHPCursor(DBFTableIndex tIndex, long rowIndex, Session session) {
+        private SHPCursor(H2TableIndex tIndex, long rowIndex, Session session) {
             this.tIndex = tIndex;
-            this.rowIndex = rowIndex - 1;
+            this.rowIndex = rowIndex;
             this.session = session;
+        }
+
+        private SHPCursor(H2TableIndex tIndex, SearchRow begin, SearchRow end, Session session) {
+            this.tIndex = tIndex;
+            this.session = session;
+            this.begin = begin;
+            this.end = end;
+            this.rowIndex = begin == null ? 0 : begin.getKey() - 1;
         }
 
         @Override
@@ -220,12 +184,14 @@ public class DBFTableIndex extends BaseIndex {
 
         @Override
         public SearchRow getSearchRow() {
-            return get();
+            Row row =  new Row(new Value[tIndex.getTable().getColumns().length], Row.MEMORY_CALCULATE);
+            row.setKey(rowIndex);
+            return row;
         }
 
         @Override
         public boolean next() {
-            if(rowIndex + 1 < tIndex.getRowCount(session)) {
+            if(rowIndex < tIndex.getRowCount(session) && (end == null || rowIndex < end.getKey())) {
                 rowIndex ++;
                 return true;
             } else {
@@ -235,7 +201,7 @@ public class DBFTableIndex extends BaseIndex {
 
         @Override
         public boolean previous() {
-            if(rowIndex - 1 >= 0) {
+            if(rowIndex > 0 && (begin == null || rowIndex >= begin.getKey())) {
                 rowIndex --;
                 return true;
             } else {

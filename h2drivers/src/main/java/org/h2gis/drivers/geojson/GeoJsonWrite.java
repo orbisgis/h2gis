@@ -1,4 +1,4 @@
-/**
+/*
  * h2spatial is a library that brings spatial support to the H2 Java database.
  *
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
@@ -22,35 +22,45 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.h2gis.drivers.geojson;
 
-package org.h2gis.h2spatialext.function.spatial.predicates;
+import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.h2spatialapi.ScalarFunction;
 
-import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * ST_IsRectangle returns true if the given geometry is a rectangle.
+ * SQL function to write a spatial table to a GeoJSON file.
  *
- * @author Adam Gouge
+ * @author Erwan Bocher
  */
-public class ST_IsRectangle extends DeterministicScalarFunction {
+public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
 
-    public ST_IsRectangle() {
-        addProperty(PROP_REMARKS, "Returns true if the given geometry is a rectangle.");
+    
+    public GeoJsonWrite(){
+        addProperty(PROP_REMARKS, "Export a spatial table to a GeoJSON 1.0 file.");
     }
-
+    
     @Override
     public String getJavaStaticMethod() {
-        return "isRectangle";
+        return "writeGeoJson";
     }
 
     /**
-     * Returns true if the given geometry is a rectangle.
+     * Write the GeoJSON file.
      *
-     * @param geometry Geometry
-     * @return True if the given geometry is a rectangle
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @throws IOException
+     * @throws SQLException
      */
-    public static Boolean isRectangle(Geometry geometry) {
-        return geometry.isRectangle();
+    public static void writeGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+            GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
+            gjdf.exportTable(connection, tableReference,  new  File(fileName), new EmptyProgressVisitor());
     }
 }

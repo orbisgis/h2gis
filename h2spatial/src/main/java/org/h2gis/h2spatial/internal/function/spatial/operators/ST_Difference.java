@@ -29,7 +29,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute the difference between two geometries
+ * Compute the difference between two Geometries.
+ *
  * @author Nicolas Fortin
  */
 public class ST_Difference extends DeterministicScalarFunction {
@@ -38,7 +39,7 @@ public class ST_Difference extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_Difference() {
-        addProperty(PROP_REMARKS, "Compute the difference between two geometries.");
+        addProperty(PROP_REMARKS, "Compute the difference between two Geometries");
     }
 
     @Override

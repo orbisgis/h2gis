@@ -31,7 +31,6 @@ import java.sql.SQLException;
 import org.h2gis.drivers.gpx.model.GpxParser;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
-import org.h2gis.utilities.TableLocation;
 
 /**
  * This class is used to read a GPX file

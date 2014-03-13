@@ -44,15 +44,18 @@
 -- ---------------------
 -- -- !#@ ADAPTATION END
 
-CREATE TABLE spatial_ref_sys (
-
-srid INTEGER NOT NULL PRIMARY KEY,
-
-auth_name CHARACTER VARYING,
-
-auth_srid INTEGER,
-
-srtext CHARACTER VARYING(2048));
+-- -- !#@ ADAPTATION BEGIN
+-- H2GIS provides its own spatial ref sys
+-- CREATE TABLE spatial_ref_sys (
+--
+--srid INTEGER NOT NULL PRIMARY KEY,
+--
+--auth_name CHARACTER VARYING,
+--
+--auth_srid INTEGER,
+--
+--srtext CHARACTER VARYING(2048));
+-- -- !#@ ADAPTATION END
 
 -- Lakes
 
@@ -162,8 +165,33 @@ fid INTEGER NOT NULL PRIMARY KEY,
 neatline POLYGON);
 
 -- Spatial Reference System
+-- -- !#@ ADAPTATION BEGIN
+-- Adapted sql add column name. H2GIS may insert additional columns later for PostGIS compatibility
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+--INSERT INTO spatial_ref_sys VALUES(101, 'POSC', 32214,
+--
+--'PROJCS["UTM_ZONE_14N", GEOGCS["World Geodetic System
+--
+--72",DATUM["WGS_72", ELLIPSOID["NWL_10D", 6378135,
+--
+--298.26]],PRIMEM["Greenwich",
+--
+--0],UNIT["Meter",1.0]],PROJECTION["Transverse_Mercator"],
+--
+--PARAMETER["False_Easting", 500000.0],PARAMETER["False_Northing",
+--
+--0.0],PARAMETER["Central_Meridian", -99.0],PARAMETER["Scale_Factor",
+--
+--0.9996],PARAMETER["Latitude_of_origin", 0.0],UNIT["Meter", 1.0]]');
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 
-INSERT INTO spatial_ref_sys VALUES(101, 'POSC', 32214,
+INSERT INTO spatial_ref_sys(srid,auth_name,auth_srid,srtext) VALUES(101, 'POSC', 32214,
 
 'PROJCS["UTM_ZONE_14N", GEOGCS["World Geodetic System
 
@@ -178,6 +206,11 @@ PARAMETER["False_Easting", 500000.0],PARAMETER["False_Northing",
 0.0],PARAMETER["Central_Meridian", -99.0],PARAMETER["Scale_Factor",
 
 0.9996],PARAMETER["Latitude_of_origin", 0.0],UNIT["Meter", 1.0]]');
+
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
 -- Lakes
 -- -- !#@ ADAPTATION BEGIN

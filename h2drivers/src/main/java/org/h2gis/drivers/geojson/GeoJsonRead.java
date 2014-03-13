@@ -1,4 +1,4 @@
-/**
+/*
  * h2spatial is a library that brings spatial support to the H2 Java database.
  *
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
@@ -22,35 +22,45 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.h2gis.drivers.geojson;
 
-package org.h2gis.h2spatialext.function.spatial.predicates;
+import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.h2spatialapi.ScalarFunction;
 
-import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import java.io.File;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
- * ST_IsValid returns true if the given geometry is valid.
+ * SQL function to read a GeoJSON file an creates the corresponding spatial
+ * table.
  *
- * @author Adam Gouge
+ * @author Erwan Bocher
  */
-public class ST_IsValid extends DeterministicScalarFunction {
+public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
 
-    public ST_IsValid() {
-        addProperty(PROP_REMARKS, "Returns true if the given geometry is valid.");
+    public GeoJsonRead() {
+        addProperty(PROP_REMARKS, "Import a GeoJSON 1.0 file.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "isValid";
+        return "readGeoJson";
     }
 
     /**
-     * Returns true if the given geometry is valid.
-     *
-     * @param geometry Geometry
-     * @return True if the given geometry is valid
+     * Read the GeoJSON file.
+     * 
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @throws IOException
+     * @throws SQLException 
      */
-    public static Boolean isValid(Geometry geometry) {
-        return geometry.isValid();
+    public static void readGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+        GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
+        gjdf.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
     }
 }

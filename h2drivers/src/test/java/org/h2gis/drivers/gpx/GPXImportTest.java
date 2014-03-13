@@ -61,8 +61,8 @@ public class GPXImportTest {
     @Test
     public void importGPXWaypoints() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT");
-        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'gpxdata');");
+        st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT,gpxdata_waypoint");
+        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA');");
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'GPXDATA_WAYPOINT'");
         assertTrue(rs.next());
         rs.close();
@@ -110,8 +110,8 @@ public class GPXImportTest {
     @Test
     public void importGPXTrack() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS GPXDATA_TRACK, GPXDATA_TRACKSEGMENT,GPXDATA_TRACKPOINT;");
-        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("track.gpx").getPath()) + ", 'gpxdata');");
+        st.execute("DROP TABLE IF EXISTS GPXDATA_TRACK, GPXDATA_TRACKSEGMENT,GPXDATA_TRACKPOINT,gpxdata_route;");
+        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("track.gpx").getPath()) + ", 'GPXDATA');");
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'GPXDATA_TRACK'");
         assertTrue(rs.next());
         rs.close();

@@ -59,4 +59,15 @@ public class ST_Envelope extends DeterministicScalarFunction {
         geometryEnvelope.setSRID(srid);
         return geometryEnvelope;
     }
+
+    /**
+     * @param geometry Geometry instance
+     * @return Geometry envelope
+     */
+    public static Geometry getEnvelope(Geometry geometry) {
+        if(geometry==null) {
+            return null;
+        }
+        return geometry.getEnvelope();
+    }
 }

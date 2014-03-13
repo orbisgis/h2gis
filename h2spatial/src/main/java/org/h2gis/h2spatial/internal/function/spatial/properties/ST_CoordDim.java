@@ -23,48 +23,39 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatial.internal.type;
+package org.h2gis.h2spatial.internal.function.spatial.properties;
 
-import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatialapi.AbstractFunction;
-import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;
-
 import java.io.IOException;
 
 /**
- * Constraint for MultiPolygon field type.
- * @author Nicolas Fortin
+ * ST_CoordDim returns the dimension of the coordinates of the given geometry.
+ * Implements the SQL/MM Part 3: Spatial 5.1.3
+ * @author Adam Gouge
  */
-public class SC_MultiPolygon extends AbstractFunction implements ScalarFunction , GeometryConstraint {
+public class ST_CoordDim extends DeterministicScalarFunction {
 
-    public SC_MultiPolygon() {
-        addProperty(PROP_REMARKS, "Return true if the geometry is a MultiPolygon.");
-    }
-
-    @Override
-    public int getGeometryTypeCode() {
-        return GeometryTypeCodes.MULTIPOLYGON;
+    public ST_CoordDim() {
+        addProperty(PROP_REMARKS, "Returns the dimension of the coordinates of the " +
+                        "given geometry.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "isMultiPolygon";
+        return "getCoordinateDimension";
     }
 
     /**
-     * @param bytes Geometry WKB or NULL
-     * @return True if null or if the field type fit with the constraint.
+     * Returns the dimension of the coordinates of the given geometry.
+     *
+     * @param geom Geometry
+     * @return The dimension of the coordinates of the given geometry
      */
-    public static boolean isMultiPolygon(byte[] bytes) {
-        if(bytes==null) {
-            return true;
+    public static Integer getCoordinateDimension(byte[] geom) throws IOException {
+        if (geom == null) {
+            return null;
         }
-        try {
-            return GeometryMetaData.getMetaDataFromWKB(bytes).geometryType == GeometryTypeCodes.MULTIPOLYGON;
-        } catch (IOException ex) {
-            return false;
-        }
+        return GeometryMetaData.getMetaDataFromWKB(geom).dimension;
     }
 }

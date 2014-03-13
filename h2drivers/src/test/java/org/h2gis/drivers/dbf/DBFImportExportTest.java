@@ -24,7 +24,6 @@
  */
 package org.h2gis.drivers.dbf;
 
-import org.h2.util.StringUtils;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.shp.SHPEngineTest;
 import org.h2gis.h2spatial.CreateSpatialExtension;
@@ -50,7 +49,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class DBFImportExportTest {
     private static Connection connection;
-    private static final String DB_NAME = "SHPImportTest";
+    private static final String DB_NAME = "DBFImportExportTest";
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -97,12 +96,12 @@ public class DBFImportExportTest {
         final String path = SHPEngineTest.class.getResource("waternetwork.dbf").getPath();
         DriverFunction driver = new DBFDriverFunction();
         st.execute("DROP TABLE IF EXISTS waternetwork");
-        driver.importFile(connection, "waternetwork", new File(path), new EmptyProgressVisitor());
+        driver.importFile(connection, "WATERNETWORK", new File(path), new EmptyProgressVisitor());
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("CHAR", rs.getString("TYPE_NAME"));
+        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID",rs.getString("COLUMN_NAME"));

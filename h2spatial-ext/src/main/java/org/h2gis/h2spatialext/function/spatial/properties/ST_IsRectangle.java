@@ -23,48 +23,34 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatial.internal.type;
+package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatialapi.AbstractFunction;
-import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.h2spatialapi.ScalarFunction;
-import org.h2gis.utilities.jts_utils.GeometryMetaData;
-
-import java.io.IOException;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Constraint for Point field type.
- * @author Nicolas Fortin
+ * ST_IsRectangle returns true if the given geometry is a rectangle.
+ *
+ * @author Adam Gouge
  */
-public class SC_Point extends AbstractFunction implements ScalarFunction , GeometryConstraint {
+public class ST_IsRectangle extends DeterministicScalarFunction {
 
-    public SC_Point() {
-        addProperty(PROP_REMARKS, "Return true if the geometry is a Point");
-    }
-
-    @Override
-    public int getGeometryTypeCode() {
-        return GeometryTypeCodes.POINT;
+    public ST_IsRectangle() {
+        addProperty(PROP_REMARKS, "Returns true if the given geometry is a rectangle.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "isPoint";
+        return "isRectangle";
     }
 
     /**
-     * @param bytes Geometry WKB or NULL
-     * @return True if null or if the field type fit with the constraint.
+     * Returns true if the given geometry is a rectangle.
+     *
+     * @param geometry Geometry
+     * @return True if the given geometry is a rectangle
      */
-    public static boolean isPoint(byte[] bytes) {
-        if(bytes==null) {
-            return true;
-        }
-        try {
-            return GeometryMetaData.getMetaDataFromWKB(bytes).geometryType == GeometryTypeCodes.POINT;
-        } catch (IOException ex) {
-            return false;
-        }
+    public static Boolean isRectangle(Geometry geometry) {
+        return geometry.isRectangle();
     }
 }

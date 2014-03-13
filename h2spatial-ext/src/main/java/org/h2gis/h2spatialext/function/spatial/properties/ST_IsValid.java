@@ -23,14 +23,34 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatial.internal.type;
+package org.h2gis.h2spatialext.function.spatial.properties;
+
+import com.vividsolutions.jts.geom.Geometry;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * @author Nicolas Fortin
+ * ST_IsValid returns true if the given geometry is valid.
+ *
+ * @author Adam Gouge
  */
-public interface GeometryConstraint {
+public class ST_IsValid extends DeterministicScalarFunction {
+
+    public ST_IsValid() {
+        addProperty(PROP_REMARKS, "Returns true if the given geometry is valid.");
+    }
+
+    @Override
+    public String getJavaStaticMethod() {
+        return "isValid";
+    }
+
     /**
-     * @return The OGC SFS Corresponding Geometry code
+     * Returns true if the given geometry is valid.
+     *
+     * @param geometry Geometry
+     * @return True if the given geometry is valid
      */
-    int getGeometryTypeCode();
+    public static Boolean isValid(Geometry geometry) {
+        return geometry.isValid();
+    }
 }

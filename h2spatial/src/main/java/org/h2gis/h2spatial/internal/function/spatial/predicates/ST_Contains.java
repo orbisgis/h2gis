@@ -29,7 +29,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Return true if the geometry A contains the geometry B
+ * Return true if Geometry A contains Geometry B.
+ *
  * @author Nicolas Fortin
  */
 public class ST_Contains extends DeterministicScalarFunction {
@@ -38,7 +39,7 @@ public class ST_Contains extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_Contains() {
-        addProperty(PROP_REMARKS, "Return true if the geometry A contains the geometry B.");
+        addProperty(PROP_REMARKS, "Return true if Geometry A contains Geometry B");
     }
 
     @Override
