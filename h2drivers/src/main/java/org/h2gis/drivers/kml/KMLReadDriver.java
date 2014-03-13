@@ -95,6 +95,7 @@ public class KMLReadDriver {
         KMLHandler kHandler = new KMLHandler(connection, tableReference);
         try {
             SAXParser parser = sParserFactory.newSAXParser();
+            sParserFactory.setValidating(true);
             parser.parse(new BufferedInputStream(new FileInputStream(fileName)),
                     kHandler);
         } catch (ParserConfigurationException ex) {
@@ -111,18 +112,5 @@ public class KMLReadDriver {
             }
         }
         return kHandler.IsSucess();
-    }
-    
-    /**
-     * The KML file is parsed to create the 
-     */
-    public void parseMetadata(){        
-        //Collect folder name and schema name
-        //We build a table for each schemas.
-        //Note a schema is reference with an unique uri available in the file
-        //External schema is not supported.
-        //A placemak has a default geometry.
-        //Two schema cannot have the same name ???. Union of schemas ???
-        
     }
 }

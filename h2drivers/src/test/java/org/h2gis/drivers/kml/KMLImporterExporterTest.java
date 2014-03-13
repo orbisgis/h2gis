@@ -78,7 +78,7 @@ public class KMLImporterExporterTest {
     }
 
     @Test
-    public void exportKMLLineString() throws SQLException {
+    public void exportImportKMLLineString() throws SQLException {
         Statement stat = connection.createStatement();
         File kmlFile = new File("target/kml_lineString.kml");
         stat.execute("DROP TABLE IF EXISTS KML_LINESTRING");
@@ -88,6 +88,10 @@ public class KMLImporterExporterTest {
         // Create a KML file
         stat.execute("CALL KMLWrite('target/kml_lineString.kml', 'KML_LINESTRING')");
         assertTrue(kmlFile.exists());
+        //Read a KML file
+        stat.execute("CALL KMLRead('target/kml_lineString.kml', 'TABLE_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_READ_KML_LINESTRING;");
+        res.next();
         stat.close();
     }
 
@@ -109,7 +113,7 @@ public class KMLImporterExporterTest {
     public void testCreateKMLPoint() throws Exception {
         Geometry geom = WKT_READER.read("POINT(1 2)");
         StringBuilder sb = new StringBuilder();
-        KMLGeometry.toKMLGeometry(geom,  sb);
+        KMLGeometry.toKMLGeometry(geom, sb);
         assertTrue(sb.toString().equals("<Point><coordinates>1.0,2.0</coordinates></Point>"));
     }
 
