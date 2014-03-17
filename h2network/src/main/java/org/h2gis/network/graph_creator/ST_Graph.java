@@ -252,7 +252,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static void getSpatialFieldIndex(String spatialFieldName) throws SQLException {
         // OBTAIN THE SPATIAL FIELD INDEX.
         ResultSet tableQuery = connection.createStatement().
-                executeQuery("SELECT * FROM " + tableName + " LIMIT 0;");
+                executeQuery("SELECT * FROM " + TableLocation.parse(tableName) + " LIMIT 0;");
         try {
             ResultSetMetaData metaData = tableQuery.getMetaData();
             int columnCount = metaData.getColumnCount();
@@ -288,12 +288,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     private static void setupOutputTables() throws SQLException {
         final Statement st = connection.createStatement();
-        st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
+        st.execute("CREATE TABLE " + TableLocation.parse(nodesName) + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
 
-        st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + ";" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN " + EDGE_ID + " INT IDENTITY;" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN " + START_NODE + " INTEGER;" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
+        st.execute("CREATE TABLE " + TableLocation.parse(edgesName) + " AS SELECT * FROM " + TableLocation.parse(tableName) + ";" +
+                "ALTER TABLE " + TableLocation.parse(edgesName) + " ADD COLUMN " + EDGE_ID + " INT IDENTITY;" +
+                "ALTER TABLE " + TableLocation.parse(edgesName) + " ADD COLUMN " + START_NODE + " INTEGER;" +
+                "ALTER TABLE " + TableLocation.parse(edgesName) + " ADD COLUMN " + END_NODE + " INTEGER;");
     }
 
     /**
@@ -309,11 +309,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static boolean updateTables() throws SQLException {
         SpatialResultSet nodesTable =
                 connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
-                        executeQuery("SELECT * FROM " + nodesName).
+                        executeQuery("SELECT * FROM " + TableLocation.parse(nodesName)).
                         unwrap(SpatialResultSet.class);
         SpatialResultSet edgesTable =
                 connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
-                        executeQuery("SELECT * FROM " + edgesName).
+                        executeQuery("SELECT * FROM " + TableLocation.parse(edgesName)).
                         unwrap(SpatialResultSet.class);
         try {
             int nodeID = 0;
@@ -339,8 +339,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             }
         } catch (SQLException e) {
             final Statement statement = connection.createStatement();
-            statement.execute("DROP TABLE " + nodesName);
-            statement.execute("DROP TABLE " + edgesName);
+            statement.execute("DROP TABLE " + TableLocation.parse(nodesName));
+            statement.execute("DROP TABLE " + TableLocation.parse(edgesName));
             return false;
         } finally {
             nodesTable.close();
