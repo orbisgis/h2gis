@@ -325,44 +325,49 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     private boolean updateTables() throws SQLException {
-        SpatialResultSet nodesTable =
-                connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
-                        executeQuery("SELECT * FROM " + nodesName).
-                        unwrap(SpatialResultSet.class);
-        SpatialResultSet edgesTable =
-                connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
-                        executeQuery("SELECT * FROM " + edgesName).
-                        unwrap(SpatialResultSet.class);
+        final Statement nodeSt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+        final Statement edgeSt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
         try {
-            int nodeID = 0;
-            while (edgesTable.next()) {
-                final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
-                if (geom != null) {
-                    final int type = SFSUtilities.getGeometryTypeFromGeometry(geom);
-                    if (type != GeometryTypeCodes.LINESTRING
-                            && type != GeometryTypeCodes.MULTILINESTRING) {
-                        throw new SQLException("Only LINESTRINGS and MULTILINESTRINGS are accepted. " +
-                                "Found: " + geom.getGeometryType());
+            SpatialResultSet nodesTable = nodeSt.
+                            executeQuery("SELECT * FROM " + nodesName).
+                            unwrap(SpatialResultSet.class);
+            SpatialResultSet edgesTable = edgeSt.
+                            executeQuery("SELECT * FROM " + edgesName).
+                            unwrap(SpatialResultSet.class);
+            try {
+                int nodeID = 0;
+                while (edgesTable.next()) {
+                    final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
+                    if (geom != null) {
+                        final int type = SFSUtilities.getGeometryTypeFromGeometry(geom);
+                        if (type != GeometryTypeCodes.LINESTRING
+                                && type != GeometryTypeCodes.MULTILINESTRING) {
+                            throw new SQLException("Only LINESTRINGS and MULTILINESTRINGS are accepted. " +
+                                    "Found: " + geom.getGeometryType());
+                        }
+                        final Coordinate[] coordinates = geom.getCoordinates();
+
+                        final Coordinate firstCoord = coordinates[0];
+                        final Coordinate lastCoord = coordinates[coordinates.length - 1];
+                        final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z) ? true : false;
+
+                        nodeID = insertNode(nodesTable, edgesTable, nodeID, firstCoord, switchCoords ? END_NODE : START_NODE);
+                        nodeID = insertNode(nodesTable, edgesTable, nodeID, lastCoord, switchCoords ? START_NODE : END_NODE);
+                        edgesTable.updateRow();
                     }
-                    final Coordinate[] coordinates = geom.getCoordinates();
-
-                    final Coordinate firstCoord = coordinates[0];
-                    final Coordinate lastCoord = coordinates[coordinates.length - 1];
-                    final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z) ? true : false;
-
-                    nodeID = insertNode(nodesTable, edgesTable, nodeID, firstCoord, switchCoords ? END_NODE : START_NODE);
-                    nodeID = insertNode(nodesTable, edgesTable, nodeID, lastCoord, switchCoords ? START_NODE : END_NODE);
-                    edgesTable.updateRow();
                 }
+            } catch (SQLException e) {
+                final Statement statement = connection.createStatement();
+                statement.execute("DROP TABLE " + nodesName);
+                statement.execute("DROP TABLE " + edgesName);
+                return false;
+            } finally {
+                nodesTable.close();
+                edgesTable.close();
             }
-        } catch (SQLException e) {
-            final Statement statement = connection.createStatement();
-            statement.execute("DROP TABLE " + nodesName);
-            statement.execute("DROP TABLE " + edgesName);
-            return false;
         } finally {
-            nodesTable.close();
-            edgesTable.close();
+            nodeSt.close();
+            edgeSt.close();
         }
         return true;
     }
