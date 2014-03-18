@@ -89,6 +89,33 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private boolean orientBySlope;
 
     public ST_Graph() {
+        this(null, null, 0.0, false);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param connection    Connection
+     * @param tableName     Input table name
+     * @param tolerance     Tolerance
+     * @param orientBySlope True if edges should be oriented by the z-value of
+     *                      their first and last coordinates (decreasing)
+     */
+    public ST_Graph(Connection connection,
+                    String tableName,
+                    double tolerance,
+                    boolean orientBySlope) {
+        if (connection != null) {
+            this.connection = SFSUtilities.wrapConnection(connection);
+        }
+        if (tableName != null) {
+            this.tableName = TableLocation.parse(tableName);
+            this.nodesName = TableLocation.parse(tableName + "_NODES");
+            this.edgesName = TableLocation.parse(tableName + "_EDGES");
+        }
+        this.tolerance = tolerance;
+        this.orientBySlope = orientBySlope;
+        this.quadtree = new Quadtree();
         addProperty(PROP_REMARKS, "ST_Graph produces two tables (nodes and edges) from an input table " +
                 "containing LINESTRINGs or MULTILINESTRINGs in the given column and using the " +
                 "given tolerance, and potentially orienting edges by slope. If the input " +
@@ -228,14 +255,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       String spatialFieldName,
                                       double tolerance,
                                       boolean orientBySlope) throws SQLException {
-        ST_Graph f = new ST_Graph();
-        f.tableName = TableLocation.parse(tableName);
-        f.nodesName = TableLocation.parse(tableName + "_NODES");
-        f.edgesName = TableLocation.parse(tableName + "_EDGES");
-        f.connection = SFSUtilities.wrapConnection(connection);
-        f.quadtree = new Quadtree();
-        f.tolerance = tolerance;
-        f.orientBySlope = orientBySlope;
+        ST_Graph f = new ST_Graph(connection, tableName, tolerance, orientBySlope);
 
         getSpatialFieldIndex(f, spatialFieldName);
         setupOutputTables(f);
