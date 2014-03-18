@@ -1726,7 +1726,7 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('POINT (100 150)'));");
         ResultSet rs = st.executeQuery("SELECT ST_Expand(the_geom, 5, -10) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT (0 0)")));
+        assertEquals(ValueGeometry.get("LINESTRING (95 150, 105 150)").getGeometry(), rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
