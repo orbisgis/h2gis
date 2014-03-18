@@ -54,9 +54,17 @@ public class ST_Expand extends DeterministicScalarFunction {
      * @param deltaX the distance to expand the envelope along the the X axis
      * @param deltaY the distance to expand the envelope along the the Y axis
      */
-    public static Geometry expand(Geometry geometry, double detlatX, double deltaY) {
-        Envelope expand = geometry.getEnvelopeInternal();
-        expand.expandBy(detlatX, deltaY);
-        return gf.toGeometry(expand);
+    public static Geometry expand(Geometry geometry, double deltaX, double deltaY) {
+        Envelope env = geometry.getEnvelopeInternal();
+        // As the time of writing Envelope.expand is buggy with negative parameters
+        double minX = env.getMinX() - deltaX;
+        double maxX = env.getMaxX() + deltaX;
+        double minY = env.getMinY() - deltaY;
+        double maxY = env.getMaxY() + deltaY;
+        Envelope expandedEnvelope = new Envelope(minX < maxX ? minX : (env.getMaxX() - env.getMinX()) / 2 + env.getMinX(),
+                                                 minX < maxX ? maxX : (env.getMaxX() - env.getMinX()) / 2 + env.getMinX(),
+                                                 minY < maxY ? minY : (env.getMaxY() - env.getMinY()) / 2 + env.getMinY(),
+                                                 minY < maxY ? maxY : (env.getMaxY() - env.getMinY()) / 2 + env.getMinY());
+        return gf.toGeometry(expandedEnvelope);
     }
 }
