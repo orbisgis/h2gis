@@ -392,27 +392,30 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     private static Node findNodeToSnapTo(ST_Graph f, Coordinate coord, Envelope envelope)
             throws SQLException {
-        final List<Node> nearbyNodes = f.quadtree.query(envelope);
         f.nearbyIntersectingNodes.clear();
-        for (Node node : nearbyNodes) {
+        for (Node node : (List<Node>) f.quadtree.query(envelope)) {
             if (envelope.contains(node.getCoordinate())) {
                 f.nearbyIntersectingNodes.add(node);
             }
         }
-        // If there is only one intersecting node, then snap this coordinate
-        // to that node and return it.
-        if (f.nearbyIntersectingNodes.size() == 1) {
-            final Node nodeToSnapTo = f.nearbyIntersectingNodes.get(0);
-            nodeToSnapTo.setSnappedCoordinate(coord);
-            return nodeToSnapTo;
-        }
-        // If there is more than one, then return the first intersecting
-        // node which has a snapped coordinate equal to this coordinate.
-        for (Node node : f.nearbyIntersectingNodes) {
-            Coordinate snappedCoordinate = node.getSnappedCoordinate();
-            if (snappedCoordinate != null) {
-                if (snappedCoordinate.equals3D(coord)) {
-                    return node;
+        final int numIntersectingNodes = f.nearbyIntersectingNodes.size();
+        if (numIntersectingNodes > 0) {
+            if (numIntersectingNodes == 1) {
+                // If there is only one intersecting node, then snap this coordinate
+                // to that node and return it.
+                final Node nodeToSnapTo = f.nearbyIntersectingNodes.get(0);
+                nodeToSnapTo.setSnappedCoordinate(coord);
+                return nodeToSnapTo;
+            } else {
+                // If there is more than one, then return the first intersecting
+                // node which has a snapped coordinate equal to this coordinate.
+                for (Node node : f.nearbyIntersectingNodes) {
+                    Coordinate snappedCoordinate = node.getSnappedCoordinate();
+                    if (snappedCoordinate != null) {
+                        if (snappedCoordinate.equals3D(coord)) {
+                            return node;
+                        }
+                    }
                 }
             }
         }
