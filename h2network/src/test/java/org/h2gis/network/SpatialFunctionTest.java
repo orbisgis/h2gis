@@ -28,9 +28,7 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.network.graph_creator.ST_Graph;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -45,6 +43,7 @@ import static org.junit.Assert.*;
 public class SpatialFunctionTest {
 
     private static Connection connection;
+    private static Statement st;
     private static final String DB_NAME = "SpatialFunctionTest";
 
     @BeforeClass
@@ -52,6 +51,16 @@ public class SpatialFunctionTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, true);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
+    }
+
+    @Before
+    public void setUpStatement() throws Exception {
+        st = connection.createStatement();
+    }
+
+    @After
+    public void tearDownStatement() throws Exception {
+        st.close();
     }
 
     @AfterClass
@@ -65,8 +74,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Graph() throws Exception {
-        Statement st = connection.createStatement();
-
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
@@ -155,8 +162,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Graph_GeometryColumnDetection() throws Exception {
-        Statement st = connection.createStatement();
-
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, way LINESTRING);" +
                 "INSERT INTO test VALUES "
@@ -262,8 +267,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Graph_Tolerance() throws Exception {
-        Statement st = connection.createStatement();
-
         // This first test shows that nodes within a tolerance of 0.05 of each
         // other are considered to be a single node.
         // Note, however, that edge geometries are left untouched.
@@ -424,7 +427,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Graph_BigTolerance() throws Exception {
-        Statement st = connection.createStatement();
         // This test shows that the results from using a large tolerance value
         // (3.1 rather than 0.1) can be very different.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
@@ -495,8 +497,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Graph_OrientBySlope() throws Exception {
-        Statement st = connection.createStatement();
-
         // This test proves that orientation by slope works. Three cases:
         // 1. first.z == last.z -- Orient first --> last
         // 2. first.z > last.z -- Orient first --> last
@@ -592,8 +592,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Graph_ErrorWithNoLINESTRINGOrMULTILINESTRING() throws Exception {
-        Statement st = connection.createStatement();
-
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road POINT, description VARCHAR);" +
@@ -611,8 +609,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Graph_MULTILINESTRING() throws Exception {
-        Statement st = connection.createStatement();
-
         // This test shows that the coordinate (1 2) is not considered to be
         // a node, even though it would be if we had used ST_Explode to split
         // the MULTILINESTRINGs into LINESTRINGs.
