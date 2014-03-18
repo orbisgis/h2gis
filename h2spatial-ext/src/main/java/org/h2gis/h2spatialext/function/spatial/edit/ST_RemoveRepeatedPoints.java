@@ -73,7 +73,10 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      * @return
      */
     public static Geometry removeDuplicateCoordinates(Geometry geom) {
-        if (geom.isEmpty()) {
+        if(geom ==null){
+            return null;
+        }
+        else if (geom.isEmpty()) {
             return geom;
         } else if (geom instanceof Point || geom instanceof MultiPoint) {
             return geom;
