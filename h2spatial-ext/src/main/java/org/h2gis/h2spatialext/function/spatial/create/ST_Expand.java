@@ -23,7 +23,6 @@
  */
 package org.h2gis.h2spatialext.function.spatial.create;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -58,32 +57,6 @@ public class ST_Expand extends DeterministicScalarFunction {
     public static Geometry expand(Geometry geometry, double detlatX, double deltaY) {
         Envelope expand = geometry.getEnvelopeInternal();
         expand.expandBy(detlatX, deltaY);
-        return toGeometry(expand);
-    }
-
-    /**
-     * Converts from an Envelope to a POLYGON geometry.
-     *
-     * @param envelope
-     * @return
-     */
-    public static Geometry toGeometry(Envelope envelope) {
-        if ((envelope.getWidth() == 0) && (envelope.getHeight() == 0)) {
-            return gf.createPoint(new Coordinate(envelope.getMinX(),
-                    envelope.getMinY()));
-        }
-
-        if ((envelope.getWidth() == 0) || (envelope.getHeight() == 0)) {
-            return gf.createLineString(new Coordinate[]{
-                new Coordinate(envelope.getMinX(), envelope.getMinY()),
-                new Coordinate(envelope.getMaxX(), envelope.getMaxY())});
-        }
-
-        return gf.createPolygon(gf.createLinearRing(new Coordinate[]{
-            new Coordinate(envelope.getMinX(), envelope.getMinY()),
-            new Coordinate(envelope.getMinX(), envelope.getMaxY()),
-            new Coordinate(envelope.getMaxX(), envelope.getMaxY()),
-            new Coordinate(envelope.getMaxX(), envelope.getMinY()),
-            new Coordinate(envelope.getMinX(), envelope.getMinY())}), null);
+        return gf.toGeometry(expand);
     }
 }
