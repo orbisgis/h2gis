@@ -256,8 +256,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       double tolerance,
                                       boolean orientBySlope) throws SQLException {
         ST_Graph f = new ST_Graph(connection, tableName, tolerance, orientBySlope);
-        f.getSpatialFieldIndex(spatialFieldName);
-        f.setupOutputTables();
+        f.setupTables(spatialFieldName);
         return f.updateTables();
     }
 
@@ -268,50 +267,44 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param spatialFieldName Spatial field name
      * @throws SQLException
      */
-    private void getSpatialFieldIndex(String spatialFieldName) throws SQLException {
-        // OBTAIN THE SPATIAL FIELD INDEX.
-        ResultSet tableQuery = connection.createStatement().
-                executeQuery("SELECT * FROM " + tableName + " LIMIT 0;");
+    private void setupTables(String spatialFieldName) throws SQLException {
+        // Find the name of the first geometry column if not provided by the user.
+        if (spatialFieldName == null) {
+            List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableName);
+            if (!geomFields.isEmpty()) {
+                spatialFieldName = geomFields.get(0);
+            } else {
+                throw new SQLException("Table " + tableName + " does not contain a geometry field.");
+            }
+        }
+        // Set up the edges table
+        final DatabaseMetaData dbmd = connection.getMetaData();
+        final ResultSet inputMD = dbmd.getColumns(tableName.getCatalog(), tableName.getSchema(), tableName.getTable(), null);
+        final Statement st = connection.createStatement();
         try {
-            ResultSetMetaData metaData = tableQuery.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            // Find the name of the first geometry column if not provided by the user.
-            if (spatialFieldName == null) {
-                List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableName);
-                if (!geomFields.isEmpty()) {
-                    spatialFieldName = geomFields.get(0);
-                } else {
-                    throw new SQLException("Table " + tableName + " does not contain a geometry field.");
+            // Set up the edges table
+            st.execute("CREATE TABLE " + edgesName);
+            while (inputMD.next()) {
+                final String columnName = inputMD.getString("COLUMN_NAME");
+                final String typeName = inputMD.getString("TYPE_NAME");
+                st.execute("ALTER TABLE " + edgesName + " ADD COLUMN " + columnName + " " + typeName);
+                // Find the index of the spatial field.
+                if (columnName.equalsIgnoreCase(spatialFieldName)) {
+                    spatialFieldIndex = inputMD.getRow();
                 }
             }
-            // Find the index of the spatial field.
-            for (int i = 1; i <= columnCount; i++) {
-                if (metaData.getColumnName(i).equalsIgnoreCase(spatialFieldName)) {
-                    spatialFieldIndex = i;
-                    break;
-                }
-            }
+            st.execute("ALTER TABLE " + edgesName + " ADD COLUMN " + EDGE_ID + " INT IDENTITY;" +
+                    "ALTER TABLE " + edgesName + " ADD COLUMN " + START_NODE + " INTEGER;" +
+                    "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
+            // Set up the nodes table
+            st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
         } finally {
-            tableQuery.close();
+            inputMD.close();
+            st.close();
         }
         if (spatialFieldIndex == null) {
             throw new SQLException("Geometry field " + spatialFieldName + " of table " + tableName + " not found");
         }
-    }
-
-    /**
-     * Create the nodes and edges tables.
-     *
-     * @throws SQLException
-     */
-    private void setupOutputTables() throws SQLException {
-        final Statement st = connection.createStatement();
-        st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
-
-        st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + ";" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN " + EDGE_ID + " INT IDENTITY;" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN " + START_NODE + " INTEGER;" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
     }
 
     /**
@@ -327,17 +320,22 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private boolean updateTables() throws SQLException {
         final Statement nodeSt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
         final Statement edgeSt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+        final Statement inputSt = connection.createStatement();
         try {
             SpatialResultSet nodesTable = nodeSt.
                             executeQuery("SELECT * FROM " + nodesName).
                             unwrap(SpatialResultSet.class);
             SpatialResultSet edgesTable = edgeSt.
-                            executeQuery("SELECT * FROM " + edgesName).
+                    executeQuery("SELECT * FROM " + edgesName).
+                    unwrap(SpatialResultSet.class);
+            SpatialResultSet inputTable = inputSt.
+                            executeQuery("SELECT * FROM " + tableName).
                             unwrap(SpatialResultSet.class);
             try {
                 int nodeID = 0;
-                while (edgesTable.next()) {
-                    final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
+                final int columnCount = inputTable.getMetaData().getColumnCount();
+                while (inputTable.next()) {
+                    final Geometry geom = inputTable.getGeometry(spatialFieldIndex);
                     if (geom != null) {
                         final int type = SFSUtilities.getGeometryTypeFromGeometry(geom);
                         if (type != GeometryTypeCodes.LINESTRING
@@ -351,23 +349,34 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                         final Coordinate lastCoord = coordinates[coordinates.length - 1];
                         final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z) ? true : false;
 
+                        edgesTable.moveToInsertRow();
+                        // Copy over original data
+                        for (int i = 1; i <= columnCount; i++) {
+                            edgesTable.updateObject(i, inputTable.getObject(i));
+                        }
                         nodeID = insertNode(nodesTable, edgesTable, nodeID, firstCoord, switchCoords ? END_NODE : START_NODE);
                         nodeID = insertNode(nodesTable, edgesTable, nodeID, lastCoord, switchCoords ? START_NODE : END_NODE);
-                        edgesTable.updateRow();
+                        edgesTable.insertRow();
                     }
                 }
             } catch (SQLException e) {
                 final Statement statement = connection.createStatement();
-                statement.execute("DROP TABLE " + nodesName);
-                statement.execute("DROP TABLE " + edgesName);
-                return false;
+                try {
+                    statement.execute("DROP TABLE " + nodesName);
+                    statement.execute("DROP TABLE " + edgesName);
+                    return false;
+                } finally {
+                    statement.close();
+                }
             } finally {
                 nodesTable.close();
                 edgesTable.close();
+                inputTable.close();
             }
         } finally {
             nodeSt.close();
             edgeSt.close();
+            inputSt.close();
         }
         return true;
     }
