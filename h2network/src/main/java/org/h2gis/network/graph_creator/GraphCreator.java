@@ -2,6 +2,7 @@ package org.h2gis.network.graph_creator;
 
 import org.javanetworkanalyzer.data.VId;
 import org.javanetworkanalyzer.model.*;
+import org.jgrapht.WeightedGraph;
 
 import java.sql.*;
 
@@ -149,7 +150,10 @@ public class GraphCreator<V extends VId, E extends Edge> {
         final int startNode = edges.getInt(startNodeIndex);
         final int endNode = edges.getInt(endNodeIndex);
         final int edgeID = edges.getInt(edgeIDIndex);
-        final double weight = edges.getDouble(weightColumnIndex);
+        double weight = WeightedGraph.DEFAULT_EDGE_WEIGHT;
+        if (weightColumnIndex != -1) {
+            weight = edges.getDouble(weightColumnIndex);
+        }
         E edge;
         // Undirected graphs are either pseudographs or weighted pseudographs,
         // so there is no need to add edges in both directions.
