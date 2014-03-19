@@ -290,14 +290,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final Statement st = connection.createStatement();
         try {
             // Set up the edges table
-            st.execute("CREATE TABLE " + edgesName);
+            st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + " LIMIT 0");
             while (inputMD.next()) {
                 columnCount++;
-                final String columnName = inputMD.getString("COLUMN_NAME");
-                final String typeName = inputMD.getString("TYPE_NAME");
-                st.execute("ALTER TABLE " + edgesName + " ADD COLUMN " + columnName + " " + typeName);
                 // Find the index of the spatial field.
-                if (columnName.equalsIgnoreCase(spatialFieldName)) {
+                if (inputMD.getString("COLUMN_NAME").equalsIgnoreCase(spatialFieldName)) {
                     spatialFieldIndex = inputMD.getRow();
                 }
             }
