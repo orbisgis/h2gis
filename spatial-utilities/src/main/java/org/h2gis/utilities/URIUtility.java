@@ -46,16 +46,31 @@ public class URIUtility {
      */
     public static Map<String,String> getQueryKeyValuePairs(URI uri) throws UnsupportedEncodingException {
         Map<String,String> queryParameters = new HashMap<String, String>();
-        StringTokenizer stringTokenizer = new StringTokenizer(uri.getRawQuery(), "&");
+        String query = uri.getRawQuery();
+        if(query == null) {
+            // Maybe invalid URI
+            try {
+                uri = URI.create(uri.getRawSchemeSpecificPart());
+                query = uri.getRawQuery();
+                if(query == null) {
+                    return queryParameters;
+                }
+            } catch (IllegalArgumentException ex) {
+                return queryParameters;
+            }
+        }
+        StringTokenizer stringTokenizer = new StringTokenizer(query, "&");
         while (stringTokenizer.hasMoreTokens()) {
             String keyValue = stringTokenizer.nextToken().trim();
             if(!keyValue.isEmpty()) {
                 int equalPos = keyValue.indexOf("=");
                 // If there is no value
+                String key = URLDecoder.decode(keyValue.substring(0,equalPos != -1 ?
+                        equalPos : keyValue.length()), ENCODING);
                 if(equalPos==-1 || equalPos == keyValue.length() - 1) {
-                    queryParameters.put(URLDecoder.decode(keyValue, ENCODING).toLowerCase(),null);
+                    // Key without value
+                    queryParameters.put(key.toLowerCase(),"");
                 } else {
-                    String key = URLDecoder.decode(keyValue.substring(0,equalPos), ENCODING);
                     String value = URLDecoder.decode(keyValue.substring(equalPos+1), ENCODING);
                     queryParameters.put(key.toLowerCase(),value);
                 }
