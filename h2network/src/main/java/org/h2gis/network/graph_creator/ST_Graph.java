@@ -330,12 +330,13 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private boolean updateTables() throws SQLException {
         connection.setAutoCommit(false);
 
-        String edgeSQL = "INSERT INTO " + edgesName + " VALUES(";
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO " + edgesName + " VALUES(");
         for (int i = 1; i <= columnCount; i++) {
-            edgeSQL += "?, ";
+            sb.append("?, ");
         }
-        edgeSQL += "DEFAULT, ?, ?)";
-        final PreparedStatement edgeSt = connection.prepareStatement(edgeSQL);
+        sb.append("DEFAULT, ?, ?)");
+        final PreparedStatement edgeSt = connection.prepareStatement(sb.toString());
 
         String nodeSQL = "INSERT INTO " + nodesName + " VALUES(?, ?)";
         final PreparedStatement nodeSt = connection.prepareStatement(nodeSQL);
