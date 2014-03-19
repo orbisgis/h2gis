@@ -93,7 +93,7 @@ public class GraphCreatorTest {
                 + "('LINESTRING (2 0, 2 2)', 6.0,  1),"
                 + "('LINESTRING (2 0, 0 1)', 7.0,  0);");
 
-        st.executeQuery("SELECT ST_Graph('cormen', 'road')");
+        st.executeQuery("SELECT ST_Graph('CORMEN', 'road')");
 //        cormen_node
 //        NODE_ID  THE_GEOM
 //        1        POINT (0 1)

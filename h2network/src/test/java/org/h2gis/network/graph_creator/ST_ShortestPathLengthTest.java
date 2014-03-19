@@ -733,7 +733,7 @@ public class ST_ShortestPathLengthTest {
         // We add another connected component consisting of the edge w(6, 7)=1.0.
         st.execute("INSERT INTO copy VALUES ('LINESTRING (3 1, 4 2)', 1.0, 1)");
         // Vertices 3 and 6 are in different connected components.
-        st.execute("CALL ST_Graph('copy', 'road')");
+        st.execute("CALL ST_Graph('COPY', 'road')");
         ResultSet rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges', " +
                 "'undirected', 3, 6)");
         assertTrue(rs.next());
