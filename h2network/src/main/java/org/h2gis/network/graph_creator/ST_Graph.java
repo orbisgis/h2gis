@@ -284,29 +284,23 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 throw new SQLException("Table " + tableName + " does not contain a geometry field.");
             }
         }
-        // Set up the edges table
-        final DatabaseMetaData dbmd = connection.getMetaData();
-        final ResultSet inputMD = dbmd.getColumns(tableName.getCatalog(), tableName.getSchema(), tableName.getTable(), null);
+        // Set up tables
         final Statement st = connection.createStatement();
         try {
+            // Recover useful informtation from the input table.
+            final ResultSet inputRS = st.executeQuery("SELECT * FROM " + tableName + " LIMIT 0");
+            spatialFieldIndex = inputRS.findColumn(spatialFieldName);
+            columnCount = inputRS.getMetaData().getColumnCount();
+            startNodeIndex = columnCount + 2;
+            endNodeIndex = columnCount + 3;
             // Set up the edges table
             st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + " LIMIT 0");
-            while (inputMD.next()) {
-                columnCount++;
-                // Find the index of the spatial field.
-                if (inputMD.getString("COLUMN_NAME").equalsIgnoreCase(spatialFieldName)) {
-                    spatialFieldIndex = inputMD.getRow();
-                }
-            }
             st.execute("ALTER TABLE " + edgesName + " ADD COLUMN " + EDGE_ID + " INT IDENTITY;" +
                     "ALTER TABLE " + edgesName + " ADD COLUMN " + START_NODE + " INTEGER;" +
                     "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
-            startNodeIndex = columnCount + 2;
-            endNodeIndex = columnCount + 3;
             // Set up the nodes table
             st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
         } finally {
-            inputMD.close();
             st.close();
         }
         if (spatialFieldIndex == null) {
