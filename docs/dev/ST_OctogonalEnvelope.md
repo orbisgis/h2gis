@@ -4,7 +4,7 @@ title: ST_OctogonalEnvelope
 category: h2spatial-ext/geometry-creation
 description: 
 prev_section: ST_MinimumRectangle
-next_section: ST_ToMultiSegments
+next_section: h2spatial-ext/edit-geometries
 permalink: /docs/dev/ST_OctogonalEnvelope/
 ---
 
