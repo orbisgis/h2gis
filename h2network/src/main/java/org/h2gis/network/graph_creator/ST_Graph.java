@@ -36,8 +36,6 @@ import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.TableLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -72,24 +70,52 @@ import java.util.List;
  */
 public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ST_Graph.class);
+    private static Connection connection;
     private static final GeometryFactory GF = new GeometryFactory();
+
     public static final String THE_GEOM = "the_geom";
     public static final String NODE_ID = "node_id";
     public static final String EDGE_ID = "edge_id";
     public static final String START_NODE = "start_node";
     public static final String END_NODE = "end_node";
-    private static Connection connection;
-    private static Quadtree quadtree;
-    private static Integer spatialFieldIndex;
-    private static String tableName;
-    private static String nodesName;
-    private static String edgesName;
-    private static double tolerance;
-    private static boolean orientBySlope;
-    private static final List<Node> nearbyIntersectingNodes = new ArrayList<Node>();
+
+    private TableLocation tableName;
+    private TableLocation nodesName;
+    private TableLocation edgesName;
+    private Integer spatialFieldIndex;
+    private Quadtree quadtree;
+    private final List<Node> nearbyIntersectingNodes = new ArrayList<Node>();
+    private double tolerance;
+    private boolean orientBySlope;
 
     public ST_Graph() {
+        this(null, null, 0.0, false);
+    }
+
+    /**
+     * Constructor
+     *
+     * @param connection    Connection
+     * @param tableName     Input table name
+     * @param tolerance     Tolerance
+     * @param orientBySlope True if edges should be oriented by the z-value of
+     *                      their first and last coordinates (decreasing)
+     */
+    public ST_Graph(Connection connection,
+                    String tableName,
+                    double tolerance,
+                    boolean orientBySlope) {
+        if (connection != null) {
+            this.connection = SFSUtilities.wrapConnection(connection);
+        }
+        if (tableName != null) {
+            this.tableName = TableLocation.parse(tableName);
+            this.nodesName = TableLocation.parse(tableName + "_NODES");
+            this.edgesName = TableLocation.parse(tableName + "_EDGES");
+        }
+        this.tolerance = tolerance;
+        this.orientBySlope = orientBySlope;
+        this.quadtree = new Quadtree();
         addProperty(PROP_REMARKS, "ST_Graph produces two tables (nodes and edges) from an input table " +
                 "containing LINESTRINGs or MULTILINESTRINGs in the given column and using the " +
                 "given tolerance, and potentially orienting edges by slope. If the input " +
@@ -229,17 +255,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       String spatialFieldName,
                                       double tolerance,
                                       boolean orientBySlope) throws SQLException {
-        ST_Graph.tableName = tableName;
-        ST_Graph.nodesName = tableName + "_nodes";
-        ST_Graph.edgesName = tableName + "_edges";
-        ST_Graph.connection = SFSUtilities.wrapConnection(connection);
-        ST_Graph.quadtree = new Quadtree();
-        ST_Graph.tolerance = tolerance;
-        ST_Graph.orientBySlope = orientBySlope;
-
-        getSpatialFieldIndex(spatialFieldName);
-        setupOutputTables();
-        return updateTables();
+        ST_Graph f = new ST_Graph(connection, tableName, tolerance, orientBySlope);
+        f.getSpatialFieldIndex(spatialFieldName);
+        f.setupOutputTables();
+        return f.updateTables();
     }
 
     /**
@@ -249,7 +268,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param spatialFieldName Spatial field name
      * @throws SQLException
      */
-    private static void getSpatialFieldIndex(String spatialFieldName) throws SQLException {
+    private void getSpatialFieldIndex(String spatialFieldName) throws SQLException {
         // OBTAIN THE SPATIAL FIELD INDEX.
         ResultSet tableQuery = connection.createStatement().
                 executeQuery("SELECT * FROM " + tableName + " LIMIT 0;");
@@ -258,8 +277,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             int columnCount = metaData.getColumnCount();
             // Find the name of the first geometry column if not provided by the user.
             if (spatialFieldName == null) {
-                List<String> geomFields = SFSUtilities.getGeometryFields(
-                        connection, TableLocation.parse(tableName));
+                List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableName);
                 if (!geomFields.isEmpty()) {
                     spatialFieldName = geomFields.get(0);
                 } else {
@@ -286,7 +304,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      *
      * @throws SQLException
      */
-    private static void setupOutputTables() throws SQLException {
+    private void setupOutputTables() throws SQLException {
         final Statement st = connection.createStatement();
         st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
 
@@ -306,7 +324,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @return True if the tables were updated.
      * @throws SQLException
      */
-    private static boolean updateTables() throws SQLException {
+    private boolean updateTables() throws SQLException {
         SpatialResultSet nodesTable =
                 connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
                         executeQuery("SELECT * FROM " + nodesName).
@@ -361,7 +379,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @return Node ID
      * @throws SQLException
      */
-    private static int insertNode(SpatialResultSet nodesTable,
+    private int insertNode(SpatialResultSet nodesTable,
                                   SpatialResultSet edgesTable,
                                   int nodeID,
                                   Coordinate coord,
@@ -390,28 +408,32 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @return A list of nodes that intersect the given Envelope
      * @throws SQLException
      */
-    private static Node findNodeToSnapTo(Coordinate coord, Envelope envelope) throws SQLException {
-        final List<Node> nearbyNodes = quadtree.query(envelope);
+    private Node findNodeToSnapTo(Coordinate coord, Envelope envelope)
+            throws SQLException {
         nearbyIntersectingNodes.clear();
-        for (Node node : nearbyNodes) {
+        for (Node node : (List<Node>) quadtree.query(envelope)) {
             if (envelope.contains(node.getCoordinate())) {
                 nearbyIntersectingNodes.add(node);
             }
         }
-        // If there is only one intersecting node, then snap this coordinate
-        // to that node and return it.
-        if (nearbyIntersectingNodes.size() == 1) {
-            final Node nodeToSnapTo = nearbyIntersectingNodes.get(0);
-            nodeToSnapTo.setSnappedCoordinate(coord);
-            return nodeToSnapTo;
-        }
-        // If there is more than one, then return the first intersecting
-        // node which has a snapped coordinate equal to this coordinate.
-        for (Node node : nearbyIntersectingNodes) {
-            Coordinate snappedCoordinate = node.getSnappedCoordinate();
-            if (snappedCoordinate != null) {
-                if (snappedCoordinate.equals3D(coord)) {
-                    return node;
+        final int numIntersectingNodes = nearbyIntersectingNodes.size();
+        if (numIntersectingNodes > 0) {
+            if (numIntersectingNodes == 1) {
+                // If there is only one intersecting node, then snap this coordinate
+                // to that node and return it.
+                final Node nodeToSnapTo = nearbyIntersectingNodes.get(0);
+                nodeToSnapTo.setSnappedCoordinate(coord);
+                return nodeToSnapTo;
+            } else {
+                // If there is more than one, then return the first intersecting
+                // node which has a snapped coordinate equal to this coordinate.
+                for (Node node : nearbyIntersectingNodes) {
+                    Coordinate snappedCoordinate = node.getSnappedCoordinate();
+                    if (snappedCoordinate != null) {
+                        if (snappedCoordinate.equals3D(coord)) {
+                            return node;
+                        }
+                    }
                 }
             }
         }
