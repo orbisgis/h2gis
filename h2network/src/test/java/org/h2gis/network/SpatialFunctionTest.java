@@ -30,9 +30,7 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.network.graph_creator.GraphCreatorTest;
 import org.h2gis.network.graph_creator.ST_Graph;
 import org.h2gis.network.graph_creator.ST_ShortestPathLength;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -47,6 +45,7 @@ import static org.junit.Assert.*;
 public class SpatialFunctionTest {
 
     private static Connection connection;
+    private static Statement st;
     private static final String DB_NAME = "SpatialFunctionTest";
 
     @BeforeClass
@@ -56,6 +55,16 @@ public class SpatialFunctionTest {
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
         GraphCreatorTest.registerCormenGraph(connection);
+    }
+
+    @Before
+    public void setUpStatement() throws Exception {
+        st = connection.createStatement();
+    }
+
+    @After
+    public void tearDownStatement() throws Exception {
+        st.close();
     }
 
     @AfterClass
@@ -69,9 +78,8 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Graph() throws Exception {
-        Statement st = connection.createStatement();
-
         // Prepare the input table.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 'road1'),"
@@ -82,13 +90,13 @@ public class SpatialFunctionTest {
                 + "('LINESTRING (7.1 5, 8 4)', 'road6');");
 
         // Make sure everything went OK.
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.1, false)");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
 
         // Test nodes table.
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -114,7 +122,7 @@ public class SpatialFunctionTest {
         assertFalse(nodesResult.next());
 
         // Test edges table.
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         // This is a copy of the original table with three columns added.
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
@@ -154,16 +162,11 @@ public class SpatialFunctionTest {
         assertEquals(6, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(7, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
     }
 
     @Test
     public void test_ST_Graph_GeometryColumnDetection() throws Exception {
-        Statement st = connection.createStatement();
-
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, way LINESTRING);" +
                 "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 'road1', 'LINESTRING (1 1, 2 2, 3 1)'),"
@@ -172,11 +175,11 @@ public class SpatialFunctionTest {
                 + "('LINESTRING (4 3, 5 2)', 'road4', 'LINESTRING (2 1, 3 1)');");
 
         // This should detect the 'road' column since it is the first geometry column.
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test')");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST')");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -191,7 +194,7 @@ public class SpatialFunctionTest {
         assertEquals(4, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(3 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (0 0, 1 2)", edgesResult.getBytes("road"));
@@ -218,15 +221,14 @@ public class SpatialFunctionTest {
         assertEquals(3, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(4, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
 
         // Here we specify the 'way' column.
-        rs = st.executeQuery("SELECT ST_Graph('test', 'way')");
+        st.execute("DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
+        rs = st.executeQuery("SELECT ST_Graph('TEST', 'way')");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -238,7 +240,7 @@ public class SpatialFunctionTest {
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(3 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (1 1, 2 2, 3 1)", edgesResult.getBytes("way"));
@@ -265,18 +267,14 @@ public class SpatialFunctionTest {
         assertEquals(3, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(2, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
     }
 
     @Test
     public void test_ST_Graph_Tolerance() throws Exception {
-        Statement st = connection.createStatement();
-
         // This first test shows that nodes within a tolerance of 0.05 of each
         // other are considered to be a single node.
         // Note, however, that edge geometries are left untouched.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 0)', 'road1'),"
@@ -284,11 +282,11 @@ public class SpatialFunctionTest {
                 + "('LINESTRING (2.05 0, 3 0)', 'road3'),"
                 + "('LINESTRING (1 0.1, 1 1)', 'road4'),"
                 + "('LINESTRING (2 0.05, 2 1)', 'road5');");
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.05)");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.05)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -312,7 +310,7 @@ public class SpatialFunctionTest {
         assertEquals(7, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (0 0, 1 0)", edgesResult.getBytes("road"));
@@ -345,24 +343,22 @@ public class SpatialFunctionTest {
         assertEquals(3, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(7, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
 
         // This test shows that _coordinates_ within a given tolerance of each
         // other are not necessarily snapped together. Only the first and last
         // coordinates of a geometry are considered to be potential nodes, and
         // only _nodes_ within a given tolerance of each other are snapped
         // together.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES "
                 + "('LINESTRING (0 1, 1 1, 1 0)', 'road1'),"
                 + "('LINESTRING (1.05 1, 2 1)', 'road2');");
-        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.05)");
+        rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.05)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -377,7 +373,7 @@ public class SpatialFunctionTest {
         assertEquals(4, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (0 1, 1 1, 1 0)", edgesResult.getBytes("road"));
@@ -392,21 +388,19 @@ public class SpatialFunctionTest {
         assertEquals(3, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(4, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
 
         // This test shows that geometry intersections are not automatically
         // considered to be potential nodes.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES "
                 + "('LINESTRING (0 1, 2 1)', 'road1'),"
                 + "('LINESTRING (2 1, 1 0, 1 2)', 'road2');");
-        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.05)");
+        rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.05)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -418,7 +412,7 @@ public class SpatialFunctionTest {
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (0 1, 2 1)", edgesResult.getBytes("road"));
@@ -433,16 +427,13 @@ public class SpatialFunctionTest {
         assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(3, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
     }
 
     @Test
     public void test_ST_Graph_BigTolerance() throws Exception {
-        Statement st = connection.createStatement();
         // This test shows that the results from using a large tolerance value
         // (3.1 rather than 0.1) can be very different.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 'road1'),"
@@ -451,11 +442,11 @@ public class SpatialFunctionTest {
                 + "('LINESTRING (4 3, 5 2)', 'road4'),"
                 + "('LINESTRING (4.05 4.1, 7 5)', 'road5'),"
                 + "('LINESTRING (7.1 5, 8 4)', 'road6');");
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 3.1, false)");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 3.1, false)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -467,7 +458,7 @@ public class SpatialFunctionTest {
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (8 4)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (0 0, 1 2)", edgesResult.getBytes("road"));
@@ -506,30 +497,25 @@ public class SpatialFunctionTest {
         assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(3, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
     }
 
     @Test
     public void test_ST_Graph_OrientBySlope() throws Exception {
-        Statement st = connection.createStatement();
-
         // This test proves that orientation by slope works. Three cases:
         // 1. first.z == last.z -- Orient first --> last
         // 2. first.z > last.z -- Orient first --> last
         // 3. first.z < last.z -- Orient last --> first
 
         // Case 1.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES " +
                 "('LINESTRING (0 0 0, 1 0 0)', 'road1');");
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.0, true)");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -538,7 +524,7 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (0 0 0, 1 0 0)", edgesResult.getBytes("road"));
@@ -548,19 +534,17 @@ public class SpatialFunctionTest {
         assertEquals(1, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(2, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
 
         // Case 2.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES " +
                 "('LINESTRING (0 0 1, 1 0 0)', 'road1');");
-        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.0, true)");
+        rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -569,7 +553,7 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (0 0 1, 1 0 0)", edgesResult.getBytes("road"));
@@ -579,19 +563,17 @@ public class SpatialFunctionTest {
         assertEquals(1, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(2, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
 
         // Case 3.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES " +
                 "('LINESTRING (0 0 0, 1 0 1)', 'road1');");
-        rs = st.executeQuery("SELECT ST_Graph('test', 'road', 0.0, true)");
+        rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -600,7 +582,7 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (1 0 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (0 0 0, 1 0 1)", edgesResult.getBytes("road"));
@@ -610,35 +592,27 @@ public class SpatialFunctionTest {
         assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(1, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
     }
 
     @Test
     public void test_ST_Graph_ErrorWithNoLINESTRINGOrMULTILINESTRING() throws Exception {
-        Statement st = connection.createStatement();
-
         // Prepare the input table.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road POINT, description VARCHAR);" +
                 "INSERT INTO test VALUES "
                 + "('POINT (0 0)', 'road1');");
 
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test')");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST')");
         assertTrue(rs.next());
         assertFalse(rs.getBoolean(1));
         assertFalse(rs.next());
 
         assertFalse(connection.getMetaData().getTables(null, null, "TEST_NODES", null).last());
         assertFalse(connection.getMetaData().getTables(null, null, "TEST_EDGES", null).last());
-
-        st.execute("DROP TABLE test");
     }
 
     @Test
     public void test_ST_Graph_MULTILINESTRING() throws Exception {
-        Statement st = connection.createStatement();
-
         // This test shows that the coordinate (1 2) is not considered to be
         // a node, even though it would be if we had used ST_Explode to split
         // the MULTILINESTRINGs into LINESTRINGs.
@@ -646,15 +620,16 @@ public class SpatialFunctionTest {
         // is not equal to the first coordinate of the second LINESTRING of road2 (4 3),
         // so this MULTILINESTRING is considered to be an edge from node 2=(4 3) to
         // node 3=(5 2).
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road MULTILINESTRING, description VARCHAR);" +
                 "INSERT INTO test VALUES "
                 + "('MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1'),"
                 + "('MULTILINESTRING ((4 3, 4 4, 1 4, 1 2), (4 3, 5 2))', 'road2');");
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('test')");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST')");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -666,7 +641,7 @@ public class SpatialFunctionTest {
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))", edgesResult.getBytes("road"));
@@ -680,9 +655,5 @@ public class SpatialFunctionTest {
         assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
         assertEquals(3, edgesResult.getInt(ST_Graph.END_NODE));
         assertFalse(edgesResult.next());
-
-        st.execute("DROP TABLE test");
-        st.execute("DROP TABLE test_nodes");
-        st.execute("DROP TABLE test_edges");
     }
 }
