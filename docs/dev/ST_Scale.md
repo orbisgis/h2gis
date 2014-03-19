@@ -4,7 +4,7 @@ title: ST_Scale
 category: h2spatial-ext/affine-transformations
 description: Scale a Geometry by multiplying the ordinates by the indicated scale factors 
 prev_section: ST_Rotate
-next_section: h2spatial-ext/geometry-conversion
+next_section: ST_Translate
 permalink: /docs/dev/ST_Scale/
 ---
 

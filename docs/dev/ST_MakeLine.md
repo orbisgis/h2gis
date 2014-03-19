@@ -3,7 +3,7 @@ layout: docs
 title: ST_MakeLine
 category: h2spatial-ext/geometry-creation
 description: <code>(MULTI)POINT</code> &rarr; <code>LINESTRING</code>
-prev_section: ST_MakeEllipse
+prev_section: ST_MakeEnvelope
 next_section: ST_MakePoint
 permalink: /docs/dev/ST_MakeLine/
 ---
