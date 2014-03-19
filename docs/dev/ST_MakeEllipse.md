@@ -3,8 +3,8 @@ layout: docs
 title: ST_MakeEllipse
 category: h2spatial-ext/geometry-creation
 description: Construct an ellipse
-prev_section: h2spatial-ext/geometry-creation
-next_section: ST_MakeLine
+prev_section: ST_Extrude
+next_section: ST_MakeEnvelope
 permalink: /docs/dev/ST_MakeEllipse/
 ---
 
