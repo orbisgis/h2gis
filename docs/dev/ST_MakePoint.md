@@ -4,7 +4,7 @@ title: ST_MakePoint
 category: h2spatial-ext/geometry-creation
 description: Construct a <code>POINT</code> from two or three coordinates
 prev_section: ST_MakeLine
-next_section: h2spatial-ext/distance-functions
+next_section: ST_MinimumRectangle
 permalink: /docs/dev/ST_MakePoint/
 ---
 
