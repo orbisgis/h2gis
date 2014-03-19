@@ -31,7 +31,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 /**
  * Expands a geometry's envelope by the given delta X and delta Y.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, Nicolas Fortin
  */
 public class ST_Expand extends DeterministicScalarFunction {
 
