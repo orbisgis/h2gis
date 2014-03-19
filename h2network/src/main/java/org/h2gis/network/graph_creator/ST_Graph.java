@@ -73,8 +73,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static Connection connection;
     private static final GeometryFactory GF = new GeometryFactory();
 
-    public static final String THE_GEOM = "the_geom";
     public static final String NODE_ID = "node_id";
+    private static final int nodeIDIndex = 1;
+    public static final String THE_GEOM = "the_geom";
+    private static final int nodeGeomIndex = 2;
     public static final String EDGE_ID = "edge_id";
     public static final String START_NODE = "start_node";
     public static final String END_NODE = "end_node";
@@ -87,6 +89,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private final List<Node> nearbyIntersectingNodes = new ArrayList<Node>();
     private double tolerance;
     private boolean orientBySlope;
+
+    private int columnCount = 0;
+    private int startNodeIndex = -1;
+    private int endNodeIndex = -1;
 
     public ST_Graph() {
         this(null, null, 0.0, false);
@@ -285,6 +291,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             // Set up the edges table
             st.execute("CREATE TABLE " + edgesName);
             while (inputMD.next()) {
+                columnCount++;
                 final String columnName = inputMD.getString("COLUMN_NAME");
                 final String typeName = inputMD.getString("TYPE_NAME");
                 st.execute("ALTER TABLE " + edgesName + " ADD COLUMN " + columnName + " " + typeName);
@@ -296,6 +303,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             st.execute("ALTER TABLE " + edgesName + " ADD COLUMN " + EDGE_ID + " INT IDENTITY;" +
                     "ALTER TABLE " + edgesName + " ADD COLUMN " + START_NODE + " INTEGER;" +
                     "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
+            startNodeIndex = columnCount + 2;
+            endNodeIndex = columnCount + 3;
             // Set up the nodes table
             st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
         } finally {
@@ -318,22 +327,26 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     private boolean updateTables() throws SQLException {
-        final Statement nodeSt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
-        final Statement edgeSt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE);
+        connection.setAutoCommit(false);
+
+        String edgeSQL = "INSERT INTO " + edgesName + " VALUES(";
+        for (int i = 1; i <= columnCount; i++) {
+            edgeSQL += "?, ";
+        }
+        edgeSQL += "DEFAULT, ?, ?)";
+        final PreparedStatement edgeSt = connection.prepareStatement(edgeSQL);
+
+        String nodeSQL = "INSERT INTO " + nodesName + " VALUES(?, ?)";
+        final PreparedStatement nodeSt = connection.prepareStatement(nodeSQL);
+
         final Statement inputSt = connection.createStatement();
+
         try {
-            SpatialResultSet nodesTable = nodeSt.
-                            executeQuery("SELECT * FROM " + nodesName).
-                            unwrap(SpatialResultSet.class);
-            SpatialResultSet edgesTable = edgeSt.
-                    executeQuery("SELECT * FROM " + edgesName).
-                    unwrap(SpatialResultSet.class);
             SpatialResultSet inputTable = inputSt.
                             executeQuery("SELECT * FROM " + tableName).
                             unwrap(SpatialResultSet.class);
             try {
                 int nodeID = 0;
-                final int columnCount = inputTable.getMetaData().getColumnCount();
                 while (inputTable.next()) {
                     final Geometry geom = inputTable.getGeometry(spatialFieldIndex);
                     if (geom != null) {
@@ -349,16 +362,18 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                         final Coordinate lastCoord = coordinates[coordinates.length - 1];
                         final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z) ? true : false;
 
-                        edgesTable.moveToInsertRow();
                         // Copy over original data
                         for (int i = 1; i <= columnCount; i++) {
-                            edgesTable.updateObject(i, inputTable.getObject(i));
+                            edgeSt.setObject(i, inputTable.getObject(i));
                         }
-                        nodeID = insertNode(nodesTable, edgesTable, nodeID, firstCoord, switchCoords ? END_NODE : START_NODE);
-                        nodeID = insertNode(nodesTable, edgesTable, nodeID, lastCoord, switchCoords ? START_NODE : END_NODE);
-                        edgesTable.insertRow();
+                        nodeID = insertNode(nodeSt, edgeSt, nodeID, firstCoord, switchCoords ? endNodeIndex : startNodeIndex);
+                        nodeID = insertNode(nodeSt, edgeSt, nodeID, lastCoord, switchCoords ? startNodeIndex : endNodeIndex);
+                        edgeSt.addBatch();
                     }
                 }
+                nodeSt.executeBatch();
+                edgeSt.executeBatch();
+                connection.commit();
             } catch (SQLException e) {
                 final Statement statement = connection.createStatement();
                 try {
@@ -369,8 +384,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     statement.close();
                 }
             } finally {
-                nodesTable.close();
-                edgesTable.close();
                 inputTable.close();
             }
         } finally {
@@ -378,6 +391,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             edgeSt.close();
             inputSt.close();
         }
+        connection.setAutoCommit(true);
         return true;
     }
 
@@ -385,32 +399,34 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Insert the node in the nodes table if it is a new node, and update the
      * edges table appropriately.
      *
-     * @param nodesTable     Nodes table
-     * @param edgesTable     Edges table
+     *
+     * @param nodeSt         Nodes statement
+     * @param edgeSt         Edges statement
      * @param nodeID         Current node ID
      * @param coord          Current coordinate
-     * @param edgeColumnName Name of column to update in edges table
+     * @param edgeColIndex   Index of column to update in edges table
      * @return Node ID
      * @throws SQLException
      */
-    private int insertNode(SpatialResultSet nodesTable,
-                                  SpatialResultSet edgesTable,
-                                  int nodeID,
-                                  Coordinate coord,
-                                  String edgeColumnName) throws SQLException {
+    private int insertNode(PreparedStatement nodeSt,
+                           PreparedStatement edgeSt,
+                           int nodeID,
+                           Coordinate coord,
+                           int edgeColIndex) throws SQLException {
         Envelope envelope = new Envelope(coord);
         envelope.expandBy(tolerance);
-
+        // Because of the DEFAULT field, there is one less parameter
+        // in the prepared statement.
+        final int adjustedIndex = edgeColIndex - 1;
         final Node nodeToSnapTo = findNodeToSnapTo(coord, envelope);
         if (nodeToSnapTo != null) {
-            edgesTable.updateInt(edgeColumnName, nodeToSnapTo.getId());
+            edgeSt.setInt(adjustedIndex, nodeToSnapTo.getId());
         } else {
-            nodesTable.moveToInsertRow();
-            nodesTable.updateInt(NODE_ID, ++nodeID);
-            nodesTable.updateGeometry(THE_GEOM, GF.createPoint(coord));
-            nodesTable.insertRow();
+            nodeSt.setInt(nodeIDIndex, ++nodeID);
+            nodeSt.setObject(nodeGeomIndex, GF.createPoint(coord));
+            nodeSt.addBatch();
             quadtree.insert(envelope, new Node(nodeID, coord));
-            edgesTable.updateInt(edgeColumnName, nodeID);
+            edgeSt.setInt(adjustedIndex, nodeID);
         }
         return nodeID;
     }
