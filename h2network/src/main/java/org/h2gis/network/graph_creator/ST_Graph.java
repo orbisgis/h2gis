@@ -80,6 +80,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     public static final String EDGE_ID = "edge_id";
     public static final String START_NODE = "start_node";
     public static final String END_NODE = "end_node";
+    private static final int BATCH_MAX_SIZE = 100;
 
     private TableLocation tableName;
     private TableLocation nodesName;
@@ -347,6 +348,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                             unwrap(SpatialResultSet.class);
             try {
                 int nodeID = 0;
+                int batchSize = 0;
                 while (inputTable.next()) {
                     final Geometry geom = inputTable.getGeometry(spatialFieldIndex);
                     if (geom != null) {
@@ -369,10 +371,22 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                         nodeID = insertNode(nodeSt, edgeSt, nodeID, firstCoord, switchCoords ? endNodeIndex : startNodeIndex);
                         nodeID = insertNode(nodeSt, edgeSt, nodeID, lastCoord, switchCoords ? startNodeIndex : endNodeIndex);
                         edgeSt.addBatch();
+
+                        // Execute a batch if needed.
+                        batchSize++;
+                        if (batchSize >= BATCH_MAX_SIZE) {
+                            nodeSt.executeBatch();
+                            nodeSt.clearBatch();
+                            edgeSt.executeBatch();
+                            edgeSt.clearBatch();
+                            batchSize = 0;
+                        }
                     }
                 }
-                nodeSt.executeBatch();
-                edgeSt.executeBatch();
+                if (batchSize > 0) {
+                    nodeSt.executeBatch();
+                    edgeSt.executeBatch();
+                }
                 connection.commit();
             } catch (SQLException e) {
                 final Statement statement = connection.createStatement();
