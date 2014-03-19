@@ -87,7 +87,7 @@ public class ST_ToMultiSegments extends DeterministicScalarFunction {
         }
     }
 
-    private static void createSegments(final LineString geom,
+    public static void createSegments(final LineString geom,
                                        final List<LineString> result) throws SQLException {
         Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(geom.getCoordinates());
         for (int j = 0; j < coords.length - 1; j++) {

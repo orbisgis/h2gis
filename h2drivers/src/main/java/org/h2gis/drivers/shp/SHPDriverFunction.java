@@ -32,6 +32,7 @@ import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.drivers.shp.internal.ShapeType;
 import org.h2gis.drivers.shp.internal.ShapefileHeader;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
@@ -56,9 +57,22 @@ public class SHPDriverFunction implements DriverFunction {
     public static String DESCRIPTION = "ESRI shapefile";
     private static final int BATCH_MAX_SIZE = 100;
 
-
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName, progress, null);
+    }
+
+    /**
+     *
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path to write, if exists it may be replaced
+     * @param encoding File encoding, null will use default encoding
+     * @throws SQLException
+     * @throws IOException
+     */
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
+        TableLocation location = TableLocation.parse(tableReference);
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         ProgressVisitor copyProgress = progress.subProcess(recordCount);
         //
@@ -72,10 +86,13 @@ public class SHPDriverFunction implements DriverFunction {
         // Read table content
         Statement st = connection.createStatement();
         try {
-            ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableReference));
+            ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
             try {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData);
+                if(encoding != null) {
+                    header.setEncoding(encoding);
+                }
                 header.setNumRecords(recordCount);
                 SHPDriver shpDriver = null;
                 Object[] row = new Object[header.getNumFields() + 1];
@@ -142,8 +159,21 @@ public class SHPDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress, null);
+    }
+
+    /**
+     *
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path to read
+     * @param forceEncoding If defined use this encoding instead of the one defined in dbf header.
+     * @throws SQLException Table write error
+     * @throws IOException File read error
+     */
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceEncoding) throws SQLException, IOException {
         SHPDriver shpDriver = new SHPDriver();
-        shpDriver.initDriverFromFile(fileName);
+        shpDriver.initDriverFromFile(fileName, forceEncoding);
         ProgressVisitor copyProgress = progress.subProcess((int)(shpDriver.getRowCount() / BATCH_MAX_SIZE));
         // PostGIS does not show sql
         String lastSql = "";
@@ -152,7 +182,7 @@ public class SHPDriverFunction implements DriverFunction {
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
-            String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader);
+            String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, JDBCUtilities.isH2DataBase(connection.getMetaData()));
             if(!types.isEmpty()) {
                 types = ", " + types;
             }
@@ -261,7 +291,7 @@ public class SHPDriverFunction implements DriverFunction {
             case 1:
             case 11:
             case 21:
-                return "MULTIPOINT";
+                return "POINT";
             case 3:
             case 13:
             case 23:

@@ -147,7 +147,7 @@ public class SHPImportExportTest {
         assertEquals("GEOMETRY", rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("CHAR", rs.getString("TYPE_NAME"));
+        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         assertTrue(rs.next());
         assertEquals("GID",rs.getString("COLUMN_NAME"));
@@ -226,7 +226,7 @@ public class SHPImportExportTest {
         exp.exportTable(connection, "AREA", shpFile,new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS myshp");
         DriverFunction manager = new DriverManager();
-        manager.importFile(connection, "myshp", shpFile, new EmptyProgressVisitor());
+        manager.importFile(connection, "MYSHP", shpFile, new EmptyProgressVisitor());
         ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom)) from myshp");
         try {
             assertTrue(rs.next());

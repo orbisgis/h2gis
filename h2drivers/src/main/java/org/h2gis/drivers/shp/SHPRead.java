@@ -53,14 +53,25 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path of the SHP file
+     * @param forceEncoding Use this encoding instead of DBF file header encoding property.
      */
-    public static void readShape(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+    public static void readShape(Connection connection, String fileName, String tableReference,String forceEncoding) throws IOException, SQLException {
         File file = new File(fileName);
         if(!file.exists()) {
             throw new FileNotFoundException("The following file does not exists:\n"+fileName);
         }
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        shpDriverFunction.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
+        shpDriverFunction.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor(), forceEncoding);
+    }
+
+    /**
+     * Copy data from Shape File into a new table in specified connection.
+     * @param connection Active connection
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path of the SHP file
+     */
+    public static void readShape(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+        readShape(connection, fileName, tableReference, null);
     }
 
     /**
@@ -74,6 +85,6 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      */
     public static void readShape(Connection connection, String fileName) throws IOException, SQLException {
         final String name = new File(fileName).getName();
-        readShape(connection, fileName, name.substring(0, name.lastIndexOf(".")));
+        readShape(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
     }
 }

@@ -77,6 +77,6 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      */
     public static void readGPX(Connection connection, String fileName) throws IOException, SQLException {
         final String name = new File(fileName).getName();
-        readGPX(connection, fileName, name.substring(0, name.lastIndexOf(".")));
+        readGPX(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
     }
 }

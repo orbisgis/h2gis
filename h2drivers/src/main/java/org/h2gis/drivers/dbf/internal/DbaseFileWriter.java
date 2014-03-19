@@ -94,7 +94,7 @@ public class DbaseFileWriter {
 	 */
 	public DbaseFileWriter(DbaseFileHeader header, WritableByteChannel out)
 			throws IOException {
-		this(header, out, null);
+		this(header, out, Charset.forName(header.getFileEncoding()));
 	}
 
     /**

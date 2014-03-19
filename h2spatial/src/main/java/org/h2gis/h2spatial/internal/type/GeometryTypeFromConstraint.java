@@ -58,12 +58,18 @@ public class GeometryTypeFromConstraint extends DeterministicScalarFunction {
     /**
      * Convert H2 constraint string into a OGC geometry type index.
      * @param constraint SQL Constraint ex: ST_GeometryTypeCode(the_geom) = 5
+     * @param numericPrecision This parameter is available if the user give domain
      * @return Geometry type code {@link org.h2gis.utilities.GeometryTypeCodes}
      */
-    public static int geometryTypeFromConstraint(String constraint) {
-        if(constraint.isEmpty()) {
+    public static int geometryTypeFromConstraint(String constraint, int numericPrecision) {
+        if(constraint.isEmpty() && numericPrecision > GeometryTypeCodes.GEOMETRYZM) {
             return GeometryTypeCodes.GEOMETRY;
         }
+        // Use Domain given parameters
+        if(numericPrecision <= GeometryTypeCodes.GEOMETRYZM) {
+            return numericPrecision;
+        }
+        // Use user defined constraint. Does not work with VIEW TABLE
         Matcher matcher = TYPE_CODE_PATTERN.matcher(constraint);
         if(matcher.find()) {
             return Integer.valueOf(matcher.group(CODE_GROUP_ID));

@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.regex.Pattern;
 
 /**
  * Just a class used to split Catalog Schema and Table. Theses components are a unique table identifier.
@@ -14,6 +15,9 @@ public class TableLocation {
     private String catalog,schema,table;
     /** Recognized by H2 and Postgres */
     private static final String QUOTE_CHAR = "\"";
+    private static final Pattern POSTGRE_SPECIAL_NAME_PATTERN = Pattern.compile("[^a-z0-9_]");
+    private static final Pattern H2_SPECIAL_NAME_PATTERN = Pattern.compile("[^A-Z0-9_]");
+    private static final String DEFAULT_SCHEMA = "PUBLIC";
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -34,7 +38,7 @@ public class TableLocation {
             throw new IllegalArgumentException("Cannot construct table location with null table");
         }
         this.catalog = catalog == null ? "" : catalog;
-        this.schema = schema  == null ? "" : schema;
+        this.schema = schema  == null || schema.isEmpty() ? DEFAULT_SCHEMA : schema;
         this.table = table;
     }
 
@@ -53,39 +57,63 @@ public class TableLocation {
         this("", table);
     }
 
+    /**
+     * Always Quote string for both H2 and Postgre compatibility
+     * @param identifier Catalog,Schema,Table or Field name
+     * @return Quoted Identifier
+     */
+    public static String quoteIdentifier(String identifier) {
+        return QUOTE_CHAR+identifier.replace("\"","\"\"")+QUOTE_CHAR;
+    }
+
+
+    /**
+     * Quote identifier only if necessary. Require database knowledge.
+     * @param identifier Catalog,Schema,Table or Field name
+     * @param isH2DataBase True if the quote is for H2, false if for POSTGRE
+     * @return Quoted Identifier
+     */
+    public static String quoteIdentifier(String identifier, boolean isH2DataBase) {
+        if((isH2DataBase && H2_SPECIAL_NAME_PATTERN.matcher(identifier).find()) ||
+                (!isH2DataBase && POSTGRE_SPECIAL_NAME_PATTERN.matcher(identifier).find())) {
+            return quoteIdentifier(identifier);
+        } else {
+            return identifier;
+        }
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         if(!catalog.isEmpty()) {
-            boolean doQuote = catalog.contains(" ");
-            if(doQuote) {
-                sb.append(QUOTE_CHAR);
-            }
-            sb.append(catalog);
-            if(doQuote) {
-                sb.append(QUOTE_CHAR);
-            }
+            sb.append(quoteIdentifier(catalog));
             sb.append(".");
         }
         if(!schema.isEmpty()) {
-            boolean doQuote = schema.contains(" ");
-            if(doQuote) {
-                sb.append(QUOTE_CHAR);
-            }
-            sb.append(schema);
-            if(doQuote) {
-                sb.append(QUOTE_CHAR);
-            }
+            sb.append(quoteIdentifier(schema));
             sb.append(".");
         }
-        boolean doQuote= table.contains(" ") || !table.equals(table.toLowerCase());
-        if(doQuote) {
-            sb.append(QUOTE_CHAR);
+        sb.append(quoteIdentifier(table));
+        return sb.toString();
+    }
+
+    /**
+     * String representation of Table location, for insertion in SQL statement.
+     * This function try to do not quote unnecessary components; require database type.
+     * @param isH2 True if H2, false if
+     * @return String representation of Table location
+     */
+    public String toString(boolean isH2) {
+        StringBuilder sb = new StringBuilder();
+        if(!catalog.isEmpty()) {
+            sb.append(quoteIdentifier(catalog, isH2));
+            sb.append(".");
         }
-        sb.append(table);
-        if(doQuote) {
-            sb.append(QUOTE_CHAR);
+        if(!schema.isEmpty()) {
+            sb.append(quoteIdentifier(schema, isH2));
+            sb.append(".");
         }
+        sb.append(quoteIdentifier(table, isH2));
         return sb.toString();
     }
 
