@@ -96,22 +96,24 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Constructor
      *
      * @param connection    Connection
-     * @param tableName     Input table name
+     * @param inputTable    Input table name
      * @param tolerance     Tolerance
      * @param orientBySlope True if edges should be oriented by the z-value of
      *                      their first and last coordinates (decreasing)
      */
     public ST_Graph(Connection connection,
-                    String tableName,
+                    String inputTable,
                     double tolerance,
                     boolean orientBySlope) {
         if (connection != null) {
             this.connection = SFSUtilities.wrapConnection(connection);
         }
-        if (tableName != null) {
-            this.tableName = TableLocation.parse(tableName);
-            this.nodesName = TableLocation.parse(tableName + "_NODES");
-            this.edgesName = TableLocation.parse(tableName + "_EDGES");
+        if (inputTable != null) {
+            this.tableName = TableLocation.parse(inputTable);
+            this.nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
+                    tableName.getTable() + "_NODES");
+            this.edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
+                    tableName.getTable() + "_EDGES");
         }
         this.tolerance = tolerance;
         this.orientBySlope = orientBySlope;
