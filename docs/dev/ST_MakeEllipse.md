@@ -45,4 +45,4 @@ fine-grained (100 segments rather than 32).
 ##### See also
 
 * [`ST_Buffer`](../ST_Buffer)
-* <a href="https://github.com/irstv/H2GIS/blob/daac86bd76645c6ec94b356e24db93ae74fe539c/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakeEllipse.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakeEllipse.java" target="_blank">Source code</a>
