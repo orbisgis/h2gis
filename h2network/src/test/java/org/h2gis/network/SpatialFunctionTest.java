@@ -118,7 +118,7 @@ public class SpatialFunctionTest {
         assertFalse(nodesResult.next());
 
         // Test edges table.
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         // This is a copy of the original table with three columns added.
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
@@ -190,7 +190,7 @@ public class SpatialFunctionTest {
         assertEquals(4, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(3 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (0 0, 1 2)", edgesResult.getBytes("road"));
@@ -224,7 +224,7 @@ public class SpatialFunctionTest {
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        nodesResult = st.executeQuery("SELECT * FROM test_nodes");
+        nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
@@ -236,7 +236,7 @@ public class SpatialFunctionTest {
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
         assertFalse(nodesResult.next());
-        edgesResult = st.executeQuery("SELECT * FROM test_edges");
+        edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(3 + 3, edgesResult.getMetaData().getColumnCount());
         assertTrue(edgesResult.next());
         assertGeometryEquals("LINESTRING (1 1, 2 2, 3 1)", edgesResult.getBytes("way"));
