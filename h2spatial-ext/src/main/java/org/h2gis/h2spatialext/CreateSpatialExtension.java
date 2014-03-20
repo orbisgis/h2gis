@@ -83,6 +83,7 @@ import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
 import org.h2gis.h2spatialext.function.spatial.properties.*;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
+import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.network.graph_creator.ST_Graph;
@@ -140,6 +141,7 @@ public class CreateSpatialExtension {
             new ST_TriangleAspect(),
             new ST_TriangleSlope(),
             new ST_TriangleDirection(),
+            new ST_TriangleContouring(),
             new ST_BoundingCircle(),
             new ST_Densify(),
             new ST_Expand(),
