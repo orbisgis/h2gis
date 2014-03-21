@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.TopologyException;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
@@ -37,5 +38,25 @@ public class ContouringTest {
             subdividedTri+=entry.getValue().size();
         }
         assertTrue(subdividedTri==5);
+    }
+
+    @Test
+    public void testContouringTriangle2() throws TopologyException {
+        int subdividedTri = 0;
+        //Input Data, a Triangle
+        TriMarkers triangleData = new TriMarkers(new Coordinate(-6.04, -0.56, 3),
+                new Coordinate(-5.7,-4.15, 4),
+                new Coordinate(0.3,1.41, 4.4),
+                3,4,4.4
+        );
+        //Iso ranges
+        LinkedList<Double> iso_lvls = new LinkedList<Double>(Arrays.asList(4.,5.));
+        //Split the triangle into multiple triangles
+        Map<Short,Deque<TriMarkers>> triangleToDriver= Contouring.processTriangle(triangleData, iso_lvls);
+        triangleToDriver.get(0);
+        for(Map.Entry<Short,Deque<TriMarkers>> entry : triangleToDriver.entrySet()) {
+            subdividedTri+=entry.getValue().size();
+        }
+        assertTrue(subdividedTri==2);
     }
 }

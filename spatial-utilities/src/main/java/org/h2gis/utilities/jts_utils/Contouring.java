@@ -45,6 +45,7 @@ import java.util.Map;
  */
 public class Contouring {
     private static final double EPSILON = 1E-15;
+    private static final boolean CHECK_RESULT = true;
 
     private static boolean isoEqual(double isoValue1, double isoValue2) {
         return Math.abs(isoValue1 - isoValue2) < EPSILON * isoValue2;
@@ -195,7 +196,7 @@ public class Contouring {
      * @return False if the entire geometry is outside of the region, true if
      * outsideTriangles or intervalTriangles has been updated.
      */
-    private static boolean splitInterval(Double beginIncluded, Double endExcluded,
+    private static boolean splitInterval(double beginIncluded, double endExcluded,
                                          TriMarkers currentTriangle,
                                          Deque<TriMarkers> outsideTriangles,
                                          Deque<TriMarkers> intervalTriangles) throws TopologyException {
@@ -414,6 +415,7 @@ public class Contouring {
             // Side to vertice
             if (vertIso1Start != -1) {
                 // Split triangle in two
+                // TODO check this conditional branch
                 short vertOutside = -1, vertInside = -1;
                 if (currentTriangle.m1 < beginIncluded) {
                     vertOutside = 0;
@@ -446,21 +448,22 @@ public class Contouring {
             } else if (vertIso2Start != -1) {
                 // Split triangle in two
                 short vertOutside = -1, vertInside = -1;
-                if (currentTriangle.m1 < endExcluded) {
+                double maxMarker = currentTriangle.getMaxMarker();
+                if (isoEqual(currentTriangle.m1, maxMarker)) {
                     vertOutside = 0;
                     if (vertIso2Start == 1) {
-                        vertInside = 2;
-                    } else {
                         vertInside = 1;
+                    } else {
+                        vertInside = 2;
                     }
-                } else if (currentTriangle.m2 < endExcluded) {
+                } else if (isoEqual(currentTriangle.m2, maxMarker)) {
                     vertOutside = 1;
                     if (vertIso2Start == 0) {
                         vertInside = 2;
                     } else {
                         vertInside = 0;
                     }
-                } else if (currentTriangle.m3 < endExcluded) {
+                } else if (isoEqual(currentTriangle.m3, maxMarker)) {
                     vertOutside = 2;
                     if (vertIso2Start == 0) {
                         vertInside = 1;
@@ -468,11 +471,23 @@ public class Contouring {
                         vertInside = 0;
                     }
                 }
-
-                outsideTriangles.add(new TriMarkers(currentTriangle.getVertice(vertIso2Start), currentTriangle.getVertice(vertOutside), posIso2Start, endExcluded,
-                        currentTriangle.getMarker(vertOutside), endExcluded));
-                intervalTriangles.add(new TriMarkers(currentTriangle.getVertice(vertIso2Start), currentTriangle.getVertice(vertInside), posIso2Start, endExcluded,
-                        currentTriangle.getMarker(vertInside), endExcluded));
+                TriMarkers outsideTriangle = new TriMarkers(
+                        currentTriangle.getVertice(vertIso2Start), currentTriangle.getVertice(vertOutside), posIso2Start,
+                        endExcluded, currentTriangle.getMarker(vertOutside), endExcluded);
+                TriMarkers intervalTriangle = new TriMarkers(
+                        currentTriangle.getVertice(vertIso2Start), currentTriangle.getVertice(vertInside), posIso2Start,
+                        endExcluded, currentTriangle.getMarker(vertInside), endExcluded);
+                if(CHECK_RESULT) {
+                    // Check that new triangle are in the right side
+                    if(!(intervalTriangle.getMinMarker() >= beginIncluded &&  intervalTriangle.getMaxMarker() <= endExcluded)) {
+                        throw new TopologyException("Computation error out of bound triangle");
+                    }
+                    if(outsideTriangle.getMaxMarker() < endExcluded) {
+                        throw new TopologyException("Computation error out of bound triangle");
+                    }
+                }
+                outsideTriangles.add(outsideTriangle);
+                intervalTriangles.add(intervalTriangle);
                 return true;
             }
 
