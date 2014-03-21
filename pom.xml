@@ -116,4 +116,13 @@
         <artifactId>orbisgis-nexus</artifactId>
         <version>1</version>
     </parent>
+    <reporting>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+            </plugin>
+        </plugins>
+    </reporting>
 </project>

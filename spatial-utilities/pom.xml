@@ -27,6 +27,40 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>cobertura-maven-plugin</artifactId>
+                <version>2.6</version>
+                <configuration>
+                    <check>
+                        <!-- TODO Raise Coverage constraint -->
+                        <branchRate>0</branchRate>
+                        <lineRate>0</lineRate>
+                        <haltOnFailure>true</haltOnFailure>
+                        <totalBranchRate>50</totalBranchRate>
+                        <totalLineRate>30</totalLineRate>
+                        <regexes>
+                            <regex>
+                                <pattern>org.h2gis.utilities.jts_utils.Contouring</pattern>
+                                <branchRate>90</branchRate>
+                                <lineRate>80</lineRate>
+                            </regex>
+                            <regex>
+                                <pattern>org.h2gis.utilities.wrapper</pattern>
+                                <branchRate>0</branchRate>
+                                <lineRate>0</lineRate>
+                            </regex>
+                        </regexes>
+                    </check>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
     <properties>

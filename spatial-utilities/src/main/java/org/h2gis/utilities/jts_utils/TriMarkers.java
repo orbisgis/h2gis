@@ -101,7 +101,7 @@ public class TriMarkers extends Triangle {
         return getMinMarker((short) -1);
     }
 
-    double getMinMarker(short exception) {
+    double getMinMarker(int exception) {
         double minval = Double.POSITIVE_INFINITY;
         if (exception != 0) {
             minval = Math.min(minval, this.m1);
@@ -119,7 +119,7 @@ public class TriMarkers extends Triangle {
         return getMaxMarker((short) -1);
     }
 
-    double getMaxMarker(short exception) {
+    double getMaxMarker(int exception) {
         double maxval = Double.NEGATIVE_INFINITY;
         if (exception != 0) {
             maxval = Math.max(maxval, this.m1);
@@ -143,7 +143,7 @@ public class TriMarkers extends Triangle {
         return new Coordinate[] { p0, p1, p2, p0 };
     }
 
-    Coordinate getVertice(short idvert) {
+    Coordinate getVertice(int idvert) {
         if (idvert == 0) {
             return p0;
         } else if (idvert == 1) {
@@ -153,7 +153,7 @@ public class TriMarkers extends Triangle {
         }
     }
 
-    double getMarker(short idvert) {
+    double getMarker(int idvert) {
         if (idvert == 0) {
             return m1;
         } else if (idvert == 1) {

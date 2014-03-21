@@ -9,6 +9,7 @@ import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -16,6 +17,7 @@ import static org.junit.Assert.assertTrue;
  * @author Nicolas Fortin
  */
 public class ContouringTest {
+    private static final double EPSILON = .01;
 
     @Test
     public void testContouringTriangle() throws TopologyException {
@@ -53,10 +55,38 @@ public class ContouringTest {
         LinkedList<Double> iso_lvls = new LinkedList<Double>(Arrays.asList(4.,5.));
         //Split the triangle into multiple triangles
         Map<Short,Deque<TriMarkers>> triangleToDriver= Contouring.processTriangle(triangleData, iso_lvls);
-        triangleToDriver.get(0);
         for(Map.Entry<Short,Deque<TriMarkers>> entry : triangleToDriver.entrySet()) {
             subdividedTri+=entry.getValue().size();
         }
-        assertTrue(subdividedTri==2);
+        assertTrue(subdividedTri == 2);
+        // Internal
+        TriMarkers tri1 = triangleToDriver.get((short) 0).getFirst();
+        TriMarkers tri2 = triangleToDriver.get((short) 1).getFirst();
+        assertEquals(4, tri1.getMarker(0), EPSILON);
+        assertEquals(3, tri1.getMarker(1), EPSILON);
+        assertEquals(4, tri1.getMarker(2), EPSILON);
+        // External
+        assertEquals(4, tri2.getMarker(0), EPSILON);
+        assertEquals(4.4, tri2.getMarker(1), EPSILON);
+        assertEquals(4, tri2.getMarker(2), EPSILON);
+    }
+
+    @Test
+    public void testContouringTriangle3() throws TopologyException {
+        int subdividedTri = 0;
+        //Input Data, a Triangle
+        TriMarkers triangleData = new TriMarkers(new Coordinate(-9.19, 3.7, 3),
+                new Coordinate(0.3,1.41, 4.4),
+                new Coordinate(-5.7,-4.15, 1),
+                3,4.4,1
+        );
+        //Iso ranges
+        LinkedList<Double> iso_lvls = new LinkedList<Double>(Arrays.asList(3.,4.,5.));
+        //Split the triangle into multiple triangles
+        Map<Short,Deque<TriMarkers>> triangleToDriver= Contouring.processTriangle(triangleData, iso_lvls);
+        for(Map.Entry<Short,Deque<TriMarkers>> entry : triangleToDriver.entrySet()) {
+            subdividedTri+=entry.getValue().size();
+        }
+
     }
 }
