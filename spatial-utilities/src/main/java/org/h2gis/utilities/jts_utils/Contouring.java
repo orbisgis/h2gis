@@ -200,17 +200,7 @@ public class Contouring {
                                          TriMarkers currentTriangle,
                                          Deque<TriMarkers> outsideTriangles,
                                          Deque<TriMarkers> intervalTriangles) throws TopologyException {
-        if ((beginIncluded > currentTriangle.m1
-                && beginIncluded > currentTriangle.m2 && beginIncluded > currentTriangle.m3)
-                || // If triangles vertices ALL outside inferior
-                (endExcluded < currentTriangle.m1
-                        && endExcluded < currentTriangle.m2 && endExcluded < currentTriangle.m3)// If
-            // triangles
-            // vertices
-            // ALL
-            // outside
-            // inferior
-                ) {
+        if(beginIncluded > currentTriangle.getMaxMarker() || endExcluded < currentTriangle.getMinMarker()) {
             return false;
         }
         short vertIso1Start = -1, vertIso1Stop = -1; // for beginIncluded -
@@ -452,9 +442,9 @@ public class Contouring {
                 if (isoEqual(currentTriangle.m1, maxMarker)) {
                     vertOutside = 0;
                     if (vertIso2Start == 1) {
-                        vertInside = 1;
-                    } else {
                         vertInside = 2;
+                    } else {
+                        vertInside = 1;
                     }
                 } else if (isoEqual(currentTriangle.m2, maxMarker)) {
                     vertOutside = 1;
@@ -463,7 +453,7 @@ public class Contouring {
                     } else {
                         vertInside = 0;
                     }
-                } else if (isoEqual(currentTriangle.m3, maxMarker)) {
+                } else {
                     vertOutside = 2;
                     if (vertIso2Start == 0) {
                         vertInside = 1;
