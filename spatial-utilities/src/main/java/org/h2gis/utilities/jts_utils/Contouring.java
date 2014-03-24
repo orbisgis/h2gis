@@ -196,7 +196,7 @@ public class Contouring {
      * @return False if the entire geometry is outside of the region, true if
      * outsideTriangles or intervalTriangles has been updated.
      */
-    private static boolean splitInterval(double beginIncluded, double endExcluded,
+    public static boolean splitInterval(double beginIncluded, double endExcluded,
                                          TriMarkers currentTriangle,
                                          Deque<TriMarkers> outsideTriangles,
                                          Deque<TriMarkers> intervalTriangles) throws TopologyException {

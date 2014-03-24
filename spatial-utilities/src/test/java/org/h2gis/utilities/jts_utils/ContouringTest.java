@@ -308,4 +308,37 @@ public class ContouringTest {
         }
         assertEquals(1, subdividedTri);
     }
+
+    @Test
+    public void testContouringTriangle12() throws TopologyException {
+        //Input Data, a Triangle
+        TriMarkers triangleData = new TriMarkers(
+                new Coordinate(1, 1),
+                new Coordinate(1, 7),
+                new Coordinate(4, 4),
+                2, 1, 1
+        );
+        //Split the triangle into multiple triangles
+        Deque<TriMarkers> inside = new LinkedList<TriMarkers>();
+        Deque<TriMarkers> outside = new LinkedList<TriMarkers>();
+        Contouring.splitInterval (1.5, 2,triangleData,inside,outside);
+        assertEquals(2, inside.size());
+        assertEquals(1, outside.size());
+        // -inf 0.5
+        TriMarkers tri1 = inside.pop();
+        TriMarkers tri2 = inside.pop();
+        TriMarkers tri3 = outside.pop();
+
+        assertEquals(1.5, tri1.getMarker(0), EPSILON);
+        assertEquals(1.5, tri1.getMarker(1), EPSILON);
+        assertEquals(1, tri2.getMarker(2), EPSILON);
+        assertEquals(1.5, tri2.getMarker(0), EPSILON);
+        assertEquals(1, tri2.getMarker(1), EPSILON);
+        assertEquals(1, tri2.getMarker(2), EPSILON);
+
+        // 0.5 +inf
+        assertEquals(1.5, tri3.getMarker(0), EPSILON);
+        assertEquals(2, tri3.getMarker(1), EPSILON);
+        assertEquals(1.5, tri3.getMarker(2), EPSILON);
+    }
 }
