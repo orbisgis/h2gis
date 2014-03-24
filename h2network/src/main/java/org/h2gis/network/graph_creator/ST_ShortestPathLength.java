@@ -82,6 +82,8 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
     public static final String DESTINATION  = "DESTINATION";
     public static final String DISTANCE  = "DISTANCE";
 
+    private static final String hackURL = "jdbc:columnlist:connection";
+
     private static final String ARG_ERROR  = "Unrecognized argument: ";
     public static final String REMARKS =
             "ST_ShortestPathLength calculates the length(s) of shortest path(s) among " +
@@ -141,6 +143,9 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String inputTable,
                                                   String orientation,
                                                   Value arg3) throws SQLException {
+        if (connection.getMetaData().getURL().equals(hackURL)) {
+            return prepareResultSet();
+        }
         if (arg3 instanceof ValueInt) {
             int source = arg3.getInt();
             return oneToAll(connection, inputTable, orientation, null, source);
@@ -178,6 +183,9 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String orientation,
                                                   Value arg3,
                                                   Value arg4) throws SQLException {
+        if (connection.getMetaData().getURL().equals(hackURL)) {
+            return prepareResultSet();
+        }
         if (arg3 instanceof ValueInt) {
             int source = arg3.getInt();
             if (arg4 instanceof ValueInt) {
@@ -227,6 +235,9 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
                                                   String weight,
                                                   int source,
                                                   Value arg5) throws SQLException {
+        if (connection.getMetaData().getURL().equals(hackURL)) {
+            return prepareResultSet();
+        }
         if (arg5 instanceof ValueInt) {
             int destination = arg5.getInt();
             return oneToOne(connection, inputTable, orientation, weight, source, destination);
