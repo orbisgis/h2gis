@@ -64,5 +64,15 @@
             <artifactId>spatial-utilities</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>java-network-analyzer</artifactId>
+            <version>0.1.5</version>
+        </dependency>
+        <dependency>
+            <groupId>${h2-package}</groupId>
+            <artifactId>h2</artifactId>
+            <version>${h2-version}</version>
+        </dependency>
     </dependencies>
 </project>
