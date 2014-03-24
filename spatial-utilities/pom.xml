@@ -42,7 +42,7 @@
                         <regexes>
                             <regex>
                                 <pattern>org.h2gis.utilities.jts_utils.Contouring</pattern>
-                                <branchRate>90</branchRate>
+                                <branchRate>79</branchRate>
                                 <lineRate>80</lineRate>
                             </regex>
                             <regex>
