@@ -64,6 +64,7 @@ import java.util.Set;
  * <li><code>o</code> = Global orientation (directed, reversed or undirected)</li>
  * <li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 =
  * undirected). Required if global orientation is directed or reversed.</li>
+ * <li><code>w</code> = Name of column containing edge weights as doubles</li>
  * <li><code>s</code> = Source vertex id</li>
  * <li><code>d</code> = Destination vertex id</li>
  * <li><code>sdt</code> = Source-Destination table name (must contain columns
@@ -106,6 +107,7 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
             "<li><code>o</code> = Global orientation (directed, reversed or undirected)</li> " +
             "<li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 = " +
             "undirected). Required if global orientation is directed or reversed.</li> " +
+            "<li><code>w</code> = Name of column containing edge weights as doubles</li> " +
             "<li><code>s</code> = Source vertex id</li> " +
             "<li><code>d</code> = Destination vertex id</li> " +
             "<li><code>sdt</code> = Source-Destination table name (must contain columns " +
