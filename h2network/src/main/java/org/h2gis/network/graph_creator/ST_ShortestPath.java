@@ -37,7 +37,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -66,11 +65,21 @@ import java.util.Set;
 public class ST_ShortestPath extends AbstractFunction implements ScalarFunction {
 
     public static final String GEOM = "THE_GEOM";
+    public static final int GEOM_INDEX = 1;
     public static final String EDGE_ID = "EDGE_ID";
+    public static final int EDGE_ID_INDEX = 2;
     public static final String PATH_ID = "PATH_ID";
+    public static final int PATH_ID_INDEX = 3;
+    public static final String PATH_EDGE_ID = "PATH_EDGE_ID";
+    public static final int PATH_EDGE_ID_INDEX = 4;
     public static final String SOURCE = "SOURCE";
+    public static final int SOURCE_INDEX = 5;
     public static final String DESTINATION = "DESTINATION";
+    public static final int DESTINATION_INDEX = 6;
     public static final String WEIGHT = "WEIGHT";
+    public static final int WEIGHT_INDEX = 7;
+    private int globalID = 1;
+    private int localID = 0;
 
     private static final String ARG_ERROR  = "Unrecognized argument: ";
     public static final String REMARKS =
@@ -112,11 +121,11 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
      * @throws SQLException
      */
     public static ResultSet getShortestPath(Connection connection,
-                                                  String inputTable,
-                                                  String orientation,
-                                                  int source,
-                                                  int destination) throws SQLException {
-        return oneToOne(connection, inputTable, orientation, null, source, destination);
+                                            String inputTable,
+                                            String orientation,
+                                            int source,
+                                            int destination) throws SQLException {
+        return getShortestPath(connection, inputTable, orientation, null, source, destination);
     }
 
     /**
@@ -130,61 +139,64 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
      * @throws SQLException
      */
     public static ResultSet getShortestPath(Connection connection,
-                                                  String inputTable,
-                                                  String orientation,
-                                                  String weight,
-                                                  int source,
-                                                  int destination) throws SQLException {
+                                            String inputTable,
+                                            String orientation,
+                                            String weight,
+                                            int source,
+                                            int destination) throws SQLException {
         return oneToOne(connection, inputTable, orientation, weight, source, destination);
     }
 
     private static ResultSet oneToOne(Connection connection,
-                                     String inputTable,
-                                     String orientation,
-                                     String weight,
-                                     int source,
-                                     int destination) throws SQLException {
-        final SimpleResultSet output = prepareResultSet();
+                                      String inputTable,
+                                      String orientation,
+                                      String weight,
+                                      int source,
+                                      int destination) throws SQLException {
+        // If we only want the column names, there is no need to do the calculation.
+        // This is a hack. See: https://groups.google.com/forum/#!topic/h2-database/NHH0rDeU258
+        if (connection.getMetaData().getURL().equals("jdbc:columnlist:connection")) {
+            return prepareResultSet();
+        }
+        // Do the calculation.
         final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
         final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         final VDijkstra vDestination = graph.getVertex(destination);
         dijkstra.oneToOne(graph.getVertex(source), vDestination);
+        // Record the results.
+        ST_ShortestPath f = new ST_ShortestPath();
+        final SimpleResultSet output = prepareResultSet();
+        f.addPredEdges(graph, vDestination, output);
+        return output;
+    }
+
+    private void addPredEdges(KeyedGraph<VDijkstra, Edge> graph, VDijkstra dest, SimpleResultSet output) {
         // Rebuild the shortest path(s). (Yes, there could be more than
         // one if they have the same distance!)
-        VDijkstra previousDestination = vDestination;
-        Set<Edge> predecessorEdges = vDestination.getPredecessorEdges();
-        final Set<Edge> nextPredecessorEdges = new HashSet<Edge>();
-        int newID = 1;
-        while (!predecessorEdges.isEmpty()) {
-            nextPredecessorEdges.clear();
-            for (Edge e : predecessorEdges) {
-                final VDijkstra eSource = graph.getEdgeSource(e);
-                final VDijkstra eDestination = graph.getEdgeTarget(e);
-                int sourceID;
-                int destinationID;
-                // With undirected graphs, the source and target could
-                // be switched. This is JGraphT's fault. Here we make
-                // sure they are in the right order.
-                if (previousDestination.equals(eDestination)) {
-                    sourceID = eSource.getID();
-                    destinationID = eDestination.getID();
-                    nextPredecessorEdges.addAll(eSource.getPredecessorEdges());
-                    previousDestination = eSource;
-                } else if (previousDestination.equals(eSource)) {
-                    sourceID = eDestination.getID();
-                    destinationID = eSource.getID();
-                    nextPredecessorEdges.addAll(eDestination.getPredecessorEdges());
-                    previousDestination = eDestination;
-                } else {
-                    throw new IllegalStateException("A vertex has a predecessor " +
-                            "edge not ending on itself.");
-                }
-                // TODO: Add the edge geometry.
-                output.addRow(null, e.getID(), newID++, sourceID, destinationID, graph.getEdgeWeight(e));
-            }
-            predecessorEdges = nextPredecessorEdges;
+        final Set<Edge> predEdges = dest.getPredecessorEdges();
+        // The only vertex with no predecessors is the source vertex, so we can
+        // start renumbering here.
+        if (predEdges.isEmpty()) {
+            localID = 0;
+            globalID++;
         }
-        return output;
+        // Recursively add the predecessor edges.
+        for (Edge e : predEdges) {
+            localID++;
+            final VDijkstra edgeSource = graph.getEdgeSource(e);
+            final VDijkstra edgeDestination = graph.getEdgeTarget(e);
+            // Right order
+            if (edgeDestination.equals(dest)) {
+                output.addRow(null, e.getID(), globalID, localID,
+                        edgeSource.getID(), edgeDestination.getID(), graph.getEdgeWeight(e));
+                addPredEdges(graph, edgeSource, output);
+            } // Wrong order
+            else {
+                output.addRow(null, e.getID(), globalID, localID,
+                        edgeDestination.getID(), edgeSource.getID(), graph.getEdgeWeight(e));
+                addPredEdges(graph, edgeDestination, output);
+            }
+        }
     }
 
     /**
@@ -198,6 +210,7 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
         output.addColumn(GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
         output.addColumn(EDGE_ID, Types.INTEGER, 10, 0);
         output.addColumn(PATH_ID, Types.INTEGER, 10, 0);
+        output.addColumn(PATH_EDGE_ID, Types.INTEGER, 10, 0);
         output.addColumn(SOURCE, Types.INTEGER, 10, 0);
         output.addColumn(DESTINATION, Types.INTEGER, 10, 0);
         output.addColumn(WEIGHT, Types.DOUBLE, 10, 0);

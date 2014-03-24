@@ -72,7 +72,7 @@ public class SpatialFunctionTest {
         connection.close();
     }
 
-    private static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
+    public static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
         assertTrue(Arrays.equals(ValueGeometry.get(expectedWKT).getBytes(), valueWKB));
     }
 
