@@ -19,8 +19,7 @@
  * h2spatial. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * or contact directly: info_at_orbisgis.org
  */
 
 package org.h2gis.network.graph_creator;
