@@ -66,7 +66,11 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
     public static final String ISO_FIELD_NAME = "IDISO";
 
     public ST_TriangleContouring() {
-        addProperty(PROP_REMARKS, "Explode Geometry Collection into multiple geometries");
+        addProperty(PROP_REMARKS, "Split triangle into polygons within the specified range values.\n" +
+                "Iso contouring using Z:\n" +
+                "select * from ST_CONTOURING('input_table', 10, 20,30,40)\n" +
+                "Iso contouring using table columns" +
+                "select * from ST_CONTOURING('input_table', 'm1', 'm2', 'm3', 10, 20,30,40)");
         addProperty(PROP_NOBUFFER, true);
     }
 
