@@ -31,6 +31,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
+import org.h2.value.Value;
+import org.h2.value.ValueString;
 import org.h2gis.h2spatial.internal.function.ExpandTableFunction;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
@@ -44,7 +46,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -87,13 +89,31 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
      * @return Result Set
      * @throws SQLException
      */
-    public static ResultSet triangleContouring(Connection connection, String tableName, Double... isoLvls) throws SQLException {
-        ExplodeResultSet rowSource = new ExplodeResultSet(connection,tableName, Arrays.asList(isoLvls));
+    public static ResultSet triangleContouring(Connection connection, String tableName, Value... varArgs) throws SQLException {
+        if(varArgs.length > 3) {
+            // First ones may be column names
+            if(varArgs[0] instanceof ValueString &&
+                    varArgs[1] instanceof ValueString &&
+                    varArgs[2] instanceof ValueString) {
+                List<Double> isoLvls = new ArrayList<Double>(varArgs.length - 3);
+                for(int idArg = 3; idArg < varArgs.length; idArg++) {
+                    isoLvls.add(varArgs[idArg].getDouble());
+                }
+                triangleContouringField(connection, tableName, varArgs[0].getString(), varArgs[1].getString(),
+                        varArgs[2].getString(), isoLvls);
+            }
+        }
+        List<Double> isoLvls = new ArrayList<Double>(varArgs.length);
+        for(Value value : varArgs) {
+            isoLvls.add(value.getDouble());
+        }
+        ExplodeResultSet rowSource = new ExplodeResultSet(connection,tableName, isoLvls);
         return rowSource.getResultSet();
     }
 
-    public static ResultSet triangleContouring(Connection connection, String tableName, String isoFieldName1, String isoFieldName2,String isoFieldName3, Double... isoLvls) throws SQLException {
-        ExplodeResultSet rowSource = new ExplodeResultSet(connection,tableName,isoFieldName1, isoFieldName2, isoFieldName3, Arrays.asList(isoLvls));
+    public static ResultSet triangleContouringField(Connection connection, String tableName, String isoFieldName1,
+                                                    String isoFieldName2,String isoFieldName3, List<Double> isoLvls) throws SQLException {
+        ExplodeResultSet rowSource = new ExplodeResultSet(connection,tableName,isoFieldName1, isoFieldName2, isoFieldName3, isoLvls);
         return rowSource.getResultSet();
     }
 
