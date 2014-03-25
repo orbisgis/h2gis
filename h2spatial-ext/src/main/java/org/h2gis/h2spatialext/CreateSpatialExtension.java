@@ -50,7 +50,6 @@ import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_LocateAlong;
 import org.h2gis.h2spatialext.function.spatial.create.ST_MakeLine;
-import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_RemoveRepeatedPoints;
 import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircle;
 import org.h2gis.h2spatialext.function.spatial.create.ST_Expand;
