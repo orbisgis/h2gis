@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -39,6 +39,7 @@ import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
+import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_Holes;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiPoint;
@@ -87,6 +88,7 @@ import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.network.graph_creator.ST_Graph;
+import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -100,80 +102,80 @@ public class CreateSpatialExtension {
      * @return instance of all built-ins functions
      */
     public static Function[] getBuiltInsFunctions() {
-        return new Function[]{
-            new ST_3DLength(),
-            new ST_ClosestPoint(),
-            new ST_ClosestCoordinate(),
-            new ST_CompactnessRatio(),
-            new ST_Covers(),
-            new ST_DWithin(),
-            new ST_Extent(),
-            new ST_Explode(),
-            new ST_FurthestCoordinate(),
-            new ST_Holes(),
-            new ST_IsRectangle(),
-            new ST_IsValid(),
-            new ST_LocateAlong(),
-            new ST_MakeEllipse(),
-            new ST_MakeLine(),
-            new ST_MakePoint(),
-            new ST_Rotate(),
-            new ST_Scale(),
-            new ST_ToMultiPoint(),
-            new ST_ToMultiLine(),
-            new ST_ToMultiSegments(),
-            new ST_XMin(),
-            new ST_XMax(),
-            new ST_YMin(),
-            new ST_YMax(),
-            new ST_ZMin(),
-            new ST_ZMax(),
-            new DriverManager(),
-            new SHPRead(),
-            new SHPWrite(),
-            new DBFRead(),
-            new DBFWrite(),
-            new GPXRead(),
-            new ST_Delaunay(),
-            new ST_ConstrainedDelaunay(),
-            new ST_MakeGrid(),
-            new ST_MakeGridPoints(),
-            new ST_TriangleAspect(),
-            new ST_TriangleSlope(),
-            new ST_TriangleDirection(),
-            new ST_TriangleContouring(),
-            new ST_BoundingCircle(),
-            new ST_Densify(),
-            new ST_Expand(),
-            new ST_OctogonalEnvelope(),
-            new ST_MinimumRectangle(),
-            new ST_RemoveRepeatedPoints(),
-            new ST_Extrude(),
-            new ST_RemoveHoles(),
-            new ST_MakeEnvelope(),
-            new ST_Interpolate3DLine(),
-            new ST_Reverse(),
-            new ST_Reverse3DLine(),
-            new ST_Snap(),
-            new ST_Split(),
-            new ST_AddPoint(),
-            new ST_RemovePoint(),
-            new ST_PrecisionReducer(),
-            new ST_Simplify(),
-            new ST_SimplifyPreserveTopology(),
-            new ST_Translate(),
-            new ST_UpdateZ(),
-            new ST_AddZ(),
-            new ST_MultiplyZ(),
-            new ST_ZUpdateExtremities(),
-            new ST_Normalize(),
-            new ST_Polygonize(),
-            // h2network functions
-            new ST_Graph(),
-            new ST_AsGeoJSON(),
-            new GeoJsonRead(),
-            new GeoJsonWrite()
-        };
+        return new Function[] {
+                new DBFRead(),
+                new DBFWrite(),
+                new DriverManager(),
+                new GPXRead(),
+                new GeoJsonRead(),
+                new GeoJsonWrite(),
+                new SHPRead(),
+                new SHPWrite(),
+                new ST_3DLength(),
+                new ST_AddPoint(),
+                new ST_AddZ(),
+                new ST_AsGeoJSON(),
+                new ST_BoundingCircle(),
+                new ST_ClosestCoordinate(),
+                new ST_ClosestPoint(),
+                new ST_CompactnessRatio(),
+                new ST_ConstrainedDelaunay(),
+                new ST_Covers(),
+                new ST_DWithin(),
+                new ST_Delaunay(),
+                new ST_Densify(),
+                new ST_Expand(),
+                new ST_Explode(),
+                new ST_Extent(),
+                new ST_Extrude(),
+                new ST_FurthestCoordinate(),
+                new ST_Holes(),
+                new ST_Interpolate3DLine(),
+                new ST_IsRectangle(),
+                new ST_IsValid(),
+                new ST_LocateAlong(),
+                new ST_MakeEllipse(),
+                new ST_MakeEnvelope(),
+                new ST_MakeGrid(),
+                new ST_MakeGridPoints(),
+                new ST_MakeLine(),
+                new ST_MakePoint(),
+                new ST_MinimumRectangle(),
+                new ST_MultiplyZ(),
+                new ST_Normalize(),
+                new ST_OctogonalEnvelope(),
+                new ST_Polygonize(),
+                new ST_PrecisionReducer(),
+                new ST_RemoveHoles(),
+                new ST_RemovePoint(),
+                new ST_RemoveRepeatedPoints(),
+                new ST_Reverse(),
+                new ST_Reverse3DLine(),
+                new ST_Rotate(),
+                new ST_Scale(),
+                new ST_Simplify(),
+                new ST_SimplifyPreserveTopology(),
+                new ST_Snap(),
+                new ST_Split(),
+                new ST_ToMultiLine(),
+                new ST_ToMultiPoint(),
+                new ST_ToMultiSegments(),
+                new ST_Translate(),
+                new ST_TriangleAspect(),
+                new ST_TriangleDirection(),
+                new ST_TriangleSlope(),
+                new ST_TriangleContouring(),
+                new ST_UpdateZ(),
+                new ST_XMax(),
+                new ST_XMin(),
+                new ST_YMax(),
+                new ST_YMin(),
+                new ST_ZMax(),
+                new ST_ZMin(),
+                new ST_ZUpdateExtremities(),
+                // h2network functions
+                new ST_Graph(),
+                new ST_ShortestPathLength()};
     }
 
     /**

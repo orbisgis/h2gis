@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -19,8 +19,7 @@
  * h2spatial. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * or contact directly: info_at_orbisgis.org
  */
 
 package org.h2gis.network.graph_creator;
@@ -73,11 +72,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static Connection connection;
     private static final GeometryFactory GF = new GeometryFactory();
 
-    public static final String THE_GEOM = "the_geom";
     public static final String NODE_ID = "node_id";
+    private static final int nodeIDIndex = 1;
+    public static final String THE_GEOM = "the_geom";
+    private static final int nodeGeomIndex = 2;
     public static final String EDGE_ID = "edge_id";
     public static final String START_NODE = "start_node";
     public static final String END_NODE = "end_node";
+    private static final int BATCH_MAX_SIZE = 100;
 
     private TableLocation tableName;
     private TableLocation nodesName;
@@ -88,6 +90,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private double tolerance;
     private boolean orientBySlope;
 
+    private int columnCount = 0;
+    private int startNodeIndex = -1;
+    private int endNodeIndex = -1;
+
     public ST_Graph() {
         this(null, null, 0.0, false);
     }
@@ -96,22 +102,24 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Constructor
      *
      * @param connection    Connection
-     * @param tableName     Input table name
+     * @param inputTable    Input table name
      * @param tolerance     Tolerance
      * @param orientBySlope True if edges should be oriented by the z-value of
      *                      their first and last coordinates (decreasing)
      */
     public ST_Graph(Connection connection,
-                    String tableName,
+                    String inputTable,
                     double tolerance,
                     boolean orientBySlope) {
         if (connection != null) {
             this.connection = SFSUtilities.wrapConnection(connection);
         }
-        if (tableName != null) {
-            this.tableName = TableLocation.parse(tableName);
-            this.nodesName = TableLocation.parse(tableName + "_NODES");
-            this.edgesName = TableLocation.parse(tableName + "_EDGES");
+        if (inputTable != null) {
+            this.tableName = TableLocation.parse(inputTable);
+            this.nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
+                    tableName.getTable() + "_NODES");
+            this.edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
+                    tableName.getTable() + "_EDGES");
         }
         this.tolerance = tolerance;
         this.orientBySlope = orientBySlope;
@@ -256,8 +264,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       double tolerance,
                                       boolean orientBySlope) throws SQLException {
         ST_Graph f = new ST_Graph(connection, tableName, tolerance, orientBySlope);
-        f.getSpatialFieldIndex(spatialFieldName);
-        f.setupOutputTables();
+        f.setupTables(spatialFieldName);
         return f.updateTables();
     }
 
@@ -268,50 +275,38 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @param spatialFieldName Spatial field name
      * @throws SQLException
      */
-    private void getSpatialFieldIndex(String spatialFieldName) throws SQLException {
-        // OBTAIN THE SPATIAL FIELD INDEX.
-        ResultSet tableQuery = connection.createStatement().
-                executeQuery("SELECT * FROM " + tableName + " LIMIT 0;");
+    private void setupTables(String spatialFieldName) throws SQLException {
+        // Find the name of the first geometry column if not provided by the user.
+        if (spatialFieldName == null) {
+            List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableName);
+            if (!geomFields.isEmpty()) {
+                spatialFieldName = geomFields.get(0);
+            } else {
+                throw new SQLException("Table " + tableName + " does not contain a geometry field.");
+            }
+        }
+        // Set up tables
+        final Statement st = connection.createStatement();
         try {
-            ResultSetMetaData metaData = tableQuery.getMetaData();
-            int columnCount = metaData.getColumnCount();
-            // Find the name of the first geometry column if not provided by the user.
-            if (spatialFieldName == null) {
-                List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableName);
-                if (!geomFields.isEmpty()) {
-                    spatialFieldName = geomFields.get(0);
-                } else {
-                    throw new SQLException("Table " + tableName + " does not contain a geometry field.");
-                }
-            }
-            // Find the index of the spatial field.
-            for (int i = 1; i <= columnCount; i++) {
-                if (metaData.getColumnName(i).equalsIgnoreCase(spatialFieldName)) {
-                    spatialFieldIndex = i;
-                    break;
-                }
-            }
+            // Recover useful informtation from the input table.
+            final ResultSet inputRS = st.executeQuery("SELECT * FROM " + tableName + " LIMIT 0");
+            spatialFieldIndex = inputRS.findColumn(spatialFieldName);
+            columnCount = inputRS.getMetaData().getColumnCount();
+            startNodeIndex = columnCount + 2;
+            endNodeIndex = columnCount + 3;
+            // Set up the edges table
+            st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + " LIMIT 0");
+            st.execute("ALTER TABLE " + edgesName + " ADD COLUMN " + EDGE_ID + " INT IDENTITY;" +
+                    "ALTER TABLE " + edgesName + " ADD COLUMN " + START_NODE + " INTEGER;" +
+                    "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
+            // Set up the nodes table
+            st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
         } finally {
-            tableQuery.close();
+            st.close();
         }
         if (spatialFieldIndex == null) {
             throw new SQLException("Geometry field " + spatialFieldName + " of table " + tableName + " not found");
         }
-    }
-
-    /**
-     * Create the nodes and edges tables.
-     *
-     * @throws SQLException
-     */
-    private void setupOutputTables() throws SQLException {
-        final Statement st = connection.createStatement();
-        st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
-
-        st.execute("CREATE TABLE " + edgesName + " AS SELECT * FROM " + tableName + ";" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN " + EDGE_ID + " INT IDENTITY;" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN " + START_NODE + " INTEGER;" +
-                "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
     }
 
     /**
@@ -325,45 +320,85 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     private boolean updateTables() throws SQLException {
-        SpatialResultSet nodesTable =
-                connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
-                        executeQuery("SELECT * FROM " + nodesName).
-                        unwrap(SpatialResultSet.class);
-        SpatialResultSet edgesTable =
-                connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_UPDATABLE).
-                        executeQuery("SELECT * FROM " + edgesName).
-                        unwrap(SpatialResultSet.class);
-        try {
-            int nodeID = 0;
-            while (edgesTable.next()) {
-                final Geometry geom = edgesTable.getGeometry(spatialFieldIndex);
-                if (geom != null) {
-                    final int type = SFSUtilities.getGeometryTypeFromGeometry(geom);
-                    if (type != GeometryTypeCodes.LINESTRING
-                            && type != GeometryTypeCodes.MULTILINESTRING) {
-                        throw new SQLException("Only LINESTRINGS and MULTILINESTRINGS are accepted. " +
-                                "Found: " + geom.getGeometryType());
-                    }
-                    final Coordinate[] coordinates = geom.getCoordinates();
+        connection.setAutoCommit(false);
 
-                    final Coordinate firstCoord = coordinates[0];
-                    final Coordinate lastCoord = coordinates[coordinates.length - 1];
-                    final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z) ? true : false;
-
-                    nodeID = insertNode(nodesTable, edgesTable, nodeID, firstCoord, switchCoords ? END_NODE : START_NODE);
-                    nodeID = insertNode(nodesTable, edgesTable, nodeID, lastCoord, switchCoords ? START_NODE : END_NODE);
-                    edgesTable.updateRow();
-                }
-            }
-        } catch (SQLException e) {
-            final Statement statement = connection.createStatement();
-            statement.execute("DROP TABLE " + nodesName);
-            statement.execute("DROP TABLE " + edgesName);
-            return false;
-        } finally {
-            nodesTable.close();
-            edgesTable.close();
+        StringBuilder sb = new StringBuilder();
+        sb.append("INSERT INTO " + edgesName + " VALUES(");
+        for (int i = 1; i <= columnCount; i++) {
+            sb.append("?, ");
         }
+        sb.append("DEFAULT, ?, ?)");
+        final PreparedStatement edgeSt = connection.prepareStatement(sb.toString());
+
+        String nodeSQL = "INSERT INTO " + nodesName + " VALUES(?, ?)";
+        final PreparedStatement nodeSt = connection.prepareStatement(nodeSQL);
+
+        final Statement inputSt = connection.createStatement();
+
+        try {
+            SpatialResultSet inputTable = inputSt.
+                            executeQuery("SELECT * FROM " + tableName).
+                            unwrap(SpatialResultSet.class);
+            try {
+                int nodeID = 0;
+                int batchSize = 0;
+                while (inputTable.next()) {
+                    final Geometry geom = inputTable.getGeometry(spatialFieldIndex);
+                    if (geom != null) {
+                        final int type = SFSUtilities.getGeometryTypeFromGeometry(geom);
+                        if (type != GeometryTypeCodes.LINESTRING
+                                && type != GeometryTypeCodes.MULTILINESTRING) {
+                            throw new SQLException("Only LINESTRINGS and MULTILINESTRINGS are accepted. " +
+                                    "Found: " + geom.getGeometryType());
+                        }
+                        final Coordinate[] coordinates = geom.getCoordinates();
+
+                        final Coordinate firstCoord = coordinates[0];
+                        final Coordinate lastCoord = coordinates[coordinates.length - 1];
+                        final boolean switchCoords = (orientBySlope && firstCoord.z < lastCoord.z) ? true : false;
+
+                        // Copy over original data
+                        for (int i = 1; i <= columnCount; i++) {
+                            edgeSt.setObject(i, inputTable.getObject(i));
+                        }
+                        nodeID = insertNode(nodeSt, edgeSt, nodeID, firstCoord, switchCoords ? endNodeIndex : startNodeIndex);
+                        nodeID = insertNode(nodeSt, edgeSt, nodeID, lastCoord, switchCoords ? startNodeIndex : endNodeIndex);
+                        edgeSt.addBatch();
+
+                        // Execute a batch if needed.
+                        batchSize++;
+                        if (batchSize >= BATCH_MAX_SIZE) {
+                            nodeSt.executeBatch();
+                            nodeSt.clearBatch();
+                            edgeSt.executeBatch();
+                            edgeSt.clearBatch();
+                            batchSize = 0;
+                        }
+                    }
+                }
+                if (batchSize > 0) {
+                    nodeSt.executeBatch();
+                    edgeSt.executeBatch();
+                }
+                connection.commit();
+            } catch (SQLException e) {
+                final Statement statement = connection.createStatement();
+                try {
+                    statement.execute("DROP TABLE " + nodesName);
+                    statement.execute("DROP TABLE " + edgesName);
+                    return false;
+                } finally {
+                    statement.close();
+                }
+            } finally {
+                inputTable.close();
+            }
+        } finally {
+            nodeSt.close();
+            edgeSt.close();
+            inputSt.close();
+        }
+        connection.setAutoCommit(true);
         return true;
     }
 
@@ -371,32 +406,34 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Insert the node in the nodes table if it is a new node, and update the
      * edges table appropriately.
      *
-     * @param nodesTable     Nodes table
-     * @param edgesTable     Edges table
+     *
+     * @param nodeSt         Nodes statement
+     * @param edgeSt         Edges statement
      * @param nodeID         Current node ID
      * @param coord          Current coordinate
-     * @param edgeColumnName Name of column to update in edges table
+     * @param edgeColIndex   Index of column to update in edges table
      * @return Node ID
      * @throws SQLException
      */
-    private int insertNode(SpatialResultSet nodesTable,
-                                  SpatialResultSet edgesTable,
-                                  int nodeID,
-                                  Coordinate coord,
-                                  String edgeColumnName) throws SQLException {
+    private int insertNode(PreparedStatement nodeSt,
+                           PreparedStatement edgeSt,
+                           int nodeID,
+                           Coordinate coord,
+                           int edgeColIndex) throws SQLException {
         Envelope envelope = new Envelope(coord);
         envelope.expandBy(tolerance);
-
+        // Because of the DEFAULT field, there is one less parameter
+        // in the prepared statement.
+        final int adjustedIndex = edgeColIndex - 1;
         final Node nodeToSnapTo = findNodeToSnapTo(coord, envelope);
         if (nodeToSnapTo != null) {
-            edgesTable.updateInt(edgeColumnName, nodeToSnapTo.getId());
+            edgeSt.setInt(adjustedIndex, nodeToSnapTo.getId());
         } else {
-            nodesTable.moveToInsertRow();
-            nodesTable.updateInt(NODE_ID, ++nodeID);
-            nodesTable.updateGeometry(THE_GEOM, GF.createPoint(coord));
-            nodesTable.insertRow();
+            nodeSt.setInt(nodeIDIndex, ++nodeID);
+            nodeSt.setObject(nodeGeomIndex, GF.createPoint(coord));
+            nodeSt.addBatch();
             quadtree.insert(envelope, new Node(nodeID, coord));
-            edgesTable.updateInt(edgeColumnName, nodeID);
+            edgeSt.setInt(adjustedIndex, nodeID);
         }
         return nodeID;
     }
