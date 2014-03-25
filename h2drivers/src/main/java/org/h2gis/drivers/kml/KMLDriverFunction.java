@@ -70,8 +70,7 @@ public class KMLDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        KMLReadDriver kMLReadDriver = new KMLReadDriver(connection, tableReference, fileName);
-        kMLReadDriver.read(progress);
+       throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

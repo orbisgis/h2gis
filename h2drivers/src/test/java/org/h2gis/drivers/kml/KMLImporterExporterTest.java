@@ -53,7 +53,6 @@ public class KMLImporterExporterTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new KMLWrite(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new KMLRead(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsKml(), "");
     }
 
@@ -63,7 +62,7 @@ public class KMLImporterExporterTest {
     }
 
     @Test
-    public void exportImportKMLPoints() throws SQLException {
+    public void exportKMLPoints() throws SQLException {
         Statement stat = connection.createStatement();
         File kmlFile = new File("target/kml_points.kml");
         stat.execute("DROP TABLE IF EXISTS KML_POINTS");
@@ -73,12 +72,11 @@ public class KMLImporterExporterTest {
         // Create a KML file
         stat.execute("CALL KMLWrite('target/kml_points.kml', 'KML_POINTS')");
         assertTrue(kmlFile.exists());
-        stat.execute("CALL KMLRead('target/kml_points.kml', 'KML_POINTS_READ')");
         stat.close();
     }
 
     @Test
-    public void exportImportKMLLineString() throws SQLException {
+    public void exportKMLLineString() throws SQLException {
         Statement stat = connection.createStatement();
         File kmlFile = new File("target/kml_lineString.kml");
         stat.execute("DROP TABLE IF EXISTS KML_LINESTRING");
@@ -87,11 +85,7 @@ public class KMLImporterExporterTest {
         stat.execute("insert into KML_LINESTRING values(2, ST_Geomfromtext('LINESTRING (1.06 47.59,1.19 46.58)', 4326))");
         // Create a KML file
         stat.execute("CALL KMLWrite('target/kml_lineString.kml', 'KML_LINESTRING')");
-        assertTrue(kmlFile.exists());
-        //Read a KML file
-        stat.execute("CALL KMLRead('target/kml_lineString.kml', 'TABLE_READ');");
-        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_READ_KML_LINESTRING;");
-        res.next();
+        assertTrue(kmlFile.exists());        
         stat.close();
     }
 
@@ -110,7 +104,7 @@ public class KMLImporterExporterTest {
     }
 
     @Test
-    public void testCreateKMLPoint() throws Exception {
+    public void createKMLPoint() throws Exception {
         Geometry geom = WKT_READER.read("POINT(1 2)");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
@@ -118,7 +112,7 @@ public class KMLImporterExporterTest {
     }
 
     @Test
-    public void testCreateKMLLineString() throws Exception {
+    public void createKMLLineString() throws Exception {
         Geometry geom = WKT_READER.read("LINESTRING(1 1, 2 2, 3 3)");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
@@ -126,7 +120,7 @@ public class KMLImporterExporterTest {
     }
 
     @Test
-    public void testCreateKMLPolygon() throws Exception {
+    public void createKMLPolygon() throws Exception {
         Geometry geom = WKT_READER.read("POLYGON ((140 370, 60 150, 220 120, 310 180, 372 355, 240 260, 140 370))");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
@@ -136,7 +130,7 @@ public class KMLImporterExporterTest {
     }
 
     @Test
-    public void testCreateKMLPolygonWithHoles() throws Exception {
+    public void createKMLPolygonWithHoles() throws Exception {
         Geometry geom = WKT_READER.read("POLYGON ((100 360, 320 360, 320 150, 100 150, 100 360), \n"
                 + "  (146 326, 198 326, 198 275, 146 275, 146 326), \n"
                 + "  (230 240, 270 240, 270 190, 230 190, 230 240))");
@@ -152,7 +146,7 @@ public class KMLImporterExporterTest {
     }
 
     @Test
-    public void testCreateKMLMultiGeometry() throws Exception {
+    public void createKMLMultiGeometry() throws Exception {
         Geometry geom = WKT_READER.read("GEOMETRYCOLLECTION (POLYGON ((100 360, 320 360, "
                 + "320 150, 100 150, 100 360), \n"
                 + "  (146 326, 198 326, 198 275, 146 275, 146 326), \n"

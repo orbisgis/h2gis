@@ -29,8 +29,12 @@ public class ST_AsKml extends DeterministicScalarFunction {
 
     public ST_AsKml() {
         addProperty(PROP_REMARKS, "Return the geometry as a Keyhole Markup Language (KML) element.\n"
-                + "Note this function supports two arguments : extrude and altitude mode.\n"
-                + "");
+                + "Note this function supports two arguments : extrude (boolean) and altitude mode (integer).\n"
+                + "Available extrude values are true, false or none.\n"
+                + "Supported altitude mode :\n"
+                + "For KML profil : CLAMPTOGROUND = 1; RELATIVETOGROUND = 2; ABSOLUTE = 4;\n"
+                + "For GX profil : CLAMPTOSEAFLOOR = 8; RELATIVETOSEAFLOOR = 16; \n"
+                + " No altitude : NONE = 0;");
     }
 
     @Override
@@ -55,18 +59,16 @@ public class ST_AsKml extends DeterministicScalarFunction {
      * Generates a KML geometry. Specifies the extrude and altitudeMode.
      *
      * Available extrude values are true, false or none.
-     * 
+     *
      * Supported altitude mode :
-     * 
+     *
      * For KML profil
-     * 
+     *
      * CLAMPTOGROUND = 1; RELATIVETOGROUND = 2; ABSOLUTE = 4;
      *
-     * For GX profil
-     * CLAMPTOSEAFLOOR = 8; RELATIVETOSEAFLOOR = 16; 
-     * 
-     * No altitude :
-     * NONE = 0;
+     * For GX profil CLAMPTOSEAFLOOR = 8; RELATIVETOSEAFLOOR = 16;
+     *
+     * No altitude : NONE = 0;
      *
      * @param geometry
      * @param altitudeModeEnum
