@@ -25,18 +25,18 @@
 
 package org.h2gis.network.graph_creator;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.Set;
 
 /**
@@ -81,6 +81,9 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
     private int globalID = 1;
     private int localID = 0;
 
+    private static Connection connection;
+    private TableLocation tableName;
+
     private static final String ARG_ERROR  = "Unrecognized argument: ";
     public static final String REMARKS =
             "ST_ShortestPath calculates the shortest path(s) between " +
@@ -103,6 +106,17 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
             "</ul> ";
 
     public ST_ShortestPath() {
+        this(null, null);
+    }
+
+    public ST_ShortestPath(Connection connection,
+                           String inputTable) {
+        if (connection != null) {
+            this.connection = SFSUtilities.wrapConnection(connection);
+        }
+        if (inputTable != null) {
+            this.tableName = TableLocation.parse(inputTable);
+        }
         addProperty(PROP_REMARKS, REMARKS);
     }
 
@@ -163,14 +177,33 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
         final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         final VDijkstra vDestination = graph.getVertex(destination);
         dijkstra.oneToOne(graph.getVertex(source), vDestination);
+
+        // Create index on table if it doesn't already exist.
+        final Statement st = connection.createStatement();
+        try {
+            st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + TableLocation.parse(inputTable)
+                    + "(" + ST_Graph.EDGE_ID + ")");
+        } finally {
+            st.close();
+        }
+
         // Record the results.
-        ST_ShortestPath f = new ST_ShortestPath();
+        ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
         final SimpleResultSet output = prepareResultSet();
-        f.addPredEdges(graph, vDestination, output);
+
+        final PreparedStatement ps = connection.prepareStatement(
+                "SELECT * FROM " + f.tableName + " WHERE " + ST_Graph.EDGE_ID + "=?");
+
+        try {
+            f.addPredEdges(graph, vDestination, output, ps);
+        } finally {
+            ps.close();
+        }
         return output;
     }
 
-    private void addPredEdges(KeyedGraph<VDijkstra, Edge> graph, VDijkstra dest, SimpleResultSet output) {
+    private void addPredEdges(KeyedGraph<VDijkstra, Edge> graph, VDijkstra dest, SimpleResultSet output,
+                              PreparedStatement ps) throws SQLException {
         // Rebuild the shortest path(s). (Yes, there could be more than
         // one if they have the same distance!)
         final Set<Edge> predEdges = dest.getPredecessorEdges();
@@ -187,16 +220,32 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
             final VDijkstra edgeDestination = graph.getEdgeTarget(e);
             // Right order
             if (edgeDestination.equals(dest)) {
-                output.addRow(null, e.getID(), globalID, localID,
+                output.addRow(getEdgeGeometry(ps, e.getID()), e.getID(), globalID, localID,
                         edgeSource.getID(), edgeDestination.getID(), graph.getEdgeWeight(e));
-                addPredEdges(graph, edgeSource, output);
+                addPredEdges(graph, edgeSource, output, ps);
             } // Wrong order
             else {
-                output.addRow(null, e.getID(), globalID, localID,
+                output.addRow(getEdgeGeometry(ps, e.getID()), e.getID(), globalID, localID,
                         edgeDestination.getID(), edgeSource.getID(), graph.getEdgeWeight(e));
-                addPredEdges(graph, edgeDestination, output);
+                addPredEdges(graph, edgeDestination, output, ps);
             }
         }
+    }
+
+    private Geometry getEdgeGeometry(PreparedStatement ps, int edgeID) throws SQLException {
+        final Geometry geom;
+        ps.setInt(1, Math.abs(edgeID));
+        ResultSet edgesTable = ps.executeQuery();
+        try {
+            edgesTable.next();
+            // TODO: Recover the spatial field index properly.
+            geom = (Geometry) edgesTable.getObject(1);
+            // Should contain a unique result.
+            assert !edgesTable.next();
+        } finally {
+            edgesTable.close();
+        }
+        return geom;
     }
 
     /**

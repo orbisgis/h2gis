@@ -26,6 +26,7 @@ package org.h2gis.network.graph_creator;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.network.SpatialFunctionTest;
 import org.junit.*;
 
 import java.sql.Connection;
@@ -85,10 +86,10 @@ public class ST_ShortestPathTest {
             try {
                 oneToOne(DO, st, 1, 3,
                         new PathEdge[]{
-                                new PathEdge(null, 6, 1, 1, 4, 3, 1.0),
-                                new PathEdge(null, 5, 1, 2, 1, 4, 1.0),
-                                new PathEdge(null, 9, 2, 1, 5, 3, 1.0),
-                                new PathEdge(null, -10, 2, 2, 1, 5, 1.0)
+                                new PathEdge("LINESTRING(1 0, 2 2)", 6, 1, 1, 4, 3, 1.0),
+                                new PathEdge("LINESTRING(0 1, 1 0)", 5, 1, 2, 1, 4, 1.0),
+                                new PathEdge("LINESTRING(2 0, 2 2)", 9, 2, 1, 5, 3, 1.0),
+                                new PathEdge("LINESTRING(2 0, 0 1)", -10, 2, 2, 1, 5, 1.0)
                         }
                 );
                 succeeded = true;
@@ -100,13 +101,13 @@ public class ST_ShortestPathTest {
     private ResultSet oneToOne(String orientation, String weight, Statement st,
                                int source, int destination, PathEdge[] pathEdges) throws SQLException {
         ResultSet rs = st.executeQuery(
-                "SELECT * FROM ST_ShortestPath('cormen_edges', "
+                "SELECT * FROM ST_ShortestPath('CORMEN_EDGES', "
                         + orientation + ((weight != null) ? ", " + weight : "")
                         + ", " + source + ", " + destination + ")");
         for (int i = 0; i < pathEdges.length; i++) {
             assertTrue(rs.next());
             PathEdge e = pathEdges[i];
-//            SpatialFunctionTest.assertGeometryEquals(e.getGeom(), rs.getBytes(ST_ShortestPath.GEOM_INDEX));
+            SpatialFunctionTest.assertGeometryEquals(e.getGeom(), rs.getBytes(ST_ShortestPath.GEOM_INDEX));
             assertEquals(e.getEdgeID(), rs.getInt(ST_ShortestPath.EDGE_ID_INDEX));
             assertEquals(e.getPathID(), rs.getInt(ST_ShortestPath.PATH_ID_INDEX));
             assertEquals(e.getPathedgeID(), rs.getInt(ST_ShortestPath.PATH_EDGE_ID_INDEX));
