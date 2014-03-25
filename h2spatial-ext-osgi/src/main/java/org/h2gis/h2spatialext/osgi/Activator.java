@@ -1,6 +1,7 @@
 package org.h2gis.h2spatialext.osgi;
 
 import org.h2gis.drivers.dbf.DBFDriverFunction;
+import org.h2gis.drivers.geojson.GeoJsonDriverFunction;
 import org.h2gis.drivers.gpx.GPXDriverFunction;
 import org.h2gis.drivers.kml.KMLDriverFunction;
 import org.h2gis.drivers.shp.SHPDriverFunction;
@@ -34,7 +35,7 @@ public class Activator implements BundleActivator {
                 bc.registerService(DriverFunction.class, new DBFDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new SHPDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new GPXDriverFunction(), null);
-                bc.registerService(DriverFunction.class, new KMLDriverFunction(), null);
+                bc.registerService(DriverFunction.class, new GeoJsonDriverFunction(), null);
         }
 
         /**

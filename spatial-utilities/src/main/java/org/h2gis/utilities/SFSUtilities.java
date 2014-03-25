@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -88,9 +88,14 @@ public class SFSUtilities {
             fieldName = geometryFields.get(0);
         }
         ResultSet geomResultSet = getGeometryColumnsView(connection,location.getCatalog(),location.getSchema(),location.getTable());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         while(geomResultSet.next()) {
             if(fieldName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(fieldName)) {
-                return geomResultSet.getInt("GEOMETRY_TYPE");
+                if(isH2) {
+                    return geomResultSet.getInt("GEOMETRY_TYPE");
+                } else {
+                    return GEOM_TYPE_TO_SFS_CODE.get(geomResultSet.getString("type").toLowerCase());
+                }
             }
         }
         throw new SQLException("Field not found "+fieldName);
@@ -137,16 +142,6 @@ public class SFSUtilities {
     }
 
     /**
-     * Convert catalog.schema.table, schema.table or table into TableLocation instance.
-     * Not specified schema or catalog are converted into an empty string.
-     * @param concatenatedTableLocation Table location
-     * @return Java beans for table location
-     */
-    public static TableLocation splitCatalogSchemaTableName(String concatenatedTableLocation) {
-        return TableLocation.parse(concatenatedTableLocation);
-    }
-
-    /**
      * Merge the bounding box of all geometries inside the provided table.
      * @param connection Active connection (not closed by this function)
      * @param location Location of the table
@@ -181,30 +176,73 @@ public class SFSUtilities {
         return getGeometryFields(connection, location.getCatalog(), location.getSchema(), location.getTable());
     }
 
-    private static ResultSet getGeometryColumnsView(Connection connection,String catalog, String schema, String table) throws SQLException {
+    /**
+     * For table containing catalog, schema and table name, this function create a prepared statement with a filter
+     * on this combination.
+     * @param connection Active connection
+     * @param catalog Table catalog, may be empty
+     * @param schema Table schema, may be empty
+     * @param table Table name
+     * @param informationSchemaTable Information table location
+     * @param endQuery Additional where statement
+     * @param catalog_field Catalog field name
+     * @param schema_field Schema field name
+     * @param table_field Table field name
+     * @return Prepared statement
+     * @throws SQLException
+     */
+    public static PreparedStatement prepareInformationSchemaStatement(Connection connection,String catalog, String schema, String table, String informationSchemaTable, String endQuery,String catalog_field, String schema_field, String table_field) throws SQLException {
         Integer catalogIndex = null;
         Integer schemaIndex = null;
         Integer tableIndex = 1;
-        StringBuilder sb = new StringBuilder("SELECT * from geometry_columns where ");
+        StringBuilder sb = new StringBuilder("SELECT * from "+informationSchemaTable+" where ");
         if(!catalog.isEmpty()) {
-            sb.append("UPPER(f_table_catalog) = ? AND ");
+            sb.append("UPPER(");
+            sb.append(catalog_field);
+            sb.append(") = ? AND ");
             catalogIndex = 1;
             tableIndex++;
         }
         if(!schema.isEmpty()) {
-            sb.append("UPPER(f_table_schema) = ? AND ");
+            sb.append("UPPER(");
+            sb.append(schema_field);
+            sb.append(") = ? AND ");
             schemaIndex = tableIndex;
             tableIndex++;
         }
-        sb.append("UPPER(f_table_name) = ? ");
-        PreparedStatement geomStatement = connection.prepareStatement(sb.toString());
+        sb.append("UPPER(");
+        sb.append(table_field);
+        sb.append(") = ? ");
+        sb.append(endQuery);
+        PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
         if(catalogIndex!=null) {
-            geomStatement.setString(catalogIndex,catalog.toUpperCase());
+            preparedStatement.setString(catalogIndex, catalog.toUpperCase());
         }
         if(schemaIndex!=null) {
-            geomStatement.setString(schemaIndex,schema.toUpperCase());
+            preparedStatement.setString(schemaIndex, schema.toUpperCase());
         }
-        geomStatement.setString(tableIndex,table.toUpperCase());
+        preparedStatement.setString(tableIndex, table.toUpperCase());
+        return preparedStatement;
+    }
+
+    /**
+     * For table containing catalog, schema and table name, this function create a prepared statement with a filter on
+     * this combination. Use "f_table_catalog","f_table_schema","f_table_name" as field names.
+     * @param connection Active connection
+     * @param catalog Table catalog, may be empty
+     * @param schema Table schema, may be empty
+     * @param table Table name
+     * @param informationSchemaTable Information table location
+     * @param endQuery Additional where statement
+     * @return Prepared statement
+     * @throws SQLException
+     */
+    public static PreparedStatement prepareInformationSchemaStatement(Connection connection,String catalog, String schema, String table, String informationSchemaTable, String endQuery) throws SQLException {
+        return prepareInformationSchemaStatement(connection,catalog, schema, table, informationSchemaTable, endQuery,"f_table_catalog","f_table_schema","f_table_name");
+    }
+
+    private static ResultSet getGeometryColumnsView(Connection connection,String catalog, String schema, String table) throws SQLException {
+        PreparedStatement geomStatement = prepareInformationSchemaStatement(connection,catalog, schema, table, "geometry_columns", "");
         return geomStatement.executeQuery();
     }
     /**

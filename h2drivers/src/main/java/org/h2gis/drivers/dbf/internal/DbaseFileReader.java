@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -103,12 +103,12 @@ public class DbaseFileReader {
          * @throws java.io.IOException
          *             If an error occurs while initializing.
          */
-        public DbaseFileReader(FileChannel channel)
+        public DbaseFileReader(FileChannel channel,String forceEncoding)
                 throws IOException {
                 this.channel = channel;
 
                 header = new DbaseFileHeader();
-                header.readHeader(channel);
+                header.readHeader(channel, forceEncoding);
 
                 init();
         }
@@ -278,19 +278,23 @@ public class DbaseFileReader {
                                                 try {
                                                         String tempString = charBuffer.subSequence(fieldOffset,
                                                                 fieldOffset + 4).toString();
-                                                        int tempYear = Integer.parseInt(tempString);
-                                                        tempString = charBuffer.subSequence(fieldOffset + 4,
-                                                                fieldOffset + 6).toString();
-                                                        int tempMonth = Integer.parseInt(tempString) - 1;
-                                                        tempString = charBuffer.subSequence(fieldOffset + 6,
-                                                                fieldOffset + 8).toString();
-                                                        int tempDay = Integer.parseInt(tempString);
-                                                        Calendar cal = Calendar.getInstance();
-                                                        cal.clear();
-                                                        cal.set(Calendar.YEAR, tempYear);
-                                                        cal.set(Calendar.MONTH, tempMonth);
-                                                        cal.set(Calendar.DAY_OF_MONTH, tempDay);
-                                                        object = cal.getTime();
+                                                        if(!tempString.trim().isEmpty()) {
+                                                            int tempYear = Integer.parseInt(tempString);
+                                                            tempString = charBuffer.subSequence(fieldOffset + 4,
+                                                                    fieldOffset + 6).toString();
+                                                            int tempMonth = Integer.parseInt(tempString) - 1;
+                                                            tempString = charBuffer.subSequence(fieldOffset + 6,
+                                                                    fieldOffset + 8).toString();
+                                                            int tempDay = Integer.parseInt(tempString);
+                                                            Calendar cal = Calendar.getInstance();
+                                                            cal.clear();
+                                                            cal.set(Calendar.YEAR, tempYear);
+                                                            cal.set(Calendar.MONTH, tempMonth);
+                                                            cal.set(Calendar.DAY_OF_MONTH, tempDay);
+                                                            object = cal.getTime();
+                                                        } else {
+                                                            object = null;
+                                                        }
                                                 } catch (NumberFormatException nfe) {
                                                         // todo: use progresslistener, this isn't a grave error.
                                                         LOG.warn("There was an error parsing a date. Ignoring it.", nfe);

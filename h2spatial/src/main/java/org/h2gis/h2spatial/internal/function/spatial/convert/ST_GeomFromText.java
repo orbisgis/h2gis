@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -35,7 +35,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Convert a Well Known Text geometry string into a geometry instance.
+ * Convert a Well Known Text String into a Geometry instance.
  * TODO Read SRID in table constraint
  * @author Nicolas Fortin
  */

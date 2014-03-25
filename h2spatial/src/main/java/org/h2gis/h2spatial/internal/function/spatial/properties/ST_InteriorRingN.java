@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -26,23 +26,28 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+
 import java.sql.SQLException;
 
 /**
- * Returns a LinearRing instance or Null if parameter is not a Geometry.
+ * Returns a LinearRing instance or Null if parameter is not a Polygon. {@link org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumInteriorRings}
+ *
  * @author Nicolas Fortin
  */
 public class ST_InteriorRingN extends DeterministicScalarFunction {
-    private static final String OUT_OF_BOUNDS_ERR_MESSAGE = "ST_InteriorRingN index > ST_NumInteriorRings or index <= 0, Ring index must be in the range [1-NbRings]";
+    private static final String OUT_OF_BOUNDS_ERR_MESSAGE =
+            "Interior ring index out of range. Must be between 1 and ST_NumInteriorRings.";
 
     /**
      * Default constructor
      */
     public ST_InteriorRingN() {
-        addProperty(PROP_REMARKS, "Returns a LinearRing instance or Null if parameter is not a Geometry.");
+        addProperty(PROP_REMARKS, "Returns interior ring number n from a Polygon. " +
+                "Use ST_NumInteriorRings to retrieve the total number of interior rings.");
     }
 
     @Override
@@ -51,15 +56,15 @@ public class ST_InteriorRingN extends DeterministicScalarFunction {
     }
 
     /**
-     * @param geometry Instance of Polygon
-     * @param i Index of Interior ring [1-N]
-     * @return LinearRing instance or Null if parameter is not a Geometry.
+     * @param geometry Polygon
+     * @param n        Index of interior ring number n in [1-N]
+     * @return Interior ring number n or NULL if parameter is null.
      */
-    public static Geometry getInteriorRing(Geometry geometry,Integer i) throws SQLException {
-        if(geometry instanceof Polygon) {
+    public static LineString getInteriorRing(Geometry geometry, Integer n) throws SQLException {
+        if (geometry instanceof Polygon) {
             Polygon polygon = (Polygon) geometry;
-            if(i>=1 && i<=polygon.getNumInteriorRing()) {
-                return polygon.getInteriorRingN(i-1);
+            if (n >= 1 && n <= polygon.getNumInteriorRing()) {
+                return polygon.getInteriorRingN(n - 1);
             } else {
                 throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
             }

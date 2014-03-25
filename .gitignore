@@ -2,3 +2,8 @@ target
 **/target
 .idea
 *.iml
+Gemfile
+Gemfile.lock
+site/
+_site/
+*.swp

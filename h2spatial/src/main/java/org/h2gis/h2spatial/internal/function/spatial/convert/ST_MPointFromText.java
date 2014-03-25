@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -26,14 +26,12 @@
 package org.h2gis.h2spatial.internal.function.spatial.convert;
 
 import com.vividsolutions.jts.geom.Geometry;
-
-import org.h2gis.h2spatial.internal.type.SC_MultiPoint;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import java.sql.SQLException;
 
 /**
- * Convert String into a MultiPoint type.
+ * Convert a WKT String into a MULTIPOINT.
  * @author Nicolas Fortin
  */
 public class ST_MPointFromText extends DeterministicScalarFunction {
@@ -42,7 +40,7 @@ public class ST_MPointFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_MPointFromText() {
-        addProperty(PROP_REMARKS, "Convert String into a MultiPoint type.");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a MULTIPOINT");
     }
 
     @Override
@@ -59,7 +57,7 @@ public class ST_MPointFromText extends DeterministicScalarFunction {
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
         if(!geometry.getGeometryType().equalsIgnoreCase("MULTIPOINT")) {
-            throw new SQLException("Provided Well Known Text geometry is not a multi point");
+            throw new SQLException("The provided WKT Geometry is not a MULTIPOINT.");
         }
         return geometry;
     }

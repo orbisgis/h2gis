@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -27,7 +27,7 @@ package org.h2gis.utilities.jts_utils;
 import com.vividsolutions.jts.geom.Coordinate;
 
 /**
- * This utility class provides some useful methods related to JTS {@link Coordinate} objects.
+ * Useful methods for JTS {@link Coordinate}s.
  *
  * @author Erwan Bocher
  */
@@ -73,6 +73,43 @@ public final class CoordinateUtils {
         result[0] = (zmin);
         result[1] = (zmax);
         return result;
+    }
+
+    /**
+     * Interpolates a z value (linearly) between the two coordinates.
+     *
+     * @param firstCoordinate
+     * @param lastCoordinate
+     * @param toBeInterpolated
+     * @return
+     */
+    public static double interpolate(Coordinate firstCoordinate, Coordinate lastCoordinate, Coordinate toBeInterpolated) {
+        if (Double.isNaN(firstCoordinate.z)) {
+            return Double.NaN;
+        }
+        if (Double.isNaN(lastCoordinate.z)) {
+            return Double.NaN;
+        }
+        return firstCoordinate.z + (lastCoordinate.z - firstCoordinate.z) * firstCoordinate.distance(toBeInterpolated)
+                / (firstCoordinate.distance(toBeInterpolated) + toBeInterpolated.distance(lastCoordinate));
+    }
+
+    /**
+     * Checks if a coordinate array contains a specific coordinate.
+     *
+     * The equality is done only in 2D (z values are not checked).
+     *
+     * @param coords
+     * @param coord
+     * @return
+     */
+    public static boolean contains2D(Coordinate[] coords, Coordinate coord) {
+        for (Coordinate coordinate : coords) {
+            if (coordinate.equals2D(coord)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

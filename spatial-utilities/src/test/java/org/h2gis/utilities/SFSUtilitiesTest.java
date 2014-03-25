@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -67,7 +67,27 @@ public class SFSUtilitiesTest {
         assertEquals("mydb",location.getCatalog());
         assertEquals("myschema",location.getSchema());
         assertEquals("mytable.hello",location.getTable());
-        assertEquals("`mydb`.`myschema`.`mytable.hello`", location.toString());
+        assertEquals("\"mydb\".\"myschema\".\"mytable.hello\"", location.toString(true));
+        assertEquals("\"mydb\".\"myschema\".\"mytable.hello\"", location.toString());
+        location = TableLocation.parse("`mydb`.`my schema`.`my table`");
+        assertEquals("mydb",location.getCatalog());
+        assertEquals("my schema",location.getSchema());
+        assertEquals("my table",location.getTable());
+        assertEquals("\"mydb\".\"my schema\".\"my table\"", location.toString());
+        assertEquals("mydb.\"my schema\".\"my table\"", location.toString(false));
+        location = TableLocation.parse(location.toString());
+        assertEquals("mydb",location.getCatalog());
+        assertEquals("my schema",location.getSchema());
+        assertEquals("my table",location.getTable());
+        assertEquals("mydb.\"my schema\".\"my table\"", location.toString(false));
+        assertEquals("\"mydb\".\"my schema\".\"my table\"", location.toString());
+        location = TableLocation.parse("public.MYTABLE");
+        assertEquals("",location.getCatalog());
+        assertEquals("public",location.getSchema());
+        assertEquals("MYTABLE",location.getTable());
+        assertEquals("public.\"MYTABLE\"", location.toString(false));
+        assertEquals("\"public\".MYTABLE", location.toString(true));
+        assertEquals("\"public\".\"MYTABLE\"", location.toString());
     }
 
     @Test

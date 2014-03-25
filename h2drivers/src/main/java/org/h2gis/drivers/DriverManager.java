@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -89,7 +89,9 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 Statement st = connection.createStatement();
-                st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s", TableLocation.parse(tableName),StringUtils.quoteStringSQL(fileName), StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
+                st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
+                        TableLocation.parse(tableName),StringUtils.quoteStringSQL(new File(fileName).toURI().toString()),
+                        StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
                 st.close();
                 return;
             }

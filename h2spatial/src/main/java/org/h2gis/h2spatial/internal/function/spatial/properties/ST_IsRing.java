@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -31,7 +31,9 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Test if the provided geometry is closed and simple.
+ * Return TRUE if the provided geometry is a closed and simple LINESTRING or
+ * MULTILINESTRING; NULL otherwise.
+ *
  * @author Nicolas Fortin
  */
 public class ST_IsRing extends DeterministicScalarFunction {
@@ -40,7 +42,8 @@ public class ST_IsRing extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_IsRing() {
-        addProperty(PROP_REMARKS, "Test if the provided geometry is closed and simple.");
+        addProperty(PROP_REMARKS, "Return TRUE if the provided geometry is a " +
+                "closed and simple LINESTRING or MULTILINESTRING; NULL otherwise.");
     }
 
     @Override
@@ -50,7 +53,7 @@ public class ST_IsRing extends DeterministicScalarFunction {
 
     /**
      * @param geometry Geometry instance
-     * @return True if the provided geometry is ring
+     * @return True if the provided geometry is a ring; null otherwise
      */
     public static Boolean isRing(Geometry geometry) {
         if (geometry instanceof MultiLineString) {

@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -29,9 +29,9 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 /**
- * Default parser. This class parses GPX 1.1 files and saves them in a .gdms
+ * Default parser. This class parses GPX 1.1 files and saves them in a
  * file. It set a contentHandler by default which is able to save general
- * informations about the document. To save specific informations (waypoints,
+ * information about the document. To save specific information (waypoints,
  * routes and tracks) it will call specific classes.
  *
  * @author  Erwan Bocher and Antonin Piasco
@@ -55,10 +55,6 @@ public class GpxParser extends AbstractGpxParserDefault {
     /**
      * Create a new GPX parser and specify what kind of data must be parsed in
      * the GPX file
-     *
-     * @param wpt
-     * @param rte
-     * @param trk
      */
     public GpxParser() {
     }

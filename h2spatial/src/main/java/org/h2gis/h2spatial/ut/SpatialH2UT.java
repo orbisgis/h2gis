@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -43,7 +43,7 @@ import java.util.Properties;
  */
 public class SpatialH2UT {
 
-    private static final String H2_PARAMETERS = ";LOCK_MODE=0;LOG=0"; //;DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
+    private static final String H2_PARAMETERS = ";LOCK_MODE=0;LOG=0;DB_CLOSE_DELAY=5"; //;DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
     //private static final String H2_PARAMETERS = ";DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
     private SpatialH2UT() {
         // utility
@@ -59,11 +59,10 @@ public class SpatialH2UT {
     public static Connection openSpatialDataBase(String dbName) throws SQLException, ClassNotFoundException {
         String dbFilePath = getDataBasePath(dbName);       
         String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
-        Class.forName("org.h2.Driver");
+        org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
-        Connection connection = DriverManager.getConnection(databasePath,
+        return DriverManager.getConnection(databasePath,
                 "sa", "sa");
-        return connection;
     }
     /**
      * Create a spatial database
@@ -126,8 +125,7 @@ public class SpatialH2UT {
      */
     public static Connection createSpatialDataBase(String dbName,boolean initSpatial)throws SQLException, ClassNotFoundException {
         String databasePath = initDBFile(dbName);
-
-        Class.forName("org.h2.Driver");
+        org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
         Connection connection = DriverManager.getConnection(databasePath,
                 "sa", "sa");

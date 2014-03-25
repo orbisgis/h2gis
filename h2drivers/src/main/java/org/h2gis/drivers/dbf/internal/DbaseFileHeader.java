@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -78,6 +78,7 @@ public class DbaseFileHeader {
     /** @see "https://github.com/infused/dbf/blob/master/lib/dbf/encodings.rb" */
     private static Map<Byte,String> CODE_PAGE_ENCODING = new HashMap<Byte, String>();
     static {
+        CODE_PAGE_ENCODING.put((byte) 0x00,"UTF-8");          // UTF-8
         CODE_PAGE_ENCODING.put((byte) 0x01,"cp437");          // U.S. MS–DOS
         CODE_PAGE_ENCODING.put((byte) 0x02,"cp850");          // International MS–DOS
         CODE_PAGE_ENCODING.put((byte) 0x03, DEFAULT_ENCODING);// Windows ANSI
@@ -483,7 +484,10 @@ public class DbaseFileHeader {
          * @throws java.io.IOException
 	 *             If errors occur while reading.
 	 */
-	public void readHeader(FileChannel channel) throws IOException {
+	public void readHeader(FileChannel channel,String forceEncoding) throws IOException {
+        if(forceEncoding != null) {
+            fileEncoding = forceEncoding;
+        }
 		// we'll read in chunks of 1K
 		ReadBufferManager in = new ReadBufferManager(channel);
 		// do this or GO CRAZY
@@ -530,7 +534,7 @@ public class DbaseFileHeader {
         // read Language driver
         byte lngDriver = in.get();
         String encoding = CODE_PAGE_ENCODING.get(lngDriver);
-        if(encoding!=null) {
+        if(encoding!=null && forceEncoding == null) {
             this.fileEncoding = encoding;
         }
         // skip reserved
@@ -548,7 +552,7 @@ public class DbaseFileHeader {
 			// read the field name
 			byte[] buffer = new byte[11];
 			in.get(buffer);
-			String name = new String(buffer);
+			String name = new String(buffer, fileEncoding);
 			int nullPoint = name.indexOf(0);
 			if (nullPoint != -1) {
 				name = name.substring(0, nullPoint);
@@ -615,6 +619,21 @@ public class DbaseFileHeader {
 		recordCnt = inNumRecords;
 	}
 
+    /**
+     * Set file encoding
+     * @param encoding Encoding to set
+     * @return True if the encoding can be set to DBF file
+     */
+    public boolean setEncoding(String encoding) {
+        for(Map.Entry<Byte, String> entry : CODE_PAGE_ENCODING.entrySet()) {
+            if(entry.getValue().equalsIgnoreCase(encoding)) {
+                this.fileEncoding = entry.getValue();
+                return true;
+            }
+        }
+        return false;
+    }
+
     private byte getEncodingByte() {
         for(Map.Entry<Byte, String> entry : CODE_PAGE_ENCODING.entrySet()) {
             if(entry.getValue().equalsIgnoreCase(fileEncoding)) {
@@ -674,9 +693,10 @@ public class DbaseFileHeader {
         for (DbaseField field : fields) {
 
             // write the field name
+            byte[] fieldName = field.fieldName.getBytes(fileEncoding);
             for (int j = 0; j < 11; j++) {
-                if (field.fieldName.length() > j) {
-                    buffer.put((byte) field.fieldName.charAt(j));
+                if (fieldName.length > j) {
+                    buffer.put(fieldName[j]);
                 } else {
                     buffer.put((byte) 0);
                 }

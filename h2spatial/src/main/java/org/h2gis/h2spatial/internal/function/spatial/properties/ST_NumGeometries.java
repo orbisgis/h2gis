@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -48,7 +48,7 @@ public class ST_NumGeometries extends DeterministicScalarFunction {
 
     /**
      * @param geometry Geometry instance or null
-     * @return Number of points or null if Geometry is null.
+     * @return Number of geometries or null if Geometry is null.
      */
     public static Integer getNumGeometries(Geometry geometry) {
         if(geometry==null) {

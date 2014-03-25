@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -28,12 +28,15 @@ package org.h2gis.h2spatial.internal.function.spatial.convert;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
-import org.h2gis.h2spatial.internal.type.SC_LineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.jts_utils.GeometryMetaData;
+
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
- * Convert WKT into a LinearRing
+ * Convert Well Known Binary into a LINESTRING.
  * @author Nicolas Fortin
  */
 public class ST_LineFromWKB extends DeterministicScalarFunction {
@@ -42,12 +45,12 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_LineFromWKB() {
-        addProperty(PROP_REMARKS, "Convert WKT into a LinearRing.");
+        addProperty(PROP_REMARKS, "Convert Well Known Binary into a LINESTRING");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "toPolygon";
+        return "toLineString";
     }
 
     /**
@@ -57,14 +60,14 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
      * @return LineString instance of null if bytes null
      * @throws SQLException WKB Parse error
      */
-    public static Geometry toPolygon(byte[] bytes, int srid) throws SQLException {
+    public static Geometry toLineString(byte[] bytes, int srid) throws SQLException, IOException {
         if(bytes==null) {
             return null;
         }
         WKBReader wkbReader = new WKBReader();
         try {
-            if(!SC_LineString.isLineString(bytes)) {
-                throw new SQLException("Provided WKB is not a LinearString.");
+            if(GeometryMetaData.getMetaDataFromWKB(bytes).geometryType != GeometryTypeCodes.LINESTRING) {
+                throw new SQLException("Provided WKB is not a LINESTRING.");
             }
             Geometry geometry = wkbReader.read(bytes);
             geometry.setSRID(srid);

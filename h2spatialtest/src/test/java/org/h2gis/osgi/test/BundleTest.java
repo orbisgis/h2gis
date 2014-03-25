@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -34,7 +34,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
-import javax.inject.Inject;
 import org.ops4j.pax.exam.junit.PaxExam;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
@@ -43,23 +42,15 @@ import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
+
+import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Properties;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.ops4j.pax.exam.CoreOptions.junitBundles;
-import static org.ops4j.pax.exam.CoreOptions.mavenBundle;
-import static org.ops4j.pax.exam.CoreOptions.options;
-import static org.ops4j.pax.exam.CoreOptions.systemProperty;
+import static org.junit.Assert.*;
+import static org.ops4j.pax.exam.CoreOptions.*;
 
 /**
  * {@see http://felix.apache.org/site/apache-felix-ipojo-junit4osgi-tutorial.html}
@@ -84,12 +75,16 @@ public class BundleTest {
                 mavenBundle("org.orbisgis", "cts"),
                 mavenBundle("org.orbisgis", "jts"),
                 mavenBundle("org.orbisgis", "jdelaunay"),
-                mavenBundle("org.orbisgis", "h2").version("1.3.174"),
+                mavenBundle("com.h2database", "h2").version("1.3.176-SNAPSHOT"),
+                mavenBundle("com.fasterxml.jackson.core", "jackson-core").version("2.3.1"),
                 mavenBundle("org.orbisgis", "h2spatial").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-ext").noStart(),
                 mavenBundle("org.orbisgis", "h2drivers").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-osgi"),
                 mavenBundle("org.orbisgis", "h2spatial-ext-osgi"),
+                mavenBundle("org.orbisgis", "java-network-analyzer").version("0.1.5"),
+                mavenBundle("org.jgrapht", "jgrapht-core").version("0.9.0"),
+                mavenBundle("org.orbisgis", "h2network").noStart(),
                 junitBundles());
     }
     /**

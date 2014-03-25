@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -25,8 +25,6 @@
 
 package org.h2gis.h2spatial.internal.type;
 
-import org.h2gis.h2spatialapi.ScalarFunction;
-
 /**
  * Class helper to define domain. Use defined type
  * @author Nicolas Fortin
@@ -35,15 +33,15 @@ public class DomainInfo {
     /** Type alias name */
     private String domainName;
     /** Constraint function associated with this type */
-    private ScalarFunction domainConstraint;
+    private int geometryTypeCode;
 
     /**
      * @param domainName Type alias name
      * @param domainConstraint Constraint function associated with this type
      */
-    public DomainInfo(String domainName, ScalarFunction domainConstraint) {
+    public DomainInfo(String domainName, int geometryTypeCode) {
         this.domainName = domainName;
-        this.domainConstraint = domainConstraint;
+        this.geometryTypeCode = geometryTypeCode;
     }
 
     /**
@@ -53,7 +51,10 @@ public class DomainInfo {
         return domainName;
     }
 
-    public ScalarFunction getDomainConstraint() {
-        return domainConstraint;
+    /**
+     * @return Return one of {@link }
+     */
+    public int getGeometryTypeCode() {
+        return geometryTypeCode;
     }
 }

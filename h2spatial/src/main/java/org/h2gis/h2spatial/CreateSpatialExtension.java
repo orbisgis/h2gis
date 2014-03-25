@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -24,7 +24,9 @@
  */
 package org.h2gis.h2spatial;
 
-import org.h2.api.AggregateAlias;
+import org.h2.api.Aggregate;
+import org.h2gis.h2spatial.internal.function.HexToVarBinary;
+import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsWKT;
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_SetSRID;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Contains;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Crosses;
@@ -36,9 +38,7 @@ import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Overlaps;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Relate;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Touches;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_Within;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Envelope;
-import org.h2gis.h2spatial.internal.type.SC_MultiPolygon;
-import org.h2gis.h2spatial.internal.function.HexToVarBinary;
+import org.h2gis.h2spatial.internal.function.spatial.properties.*;
 import org.h2gis.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsBinary;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsText;
@@ -57,50 +57,19 @@ import org.h2gis.h2spatial.internal.function.spatial.operators.ST_Difference;
 import org.h2gis.h2spatial.internal.function.spatial.operators.ST_Intersection;
 import org.h2gis.h2spatial.internal.function.spatial.operators.ST_SymDifference;
 import org.h2gis.h2spatial.internal.function.spatial.operators.ST_Union;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ColumnSRID;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Area;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Boundary;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Centroid;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Dimension;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Distance;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_EndPoint;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_ExteriorRing;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_GeometryN;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_GeometryType;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_InteriorRingN;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_IsClosed;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_IsEmpty;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_IsRing;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_IsSimple;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Length;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumGeometries;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumInteriorRing;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumInteriorRings;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumPoints;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_PointN;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_PointOnSurface;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_SRID;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_StartPoint;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_X;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Y;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_Z;
-import org.h2gis.h2spatial.internal.type.DomainInfo;
-import org.h2gis.h2spatial.internal.type.GeometryTypeFromConstraint;
-import org.h2gis.h2spatial.internal.type.SC_GeomCollection;
-import org.h2gis.h2spatial.internal.type.SC_LineString;
-import org.h2gis.h2spatial.internal.type.SC_MultiLineString;
-import org.h2gis.h2spatial.internal.type.SC_MultiPoint;
-import org.h2gis.h2spatial.internal.type.SC_Point;
-import org.h2gis.h2spatial.internal.type.SC_Polygon;
+import org.h2gis.h2spatial.internal.type.*;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialapi.ScalarFunction;
+
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_Transform;
+import org.h2gis.utilities.GeometryTypeCodes;
 
 /**
  * Add spatial features to an H2 database
@@ -123,6 +92,11 @@ public class CreateSpatialExtension {
      */
     public static Function[] getBuiltInsFunctions() {
         return new Function[] {
+                new HexToVarBinary(),
+                new GeometryTypeFromConstraint(),
+                new ColumnSRID(),
+                new GeometryTypeNameFromConstraint(),
+                new DimensionFromConstraint(),
                 new ST_GeomFromText(),
                 new ST_Area(),
                 new ST_AsBinary(),
@@ -133,10 +107,9 @@ public class CreateSpatialExtension {
                 new ST_MLineFromText(),
                 new ST_PolyFromText(),
                 new ST_MPolyFromText(),
-                new HexToVarBinary(),
                 new ST_Dimension(),
-                new GeometryTypeFromConstraint(),
                 new ST_AsText(),
+                new ST_AsWKT(),
                 new ST_PolyFromWKB(),
                 new ST_IsEmpty(),
                 new ST_IsSimple(),
@@ -145,7 +118,6 @@ public class CreateSpatialExtension {
                 new ST_X(),
                 new ST_Y(),
                 new ST_Z(),
-                new ColumnSRID(),
                 new ST_StartPoint(),
                 new ST_EndPoint(),
                 new ST_IsClosed(),
@@ -182,7 +154,9 @@ public class CreateSpatialExtension {
                 new ST_EnvelopesIntersect(),
                 new ST_Accum(),
                 new ST_Transform(),
-                new ST_SetSRID()};
+                new ST_SetSRID(),
+                new ST_CoordDim(),
+                new ST_GeometryTypeCode()};
     }
 
     /**
@@ -190,13 +164,13 @@ public class CreateSpatialExtension {
      */
     public static DomainInfo[] getBuiltInsType() {
         return new DomainInfo[] {
-                new DomainInfo("POINT", new SC_Point()),
-                new DomainInfo("LINESTRING", new SC_LineString()),
-                new DomainInfo("POLYGON", new SC_Polygon()),
-                new DomainInfo("GEOMCOLLECTION", new SC_GeomCollection()),
-                new DomainInfo("MULTIPOINT", new SC_MultiPoint()),
-                new DomainInfo("MULTILINESTRING", new SC_MultiLineString()),
-                new DomainInfo("MULTIPOLYGON", new SC_MultiPolygon())
+                new DomainInfo("POINT", GeometryTypeCodes.POINT),
+                new DomainInfo("LINESTRING", GeometryTypeCodes.LINESTRING),
+                new DomainInfo("POLYGON", GeometryTypeCodes.POLYGON),
+                new DomainInfo("GEOMCOLLECTION", GeometryTypeCodes.GEOMCOLLECTION),
+                new DomainInfo("MULTIPOINT", GeometryTypeCodes.MULTIPOINT),
+                new DomainInfo("MULTILINESTRING", GeometryTypeCodes.MULTILINESTRING),
+                new DomainInfo("MULTIPOLYGON", GeometryTypeCodes.MULTIPOLYGON)
         };
     }
 
@@ -208,8 +182,8 @@ public class CreateSpatialExtension {
      */
     public static void initSpatialExtension(Connection connection, String BundleSymbolicName, String BundleVersion) throws SQLException {
         String packagePrepend = BundleSymbolicName+":"+BundleVersion+":";
-        registerGeometryType(connection,packagePrepend);
         addSpatialFunctions(connection,packagePrepend);
+        registerGeometryType(connection);
         connection.commit();
     }
 
@@ -218,24 +192,21 @@ public class CreateSpatialExtension {
      * @param connection Active H2 connection
      */
     public static void initSpatialExtension(Connection connection) throws SQLException {
-        registerGeometryType(connection,"");
         addSpatialFunctions(connection,"");
+        registerGeometryType(connection);
         registerSpatialTables(connection);
     }
 
     /**
      * Register geometry type in an OSGi environment
      * @param connection Active H2 connection
-     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version:
      * @throws SQLException
      */
-    public static void registerGeometryType(Connection connection,String packagePrepend) throws SQLException {
+    public static void registerGeometryType(Connection connection) throws SQLException {
         Statement st = connection.createStatement();
         for(DomainInfo domainInfo : getBuiltInsType()) {
-            // Do not drop constraint function as some table may use this constraint in CHECK statement
-            registerFunction(st,domainInfo.getDomainConstraint(),packagePrepend,false);
             // Check for byte array first, to not throw an enigmatic error CastException
-            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+" CHECK ("+getAlias(domainInfo.getDomainConstraint())+"(VALUE));");
+            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+"("+domainInfo.getGeometryTypeCode()+") CHECK (ST_GeometryTypeCode(VALUE) = "+domainInfo.getGeometryTypeCode()+");");
         }
     }
 
@@ -247,7 +218,10 @@ public class CreateSpatialExtension {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
         st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
-                "COLUMN_NAME f_geometry_column,1 storage_type,GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS) geometry_type,2 coord_dimension,ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME) srid" +
+                "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) geometry_type," +
+                "_DimensionFromConstraint(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) coord_dimension," +
+                "_ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid," +
+                " _GeometryTypeNameFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) type" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {
@@ -264,12 +238,7 @@ public class CreateSpatialExtension {
         Statement st = connection.createStatement();
         DomainInfo[] domainInfos = getBuiltInsType();
         for(DomainInfo domainInfo : domainInfos) {
-            st.execute("DROP DOMAIN IF EXISTS "+domainInfo.getDomainName());
-        }
-        // Same constraint may be used by multiple domains
-        // Removal must be done in another loop
-        for(DomainInfo domainInfo : domainInfos) {
-            unRegisterFunction(st,domainInfo.getDomainConstraint());
+            st.execute("DROP DOMAIN IF EXISTS " + domainInfo.getDomainName());
         }
     }
 
@@ -329,7 +298,7 @@ public class CreateSpatialExtension {
                 ps.setString(1, functionRemarks);
                 ps.execute();
             }
-        } else if(function instanceof AggregateAlias) {
+        } else if(function instanceof Aggregate) {
                 st.execute("CREATE AGGREGATE IF NOT EXISTS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "\"");
         } else {
                 throw new SQLException("Unsupported function "+functionClass);

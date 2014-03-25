@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -25,51 +25,52 @@
 
 package org.h2gis.drivers.shp;
 
-import org.h2.api.TableEngine;
+import org.h2.command.Parser;
 import org.h2.command.ddl.CreateTableData;
-import org.h2.constant.ErrorCode;
-import org.h2.message.DbException;
-import org.h2.table.TableBase;
-import org.h2.util.StringUtils;
-import org.h2gis.drivers.DummyTable;
+import org.h2.table.Column;
+import org.h2.value.Value;
+import org.h2gis.drivers.dbf.DBFEngine;
+import org.h2gis.drivers.file_table.FileEngine;
 import org.h2gis.drivers.shp.internal.SHPDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.h2gis.drivers.shp.internal.ShapeType;
+import org.h2gis.utilities.GeometryTypeCodes;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * SHP Table factory.
  * @author Nicolas Fortin
  */
-public class SHPEngine implements TableEngine {
-    private Logger LOGGER = LoggerFactory.getLogger(SHPEngine.class);
+public class SHPEngine extends FileEngine<SHPDriver> {
 
-    /**
-     * @param data tableEngineParams must contains file path.
-     * @return A Table instance connected to the provided file path. First column is geometry field.
-     */
     @Override
-    public TableBase createTable(CreateTableData data) {
-        if(data.tableEngineParams.isEmpty()) {
-            throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
+    protected SHPDriver createDriver(File filePath, List<String> args) throws IOException {
+        SHPDriver driver = new SHPDriver();
+        driver.initDriverFromFile(filePath, args.size() > 1 ? args.get(1) : null);
+        return driver;
+    }
+
+    private static int getGeometryTypeCodeFromShapeType(ShapeType shapeType) {
+        if(shapeType.isPointType()) {
+            return GeometryTypeCodes.MULTIPOINT;
+        } else if(shapeType.isLineType()) {
+            return GeometryTypeCodes.MULTILINESTRING;
+        } else {
+            return GeometryTypeCodes.MULTIPOLYGON;
         }
-        File filePath = new File(StringUtils.javaDecode(data.tableEngineParams.get(0)));
-        if(!filePath.exists()) {
-            // Do not throw an exception as it will prevent the user from opening the database
-            LOGGER.error("Shape file not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
-            return new DummyTable(data);
-        }
-        try {
-            SHPDriver driver = new SHPDriver();
-            driver.initDriverFromFile(filePath);
-            SHPTableIndex.feedCreateTableData(driver, data);
-            SHPTable shpTable = new SHPTable(driver, data);
-            shpTable.init(data.session);
-            return shpTable;
-        } catch (IOException ex) {
-            throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
+    }
+
+    @Override
+    protected void feedCreateTableData(SHPDriver driver, CreateTableData data) throws IOException {
+        if(data.columns.isEmpty()) {
+            Column geometryColumn = new Column("THE_GEOM", Value.GEOMETRY);
+            Parser parser = new Parser(data.session);
+            geometryColumn.addCheckConstraint(data.session,
+                    parser.parseExpression("ST_GeometryTypeCode(THE_GEOM) = "+getGeometryTypeCodeFromShapeType(driver.getShapeFileHeader().getShapeType())));
+            data.columns.add(geometryColumn);
+            DBFEngine.feedTableDataFromHeader(driver.getDbaseFileHeader(), data);
         }
     }
 }

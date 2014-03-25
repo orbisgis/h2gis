@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -34,19 +34,23 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Returns the N point of a LINESTRING geometry as a POINT or NULL if the
- * input parameter is not a LINESTRING.
- * As the OGC specs ST_PointN is 1-N based.
+ * Returns the <i>n</i>th point of a LINESTRING or a MULTILINESTRING containing
+ * exactly one LINESTRING; NULL otherwise. As the OGC specifies, ST_PointN is
+ * 1-N based.
+ *
  * @author Nicolas Fortin
  */
 public class ST_PointN extends DeterministicScalarFunction {
-    private static final String OUT_OF_BOUNDS_ERR_MESSAGE = "ST_PointN index > ST_NumPoints or index <= 0, Point index must be in the range [1-NbPoints]";
+    private static final String OUT_OF_BOUNDS_ERR_MESSAGE =
+            "Point index out of range. Must be between 1 and ST_NumPoints.";
 
     /**
      * Default constructor
      */
     public ST_PointN() {
-        addProperty(PROP_REMARKS, "Returns the N point of a LINESTRING geometry as a POINT or NULL if the input parameter is not a LINESTRING.As the OGC specs ST_PointN is 1-N based.");
+        addProperty(PROP_REMARKS, "Returns the <i>n</i>th point of a LINESTRING " +
+                "or a MULTILINESTRING containing exactly one LINESTRING; " +
+                "NULL otherwise. As the OGC specifies, ST_PointN is 1-N based.");
     }
 
     @Override
@@ -55,29 +59,29 @@ public class ST_PointN extends DeterministicScalarFunction {
     }
 
     /**
-     * @param geometry Geometry instance
+     * @param geometry   Geometry instance
      * @param pointIndex Point index [1-NbPoints]
-     * @return Point geometry or null if geometry is null
+     * @return Returns the <i>n</i>th point of a LINESTRING or a
+     * MULTILINESTRING containing exactly one LINESTRING; NULL otherwise. As
+     * the OGC specifies, ST_PointN is 1-N based.
      * @throws SQLException if index is out of bound.
      */
-    public static Geometry getPointN(Geometry geometry,int pointIndex) throws SQLException {
+    public static Geometry getPointN(Geometry geometry, int pointIndex) throws SQLException {
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {
-                LineString line = (LineString) geometry.getGeometryN(0);
-                if(pointIndex<=0 || pointIndex <= line.getNumPoints()) {
-                    return line.getPointN(pointIndex-1);
-                } else {
-                    throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
-                }
+                return getPointNFromLine((LineString) geometry.getGeometryN(0), pointIndex);
             }
         } else if (geometry instanceof LineString) {
-            LineString line = (LineString) geometry;
-            if(pointIndex<=0 || pointIndex <= line.getNumPoints()) {
-                return line.getPointN(pointIndex-1);
-            }else {
-                throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
-            }
+            return getPointNFromLine((LineString) geometry, pointIndex);
         }
         return null;
+    }
+
+    private static Geometry getPointNFromLine(LineString line, int pointIndex) throws SQLException {
+        if (pointIndex <= 0 || pointIndex <= line.getNumPoints()) {
+            return line.getPointN(pointIndex - 1);
+        } else {
+            throw new SQLException(OUT_OF_BOUNDS_ERR_MESSAGE);
+        }
     }
 }

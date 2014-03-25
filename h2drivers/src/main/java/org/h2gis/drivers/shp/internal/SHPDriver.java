@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -26,6 +26,7 @@
 package org.h2gis.drivers.shp.internal;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.h2gis.drivers.FileDriver;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 
@@ -47,7 +48,7 @@ import java.io.IOException;
  *
  * @author Nicolas Fortin
  */
-public class SHPDriver {
+public class SHPDriver implements FileDriver {
     private DBFDriver dbfDriver = new DBFDriver();
     private File shpFile;
     private File shxFile;
@@ -120,7 +121,17 @@ public class SHPDriver {
      * @param shpFile Shape file path.
      * @throws IOException
      */
-    public void initDriverFromFile(File shpFile) throws IOException {             // Read columns from files metadata
+    public void initDriverFromFile(File shpFile) throws IOException {
+        initDriverFromFile(shpFile, null);
+    }
+
+    /**
+     * Init this driver from existing files, then open theses files.
+     * @param shpFile Shape file path.
+     * @param forceEncoding If defined use this encoding instead of the one defined in dbf header.
+     * @throws IOException
+     */
+    public void initDriverFromFile(File shpFile, String forceEncoding) throws IOException {             // Read columns from files metadata
         this.shpFile = shpFile;
         File dbfFile = null;
         // Find appropriate file extension for shx and dbf, maybe SHX or Shx..
@@ -141,7 +152,7 @@ public class SHPDriver {
             }
         }
         if(dbfFile != null) {
-            dbfDriver.initDriverFromFile(dbfFile);
+            dbfDriver.initDriverFromFile(dbfFile, forceEncoding);
         } else {
             throw new IllegalArgumentException("DBF File not found");
         }
@@ -158,9 +169,7 @@ public class SHPDriver {
         return dbfDriver.getDbaseFileHeader();
     }
 
-    /**
-     * @return Row count
-     */
+    @Override
     public long getRowCount() {
         return dbfDriver.getRowCount();
     }
@@ -172,6 +181,7 @@ public class SHPDriver {
         return shapefileReader.getHeader();
     }
 
+    @Override
     public void close() throws IOException {
         dbfDriver.close();
         if(shapefileReader != null) {
@@ -188,11 +198,7 @@ public class SHPDriver {
         return dbfDriver.getFieldCount() + 1;
     }
 
-    /**
-     * @param rowId Row index
-     * @return The row content
-     * @throws IOException
-     */
+    @Override
     public Object[] getRow(long rowId) throws IOException {
         final int fieldCount = getFieldCount();
         Object[] values = new Object[fieldCount];

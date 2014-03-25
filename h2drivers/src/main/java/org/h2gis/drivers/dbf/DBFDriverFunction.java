@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -28,6 +28,7 @@ import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileException;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -48,17 +49,34 @@ import java.sql.Types;
 public class DBFDriverFunction implements DriverFunction {
     public static String DESCRIPTION = "dBase III format";
     private static final int BATCH_MAX_SIZE = 100;
-
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName, progress, null);
+    }
+
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         // Read table content
         Statement st = connection.createStatement();
+        ProgressVisitor lineProgress = null;
+        if(!(progress instanceof EmptyProgressVisitor)) {
+            ResultSet rs = st.executeQuery(String.format("select count(*) from %s", TableLocation.parse(tableReference)));
+            try {
+                if(rs.next()) {
+                    lineProgress = progress.subProcess(rs.getInt(1));
+                }
+            } finally {
+                rs.close();
+            }
+        }
         try {
-            ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableReference));
+            ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference)));
             try {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
+                if(encoding != null) {
+                    header.setEncoding(encoding);
+                }
                 header.setNumRecords(recordCount);
                 DBFDriver dbfDriver = new DBFDriver();
                 dbfDriver.initDriver(fileName, header);
@@ -68,6 +86,9 @@ public class DBFDriverFunction implements DriverFunction {
                         row[columnId] = rs.getObject(columnId + 1);
                     }
                     dbfDriver.insertRow(row);
+                    if(lineProgress != null) {
+                        lineProgress.endStep();
+                    }
                 }
                 dbfDriver.close();
             } finally {
@@ -104,14 +125,26 @@ public class DBFDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress, null);
+    }
+
+    /**
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path to read
+     * @param forceFileEncoding File encoding to use, null will use the provided file encoding in file header.
+     * @throws SQLException Table write error
+     * @throws IOException File read error
+     */
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceFileEncoding) throws SQLException, IOException {
         DBFDriver dbfDriver = new DBFDriver();
-        dbfDriver.initDriverFromFile(fileName);
+        dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
         try {
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
             st.execute(String.format("CREATE TABLE %s (%s)", TableLocation.parse(tableReference),
-                    getSQLColumnTypes(dbfHeader)));
+                    getSQLColumnTypes(dbfHeader, JDBCUtilities.isH2DataBase(connection.getMetaData()))));
             st.close();
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(
@@ -183,13 +216,18 @@ public class DBFDriverFunction implements DriverFunction {
      * @param header DBAse file header
      * @return Array of columns ex: ["id INTEGER", "len DOUBLE"]
      */
-    public static String getSQLColumnTypes(DbaseFileHeader header) throws IOException {
+    public static String getSQLColumnTypes(DbaseFileHeader header, boolean isH2Database) throws IOException {
         StringBuilder stringBuilder = new StringBuilder();
         for(int idColumn = 0; idColumn < header.getNumFields(); idColumn++) {
             if(idColumn > 0) {
                 stringBuilder.append(", ");
             }
-            stringBuilder.append(header.getFieldName(idColumn));
+            String fieldName = header.getFieldName(idColumn);
+            if(isH2Database) {
+                //In h2 all field must be upper case in order to avoid user have to use double quotes
+                fieldName = fieldName.toUpperCase();
+            }
+            stringBuilder.append(TableLocation.quoteIdentifier(fieldName,isH2Database));
             stringBuilder.append(" ");
             switch (header.getFieldType(idColumn)) {
                 // (L)logical (T,t,F,f,Y,y,N,n)
@@ -200,7 +238,7 @@ public class DBFDriverFunction implements DriverFunction {
                 // (C)character (String)
                 case 'c':
                 case 'C':
-                    stringBuilder.append("CHAR(");
+                    stringBuilder.append("VARCHAR(");
                     // Append size
                     int length = header.getFieldLength(idColumn);
                     stringBuilder.append(String.valueOf(length));
@@ -272,6 +310,7 @@ public class DBFDriverFunction implements DriverFunction {
                 return new DBFType('d', 8, 0);
             case Types.DOUBLE:
             case Types.FLOAT:
+            case Types.NUMERIC:
                 return new DBFType('f', Math.min(20, length), Math.min(18,
                         precision));
             case Types.INTEGER:

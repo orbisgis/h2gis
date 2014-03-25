@@ -165,12 +165,15 @@ public class JDBCUtilities {
         ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(), tableLocation.getSchema(),
                 tableLocation.getTable());
         try {
-            if (rs.next()) {
-                columnNamePK = rs.getString("COLUMN_NAME");
-                // Found the column id
-                if (rs.next()) {
-                    // Multi-column PK is not supported
-                    columnNamePK = null;
+            while (rs.next()) {
+                if(tableLocation.getSchema().equals(rs.getString("TABLE_SCHEM"))) {
+                    if(columnNamePK == null) {
+                        columnNamePK = rs.getString("COLUMN_NAME");
+                    } else {
+                        // Multi-column PK is not supported
+                        columnNamePK = null;
+                        break;
+                    }
                 }
             }
         } finally {

@@ -33,7 +33,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.8.2</version>
+            <version>${junit-version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -64,6 +64,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2drivers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2network</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -36,12 +36,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -49,13 +47,15 @@ import static org.junit.Assert.assertTrue;
  */
 public class  DBFEngineTest {
     private static Connection connection;
-    private static final String DB_NAME = "SHPTest";
+    private static final String DB_NAME = "DBFEngineTest";
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DriverManager(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFRead(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFWrite(), "");
     }
 
     @AfterClass
@@ -88,6 +88,7 @@ public class  DBFEngineTest {
     @Test
     public void readDBFDataTest() throws SQLException {
         Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
@@ -96,6 +97,38 @@ public class  DBFEngineTest {
         assertEquals("river",rs.getString("type_axe"));
         rs.close();
         st.execute("drop table dbftable");
+    }
+
+    @Test
+    public void testRowIdHiddenColumn() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
+        // Check random access using hidden column _rowid_
+        PreparedStatement pst = connection.prepareStatement("SELECT * FROM dbftable where _rowid_ = ?");
+        pst.setInt(1, 1);
+        ResultSet rs = pst.executeQuery();
+        try {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("gid"));
+            assertEquals("river",rs.getString("type_axe"));
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT _rowid_ FROM dbftable");
+        try {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt(1));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt(1));
+            assertTrue(rs.next());
+            assertEquals(3, rs.getInt(1));
+        } finally {
+            rs.close();
+        }
+        st.execute("drop table if exists dbftable");
+
     }
 
     @Test
@@ -135,6 +168,7 @@ public class  DBFEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE('" + dstDbf + "', 'DBFTABLE');");
+        st.execute("SHUTDOWN");
         // Close database
         connection.close();
         try {
@@ -156,5 +190,76 @@ public class  DBFEngineTest {
             rs.close();
         }
         st.execute("drop table if exists dbftable");
+    }
+
+    /**
+     * Read a DBF where the encoding is missing in header.
+     * @throws SQLException
+     */
+    @Test
+    public void readDBFRussianEncodingTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists sotchi");
+        st.execute("CALL DBFREAD("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("sotchi.dbf").getPath())+", 'SOTCHI', 'cp1251');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM sotchi");
+        // Check if fields name are OK
+        ResultSetMetaData meta = rs.getMetaData();
+        assertEquals("B_ДНА",meta.getColumnName(4));
+        assertEquals("ИМЕНА_УЧАС",meta.getColumnName(7));
+        assertEquals("ДЛИНА_КАНА",meta.getColumnName(8));
+        assertEquals("ДЛИНА_КАН_",meta.getColumnName(9));
+        assertEquals("ИМЯ_МУООС",meta.getColumnName(10));
+        assertTrue(rs.next());
+        assertEquals("ВП-2", rs.getString("NAMESHEME"));
+        assertEquals("Дубовский канал",rs.getString("NAME10000"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-1", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("drop table sotchi");
+    }
+
+
+    /**
+     * Read a DBF where the encoding is missing in header. Then write it with a good header. Then check the content.
+     * @throws SQLException
+     */
+    @Test
+    public void readDBFRussianWrongEncodingThenWriteThenRead() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists sotchi");
+        st.execute("CALL DBFREAD("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("sotchi.dbf").getPath())+", 'SOTCHI', 'cp1251');");
+        st.execute("CALL DBFWRITE('target/sotchi.dbf', 'SOTCHI', 'cp1251');");
+        st.execute("drop table if exists sotchi");
+        st.execute("CALL FILE_TABLE('target/sotchi.dbf', 'SOTCHI_GOODHEADER');");
+        ResultSet rs = st.executeQuery("SELECT * FROM SOTCHI_GOODHEADER");
+        // Check if fields name are OK
+        ResultSetMetaData meta = rs.getMetaData();
+        assertEquals("B_ДНА",meta.getColumnName(4));
+        assertEquals("ИМЕНА_УЧАС",meta.getColumnName(7));
+        assertEquals("ДЛИНА_КАНА",meta.getColumnName(8));
+        assertEquals("ДЛИНА_КАН_",meta.getColumnName(9));
+        assertEquals("ИМЯ_МУООС",meta.getColumnName(10));
+        assertTrue(rs.next());
+        assertEquals("ВП-2", rs.getString("NAMESHEME"));
+        assertEquals("Дубовский канал",rs.getString("NAME10000"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-1", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("drop table SOTCHI_GOODHEADER");
     }
 }

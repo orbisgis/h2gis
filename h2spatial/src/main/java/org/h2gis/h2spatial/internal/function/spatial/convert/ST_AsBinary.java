@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -33,13 +33,13 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Convert a geometry into binary value.
+ * Convert a geometry into Well Known Binary..
  * @author Nicolas Fortin
  */
 public class ST_AsBinary extends DeterministicScalarFunction {
 
     public ST_AsBinary() {
-        addProperty(PROP_REMARKS, "Convert a geometry into WKB.");
+        addProperty(PROP_REMARKS, "Convert a geometry into Well Known Binary.");
     }
 
     @Override
@@ -48,9 +48,9 @@ public class ST_AsBinary extends DeterministicScalarFunction {
     }
 
     /**
-     * Convert a geometry into binary value.
+     * Convert a geometry into a binary value.
      * @param geometry Geometry instance
-     * @return WKB
+     * @return Well Known Binary
      */
     public static byte[] toBytes(ValueGeometry geometry) {
         if(geometry==null) {

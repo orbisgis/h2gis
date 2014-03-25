@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -25,53 +25,89 @@
 
 package org.h2gis.drivers.dbf;
 
-import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
-import org.h2.constant.ErrorCode;
-import org.h2.message.DbException;
-import org.h2.table.RegularTable;
-import org.h2.table.TableBase;
-import org.h2.util.StringUtils;
-import org.h2gis.drivers.DummyTable;
+import org.h2.table.Column;
+import org.h2.value.Value;
+import org.h2gis.drivers.file_table.FileEngine;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 /**
  * SHP Table factory.
  * @author Nicolas Fortin
  */
-public class DBFEngine implements TableEngine {
-    private Logger LOGGER = LoggerFactory.getLogger(DBFEngine.class);
-    /**
-     * @param data tableEngineParams must contains file path.
-     * @return A Table instance connected to the provided file path. First column is geometry field.
-     */
+public class DBFEngine extends FileEngine<DBFDriver> {
+
     @Override
-    public TableBase createTable(CreateTableData data) {
-        if(data.tableEngineParams.isEmpty()) {
-            throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
+    protected DBFDriver createDriver(File filePath, List<String> args) throws IOException {
+        DBFDriver driver = new DBFDriver();
+        driver.initDriverFromFile(filePath,  args.size() > 1 ? args.get(1) : null);
+        return driver;
+    }
+
+    @Override
+    protected void feedCreateTableData(DBFDriver driver, CreateTableData data) throws IOException {
+        DbaseFileHeader header = driver.getDbaseFileHeader();
+        feedTableDataFromHeader(header, data);
+    }
+
+    /**
+     * Parse the DBF file then init the provided data structure
+     * @param data Data to initialise
+     * @throws java.io.IOException
+     */
+    public static void feedTableDataFromHeader(DbaseFileHeader header, CreateTableData data) throws IOException {
+        for (int i = 0; i < header.getNumFields(); i++) {
+            String fieldsName = header.getFieldName(i);
+            final int type = dbfTypeToH2Type(header,i);
+            Column column = new Column(fieldsName.toUpperCase(), type);
+            column.setPrecision(header.getFieldLength(i)); // set string length
+            data.columns.add(column);
         }
-        File filePath = new File(StringUtils.javaDecode(data.tableEngineParams.get(0)));
-        if(!filePath.exists()) {
-            // Do not throw an exception as it will prevent the user from opening the database
-            LOGGER.error("DBF file not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
-            return new DummyTable(data);
-        }
-        try {
-            DBFDriver driver = new DBFDriver();
-            driver.initDriverFromFile(filePath);
-            if(data.columns.isEmpty()) {
-                DBFTableIndex.feedCreateTableData(driver.getDbaseFileHeader(), data);
-            }
-            DBFTable shpTable = new DBFTable(driver, data);
-            shpTable.init(data.session);
-            return shpTable;
-        } catch (IOException ex) {
-            throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
+    }
+
+    /**
+     * @see "http://www.clicketyclick.dk/databases/xbase/format/data_types.html"
+     * @param header DBF File Header
+     * @param i DBF Type identifier
+     * @return H2 {@see Value}
+     * @throws java.io.IOException
+     */
+    private static int dbfTypeToH2Type(DbaseFileHeader header, int i) throws IOException {
+        switch (header.getFieldType(i)) {
+            // (L)logical (T,t,F,f,Y,y,N,n)
+            case 'l':
+            case 'L':
+                return Value.BOOLEAN;
+            // (C)character (String)
+            case 'c':
+            case 'C':
+                return Value.STRING_FIXED;
+            // (D)date (Date)
+            case 'd':
+            case 'D':
+                return Value.DATE;
+            // (F)floating (Double)
+            case 'n':
+            case 'N':
+                if ((header.getFieldDecimalCount(i) == 0)) {
+                    if ((header.getFieldLength(i) >= 0)
+                            && (header.getFieldLength(i) < 10)) {
+                        return Value.INT;
+                    } else {
+                        return Value.LONG;
+                    }
+                }
+            case 'f':
+            case 'F': // floating point number
+            case 'o':
+            case 'O': // floating point number
+                return Value.DOUBLE;
+            default:
+                throw new IOException("Unknown DBF field type "+header.getFieldType(i));
         }
     }
 }

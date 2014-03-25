@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -63,7 +63,7 @@ public class ST_FurthestCoordinate extends DeterministicScalarFunction {
      * @return The furthest coordinate(s) contained in the given geometry starting from
      *         the given point, using the 2D distance
      */
-    public static Puntal getFurthestCoordinate(Point point, Geometry geom) {
+    public static Geometry getFurthestCoordinate(Point point, Geometry geom) {
         if (point == null || geom == null) {
             return null;
         }

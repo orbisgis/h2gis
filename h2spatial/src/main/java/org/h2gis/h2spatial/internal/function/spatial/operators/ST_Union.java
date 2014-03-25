@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -30,7 +30,8 @@ import com.vividsolutions.jts.operation.union.UnaryUnionOp;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute the union of the function geometry parameters
+ * Compute the union of two or more Geometries.
+ *
  * @author Nicolas Fortin
  */
 public class ST_Union extends DeterministicScalarFunction {
@@ -39,7 +40,7 @@ public class ST_Union extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_Union() {
-        addProperty(PROP_REMARKS, "Compute the union of the function geometry parameters.");
+        addProperty(PROP_REMARKS, "Compute the union of two or more Geometries");
     }
 
     @Override
@@ -50,7 +51,7 @@ public class ST_Union extends DeterministicScalarFunction {
     /**
      * @param a Geometry instance.
      * @param b Geometry instance
-     * @return union of the function geometry parameters
+     * @return union of Geometries a and b
      */
     public static Geometry union(Geometry a,Geometry b) {
         if(a==null || b==null) {
@@ -61,7 +62,7 @@ public class ST_Union extends DeterministicScalarFunction {
 
     /**
      * @param geomList Geometry list
-     * @return union of the function geometry parameters
+     * @return union of all Geometries in geomList
      */
     public static Geometry union(Geometry geomList) {
         return UnaryUnionOp.union(geomList);

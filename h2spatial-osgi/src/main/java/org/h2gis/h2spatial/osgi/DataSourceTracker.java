@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -66,11 +66,11 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
                         || "tcp".equalsIgnoreCase(properties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL))) {
                     return null;
                 }
-                CreateSpatialExtension.registerGeometryType(connection, "");
                 // Register built-ins functions
                 for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
                     CreateSpatialExtension.registerFunction(connection.createStatement(),function,"",false);
                 }
+                CreateSpatialExtension.registerGeometryType(connection);
                 CreateSpatialExtension.registerSpatialTables(connection);
             } finally {
                 connection.close();

@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -46,16 +46,31 @@ public class URIUtility {
      */
     public static Map<String,String> getQueryKeyValuePairs(URI uri) throws UnsupportedEncodingException {
         Map<String,String> queryParameters = new HashMap<String, String>();
-        StringTokenizer stringTokenizer = new StringTokenizer(uri.getRawQuery(), "&");
+        String query = uri.getRawQuery();
+        if(query == null) {
+            // Maybe invalid URI
+            try {
+                uri = URI.create(uri.getRawSchemeSpecificPart());
+                query = uri.getRawQuery();
+                if(query == null) {
+                    return queryParameters;
+                }
+            } catch (IllegalArgumentException ex) {
+                return queryParameters;
+            }
+        }
+        StringTokenizer stringTokenizer = new StringTokenizer(query, "&");
         while (stringTokenizer.hasMoreTokens()) {
             String keyValue = stringTokenizer.nextToken().trim();
             if(!keyValue.isEmpty()) {
                 int equalPos = keyValue.indexOf("=");
                 // If there is no value
+                String key = URLDecoder.decode(keyValue.substring(0,equalPos != -1 ?
+                        equalPos : keyValue.length()), ENCODING);
                 if(equalPos==-1 || equalPos == keyValue.length() - 1) {
-                    queryParameters.put(URLDecoder.decode(keyValue, ENCODING).toLowerCase(),null);
+                    // Key without value
+                    queryParameters.put(key.toLowerCase(),"");
                 } else {
-                    String key = URLDecoder.decode(keyValue.substring(0,equalPos), ENCODING);
                     String value = URLDecoder.decode(keyValue.substring(equalPos+1), ENCODING);
                     queryParameters.put(key.toLowerCase(),value);
                 }
@@ -100,9 +115,6 @@ public class URIUtility {
         StringBuilder rel = new StringBuilder();
         String path = base.getPath();
         String separator = "/";
-        if(base.getScheme().equalsIgnoreCase("file")) {
-            separator = File.separator;
-        }
         StringTokenizer tokenizer = new StringTokenizer(target.getPath(), separator);
         String targetPart = "";
         if(tokenizer.hasMoreTokens()) {

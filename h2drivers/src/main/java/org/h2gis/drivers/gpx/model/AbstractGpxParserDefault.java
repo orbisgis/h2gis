@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -31,6 +31,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -118,6 +120,17 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     abstract String getCopyright();
 
     /**
+     * Return the table identifier in the best fit depending on database type
+     * @param requestedTable Catalog and schema used
+     * @param tableName Table without quotes
+     * @param isH2 True if H2, false if PostGRE
+     * @return Fin table identifier
+     */
+    private static String caseIdentifier(TableLocation requestedTable, String tableName, boolean isH2) {
+        return new TableLocation(requestedTable.getCatalog(), requestedTable.getSchema(),
+                isH2 ? tableName.toUpperCase() : tableName.toLowerCase()).toString();
+    }
+    /**
      * Reads the document and parses it. The other methods are called
      * automatically when corresponding markup is found.
      *
@@ -129,20 +142,19 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      */
     public boolean read(File inputFile, String tableName, Connection connection) throws SQLException {
         // Initialisation
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
         TableLocation requestedTable = TableLocation.parse(tableName);
-        String catalog = requestedTable.getCatalog();
-        String schema = requestedTable.getSchema();
         String table = requestedTable.getTable();
 
         clear();
         // We create the tables to store all gpx data in the database
-        String wptTableName = new TableLocation(catalog, schema, table + WAYPOINT).toString();
-        String routeTableName = new TableLocation(catalog, schema, table + ROUTE).toString();
-        String routePointsTableName = new TableLocation(catalog, schema, table + ROUTEPOINT).toString();
-        String trackTableName = new TableLocation(catalog, schema, table + TRACK).toString();
-        String trackSegmentsTableName = new TableLocation(catalog, schema, table + TRACKSEGMENT).toString();
-        String trackPointsTableName = new TableLocation(catalog, schema, table + TRACKPOINT).toString();
+        String wptTableName = caseIdentifier(requestedTable, table + WAYPOINT, isH2);
+        String routeTableName = caseIdentifier(requestedTable, table + ROUTE, isH2);
+        String routePointsTableName = caseIdentifier(requestedTable, table + ROUTEPOINT, isH2);
+        String trackTableName = caseIdentifier(requestedTable, table + TRACK, isH2);
+        String trackSegmentsTableName = caseIdentifier(requestedTable, table + TRACKSEGMENT, isH2);
+        String trackPointsTableName = caseIdentifier(requestedTable, table + TRACKPOINT, isH2);
 
         setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName));
         setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName));

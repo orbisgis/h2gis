@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -29,7 +29,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Return true if the geometry A is disjoint from the geometry B
+ * Return true if the two Geometries are disjoint.
+ *
  * @author Nicolas Fortin
  */
 public class ST_Disjoint extends DeterministicScalarFunction {
@@ -38,7 +39,7 @@ public class ST_Disjoint extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_Disjoint() {
-        addProperty(PROP_REMARKS, "Return true if the geometry A is disjoint from the geometry B.");
+        addProperty(PROP_REMARKS, "Return true if the two Geometries are disjoint");
     }
 
     @Override
@@ -47,12 +48,13 @@ public class ST_Disjoint extends DeterministicScalarFunction {
     }
 
     /**
-     * Return true if the geometry A is disjoint from the geometry B
+     * Return true if the two Geometries are disjoint
+     *
      * @param a Geometry Geometry.
      * @param b Geometry instance
-     * @return true if the geometry A is disjoint from the geometry B
+     * @return true if the two Geometries are disjoint
      */
-    public static Boolean geomDisjoint(Geometry a,Geometry b) {
+    public static Boolean geomDisjoint(Geometry a, Geometry b) {
         if(a==null || b==null) {
             return null;
         }

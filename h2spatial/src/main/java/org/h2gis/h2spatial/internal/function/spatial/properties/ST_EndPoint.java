@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -31,8 +31,10 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Returns the last point of a LINESTRING geometry as a POINT or NULL if the
- * input parameter is not a LINESTRING.
+ * Returns the last coordinate of a Geometry as a POINT, given that the
+ * Geometry is a LINESTRING or a MULTILINESTRING containing only one
+ * LINESTRING; Returns NULL for all other Geometries.
+ *
  * @author Nicolas Fortin
  */
 public class ST_EndPoint extends DeterministicScalarFunction {
@@ -41,8 +43,10 @@ public class ST_EndPoint extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_EndPoint() {
-        addProperty(PROP_REMARKS, "Returns the last point of a LINESTRING geometry as a POINT or NULL if the input" +
-                " parameter is not a LINESTRING.");
+        addProperty(PROP_REMARKS, "Returns the last coordinate of a Geometry as a " +
+                "POINT, given that the Geometry is a LINESTRING or a " +
+                "MULTILINESTRING containing only one LINESTRING. " +
+                "Returns NULL for all other Geometries. ");
     }
 
     @Override
@@ -51,20 +55,18 @@ public class ST_EndPoint extends DeterministicScalarFunction {
     }
 
     /**
-     * Returns the last point of a LINESTRING geometry as a POINT or NULL if the
-     * input parameter is not a LINESTRING.
      * @param geometry Geometry
-     * @return Point instance or NULL if geometry is not a linestring instance
+     * @return The last coordinate of a Geometry as a POINT, given that the
+     * Geometry is a LINESTRING or a MULTILINESTRING containing only one
+     * LINESTRING; Returns NULL for all other Geometries.
      */
     public static Geometry getEndPoint(Geometry geometry) {
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {
-                LineString line = (LineString) geometry.getGeometryN(0);
-                return line.getEndPoint();
+                return ((LineString) geometry.getGeometryN(0)).getEndPoint();
             }
         } else if (geometry instanceof LineString) {
-            LineString line = (LineString) geometry;
-            return line.getEndPoint();
+            return ((LineString) geometry).getEndPoint();
         }
         return null;
     }

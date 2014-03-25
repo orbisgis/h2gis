@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -87,7 +87,7 @@ public class ST_ToMultiSegments extends DeterministicScalarFunction {
         }
     }
 
-    private static void createSegments(final LineString geom,
+    public static void createSegments(final LineString geom,
                                        final List<LineString> result) throws SQLException {
         Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(geom.getCoordinates());
         for (int j = 0; j < coords.length - 1; j++) {

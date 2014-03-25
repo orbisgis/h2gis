@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -28,18 +28,18 @@ package org.h2gis.h2spatialext.function.spatial.properties;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import org.h2.api.AggregateTypeFunction;
+import org.h2.api.Aggregate;
+import org.h2.value.Value;
 import org.h2gis.h2spatialapi.AbstractFunction;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Types;
 
 /**
  * ST_Extent returns an {@link com.vividsolutions.jts.geom.Envelope} that cover all aggregated geometries.
  * @author Nicolas Fortin
  */
-public class ST_Extent extends AbstractFunction implements AggregateTypeFunction {
+public class ST_Extent extends AbstractFunction implements Aggregate {
     private Envelope aggregatedEnvelope;
 
     public ST_Extent() {
@@ -52,14 +52,14 @@ public class ST_Extent extends AbstractFunction implements AggregateTypeFunction
     }
 
     @Override
-    public ColumnType getType(int[] inputTypes, String[] inputTypesName) throws SQLException {
+    public int getInternalType(int[] inputTypes) throws SQLException {
         if(inputTypes.length!=1) {
             throw new SQLException(ST_Extent.class.getSimpleName()+" expect 1 argument.");
         }
-        if(inputTypes[0]!=Types.OTHER && inputTypes[0]!=Types.JAVA_OBJECT && !inputTypesName[0].equalsIgnoreCase("geometry")) {
+        if(inputTypes[0]!=Value.GEOMETRY) {
             throw new SQLException(ST_Extent.class.getSimpleName()+" expect a geometry argument");
         }
-        return new ColumnType(Types.JAVA_OBJECT, "GEOMETRY");
+        return Value.GEOMETRY;
     }
 
     @Override

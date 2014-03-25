@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -43,9 +43,25 @@ public class URIUtilityTest {
                 "&FORMAT=image/png&STYLES=");
         Map<String,String> query = URIUtility.getQueryKeyValuePairs(uri);
         assertEquals(10,query.size());
+        assertEquals("GetMap",query.get("request"));
+        assertEquals("WMS",query.get("service"));
         assertEquals("cantons_dep44",query.get("layers"));
         assertEquals("EPSG:27572",query.get("crs"));
+        assertEquals("259555.01152073737,2218274.7695852537,342561.9239631337,2287024.7695852537",query.get("bbox"));
+        assertEquals("524",query.get("width"));
+        assertEquals("434",query.get("height"));
         assertEquals("image/png",query.get("format"));
+        assertEquals("",query.get("styles"));
+    }
+
+    @Test
+    public void testGetQueryKeyValuePairsJDBC() throws Exception {
+        URI uri = URI.create("h2:target/test-resources/dbH2OwsMapContextTest?catalog=&schema=PUBLIC&table=LANDCOVER2000");
+        Map<String,String> query = URIUtility.getQueryKeyValuePairs(uri);
+        assertEquals(3,query.size());
+        assertEquals("",query.get("catalog"));
+        assertEquals("PUBLIC",query.get("schema"));
+        assertEquals("LANDCOVER2000",query.get("table"));
     }
 
     @Test

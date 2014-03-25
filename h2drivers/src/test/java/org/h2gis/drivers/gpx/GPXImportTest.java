@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -61,8 +61,8 @@ public class GPXImportTest {
     @Test
     public void importGPXWaypoints() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT");
-        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'gpxdata');");
+        st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT,gpxdata_waypoint");
+        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA');");
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'GPXDATA_WAYPOINT'");
         assertTrue(rs.next());
         rs.close();
@@ -110,8 +110,8 @@ public class GPXImportTest {
     @Test
     public void importGPXTrack() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS GPXDATA_TRACK, GPXDATA_TRACKSEGMENT,GPXDATA_TRACKPOINT;");
-        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("track.gpx").getPath()) + ", 'gpxdata');");
+        st.execute("DROP TABLE IF EXISTS GPXDATA_TRACK, GPXDATA_TRACKSEGMENT,GPXDATA_TRACKPOINT,gpxdata_route;");
+        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("track.gpx").getPath()) + ", 'GPXDATA');");
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'GPXDATA_TRACK'");
         assertTrue(rs.next());
         rs.close();
