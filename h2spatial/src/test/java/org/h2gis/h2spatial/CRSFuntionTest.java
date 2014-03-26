@@ -91,7 +91,7 @@ public class CRSFuntionTest {
         assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
         st.execute("DROP TABLE IF EXISTS init;");
     }
-    
+
     @Test
     public void testST_Transform27572to2154WithoutNadgrid() throws Exception {
         Statement st = connection.createStatement();
@@ -103,13 +103,13 @@ public class CRSFuntionTest {
         assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
         st.execute("DROP TABLE IF EXISTS init;");
     }
-    
+
     @Test
     public void testST_Transform27572to2154WithNadgrid() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("CREATE TABLE init AS SELECT ST_GeomFromText('POINT(282331 2273699.7)', 320002120) as the_geom;");
+        st.execute("CREATE TABLE init AS SELECT ST_GeomFromText('POINT(565767.906 2669005.730)', 320002120) as the_geom;");
         WKTReader wKTReader = new WKTReader();
-        Geometry targetGeom = wKTReader.read("POINT(332602.961893497 6709788.26447893)");
+        Geometry targetGeom = wKTReader.read("POINT(619119.4605 7102502.9796)");
         SpatialResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(the_geom, 310024140) from init;").unwrap(SpatialResultSet.class);
         assertTrue(srs.next());
         assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
