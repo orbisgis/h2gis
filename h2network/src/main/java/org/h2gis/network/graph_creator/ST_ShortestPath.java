@@ -79,7 +79,6 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
     public static final String WEIGHT = "WEIGHT";
     public static final int WEIGHT_INDEX = 7;
     private int globalID = 1;
-    private int localID = 0;
 
     private static Connection connection;
     private TableLocation tableName;
@@ -195,7 +194,7 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
                 "SELECT * FROM " + f.tableName + " WHERE " + ST_Graph.EDGE_ID + "=?");
 
         try {
-            f.addPredEdges(graph, vDestination, output, ps);
+            f.addPredEdges(graph, vDestination, output, ps, 1);
         } finally {
             ps.close();
         }
@@ -203,31 +202,29 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
     }
 
     private void addPredEdges(KeyedGraph<VDijkstra, Edge> graph, VDijkstra dest, SimpleResultSet output,
-                              PreparedStatement ps) throws SQLException {
+                              PreparedStatement ps, int localID) throws SQLException {
         // Rebuild the shortest path(s). (Yes, there could be more than
         // one if they have the same distance!)
         final Set<Edge> predEdges = dest.getPredecessorEdges();
         // The only vertex with no predecessors is the source vertex, so we can
         // start renumbering here.
         if (predEdges.isEmpty()) {
-            localID = 0;
             globalID++;
         }
         // Recursively add the predecessor edges.
         for (Edge e : predEdges) {
-            localID++;
             final VDijkstra edgeSource = graph.getEdgeSource(e);
             final VDijkstra edgeDestination = graph.getEdgeTarget(e);
             // Right order
             if (edgeDestination.equals(dest)) {
                 output.addRow(getEdgeGeometry(ps, e.getID()), e.getID(), globalID, localID,
                         edgeSource.getID(), edgeDestination.getID(), graph.getEdgeWeight(e));
-                addPredEdges(graph, edgeSource, output, ps);
+                addPredEdges(graph, edgeSource, output, ps, localID + 1);
             } // Wrong order
             else {
                 output.addRow(getEdgeGeometry(ps, e.getID()), e.getID(), globalID, localID,
                         edgeDestination.getID(), edgeSource.getID(), graph.getEdgeWeight(e));
-                addPredEdges(graph, edgeDestination, output, ps);
+                addPredEdges(graph, edgeDestination, output, ps, localID + 1);
             }
         }
     }
