@@ -181,6 +181,95 @@ public class ST_ShortestPathTest {
         check(oneToOne(DO, st, 5, 5), EMPTY);
     }
 
+    @Test
+    public void oneToOneWDO() throws Exception {
+        // SELECT * FROM ST_ShortestPath('cormen_edges',
+        //     'directed - edge_orientation', 'weight', i, j)
+        check(oneToOne(DO, W, st, 1, 1), EMPTY);
+        check(oneToOne(DO, W, st, 1, 2), new PathEdge[]{
+                        new PathEdge("LINESTRING (1 0, 1 2)", 4, 1, 1, 4, 2, 3.0),
+                        new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 2, 1, 4, 5.0)});
+        final ResultSet rs13 = oneToOne(DO, W, st, 1, 3);
+        try {
+            check(rs13, new PathEdge[]{
+                    new PathEdge("LINESTRING (2 0, 2 2)", 9, 1, 1, 5, 3, 6.0),
+                    new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 2, 4, 5, 2.0),
+                    new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 3, 1, 4, 5.0),
+                    new PathEdge("LINESTRING (2 0, 0 1)", -10, 2, 2, 1, 5, 7.0)});
+        } catch (AssertionError e) {
+            rs13.beforeFirst();
+            check(rs13, new PathEdge[]{
+                    new PathEdge("LINESTRING (2 0, 2 2)", 9, 1, 1, 5, 3, 6.0),
+                    new PathEdge("LINESTRING (2 0, 0 1)", -10, 1, 2, 1, 5, 7.0),
+                    new PathEdge("LINESTRING (1 0, 2 0)", 7, 2, 2, 4, 5, 2.0),
+                    new PathEdge("LINESTRING (0 1, 1 0)", 5, 2, 3, 1, 4, 5.0)});
+        }
+        check(oneToOne(DO, W, st, 1, 4), new PathEdge[]{
+                        new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 1, 1, 4, 5.0)});
+        final ResultSet rs15 = oneToOne(DO, W, st, 1, 5);
+        try {
+            check(rs15, new PathEdge[]{
+                    new PathEdge("LINESTRING (2 0, 0 1)", -10, 1, 1, 1, 5, 7.0),
+                    new PathEdge("LINESTRING (1 0, 2 0)", 7, 2, 1, 4, 5, 2.0),
+                    new PathEdge("LINESTRING (0 1, 1 0)", 5, 2, 2, 1, 4, 5.0)});
+        } catch (AssertionError e) {
+            rs15.beforeFirst();
+            check(rs15, new PathEdge[]{
+                    new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 1, 4, 5, 2.0),
+                    new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 2, 1, 4, 5.0),
+                    new PathEdge("LINESTRING (2 0, 0 1)", -10, 2, 1, 1, 5, 7.0)});
+        }
+        check(oneToOne(DO, W, st, 2, 1),
+                new PathEdge[]{
+                        new PathEdge("LINESTRING (2 0, 0 1)", 10, 1, 1, 5, 1, 7.0),
+                        new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 2, 4, 5, 2.0),
+                        new PathEdge("LINESTRING (1 2, 1 0)", 3, 1, 3, 2, 4, 2.0)});
+        check(oneToOne(DO, W, st, 2, 2), EMPTY);
+        check(oneToOne(DO, W, st, 2, 3), new PathEdge[]{
+                        new PathEdge("LINESTRING (2 0, 2 2)", 9, 1, 1, 5, 3, 6.0),
+                        new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 2, 4, 5, 2.0),
+                        new PathEdge("LINESTRING (1 2, 1 0)", 3, 1, 3, 2, 4, 2.0)});
+        check(oneToOne(DO, W, st, 2, 4), new PathEdge[]{
+                        new PathEdge("LINESTRING (1 2, 1 0)", 3, 1, 1, 2, 4, 2.0)});
+        check(oneToOne(DO, W, st, 2, 5), new PathEdge[]{
+                        new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 1, 4, 5, 2.0),
+                        new PathEdge("LINESTRING (1 2, 1 0)", 3, 1, 2, 2, 4, 2.0)});
+        check(oneToOne(DO, W, st, 3, 1), new PathEdge[]{
+                        new PathEdge("LINESTRING (2 0, 0 1)", 10, 1, 1, 5, 1, 7.0),
+                        new PathEdge("LINESTRING (2 2, 2 0)", 8, 1, 2, 3, 5, 4.0)});
+        check(oneToOne(DO, W, st, 3, 2), new PathEdge[]{
+                        new PathEdge("LINESTRING (1 2, 2 2)", 2, 1, 1, 3, 2, 1.0)});
+        check(oneToOne(DO, W, st, 3, 3), EMPTY);
+        check(oneToOne(DO, W, st, 3, 4), new PathEdge[]{
+                        new PathEdge("LINESTRING (1 2, 1 0)", 3, 1, 1, 2, 4, 2.0),
+                        new PathEdge("LINESTRING (1 2, 2 2)", 2, 1, 2, 3, 2, 1.0)});
+        check(oneToOne(DO, W, st, 3, 5), new PathEdge[]{
+                        new PathEdge("LINESTRING (2 2, 2 0)", 8, 1, 1, 3, 5, 4.0)});
+        check(oneToOne(DO, W, st, 4, 1), new PathEdge[]{
+                        new PathEdge("LINESTRING (2 0, 0 1)", 10, 1, 1, 5, 1, 7.0),
+                        new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 2, 4, 5, 2.0)});
+        check(oneToOne(DO, W, st, 4, 2), new PathEdge[]{
+                        new PathEdge("LINESTRING (1 0, 1 2)", 4, 1, 1, 4, 2, 3.0)});
+        check(oneToOne(DO, W, st, 4, 3), new PathEdge[]{
+                        new PathEdge("LINESTRING (2 0, 2 2)", 9, 1, 1, 5, 3, 6.0),
+                        new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 2, 4, 5, 2.0)});
+        check(oneToOne(DO, W, st, 4, 4), EMPTY);
+        check(oneToOne(DO, W, st, 4, 5), new PathEdge[]{
+                        new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 1, 4, 5, 2.0)});
+        check(oneToOne(DO, W, st, 5, 1), new PathEdge[]{
+                        new PathEdge("LINESTRING (2 0, 0 1)", 10, 1, 1, 5, 1, 7.0)});
+        check(oneToOne(DO, W, st, 5, 2), new PathEdge[]{
+                        new PathEdge("LINESTRING (1 2, 2 2)", 2, 1, 1, 3, 2, 1.0),
+                        new PathEdge("LINESTRING (2 0, 2 2)", 9, 1, 2, 5, 3, 6.0)});
+        check(oneToOne(DO, W, st, 5, 3), new PathEdge[]{
+                        new PathEdge("LINESTRING (2 0, 2 2)", 9, 1, 1, 5, 3, 6.0)});
+        check(oneToOne(DO, W, st, 5, 4), new PathEdge[]{
+                        new PathEdge("LINESTRING (1 2, 1 0)", 3, 1, 1, 2, 4, 2.0),
+                        new PathEdge("LINESTRING (1 2, 2 2)", 2, 1, 2, 3, 2, 1.0),
+                        new PathEdge("LINESTRING (2 0, 2 2)", 9, 1, 3, 5, 3, 6.0)});
+        check(oneToOne(DO, W, st, 5, 5), EMPTY);
+    }
+
     private ResultSet oneToOne(String orientation, String weight, Statement st,
                                int source, int destination) throws SQLException {
         return st.executeQuery(
