@@ -33,7 +33,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
-import org.h2gis.h2spatial.internal.function.ExpandTableFunction;
+import org.h2gis.h2spatial.ExpandTableFunction;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;

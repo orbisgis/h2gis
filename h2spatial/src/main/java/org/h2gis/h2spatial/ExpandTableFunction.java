@@ -1,4 +1,4 @@
-package org.h2gis.h2spatial.internal.function;
+package org.h2gis.h2spatial;
 
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.utilities.TableLocation;

@@ -33,7 +33,7 @@ import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2.value.Value;
 import org.h2.value.ValueString;
-import org.h2gis.h2spatial.internal.function.ExpandTableFunction;
+import org.h2gis.h2spatial.ExpandTableFunction;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
