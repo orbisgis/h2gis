@@ -15,6 +15,13 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class ExpandTableFunction {
+    /**
+     * Copy fields from table into a {@link org.h2.tools.SimpleResultSet}
+     * @param connection Active connection
+     * @param rs Result set that will receive columns
+     * @param tableLocation Import columns from this table
+     * @throws SQLException Error
+     */
     public static void copyFields(Connection connection, SimpleResultSet rs, TableLocation tableLocation) throws SQLException {
         DatabaseMetaData meta = connection.getMetaData();
         ResultSet columnsRs = meta.getColumns(tableLocation.getCatalog(), tableLocation.getSchema(),

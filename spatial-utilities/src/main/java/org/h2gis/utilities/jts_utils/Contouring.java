@@ -105,25 +105,14 @@ public class Contouring {
      * triangle provided is in the same orientation)
      *
      * @param sideStart Start side of the splitting segment [0-2]
-     *
-     * @param sideStop End side of the splitting segment [0-2] (must be >
-     * sideStart)
-     *
+     * @param sideStop End side of the splitting segment [0-2] (must be > sideStart)
      * @param posIsoStart Start coordinate of the splitting segment
-     *
      * @param posIsoStop End coordinate of the splitting segment
-     *
      * @param isoLvl Iso value of the splitting segment
-     *
      * @param currentTriangle Input triangle
-     *
-     * @param[out] aloneTri Splitted triangle, the side of the shared vertex of
-     * sideStart and sideStop
-     *
+     * @param[out] aloneTri Splitted triangle, the side of the shared vertex of sideStart and sideStop
      * @param[out] firstTwinTri Splitted triangle
-     *
      * @param[out] secondTwinTri Splitted triangle
-     *
      * @return The shared vertex index [0-2]
      */
     private static short getSplittedTriangle(short sideStart, short sideStop,
