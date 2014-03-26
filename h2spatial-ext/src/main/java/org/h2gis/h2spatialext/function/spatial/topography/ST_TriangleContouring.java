@@ -47,6 +47,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,6 +67,7 @@ import java.util.Queue;
 public class ST_TriangleContouring extends DeterministicScalarFunction {
     /** The default field name for explode count, value is [1-n] */
     public static final String ISO_FIELD_NAME = "IDISO";
+    private static final String HACK_URL = "jdbc:columnlist:connection";
 
     public ST_TriangleContouring() {
         addProperty(PROP_REMARKS, "Split triangle into polygons within the specified range values.\n" +
@@ -85,35 +87,37 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
      * Iso contouring using Z,M attributes of geometries
      * @param connection Active connection
      * @param tableName Table name
-     * @param isoLvls Iso levels
+     * @param varArgs Iso levels
      * @return Result Set
      * @throws SQLException
      */
     public static ResultSet triangleContouring(Connection connection, String tableName, Value... varArgs) throws SQLException {
+        if (connection.getMetaData().getURL().equals(HACK_URL)) {
+            return new ExplodeResultSet(connection,tableName, Arrays.asList(0.0)).getResultSet();
+        }
+        ExplodeResultSet rowSource = null;
         if(varArgs.length > 3) {
             // First ones may be column names
             if(varArgs[0] instanceof ValueString &&
                     varArgs[1] instanceof ValueString &&
                     varArgs[2] instanceof ValueString) {
+                // Use table columns for iso levels
                 List<Double> isoLvls = new ArrayList<Double>(varArgs.length - 3);
                 for(int idArg = 3; idArg < varArgs.length; idArg++) {
                     isoLvls.add(varArgs[idArg].getDouble());
                 }
-                triangleContouringField(connection, tableName, varArgs[0].getString(), varArgs[1].getString(),
+                rowSource = new ExplodeResultSet(connection,tableName,varArgs[0].getString(), varArgs[1].getString(),
                         varArgs[2].getString(), isoLvls);
             }
         }
-        List<Double> isoLvls = new ArrayList<Double>(varArgs.length);
-        for(Value value : varArgs) {
-            isoLvls.add(value.getDouble());
+        if(rowSource == null) {
+            // Use Z
+            List<Double> isoLvls = new ArrayList<Double>(varArgs.length);
+            for(Value value : varArgs) {
+                isoLvls.add(value.getDouble());
+            }
+            rowSource = new ExplodeResultSet(connection,tableName, isoLvls);
         }
-        ExplodeResultSet rowSource = new ExplodeResultSet(connection,tableName, isoLvls);
-        return rowSource.getResultSet();
-    }
-
-    public static ResultSet triangleContouringField(Connection connection, String tableName, String isoFieldName1,
-                                                    String isoFieldName2,String isoFieldName3, List<Double> isoLvls) throws SQLException {
-        ExplodeResultSet rowSource = new ExplodeResultSet(connection,tableName,isoFieldName1, isoFieldName2, isoFieldName3, isoLvls);
         return rowSource.getResultSet();
     }
 
@@ -231,30 +235,18 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
                 List<String> geomFields = SFSUtilities.getGeometryFields(connection,TableLocation.parse(tableName));
                 if(!geomFields.isEmpty()) {
                     spatialFieldName = geomFields.get(0);
+                    spatialFieldIndex = tableQuery.findColumn(SFSUtilities.getGeometryFields(tableQuery).get(0));
                 } else {
                     throw new SQLException("The table "+tableName+" does not contain a geometry field");
                 }
             }
 
-            int vertex1FieldIndex = 0;
-            int vertex2FieldIndex = 0;
-            int vertex3FieldIndex = 0;
-            for(int i=1;i<=columnCount;i++) {
-                String colName = meta.getColumnName(i);
-                if(colName.equalsIgnoreCase(spatialFieldName)) {
-                    spatialFieldIndex = i;
-                    break;
-                } else if(!useZ && colName.equalsIgnoreCase(isoFieldName1)) {
-                    vertex1FieldIndex = i;
-                } else if(!useZ && colName.equalsIgnoreCase(isoFieldName2)) {
-                    vertex2FieldIndex = i;
-                } else if(!useZ && colName.equalsIgnoreCase(isoFieldName3)) {
-                    vertex3FieldIndex = i;
-                }
-            }
             if(useZ) {
                 triFactory = new ValueOnZ();
             } else {
+                int vertex1FieldIndex = tableQuery.findColumn(isoFieldName1);
+                int vertex2FieldIndex = tableQuery.findColumn(isoFieldName2);
+                int vertex3FieldIndex = tableQuery.findColumn(isoFieldName3);
                 triFactory = new ValueOnField(vertex1FieldIndex, vertex2FieldIndex, vertex3FieldIndex, tableQuery);
             }
             if(spatialFieldIndex == null) {
