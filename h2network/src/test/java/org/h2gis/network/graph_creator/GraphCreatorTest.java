@@ -60,16 +60,16 @@ public class GraphCreatorTest {
 
     public static void registerCormenGraph(Connection connection) throws SQLException {
         final Statement st = connection.createStatement();
-//                   1
-//           >2 ------------>3
+//                 2:1
+//           >2 <----------- 3
 //          / |^           ->|^
-//       10/ / |      9   / / |
-//        / 2| |3    -----  | |
-//       /   | |    /      4| |6
+//     1:10/ / |    6:9   / / |
+//        /  | |     -----  | |
+//       /3:2| |4:3 /    8:4| |9:6
 //      1<---------------   | |
-//       \   | |  /     7\  | |
-//       5\  | / /        \ | /
-//         \ v| /    2     \v|
+//       \   | |  /  10:7\  | |
+//     5:5\  | / /        \ | /
+//         \ v| /  7:2     >v|
 //          > 4 -----------> 5
 //               CORMEN
         st.execute("CREATE TABLE cormen(road LINESTRING, weight DOUBLE, edge_orientation INT);" +
