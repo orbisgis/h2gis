@@ -91,7 +91,7 @@ public class CRSFuntionTest {
         assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
         st.execute("DROP TABLE IF EXISTS init;");
     }
-    
+
     @Test
     public void testST_Transform27572to2154WithoutNadgrid() throws Exception {
         Statement st = connection.createStatement();
@@ -103,7 +103,7 @@ public class CRSFuntionTest {
         assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
         st.execute("DROP TABLE IF EXISTS init;");
     }
-    
+
     @Test
     public void testST_Transform27572to2154WithNadgrid() throws Exception {
         Statement st = connection.createStatement();
