@@ -15,33 +15,54 @@ GEOMETRY ST_Expand(GEOMETRY geom, double deltaX, double deltaY);
 {% endhighlight %}
 
 ### Description
-Returns a `GEOMETRY`'s envelope by the given `delta X` and `delta Y`. Both positive and negative distances are supported.
+Returns a `GEOMETRY`'s envelope by the given `delta X` and `delta Y`.
+ Both positive and negative distances are supported.
 
 ### Examples
 
 {% highlight mysql %}
 SELECT ST_Expand('POINT(4 4)', 5, 2);
--- Answer: POLYGON ((-1 2, -1 6, 9 6, 9 2, -1 2))
+-- Answer: POLYGON((-1 2, -1 6, 9 6, 9 2, -1 2))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Expand_1.png"/>
 
 {% highlight mysql %}
 SELECT ST_Expand('LINESTRING(3 2, 7 5, 2 7)', 2, 1);
--- Answer: POLYGON ((0 1, 0 8, 9 8, 9 1, 0 1))
+-- Answer: POLYGON((0 1, 0 8, 9 8, 9 1, 0 1))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Expand_2.png"/>
 
 {% highlight mysql %}
-SELECT ST_Expand('POLYGON ((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))', 5, -10);
--- Answer: LINESTRING (-4.5 4, 6.5 4)
+SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))',
+                 5, -1);
+-- ANswer: POLYGON((-4.5 2, -4.5 6, 6.5 6, 6.5 2, -4.5 2))
 
-SELECT ST_Expand('POLYGON ((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))', 5, -1);
--- ANswer: POLYGON ((-4.5 2, -4.5 6, 6.5 6, 6.5 2, -4.5 2))
+SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))',
+                 5, -10);
+-- Answer: LINESTRING(-4.5 4, 6.5 4)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Expand_3.png"/>
+
+*Note*: If the value absolut of delta is greater than the difference
+between the maximum coordinate and the minimum coordinate then the 
+delta who are applicate is the difference between the
+minimum coordinate and the maximum coordinate divide by two.
+For this example, delta y=-10 => |delta y|=10, ymax=7 ymin=1, ymax-ymin=6, 10>6
+|delta y|>ymax-ymin. So the delta y who are applicate is
+(ymin-ymax)/2= (1-7)/2= -3 =>
+Ymin= ymin-delta y= 1-(-3)= 4; Ymax= ymax+delta y= 7+(-3)= 4.
+
+{% highlight mysql %}
+SELECT ST_Expand('GEOMETRYCOLLECTION(
+                   LINESTRING(3 2, 7 5, 2 7), 
+                   POINT(10 10),
+                   POLYGON((0.5 0, 0.5 7, 1.5 7, 1.5 1, 0.5 0)))',
+                 2, 2);
+-- Answer: POLYGON ((-1.5 -2, -1.5 12, 12 12, 12 -2, -1.5 -2))
+{% endhighlight %}
 
 ##### See also
 
