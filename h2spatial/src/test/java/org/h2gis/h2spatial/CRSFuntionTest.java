@@ -81,7 +81,7 @@ public class CRSFuntionTest {
     }
 
     @Test
-    public void testST_Transform27572to3857() throws Exception {
+    public void test_ST_Transform27572to3857() throws Exception {
         Statement st = connection.createStatement();
         st.execute("CREATE TABLE init AS SELECT ST_GeomFromText('POINT(282331 2273699.7)', 27572) as the_geom;");
         WKTReader wKTReader = new WKTReader();
