@@ -74,7 +74,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     public static final String NODE_ID = "node_id";
     private static final int nodeIDIndex = 1;
-    public static final String THE_GEOM = "the_geom";
+    public static final String NODE_GEOM = "the_geom";
     private static final int nodeGeomIndex = 2;
     public static final String EDGE_ID = "edge_id";
     public static final String START_NODE = "start_node";
@@ -300,7 +300,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "ALTER TABLE " + edgesName + " ADD COLUMN " + START_NODE + " INTEGER;" +
                     "ALTER TABLE " + edgesName + " ADD COLUMN " + END_NODE + " INTEGER;");
             // Set up the nodes table
-            st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + THE_GEOM + " POINT);");
+            st.execute("CREATE TABLE " + nodesName + " (" + NODE_ID + " INT PRIMARY KEY, " + NODE_GEOM + " POINT);");
         } finally {
             st.close();
         }

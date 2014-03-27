@@ -64,7 +64,7 @@ import java.util.Set;
  */
 public class ST_ShortestPath extends AbstractFunction implements ScalarFunction {
 
-    public static final String GEOM = "THE_GEOM";
+    public static final String EDGE_GEOM = "THE_GEOM";
     public static final int GEOM_INDEX = 1;
     public static final String EDGE_ID = "EDGE_ID";
     public static final int EDGE_ID_INDEX = 2;
@@ -253,7 +253,7 @@ public class ST_ShortestPath extends AbstractFunction implements ScalarFunction 
      */
     private static SimpleResultSet prepareResultSet() {
         SimpleResultSet output = new SimpleResultSet();
-        output.addColumn(GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
+        output.addColumn(EDGE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
         output.addColumn(EDGE_ID, Types.INTEGER, 10, 0);
         output.addColumn(PATH_ID, Types.INTEGER, 10, 0);
         output.addColumn(PATH_EDGE_ID, Types.INTEGER, 10, 0);
