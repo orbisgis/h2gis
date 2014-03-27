@@ -29,7 +29,6 @@ import org.h2.tools.SimpleResultSet;
 import org.h2.value.Value;
 import org.h2.value.ValueInt;
 import org.h2.value.ValueString;
-import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
@@ -74,7 +73,7 @@ import java.util.Set;
  *
  * @author Adam Gouge
  */
-public class ST_ShortestPathLength extends AbstractFunction implements ScalarFunction {
+public class ST_ShortestPathLength extends GraphFunction implements ScalarFunction {
 
     public static final int SOURCE_INDEX = 1;
     public static final int DESTINATION_INDEX = 2;
@@ -387,29 +386,5 @@ public class ST_ShortestPathLength extends AbstractFunction implements ScalarFun
         output.addColumn(DESTINATION, Types.INTEGER, 10, 0);
         output.addColumn(DISTANCE, Types.DOUBLE, 10, 0);
         return output;
-    }
-
-    /**
-     * Return a JGraphT graph from the input edges table.
-     *
-     * @param connection  Connection
-     * @param inputTable  Input table name
-     * @param orientation Orientation string
-     * @param weight      Weight column name, null for unweighted graphs
-     * @return Graph
-     * @throws SQLException
-     */
-    private static KeyedGraph<VDijkstra, Edge> prepareGraph(Connection connection,
-                                                            String inputTable,
-                                                            String orientation,
-                                                            String weight) throws SQLException {
-        GraphFunctionParser parser = new GraphFunctionParser();
-        parser.parseWeightAndOrientation(orientation, weight);
-
-        return new GraphCreator<VDijkstra, Edge>(connection,
-                inputTable,
-                parser.getGlobalOrientation(), parser.getEdgeOrientation(), parser.getWeightColumn(),
-                VDijkstra.class,
-                Edge.class).prepareGraph();
     }
 }
