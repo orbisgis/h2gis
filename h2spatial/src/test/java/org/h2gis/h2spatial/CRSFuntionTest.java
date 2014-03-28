@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier
  * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -81,12 +81,36 @@ public class CRSFuntionTest {
     }
 
     @Test
-    public void testST_Transform27572to3857() throws Exception {
+    public void test_ST_Transform27572to3857() throws Exception {
         Statement st = connection.createStatement();
         st.execute("CREATE TABLE init AS SELECT ST_GeomFromText('POINT(282331 2273699.7)', 27572) as the_geom;");
         WKTReader wKTReader = new WKTReader();
         Geometry targetGeom = wKTReader.read("POINT(-208496.537435372 6005369.87702729)");
         SpatialResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(the_geom, 3857) from init;").unwrap(SpatialResultSet.class);
+        assertTrue(srs.next());
+        assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
+        st.execute("DROP TABLE IF EXISTS init;");
+    }
+
+    @Test
+    public void testST_Transform27572to2154WithoutNadgrid() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE init AS SELECT ST_GeomFromText('POINT(282331 2273699.7)', 27572) as the_geom;");
+        WKTReader wKTReader = new WKTReader();
+        Geometry targetGeom = wKTReader.read("POINT(332602.961893497 6709788.26447893)");
+        SpatialResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(the_geom, 2154) from init;").unwrap(SpatialResultSet.class);
+        assertTrue(srs.next());
+        assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
+        st.execute("DROP TABLE IF EXISTS init;");
+    }
+
+    @Test
+    public void testST_Transform27572to2154WithNadgrid() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("CREATE TABLE init AS SELECT ST_GeomFromText('POINT(565767.906 2669005.730)', 320002120) as the_geom;");
+        WKTReader wKTReader = new WKTReader();
+        Geometry targetGeom = wKTReader.read("POINT(619119.4605 7102502.9796)");
+        SpatialResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(the_geom, 310024140) from init;").unwrap(SpatialResultSet.class);
         assertTrue(srs.next());
         assertTrue(srs.getGeometry(1).equalsExact(targetGeom, 0.01));
         st.execute("DROP TABLE IF EXISTS init;");
