@@ -173,28 +173,30 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
         final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         final VDijkstra vDestination = graph.getVertex(destination);
-        dijkstra.oneToOne(graph.getVertex(source), vDestination);
+        final double distance = dijkstra.oneToOne(graph.getVertex(source), vDestination);
 
-        // Create index on table if it doesn't already exist.
-        final Statement st = connection.createStatement();
-        try {
-            st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + TableLocation.parse(inputTable)
-                    + "(" + ST_Graph.EDGE_ID + ")");
-        } finally {
-            st.close();
-        }
-
-        // Record the results.
-        ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
         final SimpleResultSet output = prepareResultSet();
+        if (distance == Double.POSITIVE_INFINITY) {
+            output.addRow(null, -1, -1, -1, source, destination, distance);
+        } else {
+            // Create index on table if it doesn't already exist.
+            final Statement st = connection.createStatement();
+            try {
+                st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + TableLocation.parse(inputTable)
+                        + "(" + ST_Graph.EDGE_ID + ")");
+            } finally {
+                st.close();
+            }
 
-        final PreparedStatement ps = connection.prepareStatement(
-                "SELECT * FROM " + f.tableName + " WHERE " + ST_Graph.EDGE_ID + "=?");
-
-        try {
-            f.addPredEdges(graph, vDestination, output, ps, 1);
-        } finally {
-            ps.close();
+            // Record the results.
+            ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
+            final PreparedStatement ps = connection.prepareStatement(
+                    "SELECT * FROM " + f.tableName + " WHERE " + ST_Graph.EDGE_ID + "=?");
+            try {
+                f.addPredEdges(graph, vDestination, output, ps, 1);
+            } finally {
+                ps.close();
+            }
         }
         return output;
     }

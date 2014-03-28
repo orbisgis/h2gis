@@ -73,7 +73,11 @@ public class SpatialFunctionTest {
     }
 
     public static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
-        assertTrue(Arrays.equals(ValueGeometry.get(expectedWKT).getBytes(), valueWKB));
+        if (expectedWKT != null) {
+            assertTrue(Arrays.equals(ValueGeometry.get(expectedWKT).getBytes(), valueWKB));
+        } else {
+            assertEquals(null, valueWKB);
+        }
     }
 
     @Test

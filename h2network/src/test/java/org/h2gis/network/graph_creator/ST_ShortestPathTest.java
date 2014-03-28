@@ -24,6 +24,7 @@
 
 package org.h2gis.network.graph_creator;
 
+import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.network.SpatialFunctionTest;
@@ -633,12 +634,57 @@ public class ST_ShortestPathTest {
         check(oneToOne(U, W, st, 5, 5), EMPTY);
     }
 
-    private ResultSet oneToOne(String orientation, String weight, Statement st,
+    @Test(expected = IllegalArgumentException.class)
+    public void testNonexistantVertex() throws Throwable {
+        try {
+            // The graph does not contain vertex 6.
+            check(oneToOne(U, W, st, 1, 6), null);
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+
+    @Test
+    public void testUnreachableVertices() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS copy");
+        st.execute("DROP TABLE IF EXISTS copy_nodes");
+        st.execute("DROP TABLE IF EXISTS copy_edges");
+        st.execute("CREATE TABLE copy AS SELECT * FROM cormen");
+        // We add another connected component consisting of the edge w(6, 7)=1.0.
+        st.execute("INSERT INTO copy VALUES ('LINESTRING (3 1, 4 2)', 1.0, 1)");
+        st.execute("CALL ST_Graph('COPY', 'road')");
+        // Vertices 3 and 6 are in different connected components.
+        check(oneToOne("COPY_EDGES", DO, W, st, 3, 6), new PathEdge[]{
+                new PathEdge(null, -1, -1, -1, 3, 6, Double.POSITIVE_INFINITY)});
+        // 7 is reachable from 6.
+        check(oneToOne("COPY_EDGES", DO, W, st, 6, 7), new PathEdge[]{
+                new PathEdge("LINESTRING (3 1, 4 2)", 11, 1, 1, 6, 7, 1.0)});
+        // But 6 is not reachable from 7 in a directed graph.
+        check(oneToOne("COPY_EDGES", DO, W, st, 7, 6), new PathEdge[]{
+                new PathEdge(null, -1, -1, -1, 7, 6, Double.POSITIVE_INFINITY)});
+        // It is, however, in an undirected graph.
+        check(oneToOne("COPY_EDGES", U, W, st, 7, 6), new PathEdge[]{
+                new PathEdge("LINESTRING (3 1, 4 2)", 11, 1, 1, 7, 6, 1.0)});
+        st.execute("DROP TABLE copy");
+        st.execute("DROP TABLE copy_nodes");
+        st.execute("DROP TABLE copy_edges");
+    }
+
+    private ResultSet oneToOne(String table, String orientation, String weight, Statement st,
                                int source, int destination) throws SQLException {
         return st.executeQuery(
-                "SELECT * FROM ST_ShortestPath('CORMEN_EDGES', "
+                "SELECT * FROM ST_ShortestPath('" + table + "', "
                         + orientation + ((weight != null) ? ", " + weight : "")
                         + ", " + source + ", " + destination + ")");
+    }
+
+    private ResultSet oneToOne(String orientation, String weight, Statement st,
+                               int source, int destination) throws SQLException {
+        return oneToOne("CORMEN_EDGES", orientation, weight, st, source, destination);
+    }
+
+    private ResultSet oneToOne(String orientation, Statement st, int source, int destination) throws SQLException {
+        return oneToOne(orientation, null, st, source, destination);
     }
 
     private void check(ResultSet rs, PathEdge[] pathEdges) throws SQLException {
@@ -654,10 +700,6 @@ public class ST_ShortestPathTest {
             assertEquals(e.getWeight(), rs.getDouble(ST_ShortestPath.WEIGHT_INDEX), TOLERANCE);
         }
         assertFalse(rs.next());
-    }
-
-    private ResultSet oneToOne(String orientation, Statement st, int source, int destination) throws SQLException {
-        return oneToOne(orientation, null, st, source, destination);
     }
 
     private class PathEdge {
