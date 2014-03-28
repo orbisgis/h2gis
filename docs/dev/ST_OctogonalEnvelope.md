@@ -2,7 +2,7 @@
 layout: docs
 title: ST_OctogonalEnvelope
 category: h2spatial-ext/geometry-creation
-description: 
+description: Compute the octogonal envelope of a Geometry
 prev_section: ST_MinimumRectangle
 next_section: h2spatial-ext/edit-geometries
 permalink: /docs/dev/ST_OctogonalEnvelope/
@@ -11,13 +11,44 @@ permalink: /docs/dev/ST_OctogonalEnvelope/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_OctogonalEnvelope(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
+Computes the octogonal envelope of a `GEOMETRY`.
+The octogonal envelope of a `Geometry` is tight along the four 
+extremal rectilineal parallels and along the four extremal diagonal parallels.
+The octagonal envelope may be degenerate to any extreme according to a `Geometry`.
 
 ### Examples
 
 {% highlight mysql %}
+SELECT ST_OctogonalEnvelope('POLYGON((2 2, 2 4, 4 4, 4 2, 2 2))');
+-- Answer: POLYGON ((2 2, 2 4, 4 4, 4 2, 2 2))
+
+SELECT ST_OctogonalEnvelope('POLYGON((1 2, 3 0, 5 2, 3 2, 2 3, 1 2))');
+-- Answer: POLYGON((1 2, 2 3, 4 3, 5 2, 3 0, 1 2))
+{% endhighlight %}
+
+<img class="displayed" src="../ST_OctogonalEnvelope_1.png"/>
+
+{% highlight mysql %}
+SELECT ST_OctogonalEnvelope('LINESTRING(1 1, 4 5, 3 2, 5 3, 6 4)');
+-- Answer: POLYGON((1 1, 1 2, 4 5, 5 5, 6 4, 3 1, 1 1))
+{% endhighlight %}
+
+<img class="displayed" src="../ST_OctogonalEnvelope_2.png"/>
+
+{% highlight mysql %}
+SELECT ST_OctogonalEnvelope('MULTIPOINT((1 1), (2 3))');
+-- Answer: POLYGON ((1 1, 1 2, 2 3, 2 2, 1 1))
+{% endhighlight %}
+
+<img class="displayed" src="../ST_OctogonalEnvelope_3.png"/>
+
+{% highlight mysql %}
+SELECT ST_OctogonalEnvelope('POLYGON((170 350, 95 214, 220 120, 210 210, 159 205, 170 240, 170 350))');
+-- Answer: POLYGON((95 214, 95 275, 170 350, 220 300, 220 120, 189 120, 95 214))
 {% endhighlight %}
 
 ##### See also
