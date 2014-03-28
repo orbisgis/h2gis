@@ -2,7 +2,7 @@
 layout: docs
 title: ST_OctogonalEnvelope
 category: h2spatial-ext/geometry-creation
-description: Compute the octogonal envelope of a Geometry
+description: Return the octogonal envelope of a Geometry
 prev_section: ST_MinimumRectangle
 next_section: h2spatial-ext/edit-geometries
 permalink: /docs/dev/ST_OctogonalEnvelope/
@@ -15,7 +15,7 @@ GEOMETRY ST_OctogonalEnvelope(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Computes the octogonal envelope of a `GEOMETRY`.
+Returns the octogonal envelope of a `GEOMETRY`.
 The octogonal envelope of a `Geometry` is tight along the four 
 extremal rectilineal parallels and along the four extremal diagonal parallels.
 The octagonal envelope may be degenerate to any extreme according to a `Geometry`.

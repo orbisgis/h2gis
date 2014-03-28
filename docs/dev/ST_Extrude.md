@@ -18,7 +18,7 @@ flag);
 
 ### Description
 Returns a 3D representation in a `GEOMETRYCOLLECTION` containing 
-floor (input `GEOMETRY`), wall and roof geometries from to 
+floor (input `GEOMETRY`), wall and roof Geometries from to 
 `LINESTRING` or `POLYGON`.
 
 The value for `flag` is 1 to extracts walls and 2 to extracts the roof.
@@ -36,7 +36,7 @@ SELECT ST_ZMin(ST_Extrude('LINESTRING(1 1, 4 4)', 5)),
 -- 0.0 ; 5.0
 {% endhighlight %}
 
-*Note*: Currently the WKT cannot display the Z value of the geometry, 
+*Note*: Currently the WKT cannot display the Z value of the Geometry, 
 but the WKB stores and manages the Z value. If you want to see the Z 
 value you can use ST_ZMin, ST_ZMax functions. 
 

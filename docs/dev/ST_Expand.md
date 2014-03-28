@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Expand
 category: h2spatial-ext/geometry-creation
-description: Return a Geometry's envelope by the given delta X and delta Y
+description: Return a Geometry's envelope by the given <code>delta X</code> and <code>delta Y</code>
 prev_section: ST_BoundingCircle
 next_section: ST_Extrude
 permalink: /docs/dev/ST_Expand/
