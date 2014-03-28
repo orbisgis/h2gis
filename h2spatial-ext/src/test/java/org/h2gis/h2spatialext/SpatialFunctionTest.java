@@ -1,8 +1,8 @@
 /**
  * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
@@ -19,8 +19,7 @@
  * h2spatial. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * or contact directly: info_at_ orbisgis.org
  */
 package org.h2gis.h2spatialext;
 
@@ -148,10 +147,10 @@ public class SpatialFunctionTest {
     public void test_TableEnvelope() throws Exception {
         Statement st = connection.createStatement();
         st.execute("drop table if exists ptClouds");
-        st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);" +
-                "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154))," +
-                "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154))," +
-                "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
+        st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);"
+                + "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)),"
+                + "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154)),"
+                + "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
         Envelope result = SFSUtilities.getTableEnvelope(connection, TableLocation.parse("PTCLOUDS"), "");
         Envelope expected = new Envelope(-5, 99, -21, 124);
         assertEquals(expected.getMinX(), result.getMinX(), 1e-12);
@@ -185,12 +184,12 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_IsValid() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;" +
-                "CREATE TABLE input_table(the_geom Polygon);" +
-                "INSERT INTO input_table VALUES(" +
-                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); " +
-                "INSERT INTO input_table VALUES(" +
-                "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))', 1));");
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom Polygon);"
+                + "INSERT INTO input_table VALUES("
+                + "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); "
+                + "INSERT INTO input_table VALUES("
+                + "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))', 1));");
         ResultSet rs = st.executeQuery("SELECT ST_IsValid(the_geom) FROM input_table;");
         assertTrue(rs.next());
         assertEquals(true, rs.getBoolean(1));
@@ -2979,5 +2978,55 @@ public class SpatialFunctionTest {
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
+    }
+
+    @Test
+    public void test_ST_MinimumDiameter1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (50 240, 62 250, 199 425, 250 240)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (128.69067451174988 337.7031864743203, 250 240)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_MinimumDiameter2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((360 380, 230 150, 370 100, 510 100, 517 110, 650 390, 430 220, 360 380))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (282.3538681948424 242.62607449856733, 517 110)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_MinimumDiameter3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT (395 278)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (395 278, 395 278)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_EQUALSBug() throws Exception {
+        assertTrue(WKT_READER.read("LINESTRING (395 278, 395 278)").equals(WKT_READER.read("LINESTRING (395 278, 395 278)")));
     }
 }
