@@ -61,7 +61,7 @@ SELECT ST_Expand('GEOMETRYCOLLECTION(
                    POINT(10 10),
                    POLYGON((0.5 0, 0.5 7, 1.5 7, 1.5 1, 0.5 0)))',
                  2, 2);
--- Answer: POLYGON ((-1.5 -2, -1.5 12, 12 12, 12 -2, -1.5 -2))
+-- Answer: POLYGON((-1.5 -2, -1.5 12, 12 12, 12 -2, -1.5 -2))
 {% endhighlight %}
 
 ##### See also

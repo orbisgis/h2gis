@@ -27,13 +27,13 @@ The value for `flag` is 1 to extracts walls and 2 to extracts the roof.
 
 {% highlight mysql %}
 SELECT ST_Extrude('LINESTRING(1 1, 4 4)', 5);
+-- Answer: GEOMETRYCOLLECTION(
+--    (floor)      LINESTRING(1 1, 4 4), 
+--    (wall)       MULTIPOLYGON(((1 1, 1 1, 4 4, 4 4, 1 1))), 
+--    (roof)       LINESTRING(1 1, 4 4))
 SELECT ST_ZMin(ST_Extrude('LINESTRING(1 1, 4 4)', 5)), 
        ST_ZMax(ST_Extrude('LINESTRING(1 1, 4 4)', 5));
--- Answer: GEOMETRYCOLLECTION(
---    (floor)      LINESTRING (1 1, 4 4), 
---    (wall)       MULTIPOLYGON (((1 1, 1 1, 4 4, 4 4, 1 1))), 
---    (roof)       LINESTRING (1 1, 4 4))
--- 0.0 ; 5.0
+-- Answer: 0.0 ; 5.0
 {% endhighlight %}
 
 *Note*: Currently the WKT cannot display the Z value of the Geometry, 
@@ -73,7 +73,7 @@ SELECT ST_Extrude('POLYGON((0 10, 10 10, 10 0, 0 0, 0 10),
 -- Answer: GEOMETRYCOLLECTION(
 --             POLYGON((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0), 
 --                (1 3 0, 3 3 0, 3 1 0, 1 1 0, 1 3 0)), 
---             MULTIPOLYGON (((0 10, 0 10, 10 10, 10 10, 0 10)), 
+--             MULTIPOLYGON(((0 10, 0 10, 10 10, 10 10, 0 10)), 
 --                ((10 10, 10 10, 10 0, 10 0, 10 10)), 
 --                ((10 0, 10 0, 0 0, 0 0, 10 0)), 
 --                ((0 0, 0 0, 0 10, 0 10, 0 0)), 
@@ -89,7 +89,7 @@ SELECT ST_Extrude('POLYGON((0 10, 10 10, 10 0, 0 0, 0 10),
 
 {% highlight mysql %}
 SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))', 10, 1);
--- Answer: MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), 
+-- Answer: MULTIPOLYGON(((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), 
 --            ((0 1 0, 0 1 10, 1 1 0, 1 1 10, 0 1 0)), 
 --            ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), 
 --            ((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))
