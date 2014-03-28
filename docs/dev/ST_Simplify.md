@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Simplify
 category: h2spatial-ext/process-geometries
-description: 
+description: Return a simplified version of the given Geometry
 prev_section: ST_PrecisionReducer
 next_section: ST_SimplifyPreserveTopology
 permalink: /docs/dev/ST_Simplify/
@@ -11,13 +11,48 @@ permalink: /docs/dev/ST_Simplify/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_Simplify(GEOMETRY geom, double distance);
 {% endhighlight %}
 
 ### Description
+Returns a simplified version of the given `GEOMETRY` using the Douglas-Peuker algorithm.
+The variable `distance` is a distance tolerance for the simplification.
+
+<div class="note warning">
+    <h5>The standard Douglas-Peucker algorithm does not preserve topology.</h5>
+</div>
 
 ### Examples
 
 {% highlight mysql %}
+SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2, 
+                             4 2, 4 1, 3 0, 2 0, 2 1))', 
+                    0.5)
+-- Answer: POLYGON((2 1, 1 2, 3 3, 4 1, 3 0, 2 0, 2 1))
+
+SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2, 
+                             4 2, 4 1, 3 0, 2 0, 2 1))', 
+                    1)
+-- Answer:POLYGON((2 1, 1 2, 3 3, 4 1, 2 1))
+
+SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2, 
+                             4 2, 4 1, 3 0, 2 0, 2 1))', 
+                    2)
+-- Answer: POLYGON EMPTY
+{% endhighlight %}
+
+<img class="displayed" src="../ST_Simplify.png"/>
+
+{% highlight mysql %}
+SELECT ST_Simplify('MULTIPOINT( (190 300), (10 11))', 4);
+-- Answer: MULTIPOINT((190 300), (10 11))
+
+SELECT ST_Simplify('LINESTRING (250 250, 280 290, 300 230, 
+                                340 300, 360 260, 440 310, 
+                                470 360, 604 286), 
+                    40);
+-- Answer: LINESTRING(250 250, 280 290, 300 230, 470 360, 
+--                    604 286)
 {% endhighlight %}
 
 ##### See also
