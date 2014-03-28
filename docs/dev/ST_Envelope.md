@@ -78,7 +78,11 @@ SELECT ST_SRID(ST_Envelope(
 
 {% include extent-envelope-cf.html %}
 
+##### Comparison with [`ST_MinimumRectangle`](../ST_MinimumRectangle)
+
+{% include minimumrectangle-envelope-cf.html %}
+
 ##### See also
 
-* [`ST_Extent`](../ST_Extent)
+* [`ST_Extent`](../ST_Extent), [`ST_MinimumRectangle`](../ST_MinimumRectangle)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Envelope.java" target="_blank">Source code</a>

@@ -144,9 +144,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.6759202"
-     inkscape:cx="131.6567"
-     inkscape:cy="420.53007"
+     inkscape:zoom="0.95589551"
+     inkscape:cx="349.14467"
+     inkscape:cy="566.98108"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -185,7 +185,7 @@
        height="412.56033"
        x="17.019896"
        y="610.33112"
-       inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_Envelope_3.png"
+       inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_MinimumRectangle_compare.png"
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
     <path
@@ -354,20 +354,14 @@
        id="path3953"
        d="m 391.14813,967.21047 279.6314,0"
        style="fill:none;stroke:#000000;stroke-width:0.36860001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.4744, 2.9488;stroke-dashoffset:0" />
-    <path
-       style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 390.49706,926.58142 120.38491,40.83541 0.35356,-80.07984 -41.01218,-0.17678 z"
-       id="path3957"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="ccccc" />
     <rect
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
        inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_MinimumRectangle_1.png"
-       y="73.97995"
+       y="148.69292"
        x="121.05367"
-       height="289.19855"
-       width="302.33566"
+       height="214.48558"
+       width="294.93835"
        id="rect3033-9"
        style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline" />
     <path
@@ -377,8 +371,8 @@
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path3035-8"
-       d="m 149.60017,81.807299 0,279.155911"
-       style="fill:none;stroke:#000000;stroke-width:0.8440876px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
+       d="m 149.60017,161.74511 0,199.28029"
+       style="fill:none;stroke:#000000;stroke-width:0.71971309px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
     <path
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
@@ -393,8 +387,8 @@
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
-       style="fill:none;stroke:#000000;stroke-width:0.3362813;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.34512505, 2.69025013;stroke-dashoffset:0;display:inline"
-       d="M 189.62642,83.715077 190.6266,343.37879"
+       style="fill:none;stroke:#000000;stroke-width:0.2798059;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.11922339, 2.23844681;stroke-dashoffset:0;display:inline"
+       d="m 189.59818,163.68683 1.00046,179.7202"
        id="path3039-6"
        inkscape:connector-curvature="0" />
     <path
@@ -404,15 +398,15 @@
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
        inkscape:connector-curvature="0"
        id="path3041-9"
-       d="M 229.62656,83.715077 228.62639,343.37879"
-       style="fill:none;stroke:#000000;stroke-width:0.3362813;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.34512505, 2.69025013;stroke-dashoffset:0;display:inline" />
+       d="m 229.60962,163.68683 -1.00046,179.7202"
+       style="fill:none;stroke:#000000;stroke-width:0.2798059;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.11922339, 2.23844681;stroke-dashoffset:0;display:inline" />
     <path
        sodipodi:nodetypes="cc"
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
-       style="fill:none;stroke:#000000;stroke-width:0.3362813;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.34512505, 2.69025013;stroke-dashoffset:0;display:inline"
-       d="M 269.6267,83.715077 269.12662,341.7641"
+       style="fill:none;stroke:#000000;stroke-width:0.2798059;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.11922339, 2.23844681;stroke-dashoffset:0;display:inline"
+       d="m 269.62106,163.68683 -0.50023,178.60263"
        id="path3043-4"
        inkscape:connector-curvature="0" />
     <path
@@ -422,15 +416,15 @@
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
        inkscape:connector-curvature="0"
        id="path3045-2"
-       d="M 309.6269,83.715077 308.62669,341.36043"
-       style="fill:none;stroke:#000000;stroke-width:0.3362813;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.34512505, 2.69025013;stroke-dashoffset:0;display:inline" />
+       d="m 309.63254,163.68683 -1.00048,178.32324"
+       style="fill:none;stroke:#000000;stroke-width:0.2798059;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.11922339, 2.23844681;stroke-dashoffset:0;display:inline" />
     <path
        sodipodi:nodetypes="cc"
        inkscape:export-ydpi="99.89669"
        inkscape:export-xdpi="99.89669"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
-       style="fill:none;stroke:#000000;stroke-width:0.3362813;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.34512505, 2.69025013;stroke-dashoffset:0;display:inline"
-       d="m 349.62706,83.715077 0,258.049023"
+       style="fill:none;stroke:#000000;stroke-width:0.2798059;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.11922339, 2.23844681;stroke-dashoffset:0;display:inline"
+       d="m 349.644,163.68683 0,178.60263"
        id="path3047-4"
        inkscape:connector-curvature="0" />
     <path
@@ -480,7 +474,7 @@
        xml:space="preserve"
        id="flowRoot3067-8"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
-       transform="matrix(0.61674087,0,0,0.61674087,-169.43347,-295.93466)"><flowRegion
+       transform="matrix(0.61674087,0,0,0.61674087,-169.43347,-227.93466)"><flowRegion
          id="flowRegion3069-6"><rect
            id="rect3071-6"
            width="121.21831"
@@ -507,8 +501,8 @@
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path3083-6"
-       d="m 389.62719,83.715077 0,257.645353"
-       style="fill:none;stroke:#000000;stroke-width:0.3362813;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.34512505, 2.69025013;stroke-dashoffset:0;display:inline"
+       d="m 389.65543,163.68683 0,178.32324"
+       style="fill:none;stroke:#000000;stroke-width:0.2798059;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.11922339, 2.23844681;stroke-dashoffset:0;display:inline"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
@@ -517,22 +511,6 @@
        d="m 149.63962,183.45412 259.64477,0"
        id="path3089-3"
        inkscape:connector-curvature="0"
-       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
-       inkscape:export-xdpi="99.89669"
-       inkscape:export-ydpi="99.89669" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:0.3552317;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.42092674, 2.84185348;stroke-dashoffset:0;display:inline"
-       d="m 149.63962,143.30215 259.64477,0"
-       id="path4276"
-       inkscape:connector-curvature="0"
-       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
-       inkscape:export-xdpi="99.89669"
-       inkscape:export-ydpi="99.89669" />
-    <path
-       inkscape:connector-curvature="0"
-       id="path4278"
-       d="m 149.63962,103.30282 259.64477,0"
-       style="fill:none;stroke:#000000;stroke-width:0.3552317;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.42092674, 2.84185348;stroke-dashoffset:0;display:inline"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
@@ -560,12 +538,36 @@
            x="29.291904"
            y="1079.5618"
            style="font-size:24px" /></flowRegion><flowPara
-         id="flowPara3156-3">ST_MinimumRectangle</flowPara></flowRoot>    <path
-       style="fill:none;stroke:#ff0000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:3, 3;stroke-dashoffset:0"
-       d="m 209.71411,214.24549 -41.05515,92.46654 153.49446,55.84978 27.73996,-99.86385 z"
-       id="path4015"
+         id="flowPara3156-3">ST_MinimumRectangle</flowPara></flowRoot>    <rect
+       style="fill:none;fill-rule:evenodd;stroke:#ff0000;stroke-width:1.2570643;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:3.77119291,3.77119291;stroke-dashoffset:0"
+       id="rect3943"
+       width="153.17686"
+       height="100.14667"
+       x="259.77063"
+       y="138.95894"
+       transform="matrix(0.94837364,0.31715522,-0.30355757,0.9528131,0,0)" />
+    <path
+       style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 390.49706,926.58142 120.38491,40.83541 0.35356,-80.07984 -41.01218,-0.17678 z"
+       id="path3957"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />
+    <path
+       style="fill:#ffaa59;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;fill-opacity:1;opacity:0.69999999999999996"
+       d="m 470.23968,926.82545 41.32251,-120.82911 38.70716,40.79944 z"
+       id="path4051"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:none;stroke:#ff0000;stroke-width:1.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4.5, 4.5;stroke-dashoffset:0"
+       id="rect3975"
+       width="52.262688"
+       height="125.35167"
+       x="750.12299"
+       y="591.73505"
+       inkscape:transform-center-x="-59.835977"
+       inkscape:transform-center-y="-44.083539"
+       transform="matrix(0.94336698,0.33175102,-0.33175102,0.94336698,0,0)"
+       ry="0" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -629,12 +631,6 @@
        id="path3133"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cc" />
-    <path
-       style="opacity:0.7;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
-       d="m 470.33037,926.57295 40.93934,-118.93933 39.2981,79.46966 z"
-       id="path3947"
-       inkscape:connector-curvature="0"
-       sodipodi:nodetypes="cccc" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.9262172px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline"
        d="m 51.359886,619.61718 -0.7071,399.17792"
@@ -851,7 +847,7 @@
        sodipodi:nodetypes="cc" />
     <path
        style="opacity:0.7;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
-       d="m 131.29537,925.91611 40.93934,-118.93936 39.2981,79.46966 z"
+       d="m 131.29537,925.91611 40.93934,-118.93936 39.2981,38.14715 z"
        id="path3947-7"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="cccc" />
@@ -903,5 +899,34 @@
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
        inkscape:export-xdpi="99.89669"
        inkscape:export-ydpi="99.89669" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path4091-9"
+       d="m 431.45802,886.39681 0.22107,-199.14416"
+       style="fill:none;stroke:#f00000;stroke-width:2;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:16, 16;stroke-dashoffset:0;display:inline" />
+    <path
+       inkscape:export-ydpi="99"
+       inkscape:export-xdpi="99"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakeLine_5.png"
+       transform="matrix(0,1.2389248,-1.2389248,0,1088.9993,282.08959)"
+       d="m 331.07143,401.82648 a 3.5714285,3.5714285 0 1 1 -7.14286,0 3.5714285,3.5714285 0 1 1 7.14286,0 z"
+       sodipodi:ry="3.5714285"
+       sodipodi:rx="3.5714285"
+       sodipodi:cy="401.82648"
+       sodipodi:cx="327.5"
+       id="path4095-4"
+       style="fill:none;stroke:#ff0000;stroke-width:1.61430299;stroke-miterlimit:0;stroke-opacity:1;stroke-dasharray:3.22860597, 1.61430298;stroke-dashoffset:4.35861805;display:inline"
+       sodipodi:type="arc" />
+    <rect
+       style="opacity:1;fill:none;fill-opacity:1;fill-rule:evenodd;stroke:#ff0000;stroke-width:1.49999999;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:4.49999998,4.49999998;stroke-dashoffset:0"
+       id="rect3973"
+       width="125.58134"
+       height="74.797119"
+       x="668.41595"
+       y="676.46936"
+       inkscape:transform-center-x="-5.3226288"
+       inkscape:transform-center-y="4.4610097"
+       transform="matrix(0.94703976,0.32111634,-0.32111634,0.94703976,0,0)" />
   </g>
 </svg>
