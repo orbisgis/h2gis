@@ -27,4 +27,12 @@ public abstract class DelayedSimpleResultSet extends SimpleResultSet {
      * Initialize the ResultSet.
      */
     protected abstract void init() throws SQLException;
+
+    /**
+     * Return true if the init method has been called.
+     * @return true if the init method has been called
+     */
+    public boolean isInitialized() {
+        return isInitialized;
+    }
 }
