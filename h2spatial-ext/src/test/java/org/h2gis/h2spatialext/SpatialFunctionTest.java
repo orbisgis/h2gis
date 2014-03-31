@@ -3019,14 +3019,9 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('POINT (395 278)'));");
         ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (395 278, 395 278)")));
+        assertTrue(((Geometry) rs.getObject(1)).equalsExact(WKT_READER.read("LINESTRING (395 278, 395 278)")));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-
-    @Test
-    public void test_EQUALSBug() throws Exception {
-        assertTrue(WKT_READER.read("LINESTRING (395 278, 395 278)").equals(WKT_READER.read("LINESTRING (395 278, 395 278)")));
-    }
-}
+   }
