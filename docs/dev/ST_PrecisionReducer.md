@@ -2,7 +2,7 @@
 layout: docs
 title: ST_PrecisionReducer
 category: h2spatial-ext/process-geometries
-description: 
+description: Reduce the Geometry precision
 prev_section: ST_Polygonize
 next_section: ST_Simplify
 permalink: /docs/dev/ST_PrecisionReducer/
@@ -11,13 +11,19 @@ permalink: /docs/dev/ST_PrecisionReducer/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_PrecisionReducer(GEOMETRY geom, int nbDec);
 {% endhighlight %}
 
 ### Description
+Reduces the Geometry precision. `nbDec` is the number of decimals to keep.
 
 ### Examples
 
 {% highlight mysql %}
+SELECT ST_PrecisionReducer('MULTIPOINT((190.1239999997 300), 
+                                       (10 11.1233))', 3);
+-- Answer: MULTIPOINT((190.124 300), (10 11.123))
+
 {% endhighlight %}
 
 ##### See also
