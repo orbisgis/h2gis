@@ -635,7 +635,17 @@ public class ST_ShortestPathTest {
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testNonexistantVertex() throws Throwable {
+    public void testNonexistantSourceVertex() throws Throwable {
+        try {
+            // The graph does not contain vertex 6.
+            check(oneToOne(U, W, st, 6, 1), null);
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNonexistantDestinationVertex() throws Throwable {
         try {
             // The graph does not contain vertex 6.
             check(oneToOne(U, W, st, 1, 6), null);
