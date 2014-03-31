@@ -16,14 +16,29 @@ double distance);
 {% endhighlight %}
 
 ### Description
-Return a simplified Geometry and ensures that the result is a valid Geometry having the same dimension and number of components as the input, and with the components having the same topological relationship.
-
-<div class="note">
-    <h5>
-    If you don't want preserve topology you can use ST_Simplify.</h5>
-</div>
+Returns a simplified Geometry and ensures that the result having the same dimension and number of components as the input, and with the components having the same topological relationship.
 
 ### Examples
+
+|           Geom Polygon                       |    |
+|----------------------------------------------|----|
+| POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 56 30, 46 33, 46 34, 47 44, 35 36, 45 33, 43 19, 29 21, 29 22, 35 26, 24 39, 8 25)) |    |
+
+{% highlight mysql %}
+SELECT st_simplifypreservetopology(geom, 10);
+-- Answer: POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 
+--                  56 30, 46 33, 46 34, 47 44, 35 36, 
+--                  45 33, 43 19, 29 21, 29 22, 35 26, 
+--                  24 39, 8 25))
+
+SELECT st_simplifypreservetopology(geom, 20);
+-- Answer:POLYGON((8 25, 33 3, 56 30, 47 44, 43 19, 8 25))
+
+SELECT st_simplifypreservetopology(geom, 30);
+-- Answer: POLYGON((8 25, 33 3, 56 30, 47 44, 8 25))
+{% endhighlight %}
+
+<img class="displayed" src="../ST_SimplifyPreserveTopology.png"/>
 
 {% highlight mysql %}
 SELECT ST_SimplifyPreserveTopology('MULTIPOINT((190 300), 
@@ -37,34 +52,7 @@ SELECT ST_SimplifyPreserveTopology('LINESTRING(250 250, 280 290,
                                                470 360, 604 286)', 
                                     40);
 -- Answer: LINESTRING(250 250, 280 290, 300 230, 470 360, 604 286)
-
-SELECT ST_SimplifyPreserveTopology('POLYGON((1 2, 4 2, 1 4, 
-                                             3 5, 6 5, 4 4, 
-                                             5 3, 4 3, 1 2))', 
-                                    1);
--- Answer: POLYGON((3.1818181818181817 2.5454545454545454,  
---                  1 4, 6 5, 4 4, 5 3, 
---                  3.1818181818181817 2.5454545454545454))
 {% endhighlight %}
-
- | 	          Geom Polygon                     | 
- |----------------------------------------------|
- | POLYGON ((24 39, 8 25, 43 19, 47 44, 35 36,  |
- |           56 30, 33 3, 15 11, 35 26, 24 39)) |
-
-{% highlight mysql %}
-SELECT st_simplifypreservetopology(geom, 10);
-SELECT st_simplifypreservetopology(geom, 20);
-SELECT st_simplifypreservetopology(geom, 30);
--- Answer: POLYGON ((24 39, 8 25, 43 19, 47 44, 35 36, 
---                   56 30, 33 3, 15 11, 35 26, 24 39))
--- POLYGON ((24 39, 8 25, 43 19, 47 44, 56 30, 33 3, 
---           15 11, 35 26, 24 39))
--- POLYGON ((24 39, 56 30, 33 3, 15 11, 24 39))
-
-{% endhighlight %}
-
-<img class="displayed" src="../ST_SimplifyPreserveTopolgy.png"/>
 
 ##### Comparison with [`ST_Simplify`](../ST_Simplify)
 
