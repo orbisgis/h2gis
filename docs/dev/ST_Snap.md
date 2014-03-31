@@ -11,13 +11,29 @@ permalink: /docs/dev/ST_Snap/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_Snap(GEOMETRY geomA, GEOMETRY geomB, double distance);
 {% endhighlight %}
 
 ### Description
+Snaps two geometries together with a given tolerance.
 
 ### Examples
 
 {% highlight mysql %}
+SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)', 
+               'LINESTRING(5 2, 2 1, 1 2)',
+               1);
+-- Answer: LINESTRING(1 2, 2 4, 4 4, 5 2)
+
+SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)', 
+               'LINESTRING(5 2, 2 1, 1 2)',
+               2);
+-- Answer: LINESTRING(1 2, 2 1, 2 4, 4 4, 5 2)
+
+SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)', 
+               'LINESTRING(5 2, 2 1, 1 2)',
+               3);
+-- Answer:LINESTRING (1 2, 1 2, 2 1, 5 2, 5 2)
 {% endhighlight %}
 
 ##### See also
