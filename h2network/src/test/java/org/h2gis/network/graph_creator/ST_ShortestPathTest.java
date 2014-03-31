@@ -640,6 +640,7 @@ public class ST_ShortestPathTest {
             // The graph does not contain vertex 6.
             check(oneToOne(U, W, st, 6, 1), null);
         } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains("Source vertex not found"));
             throw e.getOriginalCause();
         }
     }
@@ -650,6 +651,7 @@ public class ST_ShortestPathTest {
             // The graph does not contain vertex 6.
             check(oneToOne(U, W, st, 1, 6), null);
         } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains("Target vertex not found"));
             throw e.getOriginalCause();
         }
     }
