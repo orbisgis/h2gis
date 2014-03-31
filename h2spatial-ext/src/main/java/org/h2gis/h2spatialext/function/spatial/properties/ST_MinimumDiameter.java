@@ -38,8 +38,8 @@ public class ST_MinimumDiameter extends AbstractFunction implements ScalarFuncti
 
     
     public ST_MinimumDiameter(){
-        addProperty(PROP_REMARKS, "Compute a minimum diameter for a given geometry \b"
-                + "which is a represented by a linestring.");
+        addProperty(PROP_REMARKS, "Compute the minimum diameter for a given geometry \b"
+                + "which is a linestring.");
     }
     
     @Override
