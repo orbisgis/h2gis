@@ -27,6 +27,7 @@ package org.h2gis.network.graph_creator;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2.tools.SimpleResultSet;
+import org.h2gis.h2spatial.DelayedSimpleResultSet;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -158,46 +159,46 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         return oneToOne(connection, inputTable, orientation, weight, source, destination);
     }
 
-    private static ResultSet oneToOne(Connection connection,
-                                      String inputTable,
-                                      String orientation,
-                                      String weight,
-                                      int source,
-                                      int destination) throws SQLException {
-        // If we only want the column names, there is no need to do the calculation.
-        // This is a hack. See: https://groups.google.com/forum/#!topic/h2-database/NHH0rDeU258
-        if (connection.getMetaData().getURL().equals("jdbc:columnlist:connection")) {
-            return prepareResultSet();
-        }
-        // Do the calculation.
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
-        final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
-        final VDijkstra vDestination = graph.getVertex(destination);
-        final double distance = dijkstra.oneToOne(graph.getVertex(source), vDestination);
+    private static ResultSet oneToOne(final Connection connection,
+                                      final String inputTable,
+                                      final String orientation,
+                                      final String weight,
+                                      final int source,
+                                      final int destination) throws SQLException {
+        final DelayedSimpleResultSet output = new DelayedSimpleResultSet() {
+            @Override
+            protected void init() throws SQLException {
+                final KeyedGraph<VDijkstra, Edge> graph =
+                        prepareGraph(connection, inputTable, orientation, weight);
+                final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
+                final VDijkstra vDestination = graph.getVertex(destination);
+                final double distance = dijkstra.oneToOne(graph.getVertex(source), vDestination);
 
-        final SimpleResultSet output = prepareResultSet();
-        if (distance == Double.POSITIVE_INFINITY) {
-            output.addRow(null, -1, -1, -1, source, destination, distance);
-        } else {
-            // Create index on table if it doesn't already exist.
-            final Statement st = connection.createStatement();
-            try {
-                st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + TableLocation.parse(inputTable)
-                        + "(" + ST_Graph.EDGE_ID + ")");
-            } finally {
-                st.close();
-            }
+                if (distance == Double.POSITIVE_INFINITY) {
+                    addRow(null, -1, -1, -1, source, destination, distance);
+                } else {
+                    // Create index on table if it doesn't already exist.
+                    final Statement st = connection.createStatement();
+                    try {
+                        st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " +
+                                TableLocation.parse(inputTable) + "(" + ST_Graph.EDGE_ID + ")");
+                    } finally {
+                        st.close();
+                    }
 
-            // Record the results.
-            ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
-            final PreparedStatement ps = connection.prepareStatement(
-                    "SELECT * FROM " + f.tableName + " WHERE " + ST_Graph.EDGE_ID + "=?");
-            try {
-                f.addPredEdges(graph, vDestination, output, ps, 1);
-            } finally {
-                ps.close();
+                    // Record the results.
+                    ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
+                    final PreparedStatement ps = connection.prepareStatement(
+                            "SELECT * FROM " + f.tableName + " WHERE " + ST_Graph.EDGE_ID + "=?");
+                    try {
+                        f.addPredEdges(graph, vDestination, this, ps, 1);
+                    } finally {
+                        ps.close();
+                    }
+                }
             }
-        }
+        };
+        addColumns(output);
         return output;
     }
 
@@ -246,13 +247,10 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
     }
 
     /**
-     * Return a new {@link org.h2.tools.SimpleResultSet} with SOURCE,
-     * DESTINATION and DISTANCE columns.
-     * @return a new {@link org.h2.tools.SimpleResultSet} with SOURCE,
-     * DESTINATION and DISTANCE columns
+     * Add appropriate columns to a ResultSet.
+     * @return The given ResultSet with appropriate columns added
      */
-    private static SimpleResultSet prepareResultSet() {
-        SimpleResultSet output = new SimpleResultSet();
+    private static void addColumns(DelayedSimpleResultSet output) {
         output.addColumn(EDGE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
         output.addColumn(EDGE_ID, Types.INTEGER, 10, 0);
         output.addColumn(PATH_ID, Types.INTEGER, 10, 0);
@@ -260,6 +258,5 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         output.addColumn(SOURCE, Types.INTEGER, 10, 0);
         output.addColumn(DESTINATION, Types.INTEGER, 10, 0);
         output.addColumn(WEIGHT, Types.DOUBLE, 10, 0);
-        return output;
     }
 }
