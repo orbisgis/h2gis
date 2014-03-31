@@ -87,6 +87,7 @@ import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.network.graph_creator.ST_Graph;
+import org.h2gis.network.graph_creator.ST_ShortestPath;
 import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 
 /**
@@ -174,6 +175,7 @@ public class CreateSpatialExtension {
                 new ST_ZUpdateExtremities(),
                 // h2network functions
                 new ST_Graph(),
+                new ST_ShortestPath(),
                 new ST_ShortestPathLength()};
     }
 
