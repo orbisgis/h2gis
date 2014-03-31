@@ -110,8 +110,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="197.33441"
-     inkscape:cy="750.96699"
+     inkscape:cx="202.33441"
+     inkscape:cy="746.96699"
      inkscape:document-units="px"
      inkscape:current-layer="layer6"
      showgrid="false"
@@ -140,15 +140,35 @@
      inkscape:label="Fond"
      style="display:inline">
     <rect
+       inkscape:export-ydpi="95.252747"
+       inkscape:export-xdpi="95.252747"
+       inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_Simplify_1.png"
+       y="279.90424"
+       x="40.307648"
+       height="257.39252"
+       width="519.67004"
+       id="rect4122"
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none" />
+    <rect
        style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect5041"
        width="519.67004"
-       height="485.39252"
+       height="257.39252"
        x="40.307648"
        y="17.904253"
-       inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_Simplify.md.png"
-       inkscape:export-xdpi="111.6843"
-       inkscape:export-ydpi="111.6843" />
+       inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_Simplify.png"
+       inkscape:export-xdpi="95.252747"
+       inkscape:export-ydpi="95.252747" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend-7)"
+       d="m 280,137.36218 60,1"
+       id="path3120"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend-7)"
+       d="m 280,405.36218 60,1"
+       id="path4120"
+       inkscape:connector-curvature="0" />
   </g>
   <g
      inkscape:label="Calque 1"
@@ -419,6 +439,138 @@
        d="m 389.26228,149.74038 40.30509,39.24442 0,40.65864 40.30509,-0.7071 38.53732,-39.95154 -38.53732,-80.61017 z"
        id="path4337"
        inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3074"
+       d="m 75.29346,293.98636 0,215.3681"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3076"
+       d="m 53.32615,491.61079 216.76941,0"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 115.31848,303.60309 0,187.99077"
+       id="path3078"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       inkscape:connector-curvature="0"
+       id="path3080"
+       d="m 155.33993,303.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 195.36138,303.60309 0,187.99077"
+       id="path3082"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 75.33761,451.56255 187.60161,0"
+       id="path3084"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       inkscape:connector-curvature="0"
+       id="path3086"
+       d="m 75.33761,411.56321 187.60161,0"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 75.33761,371.56388 187.60161,0"
+       id="path3088"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       transform="matrix(0.61674087,0,0,0.61674087,-43.276142,103.92248)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3090"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3092"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect3094" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara3096">x</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       xml:space="preserve"
+       id="flowRoot3098"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,-249.04018,-105.06745)"><flowRegion
+         id="flowRegion3100"><rect
+           id="rect3102"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3104"
+         style="font-style:italic">y</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="111.6843"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       xml:space="preserve"
+       id="flowRoot3106"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.26110367,0,0,0.26110367,-74.486813,332.21516)"><flowRegion
+         id="flowRegion3108"><rect
+           id="rect3110"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3112"
+         style="font-style:italic">0,0</flowPara></flowRoot>    <path
+       inkscape:connector-curvature="0"
+       id="path3114"
+       d="m 235.36429,303.60309 0,187.99077"
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0"
+       d="m 75.33761,331.61577 187.60161,0"
+       id="path3116"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
+       inkscape:export-xdpi="111.6843"
+       inkscape:export-ydpi="111.6843" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3118"
+       d="m 155.91704,491.11312 39.24443,0.35355 39.95153,-39.59798 0.35356,-40.65864 -40.30509,0 0,-39.59798 -41.01219,-0.35355 0,39.59798 -38.89087,0.7071 39.95153,39.95154 z"
+       style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -429,7 +581,7 @@
        xml:space="preserve"
        id="flowRoot3238"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-       transform="translate(-487.43207,373.46932)"><flowRegion
+       transform="translate(-359.43207,394.46932)"><flowRegion
          id="flowRegion3240"><rect
            id="rect3242"
            width="171.59885"
@@ -456,7 +608,7 @@
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path3153-9"
-       d="m 223.46611,275.45006 0,215.3681"
+       d="m 351.46611,296.45006 0,215.3681"
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
     <path
        inkscape:export-ydpi="111.6843"
@@ -465,14 +617,14 @@
        sodipodi:nodetypes="cc"
        inkscape:connector-curvature="0"
        id="path3155-8"
-       d="m 201.4988,473.07449 216.76941,0"
+       d="m 329.4988,494.07449 216.76941,0"
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline" />
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
-       d="m 263.49113,285.06679 0,187.99077"
+       d="m 391.49113,306.06679 0,187.99077"
        id="path3157-5"
        inkscape:connector-curvature="0" />
     <path
@@ -481,14 +633,14 @@
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
        inkscape:connector-curvature="0"
        id="path3159-9"
-       d="m 303.51258,285.06679 0,187.99077"
+       d="m 431.51258,306.06679 0,187.99077"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
-       d="m 343.53403,285.06679 0,187.99077"
+       d="m 471.53403,306.06679 0,187.99077"
        id="path3161-2"
        inkscape:connector-curvature="0" />
     <path
@@ -496,7 +648,7 @@
        inkscape:export-xdpi="111.6843"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
-       d="m 223.51026,433.02625 187.60161,0"
+       d="m 351.51026,454.02625 187.60161,0"
        id="path3163-6"
        inkscape:connector-curvature="0" />
     <path
@@ -505,21 +657,21 @@
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
        inkscape:connector-curvature="0"
        id="path3165-2"
-       d="m 223.51026,393.02691 187.60161,0"
+       d="m 351.51026,414.02691 187.60161,0"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
-       d="m 223.51026,353.02758 187.60161,0"
+       d="m 351.51026,374.02758 187.60161,0"
        id="path3167-7"
        inkscape:connector-curvature="0" />
     <flowRoot
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
-       transform="matrix(0.61674087,0,0,0.61674087,104.8965,85.38618)"
+       transform="matrix(0.61674087,0,0,0.61674087,232.8965,106.38618)"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
        id="flowRoot3169-8"
        xml:space="preserve"><flowRegion
@@ -537,7 +689,7 @@
        xml:space="preserve"
        id="flowRoot3177-5"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
-       transform="matrix(0.61674087,0,0,0.61674087,-100.86753,-123.60375)"><flowRegion
+       transform="matrix(0.61674087,0,0,0.61674087,27.13247,-102.60375)"><flowRegion
          id="flowRegion3179-6"><rect
            id="rect3181-9"
            width="121.21831"
@@ -552,7 +704,7 @@
        xml:space="preserve"
        id="flowRoot3185-6"
        style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
-       transform="matrix(0.26110367,0,0,0.26110367,73.685838,313.67886)"><flowRegion
+       transform="matrix(0.26110367,0,0,0.26110367,201.68584,334.67886)"><flowRegion
          id="flowRegion3187-6"><rect
            id="rect3189-6"
            width="121.21831"
@@ -563,14 +715,14 @@
          style="font-style:italic">0,0</flowPara></flowRoot>    <path
        inkscape:connector-curvature="0"
        id="path3193-0"
-       d="m 383.53694,285.06679 0,187.99077"
+       d="m 511.53694,306.06679 0,187.99077"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <path
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline"
-       d="m 223.51026,313.07947 187.60161,0"
+       d="m 351.51026,334.07947 187.60161,0"
        id="path3195-9"
        inkscape:connector-curvature="0"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Intersection_1.png"
@@ -578,7 +730,7 @@
        inkscape:export-ydpi="111.6843" />
     <path
        style="opacity:0.7;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
-       d="m 263.43493,393.20408 40.30509,39.24442 c 2.36589,0.17324 78.84241,0 78.84241,0 l -38.53732,-80.61017 z"
+       d="m 391.43493,414.20408 40.30509,39.24442 c 2.36589,0.17324 78.84241,0 78.84241,0 l -38.53732,-80.61017 z"
        id="path4337-8"
        inkscape:connector-curvature="0"
        sodipodi:nodetypes="ccccc" />

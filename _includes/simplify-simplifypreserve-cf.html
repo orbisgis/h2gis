@@ -1,0 +1,36 @@
+{% highlight mysql %}
+CREATE TABLE input_table(geom GEOMETRY);
+INSERT INTO input_table VALUES (
+            'POLYGON((2 3, 1 1, 4 0, 5 2, 4 2, 5 2, 2 3))');
+
+SELECT ST_SimplifyPreserveTopology(geom, 0.1) SPT, 
+       ST_Simplify(geom, 0.1) S FROM input_table;
+
+-- Answer:
+-- |           SPT            |            S             |
+-- |--------------------------|--------------------------|
+-- | POLYGON((2 3, 1 1, 4 0,  | POLYGON((2 3, 5 2, 4 0,  |
+-- |          5 2, 4 2, 5 2,  |          1 1, 2 3))      |
+-- |          2 3))           |                          |
+{% endhighlight %}
+
+<img class="displayed" src="../ST_SimplifyPreserveTopology_compare_1.png"/>
+
+{% highlight mysql %}
+CREATE TABLE input_table(geom GEOMETRY);
+INSERT INTO input_table VALUES (
+            ''POLYGON((24 39, 8 25, 43 19, 47 44, 35 36, 56 30, 33 3, 15 11, 35 26, 24 39))');
+
+SELECT ST_SimplifyPreserveTopology(geom, 0.1) SPT, 
+       ST_Simplify(geom, 0.1) S FROM input_table;
+
+-- Answer:
+|             SPT              |                              S                              |
+|------------------------------|-------------------------------------------------------------|
+| POLYGON((24 39, 8 25, 43 19, | MULTIPOLYGON(((24 39,                                       |
+| 47 44, 35 36, 56 30,         | 35 26, 28.891472868217054 21.41860465116279, 8 25, 24 39)), |
+| 33 3, 15 11, 35 26,          | ((45.25136612021858 33.07103825136612, 35 36,               |
+| 24 39))                      | 47 44, 45.25136612021858 33.07103825136612)))               |
+{% endhighlight %}
+
+<img class="displayed" src="../ST_SimplifyPreserveTopology_compare_2.png"/>
