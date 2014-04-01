@@ -60,29 +60,29 @@ public class GraphCreatorTest {
 
     public static void registerCormenGraph(Connection connection) throws SQLException {
         final Statement st = connection.createStatement();
-//                   1
-//           >2 ------------>3
+//                 2:1
+//           >2 <----------- 3
 //          / |^           ->|^
-//       10/ / |      9   / / |
-//        / 2| |3    -----  | |
-//       /   | |    /      4| |6
+//     1:10/ / |    6:9   / / |
+//        /  | |     -----  | |
+//       /3:2| |4:3 /    8:4| |9:6
 //      1<---------------   | |
-//       \   | |  /     7\  | |
-//       5\  | / /        \ | /
-//         \ v| /    2     \v|
+//       \   | |  /  10:7\  | |
+//     5:5\  | / /        \ | /
+//         \ v| /  7:2     >v|
 //          > 4 -----------> 5
 //               CORMEN
         st.execute("CREATE TABLE cormen(road LINESTRING, weight DOUBLE, edge_orientation INT);" +
                 "INSERT INTO cormen VALUES "
                 + "('LINESTRING (0 1, 1 2)', 10.0, 1),"
                 + "('LINESTRING (1 2, 2 2)', 1.0, -1),"
-                + "('LINESTRING (1 2, 1 0)', 2.0,  1),"
-                + "('LINESTRING (1 0, 1 2)', 3.0,  1),"
+                + "('LINESTRING (1 2, 0.75 1, 1 0)', 2.0,  1),"
+                + "('LINESTRING (1 0, 1.25 1, 1 2)', 3.0,  1),"
                 + "('LINESTRING (0 1, 1 0)', 5.0,  1),"
                 + "('LINESTRING (1 0, 2 2)', 9.0,  1),"
                 + "('LINESTRING (1 0, 2 0)', 2.0,  1),"
-                + "('LINESTRING (2 2, 2 0)', 4.0,  1),"
-                + "('LINESTRING (2 0, 2 2)', 6.0,  1),"
+                + "('LINESTRING (2 2, 1.75 1, 2 0)', 4.0,  1),"
+                + "('LINESTRING (2 0, 2.25 1, 2 2)', 6.0,  1),"
                 + "('LINESTRING (2 0, 0 1)', 7.0,  0);");
 
         st.executeQuery("SELECT ST_Graph('CORMEN', 'road')");
@@ -95,17 +95,17 @@ public class GraphCreatorTest {
 //        5        POINT (2 0)
 //
 //        cormen_edges:
-//        ROAD                   WEIGHT  EDGE_ORIENTATION EDGE_ID   START_NODE   END_NODE
-//        LINESTRING (0 1, 1 2)  10.0     1               1         1            2
-//        LINESTRING (1 2, 2 2)  1.0     -1               2         2            3
-//        LINESTRING (1 2, 1 0)  2.0      1               3         2            4
-//        LINESTRING (1 0, 1 2)  3.0      1               4         4            2
-//        LINESTRING (0 1, 1 0)  5.0      1               5         1            4
-//        LINESTRING (1 0, 2 2)  9.0      1               6         4            3
-//        LINESTRING (1 0, 2 0)  2.0      1               7         4            5
-//        LINESTRING (2 2, 2 0)  4.0      1               8         3            5
-//        LINESTRING (2 0, 2 2)  6.0      1               9         5            3
-//        LINESTRING (2 0, 0 1)  7.0      0               10        5            1
+//        ROAD                          WEIGHT  EDGE_ORIENTATION EDGE_ID   START_NODE   END_NODE
+//        LINESTRING (0 1, 1 2)         10.0      1               1         1            2
+//        LINESTRING (1 2, 2 2)          1.0     -1               2         2            3
+//        LINESTRING (1 2, 0.75 1, 1 0)  2.0      1               3         2            4
+//        LINESTRING (1 0, 1.25 1, 1 2)  3.0      1               4         4            2
+//        LINESTRING (0 1, 1 0)          5.0      1               5         1            4
+//        LINESTRING (1 0, 2 2)          9.0      1               6         4            3
+//        LINESTRING (1 0, 2 0)          2.0      1               7         4            5
+//        LINESTRING (2 2, 1.75 1, 2 0)  4.0      1               8         3            5
+//        LINESTRING (2 0, 2.25 1, 2 2)  6.0      1               9         5            3
+//        LINESTRING (2 0, 0 1)          7.0      0               10        5            1
     }
 
     @Test

@@ -98,13 +98,30 @@
           <target>1.6</target>
         </configuration>
       </plugin>
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>cobertura-maven-plugin</artifactId>
+            <version>2.6</version>
+            <configuration>
+                <check>
+                    <!-- TODO Raise Coverage constraint -->
+                    <branchRate>0</branchRate>
+                    <lineRate>0</lineRate>
+                    <haltOnFailure>true</haltOnFailure>
+                    <totalBranchRate>50</totalBranchRate>
+                    <totalLineRate>78</totalLineRate>
+                    <packageLineRate>20</packageLineRate>
+                    <packageBranchRate>10</packageBranchRate>
+                </check>
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>check</goal>
+                    </goals>
+                </execution>
+            </executions>
+        </plugin>
     </plugins>
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ssh</artifactId>
-        <version>2.2</version>
-      </extension>
-    </extensions>
   </build>
 </project>
