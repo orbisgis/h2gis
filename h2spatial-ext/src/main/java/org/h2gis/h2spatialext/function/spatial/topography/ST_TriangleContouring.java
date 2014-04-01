@@ -33,7 +33,7 @@ import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2.value.Value;
 import org.h2.value.ValueString;
-import org.h2gis.h2spatial.ExpandTableFunction;
+import org.h2gis.h2spatial.TableFunctionUtil;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -257,7 +257,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            ExpandTableFunction.copyFields(connection, rs, TableLocation.parse(tableName));
+            TableFunctionUtil.copyFields(connection, rs, TableLocation.parse(tableName));
             rs.addColumn(ISO_FIELD_NAME, Types.INTEGER,10,0);
             return rs;
         }

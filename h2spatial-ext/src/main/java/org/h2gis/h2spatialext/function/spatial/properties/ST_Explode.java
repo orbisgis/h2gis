@@ -33,7 +33,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
-import org.h2gis.h2spatial.ExpandTableFunction;
+import org.h2gis.h2spatial.TableFunctionUtil;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -213,7 +213,7 @@ public class ST_Explode extends DeterministicScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            ExpandTableFunction.copyFields(connection, rs, TableLocation.parse(tableName));
+            TableFunctionUtil.copyFields(connection, rs, TableLocation.parse(tableName));
             rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
             return rs;
         }
