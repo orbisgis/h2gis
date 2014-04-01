@@ -3034,4 +3034,44 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+
+    @Test
+    public void test_ST_Azimuth1() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, 10)) ) as degAz;");
+        rs.next();
+        assertEquals(rs.getDouble(1), 0,0.00001);
+        rs.close();
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Azimuth2() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(10, 0)) ) as degAz;");
+        rs.next();
+        assertEquals(rs.getDouble(1), 90,0.00001);
+        rs.close();
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Azimuth3() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, -10)) ) as degAz;");
+        rs.next();
+        assertEquals(rs.getDouble(1), 180,0.00001);
+        rs.close();
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Azimuth4() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, 0)) ) as degAz;");
+        rs.next();
+        assertEquals(rs.getDouble(1), 0,0.00001);
+        rs.close();
+        st.close();
+    }
 }
