@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Snap
 category: h2spatial-ext/process-geometries
-description: 
+description: Snap two Geometries together
 prev_section: ST_SimplifyPreserveTopology
 next_section: ST_Split
 permalink: /docs/dev/ST_Snap/
@@ -15,7 +15,7 @@ GEOMETRY ST_Snap(GEOMETRY geomA, GEOMETRY geomB, double distance);
 {% endhighlight %}
 
 ### Description
-Snaps two geometries together with a given tolerance.
+Snaps two Geometries together with a given tolerance.
 
 ### Examples
 
@@ -35,6 +35,7 @@ SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)',
                3);
 -- Answer:LINESTRING (1 2, 1 2, 2 1, 5 2, 5 2)
 {% endhighlight %}
+<img class="displayed" src="../ST_Snap.png"/>
 
 ##### See also
 
