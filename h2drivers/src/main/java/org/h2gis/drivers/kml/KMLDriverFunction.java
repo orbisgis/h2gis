@@ -61,11 +61,9 @@ public class KMLDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-        ProgressVisitor copyProgress = progress.subProcess(recordCount);
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {        
         KMLWriterDriver kMLWriter = new KMLWriterDriver(connection, tableReference, fileName);
-        kMLWriter.write(copyProgress);
+        kMLWriter.write(progress);
     }
 
     @Override

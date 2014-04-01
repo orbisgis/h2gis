@@ -17,7 +17,8 @@
 package org.h2gis.drivers.kml;
 
 /**
- *
+ * Extrude mode specifies whether to connect the geometry to the ground.
+ * 
  * @author Erwan Bocher
  */
 public enum ExtrudeMode {

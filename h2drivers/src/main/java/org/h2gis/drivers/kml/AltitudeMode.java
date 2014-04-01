@@ -68,7 +68,8 @@ public final class AltitudeMode {
     }
 
     /**
-     * Generate String value for a property
+     * Generate a string value corresponding to the altitude mode.
+     * 
      *
      * @param altitudeMode
      * @return aString the string representation of altitudeMode
@@ -76,19 +77,19 @@ public final class AltitudeMode {
     public static void append(int altitudeMode, StringBuilder sb) {
         switch (altitudeMode) {
             case KML_CLAMPTOGROUND:
-                sb.append("<kml:altitudeMode>").append("clampToGround").append("</kml:altitudeMode>");
+                sb.append("<kml:altitudeMode>clampToGround</kml:altitudeMode>");
                 return;
             case KML_RELATIVETOGROUND:
-                sb.append("<kml:altitudeMode>").append("relativeToGround").append("</kml:altitudeMode>");
+                sb.append("<kml:altitudeMode>relativeToGround</kml:altitudeMode>");
                 return;
             case KML_ABSOLUTE:
-                sb.append("<kml:altitudeMode>").append("absolute").append("</kml:altitudeMode>");
+                sb.append("<kml:altitudeMode>absolute</kml:altitudeMode>");
                 return;
             case GX_CLAMPTOSEAFLOOR:
-                sb.append("<kml:altitudeMode>").append("clampToSeaFloor").append("</kml:altitudeMode>");
+                sb.append("<kml:altitudeMode>clampToSeaFloor</kml:altitudeMode>");
                 return;
             case GX_RELATIVETOSEAFLOOR:
-                sb.append("<kml:altitudeMode>").append("relativeToSeaFloor").append("</kml:altitudeMode>");
+                sb.append("<kml:altitudeMode>relativeToSeaFloor</kml:altitudeMode>");
             default:
         }
     }

@@ -183,6 +183,8 @@ public class KMLWriterDriver {
             try {
                 ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
                 try {
+                    int recordCount = JDBCUtilities.getRowCount(connection, tableName);
+                    ProgressVisitor copyProgress = progress.subProcess(recordCount);
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
 
@@ -191,12 +193,10 @@ public class KMLWriterDriver {
                     xmlOut.writeStartElement("name");
                     xmlOut.writeCharacters(tableName);
                     xmlOut.writeEndElement();//Name
-
                     while (rs.next()) {
                         writePlacemark(xmlOut, rs, geoFieldIndex, spatialFieldNames.get(0));
+                        copyProgress.endStep();
                     }
-
-                    progress.endStep();
 
                 } finally {
                     rs.close();
@@ -211,8 +211,6 @@ public class KMLWriterDriver {
         } catch (XMLStreamException ex) {
             throw new SQLException(ex);
         }
-
-        progress.endOfProgress();
     }
 
     /**
@@ -408,7 +406,7 @@ public class KMLWriterDriver {
             case Types.CHAR:
                 return "string";
             default:
-                throw new SQLException("Field type not supported by DBF : " + sqlTypeName);
+                throw new SQLException("Field type not supported by KML : " + sqlTypeName);
         }
     }
 }
