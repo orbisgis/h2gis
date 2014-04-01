@@ -38,6 +38,8 @@ import org.javanetworkanalyzer.model.KeyedGraph;
 import java.sql.*;
 import java.util.Set;
 
+import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
+
 /**
  * ST_ShortestPath calculates the shortest path(s) between
  * vertices in a JGraphT graph produced from an edges table produced by {@link
@@ -164,9 +166,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
                                       String weight,
                                       int source,
                                       int destination) throws SQLException {
-        // If we only want the column names, there is no need to do the calculation.
-        // This is a hack. See: https://groups.google.com/forum/#!topic/h2-database/NHH0rDeU258
-        if (connection.getMetaData().getURL().equals("jdbc:columnlist:connection")) {
+        if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
         // Do the calculation.
