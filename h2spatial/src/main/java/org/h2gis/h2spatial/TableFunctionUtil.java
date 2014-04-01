@@ -15,6 +15,11 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class TableFunctionUtil {
+
+   private TableFunctionUtil(){
+       // This is a utility class.
+   }
+
     /**
      * Copy fields from table into a {@link org.h2.tools.SimpleResultSet}
      * @param connection Active connection
