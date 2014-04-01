@@ -41,6 +41,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.h2gis.h2spatial.TableFunctionUtil.justAskingForColumns;
+
 /**
  * ST_ShortestPathLength calculates the length(s) of shortest path(s) among
  * vertices in a JGraphT graph produced from an edges table produced by {@link

@@ -14,7 +14,7 @@ import java.util.Map;
  * Utility in order to simplify table function usage
  * @author Nicolas Fortin
  */
-public class ExpandTableFunction {
+public class TableFunctionUtil {
     /**
      * Copy fields from table into a {@link org.h2.tools.SimpleResultSet}
      * @param connection Active connection
@@ -47,6 +47,17 @@ public class ExpandTableFunction {
                     (String)columnInfoObjects[COLUMN_TYPENAME], (Integer)columnInfoObjects[COLUMN_PRECISION]
                     , (Integer)columnInfoObjects[COLUMN_SCALE]);
         }
+    }
 
+    /**
+     * Return true if this connection only wants the list of columns.
+     * This is a hack. See: https://groups.google.com/forum/#!topic/h2-database/NHH0rDeU258
+     *
+     * @param connection Connection
+     * @return True if this connection only wants the list of columns
+     * @throws java.sql.SQLException
+     */
+    public static boolean justAskingForColumns(Connection connection) throws SQLException {
+        return connection.getMetaData().getURL().equals("jdbc:columnlist:connection");
     }
 }

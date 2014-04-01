@@ -38,6 +38,8 @@ import org.javanetworkanalyzer.model.KeyedGraph;
 import java.sql.*;
 import java.util.Set;
 
+import static org.h2gis.h2spatial.TableFunctionUtil.justAskingForColumns;
+
 /**
  * ST_ShortestPath calculates the shortest path(s) between
  * vertices in a JGraphT graph produced from an edges table produced by {@link
