@@ -2,9 +2,9 @@
 layout: docs
 title: ST_Split
 category: h2spatial-ext/process-geometries
-description: Return a Geometry resulting by splitting a Geometry
+description: Returns a Geometry resulting from split between two Geometry
 prev_section: ST_Snap
-next_section: h2spatial-ext/measure-distance
+next_section: h2spatial-ext/distance-functions
 permalink: /docs/dev/ST_Split/
 ---
 
@@ -17,7 +17,7 @@ double tolerance);
 {% endhighlight %}
 
 ### Description
-Returns a `GEOMETRY` resulting by splitting a `GEOMETRY`.
+Returns a `GEOMETRY` resulting from split between two `GEOMETRY`.
 Split a GeometryA according a GeometryB.
 Supported operations are : 
 
@@ -30,50 +30,51 @@ It's possible to using a snapping `tolerance`. If a `tolerance` is not define, t
 
 #####LINESTRING by a POINT 
 {% highlight mysql %}
-SELECT ST_Split('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 
-                            25 8, 30 8, 50 8, 100 8)', 
-                'POINT(1.5 4 )');
+SELECT ST_Split('LINESTRING(4 3, 4 5, 2 3)', 
+                'POINT(3 4)');
+-- Answer: MULTILINESTRING((4 3, 4 5, 3 4), (3 4, 2 3))
+
+SELECT ST_Split('LINESTRING(3 3, 4 5, 2 2)', 
+                'POINT(2 4)');
 -- Answer: MULTILINESTRING EMPTY
 
 SELECT ST_Split('LINESTRING(3 3, 4 5, 2 2)', 
                 'POINT(2 4)', 
                 4);
--- Answer: MULTILINESTRING ((3 3, 4 5, 2.9230769230769234 3.3846153846153846), (2.9230769230769234 3.3846153846153846, 2 2))                
-
-SELECT ST_Split('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 
-                            20 8, 25 8, 30 8, 50 8, 100 8)', 
-                'POINT(1.5 4 )', 
-                4);
--- Answer: MULTILINESTRING((0 8, 1 8, 1.5 8), 
---                         (1.5 8, 3 8, 8 8, 10 8, 20 8, 
---                          25 8, 30 8, 50 8, 100 8))
+-- Answer: MULTILINESTRING ((3 3, 4 5, 2.92307 3.3846), 
+--                          (2.92307 3.38461, 2 2))
 {% endhighlight %}
+
+<img class="displayed" src="../ST_Split_1.png"/>
 
 #####LINESTRING by a  LINESTRING
-{% highlight mysql %}
-SELECT ST_Split('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 
-                            25 8, 30 8, 50 8, 100 8)', 
-                'LINESTRING(50 -50, 50 50)');
--- Answer: MULTILINESTRING ((0 8, 1 8, 3 8, 8 8, 10 8, 20 8, 
---                           25 8, 30 8, 50 8), 
---                          (50 8, 100 8))
- 
-SELECT ST_Split('LINESTRING(0 0, 100 0)', 
-                'LINESTRING(50 -50, 50 50)');
--- Answer: MULTILINESTRING ((0 0, 50 0), (50 0, 100 0))
+|geomA LINESTRING |geomB LINESTRING|
+|--|--|
+| LINESTRING(0 3, 1 3 , 3 3, 6 3) | LINESTRING (5 6, 5 0) |
 
-SELECT ST_Split('LINESTRING(50 0, 100 0)', 
-                'LINESTRING(50 50, 100 50)');
--- Answer: LINESTRING (50 0, 100 0)
+{% highlight mysql %}
+SELECT ST_Split(geomA, geomB);
+-- Answer: MULTILINESTRING ((0 3, 1 3, 3 3, 5 3), 
+--                          (5 3, 6 3))
+ 
+SELECT ST_Split(geomB, geomA);
+-- Answer: MULTILINESTRING ((5 6, 5 3), 
+--                          (5 3, 5 0))
 {% endhighlight %}
+
+<img class="displayed" src="../ST_Split_2.png"/>
 
 #####POLYGON by a  LINESTRING
 {% highlight mysql %}
-SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))', 
-                'LINESTRING(5 0, 5 10)');
--- Answer: MULTIPOLYGON (((5 0, 5 10, 10 10, 10 0, 5 0)), 
-                         ((5 0, 0 0, 0 10, 5 10, 5 0)))
+SELECT ST_Split('POLYGON (( 0 0, 5 0, 5 5 , 0 5, 0 0))', 
+                'LINESTRING(2 0, 2 5)');
+-- Answer: MULTIPOLYGON (((2 0, 0 0, 0 5, 2 5, 2 0)), 
+                         ((5 5, 5 0, 2 0, 2 5, 5 5)))
+{% endhighlight %}
 
+<img class="displayed" src="../ST_Split_3.png"/>
+
+{% highlight mysql %}
 SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))', 
                 'LINESTRING (5 1, 5 12)');
 -- Answer: null
