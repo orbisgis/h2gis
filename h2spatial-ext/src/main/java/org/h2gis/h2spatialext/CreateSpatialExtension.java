@@ -173,6 +173,7 @@ public class CreateSpatialExtension {
                 new ST_ZMax(),
                 new ST_ZMin(),
                 new ST_ZUpdateExtremities(),
+                new ST_RingBuffer(),
                 // h2network functions
                 new ST_Graph(),
                 new ST_ShortestPath(),
