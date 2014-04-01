@@ -38,4 +38,16 @@ public class GraphFunction extends AbstractFunction {
                 VDijkstra.class,
                 Edge.class).prepareGraph();
     }
+
+    /**
+     * Return true if this connection only wants the list of columns.
+     * This is a hack. See: https://groups.google.com/forum/#!topic/h2-database/NHH0rDeU258
+     *
+     * @param connection Connection
+     * @return True if this connection only wants the list of columns
+     * @throws SQLException
+     */
+    protected static boolean justAskingForColumns(Connection connection) throws SQLException {
+        return connection.getMetaData().getURL().equals("jdbc:columnlist:connection");
+    }
 }

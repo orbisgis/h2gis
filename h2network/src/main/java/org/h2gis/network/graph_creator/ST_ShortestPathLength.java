@@ -82,8 +82,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
     public static final String DESTINATION  = "DESTINATION";
     public static final String DISTANCE  = "DISTANCE";
 
-    private static final String hackURL = "jdbc:columnlist:connection";
-
     private static final String ARG_ERROR  = "Unrecognized argument: ";
     public static final String REMARKS =
             "ST_ShortestPathLength calculates the length(s) of shortest path(s) among " +
@@ -144,7 +142,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String inputTable,
                                                   String orientation,
                                                   Value arg3) throws SQLException {
-        if (connection.getMetaData().getURL().equals(hackURL)) {
+        if (justAskingForColumns(connection)) {
             return prepareResultSet();
         }
         if (arg3 instanceof ValueInt) {
@@ -184,7 +182,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String orientation,
                                                   Value arg3,
                                                   Value arg4) throws SQLException {
-        if (connection.getMetaData().getURL().equals(hackURL)) {
+        if (justAskingForColumns(connection)) {
             return prepareResultSet();
         }
         if (arg3 instanceof ValueInt) {
@@ -236,7 +234,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String weight,
                                                   int source,
                                                   Value arg5) throws SQLException {
-        if (connection.getMetaData().getURL().equals(hackURL)) {
+        if (justAskingForColumns(connection)) {
             return prepareResultSet();
         }
         if (arg5 instanceof ValueInt) {
