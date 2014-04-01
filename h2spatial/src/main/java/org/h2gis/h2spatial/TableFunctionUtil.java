@@ -64,7 +64,7 @@ public class TableFunctionUtil {
      * @return True if this connection only wants the list of columns
      * @throws java.sql.SQLException
      */
-    public static boolean justAskingForColumns(Connection connection) throws SQLException {
+    public static boolean isColumnListConnection(Connection connection) throws SQLException {
         return connection.getMetaData().getURL().equals("jdbc:columnlist:connection");
     }
 }

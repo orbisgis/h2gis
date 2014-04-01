@@ -38,7 +38,7 @@ import org.javanetworkanalyzer.model.KeyedGraph;
 import java.sql.*;
 import java.util.Set;
 
-import static org.h2gis.h2spatial.TableFunctionUtil.justAskingForColumns;
+import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 
 /**
  * ST_ShortestPath calculates the shortest path(s) between
@@ -166,7 +166,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
                                       String weight,
                                       int source,
                                       int destination) throws SQLException {
-        if (justAskingForColumns(connection)) {
+        if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
         // Do the calculation.

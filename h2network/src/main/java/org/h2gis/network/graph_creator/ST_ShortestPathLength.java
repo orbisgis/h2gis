@@ -41,7 +41,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.h2gis.h2spatial.TableFunctionUtil.justAskingForColumns;
+import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 
 /**
  * ST_ShortestPathLength calculates the length(s) of shortest path(s) among
@@ -144,7 +144,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String inputTable,
                                                   String orientation,
                                                   Value arg3) throws SQLException {
-        if (justAskingForColumns(connection)) {
+        if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
         if (arg3 instanceof ValueInt) {
@@ -184,7 +184,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String orientation,
                                                   Value arg3,
                                                   Value arg4) throws SQLException {
-        if (justAskingForColumns(connection)) {
+        if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
         if (arg3 instanceof ValueInt) {
@@ -236,7 +236,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String weight,
                                                   int source,
                                                   Value arg5) throws SQLException {
-        if (justAskingForColumns(connection)) {
+        if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
         if (arg5 instanceof ValueInt) {
