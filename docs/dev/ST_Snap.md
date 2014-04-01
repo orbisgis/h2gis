@@ -15,27 +15,44 @@ GEOMETRY ST_Snap(GEOMETRY geomA, GEOMETRY geomB, double distance);
 {% endhighlight %}
 
 ### Description
-Snaps two Geometries together with a given tolerance.
+
+Returns a `GEOMETRY` that was a snapping between two Geometries with a given tolerance.
+Snaps the vertices and segments of a Geometry to another Geometry's vertices. A snap `distance tolerance` is used to control where snapping is performed. 
 
 ### Examples
+| geomA LINESTRING|geomB LINESTRING|
+|------------------|---------------------------|
+| LINESTRING(1 2, 2 4, 4 4, 5 2) |LINESTRING(5 2, 2 1, 1 2) |
 
 {% highlight mysql %}
-SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)', 
-               'LINESTRING(5 2, 2 1, 1 2)',
-               1);
+SELECT ST_Snap(geomA, geomB, 1) FROM input_table;
 -- Answer: LINESTRING(1 2, 2 4, 4 4, 5 2)
 
-SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)', 
-               'LINESTRING(5 2, 2 1, 1 2)',
-               2);
+SELECT ST_Snap(geomA, geomB, 2) FROM input_table;
 -- Answer: LINESTRING(1 2, 2 1, 2 4, 4 4, 5 2)
 
-SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)', 
-               'LINESTRING(5 2, 2 1, 1 2)',
-               3);
--- Answer:LINESTRING (1 2, 1 2, 2 1, 5 2, 5 2)
+SELECT ST_Snap(geomA, geomB, 3) FROM input_table;
+-- Answer:LINESTRING(1 2, 1 2, 2 1, 5 2, 5 2)
 {% endhighlight %}
-<img class="displayed" src="../ST_Snap.png"/>
+
+<img class="displayed" src="../ST_Snap_1.png"/>
+
+
+| geomA POLYGON|geomB POLYGON|
+|------------------|---------------------------|
+| POLYGON((1 1, 1 7, 7 7, 7 1, 1 1)) |POLYGON((3 3, 1 2, 0 2, 0 1, -2 1, -1 7, 3 6, 4 8, 7 8, 6 6, 9 6, 8 1, 8 1, 3 3)) |
+
+{% highlight mysql %}
+SELECT ST_Snap(geomA, geomB, 2) FROM input_table;
+-- Answer: POLYGON((0 1, 1 2, 0 2, -1 7, 1 7, 3 6, 6 6, 
+--                  8 1, 0 1))
+
+SELECT ST_Snap(geomB, geomA, 2) FROM input_table;
+-- Answer: POLYGON((3 3, 1 1, 1 1, 1 1, -2 1, -1 7, 1 7,  
+--                  3 6, 4 8, 7 7, 7 7, 9 6, 7 1, 7 1, 3 3))
+{% endhighlight %}
+
+<img class="displayed" src="../ST_Snap_2.png"/>
 
 ##### See also
 
