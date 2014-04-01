@@ -27,7 +27,6 @@ package org.h2gis.network;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.network.graph_creator.GraphCreatorTest;
 import org.h2gis.network.graph_creator.ST_Graph;
 import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 import org.junit.*;
@@ -54,7 +53,6 @@ public class SpatialFunctionTest {
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, true);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
-        GraphCreatorTest.registerCormenGraph(connection);
     }
 
     @Before
@@ -72,8 +70,12 @@ public class SpatialFunctionTest {
         connection.close();
     }
 
-    private static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
-        assertTrue(Arrays.equals(ValueGeometry.get(expectedWKT).getBytes(), valueWKB));
+    public static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
+        if (expectedWKT != null) {
+            assertTrue(Arrays.equals(ValueGeometry.get(expectedWKT).getBytes(), valueWKB));
+        } else {
+            assertEquals(null, valueWKB);
+        }
     }
 
     @Test
@@ -100,25 +102,25 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(4, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(5, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (4.05 4.1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (4.05 4.1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(6, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (7 5)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (7 5)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(7, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (8 4)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (8 4)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
 
         // Test edges table.
@@ -183,16 +185,16 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(4, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(3 + 3, edgesResult.getMetaData().getColumnCount());
@@ -232,13 +234,13 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (3 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (3 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(3 + 3, edgesResult.getMetaData().getColumnCount());
@@ -290,25 +292,25 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (2 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (2 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(4, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (3 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (3 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(5, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 0.1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 0.1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(6, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(7, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
@@ -362,16 +364,16 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1.05 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1.05 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(4, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
@@ -404,13 +406,13 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (2 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 2)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
@@ -450,13 +452,13 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (8 4)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (8 4)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
@@ -519,10 +521,10 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
@@ -548,10 +550,10 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 0 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 0 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
@@ -577,10 +579,10 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 0 1)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (1 0 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
@@ -633,13 +635,13 @@ public class SpatialFunctionTest {
         assertEquals(2, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(3, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.THE_GEOM));
+        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertFalse(nodesResult.next());
         ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
