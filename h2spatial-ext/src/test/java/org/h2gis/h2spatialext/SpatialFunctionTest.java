@@ -3034,4 +3034,102 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
+    
+    
+    @Test
+    public void test_ST_Force2D1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (-10 10 2, 10 10 3)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(
+                WKT_READER.read("LINESTRING (-10 10, 10 10)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Force2D2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT (-10 10 2)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(
+                WKT_READER.read("POINT (-10 10)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    
+    @Test
+    public void test_ST_Force2D3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT (-10 10)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(
+                WKT_READER.read("POINT (-10 10)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Force3D1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (-10 10, 10 10 3)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Force3D(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(
+                WKT_READER.read("LINESTRING (-10 10 0, 10 10 3)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Force3D2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (-10 10, 10 10)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Force3D(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(
+                WKT_READER.read("LINESTRING (-10 10 0, 10 10 0)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Force3D3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT (-10 10)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Force3D(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(
+                WKT_READER.read("POINT (-10 10 0)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
 }

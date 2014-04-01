@@ -40,6 +40,8 @@ import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_Force2D;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_Force3D;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_Holes;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiPoint;
@@ -174,6 +176,8 @@ public class CreateSpatialExtension {
                 new ST_ZMin(),
                 new ST_ZUpdateExtremities(),
                 new ST_RingBuffer(),
+                new ST_Force2D(),
+                new ST_Force3D(),
                 // h2network functions
                 new ST_Graph(),
                 new ST_ShortestPath(),
