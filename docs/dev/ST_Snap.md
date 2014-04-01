@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Snap
 category: h2spatial-ext/process-geometries
-description: Snap two Geometries together
+description: Return a Geometry resulting by spnapping two Geometries together
 prev_section: ST_SimplifyPreserveTopology
 next_section: ST_Split
 permalink: /docs/dev/ST_Snap/
