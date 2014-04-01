@@ -25,10 +25,10 @@
 
 package org.h2gis.network.graph_creator;
 
-import org.h2.tools.SimpleResultSet;
 import org.h2.value.Value;
 import org.h2.value.ValueInt;
 import org.h2.value.ValueString;
+import org.h2gis.h2spatial.DelayedSimpleResultSet;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
@@ -144,9 +144,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String inputTable,
                                                   String orientation,
                                                   Value arg3) throws SQLException {
-        if (connection.getMetaData().getURL().equals(hackURL)) {
-            return prepareResultSet();
-        }
         if (arg3 instanceof ValueInt) {
             int source = arg3.getInt();
             return oneToAll(connection, inputTable, orientation, null, source);
@@ -184,9 +181,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String orientation,
                                                   Value arg3,
                                                   Value arg4) throws SQLException {
-        if (connection.getMetaData().getURL().equals(hackURL)) {
-            return prepareResultSet();
-        }
         if (arg3 instanceof ValueInt) {
             int source = arg3.getInt();
             if (arg4 instanceof ValueInt) {
@@ -236,9 +230,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String weight,
                                                   int source,
                                                   Value arg5) throws SQLException {
-        if (connection.getMetaData().getURL().equals(hackURL)) {
-            return prepareResultSet();
-        }
         if (arg5 instanceof ValueInt) {
             int destination = arg5.getInt();
             return oneToOne(connection, inputTable, orientation, weight, source, destination);
@@ -250,89 +241,113 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         }
     }
 
-    private static ResultSet oneToOne(Connection connection,
-                                     String inputTable,
-                                     String orientation,
-                                     String weight,
-                                     int source,
-                                     int destination) throws SQLException {
-        final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
-        // 7: (o, w, s, d)
-        final double distance = new Dijkstra<VDijkstra, Edge>(graph)
-                .oneToOne(graph.getVertex(source), graph.getVertex(destination));
-        output.addRow(source, destination, distance);
+    private static ResultSet oneToOne(final Connection connection,
+                                      final String inputTable,
+                                      final String orientation,
+                                      final String weight,
+                                      final int source,
+                                      final int destination) throws SQLException {
+        final DelayedSimpleResultSet output = new DelayedSimpleResultSet() {
+            @Override
+            protected void init() throws SQLException {
+                final KeyedGraph<VDijkstra, Edge> graph =
+                        prepareGraph(connection, inputTable, orientation, weight);
+                // 7: (o, w, s, d)
+                final double distance = new Dijkstra<VDijkstra, Edge>(graph)
+                        .oneToOne(graph.getVertex(source), graph.getVertex(destination));
+                addRow(source, destination, distance);
+            }
+        };
+        addColumns(output);
         return output;
     }
 
-    private static ResultSet oneToAll(Connection connection,
-                                      String inputTable,
-                                      String orientation,
-                                      String weight,
-                                      int source) throws SQLException {
-        final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
-        // 5: (o, w, s)
-        final Map<VDijkstra,Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
+    private static ResultSet oneToAll(final Connection connection,
+                                      final String inputTable,
+                                      final String orientation,
+                                      final String weight,
+                                      final int source) throws SQLException {
+        final DelayedSimpleResultSet output = new DelayedSimpleResultSet() {
+            @Override
+            protected void init() throws SQLException {
+                final KeyedGraph<VDijkstra, Edge> graph =
+                        prepareGraph(connection, inputTable, orientation, weight);
+                // 5: (o, w, s)
+                final Map<VDijkstra,Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
                         .oneToMany(graph.getVertex(source), graph.vertexSet());
-        for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
-            output.addRow(source, e.getKey().getID(), e.getValue());
-        }
-        return output;
-    }
-
-    private static ResultSet manyToMany(Connection connection,
-                                        String inputTable,
-                                        String orientation,
-                                        String weight,
-                                        String sourceDestinationTable) throws SQLException {
-        final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
-        final Statement st = connection.createStatement();
-        try {
-            // Prepare the source-destination map from the source-destination table.
-            Map<VDijkstra, Set<VDijkstra>> sourceDestinationMap =
-                    prepareSourceDestinationMap(st, sourceDestinationTable, graph);
-
-            // 6: (o, w, sdt). Do One-to-Many many times and store the results.
-            for (Map.Entry<VDijkstra, Set<VDijkstra>> sourceToDestSetMap : sourceDestinationMap.entrySet()) {
-                Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
-                        .oneToMany(sourceToDestSetMap.getKey(), sourceToDestSetMap.getValue());
-                for (Map.Entry<VDijkstra, Double> destToDistMap : distances.entrySet()) {
-                    output.addRow(sourceToDestSetMap.getKey().getID(),
-                            destToDistMap.getKey().getID(), destToDistMap.getValue());
+                for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
+                    addRow(source, e.getKey().getID(), e.getValue());
                 }
             }
-        } finally {
-            st.close();
-        }
+        };
+        addColumns(output);
         return output;
     }
 
-    private static ResultSet oneToSeveral(Connection connection,
-                                          String inputTable,
-                                          String orientation,
-                                          String weight,
-                                          int source,
-                                          String destString) throws SQLException {
-        final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+    private static ResultSet manyToMany(final Connection connection,
+                                        final String inputTable,
+                                        final String orientation,
+                                        final String weight,
+                                        final String sourceDestinationTable) throws SQLException {
+        final DelayedSimpleResultSet output = new DelayedSimpleResultSet() {
+            @Override
+            protected void init() throws SQLException {
+                final KeyedGraph<VDijkstra, Edge> graph =
+                        prepareGraph(connection, inputTable, orientation, weight);
+                final Statement st = connection.createStatement();
+                try {
+                    // Prepare the source-destination map from the source-destination table.
+                    Map<VDijkstra, Set<VDijkstra>> sourceDestinationMap =
+                            prepareSourceDestinationMap(st, sourceDestinationTable, graph);
 
-        final int[] destIDs = GraphFunctionParser.parseDestinationsString(destString);
-        Set<VDijkstra> destSet = new HashSet<VDijkstra>();
-        for (int d : destIDs)  {
-            final VDijkstra dest = graph.getVertex(d);
-            if (dest == null) {
-                throw new IllegalArgumentException("The graph does not contain vertex " + d);
+                    // 6: (o, w, sdt). Do One-to-Many many times and store the results.
+                    for (Map.Entry<VDijkstra, Set<VDijkstra>> sourceToDestSetMap : sourceDestinationMap.entrySet()) {
+                        Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
+                                .oneToMany(sourceToDestSetMap.getKey(), sourceToDestSetMap.getValue());
+                        for (Map.Entry<VDijkstra, Double> destToDistMap : distances.entrySet()) {
+                            addRow(sourceToDestSetMap.getKey().getID(),
+                                    destToDistMap.getKey().getID(), destToDistMap.getValue());
+                        }
+                    }
+                } finally {
+                    st.close();
+                }
             }
-            destSet.add(dest);
-        }
-        // 8: (o, w, s, ds)
-        final Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
-                .oneToMany(graph.getVertex(source), destSet);
-        for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
-            output.addRow(source, e.getKey().getID(), e.getValue());
-        }
+        };
+        addColumns(output);
+        return output;
+    }
+
+    private static ResultSet oneToSeveral(final Connection connection,
+                                          final String inputTable,
+                                          final String orientation,
+                                          final String weight,
+                                          final int source,
+                                          final String destString) throws SQLException {
+        final DelayedSimpleResultSet output = new DelayedSimpleResultSet() {
+            @Override
+            protected void init() throws SQLException {
+                final KeyedGraph<VDijkstra, Edge> graph =
+                        prepareGraph(connection, inputTable, orientation, weight);
+
+                final int[] destIDs = GraphFunctionParser.parseDestinationsString(destString);
+                Set<VDijkstra> destSet = new HashSet<VDijkstra>();
+                for (int d : destIDs)  {
+                    final VDijkstra dest = graph.getVertex(d);
+                    if (dest == null) {
+                        throw new IllegalArgumentException("The graph does not contain vertex " + d);
+                    }
+                    destSet.add(dest);
+                }
+                // 8: (o, w, s, ds)
+                final Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
+                        .oneToMany(graph.getVertex(source), destSet);
+                for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
+                    addRow(source, e.getKey().getID(), e.getValue());
+                }
+            }
+        };
+        addColumns(output);
         return output;
     }
 
@@ -375,16 +390,13 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
     }
 
     /**
-     * Return a new {@link org.h2.tools.SimpleResultSet} with SOURCE,
-     * DESTINATION and DISTANCE columns.
-     * @return a new {@link org.h2.tools.SimpleResultSet} with SOURCE,
-     * DESTINATION and DISTANCE columns
+     * Add SOURCE, DESTINATION and DISTANCE columns to a ResultSet.
+     * @return The given ResultSet with SOURCE, DESTINATION and DISTANCE
+     * columns added
      */
-    private static SimpleResultSet prepareResultSet() {
-        SimpleResultSet output = new SimpleResultSet();
+    private static void addColumns(DelayedSimpleResultSet output) {
         output.addColumn(SOURCE, Types.INTEGER, 10, 0);
         output.addColumn(DESTINATION, Types.INTEGER, 10, 0);
         output.addColumn(DISTANCE, Types.DOUBLE, 10, 0);
-        return output;
     }
 }
