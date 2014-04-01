@@ -12,11 +12,13 @@ import java.util.Map;
 
 /**
  * Utility in order to simplify table function usage
+ *
  * @author Nicolas Fortin
+ * @author Adam Gouge
  */
 public class TableFunctionUtil {
 
-   private TableFunctionUtil(){
+   private TableFunctionUtil() {
        // This is a utility class.
    }
 
