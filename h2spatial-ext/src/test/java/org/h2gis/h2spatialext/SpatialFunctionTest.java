@@ -3079,7 +3079,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-   }
+   
 
     @Test
     public void test_ST_Azimuth1() throws Exception {

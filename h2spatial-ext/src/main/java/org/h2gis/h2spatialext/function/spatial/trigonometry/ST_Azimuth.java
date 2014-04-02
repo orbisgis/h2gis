@@ -24,18 +24,16 @@
  */
 package org.h2gis.h2spatialext.function.spatial.trigonometry;
 
-import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
-import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
  * Returns the azimuth of the segment defined by the given Point geometries.
  * Return value is in radians.
  */
-public class ST_Azimuth extends AbstractFunction implements ScalarFunction{
+public class ST_Azimuth extends DeterministicScalarFunction{
 
 
     public ST_Azimuth(){
