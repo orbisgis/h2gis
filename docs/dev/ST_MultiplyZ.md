@@ -2,7 +2,7 @@
 layout: docs
 title: ST_MultiplyZ
 category: h2spatial-ext/edit-geometries
-description: 
+description: Return a Geometry with the z value is multiply
 prev_section: ST_Interpolate3DLine
 next_section: ST_Normalize
 permalink: /docs/dev/ST_MultiplyZ/
@@ -11,13 +11,34 @@ permalink: /docs/dev/ST_MultiplyZ/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_MultiplyZ(GEOMETRY geom, double z);
 {% endhighlight %}
 
 ### Description
+Multiply the z value of each vertex of the `GEOMETRY` by a `z` value
+NaN values are not updated.
 
 ### Examples
 
 {% highlight mysql %}
+SELECT ST_MultiplyZ('MULTIPOINT((190 300), (10 11))', 10);
+-- Answer: MULTIPOINT((190 300), (10 11)
+SELECT ST_Z(ST_MultiplyZ('MULTIPOINT( (190 300), (10 11))', 10));
+-- Answer: NaN
+
+SELECT ST_MultiplyZ('MULTIPOINT((190 300 1), (10 11 50))',
+                    10);
+-- Answer: MULTIPOINT((190 300 10), (10 11 500))
+SELECT ST_Z(ST_MultiplyZ('MULTIPOINT((190 300 1), (10 11 50))',
+                         10));
+-- Answer: 10.0
+
+SELECT ST_MultiplyZ('MULTIPOINT((190 300 10), (10 11))', 10);
+-- Answer: MULTIPOINT((190 300 100), (10 11))
+
+SELECT ST_MultiplyZ('MULTIPOINT((190 300 100), (10 11 50))', 
+                    0.1);
+-- Answer: MULTIPOINT((190 300 10), (10 11 5)
 {% endhighlight %}
 
 ##### See also
