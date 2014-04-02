@@ -41,6 +41,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
+
 /**
  * ST_ShortestPathLength calculates the length(s) of shortest path(s) among
  * vertices in a JGraphT graph produced from an edges table produced by {@link
@@ -81,8 +83,6 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
     public static final String SOURCE  = "SOURCE";
     public static final String DESTINATION  = "DESTINATION";
     public static final String DISTANCE  = "DISTANCE";
-
-    private static final String hackURL = "jdbc:columnlist:connection";
 
     private static final String ARG_ERROR  = "Unrecognized argument: ";
     public static final String REMARKS =
@@ -144,7 +144,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String inputTable,
                                                   String orientation,
                                                   Value arg3) throws SQLException {
-        if (connection.getMetaData().getURL().equals(hackURL)) {
+        if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
         if (arg3 instanceof ValueInt) {
@@ -184,7 +184,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String orientation,
                                                   Value arg3,
                                                   Value arg4) throws SQLException {
-        if (connection.getMetaData().getURL().equals(hackURL)) {
+        if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
         if (arg3 instanceof ValueInt) {
@@ -236,7 +236,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String weight,
                                                   int source,
                                                   Value arg5) throws SQLException {
-        if (connection.getMetaData().getURL().equals(hackURL)) {
+        if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
         if (arg5 instanceof ValueInt) {

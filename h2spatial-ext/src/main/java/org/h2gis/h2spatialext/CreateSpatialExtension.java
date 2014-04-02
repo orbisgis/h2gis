@@ -34,6 +34,8 @@ import org.h2gis.drivers.geojson.GeoJsonRead;
 import org.h2gis.drivers.geojson.GeoJsonWrite;
 import org.h2gis.drivers.geojson.ST_AsGeoJSON;
 import org.h2gis.drivers.gpx.GPXRead;
+import org.h2gis.drivers.kml.KMLWrite;
+import org.h2gis.drivers.kml.ST_AsKml;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialapi.Function;
@@ -109,12 +111,14 @@ public class CreateSpatialExtension {
                 new GPXRead(),
                 new GeoJsonRead(),
                 new GeoJsonWrite(),
+                new KMLWrite(),
                 new SHPRead(),
                 new SHPWrite(),
                 new ST_3DLength(),
                 new ST_AddPoint(),
                 new ST_AddZ(),
                 new ST_AsGeoJSON(),
+                new ST_AsKml(),
                 new ST_BoundingCircle(),
                 new ST_ClosestCoordinate(),
                 new ST_ClosestPoint(),
@@ -162,9 +166,9 @@ public class CreateSpatialExtension {
                 new ST_ToMultiSegments(),
                 new ST_Translate(),
                 new ST_TriangleAspect(),
+                new ST_TriangleContouring(),
                 new ST_TriangleDirection(),
                 new ST_TriangleSlope(),
-                new ST_TriangleContouring(),
                 new ST_UpdateZ(),
                 new ST_XMax(),
                 new ST_XMin(),
