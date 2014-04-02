@@ -7,4 +7,5 @@ Gemfile.lock
 site/
 _site/
 *.swp
-nb-configuration.xml
+*~
+*nb-configuration.xml
