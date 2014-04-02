@@ -2,7 +2,7 @@
 layout: docs
 title: ST_AddZ
 category: h2spatial-ext/edit-geometries
-description: 
+description: Return a Geometry with the z value updated
 prev_section: ST_AddPoint
 next_section: ST_Densify
 permalink: /docs/dev/ST_AddZ/
@@ -15,34 +15,43 @@ GEOMETRY ST_AddZ(GEOMETRY geom, double z);
 {% endhighlight %}
 
 ### Description
-This function add a z value to the z component of (each vertex of) the geometric parameter to the corresponding value given by a field.
-Add a z with to the existing value (do the sum). NaN values are not updated.
+Returns a `GEOMETRY` where the output z value is the sum to the `z` value and the input z value (each vertex of).
+NaN values are not updated.
 
 ### Examples
 
+*Note*: Currently the WKT cannot display the Z value of the Geometry, but the WKB stores and manages the Z value. If you want to see the Z value you can use ST_Z aggregated with other functions. 
+
 {% highlight mysql %}
-SELECT ST_AddZ('MULTIPOINT((190 300 1), (10 11))', 10);
---Answer: MULTIPOINT((190 300 11), (10 11))
-
-SELECT ST_Z(ST_GeometryN(ST_AddZ('MULTIPOINT((190 300 1), (10 11))', 10),2));
+SELECT ST_Z(ST_GeometryN(ST_AddZ('MULTIPOINT((190 300 1), 
+                                             (10 11))',
+                                 10), 1));
 -- Answer: 11
-SELECT ST_Z(ST_GeometryN(ST_AddZ('MULTIPOINT((190 300 1), (10 11))', 10),2));
+SELECT ST_Z(ST_GeometryN(ST_AddZ('MULTIPOINT((190 300 1), 
+                                              (10 11))', 
+                                  10),2));
 -- Answer: NaN
+SELECT ST_AddZ('MULTIPOINT((190 300 1), (10 11))', 10);
+-- Answer: MULTIPOINT((190 300 11), (10 11))
 
-SELECT ST_AddZ('MULTIPOINT( (190 300 10), (10 11 5))', -10)
--- Answer: MULTIPOINT ((190 300 0), (10 11 -5))
+SELECT ST_AddZ('MULTIPOINT((190 300 10), (10 11 5))', -10)
+-- Answer: MULTIPOINT((190 300 0), (10 11 -5))
 
-SELECT ST_AddZ('MULTIPOINT( (190 300 10), (10 11 5))', -10)
--- Answer: MULTIPOINT ((190 300 0), (10 11 -5))
-
-SELECT ST_AddZ('POLYGON ((1 1 5, 1 7 10, 7 7 -1, 7 1 -1, 1 1 5))', -10);
--- Answer: POLYGON ((1 1 -5, 1 7 0, 7 7 -11, 7 1 -11, 1 1 -5))
-
-SELECT ST_Z(ST_PointN(ST_ExteriorRing(ST_AddZ('POLYGON ((1 1 5, 1 7 10, 7 7 -1, 7 1 -1, 1 1 5))', -10)), 1));
+SELECT ST_Z(ST_PointN(ST_ExteriorRing(
+                          ST_AddZ('POLYGON((1 1 5, 1 7 10, 
+                                            7 7 -1, 7 1 -1,
+                                            1 1 5))', 
+                                  -10)), 1));
 -- Answer : -5.0
-SELECT ST_Z(ST_PointN(ST_ExteriorRing(ST_AddZ('POLYGON ((1 1 5, 1 7 10, 7 7 -1, 7 1 -1, 1 1 5))', -10)),
-3));
+SELECT ST_Z(ST_PointN(ST_ExteriorRing(
+                          ST_AddZ('POLYGON((1 1 5, 1 7 10, 
+                                            7 7 -1, 7 1 -1,
+                                            1 1 5))', 
+                                  -10)), 3));
 -- Answer : -11.0
+SELECT ST_AddZ('POLYGON((1 1 5, 1 7 10, 7 7 -1, 7 1 -1, 1 1 5))', 
+               -10);
+-- Answer: POLYGON((1 1 -5, 1 7 0, 7 7 -11, 7 1 -11, 1 1 -5))
 {% endhighlight %}
 
 ##### See also
