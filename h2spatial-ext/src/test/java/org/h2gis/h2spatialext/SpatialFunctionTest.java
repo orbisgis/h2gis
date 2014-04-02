@@ -3034,8 +3034,54 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
-    
+
+    @Test
+    public void test_ST_MinimumDiameter1() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING (50 240, 62 250, 199 425, 250 240)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (128.69067451174988 337.7031864743203, 250 240)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_MinimumDiameter2() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((360 380, 230 150, 370 100, 510 100, 517 110, 650 390, 430 220, 360 380))'));");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (282.3538681948424 242.62607449856733, 517 110)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+
+    @Test
+    public void test_ST_MinimumDiameter3() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom POINT);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POINT (395 278)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equalsExact(WKT_READER.read("LINESTRING (395 278, 395 278)")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+        st.close();
+    }
+   }
+
+
     @Test
     public void test_ST_Force2D1() throws Exception {
         Statement st = connection.createStatement();
@@ -3051,7 +3097,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_Force2D2() throws Exception {
         Statement st = connection.createStatement();
@@ -3067,8 +3113,8 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
-    
+
+
     @Test
     public void test_ST_Force2D3() throws Exception {
         Statement st = connection.createStatement();
@@ -3084,7 +3130,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_Force3D1() throws Exception {
         Statement st = connection.createStatement();
@@ -3100,7 +3146,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_Force3D2() throws Exception {
         Statement st = connection.createStatement();
@@ -3116,7 +3162,7 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-    
+
     @Test
     public void test_ST_Force3D3() throws Exception {
         Statement st = connection.createStatement();
