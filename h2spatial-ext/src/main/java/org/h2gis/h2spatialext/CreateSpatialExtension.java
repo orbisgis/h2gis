@@ -182,12 +182,9 @@ public class CreateSpatialExtension {
                 new ST_ZUpdateExtremities(),
                 new ST_MinimumDiameter(),
                 new ST_RingBuffer(),
-<<<<<<< HEAD
                 new ST_Force2D(),
                 new ST_Force3D(),
-=======
                 new ST_Azimuth(),
->>>>>>> remotes/upstream/master
                 // h2network functions
                 new ST_Graph(),
                 new ST_ShortestPath(),

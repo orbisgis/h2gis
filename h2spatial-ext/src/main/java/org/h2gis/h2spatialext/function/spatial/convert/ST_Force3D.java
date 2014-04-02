@@ -27,15 +27,14 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
-import org.h2gis.h2spatialapi.AbstractFunction;
-import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Forces the geometries into XYZ mode.
  *
  * @author Erwan Bocher
  */
-public class ST_Force3D extends AbstractFunction implements ScalarFunction {
+public class ST_Force3D extends DeterministicScalarFunction {
 
     public ST_Force3D() {
         addProperty(PROP_REMARKS, "Forces the geometries into XYZ mode. This is an alias for ST_Force_3DZ.\n "
@@ -55,7 +54,7 @@ public class ST_Force3D extends AbstractFunction implements ScalarFunction {
      * @return
      */
     public static Geometry force3D(Geometry geom) {
-        geom.apply(new CoordinateSequenceFilter() {
+        ((Geometry) geom.clone()).apply(new CoordinateSequenceFilter() {
             private boolean done = false;
 
             @Override
