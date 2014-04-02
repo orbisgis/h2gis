@@ -34,6 +34,8 @@ import org.h2gis.drivers.geojson.GeoJsonRead;
 import org.h2gis.drivers.geojson.GeoJsonWrite;
 import org.h2gis.drivers.geojson.ST_AsGeoJSON;
 import org.h2gis.drivers.gpx.GPXRead;
+import org.h2gis.drivers.kml.KMLWrite;
+import org.h2gis.drivers.kml.ST_AsKml;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialapi.Function;
@@ -110,12 +112,14 @@ public class CreateSpatialExtension {
                 new GPXRead(),
                 new GeoJsonRead(),
                 new GeoJsonWrite(),
+                new KMLWrite(),
                 new SHPRead(),
                 new SHPWrite(),
                 new ST_3DLength(),
                 new ST_AddPoint(),
                 new ST_AddZ(),
                 new ST_AsGeoJSON(),
+                new ST_AsKml(),
                 new ST_BoundingCircle(),
                 new ST_ClosestCoordinate(),
                 new ST_ClosestPoint(),
@@ -152,6 +156,7 @@ public class CreateSpatialExtension {
                 new ST_RemoveRepeatedPoints(),
                 new ST_Reverse(),
                 new ST_Reverse3DLine(),
+                new ST_RingBuffer(),
                 new ST_Rotate(),
                 new ST_Scale(),
                 new ST_Simplify(),
@@ -174,7 +179,6 @@ public class CreateSpatialExtension {
                 new ST_ZMax(),
                 new ST_ZMin(),
                 new ST_ZUpdateExtremities(),
-                new ST_RingBuffer(),
                 new ST_Azimuth(),
                 // h2network functions
                 new ST_Graph(),
