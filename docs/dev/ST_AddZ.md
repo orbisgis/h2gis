@@ -11,13 +11,38 @@ permalink: /docs/dev/ST_AddZ/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_AddZ(GEOMETRY geom, double z);
 {% endhighlight %}
 
 ### Description
+This function add a z value to the z component of (each vertex of) the geometric parameter to the corresponding value given by a field.
+Add a z with to the existing value (do the sum). NaN values are not updated.
 
 ### Examples
 
 {% highlight mysql %}
+SELECT ST_AddZ('MULTIPOINT((190 300 1), (10 11))', 10);
+--Answer: MULTIPOINT((190 300 11), (10 11))
+
+SELECT ST_Z(ST_GeometryN(ST_AddZ('MULTIPOINT((190 300 1), (10 11))', 10),2));
+-- Answer: 11
+SELECT ST_Z(ST_GeometryN(ST_AddZ('MULTIPOINT((190 300 1), (10 11))', 10),2));
+-- Answer: NaN
+
+SELECT ST_AddZ('MULTIPOINT( (190 300 10), (10 11 5))', -10)
+-- Answer: MULTIPOINT ((190 300 0), (10 11 -5))
+
+SELECT ST_AddZ('MULTIPOINT( (190 300 10), (10 11 5))', -10)
+-- Answer: MULTIPOINT ((190 300 0), (10 11 -5))
+
+SELECT ST_AddZ('POLYGON ((1 1 5, 1 7 10, 7 7 -1, 7 1 -1, 1 1 5))', -10);
+-- Answer: POLYGON ((1 1 -5, 1 7 0, 7 7 -11, 7 1 -11, 1 1 -5))
+
+SELECT ST_Z(ST_PointN(ST_ExteriorRing(ST_AddZ('POLYGON ((1 1 5, 1 7 10, 7 7 -1, 7 1 -1, 1 1 5))', -10)), 1));
+-- Answer : -5.0
+SELECT ST_Z(ST_PointN(ST_ExteriorRing(ST_AddZ('POLYGON ((1 1 5, 1 7 10, 7 7 -1, 7 1 -1, 1 1 5))', -10)),
+3));
+-- Answer : -11.0
 {% endhighlight %}
 
 ##### See also
