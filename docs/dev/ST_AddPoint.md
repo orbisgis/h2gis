@@ -17,7 +17,7 @@ GEOMETRY ST_AddPoint(GEOMETRY geom, POINT point, double tolerance);
 
 ### Description
 Returns a new `GEOMETRY` based on an existing one, with a specific `POINT` as a new vertex.
-A `tolerance` could be set to snap the POINT to the GEOMETRY. A default distance 10E-6 is used to snap the input point.
+A `tolerance` could be set to snap the POINT to the GEOMETRY. A default distance 10E-6 is used to snap the input `POINT`.
 
 ### Examples
 
@@ -25,15 +25,48 @@ A `tolerance` could be set to snap the POINT to the GEOMETRY. A default distance
 SELECT ST_AddPoint('POINT(0 0)', 'POINT(1 1)');
 -- Answer: null
 
-SELECT ST_AddPoint('MULTIPOINT((0 0))', 'POINT(1 1)');
--- Answer: MULTIPOINT((0 0), (1 1))
+SELECT ST_AddPoint('MULTIPOINT((0 0), (3 3))', 'POINT(1 1)');
+-- Answer: MULTIPOINT((0 0), (3 3), (1 1))
 
-SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8)', 'POINT(1.5 4)', 4);
--- Answer: LINESTRING (0 8, 1 8, 1.5 8, 3 8, 8 8, 10 8, 20 8)
+SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 
+                               10 8, 20 8)', 
+                   'POINT(1.5 4)', 
+                   4);
+-- Answer: LINESTRING(0 8, 1 8, 1.5 8, 3 8, 8 8, 10 8, 20 8)
 
-SELECT ST_AddPoint('POLYGON ((118 134, 118 278, 266 278, 266 134, 118 134 ))', 'POINT(196 278)', 4);
--- Answer: POLYGON ((118 134, 118 278, 196 278, 266 278, 266 134, 118 134))
+SELECT ST_AddPoint('LINESTRING(1 2, 2 4, 3 4, 4 5, 5 2)', 
+                   'POINT(4 3)', 
+                   1);
+-- Answer: LINESTRING(1 2, 2 4, 3 4, 4 5, 4.6 3.2, 5 2)
 {% endhighlight %}
+
+<img class="displayed" src="../ST_AddPoint_1.png"/>
+
+{% highlight mysql %}
+SELECT ST_AddPoint('POLYGON((1 1, 1 4, 4 4, 4 1, 1 1))', 
+                   'POINT(3 8)', 
+                   4);  
+-- Answer: POLYGON((1 1, 1 4, 3 4, 4 4, 4 1, 1 1))
+{% endhighlight %}
+
+|geomA POLYGON | geomB POINT|
+|--|--|
+| POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2)) | POINT(3 3) |
+
+{% highlight mysql %}
+SELECT ST_AddPoint(geomA,geomB, 0.5);
+ -- Answer: null
+
+  SELECT ST_AddPoint(geomA,geomB, 1);     
+-- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
+--                  (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))       
+
+SELECT ST_AddPoint(geomA,geomB, 2);     
+-- Answer: POLYGON((1 1, 1 3, 1 5, 5 5, 5 1, 1 1), 
+--                 (2 2, 4 2, 4 4, 2 4, 2 2)) 
+{% endhighlight %}
+
+<img class="displayed" src="../ST_AddPoint_2.png"/>
 
 ##### See also
 
