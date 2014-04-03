@@ -25,7 +25,7 @@
 
 package org.h2gis.drivers.file_table;
 
-import org.h2.constant.ErrorCode;
+import org.h2.api.ErrorCode;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
@@ -40,7 +40,6 @@ import org.h2.table.Table;
 import org.h2.table.TableFilter;
 import org.h2.value.DataType;
 import org.h2.value.Value;
-import org.h2.value.ValueLong;
 import org.h2gis.drivers.FileDriver;
 
 import java.io.IOException;
