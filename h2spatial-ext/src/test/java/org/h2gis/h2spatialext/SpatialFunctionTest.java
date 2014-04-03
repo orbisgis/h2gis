@@ -1460,82 +1460,53 @@ public class SpatialFunctionTest {
     @Test(expected = SQLException.class)
     public void test_ST_TriangleAspect3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((0 0 , 10 0 0, 0 10 1, 0 0 1))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 , 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_TriangleSlope1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getDouble(1) == 0);
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_TriangleSlope2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'::GEOMETRY);");
         rs.next();
         assertTrue((rs.getDouble(1) - 127.27) < 10E-2);
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_TriangleDirection1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).isEmpty());
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_TriangleDirection2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((0 0 0, 4 0 0, 2 3 9, 0 0 0))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 4 0 0, 2 3 9, 0 0 0))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(2 1 3, 2 0 0)")));
+        assertGeometryEquals("LINESTRING(2 1 3, 2 0 0)", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_BoundingCircle1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
                 + "355.97696351423673 204.69731282226294, 343.22623616044143 180.84237978870843, "
@@ -1555,18 +1526,13 @@ public class SpatialFunctionTest {
                 + "355.9769635142369 310.3026871777366, 363.82882265008476 284.41857648802966, "
                 + "366.4800710247679 257.5))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_BoundingCircle2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (140 200, 170 150)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('LINESTRING (140 200, 170 150)'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((184.1547594742265 175, 183.59455894601797 "
                 + "169.3121885858704, 181.9354855535274 163.8429565746244, "
@@ -1586,144 +1552,98 @@ public class SpatialFunctionTest {
                 + "179.24129655680912 191.19751651472637, 181.93548555352743 186.15704342537552, "
                 + "183.594558946018 180.6878114141295, 184.1547594742265 175))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Densify1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (140 200, 170 150)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Densify(the_geom, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Densify('LINESTRING (140 200, 170 150)'::GEOMETRY, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (140 200, 145 191.66666666666666, "
                 + "150 183.33333333333334, 155 175, 160 166.66666666666669, 165 158.33333333333334, 170 150)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Densify2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((100 150, 150 150, 150 100, 100 100, 100 150))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Densify(the_geom, 50) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Densify('POLYGON ((100 150, 150 150, 150 100, 100 100, 100 150))'::GEOMETRY, 50);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((100 150, 125 150, 150 150, "
                 + "150 125, 150 100, 125 100, 100 100, 100 125, 100 150))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Densify3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POINT (100 150)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Densify(the_geom, 50) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Densify('POINT (100 150)'::GEOMETRY, 50);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT (100 150)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Expand1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POINT (100 150)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Expand(the_geom, 10, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 10, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((90 140, 90 160, 110 160, 110 140, 90 140))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Expand2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POINT (100 150)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Expand(the_geom, 5, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 5, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Expand3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POINT (100 150)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Expand(the_geom, 5, -10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 5, -10);");
         rs.next();
         assertEquals(ValueGeometry.get("LINESTRING (95 150, 105 150)").getGeometry(), rs.getObject(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Expand4() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Expand(the_geom, 5, -10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Expand('POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))'::GEOMETRY, 5, -10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (90 150, 110 150)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_OctogonalEnvelope1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_OctogonalEnvelope2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((170 350, 95 214, 220 120, 210 210, 159 205, 170 240, 170 350))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('POLYGON ((170 350, 95 214, 220 120, 210 210, 159 205, 170 240, 170 350))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((95 214, 95 275, 170 350, 220 300, 220 120, 189 120, 95 214))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
