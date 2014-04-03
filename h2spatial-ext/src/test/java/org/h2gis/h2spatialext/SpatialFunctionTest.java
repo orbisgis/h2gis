@@ -1972,7 +1972,7 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POINT(1 1)'::GEOMETRY, 'POINT(1 1)'::GEOMETRY, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(1 1)")));
+        assertNull(rs.getObject(1));
         rs.close();
         st.close();
     }
@@ -2013,6 +2013,26 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('LINESTRING (100 200, 153 255, 169 175, 200 240, 250 190, 264 236, 304 236, 320 240, 340 250, 345 265, 354 295)'::GEOMETRY, 'POINT (230 250)'::GEOMETRY, 100);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (100 200, 340 250, 345 265, 354 295)")));
+        rs.close();
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_RemovePoint7() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('LINESTRING (0 0, 10 0)'::GEOMETRY, 'POINT (5 0)'::GEOMETRY, 10);");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_RemovePoint8() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POINT(1 1)'::GEOMETRY, 'POINT(100 100)'::GEOMETRY, 10);");
+        rs.next();
+        assertGeometryEquals("POINT(1 1)",rs.getBytes(1));
         rs.close();
         st.close();
     }
