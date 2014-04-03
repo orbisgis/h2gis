@@ -2502,7 +2502,7 @@ public class SpatialFunctionTest {
     }
 
     @Test
-    public void test_ST_Normalize1() throws Exception {
+    public void test_ST_ZUpdateExtremities4() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities('LINESTRING(0 0, 5 0 , 10 0)'::GEOMETRY, 0, 10);");
         rs.next();
