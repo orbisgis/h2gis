@@ -2280,30 +2280,20 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_UpdateZ3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11 2))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ(the_geom, 10, 3) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('MULTIPOINT( (190 300), (10 11 2))'::GEOMETRY, 10, 3);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 10), (10 11 2))")));
+        assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11 2))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_UpdateZ4() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300 1), (10 11))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ(the_geom, 10, 2) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('MULTIPOINT( (190 300 1), (10 11))'::GEOMETRY, 10, 2);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 10), (10 11))")));
+        assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
@@ -2327,255 +2317,170 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_AddZ1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300 1), (10 11))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_AddZ(the_geom, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_AddZ('MULTIPOINT( (190 300 1), (10 11))'::GEOMETRY, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 11), (10 11))")));
+        assertGeometryEquals("MULTIPOINT( (190 300 11), (10 11))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_AddZ2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_AddZ(the_geom, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_AddZ('MULTIPOINT( (190 300), (10 11))'::GEOMETRY, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300), (10 11))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_AddZ3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300 10), (10 11 5))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_AddZ(the_geom, -10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_AddZ('MULTIPOINT( (190 300 10), (10 11 5))'::GEOMETRY, -10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 0), (10 11 -5))")));
+        assertGeometryEquals("MULTIPOINT( (190 300 0), (10 11 -5))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_MultiplyZ1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300 1), (10 11))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ(the_geom, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ('MULTIPOINT( (190 300 1), (10 11))'::GEOMETRY, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 10), (10 11))")));
+        assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_MultiplyZ2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ(the_geom, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ('MULTIPOINT( (190 300), (10 11))'::GEOMETRY, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300), (10 11))")));
+        assertGeometryEquals("MULTIPOINT( (190 300), (10 11))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_MultiplyZ3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300 100), (10 11 50))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ(the_geom, 0.1) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ('MULTIPOINT( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 1), (10 11 0.5))")));
+        assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11 5))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_PrecisionReducer1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300 100), (10 11 50))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer(the_geom, 0.1) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 100), (10 11 50))")));
+        assertGeometryEquals("MULTIPOINT( (190 300 100), (10 11 50))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_PrecisionReducer2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190.005 300 100), (10.534 11 50))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer(the_geom, 1) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190.005 300 100), (10.534 11 50))'::GEOMETRY, 1);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 100), (10.5 11 50))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_PrecisionReducer3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190.005 300 100), (10.534 11 50))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer(the_geom, 4) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190.005 300 100), (10.534 11 50))'::GEOMETRY, 4);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190.005 300 100), (10.534 11 50))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Simplify1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11 50))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Simplify(the_geom, 4) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Simplify('MULTIPOINT( (190 300), (10 11 50))'::GEOMETRY, 4);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300), (10 11 50))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Simplify2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Simplify(the_geom, 40) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Simplify('LINESTRING (250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)'::GEOMETRY, 40);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (250 250, 280 290, 300 230, 470 360, 604 286)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Simplify3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((250 250, 248 240, 250 180, 290 150, 332 165, 350 190, 330 200, 340 220, 360 260, 360 300, 330 310, 319 310, 300 310, 280 280, 256 284, 250 250))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Simplify(the_geom, 40) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Simplify('POLYGON ((250 250, 248 240, 250 180, 290 150, 332 165, 350 190, 330 200, 340 220, 360 260, 360 300, 330 310, 319 310, 300 310, 280 280, 256 284, 250 250))'::GEOMETRY, 40);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((250 250, 360 300, 332 165, 250 180, 250 250))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_SimplifyPreserveTopology1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11 50))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology(the_geom, 4) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology('MULTIPOINT( (190 300), (10 11 50))'::GEOMETRY, 4);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300), (10 11 50))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_SimplifyPreserveTopology2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology(the_geom, 40) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology('LINESTRING (250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)'::GEOMETRY, 40);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (250 250, 280 290, 300 230, 470 360, 604 286)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_SimplifyPreserveTopology3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((250 250, 248 240, 250 180, 290 150, 332 165, 350 190, 330 200, 340 220, 360 260, 360 300, 330 310, 319 310, 300 310, 280 280, 256 284, 250 250))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology(the_geom, 40) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology('POLYGON ((250 250, 248 240, 250 180, 290 150, 332 165, 350 190, 330 200, 340 220, 360 260, 360 300, 330 310, 319 310, 300 310, 280 280, 256 284, 250 250))'::GEOMETRY, 40);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((250 250, 360 300, 332 165, 250 180, 250 250))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_ZUpdateExtremities1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (250 250, 280 290)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities(the_geom, 40, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities('LINESTRING (250 250, 280 290)'::GEOMETRY, 40, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (250 250 40, 280 290 10)")));
+        assertGeometryEquals("LINESTRING (250 250 40, 280 290 10)", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_ZUpdateExtremities2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING(0 0, 5 0 , 10 0)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities(the_geom, 0, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities('LINESTRING(0 0, 5 0 , 10 0)'::GEOMETRY, 0, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
@@ -2599,30 +2504,20 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Normalize1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING(0 0, 5 0 , 10 0)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities(the_geom, 0, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities('LINESTRING(0 0, 5 0 , 10 0)'::GEOMETRY, 0, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Normalize2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((170 180, 310 180, 308 190, 310 206, 340 320, 135 333, 140 260, 170 180))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Normalize(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Normalize('POLYGON ((170 180, 310 180, 308 190, 310 206, 340 320, 135 333, 140 260, 170 180))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((135 333, 340 320, 310 206, 308 190, 310 180, 170 180, 140 260, 135 333))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
