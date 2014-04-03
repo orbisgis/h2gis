@@ -20,9 +20,9 @@ Returns a `GEOMETRY` that was a snapping between two Geometries with a given tol
 Snaps the vertices and segments of a Geometry to another Geometry's vertices. A snap `distance tolerance` is used to control where snapping is performed. 
 
 ### Examples
-| geomA LINESTRING|geomB LINESTRING|
-|------------------|---------------------------|
-| LINESTRING(1 2, 2 4, 4 4, 5 2) |LINESTRING(5 2, 2 1, 1 2) |
+| geomA LINESTRING | geomB LINESTRING |
+|--|--|
+| LINESTRING(1 2, 2 4, 4 4, 5 2) | LINESTRING(5 2, 2 1, 1 2) |
 
 {% highlight mysql %}
 SELECT ST_Snap(geomA, geomB, 1) FROM input_table;
@@ -38,9 +38,9 @@ SELECT ST_Snap(geomA, geomB, 3) FROM input_table;
 <img class="displayed" src="../ST_Snap_1.png"/>
 
 
-| geomA POLYGON|geomB POLYGON|
-|------------------|---------------------------|
-| POLYGON((1 1, 1 7, 7 7, 7 1, 1 1)) |POLYGON((3 3, 1 2, 0 2, 0 1, -2 1, -1 7, 3 6, 4 8, 7 8, 6 6, 9 6, 8 1, 8 1, 3 3)) |
+| geomA POLYGON | geomB POLYGON |
+|--|--|
+| POLYGON((1 1, 1 7, 7 7, 7 1, 1 1)) | POLYGON((3 3, 1 2, 0 2, 0 1, -2 1, -1 7, 3 6, 4 8, 7 8, 6 6, 9 6, 8 1, 8 1, 3 3)) |
 
 {% highlight mysql %}
 SELECT ST_Snap(geomA, geomB, 2) FROM input_table;

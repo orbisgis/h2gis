@@ -22,7 +22,7 @@ null.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_Polygonize('POINT (1 2)');
+SELECT ST_Polygonize('POINT(1 2)');
 -- Answer: null
 
 SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 5 2), 
@@ -59,10 +59,9 @@ SELECT ST_Polygonize('POLYGON((2 2, 2 4, 5 4, 5 2, 2 2))');
 -- Answer: MULTIPOLYGON((2 2, 2 4, 5 4, 5 2, 2 2))
 
 SELECT ST_Polygonize(st_union('MULTILINESTRING((1 2, 2 4, 5 2), 
-                                                (1 4, 4 1, 4 4))'));
--- Answer: MULTIPOLYGON (((4 2.6666666666666665, 4 1, 
---                         1.6666666666666667 3.3333333333333335, 
---                         2 4, 4 2.6666666666666665)))
+                                               (1 4, 4 1, 4 4))'));
+-- Answer: MULTIPOLYGON (((4 2.6666, 4 1, 1.6666 3.3333, 
+--                         2 4, 4 2.6666)))
 
 {% endhighlight %}
 
