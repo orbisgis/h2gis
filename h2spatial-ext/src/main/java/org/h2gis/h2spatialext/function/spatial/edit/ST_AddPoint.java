@@ -1,8 +1,8 @@
 /**
  * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
@@ -19,8 +19,7 @@
  * h2spatial. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * or contact directly: info_at_ orbisgis.org
  */
 package org.h2gis.h2spatialext.function.spatial.edit;
 
@@ -34,6 +33,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.operation.distance.DistanceOp;
 import com.vividsolutions.jts.operation.distance.GeometryLocation;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -49,11 +49,11 @@ public class ST_AddPoint extends DeterministicScalarFunction {
     private static final GeometryFactory FACTORY = new GeometryFactory();
     public static final double PRECISION = 10E-6;
 
-    public ST_AddPoint(){
+    public ST_AddPoint() {
         addProperty(PROP_REMARKS, "Adds a point to a geometry. \n"
-                + "A tolerance could be set to snap the point to the geometry." );        
+                + "A tolerance could be set to snap the point to the geometry.");
     }
-    
+
     @Override
     public String getJavaStaticMethod() {
         return "addPoint";
@@ -61,13 +61,12 @@ public class ST_AddPoint extends DeterministicScalarFunction {
 
     /**
      * Returns a new geometry based on an existing one, with a specific point as
-     * a new vertex.
-     * A default distance 10E-6 is used to snap the input point.
-     * 
+     * a new vertex. A default distance 10E-6 is used to snap the input point.
+     *
      * @param geometry
      * @param point
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static Geometry addPoint(Geometry geometry, Point point) throws SQLException {
         return addPoint(geometry, point, PRECISION);
@@ -128,8 +127,7 @@ public class ST_AddPoint extends DeterministicScalarFunction {
             } else {
                 return null;
             }
-        }
-        else if(geometry instanceof Point){
+        } else if (geometry instanceof Point) {
             return null;
         }
         throw new SQLException("Unknown geometry type" + " : " + geometry.getGeometryType());
@@ -192,43 +190,57 @@ public class ST_AddPoint extends DeterministicScalarFunction {
      * @throws SQLException
      */
     private static Polygon insertVertexInPolygon(Polygon polygon,
-            Point vertexPoint, double tolerance) throws SQLException {
-        LinearRing inserted = insertVertexInLinearRing(polygon.getExteriorRing(), vertexPoint, tolerance);
-        if (inserted != null) {
+            Point vertexPoint, double tolerance) throws SQLException {        
+        Polygon geom;
+        LineString linearRing = polygon.getExteriorRing();
+        double distance = computeDistance(linearRing, vertexPoint, tolerance);
+        int index = -1;
+        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+            double distCurr = computeDistance(polygon.getInteriorRingN(i),vertexPoint, tolerance);
+            if (distCurr<distance){
+                index = i;
+                distance=distCurr;
+            }
+        }        
+        if(index==-1){
+            //The point is a on the exterior ring.
+            LinearRing inserted = insertVertexInLinearRing(linearRing, vertexPoint, tolerance);
             LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
             for (int i = 0; i < holes.length; i++) {
-                holes[i] = FACTORY.createLinearRing(polygon.getInteriorRingN(i).getCoordinates());
+                holes[i]= (LinearRing) polygon.getInteriorRingN(i);
             }
-            Polygon ret = FACTORY.createPolygon(inserted, holes);
-
-            if (!ret.isValid()) {
-                throw new SQLException("Geometry not valid");
-            }
-
-            return ret;
+           geom = FACTORY.createPolygon(inserted, holes);
         }
-
-        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-            inserted = insertVertexInLinearRing(polygon.getInteriorRingN(i), vertexPoint, tolerance);
-            if (inserted != null) {
-                LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
-                for (int h = 0; h < holes.length; h++) {
-                    if (h == i) {
-                        holes[h] = inserted;
-                    } else {
-                        holes[h] = FACTORY.createLinearRing(polygon.getInteriorRingN(h).getCoordinates());
-                    }
+        else{
+            //We add the vertex on the first hole
+            LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
+            for (int i = 0; i < holes.length; i++) {
+                if (i == index) {
+                    holes[i] = insertVertexInLinearRing(polygon.getInteriorRingN(i), vertexPoint, tolerance);
+                } else {
+                    holes[i] = (LinearRing) polygon.getInteriorRingN(i);
                 }
-
-                Polygon ret = FACTORY.createPolygon(FACTORY.createLinearRing(polygon.getExteriorRing().getCoordinates()), holes);
-
-                if (!ret.isValid()) {
-                    throw new SQLException("Geometry not valid");
-                }
-                return ret;
             }
-        }
-        return null;
+            geom = FACTORY.createPolygon((LinearRing) linearRing, holes);
+        }       
+        
+        if (!geom.isValid()) {
+            throw new SQLException("Geometry not valid");
+        }       
+        return geom;
+    }
+
+    /**
+     * Return minimum distance between a geometry and a point.
+     *
+     * @param geometry
+     * @param vertexPoint
+     * @param tolerance
+     * @return
+     */
+    private static double computeDistance(Geometry geometry, Point vertexPoint, double tolerance) {
+        DistanceOp distanceOp = new DistanceOp(geometry, vertexPoint, tolerance);
+        return distanceOp.distance();
     }
 
     /**

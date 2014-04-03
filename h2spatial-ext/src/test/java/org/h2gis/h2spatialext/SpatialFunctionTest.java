@@ -1,8 +1,8 @@
 /**
  * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
@@ -19,8 +19,7 @@
  * h2spatial. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * or contact directly: info_at_ orbisgis.org
  */
 package org.h2gis.h2spatialext;
 
@@ -1679,7 +1678,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MinimumRectangle2() throws Exception {
-        Statement st = connection.createStatement();       
+        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('POLYGON ((150 290, 110 210, 280 130, 280 250, 235 221, 150 290))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((279.99999999999693 129.99999999999395, "
@@ -1691,7 +1690,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MinimumRectangle3() throws Exception {
-        Statement st = connection.createStatement();     
+        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('LINESTRING (60 290, 67 300, 140 330, 136 319, 127 314, "
                 + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)'::GEOMETRY);");
         rs.next();
@@ -1889,7 +1888,7 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POINT(0 0 0)'::GEOMETRY, 'POINT(1 1)'::GEOMETRY);");
         rs.next();
-        assertTrue(rs.getObject(1)== null);
+        assertTrue(rs.getObject(1) == null);
         rs.close();
         st.close();
     }
@@ -1932,6 +1931,38 @@ public class SpatialFunctionTest {
         rs.next();
         //The geometry is not modified
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((118 134, 118 278,196 278, 266 278, 266 134, 118 134 ))")));
+        rs.close();
+        st.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint6() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))'::GEOMETRY, "
+                + "'POINT(3 3 )'::GEOMETRY, 2);");
+        rs.next();
+        //The geometry is not modified
+        assertGeometryEquals("POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))", rs.getBytes(1));
+        rs.close();
+        st.close();
+    }
+
+    @Test
+    public void test_ST_AddPoint7() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), \n"
+                + "  (2 2, 4 2, 4 4, 2 4, 2 2), \n"
+                + "  (2.8 4.7, 3.2 4.7, 3.2 4.4, 2.8 4.4, 2.8 4.7), \n"
+                + "  (1.4 4.7, 1.8 4.7, 1.8 4.4, 1.4 4.4, 1.4 4.7), \n"
+                + "  (4.14 4.64, 4.65 4.64, 4.65 4.37, 4.14 4.37, 4.14 4.64))'::GEOMETRY, "
+                + "'POINT(3 3 )'::GEOMETRY, 2);");
+        rs.next();
+        //The geometry is not modified
+        assertGeometryEquals("POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), \n"
+                + "  (2 2, 3 2,4 2, 4 4, 2 4, 2 2), \n"
+                + "  (2.8 4.7, 3.2 4.7, 3.2 4.4, 2.8 4.4, 2.8 4.7), \n"
+                + "  (1.4 4.7, 1.8 4.7, 1.8 4.4, 1.4 4.4, 1.4 4.7), \n"
+                + "  (4.14 4.64, 4.65 4.64, 4.65 4.37, 4.14 4.37, 4.14 4.64))", rs.getBytes(1));
         rs.close();
         st.close();
     }
@@ -2627,14 +2658,13 @@ public class SpatialFunctionTest {
         rs.close();
         st.close();
     }
-   
 
     @Test
     public void test_ST_Azimuth1() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, 10)) ) as degAz;");
         rs.next();
-        assertEquals(rs.getDouble(1), 0,0.00001);
+        assertEquals(rs.getDouble(1), 0, 0.00001);
         rs.close();
         st.close();
     }
@@ -2644,7 +2674,7 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(10, 0)) ) as degAz;");
         rs.next();
-        assertEquals(rs.getDouble(1), 90,0.00001);
+        assertEquals(rs.getDouble(1), 90, 0.00001);
         rs.close();
         st.close();
     }
@@ -2654,7 +2684,7 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, -10)) ) as degAz;");
         rs.next();
-        assertEquals(rs.getDouble(1), 180,0.00001);
+        assertEquals(rs.getDouble(1), 180, 0.00001);
         rs.close();
         st.close();
     }
@@ -2664,7 +2694,7 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, 0)) ) as degAz;");
         rs.next();
-        assertEquals(rs.getDouble(1), 0,0.00001);
+        assertEquals(rs.getDouble(1), 0, 0.00001);
         rs.close();
         st.close();
     }
