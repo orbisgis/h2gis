@@ -1119,54 +1119,35 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_DelaunayWithPoints1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom MultiPoint);"
-                + "INSERT INTO input_table VALUES("
-                + "'MULTIPOINT ((0 0 1), (10 0 1), (10 10 1))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1))'::GEOMETRY);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON(((0 0, 10 0, 10 10, 0 0)))"));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_DelaunayWithPoints2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom MultiPoint);"
-                + "INSERT INTO input_table VALUES("
-                + "'MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((0 0, 10 0, 5 5, 0 0)), ((10 0, 5 5, 10 10, 10 0)))"));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_DelaunayWithLines() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
-                + "INSERT INTO input_table VALUES("
-                + "'MULTILINESTRING ((1.1 8 1, 8 8 1), (2 3.1 1, 8 5.1 1))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTILINESTRING ((1.1 8 1, 8 8 1), (2 3.1 1, 8 5.1 1))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON ( ((1.1 8, 2 3.1, 8 5.1, 1.1 8)),"
                 + " ((1.1 8, 8 5.1, 8 8, 1.1 8)))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_DelaunayAsMultiPolygon() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES("
-                + "'POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom, 0) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 0);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON (((1.1 9, 1.1 3, 5 8, 1.1 9)), \n"
                 + "   ((1.1 9, 5 8, 8.8 9.9, 1.1 9)), \n"
@@ -1174,17 +1155,12 @@ public class SpatialFunctionTest {
                 + "   ((5.1 1.1, 9.5 6.4, 5 8, 5.1 1.1)), \n"
                 + "   ((5.1 1.1, 5 8, 1.1 3, 5.1 1.1)))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_DelaunayAsMultiLineString() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES("
-                + "'POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(the_geom, 1) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 1);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTILINESTRING ((1.1 9, 1.1 3, 5 8, 1.1 9), \n"
                 + "  (1.1 9, 5 8, 8.8 9.9, 1.1 9), \n"
@@ -1192,17 +1168,12 @@ public class SpatialFunctionTest {
                 + "  (5.1 1.1, 9.5 6.4, 5 8, 5.1 1.1), \n"
                 + "  (5.1 1.1, 5 8, 1.1 3, 5.1 1.1))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_ConstrainedDelaunayWithPolygon() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES("
-                + "'POLYGON ((1.9 8, 2.1 2.2, 7.1 2.2, 4.9 3.5, 7.5 8.1, 3.2 6, 1.9 8))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(the_geom) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('POLYGON ((1.9 8, 2.1 2.2, 7.1 2.2, 4.9 3.5, 7.5 8.1, 3.2 6, 1.9 8))'::GEOMETRY);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((1.9 8, 2.1 2.2, 3.2 6, 1.9 8)), \n"
                 + "  ((2.1 2.2, 3.2 6, 4.9 3.5, 2.1 2.2)), \n"
@@ -1211,17 +1182,12 @@ public class SpatialFunctionTest {
                 + "  ((4.9 3.5, 3.2 6, 7.5 8.1, 4.9 3.5)), \n"
                 + "  ((3.2 6, 1.9 8, 7.5 8.1, 3.2 6)))"));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_ConstrainedDelaunayWithLines() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
-                + "INSERT INTO input_table VALUES("
-                + "'MULTILINESTRING ((2 7, 6 7),  (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(the_geom, 1) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7),  (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 1);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTILINESTRING ((2 7, 3.2 4.6), \n"
                 + "  (3.2 4.6, 4.1 5), \n"
@@ -1237,24 +1203,18 @@ public class SpatialFunctionTest {
                 + "  (4.1818181818181825 7, 6 7), \n"
                 + "  (5 9, 6 7))"));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_ConstrainedDelaunayWithLines2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
-                + "INSERT INTO input_table VALUES("
-                + "'MULTILINESTRING ((2 7, 6 7),  (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY); ");
-        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(the_geom, 0) as the_geom FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7),  (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 0);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((3.2 4.6, 4.1 5, 4.1818181818181825 7, 3.2 4.6)), "
                 + "((2 7, 3.2 4.6, 4.1818181818181825 7, 2 7)), ((4.1818181818181825 7, 2 7, 5 9, 4.1818181818181825 7)), "
                 + "((3.2 4.6, 4.1 5, 6 5, 3.2 4.6)), ((4.1 5, 4.1818181818181825 7, 6 5, 4.1 5)), "
                 + "((6 5, 4.1818181818181825 7, 6 7, 6 5)), ((4.1818181818181825 7, 5 9, 6 7, 4.1818181818181825 7)))"));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
@@ -1481,30 +1441,20 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_TriangleAspect1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getDouble(1) == 0);
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_TriangleAspect2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((0 0 1, 10 0 0, 0 10 1, 0 0 1))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 1, 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getDouble(1) == 90);
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test(expected = SQLException.class)
@@ -2060,7 +2010,7 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('LINESTRING(0 0 0, 5 0 , 10 0 10)'));");
         ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine(the_geom) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
+        assertGeometryEquals("LINESTRING(0 0 0, 5 0 5, 10 0 10)", rs.getBytes(1));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
@@ -2075,7 +2025,7 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('POINT(0 0 0)'));");
         ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine(the_geom) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)) == null);
+        assertTrue(rs.getObject(1) == null);
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
@@ -2090,7 +2040,7 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('MULTILINESTRING((0 0 0, 5 0 , 10 0 10),(0 0 0, 50 0, 100 0 100))'));");
         ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine(the_geom) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTILINESTRING((0 0 0, 5 0 , 10 0 10),(0 0 0, 50 0 50, 100 0 100))")));
+        assertGeometryEquals("MULTILINESTRING((0 0 0, 5 0 5, 10 0 10),(0 0 0, 50 0 50, 100 0 100))", rs.getBytes(1));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
@@ -2105,7 +2055,7 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('POINT(0 0 0)'));");
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint(the_geom, 'POINT(1 1)'::GEOMETRY) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)) == null);
+        assertTrue(rs.getObject(1)== null);
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
@@ -2563,7 +2513,7 @@ public class SpatialFunctionTest {
                 + "(ST_GeomFromText('POINT (190 300)'));");
         ResultSet rs = st.executeQuery("SELECT ST_UpdateZ(the_geom, 10) FROM input_table;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT (190 300 10)")));
+        assertGeometryEquals("POINT (190 300 10)", rs.getBytes(1));
         rs.close();
         st.execute("DROP TABLE input_table;");
         st.close();
@@ -2572,15 +2522,10 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_UpdateZ2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTIPOINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTIPOINT( (190 300), (10 11 2))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ(the_geom, 10) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('MULTIPOINT( (190 300), (10 11 2))'::GEOMETRY, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 10), (10 11 10))")));
+        assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11 10))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
