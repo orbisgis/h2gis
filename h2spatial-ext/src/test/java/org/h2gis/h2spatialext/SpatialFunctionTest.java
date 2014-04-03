@@ -29,9 +29,7 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -50,6 +48,7 @@ import static org.junit.Assert.*;
 public class SpatialFunctionTest {
 
     private static Connection connection;
+    private Statement st;
     private static final String DB_NAME = "SpatialFunctionTest";
     private static GeometryFactory FACTORY;
     private static WKTReader WKT_READER;
@@ -77,14 +76,23 @@ public class SpatialFunctionTest {
     public static void tearDown() throws Exception {
         connection.close();
     }
+    
+    @Before
+    public void setUpStatement() throws Exception {
+        st = connection.createStatement();
+    }
+
+    @After
+    public void tearDownStatement() throws Exception {
+        st.close();
+    }
 
     private static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
         assertTrue(Arrays.equals(ValueGeometry.get(expectedWKT).getBytes(), valueWKB));
     }
 
     @Test
-    public void test_ST_ExplodeWithoutGeometryField() throws Exception {
-        Statement st = connection.createStatement();
+    public void test_ST_ExplodeWithoutGeometryField() throws Exception {        
         st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
                 + " boundary MULTIPOLYGON);"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
@@ -97,7 +105,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExplodeEmptyGeometryCollection() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("create table test(the_geom GEOMETRY, value Integer);"
                 + "insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108),"
                 + " (ST_GeomFromText('MULTIPOINT EMPTY'),109),"
@@ -122,7 +129,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Extent() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("drop table if exists ptClouds");
         st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);"
                 + "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)),"
@@ -145,7 +151,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_TableEnvelope() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("drop table if exists ptClouds");
         st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);"
                 + "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)),"
@@ -158,15 +163,10 @@ public class SpatialFunctionTest {
         assertEquals(expected.getMinY(), result.getMinY(), 1e-12);
         assertEquals(expected.getMaxY(), result.getMaxY(), 1e-12);
         st.execute("drop table ptClouds");
-    }
-
-    @Test
-    public void testAggregateProgression() {
-    }
+    }   
 
     @Test
     public void test_ST_IsRectangle() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(the_geom Polygon);"
                 + "INSERT INTO input_table VALUES("
@@ -183,7 +183,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_IsValid() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(the_geom Polygon);"
                 + "INSERT INTO input_table VALUES("
@@ -200,7 +199,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Covers() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(smallc Polygon, bigc Polygon);"
                 + "INSERT INTO input_table VALUES("
@@ -223,7 +221,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_DWithin() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geomA Polygon, geomB Polygon);"
                 + "INSERT INTO input_table VALUES("
@@ -249,7 +246,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_XYZMinMax() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(line Linestring);"
                 + "INSERT INTO input_table VALUES("
@@ -271,7 +267,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Rotate() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
                 + "INSERT INTO input_table VALUES("
@@ -318,7 +313,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Scale() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(twoDLine Geometry, threeDLine Geometry);"
                 + "INSERT INTO input_table VALUES("
@@ -364,7 +358,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_3DLength() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -400,7 +393,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_3DLengthEqualsST_LengthFor2DGeometry() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -418,7 +410,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_CoordDim() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
                 + "INSERT INTO input_table VALUES("
@@ -445,7 +436,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_CompactnessRatio() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -481,7 +471,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakePoint() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MakePoint(1.4, -3.7), "
                 + "ST_MakePoint(1.4, -3.7, 6.2);");
         assertTrue(rs.next());
@@ -494,7 +483,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakeEllipse() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_MakeEllipse(ST_MakePoint(0, 0), 6, 4),"
                 + "ST_MakeEllipse(ST_MakePoint(-1, 4), 2, 4),"
@@ -536,7 +524,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakeLine() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_MakeLine('POINT(1 2 3)'::Geometry, 'POINT(4 5 6)'::Geometry), "
                 + "ST_MakeLine('POINT(1 2)'::Geometry, 'POINT(4 5)'::Geometry), "
@@ -597,7 +584,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ToMultiPoint() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(empty_multi_point MultiPoint,"
                 + "multi_point MultiPoint, point Point, "
@@ -635,7 +621,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ToMultiLine() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table("
                 + "point Point,"
@@ -690,7 +675,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Holes() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(empty_line_string LineString,"
                 + "line LineString, "
@@ -729,7 +713,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ToMultiSegments() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table("
                 + "point Point,"
@@ -789,7 +772,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_FurthestCoordinate() throws Exception {
-        Statement st = connection.createStatement();
         //            5
         //
         //       +---------+
@@ -833,7 +815,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ClosestCoordinate() throws Exception {
-        Statement st = connection.createStatement();
         //            5
         //
         //       +---------+
@@ -877,7 +858,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_LocateAlong() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -964,7 +944,6 @@ public class SpatialFunctionTest {
         //       |         |
         //       |         |
         //       1---------+
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(point Point);"
                 + "INSERT INTO input_table VALUES"
@@ -1063,7 +1042,6 @@ public class SpatialFunctionTest {
         //      a| |b
         //       + +
         //
-        Statement st = connection.createStatement();
         final String a = "'LINESTRING(0 0, 0 1))'";
         final String aReversed = "'LINESTRING(0 1, 0 0))'";
         final String b = "'LINESTRING(1 0, 1 1))'";
@@ -1117,7 +1095,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_DelaunayWithPoints1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1))'::GEOMETRY);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON(((0 0, 10 0, 10 10, 0 0)))"));
@@ -1126,7 +1103,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_DelaunayWithPoints2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((0 0, 10 0, 5 5, 0 0)), ((10 0, 5 5, 10 10, 10 0)))"));
@@ -1135,7 +1111,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_DelaunayWithLines() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTILINESTRING ((1.1 8 1, 8 8 1), (2 3.1 1, 8 5.1 1))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON ( ((1.1 8, 2 3.1, 8 5.1, 1.1 8)),"
@@ -1145,7 +1120,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_DelaunayAsMultiPolygon() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 0);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON (((1.1 9, 1.1 3, 5 8, 1.1 9)), \n"
@@ -1158,7 +1132,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_DelaunayAsMultiLineString() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 1);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTILINESTRING ((1.1 9, 1.1 3, 5 8, 1.1 9), \n"
@@ -1171,7 +1144,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ConstrainedDelaunayWithPolygon() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('POLYGON ((1.9 8, 2.1 2.2, 7.1 2.2, 4.9 3.5, 7.5 8.1, 3.2 6, 1.9 8))'::GEOMETRY);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((1.9 8, 2.1 2.2, 3.2 6, 1.9 8)), \n"
@@ -1185,7 +1157,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ConstrainedDelaunayWithLines() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7),  (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 1);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTILINESTRING ((2 7, 3.2 4.6), \n"
@@ -1206,7 +1177,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ConstrainedDelaunayWithLines2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7),  (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 0);");
         rs.next();
         assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((3.2 4.6, 4.1 5, 4.1818181818181825 7, 3.2 4.6)), "
@@ -1218,7 +1188,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakeGrid() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -1244,7 +1213,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void testST_MakeGridFromGeometry() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1);");
         ResultSet rs = st.executeQuery("select count(*)  from grid;");
         rs.next();
@@ -1271,7 +1239,6 @@ public class SpatialFunctionTest {
      */
     @Test
     public void testST_MakeGridFromSubquery1() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -1302,7 +1269,6 @@ public class SpatialFunctionTest {
      */
     @Test
     public void testST_MakeGridFromSubquery2() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -1335,7 +1301,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakeGridPoints() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -1360,7 +1325,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakeGrid2() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -1390,7 +1354,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakeGrid3() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -1414,7 +1377,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakeGrid4() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom Geometry);"
                 + "INSERT INTO input_table VALUES"
@@ -1439,7 +1401,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_TriangleAspect1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getDouble(1) == 0);
@@ -1449,7 +1410,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_TriangleAspect2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 1, 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getDouble(1) == 90);
@@ -1465,7 +1425,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_TriangleSlope1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getDouble(1) == 0);
@@ -1475,7 +1434,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_TriangleSlope2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'::GEOMETRY);");
         rs.next();
         assertTrue((rs.getDouble(1) - 127.27) < 10E-2);
@@ -1484,7 +1442,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_TriangleDirection1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).isEmpty());
@@ -1494,7 +1451,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_TriangleDirection2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 4 0 0, 2 3 9, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("LINESTRING(2 1 3, 2 0 0)", rs.getBytes(1));
@@ -1504,7 +1460,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_BoundingCircle1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
@@ -1530,7 +1485,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_BoundingCircle2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('LINESTRING (140 200, 170 150)'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((184.1547594742265 175, 183.59455894601797 "
@@ -1556,7 +1510,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Densify1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Densify('LINESTRING (140 200, 170 150)'::GEOMETRY, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (140 200, 145 191.66666666666666, "
@@ -1567,7 +1520,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Densify2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Densify('POLYGON ((100 150, 150 150, 150 100, 100 100, 100 150))'::GEOMETRY, 50);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((100 150, 125 150, 150 150, "
@@ -1578,7 +1530,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Densify3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Densify('POINT (100 150)'::GEOMETRY, 50);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT (100 150)")));
@@ -1588,7 +1539,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Expand1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 10, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((90 140, 90 160, 110 160, 110 140, 90 140))")));
@@ -1598,7 +1548,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Expand2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 5, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))")));
@@ -1608,7 +1557,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Expand3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 5, -10);");
         rs.next();
         assertEquals(ValueGeometry.get("LINESTRING (95 150, 105 150)").getGeometry(), rs.getObject(1));
@@ -1618,7 +1566,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Expand4() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Expand('POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))'::GEOMETRY, 5, -10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (90 150, 110 150)")));
@@ -1628,7 +1575,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_OctogonalEnvelope1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))")));
@@ -1638,7 +1584,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_OctogonalEnvelope2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('POLYGON ((170 350, 95 214, 220 120, 210 210, 159 205, 170 240, 170 350))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((95 214, 95 275, 170 350, 220 300, 220 120, 189 120, 95 214))")));
@@ -1648,7 +1593,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_OctogonalEnvelope3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('LINESTRING (50 210, 140 290, 120 120, 210 110)'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((50 190, 50 210, 130 290, 140 290, 210 220, 210 110, 130 110, 50 190))")));
@@ -1658,7 +1602,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_OctogonalEnvelope4() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('MULTIPOINT ((230 220), (193 205))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((193 205, 208 220, 230 220, 215 205, 193 205))")));
@@ -1668,7 +1611,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MinimumRectangle1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('MULTIPOINT ((230 220), (193 205))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (230 220, 193 205)")));
@@ -1678,7 +1620,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MinimumRectangle2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('POLYGON ((150 290, 110 210, 280 130, 280 250, 235 221, 150 290))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((279.99999999999693 129.99999999999395, "
@@ -1690,7 +1631,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MinimumRectangle3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('LINESTRING (60 290, 67 300, 140 330, 136 319, 127 314, "
                 + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)'::GEOMETRY);");
         rs.next();
@@ -1703,7 +1643,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemoveRepeatedPoints1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (60 290, 67 300, 67 300, 140 330, 136 319,136 319, 127 314, "
                 + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)'::GEOMETRY);");
         rs.next();
@@ -1715,7 +1654,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemoveRepeatedPoints2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('GEOMETRYCOLLECTION (LINESTRING (60 290, 67 300, 67 300, 140 330, 136 319, 127 314, 127 314, 116 307, 110 299, 103 289, 100 140, 110 142, 270 170), \n"
                 + "  POLYGON ((210 320, 160 240, 220 230, 246 254, 220 260, 240 280, 280 320, 270 350, 270 350, 210 320)))'::GEOMETRY);");
         rs.next();
@@ -1728,7 +1666,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExtrudeLineString() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('LINESTRING (0 0, 1 0)'::GEOMETRY, 10);");
         rs.next();
         //Test if the wall is created
@@ -1742,7 +1679,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExtrudePolygon() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10);");
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
@@ -1766,7 +1702,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExtrudePolygonWithHole() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10), \n"
                 + "  (1 3, 3 3, 3 1, 1 1, 1 3))'::GEOMETRY, 10);");
         rs.next();
@@ -1794,7 +1729,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExtrudePolygonWalls() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10, 1);");
         rs.next();
         Geometry walls = (Geometry) rs.getObject(1);
@@ -1810,7 +1744,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExtrudePolygonRoof() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10, 2);");
         rs.next();
         Geometry roof = (Geometry) rs.getObject(1);
@@ -1822,7 +1755,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakeEnvelope() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MakeEnvelope(0,0, 1, 1);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equalsExact(
@@ -1833,7 +1765,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MakeEnvelopeSRID() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MakeEnvelope(0,0, 1, 1, 4326);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equalsExact(
@@ -1845,7 +1776,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_InterpolateLineWithoutZ() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine('LINESTRING(0 8, 1 8 , 3 8)'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("LINESTRING(0 8, 1 8 , 3 8)", rs.getBytes(1));
@@ -1855,7 +1785,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_InterpolateLine1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine('LINESTRING(0 0 0, 5 0 , 10 0 10)'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("LINESTRING(0 0 0, 5 0 5, 10 0 10)", rs.getBytes(1));
@@ -1865,7 +1794,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_InterpolateLine2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine('POINT(0 0 0)'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getObject(1) == null);
@@ -1875,7 +1803,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_InterpolateLine3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine('MULTILINESTRING((0 0 0, 5 0 , 10 0 10),(0 0 0, 50 0, 100 0 100))'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("MULTILINESTRING((0 0 0, 5 0 5, 10 0 10),(0 0 0, 50 0 50, 100 0 100))", rs.getBytes(1));
@@ -1885,7 +1812,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddPoint1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POINT(0 0 0)'::GEOMETRY, 'POINT(1 1)'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getObject(1) == null);
@@ -1895,7 +1821,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddPoint2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint('MULTIPOINT((0 0 0))'::GEOMETRY, 'POINT(1 1)'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("MULTIPOINT((0 0 0), (1 1))", rs.getBytes(1));
@@ -1905,7 +1830,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddPoint3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8)'::GEOMETRY, 'POINT(1.5 4 )'::GEOMETRY, 4);");
         rs.next();
         assertGeometryEquals("LINESTRING(0 8, 1 8 , 1.5 8, 3 8,  8  8, 10 8, 20 8)", rs.getBytes(1));
@@ -1915,7 +1839,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddPoint4() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8)'::GEOMETRY, 'POINT(1.5 4 )'::GEOMETRY);");
         rs.next();
         //The geometry is not modified
@@ -1926,7 +1849,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddPoint5() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON ((118 134, 118 278, 266 278, 266 134, 118 134 ))'::GEOMETRY, 'POINT(196 278 )'::GEOMETRY, 4);");
         rs.next();
         //The geometry is not modified
@@ -1937,7 +1859,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddPoint6() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))'::GEOMETRY, "
                 + "'POINT(3 3 )'::GEOMETRY, 2);");
         rs.next();
@@ -1949,7 +1870,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddPoint7() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), \n"
                 + "  (2 2, 4 2, 4 4, 2 4, 2 2), \n"
                 + "  (2.8 4.7, 3.2 4.7, 3.2 4.4, 2.8 4.4, 2.8 4.7), \n"
@@ -1969,7 +1889,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POINT(1 1)'::GEOMETRY, 'POINT(1 1)'::GEOMETRY, 10);");
         rs.next();
         assertNull(rs.getObject(1));
@@ -1979,7 +1898,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('MULTIPOINT ((5 5), (10 10))'::GEOMETRY, 'POINT(10 10)'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT((5 5)))")));
@@ -1989,7 +1907,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('MULTIPOINT ((5 5), (10 10), (100 1000))'::GEOMETRY, 'POINT(10 10)'::GEOMETRY, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT((100 1000)))")));
@@ -1999,7 +1916,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint4() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POLYGON ((150 250, 220 250, 220 170, 150 170, 150 250))'::GEOMETRY, 'POINT (230 250)'::GEOMETRY, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((150 250, 220 170, 150 170, 150 250))")));
@@ -2009,7 +1925,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint5() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('LINESTRING (100 200, 153 255, 169 175, 200 240, 250 190, 264 236, 304 236, 320 240, 340 250, 345 265, 354 295)'::GEOMETRY, 'POINT (230 250)'::GEOMETRY, 100);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (100 200, 340 250, 345 265, 354 295)")));
@@ -2019,7 +1934,6 @@ public class SpatialFunctionTest {
     
     @Test
     public void test_ST_RemovePoint7() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('LINESTRING (0 0, 10 0)'::GEOMETRY, 'POINT (5 0)'::GEOMETRY, 10);");
         rs.next();
         assertNull(rs.getObject(1));
@@ -2029,7 +1943,6 @@ public class SpatialFunctionTest {
     
     @Test
     public void test_ST_RemovePoint8() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POINT(1 1)'::GEOMETRY, 'POINT(100 100)'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("POINT(1 1)",rs.getBytes(1));
@@ -2039,7 +1952,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Split1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Split('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)'::GEOMETRY, 'POINT(1.5 4 )'::GEOMETRY, 4);");
         rs.next();
         Geometry geom = (Geometry) rs.getObject(1);
@@ -2052,7 +1964,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Split2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Split('LINESTRING(0 0, 100 0)'::GEOMETRY, 'LINESTRING(50 -50, 50 50)'::GEOMETRY);");
         rs.next();
         Geometry geom = (Geometry) rs.getObject(1);
@@ -2064,7 +1975,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Split3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Split('LINESTRING(50 0, 100 0)'::GEOMETRY, 'LINESTRING(50 50, 100 50)'::GEOMETRY);");
         rs.next();
         Geometry geom = (Geometry) rs.getObject(1);
@@ -2076,7 +1986,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Split4() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'::GEOMETRY, 'LINESTRING (5 0, 5 10)'::GEOMETRY);");
         rs.next();
         Geometry geom = (Geometry) rs.getObject(1);
@@ -2096,7 +2005,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Split5() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'::GEOMETRY, 'LINESTRING (5 1, 5 8)'::GEOMETRY);");
         rs.next();
         assertNull(rs.getObject(1));
@@ -2106,7 +2014,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Split6() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'::GEOMETRY, 'LINESTRING (5 1, 5 12)'::GEOMETRY);");
         rs.next();
         assertNull(rs.getObject(1));
@@ -2116,7 +2023,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Split7() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0), (2 2, 7 2, 7 7, 2 7, 2 2))'::GEOMETRY, 'LINESTRING (5 0, 5 10)'::GEOMETRY);");
         rs.next();
         Geometry pols = (Geometry) rs.getObject(1);
@@ -2136,7 +2042,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Split8() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0 1, 10 0 5, 10 10 8 , 0 10 12, 0 0 12))'::GEOMETRY, 'LINESTRING (5 0, 5 10)'::GEOMETRY);");
         rs.next();
         Geometry pols = (Geometry) rs.getObject(1);
@@ -2151,7 +2056,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Translate1() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom POINT);"
                 + "INSERT INTO input_table VALUES"
@@ -2166,7 +2070,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Translate2() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom LINESTRING);"
                 + "INSERT INTO input_table VALUES"
@@ -2181,7 +2084,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Reverse1() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom LINESTRING);"
                 + "INSERT INTO input_table VALUES"
@@ -2196,7 +2098,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Reverse2() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom POLYGON);"
                 + "INSERT INTO input_table VALUES"
@@ -2211,7 +2112,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Reverse3() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
                 + "INSERT INTO input_table VALUES"
@@ -2228,7 +2128,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Reverse3DLine1() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom LINESTRING);"
                 + "INSERT INTO input_table VALUES"
@@ -2243,7 +2142,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Reverse3DLine2() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom LINESTRING);"
                 + "INSERT INTO input_table VALUES"
@@ -2258,7 +2156,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Reverse3DLine3() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom POLYGON);"
                 + "INSERT INTO input_table VALUES"
@@ -2273,7 +2170,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemoveHoles1() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom POLYGON);"
                 + "INSERT INTO input_table VALUES"
@@ -2288,7 +2184,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemoveHoles2() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom POLYGON);"
                 + "INSERT INTO input_table VALUES"
@@ -2305,7 +2200,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_UpdateZ1() throws Exception {
-        Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
                 + "CREATE TABLE input_table(the_geom POINT);"
                 + "INSERT INTO input_table VALUES"
@@ -2320,7 +2214,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_UpdateZ2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('MULTIPOINT( (190 300), (10 11 2))'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11 10))", rs.getBytes(1));
@@ -2330,7 +2223,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_UpdateZ3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('MULTIPOINT( (190 300), (10 11 2))'::GEOMETRY, 10, 3);");
         rs.next();
         assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11 2))", rs.getBytes(1));
@@ -2340,7 +2232,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_UpdateZ4() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('MULTIPOINT( (190 300 1), (10 11))'::GEOMETRY, 10, 2);");
         rs.next();
         assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11))", rs.getBytes(1));
@@ -2350,7 +2241,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_UpdateZ5() throws SQLException {
-        Statement st = connection.createStatement();
         ResultSet rs = null;
         try {
             rs = st.executeQuery("SELECT ST_UpdateZ('POINT (190 300 10)'::GEOMETRY, 10, 9999);");
@@ -2367,7 +2257,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddZ1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddZ('MULTIPOINT( (190 300 1), (10 11))'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("MULTIPOINT( (190 300 11), (10 11))", rs.getBytes(1));
@@ -2377,7 +2266,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddZ2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddZ('MULTIPOINT( (190 300), (10 11))'::GEOMETRY, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300), (10 11))")));
@@ -2387,7 +2275,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_AddZ3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AddZ('MULTIPOINT( (190 300 10), (10 11 5))'::GEOMETRY, -10);");
         rs.next();
         assertGeometryEquals("MULTIPOINT( (190 300 0), (10 11 -5))", rs.getBytes(1));
@@ -2397,7 +2284,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MultiplyZ1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ('MULTIPOINT( (190 300 1), (10 11))'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11))", rs.getBytes(1));
@@ -2407,7 +2293,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MultiplyZ2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ('MULTIPOINT( (190 300), (10 11))'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("MULTIPOINT( (190 300), (10 11))", rs.getBytes(1));
@@ -2417,7 +2302,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MultiplyZ3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MultiplyZ('MULTIPOINT( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
         rs.next();
         assertGeometryEquals("MULTIPOINT( (190 300 10), (10 11 5))", rs.getBytes(1));
@@ -2427,7 +2311,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_PrecisionReducer1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
         rs.next();
         assertGeometryEquals("MULTIPOINT( (190 300 100), (10 11 50))", rs.getBytes(1));
@@ -2437,7 +2320,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_PrecisionReducer2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190.005 300 100), (10.534 11 50))'::GEOMETRY, 1);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300 100), (10.5 11 50))")));
@@ -2447,7 +2329,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_PrecisionReducer3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190.005 300 100), (10.534 11 50))'::GEOMETRY, 4);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190.005 300 100), (10.534 11 50))")));
@@ -2457,7 +2338,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Simplify1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Simplify('MULTIPOINT( (190 300), (10 11 50))'::GEOMETRY, 4);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300), (10 11 50))")));
@@ -2467,7 +2347,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Simplify2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Simplify('LINESTRING (250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)'::GEOMETRY, 40);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (250 250, 280 290, 300 230, 470 360, 604 286)")));
@@ -2477,7 +2356,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Simplify3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Simplify('POLYGON ((250 250, 248 240, 250 180, 290 150, 332 165, 350 190, 330 200, 340 220, 360 260, 360 300, 330 310, 319 310, 300 310, 280 280, 256 284, 250 250))'::GEOMETRY, 40);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((250 250, 360 300, 332 165, 250 180, 250 250))")));
@@ -2487,7 +2365,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_SimplifyPreserveTopology1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology('MULTIPOINT( (190 300), (10 11 50))'::GEOMETRY, 4);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190 300), (10 11 50))")));
@@ -2497,7 +2374,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_SimplifyPreserveTopology2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology('LINESTRING (250 250, 280 290, 300 230, 340 300, 360 260, 440 310, 470 360, 604 286)'::GEOMETRY, 40);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (250 250, 280 290, 300 230, 470 360, 604 286)")));
@@ -2507,7 +2383,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_SimplifyPreserveTopology3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology('POLYGON ((250 250, 248 240, 250 180, 290 150, 332 165, 350 190, 330 200, 340 220, 360 260, 360 300, 330 310, 319 310, 300 310, 280 280, 256 284, 250 250))'::GEOMETRY, 40);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((250 250, 360 300, 332 165, 250 180, 250 250))")));
@@ -2517,7 +2392,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities('LINESTRING (250 250, 280 290)'::GEOMETRY, 40, 10);");
         rs.next();
         assertGeometryEquals("LINESTRING (250 250 40, 280 290 10)", rs.getBytes(1));
@@ -2527,7 +2401,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities('LINESTRING(0 0, 5 0 , 10 0)'::GEOMETRY, 0, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
@@ -2537,7 +2410,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities3() throws SQLException {
-        Statement st = connection.createStatement();
         ResultSet rs = null;
         try {
             rs = st.executeQuery("SELECT ST_ZUpdateExtremities('POINT (190 300 10)'::GEOMETRY, 10, 9999);");
@@ -2554,7 +2426,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities4() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ZUpdateExtremities('LINESTRING(0 0, 5 0 , 10 0)'::GEOMETRY, 0, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
@@ -2564,7 +2435,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Normalize2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Normalize('POLYGON ((170 180, 310 180, 308 190, 310 206, 340 320, 135 333, 140 260, 170 180))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((135 333, 340 320, 310 206, 308 190, 310 180, 170 180, 140 260, 135 333))")));
@@ -2574,7 +2444,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Polygonize1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Polygonize('MULTILINESTRING ((130 190, 80 370, 290 380), \n"
                 + "  (290 380, 270 270, 130 190))'::GEOMETRY);");
         rs.next();
@@ -2585,7 +2454,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Polygonize2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Polygonize('MULTILINESTRING ((50 240, 62 250, 199 425, 250 240), \n"
                 + "  (50 340, 170 250, 300 370))'::GEOMETRY);");
         rs.next();
@@ -2596,7 +2464,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Polygonize3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Polygonize(st_union('MULTILINESTRING ((50 240, 62 250, 199 425, 250 240), \n"
                 + "  (50 340, 170 250, 300 370))'::GEOMETRY));");
         rs.next();
@@ -2607,7 +2474,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RingBuffer1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RingBuffer('POINT(10 10)'::GEOMETRY, 10, 3);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(
@@ -2639,7 +2505,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RingBuffer2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_RingBuffer('LINESTRING (-10 10, 10 10)'::GEOMETRY, 10, 3);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(
@@ -2651,7 +2516,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MinimumDiameter1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter('LINESTRING (50 240, 62 250, 199 425, 250 240)'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (128.69067451174988 337.7031864743203, 250 240)")));
@@ -2661,7 +2525,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MinimumDiameter2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter('POLYGON ((360 380, 230 150, 370 100, 510 100, 517 110, 650 390, 430 220, 360 380))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (282.3538681948424 242.62607449856733, 517 110)")));
@@ -2671,7 +2534,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_MinimumDiameter3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter('POINT (395 278)'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equalsExact(WKT_READER.read("LINESTRING (395 278, 395 278)")));
@@ -2681,7 +2543,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Azimuth1() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, 10)) ) as degAz;");
         rs.next();
         assertEquals(rs.getDouble(1), 0, 0.00001);
@@ -2691,7 +2552,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Azimuth2() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(10, 0)) ) as degAz;");
         rs.next();
         assertEquals(rs.getDouble(1), 90, 0.00001);
@@ -2701,7 +2561,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Azimuth3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, -10)) ) as degAz;");
         rs.next();
         assertEquals(rs.getDouble(1), 180, 0.00001);
@@ -2711,7 +2570,6 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Azimuth4() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, 0)) ) as degAz;");
         rs.next();
         assertEquals(rs.getDouble(1), 0, 0.00001);
