@@ -1989,63 +1989,44 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Split1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'POINT(1.5 4 )'::GEOMETRY, 4) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Split('LINESTRING(0 8, 1 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)'::GEOMETRY, 'POINT(1.5 4 )'::GEOMETRY, 4);");
         rs.next();
         Geometry geom = (Geometry) rs.getObject(1);
         assertTrue(geom.getNumGeometries() == 2);
         assertTrue(geom.getGeometryN(0).equals(WKT_READER.read("LINESTRING(0 8, 1 8 , 1.5 8)")));
         assertTrue(geom.getGeometryN(1).equals(WKT_READER.read("LINESTRING(1.5 8 , 3 8,  8  8, 10 8, 20 8, 25 8, 30 8, 50 8, 100 8)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Split2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING(0 0, 100 0)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING(50 -50, 50 50)'::GEOMETRY) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Split('LINESTRING(0 0, 100 0)'::GEOMETRY, 'LINESTRING(50 -50, 50 50)'::GEOMETRY);");
         rs.next();
         Geometry geom = (Geometry) rs.getObject(1);
         assertTrue(geom.getNumGeometries() == 2);
         assertTrue(geom.equals(WKT_READER.read("MULTILINESTRING((0 0, 50 0), (50 0 , 100 0))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Split3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING(50 0, 100 0)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING(50 50, 100 50)'::GEOMETRY) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Split('LINESTRING(50 0, 100 0)'::GEOMETRY, 'LINESTRING(50 50, 100 50)'::GEOMETRY);");
         rs.next();
         Geometry geom = (Geometry) rs.getObject(1);
         assertTrue(geom.getNumGeometries() == 1);
         assertTrue(geom.equals(WKT_READER.read("LINESTRING(50 0, 100 0)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Split4() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 0, 5 10)'::GEOMETRY) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'::GEOMETRY, 'LINESTRING (5 0, 5 10)'::GEOMETRY);");
         rs.next();
         Geometry geom = (Geometry) rs.getObject(1);
         assertTrue(geom.getNumGeometries() == 2);
@@ -2059,48 +2040,33 @@ public class SpatialFunctionTest {
             }
         }
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Split5() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 1, 5 8)'::GEOMETRY) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'::GEOMETRY, 'LINESTRING (5 1, 5 8)'::GEOMETRY);");
         rs.next();
-        assertNull((Geometry) rs.getObject(1));
+        assertNull(rs.getObject(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Split6() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 1, 5 12)'::GEOMETRY) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0))'::GEOMETRY, 'LINESTRING (5 1, 5 12)'::GEOMETRY);");
         rs.next();
-        assertNull((Geometry) rs.getObject(1));
+        assertNull(rs.getObject(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Split7() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0), (2 2, 7 2, 7 7, 2 7, 2 2))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 0, 5 10)'::GEOMETRY) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0, 10 0, 10 10 , 0 10, 0 0), (2 2, 7 2, 7 7, 2 7, 2 2))'::GEOMETRY, 'LINESTRING (5 0, 5 10)'::GEOMETRY);");
         rs.next();
         Geometry pols = (Geometry) rs.getObject(1);
         assertTrue(pols.getNumGeometries() == 2);
@@ -2114,18 +2080,13 @@ public class SpatialFunctionTest {
             }
         }
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Split8() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON (( 0 0 1, 10 0 5, 10 10 8 , 0 10 12, 0 0 12))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Split(the_geom, 'LINESTRING (5 0, 5 10)'::GEOMETRY) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Split('POLYGON (( 0 0 1, 10 0 5, 10 10 8 , 0 10 12, 0 0 12))'::GEOMETRY, 'LINESTRING (5 0, 5 10)'::GEOMETRY);");
         rs.next();
         Geometry pols = (Geometry) rs.getObject(1);
         for (int i = 0; i < pols.getNumGeometries(); i++) {
@@ -2134,7 +2095,6 @@ public class SpatialFunctionTest {
                     ValueGeometry.getFromGeometry(pol).getBytesNoCopy()) == 3);
         }
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
@@ -2669,59 +2629,40 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Polygonize1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTILINESTRING ((130 190, 80 370, 290 380), \n"
-                + "  (290 380, 270 270, 130 190))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Polygonize(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Polygonize('MULTILINESTRING ((130 190, 80 370, 290 380), \n"
+                + "  (290 380, 270 270, 130 190))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON ( ((130 190, 80 370, 290 380, 270 270, 130 190)))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Polygonize2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTILINESTRING ((50 240, 62 250, 199 425, 250 240), \n"
-                + "  (50 340, 170 250, 300 370))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Polygonize(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Polygonize('MULTILINESTRING ((50 240, 62 250, 199 425, 250 240), \n"
+                + "  (50 340, 170 250, 300 370))'::GEOMETRY);");
         rs.next();
         assertNull(rs.getObject(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_Polygonize3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTILINESTRING ((50 240, 62 250, 199 425, 250 240), \n"
-                + "  (50 340, 170 250, 300 370))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Polygonize(st_union(the_geom)) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Polygonize(st_union('MULTILINESTRING ((50 240, 62 250, 199 425, 250 240), \n"
+                + "  (50 340, 170 250, 300 370))'::GEOMETRY));");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON( ((231.5744116672191 306.8379184620484, 170 250, 101.95319531953196 301.03510351035106, 199 425, 231.5744116672191 306.8379184620484)))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_RingBuffer1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom POINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POINT(10 10)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_RingBuffer(the_geom, 10, 3) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_RingBuffer('POINT(10 10)'::GEOMETRY, 10, 3);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(
                 WKT_READER.read("MULTIPOLYGON (((20 10, 19.807852804032304 8.049096779838717, "
@@ -2747,69 +2688,48 @@ public class SpatialFunctionTest {
                 + "-9.615705608064612 6.098193559677446, -10 10.000000000000016, "
                 + "-9.615705608064605 13.901806440322584, -8.477590650225725 17.653668647301817, -6.629392246050891 21.11140466039207, -4.142135623730926 24.142135623730972, -1.1114046603920151 26.629392246050926, 2.3463313526982423 28.47759065022575, 6.098193559677479 29.615705608064616, 10.00000000000005 30, 13.901806440322618 29.615705608064598, 17.65366864730185 28.477590650225714, 21.111404660392097 26.62939224605087, 24.142135623730997 24.1421356237309, 26.629392246050944 21.111404660391987, 28.477590650225764 17.653668647301725, 29.615705608064623 13.901806440322488, 30 10), (20 10, 19.80785280403231 11.950903220161244, 19.238795325112882 13.826834323650862, 18.31469612302547 15.555702330195993, 17.071067811865497 17.07106781186545, 15.555702330196048 18.314696123025435, 13.826834323650925 19.238795325112857, 11.950903220161308 19.8078528040323, 10.000000000000025 20, 8.04909677983874 19.807852804032308, 6.173165676349122 19.238795325112875, 4.444297669803992 18.314696123025463, 2.928932188134537 17.071067811865486, 1.6853038769745545 15.555702330196034, 0.7612046748871375 13.826834323650909, 0.1921471959676975 11.950903220161292, 0 10.000000000000007, 0.1921471959676939 8.049096779838722, 0.7612046748871322 6.173165676349106, 1.6853038769745474 4.444297669803978, 2.9289321881345254 2.9289321881345245, 4.44429766980398 1.6853038769745474, 6.173165676349103 0.7612046748871322, 8.049096779838719 0.1921471959676957, 10 0, 11.950903220161283 0.1921471959676957, 13.826834323650898 0.7612046748871322, 15.555702330196024 1.6853038769745474, 17.071067811865476 2.9289321881345254, 18.314696123025453 4.444297669803978, 19.238795325112868 6.173165676349102, 19.807852804032304 8.049096779838717, 20 10)), ((40 10, 39.42355841209691 4.147290339516153, 37.7163859753386 -1.4805029709526938, 34.944088369076354 -6.667106990588067, 31.213203435596427 -11.213203435596423, 26.667106990588067 -14.944088369076358, 21.480502970952696 -17.716385975338603, 15.85270966048385 -19.423558412096913, 10.000000000000002 -20, 4.147290339516154 -19.423558412096913, -1.480502970952692 -17.716385975338603, -6.66710699058806 -14.944088369076361, -11.213203435596423 -11.213203435596427, -14.944088369076361 -6.667106990588067, -17.716385975338607 -1.4805029709526831, -19.423558412096916 4.147290339516168, -20 10.000000000000023, -19.423558412096906 15.852709660483876, -17.71638597533859 21.480502970952728, -14.944088369076333 26.667106990588103, -11.213203435596391 31.213203435596462, -6.667106990588021 34.94408836907638, -1.480502970952637 37.716385975338625, 4.147290339516219 39.423558412096924, 10.000000000000075 40, 15.852709660483928 39.423558412096895, 21.480502970952774 37.71638597533857, 26.667106990588145 34.944088369076304, 31.213203435596498 31.213203435596355, 34.94408836907642 26.66710699058798, 37.716385975338646 21.48050297095259, 39.42355841209694 15.85270966048373, 40 10), (30 10, 29.615705608064623 13.901806440322488, 28.477590650225764 17.653668647301725, 26.629392246050944 21.111404660391987, 24.142135623730997 24.1421356237309, 21.111404660392097 26.62939224605087, 17.65366864730185 28.477590650225714, 13.901806440322618 29.615705608064598, 10.00000000000005 30, 6.098193559677479 29.615705608064616, 2.3463313526982423 28.47759065022575, -1.1114046603920151 26.629392246050926, -4.142135623730926 24.142135623730972, -6.629392246050891 21.11140466039207, -8.477590650225725 17.653668647301817, -9.615705608064605 13.901806440322584, -10 10.000000000000016, -9.615705608064612 6.098193559677446, -8.477590650225736 2.3463313526982112, -6.629392246050905 -1.1114046603920436, -4.142135623730949 -4.142135623730951, -1.11140466039204 -6.629392246050905, 2.346331352698206 -8.477590650225736, 6.098193559677436 -9.615705608064609, 10.000000000000002 -10, 13.901806440322567 -9.615705608064609, 17.653668647301796 -8.477590650225736, 21.111404660392047 -6.629392246050905, 24.14213562373095 -4.142135623730949, 26.629392246050905 -1.1114046603920436, 28.477590650225736 2.346331352698204, 29.61570560806461 6.098193559677435, 30 10)))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_RingBuffer2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (-10 10, 10 10)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_RingBuffer(the_geom, 10, 3) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_RingBuffer('LINESTRING (-10 10, 10 10)'::GEOMETRY, 10, 3);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(
                 WKT_READER.read("MULTIPOLYGON (((10 20, 11.950903220161283 19.807852804032304, 13.826834323650898 19.238795325112868, 15.555702330196024 18.314696123025453, 17.071067811865476 17.071067811865476, 18.314696123025453 15.555702330196022, 19.238795325112868 13.826834323650898, 19.807852804032304 11.950903220161283, 20 10, 19.807852804032304 8.049096779838717, 19.238795325112868 6.173165676349102, 18.314696123025453 4.444297669803979, 17.071067811865476 2.9289321881345254, 15.55570233019602 1.6853038769745474, 13.826834323650894 0.7612046748871304, 11.950903220161276 0.1921471959676939, 10 0, -10 0, -11.950903220161287 0.1921471959676975, -13.826834323650903 0.7612046748871357, -15.555702330196022 1.6853038769745474, -17.071067811865476 2.9289321881345254, -18.314696123025456 4.44429766980398, -19.238795325112868 6.173165676349104, -19.807852804032304 8.049096779838717, -20 10.000000000000002, -19.807852804032304 11.950903220161287, -19.238795325112868 13.8268343236509, -18.314696123025453 15.555702330196022, -17.071067811865476 17.071067811865476, -15.55570233019602 18.314696123025453, -13.826834323650893 19.238795325112868, -11.950903220161276 19.807852804032308, -10 20, 10 20)), ((10 30, 13.901806440322567 29.61570560806461, 17.653668647301796 28.477590650225736, 21.111404660392047 26.629392246050905, 24.14213562373095 24.14213562373095, 26.629392246050905 21.111404660392044, 28.477590650225736 17.653668647301796, 29.61570560806461 13.901806440322565, 30 10, 29.61570560806461 6.098193559677435, 28.477590650225736 2.346331352698204, 26.629392246050905 -1.1114046603920418, 24.14213562373095 -4.142135623730949, 21.11140466039204 -6.629392246050905, 17.65366864730179 -8.47759065022574, 13.901806440322552 -9.615705608064612, 10 -10, -10 -10, -13.901806440322574 -9.615705608064605, -17.653668647301807 -8.477590650225729, -21.111404660392044 -6.629392246050905, -24.142135623730955 -4.142135623730949, -26.62939224605091 -1.11140466039204, -28.477590650225736 2.346331352698207, -29.61570560806461 6.098193559677433, -30 10.000000000000002, -29.61570560806461 13.901806440322572, -28.477590650225736 17.6536686473018, -26.629392246050905 21.111404660392044, -24.14213562373095 24.14213562373095, -21.11140466039204 26.629392246050905, -17.653668647301785 28.47759065022574, -13.90180644032255 29.615705608064612, -10 30, 10 30), (10 20, -10 20, -11.950903220161276 19.807852804032308, -13.826834323650893 19.238795325112868, -15.55570233019602 18.314696123025453, -17.071067811865476 17.071067811865476, -18.314696123025453 15.555702330196022, -19.238795325112868 13.8268343236509, -19.807852804032304 11.950903220161287, -20 10.000000000000002, -19.807852804032304 8.049096779838717, -19.238795325112868 6.173165676349104, -18.314696123025456 4.44429766980398, -17.071067811865476 2.9289321881345254, -15.555702330196022 1.6853038769745474, -13.826834323650903 0.7612046748871357, -11.950903220161287 0.1921471959676975, -10 0, 10 0, 11.950903220161276 0.1921471959676939, 13.826834323650894 0.7612046748871304, 15.55570233019602 1.6853038769745474, 17.071067811865476 2.9289321881345254, 18.314696123025453 4.444297669803979, 19.238795325112868 6.173165676349102, 19.807852804032304 8.049096779838717, 20 10, 19.807852804032304 11.950903220161283, 19.238795325112868 13.826834323650898, 18.314696123025453 15.555702330196022, 17.071067811865476 17.071067811865476, 15.555702330196024 18.314696123025453, 13.826834323650898 19.238795325112868, 11.950903220161283 19.807852804032304, 10 20)), ((10 40, 15.85270966048385 39.42355841209691, 21.480502970952696 37.7163859753386, 26.667106990588067 34.944088369076354, 31.213203435596427 31.213203435596423, 34.944088369076354 26.667106990588067, 37.7163859753386 21.480502970952692, 39.42355841209691 15.852709660483846, 40 10, 39.42355841209691 4.147290339516153, 37.7163859753386 -1.4805029709526938, 34.94408836907636 -6.6671069905880636, 31.213203435596427 -11.213203435596423, 26.667106990588064 -14.944088369076361, 21.48050297095268 -17.71638597533861, 15.85270966048383 -19.423558412096916, 10 -20, -10 -20, -15.85270966048386 -19.42355841209691, -21.48050297095271 -17.716385975338596, -26.667106990588067 -14.944088369076358, -31.21320343559643 -11.213203435596423, -34.94408836907637 -6.66710699058806, -37.71638597533861 -1.4805029709526902, -39.42355841209691 4.147290339516149, -40 10.000000000000004, -39.42355841209691 15.852709660483859, -37.7163859753386 21.4805029709527, -34.94408836907636 26.667106990588067, -31.213203435596423 31.213203435596427, -26.66710699058806 34.94408836907636, -21.480502970952678 37.71638597533861, -15.852709660483827 39.42355841209692, -10 40, 10 40), (10 30, -10 30, -13.90180644032255 29.615705608064612, -17.653668647301785 28.47759065022574, -21.11140466039204 26.629392246050905, -24.14213562373095 24.14213562373095, -26.629392246050905 21.111404660392044, -28.477590650225736 17.6536686473018, -29.61570560806461 13.901806440322572, -30 10.000000000000002, -29.61570560806461 6.098193559677433, -28.477590650225736 2.346331352698207, -26.62939224605091 -1.11140466039204, -24.142135623730955 -4.142135623730949, -21.111404660392044 -6.629392246050905, -17.653668647301807 -8.477590650225729, -13.901806440322574 -9.615705608064605, -10 -10, 10 -10, 13.901806440322552 -9.615705608064612, 17.65366864730179 -8.47759065022574, 21.11140466039204 -6.629392246050905, 24.14213562373095 -4.142135623730949, 26.629392246050905 -1.1114046603920418, 28.477590650225736 2.346331352698204, 29.61570560806461 6.098193559677435, 30 10, 29.61570560806461 13.901806440322565, 28.477590650225736 17.653668647301796, 26.629392246050905 21.111404660392044, 24.14213562373095 24.14213562373095, 21.111404660392047 26.629392246050905, "
                 + "17.653668647301796 28.477590650225736, 13.901806440322567 29.61570560806461, 10 30)))")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_MinimumDiameter1() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (50 240, 62 250, 199 425, 250 240)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter('LINESTRING (50 240, 62 250, 199 425, 250 240)'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (128.69067451174988 337.7031864743203, 250 240)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_MinimumDiameter2() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((360 380, 230 150, 370 100, 510 100, 517 110, 650 390, 430 220, 360 380))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter('POLYGON ((360 380, 230 150, 370 100, 510 100, 517 110, 650 390, 430 220, 360 380))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (282.3538681948424 242.62607449856733, 517 110)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
 
     @Test
     public void test_ST_MinimumDiameter3() throws Exception {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POINT (395 278)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter('POINT (395 278)'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equalsExact(WKT_READER.read("LINESTRING (395 278, 395 278)")));
         rs.close();
-        st.execute("DROP TABLE input_table;");
         st.close();
     }
    
