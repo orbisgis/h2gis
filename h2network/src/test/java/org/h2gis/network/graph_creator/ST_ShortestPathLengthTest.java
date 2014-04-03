@@ -374,6 +374,7 @@ public class ST_ShortestPathLengthTest {
         assertEquals(destination, rs.getInt(ST_ShortestPathLength.DESTINATION_INDEX));
         assertEquals(distance, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
         assertFalse(rs.next());
+        rs.close();
     }
 
     private void oneToOne(String orientation, int source, int destination, double distance) throws SQLException {
@@ -487,6 +488,7 @@ public class ST_ShortestPathLengthTest {
             count++;
         }
         assertEquals(5, count);
+        rs.close();
     }
 
     private void oneToAll(String orientation, int source, double[] distances) throws SQLException {
@@ -591,6 +593,7 @@ public class ST_ShortestPathLengthTest {
             count++;
         }
         assertEquals(25, count);
+        rs.close();
     }
 
     private void manyToMany(String orientation,
@@ -715,6 +718,7 @@ public class ST_ShortestPathLengthTest {
             count++;
         }
         assertEquals(distances.length, count);
+        rs.close();
     }
 
     private void oneToSeveral(String orientation, int source, String destinationString, double[] distances) throws SQLException {
@@ -763,24 +767,28 @@ public class ST_ShortestPathLengthTest {
         assertTrue(rs.next());
         assertEquals(Double.POSITIVE_INFINITY, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
         assertFalse(rs.next());
+        rs.close();
         // 7 is reachable from 6.
         rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges', " +
                 "'directed - edge_orientation', 6, 7)");
         assertTrue(rs.next());
         assertEquals(1.0, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
         assertFalse(rs.next());
+        rs.close();
         // But 6 is not reachable from 7 in a directed graph.
         rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges', " +
                 "'directed - edge_orientation', 7, 6)");
         assertTrue(rs.next());
         assertEquals(Double.POSITIVE_INFINITY, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
         assertFalse(rs.next());
+        rs.close();
         // It is, however, in an undirected graph.
         rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges', " +
                 "'undirected', 7, 6)");
         assertTrue(rs.next());
         assertEquals(1.0, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
         assertFalse(rs.next());
+        rs.close();
         st.execute("DROP TABLE copy");
         st.execute("DROP TABLE copy_nodes");
         st.execute("DROP TABLE copy_edges");

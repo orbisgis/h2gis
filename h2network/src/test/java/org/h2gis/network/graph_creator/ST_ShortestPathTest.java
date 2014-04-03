@@ -101,6 +101,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (1 0, 2 2)", 6, 2, 1, 4, 3, 1.0),
                     new PathEdge("LINESTRING (0 1, 1 0)", 5, 2, 2, 1, 4, 1.0)});
         }
+        rs13.close();
         check(oneToOne(DO, 1, 4), new PathEdge[]{
                 new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 1, 1, 4, 1.0)});
         check(oneToOne(DO, 1, 5), new PathEdge[]{
@@ -156,6 +157,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (0 1, 1 2)", 1, 2, 1, 1, 2, 1.0),
                     new PathEdge("LINESTRING (2 0, 0 1)", 10, 2, 2, 5, 1, 1.0)});
         }
+        rs52.close();
         check(oneToOne(DO, 5, 3), new PathEdge[]{
                 new PathEdge("LINESTRING (2 0, 2.25 1, 2 2)", 9, 1, 1, 5, 3, 1.0)});
         check(oneToOne(DO, 5, 4), new PathEdge[]{
@@ -187,6 +189,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (1 0, 2 0)", 7, 2, 2, 4, 5, 2.0),
                     new PathEdge("LINESTRING (0 1, 1 0)", 5, 2, 3, 1, 4, 5.0)});
         }
+        rs13.close();
         check(oneToOne(DO, W, 1, 4), new PathEdge[]{
                         new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 1, 1, 4, 5.0)});
         final ResultSet rs15 = oneToOne(DO, W, 1, 5);
@@ -202,6 +205,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 2, 1, 4, 5.0),
                     new PathEdge("LINESTRING (2 0, 0 1)", -10, 2, 1, 1, 5, 7.0)});
         }
+        rs15.close();
         check(oneToOne(DO, W, 2, 1),
                 new PathEdge[]{
                         new PathEdge("LINESTRING (2 0, 0 1)", 10, 1, 1, 5, 1, 7.0),
@@ -292,6 +296,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (2 0, 2.25 1, 2 2)", 9, 2, 1, 3, 5, 1.0),
                     new PathEdge("LINESTRING (1 2, 2 2)", 2, 2, 2, 2, 3, 1.0)});
         }
+        rs25.close();
         final ResultSet rs31 = oneToOne(RO, 3, 1);
         try {
             check(rs31, new PathEdge[]{
@@ -307,6 +312,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (2 0, 0 1)", -10, 2, 1, 5, 1, 1.0),
                     new PathEdge("LINESTRING (2 0, 2.25 1, 2 2)", 9, 2, 2, 3, 5, 1.0)});
         }
+        rs31.close();
         check(oneToOne(RO, 3, 2), new PathEdge[]{
                 new PathEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 1, 1, 4, 2, 1.0),
                 new PathEdge("LINESTRING (1 0, 2 2)", 6, 1, 2, 3, 4, 1.0)});
@@ -383,6 +389,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (1 0, 2 0)", 7, 2, 2, 5, 4, 2.0),
                     new PathEdge("LINESTRING (2 0, 2.25 1, 2 2)", 9, 2, 3, 3, 5, 6.0)});
         }
+        rs31.close();
         check(oneToOne(RO, W, 3, 2), new PathEdge[]{
                 new PathEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 1, 1, 4, 2, 2.0),
                 new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 2, 5, 4, 2.0),
@@ -418,6 +425,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 2, 5, 4, 2.0),
                     new PathEdge("LINESTRING (2 0, 0 1)", -10, 2, 1, 5, 1, 7.0)});
         }
+        rs51.close();
         check(oneToOne(RO, W, 5, 2), new PathEdge[]{
                 new PathEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 1, 1, 4, 2, 2.0),
                 new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 2, 5, 4, 2.0)});
@@ -468,6 +476,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 1, 1, 2, 4, 1.0),
                     new PathEdge("LINESTRING (1 0, 1.25 1, 1 2)", 4, 2, 1, 2, 4, 1.0)});
         }
+        rs24.close();
         // Note: This test has several possible (5!) numberings of the shortest paths.
 //        check(oneToOne(U, st, 2, 5), new PathEdge[]{
 //                new PathEdge("LINESTRING (2 0, 0 1)", 10, 1, 1, 1, 5, 1.0),
@@ -504,6 +513,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (2 0, 2.25 1, 2 2)", 9, 1, 1, 3, 5, 1.0),
                     new PathEdge("LINESTRING (2 2, 1.75 1, 2 0)", 8, 2, 1, 3, 5, 1.0)});
         }
+        rs35.close();
         check(oneToOne(U, 4, 1), new PathEdge[]{
                 new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 1, 4, 1, 1.0)});
         ResultSet rs42 = oneToOne(U, 4, 2);
@@ -517,6 +527,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (1 0, 1.25 1, 1 2)", 4, 1, 1, 4, 2, 1.0),
                     new PathEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 2, 1, 4, 2, 1.0)});
         }
+        rs42.close();
         check(oneToOne(U, 4, 3), new PathEdge[]{
                 new PathEdge("LINESTRING (1 0, 2 2)", 6, 1, 1, 4, 3, 1.0)});
         check(oneToOne(U, 4, 4), EMPTY);
@@ -546,6 +557,7 @@ public class ST_ShortestPathTest {
                     new PathEdge("LINESTRING (2 2, 1.75 1, 2 0)", 8, 1, 1, 5, 3, 1.0),
                     new PathEdge("LINESTRING (2 0, 2.25 1, 2 2)", 9, 2, 1, 5, 3, 1.0)});
         }
+        rs53.close();
         check(oneToOne(U, 5, 4), new PathEdge[]{
                 new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 1, 5, 4, 1.0)});
         check(oneToOne(U, 5, 5), EMPTY);
@@ -578,6 +590,7 @@ public class ST_ShortestPathTest {
                 new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 2, 1, 4, 5.0),
                 new PathEdge("LINESTRING (2 0, 0 1)", 10, 2, 1, 1, 5, 7.0)});
         }
+        rs15.close();
         check(oneToOne(U, W, 2, 1), new PathEdge[]{
                 new PathEdge("LINESTRING (0 1, 1 0)", 5, 1, 1, 4, 1, 5.0),
                 new PathEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 1, 2, 2, 4, 2.0)});
@@ -624,6 +637,7 @@ public class ST_ShortestPathTest {
                 new PathEdge("LINESTRING (0 1, 1 0)", 5, 2, 1, 4, 1, 5.0),
                 new PathEdge("LINESTRING (1 0, 2 0)", 7, 2, 2, 5, 4, 2.0)});
         }
+        rs51.close();
         check(oneToOne(U, W, 5, 2), new PathEdge[]{
                 new PathEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 1, 1, 4, 2, 2.0),
                 new PathEdge("LINESTRING (1 0, 2 0)", 7, 1, 2, 5, 4, 2.0)});
@@ -712,6 +726,7 @@ public class ST_ShortestPathTest {
             assertEquals(e.getWeight(), rs.getDouble(ST_ShortestPath.WEIGHT_INDEX), TOLERANCE);
         }
         assertFalse(rs.next());
+        rs.close();
     }
 
     private class PathEdge {
