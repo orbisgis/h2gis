@@ -63,17 +63,17 @@ SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
   -- Answer: POLYGON ((1 1, 1 6, 5 6, 5 1, 1 1))
 
 SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-                                (3 4, 3 5, 4 5, 4 4, 3 4))', 
-                      'POINT(4 7)', 2);
--- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (3 4, 3 5, 4 5, 4 4, 
-                                          3 4))
--- POLYGON is not valid
-
-SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
                                 (2 2, 2 5, 4 5, 4 2, 2 2))', 
                       'POINT(4 7)', 2);
 -- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (2 2, 2 5, 4 5, 4 2, 
                                           2 2))
+-- POLYGON is not valid
+
+SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
+                                (3 4, 3 5, 4 5, 4 4, 3 4))', 
+                      'POINT(5 7)', 2);
+-- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (3 4, 3 5, 4 5, 4 4, 
+                                          3 4))
 -- POLYGON is not valid
 
 SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
