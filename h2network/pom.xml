@@ -58,12 +58,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>h2spatial</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2spatial</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -103,4 +97,11 @@
             <version>${h2-version}</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>IRSTV</id>
+            <name>IRSTV repository</name>
+            <url>http://repo.orbisgis.org</url>
+        </repository>
+    </repositories>
 </project>
