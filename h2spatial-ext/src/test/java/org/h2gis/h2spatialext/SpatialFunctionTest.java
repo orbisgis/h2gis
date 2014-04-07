@@ -3079,45 +3079,103 @@ public class SpatialFunctionTest {
         st.execute("DROP TABLE input_table;");
         st.close();
     }
-   
 
+
+   
     @Test
     public void test_ST_Azimuth1() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, 10)) ) as degAz;");
         rs.next();
-        assertEquals(rs.getDouble(1), 0,0.00001);
+        assertEquals(rs.getDouble(1), 0, 0.00001);
         rs.close();
         st.close();
     }
 
-    @Test
+    
+
     public void test_ST_Azimuth2() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(10, 0)) ) as degAz;");
         rs.next();
-        assertEquals(rs.getDouble(1), 90,0.00001);
+        assertEquals(rs.getDouble(1), 90, 0.00001);
         rs.close();
         st.close();
     }
-
+    
     @Test
     public void test_ST_Azimuth3() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, -10)) ) as degAz;");
         rs.next();
-        assertEquals(rs.getDouble(1), 180,0.00001);
+        assertEquals(rs.getDouble(1), 180, 0.00001);
+        rs.close();
+        st.close();
+    }
+    
+     @Test
+    public void test_ST_Azimuth4() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, 0)) ) as degAz;");
+        rs.next();
+        assertEquals(rs.getDouble(1), 0, 0.00001);
+        rs.close();
+        st.close();
+    }
+    
+    @Test
+    public void test_ST_Force3D1() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Force3D('LINESTRING (-10 10, 10 10 3)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (-10 10 0, 10 10 3)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Force3D2() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Force3D('LINESTRING (-10 10, 10 10)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (-10 10 0, 10 10 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Force3D3() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Force3D('POINT (-10 10)'::GEOMETRY);");
+        rs.next();        
+        assertGeometryEquals("POINT (-10 10 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Force2D1() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('LINESTRING (-10 10 2, 10 10 3)'::GEOMETRY);");
+        rs.next();        
+        assertGeometryEquals("LINESTRING (-10 10, 10 10)", rs.getBytes(1));
         rs.close();
         st.close();
     }
 
     @Test
-    public void test_ST_Azimuth4() throws Exception {
+    public void test_ST_Force2D2() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT degrees(ST_Azimuth(ST_MakePoint(0, 0), ST_MakePoint(0, 0)) ) as degAz;");
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('POINT (-10 10 2)'::GEOMETRY);");
         rs.next();
-        assertEquals(rs.getDouble(1), 0,0.00001);
+        assertGeometryEquals("POINT (-10 10)", rs.getBytes(1));
         rs.close();
         st.close();
+    }
+
+    @Test
+    public void test_ST_Force2D3() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('POINT (-10 10)'::GEOMETRY);");
+        rs.next();        
+        assertGeometryEquals("POINT (-10 10)", rs.getBytes(1));
+        rs.close();
     }
 }
