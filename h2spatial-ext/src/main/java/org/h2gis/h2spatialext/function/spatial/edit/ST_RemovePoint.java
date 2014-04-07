@@ -89,15 +89,19 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
      * @throws SQLException
      */
     private static Geometry removePointEnvelope(Geometry geometry, Envelope envelope) throws SQLException {
-        Geometry localGeometry1 = deleteComponents(geometry, envelope);
-        if (localGeometry1 != null) {
-            return localGeometry1;
+        if (geometry.getEnvelopeInternal().intersects(envelope)) {
+            Geometry localGeometry1 = deleteComponents(geometry, envelope);
+            if (localGeometry1 != null) {
+                return localGeometry1;
+            }
+            Geometry localGeometry2 = deleteVertices(geometry, envelope);
+            if (localGeometry2 != null) {
+                return localGeometry2;
+            }
+            return null;
+        } else {
+            return geometry;
         }
-        Geometry localGeometry2 = deleteVertices(geometry, envelope);
-        if (localGeometry2 != null) {
-            return localGeometry2;
-        }
-        return geometry;
     }
 
     private static Geometry deleteComponents(Geometry paramGeometry, Envelope paramEnvelope) {
