@@ -29,8 +29,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Forces the geometries into a "2-dimensional mode" so that all output
- * representations will only have the X and Y coordinates.
+ * Forces a Geometry into 2D mode by returning a copy with 
+ * its z-coordinate set to {@link Double.NaN}.
  *
  * @author Erwan Bocher
  */
@@ -53,7 +53,8 @@ public class ST_Force2D extends DeterministicScalarFunction {
      * @return
      */
     public static Geometry force2D(Geometry geom) {
-        ((Geometry) geom.clone()).apply(new CoordinateSequenceFilter() {
+        Geometry outPut = (Geometry) geom.clone();
+        outPut.apply(new CoordinateSequenceFilter() {
             private boolean done = false;
 
             @Override
@@ -69,12 +70,11 @@ public class ST_Force2D extends DeterministicScalarFunction {
             @Override
             public void filter(CoordinateSequence seq, int i) {
                 seq.setOrdinate(i, 2, Double.NaN);
-
                 if (i == seq.size()) {
                     done = true;
                 }
             }
         });
-        return geom;
+        return outPut;
     }
 }

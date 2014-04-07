@@ -30,7 +30,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Forces the geometries into XYZ mode.
+ * Forces a Geometry into 3D mode by returning a copy with 
+ * {@link Double.NaN} z-coordinates set to 0 (other z-coordinates are left untouched).
  *
  * @author Erwan Bocher
  */
@@ -54,7 +55,8 @@ public class ST_Force3D extends DeterministicScalarFunction {
      * @return
      */
     public static Geometry force3D(Geometry geom) {
-        ((Geometry) geom.clone()).apply(new CoordinateSequenceFilter() {
+        Geometry outPut = (Geometry) geom.clone();
+        outPut.apply(new CoordinateSequenceFilter() {
             private boolean done = false;
 
             @Override
@@ -79,6 +81,6 @@ public class ST_Force3D extends DeterministicScalarFunction {
                 }
             }
         });
-        return geom;
+        return outPut;
     }
 }
