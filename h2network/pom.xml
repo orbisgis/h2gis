@@ -97,11 +97,4 @@
             <version>${h2-version}</version>
         </dependency>
     </dependencies>
-    <repositories>
-        <repository>
-            <id>IRSTV</id>
-            <name>IRSTV repository</name>
-            <url>http://repo.orbisgis.org</url>
-        </repository>
-    </repositories>
 </project>
