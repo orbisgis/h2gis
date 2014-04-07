@@ -76,7 +76,7 @@ import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse;
 import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse3DLine;
 import org.h2gis.h2spatialext.function.spatial.processing.ST_Snap;
 import org.h2gis.h2spatialext.function.spatial.processing.ST_Split;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_ZUpdateExtremities;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_ZUpdateLineExtremities;
 import org.h2gis.h2spatialext.function.spatial.processing.ST_Polygonize;
 import org.h2gis.h2spatialext.function.spatial.processing.ST_PrecisionReducer;
 import org.h2gis.h2spatialext.function.spatial.processing.ST_Simplify;
@@ -177,7 +177,7 @@ public class CreateSpatialExtension {
                 new ST_YMin(),
                 new ST_ZMax(),
                 new ST_ZMin(),
-                new ST_ZUpdateExtremities(),
+                new ST_ZUpdateLineExtremities(),
                 new ST_MinimumDiameter(),
                 new ST_RingBuffer(),
                 new ST_Azimuth(),

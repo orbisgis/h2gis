@@ -37,11 +37,11 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  *
  * @author Erwan Bocher
  */
-public class ST_ZUpdateExtremities extends DeterministicScalarFunction {
+public class ST_ZUpdateLineExtremities extends DeterministicScalarFunction {
 
     private static final GeometryFactory FACTORY = new GeometryFactory();
 
-    public ST_ZUpdateExtremities() {
+    public ST_ZUpdateLineExtremities() {
         addProperty(PROP_REMARKS, "Replace the start and end z values of a linestring or multilinestring.\n"
                 + "By default the other z values are interpolated according the length of the line.\n"
                 + "Set false if you want to update only the start and end z values.");

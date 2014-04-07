@@ -26,11 +26,11 @@ package org.h2gis.h2spatialext.function.spatial.edit;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateArrays;
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.prep.PreparedPolygon;
 import com.vividsolutions.jts.geom.util.GeometryEditor;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
@@ -40,12 +40,12 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * @author Erwan Bocher
  */
 public class ST_RemovePoint extends DeterministicScalarFunction {
-
-    public static final double PRECISION = 10E-6;
-
+  
+    private static final GeometryFactory GF = new GeometryFactory();
+    
     public ST_RemovePoint() {
         addProperty(PROP_REMARKS, "Remove a point on a geometry. "
-                + "A tolerance can be set to define a buffer area.");
+                + "A polygon can be set to define a buffer area.");
     }
 
     @Override
@@ -54,49 +54,19 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
     }
 
     /**
-     * Remove all vertices that are located within an envelope based on a 10E-6
-     * buffer distance.
+     * Remove all vertices that are located within a polygon
      *
      * @param geometry
-     * @param point
+     * @param polygon
      * @return
      * @throws SQLException
      */
-    public static Geometry removePoint(Geometry geometry, Point point) throws SQLException {
-        return removePointEnvelope(geometry, point.buffer(PRECISION).getEnvelopeInternal());
-    }
-
-    /**
-     * Remove all vertices that are located within an envelope based on a given
-     * buffer distance.
-     *
-     * @param geometry
-     * @param point
-     * @param tolerance
-     * @return
-     * @throws SQLException
-     */
-    public static Geometry removePoint(Geometry geometry, Point point, double tolerance) throws SQLException {
-        return removePointEnvelope(geometry, point.buffer(tolerance).getEnvelopeInternal());
-    }
-
-    /**
-     * Remove all vertices that are located within an envelope.
-     *
-     * @param geometry
-     * @param envelope
-     * @return
-     * @throws SQLException
-     */
-    private static Geometry removePointEnvelope(Geometry geometry, Envelope envelope) throws SQLException {
-        if (geometry.getEnvelopeInternal().intersects(envelope)) {
-            Geometry localGeometry1 = deleteComponents(geometry, envelope);
-            if (localGeometry1 != null) {
-                return localGeometry1;
-            }
-            Geometry localGeometry2 = deleteVertices(geometry, envelope);
-            if (localGeometry2 != null) {
-                return localGeometry2;
+    public static Geometry removePoint(Geometry geometry, Polygon polygon) throws SQLException {
+        PreparedPolygon preparedPolygon = new PreparedPolygon(polygon);
+        if (geometry.intersects(polygon)) {
+            Geometry localGeometry = deleteVertices(geometry, preparedPolygon);
+            if (localGeometry != null) {
+                return localGeometry;
             }
             return null;
         } else {
@@ -104,66 +74,40 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
         }
     }
 
-    private static Geometry deleteComponents(Geometry paramGeometry, Envelope paramEnvelope) {
-        GeometryEditor localGeometryEditor = new GeometryEditor();
-        BoxDeleteComponentOperation localBoxDeleteComponentOperation = new BoxDeleteComponentOperation(paramEnvelope);
-        Geometry localGeometry = localGeometryEditor.edit(paramGeometry, localBoxDeleteComponentOperation);
-        if (localBoxDeleteComponentOperation.isModified()) {
-            return localGeometry;
+    private static Geometry deleteVertices(Geometry paramGeometry, PreparedPolygon polygon) {
+        GeometryEditor localGeometryEditor = new GeometryEditor();              
+        PolygonDeleteVertexOperation localBoxDeleteVertexOperation = new PolygonDeleteVertexOperation(GF, polygon);
+        Geometry localGeometry = localGeometryEditor.edit(paramGeometry, localBoxDeleteVertexOperation);       
+        if(localGeometry.isEmpty()){
+            return null;
         }
-        return null;
-    }
-
-    private static Geometry deleteVertices(Geometry paramGeometry, Envelope paramEnvelope) {
-        GeometryEditor localGeometryEditor = new GeometryEditor();
-        BoxDeleteVertexOperation localBoxDeleteVertexOperation = new BoxDeleteVertexOperation(paramEnvelope);
-        Geometry localGeometry = localGeometryEditor.edit(paramGeometry, localBoxDeleteVertexOperation);
-        if (localBoxDeleteVertexOperation.isModified()) {
-            return localGeometry;
-        }
-        return null;
+        return localGeometry;
     }
 
     /**
-     * This class is used to remove vertexes that are contained in an envelope.
-     * This class has been imported from the JTS test builder UI.
+     * This class is used to remove vertexes that are contained into a polygon.
      *
      */
-    private static class BoxDeleteVertexOperation extends GeometryEditor.CoordinateOperation {
+    private static class PolygonDeleteVertexOperation extends GeometryEditor.CoordinateOperation {
 
-        //The envelope used to select the coordinates to removed
-        private Envelope env;
-        private boolean isModified = false;
+        private GeometryFactory GF;
+        //This polygon used to select the coordinates to removed
+        private PreparedPolygon polygon;
 
-        public BoxDeleteVertexOperation(Envelope paramEnvelope) {
-            this.env = paramEnvelope;
-        }
-
-        /**
-         * Return true is the geometry has been modified
-         *
-         * @return
-         */
-        public boolean isModified() {
-            return this.isModified;
-        }
+        public PolygonDeleteVertexOperation(GeometryFactory GF, PreparedPolygon polygon) {
+            this.polygon = polygon;
+            this.GF=GF;
+        }       
 
         @Override
-        public Coordinate[] edit(Coordinate[] paramArrayOfCoordinate, Geometry paramGeometry) {
-            if (this.isModified) {
+        public Coordinate[] edit(Coordinate[] paramArrayOfCoordinate, Geometry paramGeometry) {           
+            if (!this.polygon.intersects(paramGeometry)) {
                 return paramArrayOfCoordinate;
-            }
-            if (!hasVertexInBox(paramArrayOfCoordinate)) {
-                return paramArrayOfCoordinate;
-            }
-            int i = 2;
-            if ((paramGeometry instanceof LinearRing)) {
-                i = 4;
-            }
+            }            
             Coordinate[] arrayOfCoordinate1 = new Coordinate[paramArrayOfCoordinate.length];
             int j = 0;
             for (Coordinate coordinate : paramArrayOfCoordinate) {
-                if (!this.env.contains(coordinate)) {
+                if (!this.polygon.contains(GF.createPoint(coordinate))) {
                     arrayOfCoordinate1[(j++)] = coordinate;
                 }
             }
@@ -176,60 +120,7 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
                 arrayOfCoordinate3[(arrayOfCoordinate3.length - 1)] = new Coordinate(arrayOfCoordinate3[0]);
                 localObject = arrayOfCoordinate3;
             }
-            if (localObject.length < i) {
-                return paramArrayOfCoordinate;
-            }
-            this.isModified = true;
             return localObject;
-        }
-
-        /**
-         * Return true if there is one coordinate in the input box
-         *
-         * @param paramArrayOfCoordinate
-         * @return
-         */
-        private boolean hasVertexInBox(Coordinate[] paramArrayOfCoordinate) {
-            for (Coordinate coordinate : paramArrayOfCoordinate) {
-                if (this.env.contains(coordinate)) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-
-    /**
-     * This class is used to remove component that are contained in an envelope.
-     * This class has been imported from the JTS test builder UI. It's usefull
-     * to remove coordinates in a multi geometry.
-     *
-     */
-    private static class BoxDeleteComponentOperation implements GeometryEditor.GeometryEditorOperation {
-
-        private Envelope env;
-        private boolean isEdited = false;
-
-        public BoxDeleteComponentOperation(Envelope paramEnvelope) {
-            this.env = paramEnvelope;
-        }
-
-        /**
-         * Return true is the geometry has been modified
-         *
-         * @return
-         */
-        public boolean isModified() {
-            return this.isEdited;
-        }
-
-        @Override
-        public Geometry edit(Geometry paramGeometry, GeometryFactory paramGeometryFactory) {
-            if (this.env.contains(paramGeometry.getEnvelopeInternal())) {
-                this.isEdited = true;
-                return null;
-            }
-            return paramGeometry;
-        }
-    }
+        }        
+    }   
 }
