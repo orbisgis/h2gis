@@ -20,14 +20,6 @@
                         <include>README.md</include>
                     </includes>
                 </fileSet>
-                <fileSet>
-                        <directory>${project.basedir}/src/bin/zip/</directory>
-                        <outputDirectory>/</outputDirectory>
-                        <includes>
-                                <include>*.sh</include>
-                                <include>*.bat</include>
-                        </includes>
-                </fileSet>
         </fileSets>
         <dependencySets>
             <dependencySet>
