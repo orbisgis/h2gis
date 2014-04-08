@@ -28,11 +28,9 @@ package org.h2gis.h2spatial.internal.function.spatial.operators;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import java.sql.SQLException;
 import org.h2.value.Value;
 import org.h2.value.ValueInt;
 import org.h2.value.ValueString;
-
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
@@ -62,24 +60,24 @@ public class ST_Buffer extends DeterministicScalarFunction {
     }
 
     /**
-     * @param a Geometry instance.
+     * @param geom Geometry instance
      * @param distance Buffer width in projection unit
-     * @return a buffer around a geometry.
+     * @return geom buffer around geom geometry.
      */
-    public static Geometry buffer(Geometry a,Double distance) {
-        if(a==null || distance==null) {
+    public static Geometry buffer(Geometry geom,Double distance) {
+        if(geom==null || distance==null) {
             return null;
         }
-        return a.buffer(distance);
+        return geom.buffer(distance);
     }
     
     /**
-     * @param a Geometry instance.
+     * @param geom Geometry instance
      * @param distance Buffer width in projection unit
-     * @param bufferParameters
+     * @param value Int or varchar end type
      * @return a buffer around a geometry.
      */
-    public static Geometry buffer(Geometry geom,Double distance, Value value) throws SQLException {        
+    public static Geometry buffer(Geometry geom,Double distance, Value value) throws IllegalArgumentException {
         if(value instanceof ValueString){
             String[] buffParemeters = value.getString().split("\\s+");  
             BufferParameters bufferParameters = new BufferParameters();
@@ -97,8 +95,8 @@ public class ST_Buffer extends DeterministicScalarFunction {
                         bufferParameters.setEndCapStyle(BufferParameters.CAP_SQUARE);
                     }
                     else{
-                        throw new SQLException("Supported join values are round, flat, butt or square.");
-                    }                    
+                        throw new IllegalArgumentException("Supported join values are round, flat, butt or square.");
+                    }
                 }
                 else if(keyValue[0].equalsIgnoreCase("join")){
                     String param = keyValue[1];
@@ -112,8 +110,8 @@ public class ST_Buffer extends DeterministicScalarFunction {
                         bufferParameters.setJoinStyle(BufferParameters.JOIN_ROUND);
                     }
                     else{
-                        throw new SQLException("Supported join values are bevel, mitre, miter or round.");
-                    }             
+                        throw new IllegalArgumentException("Supported join values are bevel, mitre, miter or round.");
+                    }
                 }
                 else if(keyValue[0].equalsIgnoreCase("mitre_limit")||keyValue[0].equalsIgnoreCase("miter_limit")){
                     bufferParameters.setMitreLimit(Double.valueOf(keyValue[1]));
@@ -122,7 +120,7 @@ public class ST_Buffer extends DeterministicScalarFunction {
                     bufferParameters.setQuadrantSegments(Integer.valueOf(keyValue[1]));
                 }
                 else{
-                    throw new SQLException("Unknown parameters please read the documentation.");
+                    throw new IllegalArgumentException("Unknown parameters. Please read the documentation.");
                 }
             }            
             BufferOp bufOp  = new BufferOp(geom, bufferParameters);            
@@ -133,7 +131,7 @@ public class ST_Buffer extends DeterministicScalarFunction {
             return bufOp.getResultGeometry(distance);
         }
         else {
-            throw new SQLException("The third argument must be an int or a varchar.");
+            throw new IllegalArgumentException("The third argument must be an int or a varchar.");
         }
     }
 }
