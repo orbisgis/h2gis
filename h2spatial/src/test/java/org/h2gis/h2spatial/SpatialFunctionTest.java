@@ -23,6 +23,7 @@
  */
 package org.h2gis.h2spatial;
 
+import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -37,7 +38,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import org.h2.jdbc.JdbcSQLException;
 
 import static org.junit.Assert.*;
 
