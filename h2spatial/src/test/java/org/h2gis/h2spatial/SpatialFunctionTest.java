@@ -286,8 +286,8 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Buffer1() throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_Buffer(\n"
-                + " ST_GeomFromText('POINT(100 90)'),\n"
+        ResultSet rs = st.executeQuery("SELECT ST_Buffer("
+                + " ST_GeomFromText('POINT(100 90)'),"
                 + " 50, 2);");
         try {
             assertTrue(rs.next());
@@ -302,9 +302,9 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Buffer2() throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_Buffer(\n"
-                + " ST_GeomFromText(\n"
-                + "  'LINESTRING(50 50,150 150,150 50)'\n"
+        ResultSet rs = st.executeQuery("SELECT ST_Buffer("
+                + " ST_GeomFromText("
+                + "  'LINESTRING(50 50,150 150,150 50)'"
                 + " ), 10, 'endcap=round join=round');");
         try {
             assertTrue(rs.next());
@@ -333,8 +333,8 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Buffer3() throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_Buffer(\n"
-                + " ST_GeomFromText('POINT(100 90)'),\n"
+        ResultSet rs = st.executeQuery("SELECT ST_Buffer("
+                + " ST_GeomFromText('POINT(100 90)'),"
                 + " 50, 2);");
         try {
             assertTrue(rs.next());
@@ -349,8 +349,8 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Buffer4() throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_Buffer(\n"
-                + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),\n"
+        ResultSet rs = st.executeQuery("SELECT ST_Buffer("
+                + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
                 + " 10, 'quad_segs=2 endcap=round join=mitre');");
         try {
             assertTrue(rs.next());
@@ -367,8 +367,8 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Buffer5() throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_Buffer(\n"
-                + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),\n"
+        ResultSet rs = st.executeQuery("SELECT ST_Buffer("
+                + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
                 + " 10, 'quad_segs=2 endcap=square join=bevel');");
         try {
             assertTrue(rs.next());
@@ -384,8 +384,7 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Buffer6() throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_Buffer(\n"
-                + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),\n"
+        ResultSet rs = st.executeQuery("SELECT ST_Buffer(ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
                 + " 10, 'quad_segs=2 endcap=flat join=bevel');");
         try {
             assertTrue(rs.next());
@@ -402,20 +401,20 @@ public class SpatialFunctionTest {
     public void test_ST_Buffer7() throws Throwable {
         Statement st = connection.createStatement();
         try {
-        st.execute("SELECT ST_Buffer(\n"
-                + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),\n"
+        st.execute("SELECT ST_Buffer("
+                + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
                 + " 10, 'quad_segs=2 endcap=flated');");
         }catch (JdbcSQLException e) {
             throw e.getOriginalCause();
         }
     }
-    
+
     @Test(expected = IllegalArgumentException.class)
     public void test_ST_Buffer8() throws Throwable {
         Statement st = connection.createStatement();
         try {
-            st.execute("SELECT ST_Buffer(\n"
-                    + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),\n"
+            st.execute("SELECT ST_Buffer("
+                    + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
                     + " 10, 'quad_segments=2 endcap=flated');");
         } catch (JdbcSQLException e) {
             throw e.getOriginalCause();
