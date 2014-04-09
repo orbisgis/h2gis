@@ -91,6 +91,16 @@ public class SFSUtilitiesTest {
     }
 
     @Test
+    public void testTableLocationDataBaseType() {
+        TableLocation location = TableLocation.parse("MyTable", true);
+        assertEquals("MYTABLE", location.getTable());
+        assertEquals("PUBLIC.MYTABLE", location.toString(true));
+        location = TableLocation.parse("\"MyTable\"", true);
+        assertEquals("MyTable", location.getTable());
+        assertEquals("PUBLIC.\"MyTable\"", location.toString(true));
+    }
+
+    @Test
     public void testGeometryTypeConvert() throws ParseException {
         WKTReader wktReader = new WKTReader();
         assertEquals(GeometryTypeCodes.POINT, SFSUtilities.getGeometryTypeFromGeometry(wktReader.read("POINT(1 1)")));

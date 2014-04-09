@@ -135,7 +135,7 @@ public class SHPImportExportTest {
         st.execute("DROP TABLE IF EXISTS WATERNETWORK");
         final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath());
         // No table name is specified:
-        st.execute("CALL SHPRead(" + path + ");");
+        st.execute("CALL SHPRead(" + path + ", 'waternetwork');");
         checkSHPReadResult(st);
     }
 

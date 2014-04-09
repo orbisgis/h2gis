@@ -34,6 +34,7 @@ import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
 import java.io.File;
@@ -86,11 +87,12 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
      */
     public static void openFile(Connection connection, String fileName, String tableName) throws SQLException {
         String ext = fileName.substring(fileName.lastIndexOf('.') + 1,fileName.length());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 Statement st = connection.createStatement();
                 st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
-                        TableLocation.parse(tableName),StringUtils.quoteStringSQL(new File(fileName).toURI().toString()),
+                        TableLocation.parse(tableName, isH2).toString(isH2),StringUtils.quoteStringSQL(new File(fileName).toURI().toString()),
                         StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
                 st.close();
                 return;
