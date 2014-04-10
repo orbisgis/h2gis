@@ -36,6 +36,7 @@ import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
+ * Remove all points on a geometry that are located within a polygon.
  *
  * @author Erwan Bocher
  */
@@ -44,8 +45,7 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
     private static final GeometryFactory GF = new GeometryFactory();
     
     public ST_RemovePoint() {
-        addProperty(PROP_REMARKS, "Remove a point on a geometry. "
-                + "A polygon can be set to define a buffer area.");
+        addProperty(PROP_REMARKS, "Remove all points on a geometry that are located within a polygon.");
     }
 
     @Override
@@ -62,27 +62,15 @@ public class ST_RemovePoint extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static Geometry removePoint(Geometry geometry, Polygon polygon) throws SQLException {
-        PreparedPolygon preparedPolygon = new PreparedPolygon(polygon);
-        if (geometry.intersects(polygon)) {
-            Geometry localGeometry = deleteVertices(geometry, preparedPolygon);
-            if (localGeometry != null) {
-                return localGeometry;
-            }
+        GeometryEditor localGeometryEditor = new GeometryEditor();
+        PolygonDeleteVertexOperation localBoxDeleteVertexOperation = new PolygonDeleteVertexOperation(GF, new PreparedPolygon(polygon));
+        Geometry localGeometry = localGeometryEditor.edit(geometry, localBoxDeleteVertexOperation);
+        if (localGeometry.isEmpty()) {
             return null;
-        } else {
-            return geometry;
         }
+        return localGeometry;            
     }
 
-    private static Geometry deleteVertices(Geometry paramGeometry, PreparedPolygon polygon) {
-        GeometryEditor localGeometryEditor = new GeometryEditor();              
-        PolygonDeleteVertexOperation localBoxDeleteVertexOperation = new PolygonDeleteVertexOperation(GF, polygon);
-        Geometry localGeometry = localGeometryEditor.edit(paramGeometry, localBoxDeleteVertexOperation);       
-        if(localGeometry.isEmpty()){
-            return null;
-        }
-        return localGeometry;
-    }
 
     /**
      * This class is used to remove vertexes that are contained into a polygon.
