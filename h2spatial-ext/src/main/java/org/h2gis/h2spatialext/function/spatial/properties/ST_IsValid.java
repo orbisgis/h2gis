@@ -51,6 +51,9 @@ public class ST_IsValid extends DeterministicScalarFunction {
      * @return True if the given geometry is valid
      */
     public static Boolean isValid(Geometry geometry) {
+        if (geometry == null) {
+            return null;
+        }
         return geometry.isValid();
     }
 }

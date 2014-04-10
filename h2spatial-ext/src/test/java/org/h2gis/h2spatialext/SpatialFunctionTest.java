@@ -27,6 +27,7 @@ package org.h2gis.h2spatialext;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import org.h2.value.ValueGeometry;
+import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -39,7 +40,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 
 import static org.junit.Assert.*;
 
@@ -187,16 +187,21 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(the_geom Polygon);"
-                + "INSERT INTO input_table VALUES("
-                + "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)); "
-                + "INSERT INTO input_table VALUES("
-                + "ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))', 1));");
+                + "INSERT INTO input_table VALUES"
+                + "(ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))', 1)), "
+                + "(ST_PolyFromText('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))', 1)),"
+                + "(NULL);");
         ResultSet rs = st.executeQuery("SELECT ST_IsValid(the_geom) FROM input_table;");
         assertTrue(rs.next());
         assertEquals(true, rs.getBoolean(1));
         assertTrue(rs.next());
         assertEquals(false, rs.getBoolean(1));
+        assertTrue(rs.next());
+        assertEquals(false, rs.getBoolean(1));
+        assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
+        rs.close();
+        st.close();
     }
 
     @Test
