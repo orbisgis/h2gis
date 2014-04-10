@@ -2465,4 +2465,32 @@ public class SpatialFunctionTest {
         assertEquals(rs.getDouble(1), 0, 0.00001);
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Snap1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)'::GEOMETRY, "
+                + "'LINESTRING(5 2, 2 1, 1 2)'::GEOMETRY, 1);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(1 2, 2 4, 4 4, 5 2)",rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_Snap2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)'::GEOMETRY, "
+                + "'LINESTRING(5 2, 2 1, 1 2)'::GEOMETRY, 3);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(1 2, 1 2, 2 1, 5 2, 5 2)",rs.getBytes(1));
+        rs.close();
+    }
+    
+     @Test
+    public void test_ST_Snap3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Snap('POLYGON((3 3, 1 2, 0 2, 0 1, -2 1, -1 7, 3 6, 4 8,7 8, 6 6, 9 6, 8 1, 8 1, 3 3))'::GEOMETRY," 
+                +"'POLYGON((1 1, 1 7, 7 7, 7 1, 1 1))'::GEOMETRY,  2);");
+        rs.next();
+        assertGeometryEquals("POLYGON((3 3, 1 1, 1 1, 1 1, -2 1, -1 7, 1 7, 3 6, 4 8, 7 7, 7 7, 9 6, 7 1, 7 1, 3 3))"
+                ,rs.getBytes(1));
+        rs.close();
+    }
 }
