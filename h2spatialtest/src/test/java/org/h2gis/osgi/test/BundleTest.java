@@ -75,7 +75,7 @@ public class BundleTest {
                 mavenBundle("org.orbisgis", "cts"),
                 mavenBundle("org.orbisgis", "jts"),
                 mavenBundle("org.orbisgis", "jdelaunay"),
-                mavenBundle("com.h2database", "h2").version("1.3.176-SNAPSHOT"),
+                mavenBundle("com.h2database", "h2").version("1.3.176"),
                 mavenBundle("com.fasterxml.jackson.core", "jackson-core").version("2.3.1"),
                 mavenBundle("org.orbisgis", "h2spatial").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-ext").noStart(),
