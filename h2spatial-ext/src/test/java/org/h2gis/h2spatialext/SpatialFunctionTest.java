@@ -1900,7 +1900,7 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_RemovePoint10() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), \n" +
-"                            (3 4, 3 5, 4 5, 4 4, 3 4), \n" +
+"                            (3 4, 3 5, 4 5, 4 4, 3 4)," +
 "                             (2 3, 3 3, 3 2, 2 2, 2 3))'::GEOMETRY, "
                 + "ST_Buffer('POINT (6 7)'::GEOMETRY, 4.5));");
         rs.next();
@@ -2006,69 +2006,44 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Translate1() throws Exception {
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POINT);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POINT(-71.01 42.37)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Translate(the_geom, 1, 0) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINT(-71.01 42.37)'::GEOMETRY, 1, 0);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(-70.01 42.37)")));
+        assertGeometryEquals("POINT(-70.01 42.37)", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_Translate2() throws Exception {
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING(-71.01 42.37,-71.11 42.38)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Translate(the_geom, 1, 0.5) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Translate('LINESTRING(-71.01 42.37,-71.11 42.38)'::GEOMETRY, 1, 0.5);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(-70.01 42.87,-70.11 42.88)")));
+        assertGeometryEquals("LINESTRING(-70.01 42.87,-70.11 42.88)", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_Reverse1() throws Exception {
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (105 353, 150 180, 300 280)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Reverse(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse('LINESTRING (105 353, 150 180, 300 280)'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (300 280, 150 180, 105 353)")));
+        assertGeometryEquals("LINESTRING (300 280, 150 180, 105 353)", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_Reverse2() throws Exception {
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((190 300, 140 180, 300 110, 313 117, 430 270, 380 430, 190 300))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Reverse(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse('POLYGON ((190 300, 140 180, 300 110, 313 117, 430 270, 380 430, 190 300))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((190 300, 380 430, 430 270, 313 117, 300 110, 140 180, 190 300))")));
+        assertGeometryEquals("POLYGON ((190 300, 380 430, 430 270, 313 117, 300 110, 140 180, 190 300))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_Reverse3() throws Exception {
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom MULTILINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('MULTILINESTRING ((10 260, 150 290, 186 406, 286 286), \n"
-                + "  (120 120, 130 125, 142 129, 360 160, 357 170, 380 340))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Reverse(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse('MULTILINESTRING ((10 260, 150 290, 186 406, 286 286), "
+                + "  (120 120, 130 125, 142 129, 360 160, 357 170, 380 340))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTILINESTRING ((380 340, 357 170, 360 160, 142 129, 130 125, 120 120), \n"
-                + "  (286 286, 186 406, 150 290, 10 260))")));
+        assertGeometryEquals("MULTILINESTRING ((380 340, 357 170, 360 160, 142 129, 130 125, 120 120), \n"
+                + "  (286 286, 186 406, 150 290, 10 260))", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
@@ -2077,37 +2052,46 @@ public class SpatialFunctionTest {
                 + "CREATE TABLE input_table(the_geom LINESTRING);"
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('LINESTRING (105 353 10, 150 180, 300 280 0)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('LINESTRING (105 353 10, 150 180, 300 280 0)'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (300 280 0, 150 180, 105 353 10)")));
+        assertGeometryEquals("LINESTRING (300 280 0, 150 180,105 353 10)", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
     public void test_ST_Reverse3DLine2() throws Exception {
-        st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom LINESTRING);"
-                + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('LINESTRING (105 353 0, 150 180, 300 280 10)'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine(the_geom) FROM input_table;");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('LINESTRING (300 280 10, 150 180,105 353 0 )'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (105 353 0, 150 180, 300 280 10)")));
+        assertGeometryEquals("LINESTRING (105 353 0, 150 180, 300 280 10)", rs.getBytes(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
-
+    
     @Test
     public void test_ST_Reverse3DLine3() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
-                + "CREATE TABLE input_table(the_geom POLYGON);"
+                + "CREATE TABLE input_table(the_geom LINESTRING);"
                 + "INSERT INTO input_table VALUES"
-                + "(ST_GeomFromText('POLYGON ((190 300, 140 180, 300 110, 313 117, 430 270, 380 430, 190 300))'));");
-        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine(the_geom) FROM input_table;");
+                + "(ST_GeomFromText('LINESTRING (105 353 10, 150 180, 300 280 0)'));");
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('LINESTRING (105 353 10, 150 180, 300 280 0)'::GEOMETRY, 'desc');");
+        rs.next();
+        assertGeometryEquals("LINESTRING (105 353 10, 150 180, 300 280 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Reverse3DLine4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('LINESTRING (105 353 0, 150 180, 300 280 10)'::GEOMETRY, 'desc');");
+        rs.next();
+        assertGeometryEquals("LINESTRING (300 280 10, 150 180,105 353 0 )", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Reverse3DLine5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('POLYGON ((190 300, 140 180, 300 110, 313 117, 430 270, 380 430, 190 300))'::GEOMETRY);");
         rs.next();
         assertNull(rs.getObject(1));
         rs.close();
-        st.execute("DROP TABLE input_table;");
     }
 
     @Test
