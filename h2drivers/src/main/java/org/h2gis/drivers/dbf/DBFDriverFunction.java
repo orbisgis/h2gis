@@ -56,11 +56,12 @@ public class DBFDriverFunction implements DriverFunction {
 
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         // Read table content
         Statement st = connection.createStatement();
         ProgressVisitor lineProgress = null;
         if(!(progress instanceof EmptyProgressVisitor)) {
-            ResultSet rs = st.executeQuery(String.format("select count(*) from %s", TableLocation.parse(tableReference)));
+            ResultSet rs = st.executeQuery(String.format("select count(*) from %s", TableLocation.parse(tableReference,isH2).toString(isH2)));
             try {
                 if(rs.next()) {
                     lineProgress = progress.subProcess(rs.getInt(1));
@@ -70,7 +71,7 @@ public class DBFDriverFunction implements DriverFunction {
             }
         }
         try {
-            ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference)));
+            ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
             try {
                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
@@ -139,16 +140,18 @@ public class DBFDriverFunction implements DriverFunction {
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceFileEncoding) throws SQLException, IOException {
         DBFDriver dbfDriver = new DBFDriver();
         dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
         try {
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
-            st.execute(String.format("CREATE TABLE %s (%s)", TableLocation.parse(tableReference),
+            st.execute(String.format("CREATE TABLE %s (%s)", parsedTable,
                     getSQLColumnTypes(dbfHeader, JDBCUtilities.isH2DataBase(connection.getMetaData()))));
             st.close();
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(
-                        String.format("INSERT INTO %s VALUES ( %s )", TableLocation.parse(tableReference),
+                        String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
                                 getQuestionMark(dbfHeader.getNumFields())));
                 try {
                     long batchSize = 0;
@@ -173,7 +176,7 @@ public class DBFDriverFunction implements DriverFunction {
                 }
                 //TODO create spatial index on the_geom ?
             } catch (Exception ex) {
-                connection.createStatement().execute("DROP TABLE IF EXISTS " + tableReference);
+                connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);
                 throw new SQLException(ex.getLocalizedMessage(), ex);
             }
         } finally {

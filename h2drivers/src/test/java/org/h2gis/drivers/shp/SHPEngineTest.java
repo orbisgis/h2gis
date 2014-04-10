@@ -69,7 +69,7 @@ public class SHPEngineTest {
     @Test
     public void readSHPMetaTest() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'");
         assertTrue(rs.next());
@@ -110,7 +110,7 @@ public class SHPEngineTest {
     public void readPartialSHPDataTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPtable');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT TYPE_AXE, GID, LENGTH FROM SHPTABLE;");
         assertTrue(rs.next());

@@ -35,6 +35,7 @@ import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.h2spatial.TableFunctionUtil;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -84,7 +85,8 @@ public class ST_Explode extends DeterministicScalarFunction {
      * @return
      */
     public static ResultSet explode(Connection connection, String tableName, String fieldName) throws SQLException {
-        ExplodeResultSet rowSource = new ExplodeResultSet(connection,tableName,fieldName);
+        ExplodeResultSet rowSource = new ExplodeResultSet(connection,
+                TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())).toString(),fieldName);
         return rowSource.getResultSet();
     }
 

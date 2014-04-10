@@ -131,6 +131,22 @@ public class TableLocation {
      * @return Java beans for table location   Sample Text
      */
     public static TableLocation parse(String concatenatedTableLocation) {
+        return parse(concatenatedTableLocation, null);
+    }
+
+    private static String capsIdentifier(String identifier, Boolean isH2Database) {
+        if(isH2Database != null) {
+            if(isH2Database) {
+                return identifier.toUpperCase();
+            } else {
+                return identifier.toLowerCase();
+            }
+        } else {
+            return identifier;
+        }
+    }
+
+    public static TableLocation parse(String concatenatedTableLocation, Boolean isH2Database) {
         List<String> parts = new LinkedList<String>();
         String catalog,schema,table;
         catalog = schema = table = "";
@@ -151,6 +167,9 @@ public class TableLocation {
                     sb = new StringBuilder();
                 }
             } else {
+                if(!openQuote && isH2Database != null) {
+                    token = capsIdentifier(token, isH2Database);
+                }
                 sb.append(token);
             }
         }
