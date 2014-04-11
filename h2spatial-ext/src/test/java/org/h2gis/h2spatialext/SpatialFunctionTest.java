@@ -2497,4 +2497,49 @@ public class SpatialFunctionTest {
                 ,rs.getBytes(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_IsValidReason1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('POLYGON ((280 330, 120 200, 360 190, 352 197, 170 290, 280 330))'::GEOMETRY);");
+        rs.next();
+        assertNotNull(rs.getString(1));
+        assertEquals(rs.getString(1), "Self-intersection at or near point (207.3066943435392, 270.9366891541256, NaN)");
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_IsValidReason2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('POLYGON ((0 350, 200 350, 200 250, 0 250, 0 350))'::GEOMETRY);");
+        rs.next();
+        assertNotNull(rs.getString(1));
+        assertEquals(rs.getString(1), "Valid geometry");
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_IsValidReason3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('LINESTRING (130 340, 280 210, 120 210, 320 350)'::GEOMETRY, 1);");
+        rs.next();
+        assertNotNull(rs.getString(1));
+        assertEquals(rs.getString(1), "Valid geometry");
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_IsValidReason4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('LINESTRING (130 340, 280 210, 120 210, 320 350)'::GEOMETRY, 0);");
+        rs.next();
+        assertNotNull(rs.getString(1));
+        assertEquals(rs.getString(1), "Valid geometry");
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_IsValidReason5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason(null);");
+        rs.next();
+        assertNotNull(rs.getString(1));
+        assertEquals(rs.getString(1), "Null geometry");
+        rs.close();
+    }
 }

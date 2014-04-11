@@ -185,6 +185,7 @@ public class CreateSpatialExtension {
                 new ST_Force2D(),
                 new ST_Force3D(),
                 new ST_Azimuth(),
+                new ST_IsValidReason(),
                 // h2network functions
                 new ST_Graph(),
                 new ST_ShortestPath(),
