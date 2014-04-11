@@ -25,58 +25,64 @@
 package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.operation.valid.IsValidOp;
 import com.vividsolutions.jts.operation.valid.TopologyValidationError;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Returns text stating if a geometry is valid or not an if not valid, a reason why
+ * Returns a valid_detail (valid,reason,location) as an array of objects
+ * if a geometry is valid or not and if not valid, a reason why and a location where.
  * 
  * @author Erwan Bocher
  */
-public class ST_IsValidReason extends DeterministicScalarFunction{
+public class ST_IsValidDetail extends DeterministicScalarFunction{
 
+    private static final GeometryFactory GF = new GeometryFactory();    
     
-    public ST_IsValidReason(){
-        addProperty(PROP_REMARKS, " Returns text stating if a geometry is"
-                + " valid or not and if not valid, a reason why.\n"
+    public ST_IsValidDetail() {
+        addProperty(PROP_REMARKS, " Returns a valid_detail as an array of objects\n"
+                + "     * [0] = isvalid,[1] = reason, [2] = error location"
                 + "The second argument is optional. It can have the following values (0 or 1)\n"
                 + "1 = It will validate inverted shells and exverted holes according the ESRI SDE model.\n"
                 + "0 = It will based on the OGC geometry model.");
     }
+    
     @Override
     public String getJavaStaticMethod() {
-       return "isValidReason";
+        return "isValidDetail";
     }
     
     /**
-     * Returns text stating if a geometry is valid or not an if not valid, a reason why
+     * Returns a valid_detail as an array of objects
+     * [0] = isvalid,[1] = reason, [2] = error location
      * 
      * @param geometry
      * @return 
      */
-    public static String isValidReason(Geometry geometry) {
-        return isValidReason(geometry, 0);
+    public static Object[] isValidDetail(Geometry geometry) {
+        return isValidDetail(geometry, 0);
     }
     
     /**
-     * Returns text stating if a geometry is valid or not an if not valid, a reason why.
+     * Returns a valid_detail as an array of objects
+     * [0] = isvalid,[1] = reason, [2] = error location
      * 
      * @param geometry
      * @param flag
      * @return 
      */
-    public static String isValidReason(Geometry geometry, int flag) {
-        if (geometry != null) {
+    public static Object[] isValidDetail(Geometry geometry, int flag) {        
+        if (geometry != null) {            
             if (flag == 0) {
-                return validReason(geometry, false);
+                return detail(geometry, false);
             } else if (flag == 1) {
-                return validReason(geometry, true);
+                return detail(geometry, true);
             } else {
                 throw new IllegalArgumentException("Supported arguments is 0 or 1.");
             }
         }
-        return "Null Geometry";
+        return null;
     }
     
     /**
@@ -84,15 +90,20 @@ public class ST_IsValidReason extends DeterministicScalarFunction{
      * @param geometry
      * @return
      */
-    private static String validReason(Geometry geometry, boolean flag) {    
+    private static Object[] detail(Geometry geometry, boolean flag) {    
+        Object[] details = new Object[3];
         IsValidOp validOP = new IsValidOp(geometry);
         validOP.setSelfTouchingRingFormingHoleValid(flag);
         TopologyValidationError error = validOP.getValidationError();
         if (error != null) {
-            return error.toString();
+            details[0] = false ;
+            details[1] = error.getMessage();
+            details[2] = GF.createPoint(error.getCoordinate());
         } else {
-            return "Valid Geometry";
+            details[0] = true ;
+            details[1] = "Valid geometry";
         }
+        return details;
     }
-    
+
 }

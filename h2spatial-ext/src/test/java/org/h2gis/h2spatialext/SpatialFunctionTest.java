@@ -25,6 +25,7 @@ package org.h2gis.h2spatialext;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
+import java.sql.Array;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -2503,7 +2504,7 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('POLYGON ((280 330, 120 200, 360 190, 352 197, 170 290, 280 330))'::GEOMETRY);");
         rs.next();
         assertNotNull(rs.getString(1));
-        assertEquals(rs.getString(1), "Self-intersection at or near point (207.3066943435392, 270.9366891541256, NaN)");
+        assertEquals( "Self-intersection at or near point (207.3066943435392, 270.9366891541256, NaN)", rs.getString(1));
         rs.close();
     }
     
@@ -2512,7 +2513,7 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('POLYGON ((0 350, 200 350, 200 250, 0 250, 0 350))'::GEOMETRY);");
         rs.next();
         assertNotNull(rs.getString(1));
-        assertEquals(rs.getString(1), "Valid geometry");
+        assertEquals("Valid Geometry", rs.getString(1));
         rs.close();
     }
     
@@ -2521,7 +2522,7 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('LINESTRING (130 340, 280 210, 120 210, 320 350)'::GEOMETRY, 1);");
         rs.next();
         assertNotNull(rs.getString(1));
-        assertEquals(rs.getString(1), "Valid geometry");
+        assertEquals( "Valid Geometry", rs.getString(1));
         rs.close();
     }
 
@@ -2530,7 +2531,7 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('LINESTRING (130 340, 280 210, 120 210, 320 350)'::GEOMETRY, 0);");
         rs.next();
         assertNotNull(rs.getString(1));
-        assertEquals(rs.getString(1), "Valid geometry");
+        assertEquals( "Valid Geometry", rs.getString(1));
         rs.close();
     }
 
@@ -2539,7 +2540,19 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason(null);");
         rs.next();
         assertNotNull(rs.getString(1));
-        assertEquals(rs.getString(1), "Null geometry");
+        assertEquals( "Null Geometry", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_IsValidRDetail1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail('POLYGON ((280 330, 120 200, 360 190, 352 197, 170 290, 280 330))'::GEOMETRY);");
+        rs.next();
+        Object[] results = (Object [])rs.getObject(1);
+        assertNotNull(results);
+        assertFalse((Boolean)results[0]);
+        assertEquals( "Self-intersection", results[1]);
+        assertGeometryEquals("POINT(207.3066943435392 270.9366891541256)", ValueGeometry.getFromGeometry(results[2]).getBytes());
         rs.close();
     }
 }
