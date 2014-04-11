@@ -420,4 +420,54 @@ public class SpatialFunctionTest {
             throw e.getOriginalCause();
         }
     }
+    
+    @Test
+    public void test_ST_OrderingEquals1() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING(0 0, 10 10)'::GEOMETRY,"
+                + "'LINESTRING(0 0, 5 5, 10 10)'::GEOMETRY);");
+        rs.next();
+        assertTrue(!rs.getBoolean(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_OrderingEquals2() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING(0 0, 10 10)'::GEOMETRY,"
+                + "'LINESTRING(0 0, 0 0, 10 10)'::GEOMETRY);");
+        rs.next();
+        assertTrue(!rs.getBoolean(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_OrderingEquals3() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING(0 0, 0 0, 10 10)'::GEOMETRY,"
+                + "'LINESTRING(0 0, 0 0, 10 10)'::GEOMETRY);");
+        rs.next();
+        assertTrue(rs.getBoolean(1));
+        rs.close();
+    }
+    
+     @Test
+    public void test_ST_OrderingEquals4() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING(0 0 1, 0 0, 10 10)'::GEOMETRY,"
+                + "'LINESTRING(0 0, 0 0, 10 10)'::GEOMETRY);");
+        rs.next();
+        assertTrue(!rs.getBoolean(1));
+        rs.close();
+    }
+ 
+    @Test
+    public void test_ST_OrderingEquals5() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING(0 0 1, 0 0, 10 10 3)'::GEOMETRY,"
+                + "'LINESTRING(0 0 1, 0 0, 10 10 3)'::GEOMETRY);");
+        rs.next();
+        assertTrue(rs.getBoolean(1));
+        rs.close();
+    }
 }

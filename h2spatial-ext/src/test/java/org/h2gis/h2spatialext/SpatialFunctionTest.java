@@ -25,7 +25,6 @@ package org.h2gis.h2spatialext;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
-import java.sql.Array;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -38,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import org.h2.jdbc.JdbcSQLException;
 
 import static org.junit.Assert.*;
 
@@ -77,7 +77,7 @@ public class SpatialFunctionTest {
     public static void tearDown() throws Exception {
         connection.close();
     }
-    
+
     @Before
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
@@ -1874,7 +1874,7 @@ public class SpatialFunctionTest {
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (100 200, 340 250, 345 265, 354 295)")));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_RemovePoint7() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('LINESTRING (0 0, 10 0)'::GEOMETRY, "
@@ -1883,7 +1883,7 @@ public class SpatialFunctionTest {
         assertNull(rs.getObject(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_RemovePoint8() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POINT(1 1)'::GEOMETRY, "
@@ -1892,7 +1892,7 @@ public class SpatialFunctionTest {
         assertGeometryEquals("POINT(1 1)",rs.getBytes(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_RemovePoint9() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('LINESTRING(0 3, 1 1, 3 3, 5 2, 5 4, 6 5, 7 6, 7 7, 6 8)'::GEOMETRY, "
@@ -1901,7 +1901,7 @@ public class SpatialFunctionTest {
         assertGeometryEquals("LINESTRING(0 3, 1 1, 6 5, 7 6, 7 7, 6 8)", rs.getBytes(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_RemovePoint10() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), \n" +
@@ -2070,7 +2070,7 @@ public class SpatialFunctionTest {
         assertGeometryEquals("LINESTRING (105 353 0, 150 180, 300 280 10)", rs.getBytes(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_Reverse3DLine3() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table,grid;"
@@ -2470,7 +2470,7 @@ public class SpatialFunctionTest {
         assertEquals(rs.getDouble(1), 0, 0.00001);
         rs.close();
     }
-    
+
     @Test
     public void test_ST_Snap1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)'::GEOMETRY, "
@@ -2479,7 +2479,7 @@ public class SpatialFunctionTest {
         assertGeometryEquals("LINESTRING(1 2, 2 4, 4 4, 5 2)",rs.getBytes(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_Snap2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Snap('LINESTRING(1 2, 2 4, 4 4, 5 2)'::GEOMETRY, "
@@ -2488,7 +2488,7 @@ public class SpatialFunctionTest {
         assertGeometryEquals("LINESTRING(1 2, 1 2, 2 1, 5 2, 5 2)",rs.getBytes(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_Snap3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Snap('POLYGON((3 3, 1 2, 0 2, 0 1, -2 1, -1 7, 3 6, 4 8,7 8, 6 6, 9 6, 8 1, 8 1, 3 3))'::GEOMETRY,"
@@ -2498,7 +2498,7 @@ public class SpatialFunctionTest {
                 ,rs.getBytes(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_IsValidReason1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('POLYGON ((280 330, 120 200, 360 190, 352 197, 170 290, 280 330))'::GEOMETRY);");
@@ -2507,7 +2507,7 @@ public class SpatialFunctionTest {
         assertEquals( "Self-intersection at or near point (207.3066943435392, 270.9366891541256, NaN)", rs.getString(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_IsValidReason2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('POLYGON ((0 350, 200 350, 200 250, 0 250, 0 350))'::GEOMETRY);");
@@ -2516,7 +2516,7 @@ public class SpatialFunctionTest {
         assertEquals("Valid Geometry", rs.getString(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_IsValidReason3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_IsvalidReason('LINESTRING (130 340, 280 210, 120 210, 320 350)'::GEOMETRY, 1);");
@@ -2543,7 +2543,7 @@ public class SpatialFunctionTest {
         assertEquals( "Null Geometry", rs.getString(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_IsValidRDetail1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail('POLYGON ((280 330, 120 200, 360 190, 352 197, 170 290, 280 330))'::GEOMETRY);");
@@ -2554,5 +2554,51 @@ public class SpatialFunctionTest {
         assertEquals( "Self-intersection", results[1]);
         assertGeometryEquals("POINT(207.3066943435392 270.9366891541256)", ValueGeometry.getFromGeometry(results[2]).getBytes());
         rs.close();
+    }
+
+    @Test
+    public void test_ST_MakePolygon1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250, 100 250)'::GEOMETRY );");
+        rs.next();
+        assertGeometryEquals("POLYGON ((100 250, 100 350, 200 350, 200 250, 100 250))", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_MakePolygon2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250, 100 250)'::GEOMETRY, "
+                + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
+        rs.next();
+        assertGeometryEquals("POLYGON ((100 250, 100 350, 200 350, 200 250, 100 250), \n"
+                + "  (120 320, 150 320, 150 300, 120 300, 120 320))", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_MakePolygon3() throws Throwable {
+        try {
+            st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY, "
+                    + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_MakePolygon4() throws Throwable {
+        try {
+            st.execute("SELECT ST_MakePolygon('POINT (100 250)'::GEOMETRY );");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_MakePolygon5() throws Throwable {
+        try {
+            st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY);");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
     }
 }
