@@ -2555,6 +2555,51 @@ public class SpatialFunctionTest {
         assertGeometryEquals("POINT(207.3066943435392 270.9366891541256)", ValueGeometry.getFromGeometry(results[2]).getBytes());
         rs.close();
     }
+    
+     @Test
+    public void test_ST_IsValidRDetail2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail('POLYGON ((210 440, 134 235, 145 233, 310 200, 340 360, 210 440))'::GEOMETRY);");
+        rs.next();
+        Object[] results = (Object [])rs.getObject(1);
+        assertNotNull(results);
+        assertTrue((Boolean)results[0]);
+        assertEquals( "Valid Geometry", results[1]);
+        assertNull(results[2]);
+        rs.close();
+    }
+     
+    @Test
+    public void test_ST_IsValidRDetail3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail(null);");
+        rs.next();       
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_IsValidRDetail4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail('LINESTRING (80 240, 330 330, 280 240, 190 360)'::GEOMETRY, 1);");
+        rs.next();
+        Object[] results = (Object[]) rs.getObject(1);
+        assertNotNull(results);
+        assertTrue((Boolean) results[0]);
+        assertEquals("Valid Geometry", results[1]);
+        assertNull(results[2]);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_IsValidRDetail5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail('POLYGON ((100 340, 300 340, 300 180, 100 180, 100 340),"
+                + "  (120 320, 160 320, 160 290, 120 290, 120 320))'::GEOMETRY, 0);");
+        rs.next();
+        Object[] results = (Object[]) rs.getObject(1);
+        assertNotNull(results);
+        assertTrue((Boolean) results[0]);
+        assertEquals("Valid Geometry", results[1]);
+        assertNull(results[2]);
+        rs.close();
+    }
 
     @Test
     public void test_ST_MakePolygon1() throws Exception {

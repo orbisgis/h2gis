@@ -31,8 +31,8 @@ import com.vividsolutions.jts.operation.valid.TopologyValidationError;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Returns a valid_detail (valid,reason,location) as an array of objects
- * if a geometry is valid or not and if not valid, a reason why and a location where.
+ * Returns a valid_detail (valid,reason,location) as an array of objects.
+ * If a geometry is valid or not and if not valid, a reason why and a location where.
  * 
  * @author Erwan Bocher
  */
@@ -42,7 +42,7 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
     
     public ST_IsValidDetail() {
         addProperty(PROP_REMARKS, " Returns a valid_detail as an array of objects\n"
-                + "     * [0] = isvalid,[1] = reason, [2] = error location"
+                + " [0] = isvalid,[1] = reason, [2] = error location"
                 + "The second argument is optional. It can have the following values (0 or 1)\n"
                 + "1 = It will validate inverted shells and exverted holes according the ESRI SDE model.\n"
                 + "0 = It will based on the OGC geometry model.");
@@ -101,7 +101,7 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
             details[2] = GF.createPoint(error.getCoordinate());
         } else {
             details[0] = true ;
-            details[1] = "Valid geometry";
+            details[1] = "Valid Geometry";
         }
         return details;
     }

@@ -50,7 +50,8 @@ public class ST_IsValidReason extends DeterministicScalarFunction{
     }
     
     /**
-     * Returns text stating if a geometry is valid or not an if not valid, a reason why
+     * Returns text stating whether a geometry is valid. 
+     * If not, returns a reason why.
      * 
      * @param geometry
      * @return 
@@ -60,7 +61,8 @@ public class ST_IsValidReason extends DeterministicScalarFunction{
     }
     
     /**
-     * Returns text stating if a geometry is valid or not an if not valid, a reason why.
+     * Returns text stating whether a geometry is valid. 
+     * If not, returns a reason why.
      * 
      * @param geometry
      * @param flag
@@ -73,7 +75,7 @@ public class ST_IsValidReason extends DeterministicScalarFunction{
             } else if (flag == 1) {
                 return validReason(geometry, true);
             } else {
-                throw new IllegalArgumentException("Supported arguments is 0 or 1.");
+                throw new IllegalArgumentException("Supported arguments are 0 or 1.");
             }
         }
         return "Null Geometry";
