@@ -2517,23 +2517,17 @@ public class SpatialFunctionTest {
         rs.close();
     }
 
-    @Test
-    public void test_ST_MakePolygon3() throws Exception {
-        ResultSet rs = null;
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_MakePolygon3() throws Throwable {
         try {
-            rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY, "
+            st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY, "
                     + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
-            rs.next();
-        } catch (SQLException ex) {
-            assertTrue(true);
-        } finally {
-            if (rs != null) {
-                rs.close();
-            }
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void test_ST_MakePolygon4() throws Throwable {
         try {
             st.execute("SELECT ST_MakePolygon('POINT (100 250)'::GEOMETRY );");
@@ -2542,7 +2536,7 @@ public class SpatialFunctionTest {
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test(expected = IllegalArgumentException.class)
     public void test_ST_MakePolygon5() throws Throwable {
         try {
             st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY);");

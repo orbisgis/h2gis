@@ -29,7 +29,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
-import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
@@ -57,7 +56,7 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
      * @param shell
      * @return
      */
-    public static Polygon makePolygon(Geometry shell) throws SQLException {
+    public static Polygon makePolygon(Geometry shell) throws IllegalArgumentException {
         LinearRing outerLine = checkLineString(shell);
         return GF.createPolygon(outerLine, null);
     }
@@ -69,7 +68,7 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
      * @param holes
      * @return
      */
-    public static Polygon makePolygon(Geometry shell, Geometry... holes) throws SQLException {
+    public static Polygon makePolygon(Geometry shell, Geometry... holes) throws IllegalArgumentException {
         LinearRing outerLine = checkLineString(shell);
         LinearRing[] interiorlinestrings = new LinearRing[holes.length];
         for (int i = 0; i < holes.length; i++) {
@@ -85,19 +84,19 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
      * @return
      * @throws SQLException
      */
-    private static LinearRing checkLineString(Geometry geometry) throws SQLException {
+    private static LinearRing checkLineString(Geometry geometry) throws IllegalArgumentException {
         if (geometry instanceof LineString) {
             LineString lineString = (LineString) geometry;
             if (lineString.isClosed()) {
                 return GF.createLinearRing(lineString.getCoordinateSequence());
             } else {
-                throw new SQLException("The linestring must be closed.");
+                throw new IllegalArgumentException("The linestring must be closed.");
             }
         } else if (geometry instanceof LinearRing) {
             return (LinearRing) geometry;
 
         } else {
-            throw new SQLException("Only support linestring.");
+            throw new IllegalArgumentException("Only support linestring.");
         }
     }
 }
