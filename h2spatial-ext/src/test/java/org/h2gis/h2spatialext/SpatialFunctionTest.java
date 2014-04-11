@@ -1397,7 +1397,6 @@ public class SpatialFunctionTest {
 
     @Test(expected = SQLException.class)
     public void test_ST_TriangleAspect3() throws Exception {
-        Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 , 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
         rs.close();
     }
@@ -2484,7 +2483,7 @@ public class SpatialFunctionTest {
         rs.close();
     }
     
-     @Test
+    @Test
     public void test_ST_Snap3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Snap('POLYGON((3 3, 1 2, 0 2, 0 1, -2 1, -1 7, 3 6, 4 8,7 8, 6 6, 9 6, 8 1, 8 1, 3 3))'::GEOMETRY,"
                 +"'POLYGON((1 1, 1 7, 7 7, 7 1, 1 1))'::GEOMETRY, 2);");
