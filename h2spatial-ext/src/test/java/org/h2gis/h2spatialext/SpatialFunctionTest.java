@@ -2497,4 +2497,38 @@ public class SpatialFunctionTest {
                 ,rs.getBytes(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_MakePolygon1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250, 100 250)'::GEOMETRY );");
+        rs.next();
+        assertGeometryEquals("POLYGON ((100 250, 100 350, 200 350, 200 250, 100 250))", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_MakePolygon2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250, 100 250)'::GEOMETRY, "
+                + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
+        rs.next();
+        assertGeometryEquals("POLYGON ((100 250, 100 350, 200 350, 200 250, 100 250), \n"
+                + "  (120 320, 150 320, 150 300, 120 300, 120 320))", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_MakePolygon3() throws Exception {
+        ResultSet rs = null;
+        try {
+            rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY, "
+                    + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
+            rs.next();
+        } catch (SQLException ex) {
+            assertTrue(true);
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+        }
+    }
 }
