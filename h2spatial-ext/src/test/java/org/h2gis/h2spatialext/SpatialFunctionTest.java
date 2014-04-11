@@ -37,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import org.h2.jdbc.JdbcSQLException;
 
 import static org.junit.Assert.*;
 
@@ -2529,6 +2530,24 @@ public class SpatialFunctionTest {
             if (rs != null) {
                 rs.close();
             }
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void test_ST_MakePolygon4() throws Throwable {
+        try {
+            st.execute("SELECT ST_MakePolygon('POINT (100 250)'::GEOMETRY );");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void test_ST_MakePolygon5() throws Throwable {
+        try {
+            st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY);");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
         }
     }
 }
