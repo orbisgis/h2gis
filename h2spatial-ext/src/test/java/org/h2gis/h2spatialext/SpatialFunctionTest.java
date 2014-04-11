@@ -2543,6 +2543,15 @@ public class SpatialFunctionTest {
         assertEquals( "Null Geometry", rs.getString(1));
         rs.close();
     }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_IsValidReason6() throws Throwable {
+        try {
+            st.execute("SELECT ST_IsvalidReason('LINESTRING (80 240, 330 330, 280 240, 190 360)'::GEOMETRY, 199);");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
 
     @Test
     public void test_ST_IsValidRDetail1() throws Exception {
@@ -2599,6 +2608,15 @@ public class SpatialFunctionTest {
         assertEquals("Valid Geometry", results[1]);
         assertNull(results[2]);
         rs.close();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_IsValidRDetail6() throws Throwable {
+        try {
+            st.execute("SELECT ST_IsvalidDetail('LINESTRING (80 240, 330 330, 280 240, 190 360)'::GEOMETRY, 199);");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
     }
 
     @Test
