@@ -125,9 +125,7 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
                 double currentZ = coord.z;
                 if (Double.isNaN(currentZ)) {
                     seq.setOrdinate(i, 2, z);
-                } else {
-                    seq.setOrdinate(i, 2, z);
-                }
+                } 
             } else {
                 done = true;
             }
