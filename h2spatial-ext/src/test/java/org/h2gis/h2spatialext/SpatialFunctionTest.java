@@ -37,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
+import org.h2.jdbc.JdbcSQLException;
 
 import static org.junit.Assert.*;
 
@@ -2496,5 +2497,51 @@ public class SpatialFunctionTest {
         assertGeometryEquals("POLYGON((3 3, 1 1, 1 1, 1 1, -2 1, -1 7, 1 7, 3 6, 4 8, 7 7, 7 7, 9 6, 7 1, 7 1, 3 3))"
                 ,rs.getBytes(1));
         rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakePolygon1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250, 100 250)'::GEOMETRY );");
+        rs.next();
+        assertGeometryEquals("POLYGON ((100 250, 100 350, 200 350, 200 250, 100 250))", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_MakePolygon2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250, 100 250)'::GEOMETRY, "
+                + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
+        rs.next();
+        assertGeometryEquals("POLYGON ((100 250, 100 350, 200 350, 200 250, 100 250), \n"
+                + "  (120 320, 150 320, 150 300, 120 300, 120 320))", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_MakePolygon3() throws Throwable {
+        try {
+            st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY, "
+                    + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_MakePolygon4() throws Throwable {
+        try {
+            st.execute("SELECT ST_MakePolygon('POINT (100 250)'::GEOMETRY );");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_MakePolygon5() throws Throwable {
+        try {
+            st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY);");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
     }
 }
