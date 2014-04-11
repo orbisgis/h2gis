@@ -69,6 +69,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_Transform;
+import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_OrderingEquals;
 import org.h2gis.utilities.GeometryTypeCodes;
 
 /**
@@ -156,7 +157,8 @@ public class CreateSpatialExtension {
                 new ST_Transform(),
                 new ST_SetSRID(),
                 new ST_CoordDim(),
-                new ST_GeometryTypeCode()};
+                new ST_GeometryTypeCode(),
+                new ST_OrderingEquals()};
     }
 
     /**
