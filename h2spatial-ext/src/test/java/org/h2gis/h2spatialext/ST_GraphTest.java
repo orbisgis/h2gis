@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.network;
+package org.h2gis.h2spatialext;
 
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.CreateSpatialExtension;
@@ -40,16 +40,17 @@ import static org.junit.Assert.*;
 /**
  * @author Adam Gouge
  */
-public class SpatialFunctionTest {
+public class ST_GraphTest {
 
     private static Connection connection;
     private static Statement st;
-    private static final String DB_NAME = "SpatialFunctionTest";
+    private static final String DB_NAME = "ST_GraphTest";
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, true);
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Expand(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
     }
@@ -81,14 +82,14 @@ public class SpatialFunctionTest {
     public void test_ST_Graph() throws Exception {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0, 1 2)', 'road1'),"
-                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2'),"
-                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3'),"
-                + "('LINESTRING (4 3, 5 2)', 'road4'),"
-                + "('LINESTRING (4.05 4.1, 7 5)', 'road5'),"
-                + "('LINESTRING (7.1 5, 8 4)', 'road6');");
+                + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
+                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', DEFAULT),"
+                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', DEFAULT),"
+                + "('LINESTRING (4 3, 5 2)', 'road4', DEFAULT),"
+                + "('LINESTRING (4.05 4.1, 7 5)', 'road5', DEFAULT),"
+                + "('LINESTRING (7.1 5, 8 4)', 'road6', DEFAULT);");
 
         // Make sure everything went OK.
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)");
