@@ -267,6 +267,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final Statement st = connection.createStatement();
         try {
             f.firstFirstLastLast(st, pkColName, tolerance, geomCol);
+            f.makeEnvelopes(st);
         } finally {
             st.close();
         }
@@ -327,5 +328,24 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 + lastPointLastGeom + " END_POINT, "
                 + expand(lastPointLastGeom, tolerance) + " END_POINT_EXP "
                 + "FROM " + tableName);
+    }
+
+    /**
+     * Make a big table of all points in the coords table with an envelope around each point.
+     * We will use this table to remove duplicate points.
+     */
+    private void makeEnvelopes(Statement st) throws SQLException {
+        // Putting all points and their envelopes together...
+            st.execute("DROP TABLE IF EXISTS PTS;");
+            st.execute("CREATE CACHED LOCAL TEMPORARY TABLE PTS( " +
+                               "ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                               "THE_GEOM POINT, " +
+                               "AREA POLYGON " +
+                           ") AS " +
+                               "SELECT NULL, START_POINT, START_POINT_EXP FROM COORDS " +
+                           "UNION ALL " +
+                               "SELECT NULL, END_POINT, END_POINT_EXP FROM COORDS;");
+        // Putting a spatial index on the envelopes...
+            st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
     }
 }
