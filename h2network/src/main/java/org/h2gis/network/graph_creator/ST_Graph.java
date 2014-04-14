@@ -264,7 +264,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
         f.getSpatialFieldIndexAndColumnCount(spatialFieldName);
         final String geomCol = JDBCUtilities.getFieldName(md, f.tableName.getTable(), f.spatialFieldIndex);
-        f.firstFirstLastLast(pkColName, tolerance, geomCol);
+        final Statement st = connection.createStatement();
+        try {
+            f.firstFirstLastLast(st, pkColName, tolerance, geomCol);
+        } finally {
+            st.close();
+        }
 
         return false;
     }
@@ -288,7 +293,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         // Set up tables
         final ResultSet columns = connection.getMetaData()
                 .getColumns(tableName.getCatalog(), tableName.getSchema(), tableName.getTable(), null);
-        final Statement st = connection.createStatement();
         try {
             while (columns.next()) {
                 columnCount++;
@@ -298,7 +302,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             }
         } finally {
             columns.close();
-            st.close();
         }
         if (spatialFieldIndex == null) {
             throw new SQLException("Geometry field " + spatialFieldName + " of table " + tableName + " not found");
@@ -309,25 +312,20 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return "ST_Expand(" + geom + ", " + tol + ", " + tol + ")";
     }
 
-    private void firstFirstLastLast(String pkCol, double tolerance, String geomCol) throws SQLException {
-        //    println 'Selecting the first coordinate of the first geometry and the last coordinate of the last geometry.'
+    private void firstFirstLastLast(Statement st, String pkCol, double tolerance, String geomCol) throws SQLException {
+        // Selecting the first coordinate of the first geometry and
+        // the last coordinate of the last geometry.
         final String numGeoms = "ST_NumGeometries(" + geomCol + ")";
         final String firstGeom = "ST_GeometryN(" + geomCol + ", 1)";
         final String firstPointFirstGeom = "ST_PointN(" + firstGeom + ", 1)";
         final String lastGeom = "ST_GeometryN(" + geomCol + ", " + numGeoms + ")";
         final String lastPointLastGeom = "ST_PointN(" + lastGeom + ", ST_NumPoints(" + lastGeom + "))";
-        final Statement st = connection.createStatement();
-        try {
-            st.execute("CREATE CACHED LOCAL TEMPORARY TABLE COORDS AS "
-                    + "SELECT " + pkCol + " EDGE_ID, "
-                    + firstPointFirstGeom + " START_POINT, "
-                    + expand(firstPointFirstGeom, tolerance) + " START_POINT_EXP, "
-                    + lastPointLastGeom + " END_POINT, "
-                    + expand(lastPointLastGeom, tolerance) + " END_POINT_EXP "
-                    + "FROM" + tableName);
-            System.out.println("dflkjd");
-        } finally {
-            st.close();
-        }
+        st.execute("CREATE CACHED LOCAL TEMPORARY TABLE COORDS AS "
+                + "SELECT " + pkCol + " EDGE_ID, "
+                + firstPointFirstGeom + " START_POINT, "
+                + expand(firstPointFirstGeom, tolerance) + " START_POINT_EXP, "
+                + lastPointLastGeom + " END_POINT, "
+                + expand(lastPointLastGeom, tolerance) + " END_POINT_EXP "
+                + "FROM " + tableName);
     }
 }
