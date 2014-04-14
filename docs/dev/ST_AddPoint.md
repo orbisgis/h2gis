@@ -17,7 +17,11 @@ GEOMETRY ST_AddPoint(GEOMETRY geom, POINT point, double tolerance);
 
 ### Description
 Returns a new `GEOMETRY` based on an existing one, with a specific `POINT` as a new vertex.
-A `tolerance` could be set to snap the POINT to the GEOMETRY. A default distance 10E-6 is used to snap the input `POINT`.
+A `tolerance` could be set to snap the POINT to the GEOMETRY. A 
+default distance 10E-6 is used to snap the input `POINT`.
+In case which the tolerance intersect several segments, the vertex 
+who are return is the closest and first.
+
 
 ### Examples
 
@@ -47,7 +51,23 @@ SELECT ST_AddPoint('POLYGON((1 1, 1 4, 4 4, 4 1, 1 1))',
                    'POINT(3 8)', 
                    4);  
 -- Answer: POLYGON((1 1, 1 4, 3 4, 4 4, 4 1, 1 1))
+
+SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
+                            (2 2, 4 2, 4 4, 2 4, 2 2))', 
+                   'POINT(3 3)', 1);
+ -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
+--                  (2 2, 3 2, 4 2, 4 4, 2 4, 2 2)) 
+
+SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
+                            (2 2, 2 4, 4 4, 4 2, 2 2))', 
+                   'POINT(3 3)', 1);
+ -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
+--                  (2 2, 2 3, 2 4, 4 4, 4 2, 2 2)) 
 {% endhighlight %}
+
+*Note*: This function creates a vertex with the first result that is returned depending to the order of segments and vertices.
+
+<img class="displayed" src="../ST_AddPoint_3.png"/>
 
 |geomA POLYGON | geomB POINT|
 |--|--|
@@ -61,10 +81,13 @@ SELECT ST_AddPoint(geomA,geomB, 0.5);
 -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
 --                  (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))       
 
-SELECT ST_AddPoint(geomA,geomB, 2);     
--- Answer: POLYGON((1 1, 1 3, 1 5, 5 5, 5 1, 1 1), 
---                 (2 2, 4 2, 4 4, 2 4, 2 2)) 
+SELECT ST_AddPoint(geomA,geomB, 2);  
+-- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
+--                 (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))
 {% endhighlight %}
+
+*Note*: The tolerance is not the same but the result is same. 
+Indeed, this function return the closest vertex which is found.
 
 <img class="displayed" src="../ST_AddPoint_2.png"/>
 
