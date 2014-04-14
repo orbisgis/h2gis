@@ -75,7 +75,7 @@ SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 
 {% highlight mysql %}
 SELECT ST_AddPoint(geomA,geomB, 0.5);
- -- Answer: null
+ -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))
 
   SELECT ST_AddPoint(geomA,geomB, 1);     
 -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
