@@ -107,13 +107,13 @@ public class ST_GraphTest {
         assertGeometryEquals("POINT (4 3)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(4, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
-        assertTrue(nodesResult.next());
-        assertEquals(5, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (4.05 4.1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
+        assertEquals(5, nodesResult.getInt(ST_Graph.NODE_ID));
+        assertGeometryEquals("POINT (7.1 5)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
+        assertTrue(nodesResult.next());
         assertEquals(6, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (7 5)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
+        assertGeometryEquals("POINT (5 2)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(7, nodesResult.getInt(ST_Graph.NODE_ID));
         assertGeometryEquals("POINT (8 4)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
