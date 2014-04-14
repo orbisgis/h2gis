@@ -11,46 +11,40 @@ permalink: /docs/dev/ST_RemovePoint/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_RemovePoint(GEOMETRY geom, POINT point);
-GEOMETRY ST_RemovePoint(GEOMETRY geom, POINT point, 
-                        double tolerance);
+GEOMETRY ST_RemovePoint(GEOMETRY geom, POLYGON poly);
 {% endhighlight %}
 
 ### Description
-Remove all vertices that are located within an envelope based on `tolerance`.
-The `tolerance` can be set to define a buffer area. 
-If the `tolerance` is no precised the value by default is 10E-6 buffer distance.
+Remove all vertices that are located within a `POLYGON`.
 
 {% include type-warning.html type='GEOMETRYCOLLECTION' %}
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_RemovePoint('POINT(1 1)', 'POINT(1 1)', 10);
--- Answer: currently POINT(1 1)
--- in future: POINT EMPTY
+SELECT ST_RemovePoint('POINT(1 1)', 
+                      'POLYGON ((0 2, 2 2, 2 0, 0 0, 0 2))');
+-- Answer: null
 
-SELECT ST_RemovePoint('MULTIPOINT((5 5), (10 10))', 
-                      'POINT(10 10)');
--- Answer: MULTIPOINT((5 5))
-
-SELECT ST_RemovePoint('MULTIPOINT((5 5), (10 10), 
-                                  (100 1000))', 
-                      'POINT(10 10)', 10);
--- Answer: MULTIPOINT((100 1000))
+SELECT ST_RemovePoint('MULTIPOINT((5 5), (10 10), (100 100))', 
+                      ST_Buffer('POINT(10 10)', 1));
+-- Answer: MULTIPOINT ((5 5), (100 100))
 
 SELECT ST_RemovePoint('MULTIPOINT((5 5), (3 1))', 
-                      'POINT(4 2)',1);
+                      ST_Buffer('POINT(4 2)',2));
 -- Answer: MULTIPOINT((5 5))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_RemovePoint_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_RemovePoint('POLYGON((150 250, 220 250, 220 170, 
-                                1 50, 150 250))', 
-                      'POINT(230 250)', 10);
--- Answer: POLYGON((150 250, 220 170, 150 170, 150 250))
+SELECT ST_RemovePoint('POLYGON((0 1, 5 4, 5 7, 2 6, 0 1))', 
+                      ST_Buffer('POINT(6 8)', 1.5));
+-- Answer: POLYGON((0 1, 5 4, 2 6, 0 1))
+
+SELECT ST_RemovePoint('POLYGON ((0 1, 5 4, 5 7, 2 6, 0 1))',
+                      'POLYGON((4 8, 6 8, 6 6, 4 6, 4 8))');
+-- Answer: POLYGON((0 1, 5 4, 2 6, 0 1))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_RemovePoint_2.png"/>
@@ -59,54 +53,54 @@ SELECT ST_RemovePoint('POLYGON((150 250, 220 250, 220 170,
 
 {% highlight mysql %}
 SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-  (2 2, 2 4, 4 4, 4 2, 2 2))', 'POINT(3 7)', 5);
-  -- Answer: POLYGON ((1 1, 1 6, 5 6, 5 1, 1 1))
-
-SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-                                (2 2, 2 5, 4 5, 4 2, 2 2))', 
-                      'POINT(4 7)', 2);
--- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (2 2, 2 5, 4 5, 4 2, 
-                                          2 2))
--- POLYGON is not valid
-
-SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-                                (3 4, 3 5, 4 5, 4 4, 3 4))', 
-                      'POINT(5 7)', 2);
--- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (3 4, 3 5, 4 5, 4 4, 
-                                          3 4))
--- POLYGON is not valid
-
-SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-                                (3 4, 3 5, 4 5, 4 4, 3 4))', 
-                      'POINT(5 7)', 3);
--- Answer: POLYGON((1 1, 1 6, 5 6, 5 1, 1 1))
+                                (3 4, 3 5, 4 5, 4 4, 3 4),
+                                (2 3, 3 3, 3 2, 2 2, 2 3))',
+                       ST_Buffer('POINT(6 7)', 4.5));
+-- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (2 3, 3 3, 3 2, 2 2, 2 3))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_RemovePoint_3.png"/>
+
+{% highlight mysql %}
+SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
+                              (3 4, 3 5, 4 5, 4 4, 3 4))', 
+                    ST_Buffer('POINT(6 7)', 3));
+-- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (3 4, 3 5, 4 4, 3 4))
+{% endhighlight %}
+
+<img class="displayed" src="../ST_RemovePoint_4.png"/>
+
+{% highlight mysql %}
+SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
+                                (2 2, 2 5, 4 5, 4 2, 2 2))', 
+                      ST_Buffer('POINT(4 7)', 2));
+-- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (2 2, 2 5, 4 5, 4 2, 2 2))
+-- POLYGON is not valid 
+{% endhighlight %}
+
+<img class="displayed" src="../ST_RemovePoint_5.png"/>
 
 |geomA LINESTRING | geomB POINT|
 |--|--|
 | LINESTRING(0 3, 1 1, 3 3, 5 2, 5 4, 6 5, 7 6, 7 7, 6 8) | POINT(3 4) |
 
 {% highlight mysql %}
-SELECT ST_RemovePoint(geomA, geomB, 1);
+SELECT ST_RemovePoint(geomA, ST_Buffer(geomB, 1.01));
 -- Answer: LINESTRING(0 3, 1 1, 5 2, 5 4, 6 5, 7 6, 7 7, 6 8)
 
-SELECT ST_RemovePoint(geomA, geomB, 2);
+SELECT ST_RemovePoint(geomA, ST_Buffer(geomB, 2.01));
 -- Answer: LINESTRING(0 3, 1 1, 6 5, 7 6, 7 7, 6 8)
 
-SELECT ST_RemovePoint(geomA, geomB, 3);
--- Answer: LINESTRING(7 6, 7 7, 6 8)
+SELECT ST_RemovePoint(geomA, ST_Buffer(geomB, 3.01));
+-- Answer: LINESTRING(0 3, 1 1, 6 5, 7 6, 7 7, 6 8)
 
 SELECT ST_RemovePoint('LINESTRING(0 3, 1 1, 3 3, 5 2, 5 4, 6 5,
                                   7 6, 7 7, 6 8)', 
-                      'POINT(3 4)', 6);
--- Answer: currently LINESTRING(0 3, 1 1, 3 3, 5 2, 5 4, 6 5, 
---                              7 6, 7 7, 6 8)
--- in future: LINESTRING EMPTY
+                      ST_Buffer('POINT(3 4)', 6));
+-- Answer: null
 {% endhighlight %}
 
-<img class="displayed" src="../ST_RemovePoint_4.png"/>
+<img class="displayed" src="../ST_RemovePoint_6.png"/>
 
 ##### See also
 
