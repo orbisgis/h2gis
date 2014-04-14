@@ -269,11 +269,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             f.firstFirstLastLast(st, pkColName, tolerance, geomCol);
             f.makeEnvelopes(st);
             f.nodesTable(st);
+            f.edgesTable(st);
+            System.out.println("");
         } finally {
             st.close();
         }
-
-        return false;
+        return true;
     }
     /**
      * Get the column index of the given spatial field, or the first one found
@@ -365,5 +366,22 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                            "GROUP BY A.ID " +
                            "HAVING A.ID=MIN(B.ID);");
         st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(THE_GEOM);");
-   }
+    }
+
+    /**
+     * Establish start_node and end_node ids for the coords table
+     */
+    private void edgesTable(Statement st) throws SQLException {
+        // Creating edges table
+        st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT_EXP);");
+        st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT_EXP);");
+        st.execute("DROP TABLE IF EXISTS " + edgesName + ";");
+        st.execute("CREATE TABLE " + edgesName + " AS " +
+                           "SELECT EDGE_ID, " +
+                                  "(SELECT NODE_ID FROM " + nodesName +
+                                        " WHERE " + nodesName + ".THE_GEOM && COORDS.START_POINT_EXP LIMIT 1) START_NODE, " +
+                                  "(SELECT NODE_ID FROM " + nodesName +
+                                        " WHERE " + nodesName + ".THE_GEOM && COORDS.END_POINT_EXP LIMIT 1) END_NODE " +
+                           "FROM COORDS;");
+    }
 }
