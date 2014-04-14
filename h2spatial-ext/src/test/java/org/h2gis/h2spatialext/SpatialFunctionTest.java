@@ -50,7 +50,7 @@ public class SpatialFunctionTest {
 
     private static Connection connection;
     private Statement st;
-    private static final String DB_NAME = "ST_GraphTest";
+    private static final String DB_NAME = "SpatialFunctionTest";
     private static GeometryFactory FACTORY;
     private static WKTReader WKT_READER;
     public static final double TOLERANCE = 10E-10;
