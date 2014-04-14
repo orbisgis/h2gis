@@ -268,6 +268,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         try {
             f.firstFirstLastLast(st, pkColName, tolerance, geomCol);
             f.makeEnvelopes(st);
+            f.nodesTable(st);
         } finally {
             st.close();
         }
@@ -348,4 +349,21 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         // Putting a spatial index on the envelopes...
             st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
     }
+
+    /**
+     * Create the nodes table by removing copies from the pts table.
+     */
+    private void nodesTable(Statement st) throws SQLException {
+        // Creating nodes table
+        st.execute("DROP TABLE IF EXISTS " + nodesName + ";");
+        st.execute("CREATE TABLE " + nodesName + "(" +
+                           "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                           "THE_GEOM POINT " +
+                       ") AS " +
+                           "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
+                           "WHERE A.AREA && B.AREA " +
+                           "GROUP BY A.ID " +
+                           "HAVING A.ID=MIN(B.ID);");
+        st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(THE_GEOM);");
+   }
 }
