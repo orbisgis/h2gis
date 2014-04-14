@@ -176,7 +176,7 @@ public class ST_AddPoint extends DeterministicScalarFunction {
             }
             return null;
         } else {
-            return null;
+            return lineString;
         }
     }
 
@@ -191,25 +191,25 @@ public class ST_AddPoint extends DeterministicScalarFunction {
      */
     private static Polygon insertVertexInPolygon(Polygon polygon,
             Point vertexPoint, double tolerance) throws SQLException {        
-        Polygon geom;
+        Polygon geom =polygon;
         LineString linearRing = polygon.getExteriorRing();
-        double distance = computeDistance(linearRing, vertexPoint, tolerance);
         int index = -1;
         for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
             double distCurr = computeDistance(polygon.getInteriorRingN(i),vertexPoint, tolerance);
-            if (distCurr<distance){
+            if (distCurr<tolerance){
                 index = i;
-                distance=distCurr;
             }
         }        
         if(index==-1){
             //The point is a on the exterior ring.
             LinearRing inserted = insertVertexInLinearRing(linearRing, vertexPoint, tolerance);
+            if(inserted!=null){
             LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
             for (int i = 0; i < holes.length; i++) {
                 holes[i]= (LinearRing) polygon.getInteriorRingN(i);
             }
-           geom = FACTORY.createPolygon(inserted, holes);
+            geom = FACTORY.createPolygon(inserted, holes);
+            }
         }
         else{
             //We add the vertex on the first hole
@@ -223,10 +223,11 @@ public class ST_AddPoint extends DeterministicScalarFunction {
             }
             geom = FACTORY.createPolygon((LinearRing) linearRing, holes);
         }       
-        
+        if(geom!=null){
         if (!geom.isValid()) {
             throw new SQLException("Geometry not valid");
-        }       
+        }
+        }
         return geom;
     }
 
