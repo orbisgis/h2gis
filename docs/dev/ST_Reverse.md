@@ -15,7 +15,7 @@ GEOMETRY ST_Reverse(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Returns `geom` with vertex order reversed.
+Returns `geom` with vertex order reversed. The order of the components in the GEOMETRYCOLLECTION are not reversed. 
 
 ### Examples
 
