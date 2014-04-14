@@ -68,6 +68,11 @@ public class ST_IsValidDetail extends DeterministicScalarFunction{
      * Returns a valid_detail as an array of objects
      * [0] = isvalid,[1] = reason, [2] = error location
      * 
+     * isValid equals true if the geometry is valid.
+     * reason correponds to an error message describing this error.
+     * error returns the location of this error (on the {@link Geometry} 
+     * containing the error. 
+     * 
      * @param geometry
      * @param flag
      * @return 
