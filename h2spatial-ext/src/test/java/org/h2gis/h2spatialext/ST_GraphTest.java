@@ -28,7 +28,6 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.network.graph_creator.ST_Graph;
-import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 import org.junit.*;
 
 import java.sql.Connection;
@@ -50,9 +49,7 @@ public class ST_GraphTest {
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, true);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Expand(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
+        CreateSpatialExtension.initSpatialExtension(connection);
     }
 
     @Before

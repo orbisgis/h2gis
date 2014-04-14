@@ -25,6 +25,7 @@ package org.h2gis.h2spatialext;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
+import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -37,7 +38,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
-import org.h2.jdbc.JdbcSQLException;
 
 import static org.junit.Assert.*;
 
@@ -50,7 +50,7 @@ public class SpatialFunctionTest {
 
     private static Connection connection;
     private Statement st;
-    private static final String DB_NAME = "SpatialFunctionTest";
+    private static final String DB_NAME = "ST_GraphTest";
     private static GeometryFactory FACTORY;
     private static WKTReader WKT_READER;
     public static final double TOLERANCE = 10E-10;
