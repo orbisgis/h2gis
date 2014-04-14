@@ -1791,7 +1791,7 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)'::GEOMETRY, 'POINT(1.5 4 )'::GEOMETRY);");
         rs.next();
         //The geometry is not modified
-        assertTrue(rs.getObject(1) == null);
+        assertGeometryEquals("LINESTRING(0 8, 1 8 , 3 8, 8 8, 10 8, 20 8)", rs.getBytes(1));
         rs.close();
     }
 
@@ -1812,23 +1812,15 @@ public class SpatialFunctionTest {
         //The geometry is not modified
         assertGeometryEquals("POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))", rs.getBytes(1));
         rs.close();
-    }
-
+    }    
+    
     @Test
     public void test_ST_AddPoint7() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), \n"
-                + " (2 2, 4 2, 4 4, 2 4, 2 2), \n"
-                + " (2.8 4.7, 3.2 4.7, 3.2 4.4, 2.8 4.4, 2.8 4.7), \n"
-                + " (1.4 4.7, 1.8 4.7, 1.8 4.4, 1.4 4.4, 1.4 4.7), \n"
-                + " (4.14 4.64, 4.65 4.64, 4.65 4.37, 4.14 4.37, 4.14 4.64))'::GEOMETRY, "
-                + "'POINT(3 3 )'::GEOMETRY, 2);");
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
+                + "(2 2, 4 2, 4 4, 2 4, 2 2))'::geometry,'POINT(3 3)'::geometry);");
         rs.next();
-        //The geometry is not modified
-        assertGeometryEquals("POLYGON ((1 1, 1 5, 5 5, 5 1, 1 1), \n"
-                + " (2 2, 3 2,4 2, 4 4, 2 4, 2 2), \n"
-                + " (2.8 4.7, 3.2 4.7, 3.2 4.4, 2.8 4.4, 2.8 4.7), \n"
-                + " (1.4 4.7, 1.8 4.7, 1.8 4.4, 1.4 4.4, 1.4 4.7), \n"
-                + " (4.14 4.64, 4.65 4.64, 4.65 4.37, 4.14 4.37, 4.14 4.64))", rs.getBytes(1));
+        assertGeometryEquals("POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
+                + "(2 2, 4 2, 4 4, 2 4, 2 2))", rs.getBytes(1));
         rs.close();
     }
 
