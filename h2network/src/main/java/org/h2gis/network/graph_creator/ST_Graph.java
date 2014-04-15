@@ -318,6 +318,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     private void firstFirstLastLast(Statement st, String pkCol, String geomCol) throws SQLException {
+        st.execute("drop TABLE if exists COORDS");
         // Selecting the first coordinate of the first geometry and
         // the last coordinate of the last geometry.
         final String numGeoms = "ST_NumGeometries(" + geomCol + ")";
@@ -333,7 +334,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + lastPointLastGeom + " END_POINT, "
                     + expand(lastPointLastGeom, tolerance) + " END_POINT_EXP "
                     + "FROM " + tableName);
-            makeEnvelopes(st);
         } else {
             // If the tolerance is zero, there is no need to call ST_Expand.
             st.execute("CREATE CACHED LOCAL TEMPORARY TABLE COORDS AS "
@@ -362,6 +362,17 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "SELECT NULL, END_POINT, END_POINT_EXP FROM COORDS;");
             // Putting a spatial index on the envelopes...
             st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
+        } else {
+            // If the tolerance is zero, we just put all points together
+            st.execute("CREATE CACHED LOCAL TEMPORARY TABLE PTS( " +
+                    "ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "THE_GEOM POINT" +
+                    ") AS " +
+                    "SELECT NULL, START_POINT FROM COORDS " +
+                    "UNION ALL " +
+                    "SELECT NULL, END_POINT FROM COORDS;");
+            // Putting a spatial index on the points themselves...
+            st.execute("CREATE SPATIAL INDEX ON PTS(THE_GEOM);");
         }
     }
 
@@ -382,15 +393,17 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "HAVING A.ID=MIN(B.ID);");
         } else {
             // If the tolerance is zero, we can create the NODES table
-            // directly from the COORDS table.
+            // by using = rather than &&.
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
                     "THE_GEOM POINT " +
                     ") AS " +
-                    "SELECT NULL, START_POINT THE_GEOM FROM COORDS " +
-                    "UNION ALL " +
-                    "SELECT NULL, END_POINT THE_GEOM FROM COORDS;");
+                    "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
+                    "WHERE A.THE_GEOM=B.THE_GEOM " +
+                    "GROUP BY A.ID " +
+                    "HAVING A.ID=MIN(B.ID);");
         }
+        // Putting a spatial index on the points in the NODES table
         st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(THE_GEOM);");
     }
 
