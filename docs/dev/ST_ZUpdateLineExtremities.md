@@ -2,7 +2,7 @@
 layout: docs
 title: ST_ZUpdateLineExtremities
 category: h2spatial-ext/edit-geometries
-description: 
+description: Return a Geometry with the start and end z values updated
 prev_section: ST_UpdateZ
 next_section: h2spatial-ext/process-geometries
 permalink: /docs/dev/ST_ZUpdateLineExtremities/
