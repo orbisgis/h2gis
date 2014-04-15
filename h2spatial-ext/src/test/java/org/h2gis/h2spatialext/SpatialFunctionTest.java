@@ -2656,4 +2656,55 @@ public class SpatialFunctionTest {
             throw e.getOriginalCause();
         }
     }
+    
+    @Test
+    public void test_ST_Force3D1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force3D('LINESTRING (-10 10, 10 10 3)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (-10 10 0, 10 10 3)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Force3D2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force3D('LINESTRING (-10 10, 10 10)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (-10 10 0, 10 10 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Force3D3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force3D('POINT (-10 10)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("POINT (-10 10 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_Force2D1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('LINESTRING (-10 10 2, 10 10 3)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING (-10 10, 10 10)", rs.getBytes(1));
+        rs.close();
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Force2D2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('POINT (-10 10 2)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("POINT (-10 10)", rs.getBytes(1));
+        rs.close();
+        st.close();
+    }
+
+    @Test
+    public void test_ST_Force2D3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('POINT (-10 10)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("POINT (-10 10)", rs.getBytes(1));
+        rs.close();
+    }   
+    
 }
