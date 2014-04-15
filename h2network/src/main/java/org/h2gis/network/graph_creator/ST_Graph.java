@@ -103,6 +103,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     String inputTable,
                     double tolerance,
                     boolean orientBySlope) {
+        if (tolerance < 0) {
+            throw new IllegalArgumentException("Only positive tolerances are allowed.");
+        }
         if (connection != null) {
             this.connection = SFSUtilities.wrapConnection(connection);
         }
@@ -266,11 +269,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final String geomCol = JDBCUtilities.getFieldName(md, f.tableName.getTable(), f.spatialFieldIndex);
         final Statement st = connection.createStatement();
         try {
-            f.firstFirstLastLast(st, pkColName, tolerance, geomCol);
+            f.firstFirstLastLast(st, pkColName, geomCol);
             f.makeEnvelopes(st);
             f.nodesTable(st);
             f.edgesTable(st);
-            System.out.println("");
         } finally {
             st.close();
         }
@@ -315,7 +317,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return "ST_Expand(" + geom + ", " + tol + ", " + tol + ")";
     }
 
-    private void firstFirstLastLast(Statement st, String pkCol, double tolerance, String geomCol) throws SQLException {
+    private void firstFirstLastLast(Statement st, String pkCol, String geomCol) throws SQLException {
         // Selecting the first coordinate of the first geometry and
         // the last coordinate of the last geometry.
         final String numGeoms = "ST_NumGeometries(" + geomCol + ")";
@@ -323,13 +325,23 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final String firstPointFirstGeom = "ST_PointN(" + firstGeom + ", 1)";
         final String lastGeom = "ST_GeometryN(" + geomCol + ", " + numGeoms + ")";
         final String lastPointLastGeom = "ST_PointN(" + lastGeom + ", ST_NumPoints(" + lastGeom + "))";
-        st.execute("CREATE CACHED LOCAL TEMPORARY TABLE COORDS AS "
-                + "SELECT " + pkCol + " EDGE_ID, "
-                + firstPointFirstGeom + " START_POINT, "
-                + expand(firstPointFirstGeom, tolerance) + " START_POINT_EXP, "
-                + lastPointLastGeom + " END_POINT, "
-                + expand(lastPointLastGeom, tolerance) + " END_POINT_EXP "
-                + "FROM " + tableName);
+        if (tolerance > 0) {
+            st.execute("CREATE CACHED LOCAL TEMPORARY TABLE COORDS AS "
+                    + "SELECT " + pkCol + " EDGE_ID, "
+                    + firstPointFirstGeom + " START_POINT, "
+                    + expand(firstPointFirstGeom, tolerance) + " START_POINT_EXP, "
+                    + lastPointLastGeom + " END_POINT, "
+                    + expand(lastPointLastGeom, tolerance) + " END_POINT_EXP "
+                    + "FROM " + tableName);
+            makeEnvelopes(st);
+        } else {
+            // If the tolerance is zero, there is no need to call ST_Expand.
+            st.execute("CREATE CACHED LOCAL TEMPORARY TABLE COORDS AS "
+                    + "SELECT " + pkCol + " EDGE_ID, "
+                    + firstPointFirstGeom + " START_POINT, "
+                    + lastPointLastGeom + " END_POINT "
+                    + "FROM " + tableName);
+        }
     }
 
     /**
@@ -337,34 +349,48 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * We will use this table to remove duplicate points.
      */
     private void makeEnvelopes(Statement st) throws SQLException {
-        // Putting all points and their envelopes together...
-            st.execute("DROP TABLE IF EXISTS PTS;");
+        st.execute("DROP TABLE IF EXISTS PTS;");
+        if (tolerance > 0) {
+            // Putting all points and their envelopes together...
             st.execute("CREATE CACHED LOCAL TEMPORARY TABLE PTS( " +
-                               "ID INT AUTO_INCREMENT PRIMARY KEY, " +
-                               "THE_GEOM POINT, " +
-                               "AREA POLYGON " +
-                           ") AS " +
-                               "SELECT NULL, START_POINT, START_POINT_EXP FROM COORDS " +
-                           "UNION ALL " +
-                               "SELECT NULL, END_POINT, END_POINT_EXP FROM COORDS;");
-        // Putting a spatial index on the envelopes...
+                    "ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "THE_GEOM POINT, " +
+                    "AREA POLYGON " +
+                    ") AS " +
+                    "SELECT NULL, START_POINT, START_POINT_EXP FROM COORDS " +
+                    "UNION ALL " +
+                    "SELECT NULL, END_POINT, END_POINT_EXP FROM COORDS;");
+            // Putting a spatial index on the envelopes...
             st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
+        }
     }
 
     /**
-     * Create the nodes table by removing copies from the pts table.
+     * Create the nodes table
      */
     private void nodesTable(Statement st) throws SQLException {
-        // Creating nodes table
+        // Creating nodes table by removing copies from the pts table.
         st.execute("DROP TABLE IF EXISTS " + nodesName + ";");
-        st.execute("CREATE TABLE " + nodesName + "(" +
-                           "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
-                           "THE_GEOM POINT " +
-                       ") AS " +
-                           "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
-                           "WHERE A.AREA && B.AREA " +
-                           "GROUP BY A.ID " +
-                           "HAVING A.ID=MIN(B.ID);");
+        if (tolerance > 0) {
+            st.execute("CREATE TABLE " + nodesName + "(" +
+                    "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "THE_GEOM POINT " +
+                    ") AS " +
+                    "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
+                    "WHERE A.AREA && B.AREA " +
+                    "GROUP BY A.ID " +
+                    "HAVING A.ID=MIN(B.ID);");
+        } else {
+            // If the tolerance is zero, we can create the NODES table
+            // directly from the COORDS table.
+            st.execute("CREATE TABLE " + nodesName + "(" +
+                    "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "THE_GEOM POINT " +
+                    ") AS " +
+                    "SELECT NULL, START_POINT THE_GEOM FROM COORDS " +
+                    "UNION ALL " +
+                    "SELECT NULL, END_POINT THE_GEOM FROM COORDS;");
+        }
         st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(THE_GEOM);");
     }
 
@@ -372,16 +398,28 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Establish start_node and end_node ids for the coords table
      */
     private void edgesTable(Statement st) throws SQLException {
-        // Creating edges table
-        st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT_EXP);");
-        st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT_EXP);");
         st.execute("DROP TABLE IF EXISTS " + edgesName + ";");
-        st.execute("CREATE TABLE " + edgesName + " AS " +
-                           "SELECT EDGE_ID, " +
-                                  "(SELECT NODE_ID FROM " + nodesName +
-                                        " WHERE " + nodesName + ".THE_GEOM && COORDS.START_POINT_EXP LIMIT 1) START_NODE, " +
-                                  "(SELECT NODE_ID FROM " + nodesName +
-                                        " WHERE " + nodesName + ".THE_GEOM && COORDS.END_POINT_EXP LIMIT 1) END_NODE " +
-                           "FROM COORDS;");
+        // Creating edges table
+        if (tolerance > 0) {
+            st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT_EXP);");
+            st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT_EXP);");
+            st.execute("CREATE TABLE " + edgesName + " AS " +
+                    "SELECT EDGE_ID, " +
+                    "(SELECT NODE_ID FROM " + nodesName +
+                    " WHERE " + nodesName + ".THE_GEOM && COORDS.START_POINT_EXP LIMIT 1) START_NODE, " +
+                    "(SELECT NODE_ID FROM " + nodesName +
+                    " WHERE " + nodesName + ".THE_GEOM && COORDS.END_POINT_EXP LIMIT 1) END_NODE " +
+                    "FROM COORDS;");
+        } else {
+            // If the tolerance is zero, then we can use = on the geometries
+            // instead of && on the envelopes.
+            st.execute("CREATE TABLE " + edgesName + " AS " +
+                    "SELECT EDGE_ID, " +
+                    "(SELECT NODE_ID FROM " + nodesName +
+                    " WHERE " + nodesName + ".THE_GEOM=COORDS.START_POINT LIMIT 1) START_NODE, " +
+                    "(SELECT NODE_ID FROM " + nodesName +
+                    " WHERE " + nodesName + ".THE_GEOM=COORDS.END_POINT LIMIT 1) END_NODE " +
+                    "FROM COORDS;");
+        }
     }
 }
