@@ -36,9 +36,6 @@ public class TableFunctionTest {
         connection.close();
     }
 
-    public static void assertGeometryEquals(String expectedWKT, Object resultSetObject) {
-        assertEquals(ValueGeometry.get(expectedWKT), ValueGeometry.getFromGeometry(resultSetObject));
-    }
     public static void assertGeometryBarelyEquals(String expectedWKT, Object resultSetObject) {
         assertGeometryBarelyEquals(expectedWKT, resultSetObject, EPSILON);
     }
