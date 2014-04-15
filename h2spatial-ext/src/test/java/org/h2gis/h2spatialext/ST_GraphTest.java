@@ -44,6 +44,7 @@ public class ST_GraphTest {
     private static Connection connection;
     private static Statement st;
     private static final String DB_NAME = "ST_GraphTest";
+    private static final int NUMBER_OF_EDGE_COLS = 3;
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -81,6 +82,13 @@ public class ST_GraphTest {
         assertGeometryEquals(nodeGeom, nodesResult.getBytes(ST_Graph.NODE_GEOM));
     }
 
+    private void checkEdge(ResultSet edgesResult, int gid, int startNode, int endNode) throws SQLException {
+        assertTrue(edgesResult.next());
+        assertEquals(gid, edgesResult.getInt(ST_Graph.EDGE_ID));
+        assertEquals(startNode, edgesResult.getInt(ST_Graph.START_NODE));
+        assertEquals(endNode, edgesResult.getInt(ST_Graph.END_NODE));
+    }
+
     @Test
     public void test_ST_Graph() throws Exception {
         // Prepare the input table.
@@ -116,43 +124,13 @@ public class ST_GraphTest {
         // Test edges table.
         ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         // This is a copy of the original table with three columns added.
-        assertEquals(2 + 3, edgesResult.getMetaData().getColumnCount());
-        assertTrue(edgesResult.next());
-        assertGeometryEquals("LINESTRING (0 0, 1 2)", edgesResult.getBytes("road"));
-        assertEquals("road1", edgesResult.getString("description"));
-        assertEquals(1, edgesResult.getInt(ST_Graph.EDGE_ID));
-        assertEquals(1, edgesResult.getInt(ST_Graph.START_NODE));
-        assertEquals(2, edgesResult.getInt(ST_Graph.END_NODE));
-        assertTrue(edgesResult.next());
-        assertGeometryEquals("LINESTRING (1 2, 2 3, 4 3)", edgesResult.getBytes("road"));
-        assertEquals("road2", edgesResult.getString("description"));
-        assertEquals(2, edgesResult.getInt(ST_Graph.EDGE_ID));
-        assertEquals(2, edgesResult.getInt(ST_Graph.START_NODE));
-        assertEquals(3, edgesResult.getInt(ST_Graph.END_NODE));
-        assertTrue(edgesResult.next());
-        assertGeometryEquals("LINESTRING (4 3, 4 4, 1 4, 1 2)", edgesResult.getBytes("road"));
-        assertEquals("road3", edgesResult.getString("description"));
-        assertEquals(3, edgesResult.getInt(ST_Graph.EDGE_ID));
-        assertEquals(3, edgesResult.getInt(ST_Graph.START_NODE));
-        assertEquals(2, edgesResult.getInt(ST_Graph.END_NODE));
-        assertTrue(edgesResult.next());
-        assertGeometryEquals("LINESTRING (4 3, 5 2)", edgesResult.getBytes("road"));
-        assertEquals("road4", edgesResult.getString("description"));
-        assertEquals(4, edgesResult.getInt(ST_Graph.EDGE_ID));
-        assertEquals(3, edgesResult.getInt(ST_Graph.START_NODE));
-        assertEquals(4, edgesResult.getInt(ST_Graph.END_NODE));
-        assertTrue(edgesResult.next());
-        assertGeometryEquals("LINESTRING (4.05 4.1, 7 5)", edgesResult.getBytes("road"));
-        assertEquals("road5", edgesResult.getString("description"));
-        assertEquals(5, edgesResult.getInt(ST_Graph.EDGE_ID));
-        assertEquals(5, edgesResult.getInt(ST_Graph.START_NODE));
-        assertEquals(6, edgesResult.getInt(ST_Graph.END_NODE));
-        assertTrue(edgesResult.next());
-        assertGeometryEquals("LINESTRING (7.1 5, 8 4)", edgesResult.getBytes("road"));
-        assertEquals("road6", edgesResult.getString("description"));
-        assertEquals(6, edgesResult.getInt(ST_Graph.EDGE_ID));
-        assertEquals(6, edgesResult.getInt(ST_Graph.START_NODE));
-        assertEquals(7, edgesResult.getInt(ST_Graph.END_NODE));
+        assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
+        checkEdge(edgesResult, 1, 1, 2);
+        checkEdge(edgesResult, 2, 2, 3);
+        checkEdge(edgesResult, 3, 3, 2);
+        checkEdge(edgesResult, 4, 3, 6);
+        checkEdge(edgesResult, 5, 4, 5);
+        checkEdge(edgesResult, 6, 5, 7);
         assertFalse(edgesResult.next());
         edgesResult.close();
         rs.close();
