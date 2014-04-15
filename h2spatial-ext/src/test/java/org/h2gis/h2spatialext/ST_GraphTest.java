@@ -140,12 +140,12 @@ public class ST_GraphTest {
     @Test
     public void test_ST_Graph_GeometryColumnDetection() throws Exception {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, way LINESTRING);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, way LINESTRING, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0, 1 2)', 'road1', 'LINESTRING (1 1, 2 2, 3 1)'),"
-                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', 'LINESTRING (3 1, 2 0, 1 1)'),"
-                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING (1 1, 2 1)'),"
-                + "('LINESTRING (4 3, 5 2)', 'road4', 'LINESTRING (2 1, 3 1)');");
+                + "('LINESTRING (0 0, 1 2)', 'road1', 'LINESTRING (1 1, 2 2, 3 1)', DEFAULT),"
+                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', 'LINESTRING (3 1, 2 0, 1 1)', DEFAULT),"
+                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING (1 1, 2 1)', DEFAULT),"
+                + "('LINESTRING (4 3, 5 2)', 'road4', 'LINESTRING (2 1, 3 1)', DEFAULT);");
 
         // This should detect the 'road' column since it is the first geometry column.
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST')");
@@ -200,13 +200,13 @@ public class ST_GraphTest {
         // other are considered to be a single node.
         // Note, however, that edge geometries are left untouched.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0, 1 0)', 'road1'),"
-                + "('LINESTRING (1.05 0, 2 0)', 'road2'),"
-                + "('LINESTRING (2.05 0, 3 0)', 'road3'),"
-                + "('LINESTRING (1 0.1, 1 1)', 'road4'),"
-                + "('LINESTRING (2 0.05, 2 1)', 'road5');");
+                + "('LINESTRING (0 0, 1 0)', 'road1', DEFAULT),"
+                + "('LINESTRING (1.05 0, 2 0)', 'road2', DEFAULT),"
+                + "('LINESTRING (2.05 0, 3 0)', 'road3', DEFAULT),"
+                + "('LINESTRING (1 0.1, 1 1)', 'road4', DEFAULT),"
+                + "('LINESTRING (2 0.05, 2 1)', 'road5', DEFAULT);");
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.05)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -239,10 +239,10 @@ public class ST_GraphTest {
         // only _nodes_ within a given tolerance of each other are snapped
         // together.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
-                + "('LINESTRING (0 1, 1 1, 1 0)', 'road1'),"
-                + "('LINESTRING (1.05 1, 2 1)', 'road2');");
+                + "('LINESTRING (0 1, 1 1, 1 0)', 'road1', DEFAULT),"
+                + "('LINESTRING (1.05 1, 2 1)', 'road2', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.05)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -266,10 +266,10 @@ public class ST_GraphTest {
         // This test shows that geometry intersections are not automatically
         // considered to be potential nodes.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
-                + "('LINESTRING (0 1, 2 1)', 'road1'),"
-                + "('LINESTRING (2 1, 1 0, 1 2)', 'road2');");
+                + "('LINESTRING (0 1, 2 1)', 'road1', DEFAULT),"
+                + "('LINESTRING (2 1, 1 0, 1 2)', 'road2', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.05)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -295,14 +295,14 @@ public class ST_GraphTest {
         // This test shows that the results from using a large tolerance value
         // (3.1 rather than 0.1) can be very different.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
-                + "('LINESTRING (0 0, 1 2)', 'road1'),"
-                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2'),"
-                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3'),"
-                + "('LINESTRING (4 3, 5 2)', 'road4'),"
-                + "('LINESTRING (4.05 4.1, 7 5)', 'road5'),"
-                + "('LINESTRING (7.1 5, 8 4)', 'road6');");
+                + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
+                + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', DEFAULT),"
+                + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', DEFAULT),"
+                + "('LINESTRING (4 3, 5 2)', 'road4', DEFAULT),"
+                + "('LINESTRING (4.05 4.1, 7 5)', 'road5', DEFAULT),"
+                + "('LINESTRING (7.1 5, 8 4)', 'road6', DEFAULT);");
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 3.1, false)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -336,9 +336,9 @@ public class ST_GraphTest {
 
         // Case 1.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES " +
-                "('LINESTRING (0 0 0, 1 0 0)', 'road1');");
+                "('LINESTRING (0 0 0, 1 0 0)', 'road1', DEFAULT);");
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -359,9 +359,9 @@ public class ST_GraphTest {
 
         // Case 2.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES " +
-                "('LINESTRING (0 0 1, 1 0 0)', 'road1');");
+                "('LINESTRING (0 0 1, 1 0 0)', 'road1', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -386,9 +386,9 @@ public class ST_GraphTest {
 
         // Case 3.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES " +
-                "('LINESTRING (0 0 0, 1 0 1)', 'road1');");
+                "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -412,9 +412,9 @@ public class ST_GraphTest {
     public void test_ST_Graph_ErrorWithNoLINESTRINGOrMULTILINESTRING() throws Exception {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road POINT, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road POINT, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
-                + "('POINT (0 0)', 'road1');");
+                + "('POINT (0 0)', 'road1', DEFAULT);");
 
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST')");
         assertTrue(rs.next());
@@ -436,10 +436,10 @@ public class ST_GraphTest {
         // so this MULTILINESTRING is considered to be an edge from node 2=(4 3) to
         // node 3=(5 2).
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road MULTILINESTRING, description VARCHAR);" +
+        st.execute("CREATE TABLE test(road MULTILINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
-                + "('MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1'),"
-                + "('MULTILINESTRING ((4 3, 4 4, 1 4, 1 2), (4 3, 5 2))', 'road2');");
+                + "('MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1', DEFAULT),"
+                + "('MULTILINESTRING ((4 3, 4 4, 1 4, 1 2), (4 3, 5 2))', 'road2', DEFAULT);");
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST')");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
