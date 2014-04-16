@@ -27,7 +27,7 @@ package org.h2gis.h2spatialext;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
+import org.h2gis.utilities.GraphConstants;
 import org.junit.*;
 
 import java.sql.Connection;
@@ -35,7 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.h2gis.utilities.graph_utils.GraphConstants.*;
+import static org.h2gis.utilities.GraphConstants.*;
 import static org.junit.Assert.*;
 
 /**
@@ -81,8 +81,8 @@ public class ST_GraphTest {
 
     private void checkNode(ResultSet nodesResult, int nodeID, String nodeGeom) throws SQLException {
         assertTrue(nodesResult.next());
-        assertEquals(nodeID, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals(nodeGeom, nodesResult.getBytes(ST_Graph.NODE_GEOM));
+        assertEquals(nodeID, nodesResult.getInt(GraphConstants.NODE_ID));
+        assertGeometryEquals(nodeGeom, nodesResult.getBytes(GraphConstants.NODE_GEOM));
     }
 
     private void checkEdge(ResultSet edgesResult, int gid, int startNode, int endNode) throws SQLException {
@@ -371,11 +371,11 @@ public class ST_GraphTest {
         nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
-        assertEquals(1, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (0 0 1)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
+        assertEquals(1, nodesResult.getInt(GraphConstants.NODE_ID));
+        assertGeometryEquals("POINT (0 0 1)", nodesResult.getBytes(GraphConstants.NODE_GEOM));
         assertTrue(nodesResult.next());
-        assertEquals(2, nodesResult.getInt(ST_Graph.NODE_ID));
-        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(ST_Graph.NODE_GEOM));
+        assertEquals(2, nodesResult.getInt(GraphConstants.NODE_ID));
+        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(GraphConstants.NODE_GEOM));
         assertFalse(nodesResult.next());
         nodesResult.close();
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");

@@ -24,7 +24,6 @@
 
 package org.h2gis.h2spatialext.function.spatial.graph;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
@@ -65,24 +64,14 @@ import java.util.List;
 public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     private static Connection connection;
-    private static final GeometryFactory GF = new GeometryFactory();
-
-    public static final String NODE_ID = "node_id";
-    private static final int nodeIDIndex = 1;
-    public static final String NODE_GEOM = "the_geom";
-    private static final int nodeGeomIndex = 2;
-    private static final int BATCH_MAX_SIZE = 100;
 
     private TableLocation tableName;
     private TableLocation nodesName;
     private TableLocation edgesName;
-    private Integer spatialFieldIndex;
+
     private double tolerance;
     private boolean orientBySlope;
-
-    private int columnCount = 0;
-    private int startNodeIndex = -1;
-    private int endNodeIndex = -1;
+    private Integer spatialFieldIndex;
 
     public ST_Graph() {
         this(null, null, 0.0, false);
@@ -275,7 +264,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             f.nodesTable(st);
             f.edgesTable(st);
             f.checkForNullEdgeEndpoints(st);
-            if (orientBySlope) {
+            if (f.orientBySlope) {
                 f.orientBySlope(st);
             }
         } finally {
@@ -315,7 +304,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 .getColumns(tableName.getCatalog(), tableName.getSchema(), tableName.getTable(), null);
         try {
             while (columns.next()) {
-                columnCount++;
                 if (columns.getString("COLUMN_NAME").equalsIgnoreCase(spatialFieldName)) {
                     spatialFieldIndex = columns.getRow();
                 }
@@ -468,8 +456,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final ResultSet nullEdges = st.executeQuery("SELECT COUNT(*) FROM " + edgesName + " WHERE " +
                 "START_NODE IS NULL OR END_NODE IS NULL;");
         try {
-            if (nullEdges.next()) {
-                final int n = nullEdges.getInt(1);
+            nullEdges.next();
+            final int n = nullEdges.getInt(1);
+            if (n > 0) {
                 String msg = "There " + (n == 1 ? "is one edge " : "are " + n + " edges ");
                 throw new IllegalStateException(msg + "with a null start node or end node. " +
                         "Try using a slightly smaller tolerance.");

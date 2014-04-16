@@ -30,9 +30,9 @@ import org.jgrapht.WeightedGraph;
 
 import java.sql.*;
 
-import static org.h2gis.utilities.graph_utils.GraphConstants.EDGE_ID;
-import static org.h2gis.utilities.graph_utils.GraphConstants.END_NODE;
-import static org.h2gis.utilities.graph_utils.GraphConstants.START_NODE;
+import static org.h2gis.utilities.GraphConstants.EDGE_ID;
+import static org.h2gis.utilities.GraphConstants.END_NODE;
+import static org.h2gis.utilities.GraphConstants.START_NODE;
 
 /**
  * Creates a JGraphT graph from an edges table produced by {@link

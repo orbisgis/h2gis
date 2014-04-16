@@ -30,7 +30,6 @@ import org.h2.tools.SimpleResultSet;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.graph_utils.GraphConstants;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.Edge;
@@ -40,7 +39,6 @@ import java.sql.*;
 import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
-import static org.h2gis.utilities.graph_utils.GraphConstants.EDGE_ID;
 
 /**
  * ST_ShortestPath calculates the shortest path(s) between
