@@ -88,10 +88,9 @@ public class GraphCreatorTest {
         st.executeQuery("SELECT ST_Graph('CORMEN', 'road')");
         // For now, CORMEN_EDGES has only 3 columns: EDGE_ID, START_NODE and END_NODE.
         // Quick fix to recover the others:
-        st.execute("drop table if exists cormen_edges_all;" +
-                "create table cormen_edges_all as SELECT " +
-                "a.*, b.* from cormen a, cormen_edges b where a.id=b.edge_id;");
-        System.out.println("");
+        st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL;" +
+                "CREATE TABLE CORMEN_EDGES_ALL AS SELECT " +
+                "A.*, B.* FROM CORMEN A, CORMEN_EDGES B WHERE A.ID=B.EDGE_ID;");
 //        cormen_nodes
 //        NODE_ID  THE_GEOM
 //        1        POINT (0 1)

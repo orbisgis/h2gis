@@ -759,31 +759,36 @@ public class ST_ShortestPathLengthTest {
         st.execute("DROP TABLE IF EXISTS copy_edges");
         st.execute("CREATE TABLE copy AS SELECT * FROM cormen");
         // We add another connected component consisting of the edge w(6, 7)=1.0.
-        st.execute("INSERT INTO copy VALUES ('LINESTRING (3 1, 4 2)', 1.0, 1)");
+        st.execute("INSERT INTO copy VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1)");
+        st.execute("ALTER TABLE COPY ALTER COLUMN ID SET NOT NULL");
+        st.execute("CREATE PRIMARY KEY ON COPY(ID)");
         // Vertices 3 and 6 are in different connected components.
         st.execute("CALL ST_Graph('COPY', 'road')");
-        ResultSet rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges', " +
+        st.execute("DROP TABLE IF EXISTS COPY_EDGES_ALL;" +
+                "CREATE TABLE COPY_EDGES_ALL AS SELECT " +
+                "A.*, B.* FROM COPY A, COPY_EDGES B WHERE A.ID=B.EDGE_ID;");
+        ResultSet rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges_all', " +
                 "'undirected', 3, 6)");
         assertTrue(rs.next());
         assertEquals(Double.POSITIVE_INFINITY, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
         assertFalse(rs.next());
         rs.close();
         // 7 is reachable from 6.
-        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges', " +
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges_all', " +
                 "'directed - edge_orientation', 6, 7)");
         assertTrue(rs.next());
         assertEquals(1.0, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
         assertFalse(rs.next());
         rs.close();
         // But 6 is not reachable from 7 in a directed graph.
-        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges', " +
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges_all', " +
                 "'directed - edge_orientation', 7, 6)");
         assertTrue(rs.next());
         assertEquals(Double.POSITIVE_INFINITY, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
         assertFalse(rs.next());
         rs.close();
         // It is, however, in an undirected graph.
-        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges', " +
+        rs = st.executeQuery("SELECT * FROM ST_ShortestPathLength('copy_edges_all', " +
                 "'undirected', 7, 6)");
         assertTrue(rs.next());
         assertEquals(1.0, rs.getDouble(ST_ShortestPathLength.DISTANCE_INDEX), TOLERANCE);
@@ -792,5 +797,6 @@ public class ST_ShortestPathLengthTest {
         st.execute("DROP TABLE copy");
         st.execute("DROP TABLE copy_nodes");
         st.execute("DROP TABLE copy_edges");
+        st.execute("DROP TABLE copy_edges_all");
     }
 }
