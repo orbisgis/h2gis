@@ -424,6 +424,21 @@ public class ST_GraphTest {
         }
     }
 
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_Graph_ErrorWithNegativeTolerance() throws Throwable {
+        // Prepare the input table.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
+                "INSERT INTO test VALUES " +
+                "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);");
+        try {
+            st.executeQuery("SELECT ST_Graph('TEST', 'road', -1.0)");
+        } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains("Only positive tolerances are allowed."));
+            throw e.getOriginalCause();
+        }
+    }
+
     @Test
     public void test_ST_Graph_MULTILINESTRING() throws Exception {
         // This test shows that the coordinate (1 2) is not considered to be
