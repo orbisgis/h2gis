@@ -392,7 +392,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     /**
-     * Create the nodes table
+     * Create the nodes table.
      */
     private void nodesTable(Statement st) throws SQLException {
         // Creating nodes table by removing copies from the pts table.
@@ -422,7 +422,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     /**
-     * Establish start_node and end_node ids for the coords table
+     * Create the edges table.
      */
     private void edgesTable(Statement st) throws SQLException {
         st.execute("DROP TABLE IF EXISTS " + edgesName + ";");
