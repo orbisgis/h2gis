@@ -3,7 +3,7 @@ layout: docs
 title: ST_ToMultiSegments
 category: h2spatial-ext/geometry-conversion
 description: <code>GEOMETRY(COLLECTION)</code> &rarr; <code>MULTILINESTRING</code>
-prev_section: ST_ToMultiPoint
+prev_section: ST_OctogonalEnvelope
 next_section: h2spatial-ext/geometry-creation
 permalink: /docs/dev/ST_ToMultiSegments/
 ---

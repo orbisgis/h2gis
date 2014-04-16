@@ -3,7 +3,7 @@ layout: docs
 title: Create geometries
 category: h2spatial-ext/geometry-creation
 prev_section: h2spatial-ext/geometry-conversion
-next_section: h2spatial-ext/distance-functions
+next_section: h2spatial-ext/edit-geometries
 permalink: /docs/dev/h2spatial-ext/geometry-creation/
 ---
 
