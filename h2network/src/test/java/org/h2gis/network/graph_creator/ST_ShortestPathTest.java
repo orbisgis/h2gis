@@ -674,25 +674,32 @@ public class ST_ShortestPathTest {
         st.execute("DROP TABLE IF EXISTS copy");
         st.execute("DROP TABLE IF EXISTS copy_nodes");
         st.execute("DROP TABLE IF EXISTS copy_edges");
+        st.execute("DROP TABLE IF EXISTS copy_edges_all");
         st.execute("CREATE TABLE copy AS SELECT * FROM cormen");
         // We add another connected component consisting of the edge w(6, 7)=1.0.
-        st.execute("INSERT INTO copy VALUES ('LINESTRING (3 1, 4 2)', 1.0, 1)");
+        st.execute("INSERT INTO copy VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1)");
+        st.execute("ALTER TABLE COPY ALTER COLUMN ID SET NOT NULL");
+        st.execute("CREATE PRIMARY KEY ON COPY(ID)");
         st.execute("CALL ST_Graph('COPY', 'road')");
+        st.execute("DROP TABLE IF EXISTS COPY_EDGES_ALL;" +
+                "CREATE TABLE COPY_EDGES_ALL AS SELECT " +
+                "A.*, B.* FROM COPY A, COPY_EDGES B WHERE A.ID=B.EDGE_ID;");
         // Vertices 3 and 6 are in different connected components.
-        check(oneToOne("COPY_EDGES", DO, W, 3, 6), new PathEdge[]{
+        check(oneToOne("COPY_EDGES_ALL", DO, W, 3, 6), new PathEdge[]{
                 new PathEdge(null, -1, -1, -1, 3, 6, Double.POSITIVE_INFINITY)});
         // 7 is reachable from 6.
-        check(oneToOne("COPY_EDGES", DO, W, 6, 7), new PathEdge[]{
+        check(oneToOne("COPY_EDGES_ALL", DO, W, 6, 7), new PathEdge[]{
                 new PathEdge("LINESTRING (3 1, 4 2)", 11, 1, 1, 6, 7, 1.0)});
         // But 6 is not reachable from 7 in a directed graph.
-        check(oneToOne("COPY_EDGES", DO, W, 7, 6), new PathEdge[]{
+        check(oneToOne("COPY_EDGES_ALL", DO, W, 7, 6), new PathEdge[]{
                 new PathEdge(null, -1, -1, -1, 7, 6, Double.POSITIVE_INFINITY)});
         // It is, however, in an undirected graph.
-        check(oneToOne("COPY_EDGES", U, W, 7, 6), new PathEdge[]{
+        check(oneToOne("COPY_EDGES_ALL", U, W, 7, 6), new PathEdge[]{
                 new PathEdge("LINESTRING (3 1, 4 2)", 11, 1, 1, 7, 6, 1.0)});
         st.execute("DROP TABLE copy");
         st.execute("DROP TABLE copy_nodes");
         st.execute("DROP TABLE copy_edges");
+        st.execute("DROP TABLE copy_edges_all");
     }
 
     private ResultSet oneToOne(String table, String orientation, String weight,
