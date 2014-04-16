@@ -501,11 +501,11 @@ public class ST_ShortestPathLengthTest {
     public void manyToManyDO() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'directed - edge_orientation', 'source_dest')
-        final double[][] distances = {{0.0, 1.0, 2.0, 1.0, 1.0},
-                                      {3.0, 0.0, 2.0, 1.0, 2.0},
-                                      {2.0, 1.0, 0.0, 2.0, 1.0},
-                                      {2.0, 1.0, 1.0, 0.0, 1.0},
-                                      {1.0, 2.0, 1.0, 2.0, 0.0}};
+        final double[][] distances = {{0.0, 1.0, 1.0, 2.0, 1.0},
+                                      {3.0, 0.0, 1.0, 2.0, 2.0},
+                                      {2.0, 1.0, 0.0, 1.0, 1.0},
+                                      {2.0, 1.0, 2.0, 0.0, 1.0},
+                                      {1.0, 2.0, 2.0, 1.0, 0.0}};
         manyToMany(DO, SOURCE_DEST_TABLE, distances);
     }
 
@@ -513,11 +513,11 @@ public class ST_ShortestPathLengthTest {
     public void manyToManyWDO() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'directed - edge_orientation', 'weight', 'source_dest')
-        final double[][] distances = {{0.0, 8.0, 13.0, 5.0, 7.0},
-                                      {11.0, 0.0, 10.0, 2.0, 4.0},
-                                      {11.0, 1.0, 0.0, 3.0, 4.0},
-                                      {9.0, 3.0, 8.0, 0.0, 2.0},
-                                      {7.0, 7.0, 6.0, 9.0, 0.0}};
+        final double[][] distances = {{0.0, 8.0, 5.0, 13.0, 7.0},
+                                      {11.0, 0.0, 2.0, 10.0, 4.0},
+                                      {9.0, 3.0, 0.0, 8.0, 2.0},
+                                      {11.0, 1.0, 3.0, 0.0, 4.0},
+                                      {7.0, 7.0, 9.0, 6.0, 0.0}};
         manyToMany(DO, W, SOURCE_DEST_TABLE, distances);
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'weight', 'directed - edge_orientation', 'source_dest')
@@ -530,8 +530,8 @@ public class ST_ShortestPathLengthTest {
         //     'reversed - edge_orientation', 'source_dest')
         final double[][] distances = {{0.0, 3.0, 2.0, 2.0, 1.0},
                                       {1.0, 0.0, 1.0, 1.0, 2.0},
-                                      {2.0, 2.0, 0.0, 1.0, 1.0},
-                                      {1.0, 1.0, 2.0, 0.0, 2.0},
+                                      {1.0, 1.0, 0.0, 2.0, 2.0},
+                                      {2.0, 2.0, 1.0, 0.0, 1.0},
                                       {1.0, 2.0, 1.0, 1.0, 0.0}};
         manyToMany(RO, SOURCE_DEST_TABLE, distances);
     }
@@ -540,11 +540,11 @@ public class ST_ShortestPathLengthTest {
     public void manyToManyWRO() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'reversed - edge_orientation', 'weight', 'source_dest')
-        final double[][] distances = {{0.0, 11.0, 11.0, 9.0, 7.0},
-                                      {8.0, 0.0, 1.0, 3.0, 7.0},
-                                      {13.0, 10.0, 0.0, 8.0, 6.0},
-                                      {5.0, 2.0, 3.0, 0.0, 9.0},
-                                      {7.0, 4.0, 4.0, 2.0, 0.0}};
+        final double[][] distances = {{0.0, 11.0, 9.0, 11.0, 7.0},
+                                      {8.0, 0.0, 3.0, 1.0, 7.0},
+                                      {5.0, 2.0, 0.0, 3.0, 9.0},
+                                      {13.0, 10.0, 8.0, 0.0, 6.0},
+                                      {7.0, 4.0, 2.0, 4.0, 0.0}};
         manyToMany(RO, W, SOURCE_DEST_TABLE, distances);
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'weight', 'reversed - edge_orientation', 'source_dest')
@@ -555,10 +555,10 @@ public class ST_ShortestPathLengthTest {
     public void manyToManyU() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'undirected', 'source_dest')
-        final double[][] distances = {{0.0,  1.0,  2.0,  1.0,  1.0},
+        final double[][] distances = {{0.0,  1.0,  1.0,  2.0,  1.0},
                                       {1.0,  0.0,  1.0,  1.0,  2.0},
-                                      {2.0,  1.0,  0.0,  1.0,  1.0},
-                                      {1.0,  1.0,  1.0,  0.0,  1.0},
+                                      {1.0,  1.0,  0.0,  1.0,  1.0},
+                                      {2.0,  1.0,  1.0,  0.0,  1.0},
                                       {1.0,  2.0,  1.0,  1.0,  0.0}};
         manyToMany(U, SOURCE_DEST_TABLE, distances);
     }
@@ -567,11 +567,11 @@ public class ST_ShortestPathLengthTest {
     public void manyToManyWU() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'undirected', 'weight', 'source_dest')
-        final double[][] distances = {{0.0, 7.0, 8.0, 5.0, 7.0},
-                                      {7.0, 0.0, 1.0, 2.0, 4.0},
-                                      {8.0, 1.0, 0.0, 3.0, 4.0},
-                                      {5.0, 2.0, 3.0, 0.0, 2.0},
-                                      {7.0, 4.0, 4.0, 2.0, 0.0}};
+        final double[][] distances = {{0.0, 7.0, 5.0, 8.0, 7.0},
+                                      {7.0, 0.0, 2.0, 1.0, 4.0},
+                                      {5.0, 2.0, 0.0, 3.0, 2.0},
+                                      {8.0, 1.0, 3.0, 0.0, 4.0},
+                                      {7.0, 4.0, 2.0, 4.0, 0.0}};
         manyToMany(U, W, SOURCE_DEST_TABLE, distances);
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'weight', 'undirected', 'source_dest')
