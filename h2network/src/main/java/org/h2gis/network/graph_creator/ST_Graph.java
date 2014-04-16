@@ -277,6 +277,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             f.makeEnvelopes(st);
             f.nodesTable(st);
             f.edgesTable(st);
+            if (orientBySlope) {
+                f.orientBySlope(st);
+            }
         } finally {
             st.close();
         }
@@ -452,5 +455,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     " WHERE " + nodesName + ".THE_GEOM=COORDS.END_POINT LIMIT 1) END_NODE " +
                     "FROM COORDS;");
         }
+    }
+
+    private void orientBySlope(Statement st) throws SQLException {
+        st.execute("UPDATE " + edgesName + " c " +
+                    "SET START_NODE=END_NODE, " +
+                    "    END_NODE=START_NODE " +
+                    "WHERE (SELECT ST_Z(A.THE_GEOM) < ST_Z(B.THE_GEOM) " +
+                            "FROM " + nodesName + " A, " + nodesName + " B " +
+                            "WHERE C.START_NODE=A.NODE_ID AND C.END_NODE=B.NODE_ID);");
     }
 }
