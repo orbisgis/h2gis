@@ -25,7 +25,6 @@
 package org.h2gis.network.graph_creator;
 
 import junit.framework.Assert;
-import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.*;
@@ -54,7 +53,6 @@ public class GraphCreatorTest {
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase("GraphCreatorTest", true);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
         registerCormenGraph(connection);
     }
 

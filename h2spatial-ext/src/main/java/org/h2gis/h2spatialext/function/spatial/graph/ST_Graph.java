@@ -22,7 +22,7 @@
  * or contact directly: info_at_orbisgis.org
  */
 
-package org.h2gis.network.graph_creator;
+package org.h2gis.h2spatialext.function.spatial.graph;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2gis.h2spatialapi.AbstractFunction;
@@ -71,9 +71,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static final int nodeIDIndex = 1;
     public static final String NODE_GEOM = "the_geom";
     private static final int nodeGeomIndex = 2;
-    public static final String EDGE_ID = "edge_id";
-    public static final String START_NODE = "start_node";
-    public static final String END_NODE = "end_node";
     private static final int BATCH_MAX_SIZE = 100;
 
     private TableLocation tableName;

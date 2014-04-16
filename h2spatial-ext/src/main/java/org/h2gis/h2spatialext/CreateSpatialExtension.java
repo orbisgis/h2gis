@@ -91,7 +91,7 @@ import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.h2spatialext.function.spatial.trigonometry.ST_Azimuth;
-import org.h2gis.network.graph_creator.ST_Graph;
+import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
 import org.h2gis.network.graph_creator.ST_ShortestPath;
 import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 

@@ -56,7 +56,6 @@ public class ST_ShortestPathTest {
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase("ST_ShortestPathTest", true);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Graph(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPath(), "");
         GraphCreatorTest.registerCormenGraph(connection);
     }

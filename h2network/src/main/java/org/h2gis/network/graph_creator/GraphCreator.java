@@ -30,11 +30,16 @@ import org.jgrapht.WeightedGraph;
 
 import java.sql.*;
 
+import static org.h2gis.utilities.graph_utils.GraphConstants.EDGE_ID;
+import static org.h2gis.utilities.graph_utils.GraphConstants.END_NODE;
+import static org.h2gis.utilities.graph_utils.GraphConstants.START_NODE;
+
 /**
  * Creates a JGraphT graph from an edges table produced by {@link
- * org.h2gis.network.graph_creator.ST_Graph}. The graph has the vertex and edge
- * classes passed to the constructor. Its global and edge orientations and
- * weights are specified by the strings passed to the constructor.
+ * org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}. The graph has the
+ * vertex and edge classes passed to the constructor. Its global and edge
+ * orientations and weights are specified by the strings passed to the
+ * constructor.
  *
  * @author Adam Gouge
  */
@@ -63,7 +68,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * Constructor.
      *
      * @param connection                Connection
-     * @param inputTable                Name of edges table from {@link org.h2gis.network.graph_creator.ST_Graph}
+     * @param inputTable                Name of edges table from {@link org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}.
      * @param globalOrientation         Global orientation
      * @param edgeOrientationColumnName Edge orientation
      * @param weightColumn              Weight column name
@@ -133,15 +138,15 @@ public class GraphCreator<V extends VId, E extends Edge> {
         ResultSetMetaData metaData = edges.getMetaData();
         for (int i = 1; i <= metaData.getColumnCount(); i++) {
             final String columnName = metaData.getColumnName(i);
-            if (columnName.equalsIgnoreCase(ST_Graph.START_NODE)) startNodeIndex = i;
-            if (columnName.equalsIgnoreCase(ST_Graph.END_NODE)) endNodeIndex = i;
-            if (columnName.equalsIgnoreCase(ST_Graph.EDGE_ID)) edgeIDIndex = i;
+            if (columnName.equalsIgnoreCase(START_NODE)) startNodeIndex = i;
+            if (columnName.equalsIgnoreCase(END_NODE)) endNodeIndex = i;
+            if (columnName.equalsIgnoreCase(EDGE_ID)) edgeIDIndex = i;
             if (columnName.equalsIgnoreCase(edgeOrientationColumnName)) edgeOrientationIndex = i;
             if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
         }
-        verifyIndex(startNodeIndex, ST_Graph.START_NODE);
-        verifyIndex(endNodeIndex, ST_Graph.START_NODE);
-        verifyIndex(edgeIDIndex, ST_Graph.START_NODE);
+        verifyIndex(startNodeIndex, START_NODE);
+        verifyIndex(endNodeIndex, END_NODE);
+        verifyIndex(edgeIDIndex, EDGE_ID);
         if (!globalOrientation.equals(GraphFunctionParser.Orientation.UNDIRECTED)) {
             verifyIndex(edgeOrientationIndex, edgeOrientationColumnName);
         }
