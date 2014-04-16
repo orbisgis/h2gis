@@ -15,7 +15,7 @@ GEOMETRY ST_Translate(GEOMETRY geom, double x, double y);
 {% endhighlight %}
 
 ### Description
-Translates a `GEOMETRY` to a new location using the numeric parameters as `X` and `Y` offsets.
+Translates a `GEOMETRY` to a new location using the numeric parameters (`X` and `Y`) offsets.
 
 ### Examples
 
@@ -44,5 +44,6 @@ SELECT ST_Translate('GEOMETRYCOLLECTION(
 
 ##### See also
 
+* [`ST_Rotate`](../ST_Rotate)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/affine_transformations/ST_Translate.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
