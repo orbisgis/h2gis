@@ -59,7 +59,7 @@ public class GraphCreatorTest {
     public static void registerCormenGraph(Connection connection) throws SQLException {
         final Statement st = connection.createStatement();
 //                 2:1
-//           >2 <----------- 3
+//           >2 <----------- 4
 //          / |^           ->|^
 //     1:10/ / |    6:9   / / |
 //        /  | |     -----  | |
@@ -68,7 +68,7 @@ public class GraphCreatorTest {
 //       \   | |  /  10:7\  | |
 //     5:5\  | / /        \ | /
 //         \ v| /  7:2     >v|
-//          > 4 -----------> 5
+//          > 3 -----------> 5
 //               CORMEN
         st.execute("CREATE TABLE cormen(road LINESTRING, id INT AUTO_INCREMENT PRIMARY KEY, weight DOUBLE, edge_orientation INT);" +
                 "INSERT INTO cormen VALUES "
@@ -83,12 +83,15 @@ public class GraphCreatorTest {
                 + "('LINESTRING (2 0, 2.25 1, 2 2)', DEFAULT, 6.0,  1),"
                 + "('LINESTRING (2 0, 0 1)', DEFAULT, 7.0,  0);");
 
-        st.executeQuery("SELECT ST_Graph('CORMEN', 'road')");
-        // For now, CORMEN_EDGES has only 3 columns: EDGE_ID, START_NODE and END_NODE.
-        // Quick fix to recover the others:
-        st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL;" +
-                "CREATE TABLE CORMEN_EDGES_ALL AS SELECT " +
-                "A.*, B.* FROM CORMEN A, CORMEN_EDGES B WHERE A.ID=B.EDGE_ID;");
+        // In order to not depend on ST_Graph, we simply simulate the output of ST_Graph
+        // on the Cormen graph.
+        st.execute("CREATE TABLE cormen_nodes(node_id int auto_increment primary key, the_geom point);" +
+                "INSERT INTO cormen_nodes(the_geom) VALUES "
+                + "('POINT (0 1)'),"
+                + "('POINT (1 2)'),"
+                + "('POINT (2 2)'),"
+                + "('POINT (1 0)'),"
+                + "('POINT (2 0)');");
 //        cormen_nodes
 //        NODE_ID  THE_GEOM
 //        1        POINT (0 1)
@@ -96,18 +99,45 @@ public class GraphCreatorTest {
 //        3        POINT (2 2)
 //        4        POINT (1 0)
 //        5        POINT (2 0)
-//
+        st.execute("CREATE TABLE CORMEN_EDGES(EDGE_ID INT AUTO_INCREMENT PRIMARY KEY, START_NODE INT, END_NODE INT);" +
+                "INSERT INTO CORMEN_EDGES(START_NODE, END_NODE) VALUES "
+                + "(1, 2),"
+                + "(2, 4),"
+                + "(2, 3),"
+                + "(3, 2),"
+                + "(1, 3),"
+                + "(3, 4),"
+                + "(3, 5),"
+                + "(4, 5),"
+                + "(5, 4),"
+                + "(5, 1);");
+//        CORMEN_EDGES:
+//        EDGE_ID   START_NODE   END_NODE
+//            1         1            2
+//            2         2            4
+//            3         2            3
+//            4         3            2
+//            5         1            3
+//            6         3            4
+//            7         3            5
+//            8         4            5
+//            9         5            4
+//            10        5            1
+        // Quick fix to recover other columns:
+        st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL;" +
+                "CREATE TABLE CORMEN_EDGES_ALL AS SELECT " +
+                "A.*, B.* FROM CORMEN A, CORMEN_EDGES B WHERE A.ID=B.EDGE_ID;");
 //        cormen_edges_all:
 //        ROAD                           ID  EIGHT  EDGE_ORIENTATION   EDGE_ID   START_NODE   END_NODE
 //        LINESTRING (0 1, 1 2)           1       0.0      1               1         1            2
-//        LINESTRING (1 2, 2 2)           2       1.0     -1               2         2            3
-//        LINESTRING (1 2, 0.75 1, 1 0)   3       2.0      1               3         2            4
-//        LINESTRING (1 0, 1.25 1, 1 2)   4       3.0      1               4         4            2
-//        LINESTRING (0 1, 1 0)           5       5.0      1               5         1            4
-//        LINESTRING (1 0, 2 2)           6       9.0      1               6         4            3
-//        LINESTRING (1 0, 2 0)           7       2.0      1               7         4            5
-//        LINESTRING (2 2, 1.75 1, 2 0)   8       4.0      1               8         3            5
-//        LINESTRING (2 0, 2.25 1, 2 2)   9       6.0      1               9         5            3
+//        LINESTRING (1 2, 2 2)           2       1.0     -1               2         2            4
+//        LINESTRING (1 2, 0.75 1, 1 0)   3       2.0      1               3         2            3
+//        LINESTRING (1 0, 1.25 1, 1 2)   4       3.0      1               4         3            2
+//        LINESTRING (0 1, 1 0)           5       5.0      1               5         1            3
+//        LINESTRING (1 0, 2 2)           6       9.0      1               6         3            4
+//        LINESTRING (1 0, 2 0)           7       2.0      1               7         3            5
+//        LINESTRING (2 2, 1.75 1, 2 0)   8       4.0      1               8         4            5
+//        LINESTRING (2 0, 2.25 1, 2 2)   9       6.0      1               9         5            4
 //        LINESTRING (2 0, 0 1)          10       7.0      0               10        5            1
     }
 

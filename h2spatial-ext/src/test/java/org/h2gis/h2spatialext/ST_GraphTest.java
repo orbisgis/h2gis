@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.h2gis.utilities.graph_utils.GraphConstants.*;
 import static org.junit.Assert.*;
 
 /**
@@ -86,9 +87,9 @@ public class ST_GraphTest {
 
     private void checkEdge(ResultSet edgesResult, int gid, int startNode, int endNode) throws SQLException {
         assertTrue(edgesResult.next());
-        assertEquals(gid, edgesResult.getInt(ST_Graph.EDGE_ID));
-        assertEquals(startNode, edgesResult.getInt(ST_Graph.START_NODE));
-        assertEquals(endNode, edgesResult.getInt(ST_Graph.END_NODE));
+        assertEquals(gid, edgesResult.getInt(EDGE_ID));
+        assertEquals(startNode, edgesResult.getInt(START_NODE));
+        assertEquals(endNode, edgesResult.getInt(END_NODE));
     }
 
     @Test
