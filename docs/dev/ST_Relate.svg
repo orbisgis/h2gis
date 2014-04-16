@@ -529,9 +529,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.5"
-     inkscape:cx="-134.25788"
-     inkscape:cy="-96.638099"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="360.24195"
+     inkscape:cy="-245.71496"
      inkscape:document-units="px"
      inkscape:current-layer="layer6"
      showgrid="false"
@@ -990,11 +990,11 @@
        id="rect4630-2-5"
        style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.49232462;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
     <rect
-       style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:0.52941179;stroke:#000000;stroke-width:0.82659917999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="opacity:0.7;fill:#ffaa59;fill-opacity:0.52941165;stroke:#000000;stroke-width:0.82659918;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect4632-0-1"
        width="60.026814"
        height="80.053909"
-       x="368.34256"
+       x="350.34256"
        y="1090.2329"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Contains_7.png"
        inkscape:export-xdpi="111.6843"
@@ -1210,11 +1210,11 @@
        id="rect4630-0-4"
        style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.49232462;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
     <rect
-       style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:0.52941179;stroke:#000000;stroke-width:0.82659917999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="opacity:0.7;fill:#ffaa59;fill-opacity:0.52941165;stroke:#000000;stroke-width:0.82659918;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect4632-7-0"
        width="60.026814"
        height="80.053909"
-       x="602.34253"
+       x="584.34253"
        y="1089.233"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Contains_7.png"
        inkscape:export-xdpi="111.6843"
@@ -1230,11 +1230,11 @@
        id="rect4630-00"
        style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.49232462;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
     <rect
-       style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:0.52941179;stroke:#000000;stroke-width:0.82659917999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="opacity:0.7;fill:#ffaa59;fill-opacity:0.52941165;stroke:#000000;stroke-width:0.82659918;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect4632-76"
        width="60.026814"
        height="80.053909"
-       x="128.94054"
+       x="110.94054"
        y="1090.4966"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Contains_7.png"
        inkscape:export-xdpi="111.6843"
@@ -1650,11 +1650,11 @@
        id="rect4630-2-0"
        style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.49232462;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
     <rect
-       style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:0.52941179;stroke:#000000;stroke-width:0.82659917999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="opacity:0.7;fill:#ffaa59;fill-opacity:0.52941165;stroke:#000000;stroke-width:0.82659918;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect4632-0-8"
        width="60.026814"
        height="80.053909"
-       x="368.34256"
+       x="350.34256"
        y="1304.2329"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Contains_7.png"
        inkscape:export-xdpi="111.6843"
@@ -1859,10 +1859,6 @@
        id="path4628-1-1"
        d="m 522.91376,1283.3661 187.60161,0"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
-    <path
-       style="fill:#f8a321;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none;fill-opacity:1;opacity:0.69999999999999996"
-       d="M 543 1303.0938 L 543 1323.4688 L 602.34375 1323.4688 L 602.34375 1303.2188 L 662.375 1303.2188 L 662.375 1383.2812 L 602.59375 1383.2812 L 602.59375 1403.3438 L 543 1403.3438 L 543 1403.375 L 663 1403.375 L 663 1303.0938 L 543 1303.0938 z M 543 1403.3438 L 543 1323.4688 L 542.875 1323.4688 L 542.875 1403.3438 L 543 1403.3438 z M 602.59375 1383.2812 L 602.59375 1323.4688 L 602.34375 1323.4688 L 602.34375 1383.2812 L 602.59375 1383.2812 z "
-       id="rect8149" />
     <rect
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
@@ -1874,11 +1870,11 @@
        id="rect4630-0-3"
        style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.49232462;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
     <rect
-       style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:0.52941179;stroke:#000000;stroke-width:0.82659917999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="opacity:0.7;fill:#ffaa59;fill-opacity:0.52941165;stroke:#000000;stroke-width:0.82659918;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect4632-7-8"
        width="60.026814"
        height="80.053909"
-       x="602.34253"
+       x="582.59253"
        y="1303.233"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Contains_7.png"
        inkscape:export-xdpi="111.6843"
@@ -1894,30 +1890,31 @@
        id="rect4630-1"
        style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.49232462;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
     <rect
-       style="opacity:0.69999999999999996;fill:#f8a321;fill-opacity:1;stroke:#000000;stroke-width:0.82659917999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="opacity:0.7;fill:#f8a321;fill-opacity:1;stroke:#000000;stroke-width:0.82659918;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect4632-5"
        width="60.026814"
        height="80.053909"
-       x="128.94054"
+       x="110.94054"
        y="1304.4966"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Contains_7.png"
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <path
-       style="fill:none;stroke:#f87521;stroke-width:2.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
-       d="m 368,1109.8622 0.5,60.75"
-       id="path8147"
+       style="fill:none;stroke:#ff7521;stroke-width:2.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+       d="m 584,1109.3622 -41.5,-0.25 0.25,80 59.75,0.25 0,-20.5"
+       id="path4842"
        inkscape:connector-curvature="0" />
     <path
-       inkscape:connector-curvature="0"
-       id="path8162"
-       d="m 602,1109.8622 0.5,60.75"
-       style="fill:none;stroke:#f87521;stroke-width:2.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:none;stroke:#ff7521;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 368.5,1384.2372 41.5,0.25 -0.25,-80 -59.75,-0.25 0,20.5"
+       id="path4842-3"
+       inkscape:connector-curvature="0" />
     <path
+       style="opacity:1;fill:#f8a321;fill-opacity:1;fill-rule:evenodd;stroke:#ff7521;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 543,1303.0938 0,20.375 39.59375,0 -0.0625,-20.25 60.15625,0.25 0.0625,79.8749 -40.15625,-0.062 0,20.0626 -59.59375,0 0,0.031 99.625,-0.375 0,-99.5312 z m 0,100.25 0,-79.875 -0.125,0 0,79.875 z"
+       id="rect8149"
        inkscape:connector-curvature="0"
-       id="path8164"
-       d="m 368,1323.8622 0.5,60.75"
-       style="fill:none;stroke:#f87521;stroke-width:2.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       sodipodi:nodetypes="cccccccccccccccccc" />
   </g>
   <g
      inkscape:label="Calque 1"
@@ -4224,7 +4221,7 @@
          sodipodi:role="line"
          id="tspan5546-5"
          x="246.42563"
-         y="782.94897">GeomB: POLYGON((4 2, 7 2, 7 6, 4 6, 4 2))</tspan></text>
+         y="782.94897">GeomB: POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))</tspan></text>
     <path
        inkscape:export-ydpi="111.6843"
        inkscape:export-xdpi="111.6843"
@@ -4436,11 +4433,11 @@
        id="rect4630-2"
        style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.49232462;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline" />
     <rect
-       style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:0.52941179;stroke:#000000;stroke-width:0.82659917999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="opacity:0.7;fill:#ffaa59;fill-opacity:0.52941165;stroke:#000000;stroke-width:0.82659918;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect4632-0"
        width="60.026814"
        height="80.053909"
-       x="369.64154"
+       x="351.64154"
        y="878.86475"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Contains_7.png"
        inkscape:export-xdpi="111.6843"
@@ -4646,7 +4643,7 @@
        d="m 524.21274,857.99794 187.60161,0"
        style="fill:none;stroke:#000000;stroke-width:0.40000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.6, 3.2;stroke-dashoffset:0;display:inline" />
     <rect
-       style="opacity:0.69999999999999996;fill:#f8a321;fill-opacity:1;stroke:#000000;stroke-width:0.49199999999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="opacity:0.69999999999999996;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.49199999999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect8160"
        width="59.72427"
        height="79.877777"
@@ -4656,11 +4653,11 @@
        inkscape:export-xdpi="111.6843"
        inkscape:export-ydpi="111.6843" />
     <rect
-       style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:0.52941179;stroke:#000000;stroke-width:0.82659917999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       style="opacity:0.7;fill:#ffaa59;fill-opacity:0.52941165;stroke:#000000;stroke-width:0.82659918;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
        id="rect4632-7"
        width="60.026814"
        height="80.053909"
-       x="603.64154"
+       x="585.64154"
        y="877.86481"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Contains_7.png"
        inkscape:export-xdpi="111.6843"
@@ -4676,7 +4673,7 @@
            height="22.999998"
            x="81.999992"
            y="211.36223" /></flowRegion><flowPara
-         id="flowPara4478-7">False</flowPara></flowRoot>    <flowRoot
+         id="flowPara4478-7">2</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot4472-2-0"
        style="font-size:13px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
@@ -4687,7 +4684,7 @@
            height="22.999998"
            x="81.999992"
            y="211.36223" /></flowRegion><flowPara
-         id="flowPara4478-6-6">False</flowPara></flowRoot>    <flowRoot
+         id="flowPara4478-6-6">1</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot4472-6-3"
        style="font-size:13px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
@@ -4698,7 +4695,7 @@
            height="22.999998"
            x="81.999992"
            y="211.36223" /></flowRegion><flowPara
-         id="flowPara4478-3-9">False</flowPara></flowRoot>    <flowRoot
+         id="flowPara4478-3-9">1</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot4472-4-1"
        style="font-size:13px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
@@ -4709,7 +4706,7 @@
            height="22.999998"
            x="81.999992"
            y="211.36223" /></flowRegion><flowPara
-         id="flowPara4478-9-1">1</flowPara></flowRoot>    <flowRoot
+         id="flowPara4478-9-1">0</flowPara></flowRoot>    <flowRoot
        xml:space="preserve"
        id="flowRoot4472-4-3-0"
        style="font-size:13px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
@@ -4772,12 +4769,41 @@
        x="-157.7552"
        y="1023.607" />
     <rect
-       style="opacity:0.50000000000000000;fill:#ffaa59;fill-opacity:0.70980394;fill-rule:evenodd;stroke:#000000;stroke-width:1.12032997999999995px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
+       style="opacity:0.5;fill:#ffaa59;fill-opacity:0.70980392;fill-rule:evenodd;stroke:#000000;stroke-width:1.12032998px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;display:inline"
        id="rect8143-5"
        width="283.87967"
        height="29.879671"
        x="240.06015"
-       y="763.42236" />
+       y="761.42236" />
+    <path
+       style="opacity:1;fill:#ffa321;fill-opacity:1;stroke:#000000;stroke-width:0.49199999999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="M 544.15625 898.09375 L 544.15625 977.96875 L 603.875 977.96875 L 603.875 957.90625 L 585.65625 957.90625 L 585.65625 898.09375 L 544.15625 898.09375 z "
+       id="rect4794" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#f87521;fill-opacity:1;stroke:none;display:inline"
+       id="path5574-7-0-0"
+       sodipodi:cx="475.08737"
+       sodipodi:cy="360.90015"
+       sodipodi:rx="5.2149124"
+       sodipodi:ry="5.2149124"
+       d="m 480.30228,360.90015 a 5.2149124,5.2149124 0 1 1 -10.42982,0 5.2149124,5.2149124 0 1 1 10.42982,0 z"
+       transform="matrix(0.72881356,0,0,0.72881356,3.4998814,847.83326)" />
+    <path
+       sodipodi:type="arc"
+       style="fill:#f87521;fill-opacity:1;stroke:none;display:inline"
+       id="path5574-7-0-05"
+       sodipodi:cx="475.08737"
+       sodipodi:cy="360.90015"
+       sodipodi:rx="5.2149124"
+       sodipodi:ry="5.2149124"
+       d="m 480.30228,360.90015 a 5.2149124,5.2149124 0 1 1 -10.42982,0 5.2149124,5.2149124 0 1 1 10.42982,0 z"
+       transform="matrix(0.72881356,0,0,0.72881356,22.749881,907.33326)" />
+    <path
+       inkscape:connector-curvature="0"
+       style="fill:#ffa321;fill-opacity:1;stroke:#000000;stroke-width:0.49200001;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
+       d="m 171.28076,1385.0419 0,-79.875 -59.7188,0 0,20.0625 18.2188,0 0,59.8125 41.5,0 z"
+       id="rect4794-0" />
   </g>
   <g
      inkscape:groupmode="layer"
@@ -4795,11 +4821,11 @@
        id="rect4630"
        style="opacity:0.7;fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:0.49232462;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
     <rect
-       style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:0.52941179;stroke:#000000;stroke-width:0.82659917999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       style="opacity:0.7;fill:#ffaa59;fill-opacity:0.52941165;stroke:#000000;stroke-width:0.82659918;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect4632"
        width="60.026814"
        height="80.053909"
-       x="130.23952"
+       x="110.23952"
        y="879.12842"
        inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Contains_7.png"
        inkscape:export-xdpi="111.6843"
@@ -4832,5 +4858,19 @@
            height="107.48023"
            x="1038.7399"
            y="-76.180244" /></flowRegion><flowPara
-         id="flowPara4831" /></flowRoot>  </g>
+         id="flowPara4831" /></flowRoot>    <path
+       style="opacity:1;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:0.49232461999999999;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       d="M 110.25 899.34375 L 110.25 959.1875 L 130.46875 959.1875 L 130.46875 899.34375 L 110.25 899.34375 z "
+       id="rect4785" />
+    <path
+       style="fill:none;stroke:#ff7521;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       d="m 351,898.36218 1.5,60.5 19,0"
+       id="path4790"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#ff7521;stroke-width:2.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 131.25,1170.6122 -1.5,-60.5 -19,0"
+       id="path4790-9"
+       inkscape:connector-curvature="0" />
+  </g>
 </svg>
