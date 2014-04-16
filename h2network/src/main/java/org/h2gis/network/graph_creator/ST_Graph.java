@@ -27,6 +27,7 @@ package org.h2gis.network.graph_creator;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -258,14 +259,16 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       double tolerance,
                                       boolean orientBySlope) throws SQLException {
         ST_Graph f = new ST_Graph(connection, tableName, tolerance, orientBySlope);
+        // Check for a primary key
         final DatabaseMetaData md = connection.getMetaData();
         final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(md, f.tableName.getTable());
         if (pkIndex == 0) {
             throw new IllegalStateException("Table " + f.tableName.getTable() + " must contain a primary key.");
         }
         final String pkColName = JDBCUtilities.getFieldName(md, f.tableName.getTable(), pkIndex);
-
+        // Check the geometry column type;
         f.getSpatialFieldIndexAndColumnCount(spatialFieldName);
+        f.checkGeometryType();
         final String geomCol = JDBCUtilities.getFieldName(md, f.tableName.getTable(), f.spatialFieldIndex);
         final Statement st = connection.createStatement();
         try {
@@ -278,6 +281,16 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
         return true;
     }
+
+    private void checkGeometryType() throws SQLException {
+        final String fieldName = JDBCUtilities.getFieldName(connection.getMetaData(), tableName.getTable(), spatialFieldIndex);
+        final int type = SFSUtilities.getGeometryType(connection, tableName, fieldName);
+        if (type != GeometryTypeCodes.LINESTRING && type != GeometryTypeCodes.MULTILINESTRING) {
+            throw new IllegalArgumentException("Column " + fieldName + " must be of type LINESTRING " +
+                    "or MULTILINESTRING.");
+        }
+    }
+
     /**
      * Get the column index of the given spatial field, or the first one found
      * if none is given (specified by null).
@@ -385,9 +398,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         if (tolerance > 0) {
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
-                    "THE_GEOM POINT " +
+                    "THE_GEOM POINT, " +
+                    "EXP POLYGON" +
                     ") AS " +
-                    "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
+                    "SELECT NULL, A.THE_GEOM, A.AREA FROM PTS A, PTS B " +
                     "WHERE A.AREA && B.AREA " +
                     "GROUP BY A.ID " +
                     "HAVING A.ID=MIN(B.ID);");
@@ -403,8 +417,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "GROUP BY A.ID " +
                     "HAVING A.ID=MIN(B.ID);");
         }
-        // Putting a spatial index on the points in the NODES table
-        st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(THE_GEOM);");
     }
 
     /**
@@ -414,16 +426,21 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         st.execute("DROP TABLE IF EXISTS " + edgesName + ";");
         // Creating edges table
         if (tolerance > 0) {
+            st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(EXP);");
             st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT_EXP);");
             st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT_EXP);");
             st.execute("CREATE TABLE " + edgesName + " AS " +
                     "SELECT EDGE_ID, " +
                     "(SELECT NODE_ID FROM " + nodesName +
-                    " WHERE " + nodesName + ".THE_GEOM && COORDS.START_POINT_EXP LIMIT 1) START_NODE, " +
+                    " WHERE " + nodesName + ".EXP && COORDS.START_POINT_EXP LIMIT 1) START_NODE, " +
                     "(SELECT NODE_ID FROM " + nodesName +
-                    " WHERE " + nodesName + ".THE_GEOM && COORDS.END_POINT_EXP LIMIT 1) END_NODE " +
+                    " WHERE " + nodesName + ".EXP && COORDS.END_POINT_EXP LIMIT 1) END_NODE " +
                     "FROM COORDS;");
+            st.execute("ALTER TABLE " + nodesName + " DROP COLUMN EXP;");
         } else {
+            st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(THE_GEOM);");
+            st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT);");
+            st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT);");
             // If the tolerance is zero, then we can use = on the geometries
             // instead of && on the envelopes.
             st.execute("CREATE TABLE " + edgesName + " AS " +
