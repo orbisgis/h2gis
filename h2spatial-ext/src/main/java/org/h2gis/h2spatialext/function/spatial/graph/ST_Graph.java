@@ -30,6 +30,8 @@ import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.List;
@@ -72,6 +74,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private double tolerance;
     private boolean orientBySlope;
     private Integer spatialFieldIndex;
+
+    private final Logger logger = LoggerFactory.getLogger("gui." + ST_Graph.class);
 
     public ST_Graph() {
         this(null, null, 0.0, false);
@@ -321,14 +325,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     private void firstFirstLastLast(Statement st, String pkCol, String geomCol) throws SQLException {
-        st.execute("drop TABLE if exists COORDS");
-        // Selecting the first coordinate of the first geometry and
-        // the last coordinate of the last geometry.
+        logger.info("Selecting the first coordinate of the first geometry and " +
+                "the last coordinate of the last geometry...");
         final String numGeoms = "ST_NumGeometries(" + geomCol + ")";
         final String firstGeom = "ST_GeometryN(" + geomCol + ", 1)";
         final String firstPointFirstGeom = "ST_PointN(" + firstGeom + ", 1)";
         final String lastGeom = "ST_GeometryN(" + geomCol + ", " + numGeoms + ")";
         final String lastPointLastGeom = "ST_PointN(" + lastGeom + ", ST_NumPoints(" + lastGeom + "))";
+        st.execute("drop TABLE if exists COORDS");
         if (tolerance > 0) {
             st.execute("CREATE CACHED LOCAL TEMPORARY TABLE COORDS AS "
                     + "SELECT " + pkCol + " EDGE_ID, "
@@ -354,6 +358,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private void makeEnvelopes(Statement st) throws SQLException {
         st.execute("DROP TABLE IF EXISTS PTS;");
         if (tolerance > 0) {
+            logger.info("Calculating envelopes around coordinates...");
             // Putting all points and their envelopes together...
             st.execute("CREATE CACHED LOCAL TEMPORARY TABLE PTS( " +
                     "ID INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -366,6 +371,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             // Putting a spatial index on the envelopes...
             st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
         } else {
+            logger.info("Preparing temporary nodes table from coordinates...");
             // If the tolerance is zero, we just put all points together
             st.execute("CREATE CACHED LOCAL TEMPORARY TABLE PTS( " +
                     "ID INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -383,6 +389,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Create the nodes table.
      */
     private void nodesTable(Statement st) throws SQLException {
+        logger.info("Creating the nodes table...");
         // Creating nodes table by removing copies from the pts table.
         st.execute("DROP TABLE IF EXISTS " + nodesName + ";");
         if (tolerance > 0) {
@@ -413,8 +420,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Create the edges table.
      */
     private void edgesTable(Statement st) throws SQLException {
+        logger.info("Creating the edges table...");
         st.execute("DROP TABLE IF EXISTS " + edgesName + ";");
-        // Creating edges table
         if (tolerance > 0) {
             st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(EXP);");
             st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT_EXP);");
@@ -444,6 +451,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     private void orientBySlope(Statement st) throws SQLException {
+        logger.info("Orienting edges by slope...");
         st.execute("UPDATE " + edgesName + " c " +
                     "SET START_NODE=END_NODE, " +
                     "    END_NODE=START_NODE " +
@@ -453,6 +461,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     private void checkForNullEdgeEndpoints(Statement st) throws SQLException {
+        logger.info("Checking for null edge endpoints...");
         final ResultSet nullEdges = st.executeQuery("SELECT COUNT(*) FROM " + edgesName + " WHERE " +
                 "START_NODE IS NULL OR END_NODE IS NULL;");
         try {
