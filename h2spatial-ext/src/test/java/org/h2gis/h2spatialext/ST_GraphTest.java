@@ -439,6 +439,38 @@ public class ST_GraphTest {
         }
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void test_ST_Graph_ErrorWithNoPrimaryKey() throws Throwable {
+        // Prepare the input table.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR);" +
+                "INSERT INTO test VALUES " +
+                "('LINESTRING (0 0 0, 1 0 1)', 'road1');");
+        try {
+            st.executeQuery("SELECT ST_Graph('TEST')");
+        } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains("must contain a single integer primary key"));
+            throw e.getOriginalCause();
+        }
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void test_ST_Graph_ErrorWithCompositePrimaryKey() throws Throwable {
+        // Prepare the input table.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR NOT NULL, " +
+                "id INT AUTO_INCREMENT);" +
+                "INSERT INTO test VALUES " +
+                "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);" +
+                "CREATE PRIMARY KEY ON TEST(DESCRIPTION, ID);");
+        try {
+            st.executeQuery("SELECT ST_Graph('TEST')");
+        } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains("must contain a single integer primary key"));
+            throw e.getOriginalCause();
+        }
+    }
+
     @Test
     public void test_ST_Graph_MULTILINESTRING() throws Exception {
         // This test shows that the coordinate (1 2) is not considered to be
