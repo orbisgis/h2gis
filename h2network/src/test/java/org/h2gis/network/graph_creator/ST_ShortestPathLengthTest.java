@@ -387,30 +387,30 @@ public class ST_ShortestPathLengthTest {
     public void oneToAllDO() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'directed - edge_orientation', i)
-        oneToAll(DO, 1, new double[]{0.0, 1.0, 2.0, 1.0, 1.0});
-        oneToAll(DO, 2, new double[]{3.0, 0.0, 2.0, 1.0, 2.0});
-        oneToAll(DO, 3, new double[]{2.0, 1.0, 0.0, 2.0, 1.0});
-        oneToAll(DO, 4, new double[]{2.0, 1.0, 1.0, 0.0, 1.0});
-        oneToAll(DO, 5, new double[]{1.0, 2.0, 1.0, 2.0, 0.0});
+        oneToAll(DO, 1, new double[]{0.0, 1.0, 1.0, 2.0, 1.0});
+        oneToAll(DO, 2, new double[]{3.0, 0.0, 1.0, 2.0, 2.0});
+        oneToAll(DO, 3, new double[]{2.0, 1.0, 0.0, 1.0, 1.0});
+        oneToAll(DO, 4, new double[]{2.0, 1.0, 2.0, 0.0, 1.0});
+        oneToAll(DO, 5, new double[]{1.0, 2.0, 2.0, 1.0, 0.0});
     }
 
     @Test
     public void oneToAllWDO() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'directed - edge_orientation', 'weight', i)
-        oneToAll(DO, W, 1, new double[]{0.0, 8.0, 13.0, 5.0, 7.0});
-        oneToAll(DO, W, 2, new double[]{11.0, 0.0, 10.0, 2.0, 4.0});
-        oneToAll(DO, W, 3, new double[]{11.0, 1.0, 0.0, 3.0, 4.0});
-        oneToAll(DO, W, 4, new double[]{9.0, 3.0, 8.0, 0.0, 2.0});
-        oneToAll(DO, W, 5, new double[]{7.0, 7.0, 6.0, 9.0, 0.0});
+        oneToAll(DO, W, 1, new double[]{0.0, 8.0, 5.0, 13.0, 7.0});
+        oneToAll(DO, W, 2, new double[]{11.0, 0.0, 2.0, 10.0, 4.0});
+        oneToAll(DO, W, 3, new double[]{9.0, 3.0, 0.0, 8.0, 2.0});
+        oneToAll(DO, W, 4, new double[]{11.0, 1.0, 3.0, 0.0, 4.0});
+        oneToAll(DO, W, 5, new double[]{7.0, 7.0, 9.0, 6.0, 0.0});
 
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'weight', 'directed - edge_orientation', i)
-        oneToAll(W, DO, 1, new double[]{0.0, 8.0, 13.0, 5.0, 7.0});
-        oneToAll(W, DO, 2, new double[]{11.0, 0.0, 10.0, 2.0, 4.0});
-        oneToAll(W, DO, 3, new double[]{11.0, 1.0, 0.0, 3.0, 4.0});
-        oneToAll(W, DO, 4, new double[]{9.0, 3.0, 8.0, 0.0, 2.0});
-        oneToAll(W, DO, 5, new double[]{7.0, 7.0, 6.0, 9.0, 0.0});
+        oneToAll(W, DO, 1, new double[]{0.0, 8.0, 5.0, 13.0, 7.0});
+        oneToAll(W, DO, 2, new double[]{11.0, 0.0, 2.0, 10.0, 4.0});
+        oneToAll(W, DO, 3, new double[]{9.0, 3.0, 0.0, 8.0, 2.0});
+        oneToAll(W, DO, 4, new double[]{11.0, 1.0, 3.0, 0.0, 4.0});
+        oneToAll(W, DO, 5, new double[]{7.0, 7.0, 9.0, 6.0, 0.0});
     }
 
     @Test
@@ -419,8 +419,8 @@ public class ST_ShortestPathLengthTest {
         //     'reversed - edge_orientation', i)
         oneToAll(RO, 1, new double[]{0.0, 3.0, 2.0, 2.0, 1.0});
         oneToAll(RO, 2, new double[]{1.0, 0.0, 1.0, 1.0, 2.0});
-        oneToAll(RO, 3, new double[]{2.0, 2.0, 0.0, 1.0, 1.0});
-        oneToAll(RO, 4, new double[]{1.0, 1.0, 2.0, 0.0, 2.0});
+        oneToAll(RO, 3, new double[]{1.0, 1.0, 0.0, 2.0, 2.0});
+        oneToAll(RO, 4, new double[]{2.0, 2.0, 1.0, 0.0, 1.0});
         oneToAll(RO, 5, new double[]{1.0, 2.0, 1.0, 1.0, 0.0});
     }
 
@@ -428,29 +428,29 @@ public class ST_ShortestPathLengthTest {
     public void oneToAllWRO() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'reversed - edge_orientation', 'weight', i)
-        oneToAll(RO, W, 1, new double[]{0.0, 11.0, 11.0, 9.0, 7.0});
-        oneToAll(RO, W, 2, new double[]{8.0, 0.0, 1.0, 3.0, 7.0});
-        oneToAll(RO, W, 3, new double[]{13.0, 10.0, 0.0, 8.0, 6.0});
-        oneToAll(RO, W, 4, new double[]{5.0, 2.0, 3.0, 0.0, 9.0});
-        oneToAll(RO, W, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+        oneToAll(RO, W, 1, new double[]{0.0, 11.0, 9.0, 11.0, 7.0});
+        oneToAll(RO, W, 2, new double[]{8.0, 0.0, 3.0, 1.0, 7.0});
+        oneToAll(RO, W, 3, new double[]{5.0, 2.0, 0.0, 3.0, 9.0});
+        oneToAll(RO, W, 4, new double[]{13.0, 10.0, 8.0, 0.0, 6.0});
+        oneToAll(RO, W, 5, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
 
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'weight', 'reversed - edge_orientation', i)
-        oneToAll(W, RO, 1, new double[]{0.0, 11.0, 11.0, 9.0, 7.0});
-        oneToAll(W, RO, 2, new double[]{8.0, 0.0, 1.0, 3.0, 7.0});
-        oneToAll(W, RO, 3, new double[]{13.0, 10.0, 0.0, 8.0, 6.0});
-        oneToAll(W, RO, 4, new double[]{5.0, 2.0, 3.0, 0.0, 9.0});
-        oneToAll(W, RO, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+        oneToAll(W, RO, 1, new double[]{0.0, 11.0, 9.0, 11.0, 7.0});
+        oneToAll(W, RO, 2, new double[]{8.0, 0.0, 3.0, 1.0, 7.0});
+        oneToAll(W, RO, 3, new double[]{5.0, 2.0, 0.0, 3.0, 9.0});
+        oneToAll(W, RO, 4, new double[]{13.0, 10.0, 8.0, 0.0, 6.0});
+        oneToAll(W, RO, 5, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
     }
 
     @Test
     public void oneToAllU() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'undirected', i)
-        oneToAll(U, 1, new double[]{0.0,  1.0,  2.0,  1.0,  1.0});
+        oneToAll(U, 1, new double[]{0.0,  1.0,  1.0,  2.0,  1.0});
         oneToAll(U, 2, new double[]{1.0,  0.0,  1.0,  1.0,  2.0});
-        oneToAll(U, 3, new double[]{2.0,  1.0,  0.0,  1.0,  1.0});
-        oneToAll(U, 4, new double[]{1.0,  1.0,  1.0,  0.0,  1.0});
+        oneToAll(U, 3, new double[]{1.0,  1.0,  0.0,  1.0,  1.0});
+        oneToAll(U, 4, new double[]{2.0,  1.0,  1.0,  0.0,  1.0});
         oneToAll(U, 5, new double[]{1.0,  2.0,  1.0,  1.0,  0.0});
     }
 
@@ -458,19 +458,19 @@ public class ST_ShortestPathLengthTest {
     public void oneToAllWU() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'undirected', 'weight', i)
-        oneToAll(U, W, 1, new double[]{0.0, 7.0, 8.0, 5.0, 7.0});
-        oneToAll(U, W, 2, new double[]{7.0, 0.0, 1.0, 2.0, 4.0});
-        oneToAll(U, W, 3, new double[]{8.0, 1.0, 0.0, 3.0, 4.0});
-        oneToAll(U, W, 4, new double[]{5.0, 2.0, 3.0, 0.0, 2.0});
-        oneToAll(U, W, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+        oneToAll(U, W, 1, new double[]{0.0, 7.0, 5.0, 8.0, 7.0});
+        oneToAll(U, W, 2, new double[]{7.0, 0.0, 2.0, 1.0, 4.0});
+        oneToAll(U, W, 3, new double[]{5.0, 2.0, 0.0, 3.0, 2.0});
+        oneToAll(U, W, 4, new double[]{8.0, 1.0, 3.0, 0.0, 4.0});
+        oneToAll(U, W, 5, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
 
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'weight', 'undirected', i)
-        oneToAll(W, U, 1, new double[]{0.0, 7.0, 8.0, 5.0, 7.0});
-        oneToAll(W, U, 2, new double[]{7.0, 0.0, 1.0, 2.0, 4.0});
-        oneToAll(W, U, 3, new double[]{8.0, 1.0, 0.0, 3.0, 4.0});
-        oneToAll(W, U, 4, new double[]{5.0, 2.0, 3.0, 0.0, 2.0});
-        oneToAll(W, U, 5, new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+        oneToAll(W, U, 1, new double[]{0.0, 7.0, 5.0, 8.0, 7.0});
+        oneToAll(W, U, 2, new double[]{7.0, 0.0, 2.0, 1.0, 4.0});
+        oneToAll(W, U, 3, new double[]{5.0, 2.0, 0.0, 3.0, 2.0});
+        oneToAll(W, U, 4, new double[]{8.0, 1.0, 3.0, 0.0, 4.0});
+        oneToAll(W, U, 5, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
     }
 
     private void oneToAll(String orientation, String weight, int source, double[] distances) throws SQLException {
