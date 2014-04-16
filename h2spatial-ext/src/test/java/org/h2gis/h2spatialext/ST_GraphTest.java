@@ -505,4 +505,22 @@ public class ST_GraphTest {
         edgesResult.close();
         rs.close();
     }
+
+    @Test(expected = IllegalStateException.class)
+    public void test_ST_Graph_ErrorWithNullEdgeEndpoints() throws Throwable {
+        // Prepare the input table.
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR NOT NULL, " +
+                "id INT AUTO_INCREMENT PRIMARY KEY);" +
+                "INSERT INTO test VALUES " +
+                "('LINESTRING (0 0, 0 2)', 'road1', DEFAULT)," +
+                "('LINESTRING (1 0, 1 2)', 'road2', DEFAULT)," +
+                "('LINESTRING (2 0, 2 2)', 'road3', DEFAULT);");
+        try {
+            st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.5)");
+        } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains("Try using a slightly smaller tolerance."));
+            throw e.getOriginalCause();
+        }
+    }
 }

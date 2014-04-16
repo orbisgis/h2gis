@@ -274,6 +274,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             f.makeEnvelopes(st);
             f.nodesTable(st);
             f.edgesTable(st);
+            f.checkForNullEdgeEndpoints(st);
             if (orientBySlope) {
                 f.orientBySlope(st);
             }
@@ -461,5 +462,20 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "WHERE (SELECT ST_Z(A.THE_GEOM) < ST_Z(B.THE_GEOM) " +
                             "FROM " + nodesName + " A, " + nodesName + " B " +
                             "WHERE C.START_NODE=A.NODE_ID AND C.END_NODE=B.NODE_ID);");
+    }
+
+    private void checkForNullEdgeEndpoints(Statement st) throws SQLException {
+        final ResultSet nullEdges = st.executeQuery("SELECT COUNT(*) FROM " + edgesName + " WHERE " +
+                "START_NODE IS NULL OR END_NODE IS NULL;");
+        try {
+            if (nullEdges.next()) {
+                final int n = nullEdges.getInt(1);
+                String msg = "There " + (n == 1 ? "is one edge " : "are " + n + " edges ");
+                throw new IllegalStateException(msg + "with a null start node or end node. " +
+                        "Try using a slightly smaller tolerance.");
+            }
+        } finally {
+            nullEdges.close();
+        }
     }
 }
