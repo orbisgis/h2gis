@@ -20,7 +20,7 @@ The variable `distance` is a distance tolerance for the simplification.
 
 <div class="note">
     <h5>The standard Douglas-Peucker algorithm does not preserve topology.
-    If you want preserve topology you can use ST_SimplifyPreserveTopology.</h5>
+    If you want to preserve the topology you can use [`ST_SimplifyPreserveTopology`](../ST_SimplifyPreserveTopology)function.</h5>
 </div>
 
 ### Examples

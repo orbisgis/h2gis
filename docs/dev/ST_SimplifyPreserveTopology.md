@@ -19,7 +19,7 @@ double distance);
 Returns a simplified Geometry and ensures that the result having the same dimension and number of components as the input, and with the components having the same topological relationship.
 
 <div class="note warning">
-    <h5>If the input Geometry is invalid so the output Geometry can
+    <h5>If the input Geometry is invalid then the output Geometry can
     	be invalid.</h5>
 </div>
 
