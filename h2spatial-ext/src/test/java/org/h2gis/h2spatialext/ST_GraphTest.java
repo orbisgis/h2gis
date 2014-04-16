@@ -24,6 +24,7 @@
  */
 package org.h2gis.h2spatialext;
 
+import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.network.graph_creator.ST_Graph;
@@ -207,17 +208,17 @@ public class ST_GraphTest {
                 + "('LINESTRING (2.05 0, 3 0)', 'road3', DEFAULT),"
                 + "('LINESTRING (1 0.1, 1 1)', 'road4', DEFAULT),"
                 + "('LINESTRING (2 0.05, 2 1)', 'road5', DEFAULT);");
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.05)");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.049)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
         ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
         checkNode(nodesResult, 1, "POINT (0 0)");
-        checkNode(nodesResult, 2, "POINT (1 0)");
-        checkNode(nodesResult, 3, "POINT (2 0)");
-        checkNode(nodesResult, 4, "POINT (3 0)");
-        checkNode(nodesResult, 5, "POINT (1 0.1)");
+        checkNode(nodesResult, 2, "POINT (1.05 0)");
+        checkNode(nodesResult, 3, "POINT (2.05 0)");
+        checkNode(nodesResult, 4, "POINT (1 0.1)");
+        checkNode(nodesResult, 5, "POINT (3 0)");
         checkNode(nodesResult, 6, "POINT (1 1)");
         checkNode(nodesResult, 7, "POINT (2 1)");
         assertFalse(nodesResult.next());
@@ -226,8 +227,8 @@ public class ST_GraphTest {
         assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
         checkEdge(edgesResult, 1, 1, 2);
         checkEdge(edgesResult, 2, 2, 3);
-        checkEdge(edgesResult, 3, 3, 4);
-        checkEdge(edgesResult, 4, 5, 6);
+        checkEdge(edgesResult, 3, 3, 5);
+        checkEdge(edgesResult, 4, 4, 6);
         checkEdge(edgesResult, 5, 3, 7);
         assertFalse(edgesResult.next());
         edgesResult.close();
@@ -250,15 +251,15 @@ public class ST_GraphTest {
         nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
         checkNode(nodesResult, 1, "POINT (0 1)");
-        checkNode(nodesResult, 2, "POINT (1 0)");
-        checkNode(nodesResult, 3, "POINT (1.05 1)");
+        checkNode(nodesResult, 2, "POINT (1.05 1)");
+        checkNode(nodesResult, 3, "POINT (1 0)");
         checkNode(nodesResult, 4, "POINT (2 1)");
         assertFalse(nodesResult.next());
         nodesResult.close();
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
         assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
-        checkEdge(edgesResult, 1, 1, 2);
-        checkEdge(edgesResult, 2, 3, 4);
+        checkEdge(edgesResult, 1, 1, 3);
+        checkEdge(edgesResult, 2, 2, 4);
         assertFalse(edgesResult.next());
         edgesResult.close();
         rs.close();
@@ -293,7 +294,7 @@ public class ST_GraphTest {
     @Test
     public void test_ST_Graph_BigTolerance() throws Exception {
         // This test shows that the results from using a large tolerance value
-        // (3.1 rather than 0.1) can be very different.
+        // (1.1 rather than 0.1) can be very different.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
@@ -303,7 +304,7 @@ public class ST_GraphTest {
                 + "('LINESTRING (4 3, 5 2)', 'road4', DEFAULT),"
                 + "('LINESTRING (4.05 4.1, 7 5)', 'road5', DEFAULT),"
                 + "('LINESTRING (7.1 5, 8 4)', 'road6', DEFAULT);");
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 3.1, false)");
+        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 1.1, false)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
@@ -311,7 +312,7 @@ public class ST_GraphTest {
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
         checkNode(nodesResult, 1, "POINT (0 0)");
         checkNode(nodesResult, 2, "POINT (4 3)");
-        checkNode(nodesResult, 3, "POINT (8 4)");
+        checkNode(nodesResult, 3, "POINT (7.1 5)");
         assertFalse(nodesResult.next());
         nodesResult.close();
         ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
@@ -320,8 +321,8 @@ public class ST_GraphTest {
         checkEdge(edgesResult, 2, 1, 2);
         checkEdge(edgesResult, 3, 2, 1);
         checkEdge(edgesResult, 4, 2, 2);
-        checkEdge(edgesResult, 5, 2, 2);
-        checkEdge(edgesResult, 6, 2, 3);
+        checkEdge(edgesResult, 5, 2, 3);
+        checkEdge(edgesResult, 6, 3, 3);
         assertFalse(edgesResult.next());
         edgesResult.close();
         rs.close();
@@ -408,22 +409,19 @@ public class ST_GraphTest {
         rs.close();
     }
 
-    @Test
-    public void test_ST_Graph_ErrorWithNoLINESTRINGOrMULTILINESTRING() throws Exception {
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_Graph_ErrorWithNoLINESTRINGOrMULTILINESTRING() throws Throwable {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road POINT, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
                 + "('POINT (0 0)', 'road1', DEFAULT);");
-
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST')");
-        assertTrue(rs.next());
-        assertFalse(rs.getBoolean(1));
-        assertFalse(rs.next());
-        rs.close();
-
-        assertFalse(connection.getMetaData().getTables(null, null, "TEST_NODES", null).last());
-        assertFalse(connection.getMetaData().getTables(null, null, "TEST_EDGES", null).last());
+        try {
+            st.executeQuery("SELECT ST_Graph('TEST')");
+        } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains("must be of type LINESTRING or MULTILINESTRING"));
+            throw e.getOriginalCause();
+        }
     }
 
     @Test
