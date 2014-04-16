@@ -19,9 +19,7 @@ GEOMETRY ST_AddPoint(GEOMETRY geom, POINT point, double tolerance);
 Returns a new `GEOMETRY` based on an existing one, with a specific `POINT` as a new vertex.
 A `tolerance` could be set to snap the POINT to the GEOMETRY. A 
 default distance 10E-6 is used to snap the input `POINT`.
-In case which the tolerance intersect several segments, the vertex 
-who are return is the closest and first.
-
+If the tolerance intersects several segments, the returned vertex is the closest and the first one.
 
 ### Examples
 
