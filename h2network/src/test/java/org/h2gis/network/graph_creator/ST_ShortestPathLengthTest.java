@@ -607,30 +607,30 @@ public class ST_ShortestPathLengthTest {
     public void oneToSeveralDO() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'directed - edge_orientation', i, '1, 2, 3, 4, 5')
-        oneToSeveral(DO, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 1.0, 2.0, 1.0, 1.0});
-        oneToSeveral(DO, 2, "'1, 2, 3, 4, 5'", new double[]{3.0, 0.0, 2.0, 1.0, 2.0});
-        oneToSeveral(DO, 3, "'1, 2, 3, 4, 5'", new double[]{2.0, 1.0, 0.0, 2.0, 1.0});
-        oneToSeveral(DO, 4, "'1, 2, 3, 4, 5'", new double[]{2.0, 1.0, 1.0, 0.0, 1.0});
-        oneToSeveral(DO, 5, "'1, 2, 3, 4, 5'", new double[]{1.0, 2.0, 1.0, 2.0, 0.0});
+        oneToSeveral(DO, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 1.0, 1.0, 2.0, 1.0});
+        oneToSeveral(DO, 2, "'1, 2, 3, 4, 5'", new double[]{3.0, 0.0, 1.0, 2.0, 2.0});
+        oneToSeveral(DO, 3, "'1, 2, 3, 4, 5'", new double[]{2.0, 1.0, 0.0, 1.0, 1.0});
+        oneToSeveral(DO, 4, "'1, 2, 3, 4, 5'", new double[]{2.0, 1.0, 2.0, 0.0, 1.0});
+        oneToSeveral(DO, 5, "'1, 2, 3, 4, 5'", new double[]{1.0, 2.0, 2.0, 1.0, 0.0});
     }
 
     @Test
     public void oneToSeveralWDO() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'directed - edge_orientation', 'weight', i, '1, 2, 3, 4, 5')
-        oneToSeveral(DO, W, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 8.0, 13.0, 5.0, 7.0});
-        oneToSeveral(DO, W, 2, "'1, 2, 3, 4, 5'", new double[]{11.0, 0.0, 10.0, 2.0, 4.0});
-        oneToSeveral(DO, W, 3, "'1, 2, 3, 4, 5'", new double[]{11.0, 1.0, 0.0, 3.0, 4.0});
-        oneToSeveral(DO, W, 4, "'1, 2, 3, 4, 5'", new double[]{9.0, 3.0, 8.0, 0.0, 2.0});
-        oneToSeveral(DO, W, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 7.0, 6.0, 9.0, 0.0});
+        oneToSeveral(DO, W, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 8.0, 5.0, 13.0, 7.0});
+        oneToSeveral(DO, W, 2, "'1, 2, 3, 4, 5'", new double[]{11.0, 0.0, 2.0, 10.0, 4.0});
+        oneToSeveral(DO, W, 3, "'1, 2, 3, 4, 5'", new double[]{9.0, 3.0, 0.0, 8.0, 2.0});
+        oneToSeveral(DO, W, 4, "'1, 2, 3, 4, 5'", new double[]{11.0, 1.0, 3.0, 0.0, 4.0});
+        oneToSeveral(DO, W, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 7.0, 9.0, 6.0, 0.0});
 
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'weight', 'directed - edge_orientation', i, '1, 2, 3, 4, 5')
-        oneToSeveral(W, DO, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 8.0, 13.0, 5.0, 7.0});
-        oneToSeveral(W, DO, 2, "'1, 2, 3, 4, 5'", new double[]{11.0, 0.0, 10.0, 2.0, 4.0});
-        oneToSeveral(W, DO, 3, "'1, 2, 3, 4, 5'", new double[]{11.0, 1.0, 0.0, 3.0, 4.0});
-        oneToSeveral(W, DO, 4, "'1, 2, 3, 4, 5'", new double[]{9.0, 3.0, 8.0, 0.0, 2.0});
-        oneToSeveral(W, DO, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 7.0, 6.0, 9.0, 0.0});
+        oneToSeveral(W, DO, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 8.0, 5.0, 13.0, 7.0});
+        oneToSeveral(W, DO, 2, "'1, 2, 3, 4, 5'", new double[]{11.0, 0.0, 2.0, 10.0, 4.0});
+        oneToSeveral(W, DO, 3, "'1, 2, 3, 4, 5'", new double[]{9.0, 3.0, 0.0, 8.0, 2.0});
+        oneToSeveral(W, DO, 4, "'1, 2, 3, 4, 5'", new double[]{11.0, 1.0, 3.0, 0.0, 4.0});
+        oneToSeveral(W, DO, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 7.0, 9.0, 6.0, 0.0});
     }
 
     @Test
@@ -639,8 +639,8 @@ public class ST_ShortestPathLengthTest {
         //     'reversed - edge_orientation', i, '1, 2, 3, 4, 5')
         oneToSeveral(RO, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 3.0, 2.0, 2.0, 1.0});
         oneToSeveral(RO, 2, "'1, 2, 3, 4, 5'", new double[]{1.0, 0.0, 1.0, 1.0, 2.0});
-        oneToSeveral(RO, 3, "'1, 2, 3, 4, 5'", new double[]{2.0, 2.0, 0.0, 1.0, 1.0});
-        oneToSeveral(RO, 4, "'1, 2, 3, 4, 5'", new double[]{1.0, 1.0, 2.0, 0.0, 2.0});
+        oneToSeveral(RO, 3, "'1, 2, 3, 4, 5'", new double[]{1.0, 1.0, 0.0, 2.0, 2.0});
+        oneToSeveral(RO, 4, "'1, 2, 3, 4, 5'", new double[]{2.0, 2.0, 1.0, 0.0, 1.0});
         oneToSeveral(RO, 5, "'1, 2, 3, 4, 5'", new double[]{1.0, 2.0, 1.0, 1.0, 0.0});
     }
 
@@ -648,29 +648,29 @@ public class ST_ShortestPathLengthTest {
     public void oneToSeveralWRO() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'reversed - edge_orientation', 'weight', i, '1, 2, 3, 4, 5')
-        oneToSeveral(RO, W, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 11.0, 11.0, 9.0, 7.0});
-        oneToSeveral(RO, W, 2, "'1, 2, 3, 4, 5'", new double[]{8.0, 0.0, 1.0, 3.0, 7.0});
-        oneToSeveral(RO, W, 3, "'1, 2, 3, 4, 5'", new double[]{13.0, 10.0, 0.0, 8.0, 6.0});
-        oneToSeveral(RO, W, 4, "'1, 2, 3, 4, 5'", new double[]{5.0, 2.0, 3.0, 0.0, 9.0});
-        oneToSeveral(RO, W, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+        oneToSeveral(RO, W, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 11.0, 9.0, 11.0, 7.0});
+        oneToSeveral(RO, W, 2, "'1, 2, 3, 4, 5'", new double[]{8.0, 0.0, 3.0, 1.0, 7.0});
+        oneToSeveral(RO, W, 3, "'1, 2, 3, 4, 5'", new double[]{5.0, 2.0, 0.0, 3.0, 9.0});
+        oneToSeveral(RO, W, 4, "'1, 2, 3, 4, 5'", new double[]{13.0, 10.0, 8.0, 0.0, 6.0});
+        oneToSeveral(RO, W, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
 
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'weight', 'reversed - edge_orientation', i, '1, 2, 3, 4, 5')
-        oneToSeveral(W, RO, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 11.0, 11.0, 9.0, 7.0});
-        oneToSeveral(W, RO, 2, "'1, 2, 3, 4, 5'", new double[]{8.0, 0.0, 1.0, 3.0, 7.0});
-        oneToSeveral(W, RO, 3, "'1, 2, 3, 4, 5'", new double[]{13.0, 10.0, 0.0, 8.0, 6.0});
-        oneToSeveral(W, RO, 4, "'1, 2, 3, 4, 5'", new double[]{5.0, 2.0, 3.0, 0.0, 9.0});
-        oneToSeveral(W, RO, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+        oneToSeveral(W, RO, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 11.0, 9.0, 11.0, 7.0});
+        oneToSeveral(W, RO, 2, "'1, 2, 3, 4, 5'", new double[]{8.0, 0.0, 3.0, 1.0, 7.0});
+        oneToSeveral(W, RO, 3, "'1, 2, 3, 4, 5'", new double[]{5.0, 2.0, 0.0, 3.0, 9.0});
+        oneToSeveral(W, RO, 4, "'1, 2, 3, 4, 5'", new double[]{13.0, 10.0, 8.0, 0.0, 6.0});
+        oneToSeveral(W, RO, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
     }
 
     @Test
     public void oneToSeveralU() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'undirected', i, '1, 2, 3, 4, 5')
-        oneToSeveral(U, 1, "'1, 2, 3, 4, 5'", new double[]{0.0,  1.0,  2.0,  1.0,  1.0});
+        oneToSeveral(U, 1, "'1, 2, 3, 4, 5'", new double[]{0.0,  1.0,  1.0,  2.0,  1.0});
         oneToSeveral(U, 2, "'1, 2, 3, 4, 5'", new double[]{1.0,  0.0,  1.0,  1.0,  2.0});
-        oneToSeveral(U, 3, "'1, 2, 3, 4, 5'", new double[]{2.0,  1.0,  0.0,  1.0,  1.0});
-        oneToSeveral(U, 4, "'1, 2, 3, 4, 5'", new double[]{1.0,  1.0,  1.0,  0.0,  1.0});
+        oneToSeveral(U, 3, "'1, 2, 3, 4, 5'", new double[]{1.0,  1.0,  0.0,  1.0,  1.0});
+        oneToSeveral(U, 4, "'1, 2, 3, 4, 5'", new double[]{2.0,  1.0,  1.0,  0.0,  1.0});
         oneToSeveral(U, 5, "'1, 2, 3, 4, 5'", new double[]{1.0,  2.0,  1.0,  1.0,  0.0});
     }
 
@@ -678,19 +678,19 @@ public class ST_ShortestPathLengthTest {
     public void oneToSeveralWU() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'undirected', 'weight', i, '1, 2, 3, 4, 5')
-        oneToSeveral(U, W, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 7.0, 8.0, 5.0, 7.0});
-        oneToSeveral(U, W, 2, "'1, 2, 3, 4, 5'", new double[]{7.0, 0.0, 1.0, 2.0, 4.0});
-        oneToSeveral(U, W, 3, "'1, 2, 3, 4, 5'", new double[]{8.0, 1.0, 0.0, 3.0, 4.0});
-        oneToSeveral(U, W, 4, "'1, 2, 3, 4, 5'", new double[]{5.0, 2.0, 3.0, 0.0, 2.0});
-        oneToSeveral(U, W, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+        oneToSeveral(U, W, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 7.0, 5.0, 8.0, 7.0});
+        oneToSeveral(U, W, 2, "'1, 2, 3, 4, 5'", new double[]{7.0, 0.0, 2.0, 1.0, 4.0});
+        oneToSeveral(U, W, 3, "'1, 2, 3, 4, 5'", new double[]{5.0, 2.0, 0.0, 3.0, 2.0});
+        oneToSeveral(U, W, 4, "'1, 2, 3, 4, 5'", new double[]{8.0, 1.0, 3.0, 0.0, 4.0});
+        oneToSeveral(U, W, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
 
         // SELECT * FROM ST_ShortestPathLength('cormen_edges_all',
         //     'weight', 'undirected', i, '1, 2, 3, 4, 5')
-        oneToSeveral(W, U, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 7.0, 8.0, 5.0, 7.0});
-        oneToSeveral(W, U, 2, "'1, 2, 3, 4, 5'", new double[]{7.0, 0.0, 1.0, 2.0, 4.0});
-        oneToSeveral(W, U, 3, "'1, 2, 3, 4, 5'", new double[]{8.0, 1.0, 0.0, 3.0, 4.0});
-        oneToSeveral(W, U, 4, "'1, 2, 3, 4, 5'", new double[]{5.0, 2.0, 3.0, 0.0, 2.0});
-        oneToSeveral(W, U, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 4.0, 2.0, 0.0});
+        oneToSeveral(W, U, 1, "'1, 2, 3, 4, 5'", new double[]{0.0, 7.0, 5.0, 8.0, 7.0});
+        oneToSeveral(W, U, 2, "'1, 2, 3, 4, 5'", new double[]{7.0, 0.0, 2.0, 1.0, 4.0});
+        oneToSeveral(W, U, 3, "'1, 2, 3, 4, 5'", new double[]{5.0, 2.0, 0.0, 3.0, 2.0});
+        oneToSeveral(W, U, 4, "'1, 2, 3, 4, 5'", new double[]{8.0, 1.0, 3.0, 0.0, 4.0});
+        oneToSeveral(W, U, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
     }
 
     @Test(expected = IllegalArgumentException.class)
