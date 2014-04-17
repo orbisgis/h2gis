@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_SimplifyPreserveTopology/
 
 {% highlight mysql %}
 GEOMETRY ST_SimplyPreserveTopology(GEOMETRY geom, 
-double distance);
+                                   double distance);
 {% endhighlight %}
 
 ### Description

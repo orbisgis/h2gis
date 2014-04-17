@@ -49,10 +49,10 @@ SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
                     2)
 -- Answer: POLYGON EMPTY
 
-SELECT ST_Simplify('MULTIPOINT( (190 300), (10 11))', 4);
+SELECT ST_Simplify('MULTIPOINT((190 300), (10 11))', 4);
 -- Answer: MULTIPOINT((190 300), (10 11))
 
-SELECT ST_Simplify('LINESTRING (250 250, 280 290, 300 230, 
+SELECT ST_Simplify('LINESTRING(250 250, 280 290, 300 230, 
                                 340 300, 360 260, 440 310, 
                                 470 360, 604 286)', 
                     40);
