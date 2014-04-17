@@ -91,5 +91,6 @@ Indeed, this function return the closest vertex which is found.
 
 ##### See also
 
+* [`ST_RemovePoint`](../ST_RemovePoint), [`ST_Densify`](../ST_Densify)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_AddPoint.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
