@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_StartPoint
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the first coordinate of a <code>LINESTRING</code>
 prev_section: ST_SRID
 next_section: ST_X

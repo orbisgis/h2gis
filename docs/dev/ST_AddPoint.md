@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_AddPoint
-category: h2spatial-ext/edit-geometries
+category: Geometry2D/edit-geometries
 description: 
-prev_section: h2spatial-ext/edit-geometries
-next_section: ST_AddZ
+prev_section: Geometry2D/edit-geometries
+next_section: ST_Densify
 permalink: /docs/dev/ST_AddPoint/
 ---
 

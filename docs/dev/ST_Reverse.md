@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Reverse
-category: h2spatial-ext/edit-geometries
+category: Geometry2D/edit-geometries
 description: 
 prev_section: ST_RemoveRepeatedPoints
-next_section: ST_Reverse3DLine
+next_section: Geometry2D/distance-functions
 permalink: /docs/dev/ST_Reverse/
 ---
 

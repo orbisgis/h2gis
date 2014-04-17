@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_PolyFromWKB
-category: h2spatial/geometry-conversion
+category: Geometry2D/geometry-conversion
 description: Well Known Binary &rarr; <code>POLYGON</code>
 prev_section: ST_PolyFromText
-next_section: h2spatial/operators
+next_section: Geometry2D/operators
 permalink: /docs/dev/ST_PolyFromWKB/
 ---
 

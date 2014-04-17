@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Dimension
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the dimension of a Geometry
 prev_section: ST_Centroid
 next_section: ST_Distance

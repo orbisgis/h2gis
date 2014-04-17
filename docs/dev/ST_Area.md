@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_Area
-category: h2spatial/properties
+category: Geometry2D/distance-functions
 description: Return a Geometry's area
-prev_section: h2spatial/properties
+prev_section: Geometry2D/distance-functions
 next_section: ST_Boundary
 permalink: /docs/dev/ST_Area/
 ---

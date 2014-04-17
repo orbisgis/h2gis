@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_IsSimple
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return true if a Geometry is simple
 prev_section: ST_IsRing
 next_section: ST_Length

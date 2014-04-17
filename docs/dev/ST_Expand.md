@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Expand
-category: h2spatial-ext/geometry-creation
+category: Geometry2D/geometry-creation
 description: 
 prev_section: ST_BoundingCircle
-next_section: ST_Extrude
+next_section: ST_MakeEllipse
 permalink: /docs/dev/ST_Expand/
 ---
 

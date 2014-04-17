@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_ZMin
-category: h2spatial-ext/properties
+category: Geometry3D/properties
 description: Return the minimum z-value of a Geometry
 prev_section: ST_ZMax
-next_section:
+next_section: Geometry3D/geometry-conversion
 permalink: /docs/dev/ST_ZMin/
 ---
 

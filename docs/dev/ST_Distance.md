@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Distance
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the distance between two Geometries
 prev_section: ST_Dimension
 next_section: ST_EndPoint

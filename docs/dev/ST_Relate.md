@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Relate
-category: h2spatial/predicates
+category: Geometry2D/predicates
 description: 
 prev_section: ST_Overlaps
 next_section: ST_Touches

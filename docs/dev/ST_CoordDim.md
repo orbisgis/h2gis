@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_CoordDim
-category: h2spatial-ext/properties
+category: Geometry2D/properties
 description: Return the dimension of the coordinates of a Geometry
 prev_section: ST_CompactnessRatio
 next_section: ST_Explode

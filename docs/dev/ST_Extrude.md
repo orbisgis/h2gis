@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Extrude
-category: h2spatial-ext/geometry-creation
+category: Geometry3D/geometry-creation
 description: 
 prev_section: ST_Expand
 next_section: ST_MakeEllipse

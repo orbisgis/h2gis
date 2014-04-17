@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_PrecisionReducer
-category: h2spatial-ext/process-geometries
+category: Geometry2D/process-geometries
 description: 
 prev_section: ST_Polygonize
 next_section: ST_Simplify

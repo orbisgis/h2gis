@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_ConstrainedDelaunay
-category: h2spatial-ext/triangulation
+category: Geometry3D/triangulation
 description: 
-prev_section: h2spatial-ext/triangulation
+prev_section: Geometry3D/triangulation
 next_section: ST_Delaunay
 permalink: /docs/dev/ST_ConstrainedDelaunay/
 ---

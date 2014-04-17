@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_ToMultiLine
-category: h2spatial-ext/geometry-conversion
+category: Geometry2D/geometry-conversion
 description: Geometry's coordinates &rarr; <code>MULTILINESTRING</code>
 prev_section: ST_Holes
 next_section: ST_ToMultiPoint

@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_XMin
-category: h2spatial-ext/properties
+category: Geometry2D/properties
 description: Return the minimum x-value of a Geometry
 prev_section: ST_XMax
 next_section: ST_YMax

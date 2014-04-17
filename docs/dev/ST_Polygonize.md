@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_Polygonize
-category: h2spatial-ext/process-geometries
+category: Geometry2D/process-geometries
 description: 
-prev_section: h2spatial-ext/process-geometries
+prev_section: Geometry2D/process-geometries
 next_section: ST_PrecisionReducer
 permalink: /docs/dev/ST_Polygonize/
 ---

@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Transform
-category: h2spatial/projections
+category: Geometry2D/projections
 description: Transform a Geometry from one CRS to another
 prev_section: ST_SetSRID
-next_section: h2spatial/properties
+next_section: Geometry2D/properties
 permalink: /docs/dev/ST_Transform/
 ---
 

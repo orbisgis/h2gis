@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_DWithin
-category: h2spatial-ext/predicates
+category: Geometry2D/predicates
 description: Return true if the Geometries are within the specified distance of one another
 prev_section: ST_Covers
-next_section: h2spatial-ext/properties
+next_section: Geometry2D/properties
 permalink: /docs/dev/ST_DWithin/
 ---
 

@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_YMin
-category: h2spatial-ext/properties
+category: Geometry2D/properties
 description: Return the minimum y-value of a Geometry
 prev_section: ST_YMax
-next_section: ST_ZMax
+next_section: Geometry3D/list-function-3d
 permalink: /docs/dev/ST_YMin/
 ---
 

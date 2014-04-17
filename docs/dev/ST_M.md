@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_M
-category: h2spatial/properties
+category: Geometry2D/properties
 description: 
 prev_section: ST_Length
 next_section: ST_NumGeometries

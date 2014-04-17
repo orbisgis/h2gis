@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Densify
-category: h2spatial-ext/edit-geometries
+category: Geometry2D/edit-geometries
 description: 
-prev_section: ST_AddZ
-next_section: ST_Interpolate3DLine
+prev_section: ST_AddPoint
+next_section: ST_Normalize
 permalink: /docs/dev/ST_Densify/
 ---
 

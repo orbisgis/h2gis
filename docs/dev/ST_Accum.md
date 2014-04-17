@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Accum
-category: h2spatial/aggregates
+category: Geometry2D/aggregates
 description: Construct a `GEOMETRYCOLLECTION` from a column of Geometries
-prev_section: h2spatial/aggregates
-next_section: h2spatial-ext/affine-transformations
+prev_section: Geometry2D/aggregates
+next_section: Geometry2D/affine-transformations
 permalink: /docs/dev/ST_Accum/
 ---
 

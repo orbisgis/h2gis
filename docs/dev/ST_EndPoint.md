@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_EndPoint
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the last coordinate of a <code>LINESTRING</code>
 prev_section: ST_Distance
 next_section: ST_Envelope

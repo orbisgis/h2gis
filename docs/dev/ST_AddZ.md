@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_AddZ
-category: h2spatial-ext/edit-geometries
+category: Geometry3D/edit-geometries
 description: 
 prev_section: ST_AddPoint
 next_section: ST_Densify

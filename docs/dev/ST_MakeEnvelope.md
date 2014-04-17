@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MakeEnvelope
-category: h2spatial-ext/geometry-creation
+category: Geometry2D/geometry-creation
 description: 
 prev_section: ST_MakeEllipse
 next_section: ST_MakeLine

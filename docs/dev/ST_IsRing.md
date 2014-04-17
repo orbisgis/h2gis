@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_IsRing
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return true if a <code>LINESTRING</code> is ring
 prev_section: ST_IsEmpty
 next_section: ST_IsSimple

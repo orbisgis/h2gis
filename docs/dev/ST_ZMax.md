@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_ZMax
-category: h2spatial-ext/properties
+category: Geometry3D/properties
 description: Return the maximum z-value of a Geometry
 prev_section: ST_YMin
 next_section: ST_ZMin

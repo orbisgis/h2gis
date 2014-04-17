@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Intersects
-category: h2spatial/predicates
+category: Geometry2D/predicates
 description: Return true if Geometry A intersects Geometry B
 prev_section: ST_Equals
 next_section: ST_Overlaps

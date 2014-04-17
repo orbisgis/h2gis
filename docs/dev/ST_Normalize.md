@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_Normalize
-category: h2spatial-ext/edit-geometries
+category: Geometry2D/edit-geometries
 description: 
-prev_section: ST_MultiplyZ
+prev_section: ST_Densify
 next_section: ST_RemoveHoles
 permalink: /docs/dev/ST_Normalize/
 ---

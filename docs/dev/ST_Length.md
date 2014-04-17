@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Length
-category: h2spatial/properties
+category: Geometry2D/distance-functions
 description: Return the length of a Geometry
 prev_section: ST_IsSimple
 next_section: ST_M

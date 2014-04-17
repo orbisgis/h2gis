@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_IsValid
-category: h2spatial-ext/properties
+category: Geometry2D/properties
 description: Return true if the Geometry is valid
 prev_section: ST_IsRectangle
 next_section: ST_XMax

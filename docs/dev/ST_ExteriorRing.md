@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_ExteriorRing
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the exterior ring of a <code>POLYGON</code>
 prev_section: ST_Envelope
 next_section: ST_GeometryN

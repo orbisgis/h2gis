@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_ToMultiPoint
-category: h2spatial-ext/geometry-conversion
+category: Geometry2D/geometry-conversion
 description: Geometry's coordinates &rarr; <code>MULTIPOINT</code>
 prev_section: ST_ToMultiLine
 next_section: ST_ToMultiSegments

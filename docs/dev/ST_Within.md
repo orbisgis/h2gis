@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Within
-category: h2spatial/predicates
+category: Geometry2D/predicates
 description: Return true if Geometry A is within Geometry B
 prev_section: ST_Touches
-next_section: h2spatial/projections
+next_section: Geometry2D/process-geometries
 permalink: /docs/dev/ST_Within/
 ---
 

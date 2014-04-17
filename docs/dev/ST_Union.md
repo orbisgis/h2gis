@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Union
-category: h2spatial/operators
+category: Geometry2D/operators
 description: Compute the union of two or more Geometries
 prev_section: ST_SymDifference
-next_section: h2spatial/predicates
+next_section: Geometry2D/predicates
 permalink: /docs/dev/ST_Union/
 ---
 

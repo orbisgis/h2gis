@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Y
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the y-value of the first coordinate of a Geometry
 prev_section: ST_X
 next_section: ST_Z

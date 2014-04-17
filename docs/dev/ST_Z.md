@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Z
-category: h2spatial/properties
+category: Geometry3D/properties
 description: Return the z-value of the first coordinate of a Geometry
 prev_section: ST_Y
-next_section: h2spatial/aggregates
+next_section: Geometry3D/aggregates
 permalink: /docs/dev/ST_Z/
 ---
 

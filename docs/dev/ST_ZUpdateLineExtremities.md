@@ -1,10 +1,10 @@
 ---
 layout: docs
-title: ST_ZUpdateExtremities
-category: h2spatial-ext/edit-geometries
+title: ST_ZUpdateLineExtremities
+category: Geometry3D/edit-geometries
 description: 
 prev_section: ST_UpdateZ
-next_section: h2spatial-ext/process-geometries
+next_section: Geometry3D/process-geometries
 permalink: /docs/dev/ST_ZUpdateExtremities/
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Interpolate3DLine
-category: h2spatial-ext/edit-geometries
+category: Geometry3D/edit-geometries
 description: 
 prev_section: ST_Densify
 next_section: ST_MultiplyZ

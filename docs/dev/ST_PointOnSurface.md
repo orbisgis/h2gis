@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_PointOnSurface
-category: h2spatial/properties
+category: Geometry2D/properties
 description: 
 prev_section: ST_PointN
 next_section: ST_SRID

@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_UpdateZ
-category: h2spatial-ext/edit-geometries
+category: Geometry3D/edit-geometries
 description: 
 prev_section: ST_Reverse3DLine
 next_section: ST_ZUpdateExtremities

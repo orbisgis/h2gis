@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_BoundingCircle
-category: h2spatial-ext/geometry-creation
+category: Geometry2D/geometry-creation
 description: 
-prev_section: h2spatial-ext/geometry-creation
+prev_section: Geometry2D/geometry-creation
 next_section: ST_Expand
 permalink: /docs/dev/ST_BoundingCircle/
 ---

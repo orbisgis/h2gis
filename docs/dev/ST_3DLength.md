@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_3DLength
-category: h2spatial-ext/properties
+category: Geometry3D/distance-functions
 description: Return the 3D length or the 3D perimeter a Geometry
-prev_section: h2spatial-ext/properties
+prev_section: Geometry3D/distance-functions
 next_section: ST_CompactnessRatio
 permalink: /docs/dev/ST_3DLength/
 ---

@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_OctogonalEnvelope
-category: h2spatial-ext/geometry-creation
+category: Geometry2D/geometry-creation
 description: 
 prev_section: ST_MinimumRectangle
-next_section: h2spatial-ext/edit-geometries
+next_section: Geometry2D/edit-geometries
 permalink: /docs/dev/ST_OctogonalEnvelope/
 ---
 

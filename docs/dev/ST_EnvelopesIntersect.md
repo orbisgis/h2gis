@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_EnvelopesIntersect
-category: h2spatial/predicates
+category: Geometry2D/predicates
 description: Return true if the envelope of Geometry A intersects the envelope of Geometry B
 prev_section: ST_Disjoint
 next_section: ST_Equals

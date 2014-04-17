@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Centroid
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the centroid of a Geometry
 prev_section: ST_Boundary
 next_section: ST_Dimension

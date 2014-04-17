@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Boundary
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return a Geometry's boundary
 prev_section: ST_Area
 next_section: ST_Centroid

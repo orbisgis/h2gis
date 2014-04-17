@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_GeometryType
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the type of a Geometry
 prev_section: ST_GeometryN
 next_section: ST_InteriorRingN

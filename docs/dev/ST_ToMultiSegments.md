@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_ToMultiSegments
-category: h2spatial-ext/geometry-conversion
+category: Geometry2D/geometry-conversion
 description: <code>GEOMETRY(COLLECTION)</code> &rarr; <code>MULTILINESTRING</code>
 prev_section: ST_OctogonalEnvelope
-next_section: h2spatial-ext/geometry-creation
+next_section: Geometry2D/geometry-creation
 permalink: /docs/dev/ST_ToMultiSegments/
 ---
 

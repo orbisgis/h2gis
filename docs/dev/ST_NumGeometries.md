@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_NumGeometries
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the number of Geometries in a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_M
 next_section: ST_NumInteriorRing

@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_XMax
-category: h2spatial-ext/properties
+category: Geometry2D/properties
 description: Return the maximum x-value of a Geometry
 prev_section: ST_IsValid
 next_section: ST_XMin

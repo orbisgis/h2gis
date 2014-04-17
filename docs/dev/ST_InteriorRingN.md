@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_InteriorRingN
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the <i>n</i>th interior ring of a <code>POLYGON</code>
 prev_section: ST_GeometryType
 next_section: ST_IsClosed

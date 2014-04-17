@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Delaunay
-category: h2spatial-ext/triangulation
+category: Geometry3D/triangulation
 description: 
 prev_section: ST_ConstrainedDelaunay
 next_section: 

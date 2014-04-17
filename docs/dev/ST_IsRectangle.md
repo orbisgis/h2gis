@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_IsRectangle
-category: h2spatial-ext/properties
+category: Geometry2D/properties
 description: Return true if the Geometry is a rectangle
 prev_section: ST_Extent
 next_section: ST_IsValid

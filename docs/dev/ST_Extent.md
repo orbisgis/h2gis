@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Extent
-category: h2spatial-ext/properties
+category: Geometry2D/properties
 description: Return the minimum bounding box of a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_Explode
 next_section: ST_IsRectangle

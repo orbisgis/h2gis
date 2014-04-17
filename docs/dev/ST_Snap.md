@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Snap
-category: h2spatial-ext/process-geometries
+category: Geometry2D/process-geometries
 description: 
 prev_section: ST_SimplifyPreserveTopology
 next_section: ST_Split

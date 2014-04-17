@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MinimumRectangle
-category: h2spatial-ext/geometry-creation
+category: Geometry2D/geometry-creation
 description: 
 prev_section: ST_MakePoint
 next_section: ST_OctogonalEnvelope

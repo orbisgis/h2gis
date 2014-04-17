@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_AsWKT
-category: h2spatial/geometry-conversion
+category: Geometry2D/geometry-conversion
 description: Geometry &rarr; Well Known Text
 prev_section: ST_AsText
 next_section: ST_GeomFromText

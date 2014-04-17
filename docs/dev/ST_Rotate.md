@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_Rotate
-category: h2spatial-ext/affine-transformations
+category: Geometry2D/affine-transformations
 description: Rotate a Geometry counter-clockwise by an angle (in radians) about a point 
-prev_section: h2spatial-ext/affine-transformations
+prev_section: Geometry2D/affine-transformations
 next_section: ST_Scale
 permalink: /docs/dev/ST_Rotate/
 ---

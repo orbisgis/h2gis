@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_PointFromText
-category: h2spatial/geometry-conversion
+category: Geometry2D/geometry-conversion
 description: Well Known Text &rarr; <code>POINT</code>
 prev_section: ST_MPolyFromText
 next_section: ST_PolyFromText

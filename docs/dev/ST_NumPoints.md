@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_NumPoints
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the number of points in a Geometry
 prev_section: ST_NumInteriorRings
 next_section: ST_PointN

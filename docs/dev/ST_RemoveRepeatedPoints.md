@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_RemoveRepeatedPoints
-category: h2spatial-ext/edit-geometries
+category: Geometry2D/edit-geometries
 description: 
 prev_section: ST_RemovePoint
 next_section: ST_Reverse

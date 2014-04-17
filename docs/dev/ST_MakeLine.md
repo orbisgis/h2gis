@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MakeLine
-category: h2spatial-ext/geometry-creation
+category: Geometry2D/geometry-creation
 description: <code>(MULTI)POINT</code> &rarr; <code>LINESTRING</code>
 prev_section: ST_MakeEnvelope
 next_section: ST_MakePoint

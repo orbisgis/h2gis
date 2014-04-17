@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_YMax
-category: h2spatial-ext/properties
+category: Geometry2D/properties
 description: Return the maximum y-value of a Geometry
 prev_section: ST_XMin
 next_section: ST_YMin

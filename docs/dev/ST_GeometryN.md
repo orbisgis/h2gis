@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_GeometryN
-category: h2spatial/properties
+category: Geometry2D/properties
 description: Return the <i>n</i>th Geometry of a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_ExteriorRing
 next_section: ST_GeometryType

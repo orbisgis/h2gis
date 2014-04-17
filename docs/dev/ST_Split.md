@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Split
-category: h2spatial-ext/process-geometries
+category: Geometry2D/process-geometries
 description: 
 prev_section: ST_Snap
-next_section: h2spatial-ext/measure-distance
+next_section: Geometry2D/projections
 permalink: /docs/dev/ST_Split/
 ---
 
