@@ -410,7 +410,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "THE_GEOM POINT " +
                     ") AS " +
                     "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
-                    "WHERE A.THE_GEOM=B.THE_GEOM " +
+                    "WHERE A.THE_GEOM && B.THE_GEOM AND A.THE_GEOM=B.THE_GEOM " +
                     "GROUP BY A.ID " +
                     "HAVING A.ID=MIN(B.ID);");
         }
@@ -443,9 +443,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             st.execute("CREATE TABLE " + edgesName + " AS " +
                     "SELECT EDGE_ID, " +
                     "(SELECT NODE_ID FROM " + nodesName +
-                    " WHERE " + nodesName + ".THE_GEOM=COORDS.START_POINT LIMIT 1) START_NODE, " +
+                    " WHERE " + nodesName + ".THE_GEOM && COORDS.START_POINT " +
+                    "AND " + nodesName + ".THE_GEOM=COORDS.START_POINT LIMIT 1) START_NODE, " +
                     "(SELECT NODE_ID FROM " + nodesName +
-                    " WHERE " + nodesName + ".THE_GEOM=COORDS.END_POINT LIMIT 1) END_NODE " +
+                    " WHERE " + nodesName + ".THE_GEOM && COORDS.END_POINT " +
+                    "AND " + nodesName + ".THE_GEOM=COORDS.END_POINT LIMIT 1) END_NODE " +
                     "FROM COORDS;");
         }
     }
