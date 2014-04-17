@@ -29,19 +29,19 @@ SELECT ST_Interpolate3DLine('POLYGON((2 0 1, 2 8 0, 4 8,
 -- Answer: null
 
 SELECT ST_Interpolate3DLine('LINESTRING(0 8, 1 8, 3 8)');
--- Answer: LINESTRING (0 8, 1 8, 3 8)
+-- Answer: LINESTRING(0 8, 1 8, 3 8)
 SELECT ST_Z(ST_PointN(ST_Interpolate3DLine('LINESTRING(0 8, 1 8,
                                                        3 8)'),1));
 -- Answer: NaN
 
 SELECT ST_Interpolate3DLine('LINESTRING(0 0 1, 5 0 , 10 0 10)');
--- Answer: LINESTRING (0 0 1, 5 0 5.5, 10 0 10)
+-- Answer: LINESTRING(0 0 1, 5 0 5.5, 10 0 10)
 
 SELECT ST_Interpolate3DLine('MULTILINESTRING((0 0 0, 5 0 , 
                                               10 0 10),
                                              (0 0 0, 50 0, 
                                               100 0 100))');
--- Answer: MULTILINESTRING ((0 0 0, 5 0 5, 10 0 10), 
+-- Answer: MULTILINESTRING((0 0 0, 5 0 5, 10 0 10), 
 --                          (0 0 0, 50 0 50, 100 0 100))
 {% endhighlight %}
 

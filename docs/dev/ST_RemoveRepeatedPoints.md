@@ -29,7 +29,7 @@ SELECT ST_RemoveRepeatedPoints('MULTIPOINT((4 4), (1 1), (1 0),
 SELECT ST_RemoveRepeatedPoints('LINESTRING(1 1, 2 2, 2 2, 1 3, 
                                            1 3, 3 3, 3 3, 5 2, 
                                            5 2, 5 1)');
--- Answer: LINESTRING (1 1, 2 2, 1 3, 3 3, 5 2, 5 1) 
+-- Answer: LINESTRING(1 1, 2 2, 1 3, 3 3, 5 2, 5 1) 
 
 SELECT ST_RemoveRepeatedPoints('POLYGON((2 4, 1 3, 2 1, 2 1, 
                                          6 1, 6 3, 4 4, 4 4, 
@@ -48,5 +48,6 @@ SELECT ST_RemoveRepeatedPoints('GEOMETRYCOLLECTION(
 
 ##### See also
 
+* [`ST_RemovePoint`](../ST_RemovePoint)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_RemoveRepeatedPoints.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

@@ -17,14 +17,13 @@ GEOMETRY ST_Reverse3DLine(GEOMETRY geom, varchar orderReverse);
 
 ### Description
 Reverses order ascending or descending of z values of a `LINESTRING` or `MULTILINESTRING` according the start and the end z values.
-If the `orderReverse` is not defined, it's ascending order which
-applies.
+If the `orderReverse` is not defined, it's ascending order which applies.
 If the  start or the end z values are equal to NaN return the input Geometry.
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_Reverse3DLine('POLYGON ((190 300, 140 180, 300 110, 
+SELECT ST_Reverse3DLine('POLYGON((190 300, 140 180, 300 110, 
                                    313 117, 430 270, 380 430, 
                                    190 300))');
 -- Answer: null
@@ -54,5 +53,6 @@ SELECT ST_Reverse3DLine('MULTILINESTRING((1 1 1, 1 6 2, 2 2 1,
 
 ##### See also
 
+* [`ST_Reverse`](../ST_Reverse)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_Reverse3DLine.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

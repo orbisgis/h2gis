@@ -8,7 +8,7 @@ next_section: h2spatial-ext/process-geometries
 permalink: /docs/dev/ST_ZUpdateLineExtremities/
 ---
 
-### Signature
+### Signatures
 
 {% highlight mysql %}
 GEOMETRY ST_ZUpdateLineExtremities(GEOMETRY geom, double startZ, 
@@ -21,7 +21,6 @@ GEOMETRY ST_ZUpdateLineExtremities(GEOMETRY geom, double startZ,
 Replaces the start and end z values of a `LINESTRING` or `MULTILINESTRING`. By default the other z values are interpolated according the length of the line. 
 If the `interpolate` is true the vertices are interpolated according the `startZ` and `endZ` values.
 Set false if you want to update only the start and end z values.
-
 
 ### Examples
 
@@ -58,6 +57,6 @@ SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0 , 5 0 1, 10 0 )',
 {% endhighlight %}
 
 ##### See also
-
+* [`ST_UpdateZ`](../ST_UpdateZ)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_ZUpdateLineExtremities.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

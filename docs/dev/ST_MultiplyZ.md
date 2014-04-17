@@ -23,7 +23,7 @@ NaN values are not updated.
 {% highlight mysql %}
 SELECT ST_MultiplyZ('MULTIPOINT((190 300), (10 11))', 10);
 -- Answer: MULTIPOINT((190 300), (10 11)
-SELECT ST_Z(ST_MultiplyZ('MULTIPOINT( (190 300), (10 11))', 10));
+SELECT ST_Z(ST_MultiplyZ('MULTIPOINT((190 300), (10 11))', 10));
 -- Answer: NaN
 
 SELECT ST_MultiplyZ('MULTIPOINT((190 300 1), (10 11 50))',
@@ -40,5 +40,6 @@ SELECT ST_MultiplyZ('MULTIPOINT((190 300 100), (10 11 50))',
 
 ##### See also
 
+* [`ST_UpdateZ`](../ST_UpdateZ),
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_MultiplyZ.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

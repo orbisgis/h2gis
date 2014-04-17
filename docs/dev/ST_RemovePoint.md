@@ -8,7 +8,7 @@ next_section: ST_RemoveRepeatedPoints
 permalink: /docs/dev/ST_RemovePoint/
 ---
 
-### Signatures
+### Signature
 
 {% highlight mysql %}
 GEOMETRY ST_RemovePoint(GEOMETRY geom, POLYGON poly);
@@ -23,12 +23,12 @@ Remove all vertices that are located within a `POLYGON`.
 
 {% highlight mysql %}
 SELECT ST_RemovePoint('POINT(1 1)', 
-                      'POLYGON ((0 2, 2 2, 2 0, 0 0, 0 2))');
+                      'POLYGON((0 2, 2 2, 2 0, 0 0, 0 2))');
 -- Answer: null
 
 SELECT ST_RemovePoint('MULTIPOINT((5 5), (10 10), (100 100))', 
                       ST_Buffer('POINT(10 10)', 1));
--- Answer: MULTIPOINT ((5 5), (100 100))
+-- Answer: MULTIPOINT((5 5), (100 100))
 
 SELECT ST_RemovePoint('MULTIPOINT((5 5), (3 1))', 
                       ST_Buffer('POINT(4 2)',2));
@@ -42,7 +42,7 @@ SELECT ST_RemovePoint('POLYGON((0 1, 5 4, 5 7, 2 6, 0 1))',
                       ST_Buffer('POINT(6 8)', 1.5));
 -- Answer: POLYGON((0 1, 5 4, 2 6, 0 1))
 
-SELECT ST_RemovePoint('POLYGON ((0 1, 5 4, 5 7, 2 6, 0 1))',
+SELECT ST_RemovePoint('POLYGON((0 1, 5 4, 5 7, 2 6, 0 1))',
                       'POLYGON((4 8, 6 8, 6 6, 4 6, 4 8))');
 -- Answer: POLYGON((0 1, 5 4, 2 6, 0 1))
 {% endhighlight %}
@@ -104,5 +104,6 @@ SELECT ST_RemovePoint('LINESTRING(0 3, 1 1, 3 3, 5 2, 5 4, 6 5,
 
 ##### See also
 
+* [`ST_AddPoint`](../ST_AddPoint), [`ST_RemoveRepeatedPoints`](../ST_RemoveRepeatedPoints)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_RemovePoint.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

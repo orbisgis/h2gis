@@ -26,7 +26,7 @@ If the `updateCondition` is not defined, `z` replace all z value.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_UpdateZ('POINT(190 300 1)'::GEOMETRY, 10, 4);
+SELECT ST_UpdateZ('POINT(190 300 1)', 10, 4);
 -- Answer: Available values are 1, 2 or 3.
 
 SELECT ST_UpdateZ('MULTIPOINT((190 300), (10 11 2))', 10);
@@ -47,5 +47,7 @@ SELECT ST_UpdateZ('LINESTRING(250 250 10, 280 290, 300 230 0,
 
 ##### See also
 
+* [`ST_ZUpdateLineExtremities`](../ST_ZUpdateLineExtremities),
+[`ST_MultiplyZ`](../ST_MultiplyZ)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_UpdateZ.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
