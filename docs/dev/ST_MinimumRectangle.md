@@ -3,7 +3,7 @@ layout: docs
 title: ST_MinimumRectangle
 category: Geometry2D/geometry-creation
 description: 
-prev_section: ST_MakePoint
+prev_section: ST_MinimumDiameter
 next_section: ST_OctogonalEnvelope
 permalink: /docs/dev/ST_MinimumRectangle/
 ---

@@ -4,7 +4,7 @@ title: ST_MakeEnvelope
 category: Geometry2D/geometry-creation
 description: 
 prev_section: ST_MakeEllipse
-next_section: ST_MakeLine
+next_section: ST_MakeGrid
 permalink: /docs/dev/ST_MakeEnvelope/
 ---
 

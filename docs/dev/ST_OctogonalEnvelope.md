@@ -4,7 +4,7 @@ title: ST_OctogonalEnvelope
 category: Geometry2D/geometry-creation
 description: 
 prev_section: ST_MinimumRectangle
-next_section: Geometry2D/edit-geometries
+next_section: ST_RingBuffer
 permalink: /docs/dev/ST_OctogonalEnvelope/
 ---
 

@@ -4,7 +4,7 @@ title: ST_MakePoint
 category: Geometry2D/geometry-creation
 description: Construct a <code>POINT</code> from two or three coordinates
 prev_section: ST_MakeLine
-next_section: ST_MinimumRectangle
+next_section: ST_MakePolygon
 permalink: /docs/dev/ST_MakePoint/
 ---
 

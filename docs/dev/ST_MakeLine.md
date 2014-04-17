@@ -3,7 +3,7 @@ layout: docs
 title: ST_MakeLine
 category: Geometry2D/geometry-creation
 description: <code>(MULTI)POINT</code> &rarr; <code>LINESTRING</code>
-prev_section: ST_MakeEnvelope
+prev_section: ST_MakeGridPoints
 next_section: ST_MakePoint
 permalink: /docs/dev/ST_MakeLine/
 ---
