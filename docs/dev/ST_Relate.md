@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Relate
 category: h2spatial/predicates
-description: Return a <code>IntersectionMatrix</code> or true if the <code>IntersectionMatrix</code> is valid.
+description: Return the <code>IntersectionMatrix code</code> for the two Geometries or true if the given <code>IntersectionMatrix code</code>  match the elements in intersectionPattern.
 prev_section: ST_Overlaps
 next_section: ST_Touches
 permalink: /docs/dev/ST_Relate/
@@ -18,8 +18,8 @@ boolean ST_Relate(GEOMETRY GeomA, GEOMETRY geomB, varchar iMatrix);
 ### Description
 
 Computes the relation between two Geometries, as described in the SFS specification. It can be used in two ways: 
-* First, if only two Geometries are given, it returns a `9-character string representation` that refers to the corresponding IntersectionMatrix (DE-9IM). 
-* Secondly, if two Geometries and an `IntersectionMatrix` representation are given, it returns true if the computed IntersectionMatrix representation match with the given one. If no match, false is returned.
+* First, if only two Geometries are given, it returns a 9-character string representation that refers to the corresponding IntersectionMatrix (DE-9IM). 
+* Secondly, if two Geometries and an 9-character string representation (`iMatrix`) are given, it returns true if the computed `iMatrix` match with the given one. If no match, false is returned.
 
 <div class="note"><p>See <a href="http://en.wikipedia.org/wiki/DE-9IM">here</a> for more information about the DE9-IM.</p></div>
 
@@ -63,8 +63,8 @@ SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
 
 ##### See also
 
-* [`ST_Contains`](../ST_Contains), [`ST_Covers`](../ST_Covers),[`ST_CoveredBy`](../ST_CoveredBy),[`ST_Crosses`](../ST_Crosses),   [`ST_Disjoint`](../ST_Disjoint),
-[`ST_Equals`](../ST_Equals),[`ST_Intersect`](../ST_Intersect),
+* [`ST_Contains`](../ST_Contains), [`ST_Covers`](../ST_Covers), [`ST_Crosses`](../ST_Crosses),   [`ST_Disjoint`](../ST_Disjoint),
+[`ST_Equals`](../ST_Equals),[`ST_Intersects`](../ST_Intersects),
 [`ST_Overlaps`](../ST_Overlaps),[`ST_Touches`](../ST_Touches),
 [`ST_Within`](../ST_Within),
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_Relate.java" target="_blank">Source code</a>
