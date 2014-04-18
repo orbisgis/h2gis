@@ -5,7 +5,7 @@ category: Geometry2D/geometry-creation
 description: 
 prev_section: ST_OctogonalEnvelope
 next_section: Geometry2D/edit-geometries
-permalink: /docs/dev/ST_MakePolygon/
+permalink: /docs/dev/ST_RingBuffer/
 ---
 
 ### Signature

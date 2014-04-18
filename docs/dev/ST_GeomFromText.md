@@ -3,7 +3,7 @@ layout: docs
 title: ST_GeomFromText
 category: Geometry2D/geometry-conversion
 description: Well Known Text &rarr; Geometry
-prev_section: ST_AsWKT
+prev_section: ST_Force2D
 next_section: ST_GeometryTypeCode
 permalink: /docs/dev/ST_GeomFromText/
 ---

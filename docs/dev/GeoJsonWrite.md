@@ -4,7 +4,7 @@ title: GeoJsonWrite
 category: h2drivers/GeoJson
 description: 
 prev_section: GeoJsonRead
-next_section: h2drivers/GPX
+next_section: ST_AsGeoJson
 permalink: /docs/dev/GeoJsonWrite/
 ---
 

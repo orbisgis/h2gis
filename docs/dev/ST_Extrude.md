@@ -3,8 +3,8 @@ layout: docs
 title: ST_Extrude
 category: Geometry3D/geometry-creation
 description: 
-prev_section: ST_Expand
-next_section: ST_MakeEllipse
+prev_section: 
+next_section: 
 permalink: /docs/dev/ST_Extrude/
 ---
 

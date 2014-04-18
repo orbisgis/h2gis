@@ -7,6 +7,6 @@ next_section: Geometry2D/affine-transformations
 permalink: /docs/dev/Geometry2D/list-function-2d/
 ---
 
-The following 2D functions are available:
+Here is a list of all 2D functions included in H2GIS.
 
-{% include table_of_functions.html %}
+{% include all_2D_functions.html %}

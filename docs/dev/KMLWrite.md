@@ -4,8 +4,8 @@ title: KMLWrite
 category: h2drivers/KML
 description: 
 prev_section: h2drivers/KML
-next_section: h2drivers/SHP
-permalink: /docs/dev/KMLnWrite/
+next_section: ST_AsKml
+permalink: /docs/dev/KMLWrite/
 ---
 
 ### Signature

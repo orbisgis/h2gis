@@ -4,7 +4,7 @@ title: ST_Area
 category: Geometry2D/distance-functions
 description: Return a Geometry's area
 prev_section: Geometry2D/distance-functions
-next_section: ST_Boundary
+next_section: ST_ClosestCoordinate
 permalink: /docs/dev/ST_Area/
 ---
 

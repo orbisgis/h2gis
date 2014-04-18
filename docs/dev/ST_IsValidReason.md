@@ -4,7 +4,7 @@ title: ST_IsValidReason
 category: Geometry2D/properties
 description: 
 prev_section: ST_IsValidDetail
-next_section: ST_M
+next_section: ST_NumGeometries
 permalink: /docs/dev/ST_IsValidReason/
 ---
 

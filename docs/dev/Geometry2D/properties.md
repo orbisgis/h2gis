@@ -3,7 +3,7 @@ layout: docs
 title: Properties
 category: Geometry2D/properties
 prev_section: Geometry2D/projections
-next_section: Geometry3D/geometry-conversion
+next_section: Geometry2D/trigonometry
 permalink: /docs/dev/Geometry2D/properties/
 ---
 

@@ -4,7 +4,7 @@ title: ST_YMin
 category: Geometry2D/properties
 description: Return the minimum y-value of a Geometry
 prev_section: ST_YMax
-next_section: Geometry3D/list-function-3d
+next_section: Geometry2D/trigonometry
 permalink: /docs/dev/ST_YMin/
 ---
 

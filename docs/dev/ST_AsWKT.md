@@ -4,7 +4,7 @@ title: ST_AsWKT
 category: Geometry2D/geometry-conversion
 description: Geometry &rarr; Well Known Text
 prev_section: ST_AsText
-next_section: ST_GeomFromText
+next_section: ST_Force2D
 permalink: /docs/dev/ST_AsWKT/
 ---
 

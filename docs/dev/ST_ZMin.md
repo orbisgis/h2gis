@@ -4,7 +4,7 @@ title: ST_ZMin
 category: Geometry3D/properties
 description: Return the minimum z-value of a Geometry
 prev_section: ST_ZMax
-next_section: Geometry3D/geometry-conversion
+next_section: Geometry3D/topography
 permalink: /docs/dev/ST_ZMin/
 ---
 

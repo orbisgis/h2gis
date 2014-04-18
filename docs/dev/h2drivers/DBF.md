@@ -2,7 +2,7 @@
 layout: docs
 title: DBF
 category: h2drivers/DBF
-prev_section: functions
+prev_section: h2drivers/list-drivers
 next_section: h2drivers/GeoJson
 permalink: /docs/dev/h2drivers/DBF/
 ---

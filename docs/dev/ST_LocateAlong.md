@@ -3,7 +3,7 @@ layout: docs
 title: ST_LocateAlong
 category: Geometry2D/distance-functions
 description: 
-prev_section: ST_FurthestCoordinate
+prev_section: ST_Length
 next_section: Geometry2D/operators
 permalink: /docs/dev/ST_LocateAlong/
 ---
