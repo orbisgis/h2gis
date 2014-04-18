@@ -3,8 +3,8 @@ layout: docs
 title: ST_IsValid
 category: Geometry2D/properties
 description: Return true if the Geometry is valid
-prev_section: ST_IsRectangle
-next_section: ST_XMax
+prev_section: ST_IsSimple
+next_section: ST_IsValidDetail
 permalink: /docs/dev/ST_IsValid/
 ---
 

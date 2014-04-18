@@ -4,7 +4,7 @@ title: ST_IsEmpty
 category: Geometry2D/properties
 description: Return true if a Geometry is empty
 prev_section: ST_IsClosed
-next_section: ST_IsRing
+next_section: ST_IsRectangle
 permalink: /docs/dev/ST_IsEmpty/
 ---
 

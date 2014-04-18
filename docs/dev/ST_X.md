@@ -4,7 +4,7 @@ title: ST_X
 category: Geometry2D/properties
 description: Return the x-value of the first coordinate of a Geometry
 prev_section: ST_StartPoint
-next_section: ST_Y
+next_section: ST_XMax
 permalink: /docs/dev/ST_X/
 ---
 

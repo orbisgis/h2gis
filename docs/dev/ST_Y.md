@@ -3,8 +3,8 @@ layout: docs
 title: ST_Y
 category: Geometry2D/properties
 description: Return the y-value of the first coordinate of a Geometry
-prev_section: ST_X
-next_section: ST_Z
+prev_section: ST_XMin
+next_section: ST_YMax
 permalink: /docs/dev/ST_Y/
 ---
 

@@ -4,7 +4,7 @@ title: ST_PolyFromWKB
 category: Geometry2D/geometry-conversion
 description: Well Known Binary &rarr; <code>POLYGON</code>
 prev_section: ST_PolyFromText
-next_section: Geometry2D/operators
+next_section: ST_ToMultiLine
 permalink: /docs/dev/ST_PolyFromWKB/
 ---
 

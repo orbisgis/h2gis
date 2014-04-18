@@ -3,7 +3,7 @@ layout: docs
 title: ST_YMax
 category: Geometry2D/properties
 description: Return the maximum y-value of a Geometry
-prev_section: ST_XMin
+prev_section: ST_Y
 next_section: ST_YMin
 permalink: /docs/dev/ST_YMax/
 ---

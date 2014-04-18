@@ -3,7 +3,7 @@ layout: docs
 title: ST_ExteriorRing
 category: Geometry2D/properties
 description: Return the exterior ring of a <code>POLYGON</code>
-prev_section: ST_Envelope
+prev_section: ST_Extent
 next_section: ST_GeometryN
 permalink: /docs/dev/ST_ExteriorRing/
 ---

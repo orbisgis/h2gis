@@ -3,7 +3,7 @@ layout: docs
 title: ST_Boundary
 category: Geometry2D/properties
 description: Return a Geometry's boundary
-prev_section: ST_Area
+prev_section: Geometry2D/projections
 next_section: ST_Centroid
 permalink: /docs/dev/ST_Boundary/
 ---

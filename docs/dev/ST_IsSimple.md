@@ -4,7 +4,7 @@ title: ST_IsSimple
 category: Geometry2D/properties
 description: Return true if a Geometry is simple
 prev_section: ST_IsRing
-next_section: ST_Length
+next_section: ST_IsValid
 permalink: /docs/dev/ST_IsSimple/
 ---
 

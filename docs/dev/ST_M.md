@@ -3,7 +3,7 @@ layout: docs
 title: ST_M
 category: Geometry2D/properties
 description: 
-prev_section: ST_Length
+prev_section: ST_IsValidReason
 next_section: ST_NumGeometries
 permalink: /docs/dev/ST_M/
 ---

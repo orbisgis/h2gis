@@ -3,8 +3,8 @@ layout: docs
 title: ST_Holes
 category: Geometry2D/geometry-conversion
 description: Return a Geometry's holes
-prev_section: Geometry2D/geometry-conversion
-next_section: ST_ToMultiLine
+prev_section: ST_GeometryTypeCode
+next_section: ST_LineFromText
 permalink: /docs/dev/ST_Holes/
 ---
 

@@ -3,7 +3,7 @@ layout: docs
 title: ST_XMax
 category: Geometry2D/properties
 description: Return the maximum x-value of a Geometry
-prev_section: ST_IsValid
+prev_section: ST_X
 next_section: ST_XMin
 permalink: /docs/dev/ST_XMax/
 ---

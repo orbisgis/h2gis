@@ -4,7 +4,7 @@ title: ST_CoordDim
 category: Geometry2D/properties
 description: Return the dimension of the coordinates of a Geometry
 prev_section: ST_CompactnessRatio
-next_section: ST_Explode
+next_section: ST_Dimension
 permalink: /docs/dev/ST_CoordDim/
 ---
  

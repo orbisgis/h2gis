@@ -4,7 +4,7 @@ title: ST_Contains
 category: Geometry2D/predicates
 description: 
 prev_section: Geometry2D/predicates
-next_section: ST_Crosses
+next_section: ST_Covers
 permalink: /docs/dev/ST_Contains/
 description: Return true if Geometry A contains Geometry B
 ---

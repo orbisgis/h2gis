@@ -3,8 +3,8 @@ layout: docs
 title: ST_Covers
 category: Geometry2D/predicates
 description: Return true if no point in Geometry B is outside Geometry A
-prev_section: Geometry2D/predicates
-next_section: ST_DWithin
+prev_section: ST_Contains
+next_section: ST_Crosses
 permalink: /docs/dev/ST_Covers/
 ---
 

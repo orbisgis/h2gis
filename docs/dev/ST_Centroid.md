@@ -4,7 +4,7 @@ title: ST_Centroid
 category: Geometry2D/properties
 description: Return the centroid of a Geometry
 prev_section: ST_Boundary
-next_section: ST_Dimension
+next_section: ST_CompactnessRatio
 permalink: /docs/dev/ST_Centroid/
 ---
 

@@ -3,7 +3,7 @@ layout: docs
 title: ST_Dimension
 category: Geometry2D/properties
 description: Return the dimension of a Geometry
-prev_section: ST_Centroid
+prev_section: ST_CoordDim
 next_section: ST_Distance
 permalink: /docs/dev/ST_Dimension/
 ---

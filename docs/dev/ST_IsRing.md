@@ -3,7 +3,7 @@ layout: docs
 title: ST_IsRing
 category: Geometry2D/properties
 description: Return true if a <code>LINESTRING</code> is ring
-prev_section: ST_IsEmpty
+prev_section: ST_IsRectangle
 next_section: ST_IsSimple
 permalink: /docs/dev/ST_IsRing/
 ---

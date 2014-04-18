@@ -4,7 +4,7 @@ title: ST_Extent
 category: Geometry2D/properties
 description: Return the minimum bounding box of a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_Explode
-next_section: ST_IsRectangle
+next_section: ST_ExteriorRing
 permalink: /docs/dev/ST_Extent/
 ---
  

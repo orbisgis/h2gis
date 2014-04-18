@@ -3,8 +3,8 @@ layout: docs
 title: ST_IsRectangle
 category: Geometry2D/properties
 description: Return true if the Geometry is a rectangle
-prev_section: ST_Extent
-next_section: ST_IsValid
+prev_section: ST_IsEmpty
+next_section: ST_IsRing
 permalink: /docs/dev/ST_IsRectangle/
 ---
 
