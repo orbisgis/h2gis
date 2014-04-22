@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
+import static org.h2gis.utilities.GraphConstants.*;
 
 /**
  * ST_ShortestPathLength calculates the length(s) of shortest path(s) among
@@ -80,11 +81,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
     public static final int SOURCE_INDEX = 1;
     public static final int DESTINATION_INDEX = 2;
     public static final int DISTANCE_INDEX = 3;
-    public static final String SOURCE  = "SOURCE";
-    public static final String DESTINATION  = "DESTINATION";
-    public static final String DISTANCE  = "DISTANCE";
 
-    private static final String ARG_ERROR  = "Unrecognized argument: ";
     public static final String REMARKS =
             "ST_ShortestPathLength calculates the length(s) of shortest path(s) among " +
             "vertices in a JGraphT graph produced from an edges table produced by {@link " +

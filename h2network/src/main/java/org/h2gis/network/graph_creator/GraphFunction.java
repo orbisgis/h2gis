@@ -15,6 +15,8 @@ import java.sql.SQLException;
  */
 public class GraphFunction extends AbstractFunction {
 
+    public static final String ARG_ERROR  = "Unrecognized argument: ";
+
     /**
      * Return a JGraphT graph from the input edges table.
      *
