@@ -1,8 +1,8 @@
 ---
 layout: docs
-title: Graph functions
+title: Graph
 category: h2network/graph-functions
-prev_section: Geometry3D/triangulation
+prev_section: h2network/list-thematic-function/
 permalink: /docs/dev/h2network/graph-functions/
 ---
 
