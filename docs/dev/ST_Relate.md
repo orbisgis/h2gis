@@ -63,8 +63,8 @@ SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
 
 ##### See also
 
-* [`ST_Contains`](../ST_Contains), [`ST_Covers`](../ST_Covers), [`ST_Crosses`](../ST_Crosses),   [`ST_Disjoint`](../ST_Disjoint),
-[`ST_Equals`](../ST_Equals),[`ST_Intersects`](../ST_Intersects),
-[`ST_Overlaps`](../ST_Overlaps),[`ST_Touches`](../ST_Touches),
-[`ST_Within`](../ST_Within),
+* [`ST_Contains`](../ST_Contains), [`ST_Covers`](../ST_Covers), [`ST_Crosses`](../ST_Crosses), [`ST_Disjoint`](../ST_Disjoint),
+ [`ST_Equals`](../ST_Equals), [`ST_Intersects`](../ST_Intersects),
+ [`ST_Overlaps`](../ST_Overlaps), [`ST_Touches`](../ST_Touches),
+ [`ST_Within`](../ST_Within),
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_Relate.java" target="_blank">Source code</a>
