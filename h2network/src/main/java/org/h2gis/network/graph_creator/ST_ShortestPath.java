@@ -43,7 +43,7 @@ import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 /**
  * ST_ShortestPath calculates the shortest path(s) between
  * vertices in a JGraphT graph produced from an edges table produced by {@link
- * org.h2gis.network.graph_creator.ST_Graph}.
+ * org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}.
  *
  * <p>Possible signatures:
  * <ol>
@@ -87,7 +87,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
     public static final String REMARKS =
             "ST_ShortestPath calculates the shortest path(s) between " +
             "vertices in a JGraphT graph produced from an edges table produced by {@link " +
-            "org.h2gis.network.graph_creator.ST_Graph}. " +
+            "org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}. " +
             "<p>Possible signatures: " +
             "<ol> " +
             "<li><code> ST_ShortestPath('input_edges', 'o[ - eo]', s, d) </code> - One-to-One</li> " +
@@ -183,7 +183,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
             final Statement st = connection.createStatement();
             try {
                 st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + TableLocation.parse(inputTable)
-                        + "(" + ST_Graph.EDGE_ID + ")");
+                        + "(" + EDGE_ID + ")");
             } finally {
                 st.close();
             }
@@ -191,7 +191,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
             // Record the results.
             ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
             final PreparedStatement ps = connection.prepareStatement(
-                    "SELECT * FROM " + f.tableName + " WHERE " + ST_Graph.EDGE_ID + "=?");
+                    "SELECT * FROM " + f.tableName + " WHERE " + EDGE_ID + "=?");
             try {
                 f.addPredEdges(graph, vDestination, output, ps, 1);
             } finally {
