@@ -3,8 +3,8 @@ layout: docs
 title: ST_Force3D
 category: Geometry3D/geometry-conversion
 description: 
-prev_section: 
-next_section: 
+prev_section: Geometry3D/geometry-conversion
+next_section: Geometry3D/geometry-creation
 permalink: /docs/dev/ST_Force3D/
 ---
 

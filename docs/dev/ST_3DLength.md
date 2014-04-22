@@ -4,7 +4,7 @@ title: ST_3DLength
 category: Geometry3D/distance-functions
 description: Return the 3D length or the 3D perimeter a Geometry
 prev_section: Geometry3D/distance-functions
-next_section: ST_CompactnessRatio
+next_section: Geometry3D/properties
 permalink: /docs/dev/ST_3DLength/
 ---
 

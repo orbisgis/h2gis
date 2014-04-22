@@ -3,7 +3,7 @@ layout: docs
 title: ST_Interpolate3DLine
 category: Geometry3D/edit-geometries
 description: 
-prev_section: ST_Densify
+prev_section: ST_AddZ
 next_section: ST_MultiplyZ
 permalink: /docs/dev/ST_Interpolate3DLine/
 ---

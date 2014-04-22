@@ -4,7 +4,7 @@ title: ST_Delaunay
 category: Geometry3D/triangulation
 description: 
 prev_section: ST_ConstrainedDelaunay
-next_section: 
+next_section: raster/list-raster-function
 permalink: /docs/dev/ST_Delaunay/
 ---
 

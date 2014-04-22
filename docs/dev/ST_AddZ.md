@@ -3,8 +3,8 @@ layout: docs
 title: ST_AddZ
 category: Geometry3D/edit-geometries
 description: 
-prev_section: ST_AddPoint
-next_section: ST_Densify
+prev_section: Geometry3D/edit-geometries
+next_section: ST_Interpolate3DLine
 permalink: /docs/dev/ST_AddZ/
 ---
 

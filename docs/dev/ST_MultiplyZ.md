@@ -4,7 +4,7 @@ title: ST_MultiplyZ
 category: Geometry3D/edit-geometries
 description: 
 prev_section: ST_Interpolate3DLine
-next_section: ST_Normalize
+next_section: ST_Reverse3DLine
 permalink: /docs/dev/ST_MultiplyZ/
 ---
 

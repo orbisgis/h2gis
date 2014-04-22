@@ -3,7 +3,7 @@ layout: docs
 title: ST_BoundingCircle
 category: Geometry2D/geometry-creation
 description: 
-prev_section: Geometry2D/geometry-creation
+prev_section: ST_Accum
 next_section: ST_Expand
 permalink: /docs/dev/ST_BoundingCircle/
 ---

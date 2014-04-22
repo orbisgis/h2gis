@@ -3,7 +3,7 @@ layout: docs
 title: ST_Reverse3DLine
 category: Geometry3D/edit-geometries
 description: 
-prev_section: ST_Reverse
+prev_section: ST_MultiplyZ
 next_section: ST_UpdateZ
 permalink: /docs/dev/ST_Reverse3DLine/
 ---

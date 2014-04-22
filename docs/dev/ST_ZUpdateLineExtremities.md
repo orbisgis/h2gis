@@ -4,7 +4,7 @@ title: ST_ZUpdateLineExtremities
 category: Geometry3D/edit-geometries
 description: 
 prev_section: ST_UpdateZ
-next_section: Geometry3D/process-geometries
+next_section: Geometry3D/distance-functions
 permalink: /docs/dev/ST_ZUpdateExtremities/
 ---
 

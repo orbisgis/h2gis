@@ -3,7 +3,7 @@ layout: docs
 title: ST_ZMax
 category: Geometry3D/properties
 description: Return the maximum z-value of a Geometry
-prev_section: ST_YMin
+prev_section: ST_Z
 next_section: ST_ZMin
 permalink: /docs/dev/ST_ZMax/
 ---

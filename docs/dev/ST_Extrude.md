@@ -3,8 +3,8 @@ layout: docs
 title: ST_Extrude
 category: Geometry3D/geometry-creation
 description: 
-prev_section: 
-next_section: 
+prev_section: Geometry3D/geometry-creation
+next_section: Geometry3D/edit-geometries
 permalink: /docs/dev/ST_Extrude/
 ---
 

@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Accum
-category: Geometry2D/aggregates
+category: Geometry2D/geometry-creation
 description: Construct a `GEOMETRYCOLLECTION` from a column of Geometries
-prev_section: Geometry2D/aggregates
-next_section: Geometry2D/affine-transformations
+prev_section: Geometry2D/geometry-creation
+next_section: ST_BoundingCircle
 permalink: /docs/dev/ST_Accum/
 ---
 
