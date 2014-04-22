@@ -25,9 +25,6 @@
 package org.h2gis.network.graph_creator;
 
 import org.h2.tools.SimpleResultSet;
-import org.h2.value.Value;
-import org.h2.value.ValueInt;
-import org.h2.value.ValueString;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
 import java.sql.Connection;
@@ -52,74 +49,42 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
     public static ResultSet getAccessibility(Connection connection,
                                              String inputTable,
                                              String orientation,
-                                             Value arg3) throws SQLException {
-        if (isColumnListConnection(connection)) {
-            return prepareResultSet();
-        }
-        if (arg3 instanceof ValueInt) {
-            int source = arg3.getInt();
-            return oneToAll(connection, inputTable, orientation, null, source);
-        } else if (arg3 instanceof ValueString) {
-            String table = arg3.getString();
-            return manyToMany(connection, inputTable, orientation, null, table);
-        } else {
-            throw new IllegalArgumentException(ARG_ERROR + arg3);
-        }
-    }
-
-    public static ResultSet getAccessibility(Connection connection,
-                                             String inputTable,
-                                             String orientation,
-                                             Value arg3,
-                                             Value arg4) throws SQLException {
-        if (isColumnListConnection(connection)) {
-            return prepareResultSet();
-        }
-        if (arg3 instanceof ValueInt) {
-            int source = arg3.getInt();
-            if (arg4 instanceof ValueInt) {
-                int destination = arg4.getInt();
-                return oneToOne(connection, inputTable, orientation, null, source, destination);
-            } else if (arg4 instanceof ValueString) {
-                String destinationString = arg4.getString();
-                return oneToSeveral(connection, inputTable, orientation, null, source, destinationString);
-            } else {
-                throw new IllegalArgumentException(ARG_ERROR + arg4);
-            }
-        } else if (arg3 instanceof ValueString) {
-            String weight = arg3.getString();
-            if (arg4 instanceof ValueInt) {
-                int source = arg4.getInt();
-                return oneToAll(connection, inputTable, orientation, weight, source);
-            } else if (arg4 instanceof ValueString) {
-                String table = arg4.getString();
-                return manyToMany(connection, inputTable, orientation, weight, table);
-            } else {
-                throw new IllegalArgumentException(ARG_ERROR + arg4);
-            }
-        } else {
-            throw new IllegalArgumentException(ARG_ERROR + arg3);
-        }
+                                             String arg3) throws SQLException {
+        return getAccessibility(connection, inputTable, orientation, null, arg3);
     }
 
     public static ResultSet getAccessibility(Connection connection,
                                              String inputTable,
                                              String orientation,
                                              String weight,
-                                             int source,
-                                             Value arg5) throws SQLException {
+                                             String arg4) throws SQLException {
         if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
-        if (arg5 instanceof ValueInt) {
-            int destination = arg5.getInt();
-            return oneToOne(connection, inputTable, orientation, weight, source, destination);
-        } else if (arg5 instanceof ValueString) {
-            String destinationString = arg5.getString();
-            return oneToSeveral(connection, inputTable, orientation, weight, source, destinationString);
+        // Decide whether this is a destination string or a table string.
+        if (GraphFunctionParser.isDestinationsString(arg4)) {
+            final int[] dests = GraphFunctionParser.parseDestinationsString(arg4);
+            return allToSeveral(connection, inputTable, orientation, weight, dests);
         } else {
-            throw new IllegalArgumentException(ARG_ERROR + arg5);
+            // arg4 is a destination table.
+            return allToMany(connection, inputTable, orientation, weight, arg4);
         }
+    }
+
+    private static ResultSet allToSeveral(Connection connection,
+                                          String inputTable,
+                                          String orientation,
+                                          String weight,
+                                          int[] dests) {
+        return null;
+    }
+
+    private static ResultSet allToMany(Connection connection,
+                                       String inputTable,
+                                       String orientation,
+                                       String weight,
+                                       String destTable) {
+        return null;
     }
 
     private static SimpleResultSet prepareResultSet() {
