@@ -26,15 +26,22 @@ package org.h2gis.network.graph_creator;
 
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.javanetworkanalyzer.analyzers.AccessibilityAnalyzer;
+import org.javanetworkanalyzer.data.VAccess;
+import org.javanetworkanalyzer.model.Edge;
+import org.javanetworkanalyzer.model.KeyedGraph;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
-import static org.h2gis.utilities.GraphConstants.DESTINATION;
+import static org.h2gis.utilities.GraphConstants.CLOSEST_DEST;
 import static org.h2gis.utilities.GraphConstants.DISTANCE;
+import static org.h2gis.utilities.GraphConstants.SOURCE;
 
 /**
  * @author Adam Gogue
@@ -75,8 +82,22 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
                                           String inputTable,
                                           String orientation,
                                           String weight,
-                                          int[] dests) {
-        return null;
+                                          int[] dests) throws SQLException {
+        final SimpleResultSet output = prepareResultSet();
+        final KeyedGraph<VAccess, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VAccess.class);
+
+        Set<VAccess> destinations = new HashSet<VAccess>();
+        for (int i = 0; i < dests.length; i++) {
+            destinations.add(graph.getVertex(dests[i]));
+        }
+
+        new AccessibilityAnalyzer(graph, destinations).compute();
+
+        for (VAccess v : graph.vertexSet()) {
+            output.addRow(v.getID(), v.getClosestDestinationId(), v.getDistanceToClosestDestination());
+        }
+        return output;
     }
 
     private static ResultSet allToMany(Connection connection,
@@ -89,7 +110,8 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
 
     private static SimpleResultSet prepareResultSet() {
         SimpleResultSet output = new SimpleResultSet();
-        output.addColumn(DESTINATION, Types.INTEGER, 10, 0);
+        output.addColumn(SOURCE, Types.INTEGER, 10, 0);
+        output.addColumn(CLOSEST_DEST, Types.INTEGER, 10, 0);
         output.addColumn(DISTANCE, Types.DOUBLE, 10, 0);
         return output;
     }

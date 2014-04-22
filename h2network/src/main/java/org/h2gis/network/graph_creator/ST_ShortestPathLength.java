@@ -254,7 +254,8 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                      int source,
                                      int destination) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
         // 7: (o, w, s, d)
         final double distance = new Dijkstra<VDijkstra, Edge>(graph)
                 .oneToOne(graph.getVertex(source), graph.getVertex(destination));
@@ -268,7 +269,8 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                       String weight,
                                       int source) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
         // 5: (o, w, s)
         final Map<VDijkstra,Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
                         .oneToMany(graph.getVertex(source), graph.vertexSet());
@@ -284,7 +286,8 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                         String weight,
                                         String sourceDestinationTable) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
         final Statement st = connection.createStatement();
         try {
             // Prepare the source-destination map from the source-destination table.
@@ -313,7 +316,8 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                           int source,
                                           String destString) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
 
         final int[] destIDs = GraphFunctionParser.parseDestinationsString(destString);
         Set<VDijkstra> destSet = new HashSet<VDijkstra>();

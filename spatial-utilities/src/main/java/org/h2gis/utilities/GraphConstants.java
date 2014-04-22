@@ -13,5 +13,6 @@ public interface GraphConstants {
     public static final String NODE_GEOM = "THE_GEOM";
     public static final String SOURCE  = "SOURCE";
     public static final String DESTINATION  = "DESTINATION";
+    public static final String CLOSEST_DEST  = "CLOSEST_DEST";
     public static final String DISTANCE  = "DISTANCE";
 }

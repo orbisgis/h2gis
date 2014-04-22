@@ -170,7 +170,8 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
             return prepareResultSet();
         }
         // Do the calculation.
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
         final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         final VDijkstra vDestination = graph.getVertex(destination);
         final double distance = dijkstra.oneToOne(graph.getVertex(source), vDestination);
