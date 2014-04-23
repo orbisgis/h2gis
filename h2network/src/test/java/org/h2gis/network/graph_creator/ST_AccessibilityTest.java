@@ -173,13 +173,19 @@ public class ST_AccessibilityTest {
     }
 
     @Test
-    public void allToSeveralWRO() throws Exception {
+    public void WRO() throws Exception {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'reversed - edge_orientation', 'weight', '1, 5')
         check(compute(RO, W, "'1, 5'"), new int[]{1, 5, 1, 5, 5}, new double[]{0.0, 7.0, 5.0, 6.0, 0.0});
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'reversed - edge_orientation', 'weight', 'dest15')
+        check(compute(RO, W, "'dest15'"), new int[]{1, 5, 1, 5, 5}, new double[]{0.0, 7.0, 5.0, 6.0, 0.0});
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'reversed - edge_orientation', 'weight', '2, 3, 4')
         check(compute(RO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{9.0, 0.0, 0.0, 0.0, 2.0});
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'reversed - edge_orientation', 'weight', 'dest234')
+        check(compute(RO, W, "'dest234'"), new int[]{3, 2, 3, 4, 3}, new double[]{9.0, 0.0, 0.0, 0.0, 2.0});
     }
 
     @Test
