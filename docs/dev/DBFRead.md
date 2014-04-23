@@ -11,23 +11,22 @@ permalink: /docs/dev/DBFRead/
 ### Signatures
 
 {% highlight mysql %}
-DBFRead(Connection connection, varchar fileName, 
-        varchar tableReference);
-DBFRead(Connection connection, varchar fileName, 
-        varchar tableReference, varchar fileEncoding)
+DBFRead(varchar fileName, varchar tableReference);
+DBFRead(varchar fileName, varchar tableReference, 
+        varchar fileEncoding);
 {% endhighlight %}
 
 ### Description
-Read a DBase III file and copy the content into a new table in the database.
+Reads a DBase III file and copy the content into a new table in the database.
 If you define `fileEncoding`, you can read a DBF where the encoding is missing in header.
 
 ### Examples
 
 {% highlight mysql %}
-CALL FILE_TABLE('/home/user/data/file.DBF', 'tableName');
-CALL DBFREAD('/home/user/data/file.DBF', 'tableName');
+CALL DBFRead('/home/user/data/file.DBF', 
+             'database.schema.tableName');
 
-CALL DBFREAD('donnees_sig/IGN - BD Topo/SHP_LAMB93_D044-ED113/
+CALL DBFRead('donnees_sig/IGN - BD Topo/SHP_LAMB93_D044-ED113/
               H_ADMINISTRATIF/COMMUNE.DBF', 'commune44iso',
              'iso-8859-1');
 select * from commune44iso limit 2;
@@ -37,7 +36,7 @@ select * from commune44iso limit 2;
 -- | Puceul  |   44138    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
 -- | Sévérac |   44196    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
 
-CALL DBFREAD('donnees_sig/IGN - BD Topo/SHP_LAMB93_D044-ED113/
+CALL DBFRead('donnees_sig/IGN - BD Topo/SHP_LAMB93_D044-ED113/
               H_ADMINISTRATIF/COMMUNE.DBF', 'commune44utf',
              'utf-8');
 select * from commune44utf limit 2;
