@@ -85,12 +85,13 @@ public class ST_AccessibilityTest {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'directed - edge_orientation', '2, 3, 4')
         final ResultSet rs234 = allToSeveral(DO, "'2, 3, 4'");
+        final double[] dist234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
         // d(1,2)=d(1,3)=1.0.
         try {
-            check(rs234, new int[]{2, 2, 3, 4, 4}, new double[]{1.0, 0.0, 0.0, 0.0, 1.0});
+            check(rs234, new int[]{2, 2, 3, 4, 4}, dist234);
         } catch (AssertionError e) {
             rs234.beforeFirst();
-            check(rs234, new int[]{3, 2, 3, 4, 4}, new double[]{1.0, 0.0, 0.0, 0.0, 1.0});
+            check(rs234, new int[]{3, 2, 3, 4, 4}, dist234);
         }
     }
 
@@ -112,20 +113,21 @@ public class ST_AccessibilityTest {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'reversed - edge_orientation', '2, 3, 4')
         final ResultSet rs234 = allToSeveral(RO, "'2, 3, 4'");
+        final double[] dist234 = new double[]{2.0, 0.0, 0.0, 0.0, 1.0};
         // d(1,3)=d(1,4)=2.0, d(5,3)=d(5,4)=1.0.
         try {
-            check(rs234, new int[]{3, 2, 3, 4, 3}, new double[]{2.0, 0.0, 0.0, 0.0, 1.0});
+            check(rs234, new int[]{3, 2, 3, 4, 3}, dist234);
         } catch (AssertionError e) {
             rs234.beforeFirst();
             try {
-                check(rs234, new int[]{3, 2, 3, 4, 4}, new double[]{2.0, 0.0, 0.0, 0.0, 1.0});
+                check(rs234, new int[]{3, 2, 3, 4, 4}, dist234);
             } catch (AssertionError e1) {
                 rs234.beforeFirst();
                 try {
-                    check(rs234, new int[]{4, 2, 3, 4, 3}, new double[]{2.0, 0.0, 0.0, 0.0, 1.0});
+                    check(rs234, new int[]{4, 2, 3, 4, 3}, dist234);
                 } catch (AssertionError e2) {
                     rs234.beforeFirst();
-                    check(rs234, new int[]{4, 2, 3, 4, 4}, new double[]{2.0, 0.0, 0.0, 0.0, 1.0});
+                    check(rs234, new int[]{4, 2, 3, 4, 4}, dist234);
                 }
             }
         }
