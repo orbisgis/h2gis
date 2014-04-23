@@ -143,6 +143,42 @@ public class ST_AccessibilityTest {
         check(allToSeveral(RO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{9.0, 0.0, 0.0, 0.0, 2.0});
     }
 
+    @Test
+    public void allToSeveralU() throws Exception {
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'undirected', '1, 5')
+        final ResultSet rs15 = allToSeveral(U, "'1, 5'");
+        final double[] dist15 = new double[]{0.0, 1.0, 1.0, 1.0, 0.0};
+        // d(3,1)=d(3,5)=1.0.
+        try {
+            check(rs15, new int[]{1, 1, 1, 5, 5}, dist15);
+        } catch (AssertionError e) {
+            rs15.beforeFirst();
+            check(rs15, new int[]{1, 1, 5, 5, 5}, dist15);
+        }
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'undirected', '2, 3, 4')
+        final ResultSet rs234 = allToSeveral(U, "'2, 3, 4'");
+        final double[] dist234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
+        // d(1,2)=d(1,3)=1.0, d(5,3)=d(5,4)=1.0.
+        try {
+            check(rs234, new int[]{2, 2, 3, 4, 3}, dist234);
+        } catch (AssertionError e) {
+            rs234.beforeFirst();
+            try {
+                check(rs234, new int[]{2, 2, 3, 4, 4}, dist234);
+            } catch (AssertionError e1) {
+                rs234.beforeFirst();
+                try {
+                    check(rs234, new int[]{3, 2, 3, 4, 3}, dist234);
+                } catch (AssertionError e2) {
+                    rs234.beforeFirst();
+                    check(rs234, new int[]{3, 2, 3, 4, 4}, dist234);
+                }
+            }
+        }
+    }
+
     private ResultSet allToSeveral(String orientation, String weight, String destinationString) throws SQLException {
         return st.executeQuery(
                 "SELECT * FROM ST_Accessibility('cormen_edges_all', "
