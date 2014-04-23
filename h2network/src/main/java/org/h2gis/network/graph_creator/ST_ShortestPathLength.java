@@ -107,7 +107,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             "<li><code>s</code> = Source vertex id</li> " +
             "<li><code>d</code> = Destination vertex id</li> " +
             "<li><code>sdt</code> = Source-Destination table name (must contain columns " +
-            "SOURCE and DESTINATION containing integer vertex ids)</li> " +
+            SOURCE + " and " + DESTINATION + " containing integer vertex ids)</li> " +
             "<li><code>ds</code> = Comma-separated Destination string ('dest1, dest2, ...')</li> " +
             "</ul> ";
 

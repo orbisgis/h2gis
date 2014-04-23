@@ -64,7 +64,7 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
             "<li><code>w</code> = Name of column containing edge weights as doubles</li> " +
             "<li><code>ds</code> = Comma-separated Destination string ('dest1, dest2, ...')</li> " +
             "<li><code>dt</code> = Destination table name (must contain column " +
-            "DESTINATION containing integer vertex ids)</li> " +
+            DESTINATION + "containing integer vertex ids)</li> " +
             "</ul> ";
 
     public ST_Accessibility() {
