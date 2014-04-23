@@ -78,6 +78,15 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
         return "getAccessibility";
     }
 
+    /**
+     * @param connection  Connection
+     * @param inputTable  Edges table produced by ST_Graph
+     * @param orientation Orientation string
+     * @param arg3        Destination string or destination table
+     * @return Table with closest destination id and distance to closest
+     * destination
+     * @throws SQLException
+     */
     public static ResultSet getAccessibility(Connection connection,
                                              String inputTable,
                                              String orientation,
@@ -85,6 +94,16 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
         return getAccessibility(connection, inputTable, orientation, null, arg3);
     }
 
+    /**
+     * @param connection  Connection
+     * @param inputTable  Edges table produced by ST_Graph
+     * @param orientation Orientation string
+     * @param weight      Weight
+     * @param arg4        Destination string or destination table
+     * @return Table with closest destination id and distance to closest
+     * destination
+     * @throws SQLException
+     */
     public static ResultSet getAccessibility(Connection connection,
                                              String inputTable,
                                              String orientation,
