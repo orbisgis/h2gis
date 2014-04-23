@@ -190,10 +190,23 @@ public class ST_AccessibilityTest {
 
     @Test
     public void allToSeveralU() throws Exception {
+        final double[] dist15 = new double[]{0.0, 1.0, 1.0, 1.0, 0.0};
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'undirected', '1, 5')
-        final ResultSet rs15 = compute(U, "'1, 5'");
-        final double[] dist15 = new double[]{0.0, 1.0, 1.0, 1.0, 0.0};
+        check15U(compute(U, "'1, 5'"), dist15);
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'undirected', 'dest15')
+        check15U(compute(U, "'dest15'"), dist15);
+        final double[] dist234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'undirected', '2, 3, 4')
+        check234U(compute(U, "'2, 3, 4'"), dist234);
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'undirected', 'dest234')
+        check234U(compute(U, "'dest234'"), dist234);
+    }
+
+    private void check15U(ResultSet rs15, double[] dist15) throws SQLException {
         // d(3,1)=d(3,5)=1.0.
         try {
             check(rs15, new int[]{1, 1, 1, 5, 5}, dist15);
@@ -201,10 +214,9 @@ public class ST_AccessibilityTest {
             rs15.beforeFirst();
             check(rs15, new int[]{1, 1, 5, 5, 5}, dist15);
         }
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
-        //     'undirected', '2, 3, 4')
-        final ResultSet rs234 = compute(U, "'2, 3, 4'");
-        final double[] dist234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
+    }
+
+    private void check234U(ResultSet rs234, double[] dist234) throws SQLException {
         // d(1,2)=d(1,3)=1.0, d(5,3)=d(5,4)=1.0.
         try {
             check(rs234, new int[]{2, 2, 3, 4, 3}, dist234);
