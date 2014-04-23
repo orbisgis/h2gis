@@ -91,20 +91,31 @@ public class ST_AccessibilityTest {
     // ************************** All-to-Several ****************************************
 
     @Test
-    public void allToSeveralDO() throws Exception {
+    public void DO() throws Exception {
+        final int[] closestDests15 = new int[]{1, 5, 5, 5, 5};
+        final double[] dists15 = new double[]{0.0, 2.0, 1.0, 1.0, 0.0};
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'directed - edge_orientation', '1, 5')
-        check(allToSeveral(DO, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 2.0, 1.0, 1.0, 0.0});
+        check(compute(DO, "'1, 5'"), closestDests15, dists15);
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'directed - edge_orientation', 'dest15')
+        check(compute(DO, "'dest15'"), closestDests15, dists15);
+        final double[] dists234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'directed - edge_orientation', '2, 3, 4')
-        final ResultSet rs234 = allToSeveral(DO, "'2, 3, 4'");
-        final double[] dist234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
+        check234DO(compute(DO, "'2, 3, 4'"), dists234);
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'directed - edge_orientation', '2, 3, 4')
+        check234DO(compute(DO, "'dest234'"), dists234);
+    }
+
+    private void check234DO(ResultSet rs234, double[] dists234) throws SQLException {
         // d(1,2)=d(1,3)=1.0.
         try {
-            check(rs234, new int[]{2, 2, 3, 4, 4}, dist234);
+            check(rs234, new int[]{2, 2, 3, 4, 4}, dists234);
         } catch (AssertionError e) {
             rs234.beforeFirst();
-            check(rs234, new int[]{3, 2, 3, 4, 4}, dist234);
+            check(rs234, new int[]{3, 2, 3, 4, 4}, dists234);
         }
     }
 
@@ -112,20 +123,20 @@ public class ST_AccessibilityTest {
     public void allToSeveralWDO() throws Exception {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'directed - edge_orientation', 'weight', '1, 5')
-        check(allToSeveral(DO, W, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
+        check(compute(DO, W, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'directed - edge_orientation', 'weight', '2, 3, 4')
-        check(allToSeveral(DO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 4}, new double[]{5.0, 0.0, 0.0, 0.0, 6.0});
+        check(compute(DO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 4}, new double[]{5.0, 0.0, 0.0, 0.0, 6.0});
     }
 
     @Test
     public void allToSeveralRO() throws Exception {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'reversed - edge_orientation', '1, 5')
-        check(allToSeveral(RO, "'1, 5'"), new int[]{1, 1, 1, 5, 5}, new double[]{0.0, 1.0, 1.0, 1.0, 0.0});
+        check(compute(RO, "'1, 5'"), new int[]{1, 1, 1, 5, 5}, new double[]{0.0, 1.0, 1.0, 1.0, 0.0});
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'reversed - edge_orientation', '2, 3, 4')
-        final ResultSet rs234 = allToSeveral(RO, "'2, 3, 4'");
+        final ResultSet rs234 = compute(RO, "'2, 3, 4'");
         final double[] dist234 = new double[]{2.0, 0.0, 0.0, 0.0, 1.0};
         // d(1,3)=d(1,4)=2.0, d(5,3)=d(5,4)=1.0.
         try {
@@ -150,17 +161,17 @@ public class ST_AccessibilityTest {
     public void allToSeveralWRO() throws Exception {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'reversed - edge_orientation', 'weight', '1, 5')
-        check(allToSeveral(RO, W, "'1, 5'"), new int[]{1, 5, 1, 5, 5}, new double[]{0.0, 7.0, 5.0, 6.0, 0.0});
+        check(compute(RO, W, "'1, 5'"), new int[]{1, 5, 1, 5, 5}, new double[]{0.0, 7.0, 5.0, 6.0, 0.0});
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'reversed - edge_orientation', 'weight', '2, 3, 4')
-        check(allToSeveral(RO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{9.0, 0.0, 0.0, 0.0, 2.0});
+        check(compute(RO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{9.0, 0.0, 0.0, 0.0, 2.0});
     }
 
     @Test
     public void allToSeveralU() throws Exception {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'undirected', '1, 5')
-        final ResultSet rs15 = allToSeveral(U, "'1, 5'");
+        final ResultSet rs15 = compute(U, "'1, 5'");
         final double[] dist15 = new double[]{0.0, 1.0, 1.0, 1.0, 0.0};
         // d(3,1)=d(3,5)=1.0.
         try {
@@ -171,7 +182,7 @@ public class ST_AccessibilityTest {
         }
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'undirected', '2, 3, 4')
-        final ResultSet rs234 = allToSeveral(U, "'2, 3, 4'");
+        final ResultSet rs234 = compute(U, "'2, 3, 4'");
         final double[] dist234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
         // d(1,2)=d(1,3)=1.0, d(5,3)=d(5,4)=1.0.
         try {
@@ -196,21 +207,21 @@ public class ST_AccessibilityTest {
     public void allToSeveralWU() throws Exception {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'undirected', 'weight', '1, 5')
-        check(allToSeveral(U, W, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
+        check(compute(U, W, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'undirected', 'weight', '2, 3, 4')
-        check(allToSeveral(U, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
+        check(compute(U, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
     }
 
-    private ResultSet allToSeveral(String orientation, String weight, String destinationString) throws SQLException {
+    private ResultSet compute(String orientation, String weight, String destinationString) throws SQLException {
         return st.executeQuery(
                 "SELECT * FROM ST_Accessibility('cormen_edges_all', "
                         + orientation + ((weight != null) ? ", " + weight : "")
                         + ", " + destinationString + ")");
     }
 
-    private ResultSet allToSeveral(String orientation, String destinationString) throws SQLException {
-        return allToSeveral(orientation, null, destinationString);
+    private ResultSet compute(String orientation, String destinationString) throws SQLException {
+        return compute(orientation, null, destinationString);
     }
 
     private void check(ResultSet rs, int[] closestDests, double[] distances) throws SQLException {
@@ -225,23 +236,5 @@ public class ST_AccessibilityTest {
         }
         assertEquals(distances.length, count);
         rs.close();
-    }
-
-    @Test
-    public void allToManyDO() throws Exception {
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
-        //     'directed - edge_orientation', 'dest15')
-        check(allToSeveral(DO, "'dest15'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 2.0, 1.0, 1.0, 0.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
-        //     'directed - edge_orientation', 'dest234')
-        final ResultSet rs234 = allToSeveral(DO, "'dest234'");
-        final double[] dist234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
-        // d(1,2)=d(1,3)=1.0.
-        try {
-            check(rs234, new int[]{2, 2, 3, 4, 4}, dist234);
-        } catch (AssertionError e) {
-            rs234.beforeFirst();
-            check(rs234, new int[]{3, 2, 3, 4, 4}, dist234);
-        }
     }
 }
