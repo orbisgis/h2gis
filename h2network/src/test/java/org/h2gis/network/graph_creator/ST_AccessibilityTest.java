@@ -242,8 +242,14 @@ public class ST_AccessibilityTest {
         //     'undirected', 'weight', '1, 5')
         check(compute(U, W, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'undirected', 'weight', 'dest15')
+        check(compute(U, W, "'dest15'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'undirected', 'weight', '2, 3, 4')
         check(compute(U, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'undirected', 'weight', 'dest234')
+        check(compute(U, W, "'dest234'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
     }
 
     private ResultSet compute(String orientation, String weight, String destinationString) throws SQLException {
