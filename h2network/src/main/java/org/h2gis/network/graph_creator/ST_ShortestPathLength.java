@@ -130,7 +130,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * column named DESTINATION, both consisting of integer IDs.
      *
      * @param connection  Connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param arg3        Source vertex id -OR- Source-Destination table
      * @return Distances table
@@ -167,7 +167,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * column named DESTINATION, both consisting of integer IDs.
      *
      * @param connection  connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param arg3        Source vertex id -OR- Weight column name
      * @param arg4        Destination vertex id -OR- Destination string -OR-
@@ -218,7 +218,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * </ol>
      *
      * @param connection  Connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param weight      Weight column name, null for unweighted graphs
      * @param source      Source vertex id

@@ -125,7 +125,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
     /**
      * @param connection  connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param source      Source vertex id
      * @param destination Destination vertex id
@@ -142,7 +142,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
     /**
      * @param connection  connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param weight      Weight
      * @param source      Source vertex id
