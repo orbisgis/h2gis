@@ -40,14 +40,16 @@ import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
+ * Calculates, for each vertex, the (distance to the) closest destination among
+ * several possible destinations.
+ *
  * @author Adam Gogue
  */
 public class ST_Accessibility extends GraphFunction implements ScalarFunction {
 
     public static final String REMARKS =
-            "ST_Accessibility calculates the length(s) of shortest path(s) among " +
-            "vertices in a JGraphT graph produced from an edges table produced by " +
-            "ST_Graph. " +
+            "ST_Accessibility calculates, for each vertex in a graph, the (distance to " +
+            "the) closest destination among several possible destinations. " +
             "<p>Possible signatures: " +
             "<ol> " +
             "<li><code> ST_Accessibility('input_edges', 'o[ - eo]', 'ds') </code></li> " +
