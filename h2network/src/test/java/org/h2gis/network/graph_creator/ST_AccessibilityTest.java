@@ -136,14 +136,23 @@ public class ST_AccessibilityTest {
     }
 
     @Test
-    public void allToSeveralRO() throws Exception {
+    public void RO() throws Exception {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'reversed - edge_orientation', '1, 5')
         check(compute(RO, "'1, 5'"), new int[]{1, 1, 1, 5, 5}, new double[]{0.0, 1.0, 1.0, 1.0, 0.0});
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
-        //     'reversed - edge_orientation', '2, 3, 4')
-        final ResultSet rs234 = compute(RO, "'2, 3, 4'");
+        //     'reversed - edge_orientation', 'dest15')
+        check(compute(RO, "'dest15'"), new int[]{1, 1, 1, 5, 5}, new double[]{0.0, 1.0, 1.0, 1.0, 0.0});
         final double[] dist234 = new double[]{2.0, 0.0, 0.0, 0.0, 1.0};
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'reversed - edge_orientation', '2, 3, 4')
+        check234RO(compute(RO, "'2, 3, 4'"), dist234);
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'reversed - edge_orientation', 'dest234')
+        check234RO(compute(RO, "'dest234'"), dist234);
+    }
+
+    private void check234RO(ResultSet rs234, double[] dist234) throws SQLException {
         // d(1,3)=d(1,4)=2.0, d(5,3)=d(5,4)=1.0.
         try {
             check(rs234, new int[]{3, 2, 3, 4, 3}, dist234);
