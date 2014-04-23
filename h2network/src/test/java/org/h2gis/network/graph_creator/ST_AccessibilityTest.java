@@ -179,6 +179,16 @@ public class ST_AccessibilityTest {
         }
     }
 
+    @Test
+    public void allToSeveralWU() throws Exception {
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'undirected', 'weight', '1, 5')
+        check(allToSeveral(U, W, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'undirected', 'weight', '2, 3, 4')
+        check(allToSeveral(U, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
+    }
+
     private ResultSet allToSeveral(String orientation, String weight, String destinationString) throws SQLException {
         return st.executeQuery(
                 "SELECT * FROM ST_Accessibility('cormen_edges_all', "
