@@ -26,22 +26,18 @@ package org.h2gis.network.graph_creator;
 
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.analyzers.AccessibilityAnalyzer;
 import org.javanetworkanalyzer.data.VAccess;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
+import java.sql.*;
 import java.util.HashSet;
 import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
-import static org.h2gis.utilities.GraphConstants.CLOSEST_DEST;
-import static org.h2gis.utilities.GraphConstants.DISTANCE;
-import static org.h2gis.utilities.GraphConstants.SOURCE;
+import static org.h2gis.utilities.GraphConstants.*;
 
 /**
  * @author Adam Gogue
@@ -104,8 +100,29 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
                                        String inputTable,
                                        String orientation,
                                        String weight,
-                                       String destTable) {
-        return null;
+                                       String destTable) throws SQLException {
+        final SimpleResultSet output = prepareResultSet();
+        final KeyedGraph<VAccess, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VAccess.class);
+
+        final Statement st = connection.createStatement();
+        Set<VAccess> destinations = new HashSet<VAccess>();
+        try {
+            final ResultSet rs = st.executeQuery(
+                    "SELECT * FROM " + TableLocation.parse(destTable).getTable());
+            while (rs.next()) {
+                destinations.add(graph.getVertex(rs.getInt(DESTINATION)));
+            }
+        } finally {
+            st.close();
+        }
+
+        new AccessibilityAnalyzer(graph, destinations).compute();
+
+        for (VAccess v : graph.vertexSet()) {
+            output.addRow(v.getID(), v.getClosestDestinationId(), v.getDistanceToClosestDestination());
+        }
+        return output;
     }
 
     private static SimpleResultSet prepareResultSet() {

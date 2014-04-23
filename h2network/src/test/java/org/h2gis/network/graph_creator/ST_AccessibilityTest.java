@@ -58,6 +58,7 @@ public class ST_AccessibilityTest {
         connection = SpatialH2UT.createSpatialDataBase("ST_AccessibilityTest", true);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Accessibility(), "");
         GraphCreatorTest.registerCormenGraph(connection);
+        registerDestinationTables(connection);
     }
 
     @Before
@@ -73,6 +74,18 @@ public class ST_AccessibilityTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+
+    private static void registerDestinationTables(Connection connection) throws SQLException {
+        final Statement st = connection.createStatement();
+        try {
+            st.execute("CREATE TABLE dest15(destination INT);" +
+                    "INSERT INTO dest15 VALUES (1), (5);" +
+                    "CREATE TABLE dest234(destination INT);" +
+                    "INSERT INTO dest234 VALUES (2), (3), (4);");
+        } finally {
+            st.close();
+        }
     }
 
     // ************************** All-to-Several ****************************************
@@ -212,5 +225,23 @@ public class ST_AccessibilityTest {
         }
         assertEquals(distances.length, count);
         rs.close();
+    }
+
+    @Test
+    public void allToManyDO() throws Exception {
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'directed - edge_orientation', 'dest15')
+        check(allToSeveral(DO, "'dest15'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 2.0, 1.0, 1.0, 0.0});
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'directed - edge_orientation', 'dest234')
+        final ResultSet rs234 = allToSeveral(DO, "'dest234'");
+        final double[] dist234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
+        // d(1,2)=d(1,3)=1.0.
+        try {
+            check(rs234, new int[]{2, 2, 3, 4, 4}, dist234);
+        } catch (AssertionError e) {
+            rs234.beforeFirst();
+            check(rs234, new int[]{3, 2, 3, 4, 4}, dist234);
+        }
     }
 }
