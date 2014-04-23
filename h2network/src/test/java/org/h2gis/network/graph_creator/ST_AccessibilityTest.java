@@ -85,6 +85,7 @@ public class ST_AccessibilityTest {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'directed - edge_orientation', '2, 3, 4')
         final ResultSet rs234 = allToSeveral(DO, "'2, 3, 4'");
+        // d(1,2)=d(1,3)=1.0.
         try {
             check(rs234, new int[]{2, 2, 3, 4, 4}, new double[]{1.0, 0.0, 0.0, 0.0, 1.0});
         } catch (AssertionError e) {
@@ -101,6 +102,33 @@ public class ST_AccessibilityTest {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'directed - edge_orientation', 'weight', '2, 3, 4')
         check(allToSeveral(DO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 4}, new double[]{5.0, 0.0, 0.0, 0.0, 6.0});
+    }
+
+    @Test
+    public void allToSeveralRO() throws Exception {
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'reversed - edge_orientation', '1, 5')
+        check(allToSeveral(RO, "'1, 5'"), new int[]{1, 1, 1, 5, 5}, new double[]{0.0, 1.0, 1.0, 1.0, 0.0});
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'reversed - edge_orientation', '2, 3, 4')
+        final ResultSet rs234 = allToSeveral(RO, "'2, 3, 4'");
+        // d(1,3)=d(1,4)=2.0, d(5,3)=d(5,4)=1.0.
+        try {
+            check(rs234, new int[]{3, 2, 3, 4, 3}, new double[]{2.0, 0.0, 0.0, 0.0, 1.0});
+        } catch (AssertionError e) {
+            rs234.beforeFirst();
+            try {
+                check(rs234, new int[]{3, 2, 3, 4, 4}, new double[]{2.0, 0.0, 0.0, 0.0, 1.0});
+            } catch (AssertionError e1) {
+                rs234.beforeFirst();
+                try {
+                    check(rs234, new int[]{4, 2, 3, 4, 3}, new double[]{2.0, 0.0, 0.0, 0.0, 1.0});
+                } catch (AssertionError e2) {
+                    rs234.beforeFirst();
+                    check(rs234, new int[]{4, 2, 3, 4, 4}, new double[]{2.0, 0.0, 0.0, 0.0, 1.0});
+                }
+            }
+        }
     }
 
     private ResultSet allToSeveral(String orientation, String weight, String destinationString) throws SQLException {
