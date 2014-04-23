@@ -44,6 +44,33 @@ import static org.h2gis.utilities.GraphConstants.*;
  */
 public class ST_Accessibility extends GraphFunction implements ScalarFunction {
 
+    public static final String REMARKS =
+            "ST_Accessibility calculates the length(s) of shortest path(s) among " +
+            "vertices in a JGraphT graph produced from an edges table produced by " +
+            "ST_Graph. " +
+            "<p>Possible signatures: " +
+            "<ol> " +
+            "<li><code> ST_Accessibility('input_edges', 'o[ - eo]', 'ds') </code></li> " +
+            "<li><code> ST_Accessibility('input_edges', 'o[ - eo]', 'dt') </code></li> " +
+            "<li><code> ST_Accessibility('input_edges', 'o[ - eo]', 'w', 'ds') </code></li> " +
+            "<li><code> ST_Accessibility('input_edges', 'o[ - eo]', 'w', 'dt') </code></li> " +
+            "</ol> " +
+            "where " +
+            "<ul> " +
+            "<li><code>input_edges</code> = Edges table produced by <code>ST_Graph</code> from table <code>input</code></li> " +
+            "<li><code>o</code> = Global orientation (directed, reversed or undirected)</li> " +
+            "<li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 = " +
+            "undirected). Required if global orientation is directed or reversed.</li> " +
+            "<li><code>w</code> = Name of column containing edge weights as doubles</li> " +
+            "<li><code>ds</code> = Comma-separated Destination string ('dest1, dest2, ...')</li> " +
+            "<li><code>dt</code> = Destination table name (must contain column " +
+            "DESTINATION containing integer vertex ids)</li> " +
+            "</ul> ";
+
+    public ST_Accessibility() {
+        addProperty(PROP_REMARKS, REMARKS);
+    }
+
     @Override
     public String getJavaStaticMethod() {
         return "getAccessibility";
