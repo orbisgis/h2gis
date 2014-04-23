@@ -86,8 +86,8 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
     public static final String REMARKS =
             "ST_ShortestPath calculates the shortest path(s) between " +
-            "vertices in a JGraphT graph produced from an edges table produced by {@link " +
-            "org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}. " +
+            "vertices in a JGraphT graph produced from an edges table produced by " +
+            "ST_Graph. " +
             "<p>Possible signatures: " +
             "<ol> " +
             "<li><code> ST_ShortestPath('input_edges', 'o[ - eo]', s, d) </code> - One-to-One</li> " +
