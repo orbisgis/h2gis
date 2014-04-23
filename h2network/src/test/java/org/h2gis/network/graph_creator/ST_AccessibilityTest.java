@@ -88,8 +88,6 @@ public class ST_AccessibilityTest {
         }
     }
 
-    // ************************** All-to-Several ****************************************
-
     @Test
     public void DO() throws Exception {
         final int[] closestDests15 = new int[]{1, 5, 5, 5, 5};
@@ -189,7 +187,7 @@ public class ST_AccessibilityTest {
     }
 
     @Test
-    public void allToSeveralU() throws Exception {
+    public void U() throws Exception {
         final double[] dist15 = new double[]{0.0, 1.0, 1.0, 1.0, 0.0};
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'undirected', '1, 5')
@@ -237,7 +235,7 @@ public class ST_AccessibilityTest {
     }
 
     @Test
-    public void allToSeveralWU() throws Exception {
+    public void WU() throws Exception {
         // SELECT * FROM ST_Accessibility('cormen_edges_all',
         //     'undirected', 'weight', '1, 5')
         check(compute(U, W, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
