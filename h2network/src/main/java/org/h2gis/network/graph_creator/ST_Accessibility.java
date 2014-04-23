@@ -64,47 +64,38 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
         if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
+        final KeyedGraph<VAccess, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VAccess.class);
         // Decide whether this is a destination string or a table string.
         if (GraphFunctionParser.isDestinationsString(arg4)) {
-            final int[] dests = GraphFunctionParser.parseDestinationsString(arg4);
-            return allToSeveral(connection, inputTable, orientation, weight, dests);
+            return compute(graph, prepareDestSet(graph, GraphFunctionParser.parseDestinationsString(arg4)));
         } else {
             // arg4 is a destination table.
-            return allToMany(connection, inputTable, orientation, weight, arg4);
+            return compute(graph, prepareDestSet(connection, graph, arg4));
         }
     }
 
-    private static ResultSet allToSeveral(Connection connection,
-                                          String inputTable,
-                                          String orientation,
-                                          String weight,
-                                          int[] dests) throws SQLException {
-        final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VAccess, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight, VAccess.class);
-
-        Set<VAccess> destinations = new HashSet<VAccess>();
-        for (int i = 0; i < dests.length; i++) {
-            destinations.add(graph.getVertex(dests[i]));
-        }
-
+    private static ResultSet compute(KeyedGraph<VAccess, Edge> graph,
+                                     Set<VAccess> destinations) throws SQLException {
+        SimpleResultSet output = prepareResultSet();
         new AccessibilityAnalyzer(graph, destinations).compute();
-
         for (VAccess v : graph.vertexSet()) {
             output.addRow(v.getID(), v.getClosestDestinationId(), v.getDistanceToClosestDestination());
         }
         return output;
     }
 
-    private static ResultSet allToMany(Connection connection,
-                                       String inputTable,
-                                       String orientation,
-                                       String weight,
-                                       String destTable) throws SQLException {
-        final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VAccess, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight, VAccess.class);
+    private static Set<VAccess> prepareDestSet(KeyedGraph<VAccess, Edge> graph, int[] dests) {
+        Set<VAccess> destinations = new HashSet<VAccess>();
+        for (int i = 0; i < dests.length; i++) {
+            destinations.add(graph.getVertex(dests[i]));
+        }
+        return destinations;
+    }
 
+    private static Set<VAccess> prepareDestSet(Connection connection,
+                                               KeyedGraph<VAccess, Edge> graph,
+                                               String destTable) throws SQLException {
         final Statement st = connection.createStatement();
         Set<VAccess> destinations = new HashSet<VAccess>();
         try {
@@ -116,13 +107,7 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
         } finally {
             st.close();
         }
-
-        new AccessibilityAnalyzer(graph, destinations).compute();
-
-        for (VAccess v : graph.vertexSet()) {
-            output.addRow(v.getID(), v.getClosestDestinationId(), v.getDistanceToClosestDestination());
-        }
-        return output;
+        return destinations;
     }
 
     private static SimpleResultSet prepareResultSet() {
