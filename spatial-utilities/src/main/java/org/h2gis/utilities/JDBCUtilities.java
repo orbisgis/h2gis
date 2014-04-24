@@ -75,7 +75,7 @@ public class JDBCUtilities {
      */
     public static String getFieldName(DatabaseMetaData meta, String table, int fieldIndex) throws SQLException {
         TableLocation location = TableLocation.parse(table);
-        ResultSet rs = meta.getColumns(location.getCatalog(), location.getSchema(), location.getTable(), null);
+        ResultSet rs = meta.getColumns(location.getCatalog(null), location.getSchema(null), location.getTable(), null);
         try {
             while(rs.next()) {
                 if(rs.getInt("ORDINAL_POSITION") == fieldIndex) {
@@ -162,11 +162,12 @@ public class JDBCUtilities {
     public static int getIntegerPrimaryKey(DatabaseMetaData meta, String tableReference) throws SQLException {
         TableLocation tableLocation = TableLocation.parse(tableReference);
         String columnNamePK = null;
-        ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(), tableLocation.getSchema(),
+        ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(null), tableLocation.getSchema(null),
                 tableLocation.getTable());
         try {
             while (rs.next()) {
-                if(tableLocation.getSchema().equals(rs.getString("TABLE_SCHEM"))) {
+                // If the schema is not specified, public must be the schema
+                if(!tableLocation.getSchema().isEmpty() || "public".equalsIgnoreCase(rs.getString("TABLE_SCHEM"))) {
                     if(columnNamePK == null) {
                         columnNamePK = rs.getString("COLUMN_NAME");
                     } else {
@@ -180,13 +181,15 @@ public class JDBCUtilities {
             rs.close();
         }
         if (columnNamePK != null) {
-            rs = meta.getColumns(tableLocation.getCatalog(), tableLocation.getSchema(),
+            rs = meta.getColumns(tableLocation.getCatalog(null), tableLocation.getSchema(null),
                     tableLocation.getTable(), columnNamePK);
             try {
-                if (rs.next()) {
-                    int dataType = rs.getInt("DATA_TYPE");
-                    if (dataType == Types.BIGINT || dataType == Types.INTEGER || dataType == Types.ROWID) {
-                        return rs.getInt("ORDINAL_POSITION");
+                while (rs.next()) {
+                    if(!tableLocation.getSchema().isEmpty() || "public".equalsIgnoreCase(rs.getString("TABLE_SCHEM"))) {
+                        int dataType = rs.getInt("DATA_TYPE");
+                        if (dataType == Types.BIGINT || dataType == Types.INTEGER || dataType == Types.ROWID) {
+                            return rs.getInt("ORDINAL_POSITION");
+                        }
                     }
                 }
             } finally {

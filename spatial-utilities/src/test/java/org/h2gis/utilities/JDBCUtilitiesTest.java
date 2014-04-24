@@ -62,6 +62,9 @@ public class JDBCUtilitiesTest {
 
     @Test
     public void testPrimaryKeyExtract() throws SQLException {
+        connection.createStatement().execute("DROP SCHEMA IF EXISTS ATEMPSCHEMA");
+        connection.createStatement().execute("CREATE SCHEMA ATEMPSCHEMA");
+        connection.createStatement().execute("CREATE TABLE ATEMPSCHEMA.TEMPTABLE(id integer)");
         connection.createStatement().execute("DROP TABLE IF EXISTS TEMPTABLE");
         connection.createStatement().execute("CREATE TABLE TEMPTABLE(id integer primary key)");
         assertEquals(1, JDBCUtilities.getIntegerPrimaryKey(connection.getMetaData(), "TEMPTABLE"));

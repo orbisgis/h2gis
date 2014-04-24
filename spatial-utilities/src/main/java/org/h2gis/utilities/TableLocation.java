@@ -17,7 +17,6 @@ public class TableLocation {
     private static final String QUOTE_CHAR = "\"";
     private static final Pattern POSTGRE_SPECIAL_NAME_PATTERN = Pattern.compile("[^a-z0-9_]");
     private static final Pattern H2_SPECIAL_NAME_PATTERN = Pattern.compile("[^A-Z0-9_]");
-    private static final String DEFAULT_SCHEMA = "PUBLIC";
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -38,7 +37,7 @@ public class TableLocation {
             throw new IllegalArgumentException("Cannot construct table location with null table");
         }
         this.catalog = catalog == null ? "" : catalog;
-        this.schema = schema  == null || schema.isEmpty() ? DEFAULT_SCHEMA : schema;
+        this.schema = schema  == null || schema.isEmpty() ? "" : schema;
         this.table = table;
     }
 
@@ -124,6 +123,15 @@ public class TableLocation {
         return catalog;
     }
 
+
+    /**
+     * @param defaultValue Return this value if this attribute is not defined.
+     * @return Table catalog name (database)
+     */
+    public String getCatalog(String defaultValue) {
+        return catalog.isEmpty() ? defaultValue : catalog;
+    }
+
     /**
      * Convert catalog.schema.table, schema.table or table into TableLocation instance.
      * Not specified schema or catalog are converted into an empty string.
@@ -149,8 +157,7 @@ public class TableLocation {
     public static TableLocation parse(String concatenatedTableLocation, Boolean isH2Database) {
         List<String> parts = new LinkedList<String>();
         String catalog,schema,table;
-        catalog = table = "";
-        schema = capsIdentifier(DEFAULT_SCHEMA, isH2Database);
+        catalog = table = schema = "";
         StringTokenizer st = new StringTokenizer(concatenatedTableLocation, ".`\"", true);
         boolean openQuote = false;
         StringBuilder sb = new StringBuilder();
@@ -202,6 +209,13 @@ public class TableLocation {
         return schema;
     }
 
+    /**
+     * @param defaultValue Return this value if this attribute is not defined.
+     * @return Table schema name
+     */
+    public String getSchema(String defaultValue) {
+        return schema.isEmpty() ? defaultValue : schema;
+    }
     /**
      * @return Table name
      */

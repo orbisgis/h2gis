@@ -305,7 +305,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
         // Set up tables
         final ResultSet columns = connection.getMetaData()
-                .getColumns(tableName.getCatalog(), tableName.getSchema(), tableName.getTable(), null);
+                .getColumns(tableName.getCatalog(null), tableName.getSchema(null), tableName.getTable(), null);
         try {
             while (columns.next()) {
                 if (columns.getString("COLUMN_NAME").equalsIgnoreCase(spatialFieldName)) {

@@ -31,8 +31,8 @@ public class TableFunctionUtil {
      */
     public static void copyFields(Connection connection, SimpleResultSet rs, TableLocation tableLocation) throws SQLException {
         DatabaseMetaData meta = connection.getMetaData();
-        ResultSet columnsRs = meta.getColumns(tableLocation.getCatalog(), tableLocation.getSchema(),
-                tableLocation.getTable().toUpperCase(), null);
+        ResultSet columnsRs = meta.getColumns(tableLocation.getCatalog(null), tableLocation.getSchema(null),
+                tableLocation.getTable(), null);
         Map<Integer, Object[]> columns = new HashMap<Integer, Object[]>();
         int COLUMN_NAME = 0, COLUMN_TYPE = 1, COLUMN_TYPENAME = 2, COLUMN_PRECISION = 3, COLUMN_SCALE = 4;
         try {

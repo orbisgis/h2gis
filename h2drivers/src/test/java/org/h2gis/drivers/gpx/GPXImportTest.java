@@ -61,7 +61,7 @@ public class GPXImportTest {
     @Test
     public void importGPXWaypoints() throws SQLException {
         Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT,gpxdata_waypoint");
+        st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT,gpxdata_waypoint,GPXDATA_track");
         st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA');");
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'GPXDATA_WAYPOINT'");
         assertTrue(rs.next());
