@@ -10,7 +10,7 @@
 {% assign pages = site.pages | sort: 'name' %}
 {% for p in pages %}
     {% if p.category contains 'drivers' %}
-        {% unless p.permalink contains 'drivers' %}
+        {% unless p.permalink contains 'drivers' and p.title != 'file_table'%}
             {% if p.description %}
                 {% capture described %}{{ described | plus:1 }}{% endcapture %}
             {% endif %}
