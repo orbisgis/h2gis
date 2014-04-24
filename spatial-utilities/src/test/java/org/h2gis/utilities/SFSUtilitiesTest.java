@@ -94,13 +94,13 @@ public class SFSUtilitiesTest {
     public void testTableLocationDataBaseType() {
         TableLocation location = TableLocation.parse("MyTable", true);
         assertEquals("MYTABLE", location.getTable());
-        assertEquals("PUBLIC.MYTABLE", location.toString(true));
+        assertEquals("MYTABLE", location.toString(true));
         location = TableLocation.parse("\"MyTable\"", true);
         assertEquals("MyTable", location.getTable());
-        assertEquals("PUBLIC.\"MyTable\"", location.toString(true));
+        assertEquals("\"MyTable\"", location.toString(true));
         location = TableLocation.parse("\"MyTable\"", false);
         assertEquals("MyTable", location.getTable());
-        assertEquals("public.\"MyTable\"", location.toString(false));
+        assertEquals("\"MyTable\"", location.toString(false));
     }
 
     @Test
