@@ -149,7 +149,8 @@ public class TableLocation {
     public static TableLocation parse(String concatenatedTableLocation, Boolean isH2Database) {
         List<String> parts = new LinkedList<String>();
         String catalog,schema,table;
-        catalog = schema = table = "";
+        catalog = table = "";
+        schema = capsIdentifier(DEFAULT_SCHEMA, isH2Database);
         StringTokenizer st = new StringTokenizer(concatenatedTableLocation, ".`\"", true);
         boolean openQuote = false;
         StringBuilder sb = new StringBuilder();
