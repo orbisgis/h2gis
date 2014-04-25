@@ -8,7 +8,7 @@ next_section: ST_IsValidReason
 permalink: /docs/dev/ST_IsValidDetail/
 ---
 
-### Signature
+### Signatures
 
 {% highlight mysql %}
 Object[] isValidDetail(GEOMETRY geom);
@@ -29,8 +29,9 @@ SELECT ST_IsvalidDetail('POLYGON((210 440, 134 235, 145 233,
                                   310 200, 340 360, 210 440))');
 -- Answer: (TRUE, Valid Geometry, null)
 
-SELECT ST_IsvalidDetail('POLYGON((0 0, 10 0, 10 5, 6 -2, 0 0))');
--- Answer: (FALSE, Self-intersection, POINT(7.142857142857143 0))
+SELECT ST_IsvalidDetail('POLYGON((0 0 1, 10 0 1, 10 5 1, 6 -2 1, 
+                                  0 0 1))');
+-- Answer: (FALSE, Self-intersection, POINT(7.142857142857143 0 1))
 
 SELECT ST_IsvalidDetail('POLYGON((1 1, 1 6, 5 1, 1 1), 
                                  (3 4, 3 5, 4 4, 3 4))', 0);
@@ -53,4 +54,5 @@ SELECT ST_IsValidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,
 
 ##### See also
 
+* [`ST_IsValidReason`](../ST_IsValidReason)
 * <a href="https://github.com/irstv/H2GIS/blob/847a47a2bd304a556434b89c2d31ab3ba547bcd0/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_IsValidDetail.java" target="_blank">Source code</a>
