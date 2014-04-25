@@ -26,7 +26,7 @@ Calculates a regular grid. The first argument is either a Geometry or a table. T
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE grid AS SELECT * FROM st_makegrid(
+CREATE TABLE grid AS SELECT * FROM ST_MakeGrid(
    'POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1);
 SELECT * FROM grid;
 -- Answer: 
@@ -39,7 +39,7 @@ SELECT * FROM grid;
 
 CREATE TABLE input_table(the_geom Geometry);
 INSERT INTO input_table VALUES('POLYGON((0 0, 2 0, 2 2, 0 0))');
-CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1,
+CREATE TABLE grid AS SELECT * FROM ST_MakeGrid('input_table', 1,
                                                1);
 SELECT * FROM grid;
 -- Answer: 
@@ -53,7 +53,7 @@ SELECT * FROM grid;
 CREATE TABLE input_table(the_geom Geometry);
 INSERT INTO input_table VALUES('POLYGON((0 0, 2 0, 2 2, 0 0))');
 INSERT INTO input_table VALUES('POLYGON((1 1, 2 2, 1 2, 1 1 ))');
-CREATE TABLE grid AS SELECT * FROM st_makegrid((SELECT 
+CREATE TABLE grid AS SELECT * FROM ST_MakeGrid((SELECT 
    ST_Union(ST_Accum(the_geom)) FROM input_table), 1, 1);
 SELECT * FROM grid;
 -- Answer: 
