@@ -34,7 +34,9 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
         }
         try {
             Driver driver = createDriver(filePath, data.tableEngineParams);
-            feedCreateTableData(driver, data);
+            if(data.columns.isEmpty()) {
+                feedCreateTableData(driver, data);
+            }
             H2Table shpTable = new H2Table(driver, data);
             shpTable.init(data.session);
             return shpTable;
