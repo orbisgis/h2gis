@@ -262,4 +262,30 @@ public class  DBFEngineTest {
         rs.close();
         st.execute("drop table SOTCHI_GOODHEADER");
     }
+
+
+    @Test
+    public void testRestartDb() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'dbftable');");
+        // Close Db
+        st.execute("SHUTDOWN");
+        connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
+        st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
+        assertTrue(rs.next());
+        assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
+        assertEquals("CHAR",rs.getString("TYPE_NAME"));
+        assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+        assertTrue(rs.next());
+        assertEquals("GID",rs.getString("COLUMN_NAME"));
+        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+        assertTrue(rs.next());
+        assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
+        assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+        rs.close();
+        st.execute("drop table dbftable");
+    }
+
 }

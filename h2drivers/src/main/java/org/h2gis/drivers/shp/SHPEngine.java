@@ -64,13 +64,11 @@ public class SHPEngine extends FileEngine<SHPDriver> {
 
     @Override
     protected void feedCreateTableData(SHPDriver driver, CreateTableData data) throws IOException {
-        if(data.columns.isEmpty()) {
-            Column geometryColumn = new Column("THE_GEOM", Value.GEOMETRY);
-            Parser parser = new Parser(data.session);
-            geometryColumn.addCheckConstraint(data.session,
-                    parser.parseExpression("ST_GeometryTypeCode(THE_GEOM) = "+getGeometryTypeCodeFromShapeType(driver.getShapeFileHeader().getShapeType())));
-            data.columns.add(geometryColumn);
-            DBFEngine.feedTableDataFromHeader(driver.getDbaseFileHeader(), data);
-        }
+        Column geometryColumn = new Column("THE_GEOM", Value.GEOMETRY);
+        Parser parser = new Parser(data.session);
+        geometryColumn.addCheckConstraint(data.session,
+                parser.parseExpression("ST_GeometryTypeCode(THE_GEOM) = "+getGeometryTypeCodeFromShapeType(driver.getShapeFileHeader().getShapeType())));
+        data.columns.add(geometryColumn);
+        DBFEngine.feedTableDataFromHeader(driver.getDbaseFileHeader(), data);
     }
 }
