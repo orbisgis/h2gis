@@ -394,6 +394,14 @@ public class SpatialFunctionTest {
                 + Math.sqrt(10), rs.getDouble(1), 0.0);
         st.execute("DROP TABLE input_table;");
     }
+    
+    @Test
+    public void test_ST_3DLength2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DLength('MULTIPOLYGON (((898458.2 6245894.6, 898493.4 6245894.5, 898492.3 6245888.4, 898458.7 6245888.5, 898458.2 6245894.6)))')");
+        rs.next();        
+        assertEquals(81.11, rs.getDouble(1),0.01);
+        rs.close();
+    }
 
     @Test
     public void test_ST_3DLengthEqualsST_LengthFor2DGeometry() throws Exception {
