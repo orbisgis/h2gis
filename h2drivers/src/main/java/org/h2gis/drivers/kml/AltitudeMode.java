@@ -78,26 +78,26 @@ public final class AltitudeMode {
         switch (altitudeMode) {
             case KML_CLAMPTOGROUND:
                 sb.append("<kml:altitudeMode>clampToGround</kml:altitudeMode>");
-                return ;
+                return;
             case KML_RELATIVETOGROUND:
                 sb.append("<kml:altitudeMode>relativeToGround</kml:altitudeMode>");
-                return ;
+                return;
             case KML_ABSOLUTE:
                 sb.append("<kml:altitudeMode>absolute</kml:altitudeMode>");
-                return ;
+                return;
             case GX_CLAMPTOSEAFLOOR:
                 sb.append("<kml:altitudeMode>clampToSeaFloor</kml:altitudeMode>");
-                return ;
+                return;
             case GX_RELATIVETOSEAFLOOR:
                 sb.append("<kml:altitudeMode>relativeToSeaFloor</kml:altitudeMode>");
-                return ;
+                return;
             case NONE:
-                return ;
+                return;
             default:
-            throw new IllegalArgumentException("Supported altitude mode are : \n"
-                    + " For KML profil : CLAMPTOGROUND = 1; RELATIVETOGROUND = 2; ABSOLUTE = 4;\n"
-                + "For GX profil : CLAMPTOSEAFLOOR = 8; RELATIVETOSEAFLOOR = 16; \n"
-                + " No altitude : NONE = 0");
+                throw new IllegalArgumentException("Supported altitude mode are : \n"
+                        + " For KML profil : CLAMPTOGROUND = 1; RELATIVETOGROUND = 2; ABSOLUTE = 4;\n"
+                        + "For GX profil : CLAMPTOSEAFLOOR = 8; RELATIVETOSEAFLOOR = 16; \n"
+                        + " No altitude : NONE = 0");
         }
     }
 }
