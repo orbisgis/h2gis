@@ -37,7 +37,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 
 import static org.junit.Assert.*;
 
@@ -2609,6 +2608,31 @@ public class SpatialFunctionTest {
         } catch (JdbcSQLException e) {
             throw e.getOriginalCause();
         }
+    }
+    
+    
+    @Test
+    public void test_ST_IsValidRDetail8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,3 0))'::geometry,0);");
+        rs.next();
+        Object[] results = (Object[]) rs.getObject(1);
+        assertNotNull(results);
+        assertFalse((Boolean) results[0]);
+        assertEquals("Ring Self-intersection", results[1]);
+        assertGeometryEquals("POINT(3 0)", ValueGeometry.getFromGeometry(results[2]).getBytes());
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_IsValidRDetail9() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,3 0))'::geometry,1)");
+        rs.next();
+        Object[] results = (Object[]) rs.getObject(1);
+        assertNotNull(results);
+        assertTrue((Boolean) results[0]);
+        assertEquals("Valid Geometry", results[1]);
+        assertNull(results[2]);
+        rs.close();
     }
 
     @Test
