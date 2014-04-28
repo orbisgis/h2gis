@@ -64,6 +64,7 @@ public class ST_ZUpdateLineExtremities extends DeterministicScalarFunction {
      * @param geometry
      * @param startZ
      * @param endZ
+     * @param interpolate
      * @return
      */
     public static Geometry updateZExtremities(Geometry geometry, double startZ, double endZ, boolean interpolate) {
