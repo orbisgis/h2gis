@@ -258,7 +258,7 @@ public class KMLImporterExporterTest {
                 + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 8);");
         res.next();
-        assertTrue(res.getString(1).equals("<LineString><extrude>1</extrude><kml:altitudeMode>clampToSeaFloor</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>"));        
+        assertTrue(res.getString(1).equals("<LineString><extrude>1</extrude><gx:altitudeMode>clampToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>"));        
         res.close();
         stat.close();
     }
@@ -270,7 +270,7 @@ public class KMLImporterExporterTest {
                 + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 16);");
         res.next();
-        assertTrue(res.getString(1).equals("<LineString><extrude>1</extrude><kml:altitudeMode>relativeToSeaFloor</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>"));        
+        assertTrue(res.getString(1).equals("<LineString><extrude>1</extrude><gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>"));        
         res.close();
         stat.close();
     }
