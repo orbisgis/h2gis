@@ -16,8 +16,8 @@ GEOMETRY ST_Snap(GEOMETRY geomA, GEOMETRY geomB, double distance);
 
 ### Description
 
-Returns a `GEOMETRY` that was a snapping between two Geometries with a given tolerance.
-Snaps the vertices and segments of a Geometry to another Geometry's vertices. A snap `distance tolerance` is used to control where snapping is performed. 
+Returns a `GEOMETRY` that was a snapping between two `GEOMETRIE`s with a given tolerance.
+Snaps the vertices and segments of a GEOMETRY to another GEOMETRY's vertices. A snap `distance tolerance` is used to control where snapping is performed. 
 
 ### Examples
 | geomA LINESTRING | geomB LINESTRING |

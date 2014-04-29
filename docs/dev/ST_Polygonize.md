@@ -15,8 +15,8 @@ MULTIPOLYGON ST_Polygonize(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Creates a `MULTIPOLYGON` containing possible Polygons formed from the constituent linework of a set of
-Geometries. If the endpoints of the Geometries are not properly joined this function return
+Creates a `MULTIPOLYGON` containing possible POLYGONs formed from a `LINESTRING` or `MULTILINESTRING`. 
+If the endpoints of the Geometries are not properly joined this function return
 null.
 
 ### Examples

@@ -18,7 +18,7 @@ double tolerance);
 
 ### Description
 Returns a `GEOMETRY` resulting from split between two `GEOMETRY`.
-Split a GeometryA according a GeometryB.
+Split `GeomA` according `GeomB`.
 Supported operations are : 
 
 * a LINESTRING by a POINT 
