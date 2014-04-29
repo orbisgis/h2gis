@@ -1,0 +1,1099 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   id="svg3055"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   width="314"
+   height="314"
+   sodipodi:docname="ST_RingBuffer.svg"
+   inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_MakeEllipse.png"
+   inkscape:export-xdpi="99"
+   inkscape:export-ydpi="99">
+  <metadata
+     id="metadata3061">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs3059">
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-9"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-8"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-8"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-4"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-6"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-2"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-1"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-1"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-1"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-3"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-3"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-0"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-5"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-83"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-9"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-47"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-8"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-30"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-37"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-2"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-0"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-80"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-97"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-8"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-90"
+       style="overflow:visible">
+      <path
+         id="path3845-29"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-2"
+       style="overflow:visible">
+      <path
+         id="path3824-01"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-18"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-9"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-4"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-9"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-2"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-7"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-88"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-94"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-03"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-70"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-82"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-19"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-56"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3845-73"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lstart-92"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3824-7"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(0.8,0,0,0.8,10,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1440"
+     inkscape:window-height="824"
+     id="namedview3057"
+     showgrid="false"
+     inkscape:zoom="1.4727638"
+     inkscape:cx="185.8951"
+     inkscape:cy="122.96458"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg3055" />
+  <rect
+     style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
+     id="rect3590"
+     width="327.6297"
+     height="387.97708"
+     x="-7.2154365"
+     y="236.63635"
+     inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_RingBuffer_2.png"
+     inkscape:export-xdpi="96.145126"
+     inkscape:export-ydpi="96.145126" />
+  <rect
+     y="-23.211081"
+     x="-33.707779"
+     height="234.36484"
+     width="454.87744"
+     id="rect4679"
+     style="opacity:0.8;fill:#ffffff;fill-opacity:1;stroke:#ffffff;stroke-width:0.83946311;stroke-opacity:1"
+     inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_RingBuffer_1.png"
+     inkscape:export-xdpi="128.36865"
+     inkscape:export-ydpi="128.36865" />
+  <rect
+     style="opacity:0;fill:#fe8300;fill-opacity:0.20784314;stroke:none"
+     id="rect3849"
+     width="366.65756"
+     height="406.03931"
+     x="-40.739731"
+     y="-9.8808546" />
+  <rect
+     style="opacity:0;fill:#fe8300;fill-opacity:0.20784314;stroke:none"
+     id="rect3851"
+     width="383.63245"
+     height="410.11328"
+     x="-43.455711"
+     y="-14.633823" />
+  <rect
+     style="opacity:0;fill:#fe8300;fill-opacity:0.20784314;stroke:none"
+     id="rect3853"
+     width="374.80551"
+     height="384.31146"
+     x="-43.95755"
+     y="-9.400034" />
+  <text
+     xml:space="preserve"
+     style="font-size:13px;font-style:normal;font-weight:normal;text-align:center;line-height:125%;letter-spacing:0px;word-spacing:0px;text-anchor:middle;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+     x="79.090973"
+     y="172.54669"
+     id="text4403-0-0"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       id="tspan4405-5-8"
+       x="79.090973"
+       y="172.54669">ST_RingBuffer(geom, 2, 2)</tspan><tspan
+       sodipodi:role="line"
+       x="79.090973"
+       y="188.79669"
+       id="tspan4707">(by default endcap=round)</tspan></text>
+  <text
+     xml:space="preserve"
+     style="font-size:13px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+     x="193.92319"
+     y="184.56024"
+     id="text4403-0-0-4-8"
+     sodipodi:linespacing="125%"><tspan
+       sodipodi:role="line"
+       x="193.92319"
+       y="184.56024"
+       id="tspan4709">ST_Buffer(geom, 2, 2, 'square')</tspan></text>
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.03345132;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline"
+     d="m 41.006455,-9.7323313 0,168.9935413"
+     id="path3592-4"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cc"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.95490634;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Lend);display:inline"
+     d="m -3.2413016,115.85379 169.1714216,0"
+     id="path3594-6"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cc"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path3596-2"
+     d="m 81.024126,-9.8327753 0,169.6752653"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     d="m 121.0496,-9.8327753 0,169.6752653"
+     id="path3598-7"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path3600-2"
+     d="m 161.07449,-9.8327753 0,169.6752653"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path3602-1"
+     d="m -4.9394706,75.827455 170.3829306,0"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     d="m -4.9394706,35.815515 170.3829306,0"
+     id="path3604-6"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <flowRoot
+     xml:space="preserve"
+     id="flowRoot3608-2"
+     style="font-size:25.94282341px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     transform="matrix(0.61674087,0,0,0.61674087,-148.36105,-273.83443)"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843"><flowRegion
+       id="flowRegion3610-1"><rect
+         id="rect3612-5"
+         width="121.21831"
+         height="48.487324"
+         x="487.39859"
+         y="626.07782"
+         style="font-size:25.94282341px" /></flowRegion><flowPara
+       id="flowPara3614-0"
+       style="font-size:25.94282341px;font-style:italic">x</flowPara></flowRoot>  <flowRoot
+     transform="matrix(0.61674087,0,0,0.61674087,-272.24752,-401.8701)"
+     style="font-size:25.94282341px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     id="flowRoot3616-6"
+     xml:space="preserve"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843"><flowRegion
+       id="flowRegion3618-2"><rect
+         y="626.07782"
+         x="487.39859"
+         height="48.487324"
+         width="121.21831"
+         id="rect3620-8"
+         style="font-size:25.94282341px" /></flowRegion><flowPara
+       style="font-size:25.94282341px;font-style:italic"
+       id="flowPara3622-9">y</flowPara></flowRoot>  <flowRoot
+     transform="matrix(0.26110367,0,0,0.26110367,-108.76054,-43.541765)"
+     style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     id="flowRoot3624-0"
+     xml:space="preserve"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843"><flowRegion
+       id="flowRegion3626-3"><rect
+         y="626.07782"
+         x="487.39859"
+         height="48.487324"
+         width="121.21831"
+         id="rect3628-9" /></flowRegion><flowPara
+       style="font-style:italic"
+       id="flowPara3630-3">0,0</flowPara></flowRoot>  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     d="m 61.0142,-9.8327753 0,169.6752653"
+     id="path3636-1"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:connector-curvature="0"
+     id="path3638-7"
+     d="m 101.03937,-9.8327753 0,169.6752653"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     d="m 141.065,-9.8327753 0,169.6752653"
+     id="path3640-8"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     d="m -4.9394706,95.837835 170.3829306,0"
+     id="path3646-3"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:connector-curvature="0"
+     id="path3648-9"
+     d="m -4.9394706,55.825895 170.3829306,0"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     d="m -4.9394706,15.813983 170.3829306,0"
+     id="path3650-1"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.01610255px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline"
+     d="m 128.10004,256.07287 -2.03699,360.14115"
+     id="path2985-8-33-6"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cc"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:1.00452483px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend);display:inline"
+     d="m 7.6136359,486.57613 298.4920441,0"
+     id="path2987-8-5-5"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cc"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path2989-7-8-1"
+     d="m 168.08647,254.68335 0,359.86015"
+     style="fill:none;stroke:#000000;stroke-width:0.49085176;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.96340706, 3.9268141;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.49085176;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.96340706, 3.9268141;stroke-dashoffset:0;display:inline"
+     d="m 206.0826,254.68335 0,359.86015"
+     id="path2991-5-8-9"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path2993-8-2-81"
+     d="m 244.07875,254.68335 0,359.86015"
+     style="fill:none;stroke:#000000;stroke-width:0.49085176;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.96340706, 3.9268141;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.49085176;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.96340706, 3.9268141;stroke-dashoffset:0;display:inline"
+     d="m 282.07488,254.68335 0,359.86015"
+     id="path2995-9-9-3"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.45765257;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.83061002, 3.66122001;stroke-dashoffset:0;display:inline"
+     d="m 6.6149459,366.61923 299.7983541,0"
+     id="path3001-2-5-08"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path3003-6-4-4"
+     d="m 6.6149459,326.6187 299.7983541,0"
+     style="fill:none;stroke:#000000;stroke-width:0.45765257;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.83061002, 3.66122001;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.45765257;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.83061002, 3.66122001;stroke-dashoffset:0;display:inline"
+     d="m 6.6149459,286.61821 299.7983541,0"
+     id="path3005-4-2-4"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <flowRoot
+     xml:space="preserve"
+     id="flowRoot3804-2-6-4"
+     style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     transform="matrix(0.61674087,0,0,0.61674087,-20.469574,96.900624)"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669"><flowRegion
+       id="flowRegion3806-7-6-2"><rect
+         id="rect3808-6-9-7"
+         width="121.21831"
+         height="48.487324"
+         x="487.39859"
+         y="626.07782" /></flowRegion><flowPara
+       id="flowPara3810-2-9-9"
+       style="font-style:italic">x</flowPara></flowRoot>  <flowRoot
+     transform="matrix(0.61674087,0,0,0.61674087,-192.2336,-121.57095)"
+     style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     id="flowRoot3812-8-0-0"
+     xml:space="preserve"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669"><flowRegion
+       id="flowRegion3814-8-2-0"><rect
+         y="626.07782"
+         x="487.39859"
+         height="48.487324"
+         width="121.21831"
+         id="rect3816-1-4-5" /></flowRegion><flowPara
+       style="font-style:italic"
+       id="flowPara3818-8-9-6">y</flowPara></flowRoot>  <flowRoot
+     transform="matrix(0.26110367,0,0,0.26110367,-21.680244,327.1933)"
+     style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     id="flowRoot4814-7-2-0"
+     xml:space="preserve"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669"><flowRegion
+       id="flowRegion4816-0-8-3"><rect
+         y="626.07782"
+         x="487.39859"
+         height="48.487324"
+         width="121.21831"
+         id="rect4818-9-4-4" /></flowRegion><flowPara
+       style="font-style:italic"
+       id="flowPara4820-5-53-0">0,0</flowPara></flowRoot>  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.45765257;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.83061002, 3.66122001;stroke-dashoffset:0;display:inline"
+     d="m 6.6149459,446.62027 299.7983541,0"
+     id="path3441-2-2"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:connector-curvature="0"
+     id="path3443-8-9"
+     d="m 6.6149459,406.61977 299.7983541,0"
+     style="fill:none;stroke:#000000;stroke-width:0.45765257;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.83061002, 3.66122001;stroke-dashoffset:0;display:inline" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.49085176;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.96340706, 3.9268141;stroke-dashoffset:0;display:inline"
+     d="m 90.137746,254.68335 0,359.86015"
+     id="path4526"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.45765257;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.83061002, 3.66122001;stroke-dashoffset:0;display:inline"
+     d="m 6.6149459,526.54268 299.7983541,0"
+     id="path4514"
+     inkscape:connector-curvature="0" />
+  <path
+     style="opacity:0.7;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:1.4732852px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 167.71453,329.15388 c -38.91208,-0.36154 -58.76358,28.83891 -58.34375,58.96875 -37.523654,0.82801 -56.566914,29.71654 -55.968754,59.375 l -0.1875,58.71875 c -0.21967,38.97682 17.89299,57.51512 57.812504,59.09375 l 56.09375,0.125 c 34.22091,0.61482 57.27809,-20.63497 56.75,-58.9375 33.97611,0.27581 56.79317,-21.14876 56,-59.5625 l 0.5,-59.59375 c -0.50328,-30.71142 -12.90919,-58.34061 -56.40625,-58.1875 l -56.25,0 z m 0.3125,37.3125 38.1875,0 c 29.52385,-0.10392 37.93965,18.65446 38.28125,39.5 l -0.34375,40.4375 c 0.53837,26.07353 -14.93854,40.62471 -38,40.4375 0.35844,25.99804 -15.30364,40.41731 -38.53125,40 l -38.0625,-0.0937 C 102.4627,525.67612 90.159176,513.1096 90.308276,486.65388 l 0.125,-39.875 c -0.40601,-20.13084 12.530634,-39.71924 38.000004,-40.28125 -0.28496,-20.45079 13.18197,-40.27665 39.59375,-40.03125 z"
+     id="path4530"
+     inkscape:connector-curvature="0" />
+  <path
+     style="opacity:0.7;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 168.02703,366.46638 c -26.41178,-0.2454 -39.87871,19.58046 -39.59375,40.03125 -25.46937,0.56201 -38.406014,20.15041 -38.000004,40.28125 l -0.125,39.875 c -0.1491,26.45572 12.154424,39.02224 39.250004,40.09375 l 38.0625,0.0937 c 23.22761,0.41731 38.88969,-14.00196 38.53125,-40 23.06146,0.18721 38.53837,-14.36397 38,-40.4375 l 0.34375,-40.4375 c -0.3416,-20.84554 -8.7574,-39.60392 -38.28125,-39.5 l -38.1875,0 z m 0.3125,39.90625 37.71875,0 0,40.15625 -37.71875,0 0,-40.15625 z m -39.9375,40.25 39.40625,0 0,40.125 -39.40625,0 0,-40.125 z"
+     id="path4487"
+     inkscape:connector-curvature="0" />
+  <rect
+     y="446.63306"
+     x="128.41733"
+     height="40.110447"
+     width="39.390266"
+     id="rect3569"
+     style="opacity:0.7;fill:#afdcff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.97976565px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+  <rect
+     style="opacity:0.7;fill:#afdcff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:0.95914745px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     id="rect3571"
+     width="37.730457"
+     height="40.131065"
+     x="168.32751"
+     y="406.38269" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:connector-curvature="0"
+     id="path4512"
+     d="m 6.6149459,566.54321 299.7983541,0"
+     style="fill:none;stroke:#000000;stroke-width:0.45765257;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.83061002, 3.66122001;stroke-dashoffset:0;display:inline" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.45765257;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.83061002, 3.66122001;stroke-dashoffset:0;display:inline"
+     d="m 6.6149459,606.54376 299.7983541,0"
+     id="path4520"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-ydpi="99.89669" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.49085176;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.96340706, 3.9268141;stroke-dashoffset:0;display:inline"
+     d="m 14.145456,254.68335 0,359.86015"
+     id="path4522"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="99.89669"
+     inkscape:export-xdpi="99.89669"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
+     inkscape:connector-curvature="0"
+     id="path4524"
+     d="m 52.141596,254.68335 0,359.86015"
+     style="fill:none;stroke:#000000;stroke-width:0.49085176;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.96340706, 3.9268141;stroke-dashoffset:0;display:inline" />
+  <path
+     style="opacity:0.7;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-opacity:1"
+     d="m 80.222319,-3.9367353 c -44.149846,0 -79.93749959,35.7876503 -79.93749959,79.9375003 0,44.149845 35.78765359,79.937495 79.93749959,79.937495 44.149851,0 79.937501,-35.78765 79.937501,-79.937495 0,-44.14985 -35.78765,-79.9375003 -79.937501,-79.9375003 z m 0.96875,39.9687503 c 21.900461,0 39.625001,17.80648 39.625001,39.78125 0,21.97477 -17.72454,39.812495 -39.625001,39.812495 -21.900456,0 -39.65625,-17.837725 -39.65625,-39.812495 0,-21.97477 17.755794,-39.78125 39.65625,-39.78125 z"
+     id="path4591"
+     inkscape:connector-curvature="0" />
+  <path
+     style="opacity:0.7;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+     d="m 81.191069,36.032015 c -21.900456,0 -39.65625,17.80648 -39.65625,39.78125 0,21.97477 17.755794,39.812495 39.65625,39.812495 21.900461,0 39.625001,-17.837725 39.625001,-39.812495 0,-21.97477 -17.72454,-39.78125 -39.625001,-39.78125 z m -0.46875,36.375 c 1.762685,0 3.1875,1.42481 3.1875,3.1875 0,1.76269 -1.424815,3.21875 -3.1875,3.21875 -1.762685,0 -3.1875,-1.45606 -3.1875,-3.21875 0,-1.76269 1.424815,-3.1875 3.1875,-3.1875 z"
+     id="path3965"
+     inkscape:connector-curvature="0" />
+  <path
+     sodipodi:type="arc"
+     style="fill:#0000ff;fill-opacity:1;stroke:none;display:inline"
+     id="path3321"
+     sodipodi:cx="135.32256"
+     sodipodi:cy="827.41382"
+     sodipodi:rx="1.6793786"
+     sodipodi:ry="1.6793786"
+     d="m 137.00193,827.41382 a 1.6793786,1.6793786 0 1 1 -3.35875,0 1.6793786,1.6793786 0 1 1 3.35875,0 z"
+     transform="matrix(1.9004792,0,0,1.9004792,-176.46025,-1496.8735)"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111"
+     inkscape:export-ydpi="111" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     d="m -4.9394706,135.80269 170.3829306,0"
+     id="path4569"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path4571"
+     d="m -4.9394706,155.81307 170.3829306,0"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:connector-curvature="0"
+     id="path4581"
+     d="m 1.1177034,-9.8327753 0,169.6752653"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     d="m 21.133111,-9.8327753 0,169.6752653"
+     id="path4585"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path4589"
+     d="m -4.9394706,-4.1777613 170.3829306,0"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     sodipodi:nodetypes="cc"
+     inkscape:connector-curvature="0"
+     id="path4602"
+     d="m 255.00646,-9.7323313 0,168.9935413"
+     style="fill:none;stroke:#000000;stroke-width:1.03345132;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:url(#Arrow1Lstart);marker-end:none;display:inline" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     sodipodi:nodetypes="cc"
+     inkscape:connector-curvature="0"
+     id="path4604"
+     d="m 210.7587,115.85379 169.17142,0"
+     style="fill:none;stroke:#000000;stroke-width:0.95490634;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-end:url(#Arrow2Lend);display:inline" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     d="m 295.02413,-9.8327753 0,169.6752653"
+     id="path4606"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:connector-curvature="0"
+     id="path4608"
+     d="m 335.0496,-9.8327753 0,169.6752653"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     d="m 375.07449,-9.8327753 0,169.6752653"
+     id="path4610"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     d="m 209.06053,75.827455 170.38293,0"
+     id="path4612"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:connector-curvature="0"
+     id="path4614"
+     d="m 209.06053,35.815515 170.38293,0"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline" />
+  <flowRoot
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     transform="matrix(0.61674087,0,0,0.61674087,65.638949,-273.83443)"
+     style="font-size:25.94282341px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     id="flowRoot4616"
+     xml:space="preserve"><flowRegion
+       id="flowRegion4618"><rect
+         style="font-size:25.94282341px"
+         y="626.07782"
+         x="487.39859"
+         height="48.487324"
+         width="121.21831"
+         id="rect4620" /></flowRegion><flowPara
+       style="font-size:25.94282341px;font-style:italic"
+       id="flowPara4622">x</flowPara></flowRoot>  <flowRoot
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     xml:space="preserve"
+     id="flowRoot4624"
+     style="font-size:25.94282341px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     transform="matrix(0.61674087,0,0,0.61674087,-57.313901,-403.78094)"><flowRegion
+       id="flowRegion4626"><rect
+         style="font-size:25.94282341px"
+         id="rect4628"
+         width="121.21831"
+         height="48.487324"
+         x="487.39859"
+         y="626.07782" /></flowRegion><flowPara
+       id="flowPara4630"
+       style="font-size:25.94282341px;font-style:italic">y</flowPara></flowRoot>  <flowRoot
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     xml:space="preserve"
+     id="flowRoot4632"
+     style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;display:inline;font-family:Sans"
+     transform="matrix(0.26110367,0,0,0.26110367,105.23946,-43.541765)"><flowRegion
+       id="flowRegion4634"><rect
+         id="rect4636"
+         width="121.21831"
+         height="48.487324"
+         x="487.39859"
+         y="626.07782" /></flowRegion><flowPara
+       id="flowPara4638"
+       style="font-style:italic">0,0</flowPara></flowRoot>  <path
+     inkscape:connector-curvature="0"
+     id="path4640"
+     d="m 275.0142,-9.8327753 0,169.6752653"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     d="m 315.03937,-9.8327753 0,169.6752653"
+     id="path4642"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path4644"
+     d="m 355.065,-9.8327753 0,169.6752653"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path4646"
+     d="m 209.06053,95.837835 170.38293,0"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     d="m 209.06053,55.825895 170.38293,0"
+     id="path4648"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path4650"
+     d="m 209.06053,15.813983 170.38293,0"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;stroke-miterlimit:4;stroke-dasharray:none"
+     d="m 215.86433,-3.4350503 0,158.9062503 159.4375,0 0,-158.9062503 z m 39.53125,39.0625053 80.125,0 0,79.437495 -80.125,0 z"
+     id="rect4668"
+     inkscape:connector-curvature="0"
+     sodipodi:nodetypes="cccccccccc" />
+  <path
+     style="opacity:0.7;fill:#ffaa59;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+     d="m 254.73953,35.795505 0,79.437495 80.125,0 0,-79.437495 -80.125,0 z m 40.09375,36.78125 c 1.76269,0 3.1875,1.42481 3.1875,3.1875 0,1.76269 -1.42481,3.21875 -3.1875,3.21875 -1.76269,0 -3.1875,-1.45606 -3.1875,-3.21875 0,-1.76269 1.42481,-3.1875 3.1875,-3.1875 z"
+     id="rect4670"
+     inkscape:connector-curvature="0" />
+  <path
+     inkscape:export-ydpi="111"
+     inkscape:export-xdpi="111"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     transform="matrix(1.9004792,0,0,1.9004792,37.539749,-1496.8735)"
+     d="m 137.00193,827.41382 a 1.6793786,1.6793786 0 1 1 -3.35875,0 1.6793786,1.6793786 0 1 1 3.35875,0 z"
+     sodipodi:ry="1.6793786"
+     sodipodi:rx="1.6793786"
+     sodipodi:cy="827.41382"
+     sodipodi:cx="135.32256"
+     id="path4656"
+     style="fill:#0000ff;fill-opacity:1;stroke:none;display:inline"
+     sodipodi:type="arc" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path4658"
+     d="m 209.06053,135.80269 170.38293,0"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     d="m 209.06053,155.81307 170.38293,0"
+     id="path4660"
+     inkscape:connector-curvature="0" />
+  <path
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     d="m 215.1177,-9.8327753 0,169.6752653"
+     id="path4662"
+     inkscape:connector-curvature="0"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:connector-curvature="0"
+     id="path4664"
+     d="m 235.13311,-9.8327753 0,169.6752653"
+     style="fill:none;stroke:#000000;stroke-width:0.46473181;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.8589272, 3.71785444;stroke-dashoffset:0;display:inline"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-ydpi="111.6843" />
+  <path
+     inkscape:export-ydpi="111.6843"
+     inkscape:export-xdpi="111.6843"
+     inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_Crosses_1.png"
+     style="fill:none;stroke:#000000;stroke-width:0.46606854;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.86427413, 3.72854827;stroke-dashoffset:0;display:inline"
+     d="m 209.06053,-4.1777613 170.38293,0"
+     id="path4666"
+     inkscape:connector-curvature="0" />
+</svg>
