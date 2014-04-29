@@ -15,7 +15,7 @@ GEOMETRY ST_RemoveHoles(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Remove all holes in a POLYGON or a MULTIPOLYGON. 
+Remove all holes in a `POLYGON` or a `MULTIPOLYGON`. 
 If the Geometry doesn't contain any hole return the input `GEOMETRY`. 
 If the input `GEOMETRY` is not a POLYGON or MULTIPOLYGON return null.
 

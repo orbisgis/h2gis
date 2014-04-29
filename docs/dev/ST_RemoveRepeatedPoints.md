@@ -24,7 +24,7 @@ SELECT ST_RemoveRepeatedPoints('MULTIPOINT((4 4), (1 1), (1 0),
                                            (0 3), (4 4))');
 -- Answer:  MULTIPOINT((4 4), (1 1), (1 0),(0 3), (4 4))
 -- The POINT(4 4) is not duplicated is two geometries 
---  independent so is not removed.
+--  independent then it's not removed.
 
 SELECT ST_RemoveRepeatedPoints('LINESTRING(1 1, 2 2, 2 2, 1 3, 
                                            1 3, 3 3, 3 3, 5 2, 

@@ -104,6 +104,7 @@ SELECT ST_RemovePoint('LINESTRING(0 3, 1 1, 3 3, 5 2, 5 4, 6 5,
 
 ##### See also
 
-* [`ST_AddPoint`](../ST_AddPoint), [`ST_RemoveRepeatedPoints`](../ST_RemoveRepeatedPoints)
+* [`ST_AddPoint`](../ST_AddPoint), [`ST_RemoveRepeatedPoints`](../ST_RemoveRepeatedPoints),
+[`ST_RemoveHoles`](../ST_RemoveHoles)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_RemovePoint.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
