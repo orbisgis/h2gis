@@ -1129,7 +1129,7 @@ public class SpatialFunctionTest {
     public void test_ST_DelaunayAsMultiLineString() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 1);");
         rs.next();
-        assertGeometryEquals("MULTILINESTRING((1.1 3 1, 1.1 9 1), (1.1 3 1, 5 8 1),  (1.1 9 1, 5 8 1), (1.1 3 1, 5.1 1.1 1),  (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1),  (5 8 1, 8.8 9.9 1), (1.1 9 1, 8.8 9.9 1),(5.1 1.1 1, 9.5 6.4 1),  (8.8 9.9 1, 9.5 6.4 1))", rs.getBytes(1));
+        assertGeometryEquals("MULTILINESTRING((1.1 3 1, 1.1 9 1), (1.1 3 1, 5 8 1),  (1.1 9 1, 5 8 1), (1.1 3 1, 5.1 1.1 1),  (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1),  (5 8 1, 8.8 9.9 1), (1.1 9 1, 8.8 9.9 1),(5.1 1.1 1, 9.5 6.4 1),  (8.8 9.9 1, 9.5 6.4 1))",rs.getBytes(1));
         rs.close();
     }
 
@@ -1137,12 +1137,12 @@ public class SpatialFunctionTest {
     public void test_ST_ConstrainedDelaunayWithPolygon() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('POLYGON ((1.9 8, 2.1 2.2, 7.1 2.2, 4.9 3.5, 7.5 8.1, 3.2 6, 1.9 8))'::GEOMETRY);");
         rs.next();
-        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((1.9 8, 2.1 2.2, 3.2 6, 1.9 8)), \n"
-                + " ((2.1 2.2, 3.2 6, 4.9 3.5, 2.1 2.2)), \n"
-                + " ((2.1 2.2, 4.9 3.5, 7.1 2.2, 2.1 2.2)), \n"
-                + " ((7.1 2.2, 4.9 3.5, 7.5 8.1, 7.1 2.2)), \n"
-                + " ((4.9 3.5, 3.2 6, 7.5 8.1, 4.9 3.5)), \n"
-                + " ((3.2 6, 1.9 8, 7.5 8.1, 3.2 6)))"));
+        assertGeometryEquals("MULTIPOLYGON (((1.9 8 0, 2.1 2.2 0, 3.2 6 0, 1.9 8 0)),"
+                + " ((2.1 2.2 0, 3.2 6 0, 4.9 3.5 0, 2.1 2.2 0)),"
+                + " ((2.1 2.2 0, 4.9 3.5 0, 7.1 2.2 0, 2.1 2.2 0)),"
+                + " ((7.1 2.2 0, 4.9 3.5 0, 7.5 8.1 0, 7.1 2.2 0)),"
+                + " ((4.9 3.5 0, 3.2 6 0, 7.5 8.1 0, 4.9 3.5 0)),"
+                + " ((3.2 6 0, 1.9 8 0, 7.5 8.1 0, 3.2 6 0)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -1150,19 +1150,10 @@ public class SpatialFunctionTest {
     public void test_ST_ConstrainedDelaunayWithLines() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7), (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 1);");
         rs.next();
-        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTILINESTRING ((2 7, 3.2 4.6), \n"
-                + " (3.2 4.6, 4.1 5), \n"
-                + " (4.1 5, 4.1818181818181825 7), \n"
-                + " (3.2 4.6, 4.1818181818181825 7), \n"
-                + " (2 7, 4.1818181818181825 7), \n"
-                + " (4.1818181818181825 7, 5 9), \n"
-                + " (2 7, 5 9), \n"
-                + " (3.2 4.6, 6 5), \n"
-                + " (4.1 5, 6 5), \n"
-                + " (4.1818181818181825 7, 6 5), \n"
-                + " (6 5, 6 7), \n"
-                + " (4.1818181818181825 7, 6 7), \n"
-                + " (5 9, 6 7))"));
+        assertGeometryEquals("MULTILINESTRING ((2 7 0, 3.2 4.6 0), (3.2 4.6 0, 4.1 5 0), (4.1 5 0, 4.1818181818181825 7 0), "
+                + "(3.2 4.6 0, 4.1818181818181825 7 0), (2 7 0, 4.1818181818181825 7 0), (4.1818181818181825 7 0, 5 9 0), "
+                + "(2 7 0, 5 9 0), (3.2 4.6 0, 6 5 0), (4.1 5 0, 6 5 0), (4.1818181818181825 7 0, 6 5 0), (6 5 0, 6 7 0), "
+                + "(4.1818181818181825 7 0, 6 7 0), (5 9 0, 6 7 0))", rs.getBytes(1));
         rs.close();
     }
 
@@ -1170,12 +1161,29 @@ public class SpatialFunctionTest {
     public void test_ST_ConstrainedDelaunayWithLines2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7), (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 0);");
         rs.next();
-        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((3.2 4.6, 4.1 5, 4.1818181818181825 7, 3.2 4.6)), "
-                + "((2 7, 3.2 4.6, 4.1818181818181825 7, 2 7)), ((4.1818181818181825 7, 2 7, 5 9, 4.1818181818181825 7)), "
-                + "((3.2 4.6, 4.1 5, 6 5, 3.2 4.6)), ((4.1 5, 4.1818181818181825 7, 6 5, 4.1 5)), "
-                + "((6 5, 4.1818181818181825 7, 6 7, 6 5)), ((4.1818181818181825 7, 5 9, 6 7, 4.1818181818181825 7)))"));
+        assertGeometryEquals("MULTIPOLYGON (((3.2 4.6 0, 4.1 5 0, 4.1818181818181825 7 0, 3.2 4.6 0)), "
+                + "((2 7 0, 3.2 4.6 0, 4.1818181818181825 7 0, 2 7 0)), ((4.1818181818181825 7 0, 2 7 0, 5 9 0, 4.1818181818181825 7 0)), "
+                + "((3.2 4.6 0, 4.1 5 0, 6 5 0, 3.2 4.6 0)), ((4.1 5 0, 4.1818181818181825 7 0, 6 5 0, 4.1 5 0)), "
+                + "((6 5 0, 4.1818181818181825 7 0, 6 7 0, 6 5 0)), ((4.1818181818181825 7 0, 5 9 0, 6 7 0, 4.1818181818181825 7 0)))", rs.getBytes(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_ConstrainedDelaunayWithLines3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRING (0 0, 10 0, 10 10, 0 10, 0 0)'::GEOMETRY, 1);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING ((0 0 0, 0 10 0), (0 0 0, 10 0 0), (0 10 0, 10 0 0), (10 0 0, 10 10 0), (0 10 0, 10 10 0))", rs.getBytes(1));
+        rs.close();                
+    }
+    
+     @Test
+    public void test_ST_ConstrainedDelaunayWithLines4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRING (0 0 1, 10 0 1, 10 10 1, 0 10 1, 0 0 1)'::GEOMETRY, 1);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING ((0 0 1, 0 10 1), (0 0 1, 10 0 1), (0 10 1, 10 0 1), (10 0 1, 10 10 1), (0 10 1, 10 10 1))", rs.getBytes(1));
+        rs.close();                
+    }
+    
 
     @Test
     public void test_ST_MakeGrid() throws Exception {
