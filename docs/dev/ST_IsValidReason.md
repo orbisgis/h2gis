@@ -2,7 +2,7 @@
 layout: docs
 title: ST_IsValidReason
 category: Geometry2D/properties
-description: Return text stating if a geometry is valid or not an if not valid, a reason why
+description: Return text stating if a geometry is valid or not and if not valid, a reason why
 prev_section: ST_IsValidDetail
 next_section: ST_NumGeometries
 permalink: /docs/dev/ST_IsValidReason/
@@ -24,15 +24,15 @@ The value for `flag` can be:
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_IsvalidDetail('POLYGON((210 440, 134 235, 145 233, 
+SELECT ST_IsvalidReason('POLYGON((210 440, 134 235, 145 233, 
                                   310 200, 340 360, 210 440))');
 -- Answer: Valid Geometry
 
-SELECT ST_IsvalidDetail('POLYGON((0 0, 10 0, 10 5, 6 -2, 0 0))');
+SELECT ST_IsvalidReason('POLYGON((0 0, 10 0, 10 5, 6 -2, 0 0))');
 -- Answer: Self-intersection at or near 
 --     POINT(7.142857142857143, 0.0, NaN)
 
-SELECT ST_IsvalidDetail('POLYGON((1 1, 1 6, 5 1, 1 1), 
+SELECT ST_IsvalidReason('POLYGON((1 1, 1 6, 5 1, 1 1), 
                                  (3 4, 3 5, 4 4, 3 4))', 0);
 -- Answer: Hole lies outside shell at or near POINT(3.0, 4.0, NaN)
 {% endhighlight %}
@@ -40,11 +40,11 @@ SELECT ST_IsvalidDetail('POLYGON((1 1, 1 6, 5 1, 1 1),
 <img class="displayed" src="../ST_IsValidReason_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_IsValidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,
+SELECT ST_IsValidReason('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,
                                   3 0))',0);
 -- Answer: Ring Self-intersection at or near POINT(3.0, 0.0, NaN)
 
-SELECT ST_IsValidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,
+SELECT ST_IsValidReason('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,
                                   3 0))',1);
 -- Answer: Valid Geometry
 {% endhighlight %}

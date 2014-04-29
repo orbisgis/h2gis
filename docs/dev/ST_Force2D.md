@@ -15,7 +15,7 @@ GEOMETRY ST_Force2D(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Forces the geometries into a 2-dimensional mode so that all output representations will only have the X and Y coordinates.
+Returns a `GEOMETRY` in 2-dimensional. The output `GEOMETRY` will only have the X and Y coordinates.
 
 ### Examples
 

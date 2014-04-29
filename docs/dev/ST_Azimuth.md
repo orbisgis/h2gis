@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Azimuth
 category: Geometry2D/trigonometry
-description: Return the azimuth of the segment defined by the given Points
+description: Return the azimuth of the segment defined by the given <code>POINT</code>s
 prev_section: Geometry2D/trigonometry
 next_section: Geometry3D/list-function-3d
 permalink: /docs/dev/ST_Azimuth/
@@ -15,7 +15,7 @@ double ST_Azimuth(GEOMETRY PointA, GEOMETRY PointB);
 {% endhighlight %}
 
 ### Description
-Returns the azimuth of the segment defined by the given `POINTS`, or Null if the two `POINTS` are coincident. Return value is in radians. Angle is computed clockwise from the north equals to 0.
+Returns the `azimuth` of the segment defined by the given `POINT`s, or null if the two `POINT`s are coincident. Return value is in radians. Angle is computed clockwise from the north equals to 0.
 
 ### Examples
 

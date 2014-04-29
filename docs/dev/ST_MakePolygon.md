@@ -19,7 +19,7 @@ POLYGON ST_MakePolygon(GEOMETRY shell, GEOMETRY holes)
 Creates a Polygon formed by the given `shell` and optionally `holes`.
 
 <div class="note">
-	<h5>Input Geometries must be closed `LINESTRING`</h5>
+	<h5>Input `GEOMETRIES` must be closed `LINESTRING`</h5>
 </div>
 
 ### Examples

@@ -15,8 +15,8 @@ LINESTRING ST_MinimumDiameter(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Returns the minimum diameter for a input Geometry. 
-The minimum diameter is computed in relation to the minimum rectangle which encloses a input
+Returns the minimum diameter for a input `GEOMETRY`. 
+The minimum diameter is computed from to the minimum rectangle which encloses a input
 Geometry.
 
 ### Examples
@@ -48,6 +48,6 @@ SELECT ST_MinimumDiameter('GEOMETRYCOLLECTION(
 
 ##### See also
 
-* [`ST_MinimumRectangle`](../MinimumRectangle)
+* [`ST_MinimumRectangle`](../ST_MinimumRectangle)
 * <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_MinimumDiameter.java" target="_blank">Source code</a>
 

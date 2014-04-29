@@ -2,7 +2,7 @@
 layout: docs
 title: ST_GeometryTypeCode
 category: Geometry2D/geometry-conversion
-description: Return the OGC SFS of a Geometry
+description: Return the geometry type code from OGC SFS
 prev_section: ST_GeomFromText
 next_section: ST_Holes
 permalink: /docs/dev/ST_GeometryTypeCode/
@@ -15,9 +15,9 @@ int ST_GeometryTypeCode(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Returns the OGC SFS <a href="http://www.opengeospatial.org/standards/sfs" target="_blank">version
-  1.2.1</a> of a Geometry. 
-This function does not take account of Z or M.
+Returns the geometry type code from OGC SFS 
+<a href="http://www.opengeospatial.org/standards/sfs" target="_blank">version 1.2.1</a>. 
+This function does not take account of Z or M values.
 This function is not part of SFS. It is used in constraints.
 
 | Code |    Geometry  type   |
