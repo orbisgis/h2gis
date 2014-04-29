@@ -94,10 +94,10 @@ public final class AltitudeMode {
             case NONE:
                 return;
             default:
-                throw new IllegalArgumentException("Supported altitude mode are : \n"
-                        + " For KML profil : CLAMPTOGROUND = 1; RELATIVETOGROUND = 2; ABSOLUTE = 4;\n"
-                        + "For GX profil : CLAMPTOSEAFLOOR = 8; RELATIVETOSEAFLOOR = 16; \n"
-                        + " No altitude : NONE = 0");
+                throw new IllegalArgumentException("Supported altitude modes are: \n"
+                        + " For KML profils: CLAMPTOGROUND = 1; RELATIVETOGROUND = 2; ABSOLUTE = 4;\n"
+                        + "For GX profils: CLAMPTOSEAFLOOR = 8; RELATIVETOSEAFLOOR = 16; \n"
+                        + " No altitude: NONE = 0");
         }
     }
 }
