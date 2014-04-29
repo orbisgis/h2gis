@@ -34,7 +34,7 @@ import org.jdelaunay.delaunay.geometries.DTriangle;
  */
 public class DelaunayTools {
 
-    private static GeometryFactory gf = new GeometryFactory();
+    private static final GeometryFactory gf = new GeometryFactory();
 
     /**
      * Convert a list of triangles to a JTS MultiPolygon
@@ -67,7 +67,7 @@ public class DelaunayTools {
     /**
      * Convert a list of triangles to a JTS MultiLineString
      *
-     * @param triangles
+     * @param edges
      * @return
      */
     public static MultiLineString toMultiLineString(List<DEdge> edges) {
