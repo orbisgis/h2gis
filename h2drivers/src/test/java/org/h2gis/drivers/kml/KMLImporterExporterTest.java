@@ -35,9 +35,9 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
-import static org.junit.Assert.assertTrue;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -109,7 +109,7 @@ public class KMLImporterExporterTest {
         Geometry geom = WKT_READER.read("POINT(1 2)");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
-        assertTrue(sb.toString().equals("<Point><coordinates>1.0,2.0</coordinates></Point>"));
+        assertEquals("<Point><coordinates>1.0,2.0</coordinates></Point>", sb.toString());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class KMLImporterExporterTest {
         Geometry geom = WKT_READER.read("LINESTRING(1 1, 2 2, 3 3)");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
-        assertTrue(sb.toString().equals("<LineString><coordinates>1.0,1.0 2.0,2.0 3.0,3.0</coordinates></LineString>"));
+        assertEquals("<LineString><coordinates>1.0,1.0 2.0,2.0 3.0,3.0</coordinates></LineString>", sb.toString());
     }
 
     @Test
@@ -125,9 +125,9 @@ public class KMLImporterExporterTest {
         Geometry geom = WKT_READER.read("POLYGON ((140 370, 60 150, 220 120, 310 180, 372 355, 240 260, 140 370))");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
-        assertTrue(sb.toString().equals("<Polygon><outerBoundaryIs><LinearRing><coordinates>"
+        assertEquals("<Polygon><outerBoundaryIs><LinearRing><coordinates>"
                 + "140.0,370.0 60.0,150.0 220.0,120.0 310.0,180.0 372.0,355.0 240.0,260.0 140.0,370.0"
-                + "</coordinates></LinearRing></outerBoundaryIs></Polygon>"));
+                + "</coordinates></LinearRing></outerBoundaryIs></Polygon>", sb.toString());
     }
 
     @Test
@@ -137,13 +137,13 @@ public class KMLImporterExporterTest {
                 + "  (230 240, 270 240, 270 190, 230 190, 230 240))");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
-        assertTrue(sb.toString().equals("<Polygon><outerBoundaryIs><LinearRing><coordinates>"
+        assertEquals("<Polygon><outerBoundaryIs><LinearRing><coordinates>"
                 + "100.0,360.0 320.0,360.0 320.0,150.0 100.0,150.0 100.0,360.0</coordinates>"
                 + "</LinearRing></outerBoundaryIs><innerBoundaryIs><LinearRing><coordinates>"
                 + "146.0,326.0 198.0,326.0 198.0,275.0 146.0,275.0 146.0,326.0</coordinates>"
                 + "</LinearRing></innerBoundaryIs><innerBoundaryIs><LinearRing>"
                 + "<coordinates>230.0,240.0 270.0,240.0 270.0,190.0 230.0,190.0 230.0,240.0"
-                + "</coordinates></LinearRing></innerBoundaryIs></Polygon>"));
+                + "</coordinates></LinearRing></innerBoundaryIs></Polygon>", sb.toString());
     }
 
     @Test
@@ -156,7 +156,7 @@ public class KMLImporterExporterTest {
                 + "  POINT (79 305))");
         StringBuilder sb = new StringBuilder();
         KMLGeometry.toKMLGeometry(geom, sb);
-        assertTrue(sb.toString().equals("<MultiGeometry><Polygon><outerBoundaryIs><LinearRing>"
+        assertEquals("<MultiGeometry><Polygon><outerBoundaryIs><LinearRing>"
                 + "<coordinates>100.0,360.0 320.0,360.0 320.0,150.0 100.0,150.0 100.0,360.0"
                 + "</coordinates></LinearRing></outerBoundaryIs><innerBoundaryIs><LinearRing>"
                 + "<coordinates>146.0,326.0 198.0,326.0 198.0,275.0 146.0,275.0 146.0,326.0"
@@ -164,7 +164,7 @@ public class KMLImporterExporterTest {
                 + "<coordinates>230.0,240.0 270.0,240.0 270.0,190.0 230.0,190.0 230.0,240.0"
                 + "</coordinates></LinearRing></innerBoundaryIs></Polygon><LineString>"
                 + "<coordinates>140.0,420.0 286.0,425.0 383.0,315.0</coordinates>"
-                + "</LineString><Point><coordinates>79.0,305.0</coordinates></Point></MultiGeometry>"));
+                + "</LineString><Point><coordinates>79.0,305.0</coordinates></Point></MultiGeometry>", sb.toString());
     }
 
     @Test
@@ -210,7 +210,7 @@ public class KMLImporterExporterTest {
         // Create a KMZ file
         ResultSet res = stat.executeQuery("SELECT ST_AsKml(the_geom) from KML_POINTS");
         res.next();
-        assertTrue(res.getString(1).equals("<Point><coordinates>2.19,47.58</coordinates></Point>"));
+        assertEquals("<Point><coordinates>2.19,47.58</coordinates></Point>", res.getString(1));
         res.close();
         stat.close();
     }
@@ -222,7 +222,7 @@ public class KMLImporterExporterTest {
                 + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 2);");
         res.next();
-        assertTrue(res.getString(1).equals("<LineString><extrude>1</extrude><kml:altitudeMode>relativeToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>"));        
+        assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>relativeToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));        
         res.close();
         stat.close();
     }
@@ -234,7 +234,7 @@ public class KMLImporterExporterTest {
                 + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 1);");
         res.next();
-        assertTrue(res.getString(1).equals("<LineString><extrude>1</extrude><kml:altitudeMode>clampToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>"));        
+        assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>clampToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));        
         res.close();
         stat.close();
     }
@@ -246,7 +246,7 @@ public class KMLImporterExporterTest {
                 + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 4);");
         res.next();
-        assertTrue(res.getString(1).equals("<LineString><extrude>1</extrude><kml:altitudeMode>absolute</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>"));        
+        assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>absolute</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));        
         res.close();
         stat.close();
     }
@@ -258,7 +258,7 @@ public class KMLImporterExporterTest {
                 + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 8);");
         res.next();
-        assertTrue(res.getString(1).equals("<LineString><extrude>1</extrude><gx:altitudeMode>clampToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>"));        
+        assertEquals("<LineString><extrude>1</extrude><gx:altitudeMode>clampToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));        
         res.close();
         stat.close();
     }
@@ -270,7 +270,7 @@ public class KMLImporterExporterTest {
                 + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                 + "                -1.49 47.17 100)',4326), true, 16);");
         res.next();
-        assertTrue(res.getString(1).equals("<LineString><extrude>1</extrude><gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>"));        
+        assertEquals("<LineString><extrude>1</extrude><gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));        
         res.close();
         stat.close();
     }
