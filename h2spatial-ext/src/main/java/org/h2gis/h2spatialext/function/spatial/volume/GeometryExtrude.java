@@ -26,7 +26,7 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
-import java.util.HashMap;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_UpdateZ.UpdateZCoordinateSequenceFilter;
 
 /**
  * This class is used to extrude a polygon or a linestring to a set of walls,
@@ -37,9 +37,7 @@ import java.util.HashMap;
  */
 public class GeometryExtrude {
 
-    private static final GeometryFactory GF = new GeometryFactory();    
-
-   
+    private static final GeometryFactory GF = new GeometryFactory();
 
     private GeometryExtrude() {
     }
@@ -62,7 +60,7 @@ public class GeometryExtrude {
      /**
      * Extrude the linestring as a collection of geometries
      * The output geometryCollection contains the floor, the walls and the roof.
-     * @param linestring
+     * @param lineString
      * @param hight
      * @return 
      */
@@ -87,10 +85,10 @@ public class GeometryExtrude {
     /**
      * Reverse the polygon to be oriented counter-clockwise
      * @param polygon
-     * @param hightt
+     * @param hight
      * @return 
      */
-    public static Polygon extractFloor(Polygon polygon, double hightt){
+    public static Polygon extractFloor(Polygon polygon, double hight){
         return getClockWise(polygon);
     }
     
@@ -141,6 +139,7 @@ public class GeometryExtrude {
     /**
      * Extrude the LineString as a set of walls.
      * @param lineString
+     * @param hight
      * @return
      */
     public static MultiPolygon extractWalls(LineString lineString, double hight) {
@@ -155,6 +154,7 @@ public class GeometryExtrude {
 
     /**
      * Reverse the LineString to be oriented clockwise.
+     * All NaN z values are replaced by a zero value.
      * @param lineString
      * @return 
      */
@@ -162,10 +162,10 @@ public class GeometryExtrude {
         final Coordinate c0 = lineString.getCoordinateN(0);
         final Coordinate c1 = lineString.getCoordinateN(1);
         final Coordinate c2 = lineString.getCoordinateN(2);
-
+        lineString.apply(new UpdateZCoordinateSequenceFilter(0, 3));
         if (CGAlgorithms.computeOrientation(c0, c1, c2) == CGAlgorithms.CLOCKWISE) {
             return lineString;
-        } else {
+        } else {            
             return (LineString) lineString.reverse();
         }
     }
@@ -179,6 +179,7 @@ public class GeometryExtrude {
         final Coordinate c0 = lineString.getCoordinateN(0);
         final Coordinate c1 = lineString.getCoordinateN(1);
         final Coordinate c2 = lineString.getCoordinateN(2);
+        lineString.apply(new UpdateZCoordinateSequenceFilter(0, 3));
         if (CGAlgorithms.computeOrientation(c0, c1, c2) == CGAlgorithms.COUNTERCLOCKWISE) {
             return lineString;
         } else {
@@ -220,7 +221,8 @@ public class GeometryExtrude {
     }
 
     /**
-     * Create a polygon corresponding to the wall
+     * Create a polygon corresponding to the wall.
+     * 
      *
      * @param beginPoint
      * @param endPoint

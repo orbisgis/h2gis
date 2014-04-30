@@ -38,7 +38,8 @@ public class ST_Extrude extends DeterministicScalarFunction {
     public ST_Extrude() {
         addProperty(PROP_REMARKS, "ST_Extrude takes a LINESTRING or POLYGON as input\n"
                 + " and extends it to a 3D representation, returning a geometry collection\n"
-                + " containing floor, ceiling and wall geometries");
+                + " containing floor, ceiling and wall geometries.\n"
+                + "Note :  the NaN z value of the input geometry are replaced by a zero.");
     }
 
     @Override
@@ -49,6 +50,7 @@ public class ST_Extrude extends DeterministicScalarFunction {
     /**
      * Extrudes a POLYGON or a LINESTRING into a GEOMETRYCOLLECTION containing
      * the floor (input geometry), walls and ceiling.
+     * Note :  the NaN z value of the input geometry are replaced by a zero.
      *
      * @param geometry Input geometry
      * @param height   Desired height

@@ -1638,10 +1638,8 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('LINESTRING (0 0, 1 0)'::GEOMETRY, 10);");
         rs.next();
         //Test if the wall is created
-        Coordinate[] wallCoords = ((Geometry) rs.getObject(1)).getGeometryN(1).getCoordinates();
-        assertTrue(wallCoords.length == 5);
-        Geometry wallTarget = WKT_READER.read("MULTIPOLYGON(((0 0 0, 0 0 10, 1 0 10, 1 0 0, 0 0 0)))");
-        assertTrue(CoordinateArrays.equals(wallCoords, wallTarget.getCoordinates()));
+        assertGeometryEquals("MULTIPOLYGON(((0 0 0, 0 0 10, 1 0 10, 1 0 0, 0 0 0)))", 
+                ValueGeometry.getFromGeometry(((Geometry) rs.getObject(1)).getGeometryN(1)).getBytes());
         rs.close();
     }
 
@@ -1651,45 +1649,35 @@ public class SpatialFunctionTest {
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
-        assertTrue(outputGeom.getGeometryN(0).equalsTopo(WKT_READER.read("POLYGON(( 0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))")));
+        assertGeometryEquals("POLYGON ((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(0)).getBytes());
 
-        Geometry walls = outputGeom.getGeometryN(1);
         //Test if the walls are created
-        assertTrue(walls.getCoordinates().length == 20);
-        Geometry wallTarget = WKT_READER.read("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
+        assertGeometryEquals("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
                 + "((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), "
-                + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))");
-        assertTrue(CoordinateArrays.equals(walls.getCoordinates(), wallTarget.getCoordinates()));
+                + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getBytes());
 
         //Test the roof
-        assertTrue(outputGeom.getGeometryN(2).equalsTopo(WKT_READER.read("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))")));
+        assertGeometryEquals("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(2)).getBytes());
 
         rs.close();
     }
 
     @Test
     public void test_ST_ExtrudePolygonWithHole() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10), \n"
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10),"
                 + " (1 3, 3 3, 3 1, 1 1, 1 3))'::GEOMETRY, 10);");
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
-        assertTrue(outputGeom.getGeometryN(0).equals(WKT_READER.read("POLYGON ((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0), \n"
-                + " (1 3 0, 3 3 0, 3 1 0, 1 1 0, 1 3 0))")));
-
-        Geometry walls = outputGeom.getGeometryN(1);
+        assertGeometryEquals("POLYGON ((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0), (1 3 0, 1 1 0, 3 1 0, 3 3 0, 1 3 0))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(0)).getBytes());
+          
         //Test if the walls are created
-        assertTrue(walls.getCoordinates().length == 40);
-        Geometry wallTarget = WKT_READER.read("MULTIPOLYGON (((0 10, 0 10, 10 10, 10 10, 0 10)), "
-                + "((10 10, 10 10, 10 0, 10 0, 10 10)), ((10 0, 10 0, 0 0, 0 0, 10 0)), "
-                + "((0 0, 0 0, 0 10, 0 10, 0 0)), ((1 3, 1 3, 1 1, 1 1, 1 3)), "
-                + "((1 1, 1 1, 3 1, 3 1, 1 1)), ((3 1, 3 1, 3 3, 3 3, 3 1)), ((3 3, 3 3, 1 3, 1 3, 3 3)))");
-        assertTrue(CoordinateArrays.equals(walls.getCoordinates(), wallTarget.getCoordinates()));
+        assertGeometryEquals("MULTIPOLYGON (((0 10 0, 0 10 10, 10 10 10, 10 10 0, 0 10 0)), ((10 10 0, 10 10 10, 10 0 10, 10 0 0, 10 10 0)), ((10 0 0, 10 0 10, 0 0 10, 0 0 0, 10 0 0)), ((0 0 0, 0 0 10, 0 10 10, 0 10 0, 0 0 0)), ((1 3 0, 1 3 10, 1 1 10, 1 1 0, 1 3 0)), ((1 1 0, 1 1 10, 3 1 10, 3 1 0, 1 1 0)), ((3 1 0, 3 1 10, 3 3 10, 3 3 0, 3 1 0)), ((3 3 0, 3 3 10, 1 3 10, 1 3 0, 3 3 0)))",
+                ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getBytes());
 
-        //Test the roof
-        assertTrue(outputGeom.getGeometryN(2).equalsExact(WKT_READER.read("POLYGON ((0 10 10, 0 0 10, 10 0 10, 10 10 10, 0 10 10),"
-                + " (1 3 10, 3 3 10, 3 1 10, 1 1 10, 1 3 10)))")));
-
+        //Test the roof        
+        assertGeometryEquals("POLYGON ((0 10 10, 0 0 10, 10 0 10, 10 10 10, 0 10 10), (1 3 10, 3 3 10, 3 1 10, 1 1 10, 1 3 10))",
+                ValueGeometry.getFromGeometry(outputGeom.getGeometryN(2)).getBytes());
         rs.close();
     }
 
@@ -1697,13 +1685,8 @@ public class SpatialFunctionTest {
     public void test_ST_ExtrudePolygonWalls() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10, 1);");
         rs.next();
-        Geometry walls = (Geometry) rs.getObject(1);
         //Test if the walls are created
-        assertTrue(walls.getCoordinates().length == 20);
-        Geometry wallTarget = WKT_READER.read("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
-                + "((0 1 0, 0 1 10, 1 1 0, 1 1 10, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), "
-                + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))");
-        assertTrue(CoordinateArrays.equals(walls.getCoordinates(), wallTarget.getCoordinates()));
+        assertGeometryEquals("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), ((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), ((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0)))", rs.getBytes(1));        
         rs.close();
     }
 
@@ -1711,9 +1694,8 @@ public class SpatialFunctionTest {
     public void test_ST_ExtrudePolygonRoof() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10, 2);");
         rs.next();
-        Geometry roof = (Geometry) rs.getObject(1);
         //Test the roof
-        assertTrue(roof.equalsExact(WKT_READER.read("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))")));
+        assertGeometryEquals("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))", rs.getBytes(1));
         rs.close();
     }
 
