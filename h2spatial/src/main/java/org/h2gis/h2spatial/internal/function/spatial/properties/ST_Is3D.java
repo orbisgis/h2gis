@@ -30,7 +30,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;
 
 /**
- * Returns 1 if a geometry has a z-coordinate otherwise 0.
+ * Returns 1 if a geometry has a z-coordinate, otherwise 0.
  * 
  * Implements the SQL/MM Part 3: Spatial 5.1.3
  * 
