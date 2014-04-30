@@ -39,7 +39,7 @@ public class ST_Extrude extends DeterministicScalarFunction {
         addProperty(PROP_REMARKS, "ST_Extrude takes a LINESTRING or POLYGON as input\n"
                 + " and extends it to a 3D representation, returning a geometry collection\n"
                 + " containing floor, ceiling and wall geometries.\n"
-                + "Note :  the NaN z value of the input geometry are replaced by a zero.");
+                + "Note: the NaN z value of the input geometry are replaced by a zero.");
     }
 
     @Override
@@ -86,7 +86,7 @@ public class ST_Extrude extends DeterministicScalarFunction {
                 return GeometryExtrude.extractRoof((Polygon)geometry, height);
             } else {
                 throw new SQLException("Incorrect flag value. Please set 1 to extract walls "
-                        + "or 2 to extract roof. ");
+                        + "or 2 to extract roof.");
             }
         } else if (geometry instanceof LineString) {
             if (flag == 1) {
@@ -95,7 +95,7 @@ public class ST_Extrude extends DeterministicScalarFunction {
                 return GeometryExtrude.extractRoof((LineString)geometry, height);
             } else {
                 throw new SQLException("Incorrect flag value. Please set 1 to extract walls "
-                        + "or 2 to extract roof. ");
+                        + "or 2 to extract roof.");
             }
         }
         throw new SQLException("Only LINESTRING and POLYGON inputs are accepted.");
