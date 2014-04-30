@@ -16,20 +16,26 @@ double ST_TriangleAspect(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Returns the aspect value of steepest downhill slope for a triangle. 
-The aspect value is expressed in degrees compared to the north direction.
+Returns the aspect value of a triangle. Aspect represents the main slope direction angle compared to the north direction.
+The aspect value is expressed in degrees. It can be thought of as the slope direction.
+
+<img class="displayed" src="../ST_TriangleAspect_1.png"/>
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_TriangleAspect('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))');
+SELECT ST_TriangleAspect('POLYGON((0 0 0, 3 0 0, 0 3 0, 0 0 0))');
 -- Answer: 0.0
 
-SELECT ST_TriangleAspect('POLYGON ((0 0 1, 10 0 0, 0 10 1, 0 0 1))');
+SELECT ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 0 3 1, 0 0 1))');
 -- Answer: 90.0
-{% endhighlight %}
 
-<img class="displayed" src="../ST_TriangleAspect_1.png"/>
+SELECT ST_TriangleAspect('POLYGON((0 0 1, 3 0 1, 0 3 0, 0 0 1))');
+-- Answer: 180.0
+
+SELECT ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 3 3 1, 0 0 1))');
+-- Answer: 45.0
+{% endhighlight %}
 
 ##### See also
 
