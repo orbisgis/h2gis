@@ -40,7 +40,7 @@ public class ST_Is3D extends DeterministicScalarFunction{
 
     
     public ST_Is3D(){
-        addProperty(PROP_REMARKS, "Returns 1 if a geometry has a z-coordinate otherwise 0.");
+        addProperty(PROP_REMARKS, "Returns 1 if a geometry has a z-coordinate, otherwise 0.");
     }
     
     @Override
@@ -48,6 +48,12 @@ public class ST_Is3D extends DeterministicScalarFunction{
         return "is3D";
     }
     
+    /**
+     * Returns 1 if a geometry has a z-coordinate, otherwise 0.
+     * @param geom
+     * @return
+     * @throws IOException 
+     */
     public static int is3D(byte[] geom) throws IOException {
          if (geom == null) {
             return 0;
