@@ -3,7 +3,7 @@ layout: docs
 title: ST_TriangleContouring
 category: geom3D/topography
 is_function: true
-description: 
+description: Split triangle into POLYGONs within the specified range of values
 prev_section: ST_TriangleAspect
 next_section: ST_TriangleDirection
 permalink: /docs/dev/ST_TriangleContouring/
@@ -19,11 +19,10 @@ tableName[the_geom, , idiso] ST_TriangleContouring(varchar
 {% endhighlight %}
 
 ### Description
-Split triangle into POLYGONs within the specified range of values.
+Splits triangle into POLYGONs within the specified range of values.
 Iso contouring using Z or table columns as value of vertex.
 
-IDISO:     |  0  |    1    |    2   |
-varArgs:  -∞  varArgs1  varArgs2 varArgs3
+<img class="displayed" src="../ST_TriangleContouring_0.png"/>
 
 ### Examples
 
@@ -39,9 +38,6 @@ SELECT * FROM ST_TriangleContouring('TIN', 2,3,4);
 -- | POLYGON((3 2.25 3, 2 2 3, 3 1.5 2, 3 2.25 3)) |     1 |
 -- | POLYGON((2 2 3, 1 1 2, 3 1.5 2, 2 2 3))       |     1 |
 -- | POLYGON((3 2.25 3, 3 3 4, 2 2 3, 3 2.25 3))   |     2 |
-
--- IDISO:     | 0 | 1 | 2 |
--- varArgs:  -∞   2   3   4
 {% endhighlight %}
 
 <img class="displayed" src="../ST_TriangleContouring_1.png"/>
@@ -70,9 +66,6 @@ SELECT * FROM ST_TriangleContouring('TIN','m1','m2','m3',2,3,5);
 -- |          1.2 0 0.6, 2.4 0 0.2))      |     |     |     |       |
 -- | POLYGON((3 1.5 2, 3 3 4, 1.2 0 0.6,  | 1.0 |   6 | 4.0 |     2 |
 -- |          3 1.5 2))                   |     |     |     |       |
-
--- IDISO:     | 0 | 1 | 2 |
--- varArgs:  -∞   2   3   5
 {% endhighlight %}
 
 <img class="displayed" src="../ST_TriangleContouring_2.png"/>
