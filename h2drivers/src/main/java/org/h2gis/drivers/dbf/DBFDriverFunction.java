@@ -225,11 +225,7 @@ public class DBFDriverFunction implements DriverFunction {
             if(idColumn > 0) {
                 stringBuilder.append(", ");
             }
-            String fieldName = header.getFieldName(idColumn);
-            if(isH2Database) {
-                //In h2 all field must be upper case in order to avoid user have to use double quotes
-                fieldName = fieldName.toUpperCase();
-            }
+            String fieldName = TableLocation.capsIdentifier(header.getFieldName(idColumn), isH2Database);
             stringBuilder.append(TableLocation.quoteIdentifier(fieldName,isH2Database));
             stringBuilder.append(" ");
             switch (header.getFieldType(idColumn)) {
