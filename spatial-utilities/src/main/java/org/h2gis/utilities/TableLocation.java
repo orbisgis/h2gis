@@ -142,7 +142,13 @@ public class TableLocation {
         return parse(concatenatedTableLocation, null);
     }
 
-    private static String capsIdentifier(String identifier, Boolean isH2Database) {
+    /**
+     * Change case of parameters in order to it more user friendly.
+     * @param identifier Table, Catalog, Schema, or column name.
+     * @param isH2Database True if H2, False if PostGreSQL, null if unknown.
+     * @return Upper or lower case version of identifier.
+     */
+    public static String capsIdentifier(String identifier, Boolean isH2Database) {
         if(isH2Database != null) {
             if(isH2Database) {
                 return identifier.toUpperCase();
