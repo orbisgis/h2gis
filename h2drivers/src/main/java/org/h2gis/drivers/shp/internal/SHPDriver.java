@@ -74,7 +74,6 @@ public class SHPDriver implements FileDriver {
                         " found "+values[geometryFieldIndex].getClass()+" instead.");
             }
         }
-        //compatibleGeom = factory.createMultiLineString(new LineString[] {(LineString)compatibleGeom});
         shapefileWriter.writeGeometry((Geometry)values[geometryFieldIndex]);
         // Extract the DBF part of the row
         Object[] dbfValues = new Object[values.length - 1];
