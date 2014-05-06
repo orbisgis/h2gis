@@ -86,8 +86,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
     public static final String REMARKS =
             "ST_ShortestPath calculates the shortest path(s) between " +
-            "vertices in a JGraphT graph produced from an edges table produced by {@link " +
-            "org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}. " +
+            "vertices in a graph. " +
             "<p>Possible signatures: " +
             "<ol> " +
             "<li><code> ST_ShortestPath('input_edges', 'o[ - eo]', s, d) </code> - One-to-One</li> " +
@@ -126,7 +125,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
     /**
      * @param connection  connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param source      Source vertex id
      * @param destination Destination vertex id
@@ -143,7 +142,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
     /**
      * @param connection  connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param weight      Weight
      * @param source      Source vertex id
@@ -170,7 +169,8 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
             return prepareResultSet();
         }
         // Do the calculation.
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
         final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         final VDijkstra vDestination = graph.getVertex(destination);
         final double distance = dijkstra.oneToOne(graph.getVertex(source), vDestination);

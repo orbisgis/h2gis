@@ -42,6 +42,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
+import static org.h2gis.utilities.GraphConstants.*;
 
 /**
  * ST_ShortestPathLength calculates the length(s) of shortest path(s) among
@@ -80,15 +81,10 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
     public static final int SOURCE_INDEX = 1;
     public static final int DESTINATION_INDEX = 2;
     public static final int DISTANCE_INDEX = 3;
-    public static final String SOURCE  = "SOURCE";
-    public static final String DESTINATION  = "DESTINATION";
-    public static final String DISTANCE  = "DISTANCE";
 
-    private static final String ARG_ERROR  = "Unrecognized argument: ";
     public static final String REMARKS =
             "ST_ShortestPathLength calculates the length(s) of shortest path(s) among " +
-            "vertices in a JGraphT graph produced from an edges table produced by {@link " +
-            "org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}. " +
+            "vertices in a graph. " +
             "<p>Possible signatures: " +
             "<ol> " +
             "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s) </code> - One-to-All</li> " +
@@ -110,7 +106,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             "<li><code>s</code> = Source vertex id</li> " +
             "<li><code>d</code> = Destination vertex id</li> " +
             "<li><code>sdt</code> = Source-Destination table name (must contain columns " +
-            "SOURCE and DESTINATION containing integer vertex ids)</li> " +
+            SOURCE + " and " + DESTINATION + " containing integer vertex ids)</li> " +
             "<li><code>ds</code> = Comma-separated Destination string ('dest1, dest2, ...')</li> " +
             "</ul> ";
 
@@ -134,7 +130,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * column named DESTINATION, both consisting of integer IDs.
      *
      * @param connection  Connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param arg3        Source vertex id -OR- Source-Destination table
      * @return Distances table
@@ -171,7 +167,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * column named DESTINATION, both consisting of integer IDs.
      *
      * @param connection  connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param arg3        Source vertex id -OR- Weight column name
      * @param arg4        Destination vertex id -OR- Destination string -OR-
@@ -222,7 +218,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * </ol>
      *
      * @param connection  Connection
-     * @param inputTable  Input table
+     * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
      * @param weight      Weight column name, null for unweighted graphs
      * @param source      Source vertex id
@@ -257,7 +253,8 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                      int source,
                                      int destination) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
         // 7: (o, w, s, d)
         final double distance = new Dijkstra<VDijkstra, Edge>(graph)
                 .oneToOne(graph.getVertex(source), graph.getVertex(destination));
@@ -271,7 +268,8 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                       String weight,
                                       int source) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
         // 5: (o, w, s)
         final Map<VDijkstra,Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
                         .oneToMany(graph.getVertex(source), graph.vertexSet());
@@ -287,7 +285,8 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                         String weight,
                                         String sourceDestinationTable) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
         final Statement st = connection.createStatement();
         try {
             // Prepare the source-destination map from the source-destination table.
@@ -316,7 +315,8 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                           int source,
                                           String destString) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
-        final KeyedGraph<VDijkstra, Edge> graph = prepareGraph(connection, inputTable, orientation, weight);
+        final KeyedGraph<VDijkstra, Edge> graph =
+                prepareGraph(connection, inputTable, orientation, weight, VDijkstra.class);
 
         final int[] destIDs = GraphFunctionParser.parseDestinationsString(destString);
         Set<VDijkstra> destSet = new HashSet<VDijkstra>();
