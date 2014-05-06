@@ -246,4 +246,30 @@ public class SHPImportExportTest {
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export.shp', 'AREA')");
     }
+
+    @Test
+    public void exportTableLineString() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/line_export.shp");
+        stat.execute("DROP TABLE IF EXISTS LINE");
+        stat.execute("create table LINE(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into LINE values(1, 'LINESTRING (-10 109, 90 109, 90 9, -10 9)')");
+        stat.execute("insert into LINE values(2, 'LINESTRING (90 109, 190 109, 190 9, 90 9)')");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/line_export.shp', 'LINE')");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        SHPDriver shpDriver = new SHPDriver();
+        shpDriver.initDriverFromFile(shpFile);
+        shpDriver.setGeometryFieldIndex(1);
+        assertEquals(2, shpDriver.getFieldCount());
+        assertEquals(2, shpDriver.getRowCount());
+        Object[] row = shpDriver.getRow(0);
+        assertEquals(1, row[0]);
+        // The driver can not create POLYGON
+        assertEquals("MULTILINESTRING ((-10 109, 90 109, 90 9, -10 9))", ((Geometry)row[1]).toText());
+        row = shpDriver.getRow(1);
+        assertEquals(2, row[0]);
+        assertEquals("MULTILINESTRING ((90 109, 190 109, 190 9, 90 9))", ((Geometry)row[1]).toText());
+    }
 }
