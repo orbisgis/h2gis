@@ -26,6 +26,8 @@
 package org.h2gis.drivers.shp.internal;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import org.h2gis.drivers.FileDriver;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
@@ -34,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * Merge ShapeFileReader and DBFReader.
@@ -57,6 +60,7 @@ public class SHPDriver implements FileDriver {
     private IndexFile shxFileReader;
     private int geometryFieldIndex = 0;
     private ShapeType shapeType;
+    private GeometryFactory factory = new GeometryFactory();
 
     /**
      * @param geometryFieldIndex The geometry field index in getRow() array.
@@ -74,6 +78,7 @@ public class SHPDriver implements FileDriver {
                         " found "+values[geometryFieldIndex].getClass()+" instead.");
             }
         }
+        //compatibleGeom = factory.createMultiLineString(new LineString[] {(LineString)compatibleGeom});
         shapefileWriter.writeGeometry((Geometry)values[geometryFieldIndex]);
         // Extract the DBF part of the row
         Object[] dbfValues = new Object[values.length - 1];

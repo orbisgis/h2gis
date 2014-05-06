@@ -103,31 +103,36 @@ public class MultiLineHandler implements ShapeHandler {
 		return shapeType;
 	}
 
+    private MultiLineString castToMultiLineString(Object geometry) {
+        if(geometry instanceof MultiLineString) {
+            return  (MultiLineString) geometry;
+        } else if(geometry instanceof LineString) {
+            return geometryFactory.createMultiLineString(new LineString[]{(LineString)geometry});
+        } else {
+            throw new IllegalArgumentException("Only LineString and MultiLineString are managed by MultiLineHandler");
+        }
+    }
+
 	/** */
         @Override
 	public int getLength(Object geometry) {
-		MultiLineString multi = (MultiLineString) geometry;
+        Geometry geom = (Geometry)geometry;
 
-		int numlines;
-		int numpoints;
+		int numLines = geom.getNumGeometries();
+		int numPoints = geom.getNumPoints();
 		int length;
-
-		numlines = multi.getNumGeometries();
-		numpoints = multi.getNumPoints();
-
 		if (shapeType == ShapeType.ARC) {
-			length = 44 + (4 * numlines) + (numpoints * 16);
+			length = 44 + (4 * numLines) + (numPoints * 16);
 		} else if (shapeType == ShapeType.ARCM) {
-			length = 44 + (4 * numlines) + (numpoints * 16) + 8 + 8
-					+ (8 * numpoints);
+			length = 44 + (4 * numLines) + (numPoints * 16) + 8 + 8
+					+ (8 * numPoints);
 		} else if (shapeType == ShapeType.ARCZ) {
-			length = 44 + (4 * numlines) + (numpoints * 16) + 8 + 8
-					+ (8 * numpoints) + 8 + 8 + (8 * numpoints);
+			length = 44 + (4 * numLines) + (numPoints * 16) + 8 + 8
+					+ (8 * numPoints) + 8 + 8 + (8 * numPoints);
 		} else {
 			throw new IllegalStateException("Expected ShapeType of Arc, got "
 					+ shapeType);
 		}
-
 		return length;
 	}
 
@@ -237,7 +242,7 @@ public class MultiLineHandler implements ShapeHandler {
         @Override
 	public void write(WriteBufferManager buffer, Object geometry)
 			throws IOException {
-		MultiLineString multi = (MultiLineString) geometry;
+		MultiLineString multi = castToMultiLineString(geometry);
 
 		Envelope box = multi.getEnvelopeInternal();
 		buffer.putDouble(box.getMinX());
