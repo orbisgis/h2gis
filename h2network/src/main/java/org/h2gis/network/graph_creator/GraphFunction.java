@@ -1,7 +1,6 @@
 package org.h2gis.network.graph_creator;
 
 import org.h2gis.h2spatialapi.AbstractFunction;
-import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 
@@ -15,6 +14,8 @@ import java.sql.SQLException;
  */
 public class GraphFunction extends AbstractFunction {
 
+    public static final String ARG_ERROR  = "Unrecognized argument: ";
+
     /**
      * Return a JGraphT graph from the input edges table.
      *
@@ -25,17 +26,18 @@ public class GraphFunction extends AbstractFunction {
      * @return Graph
      * @throws SQLException
      */
-    protected static KeyedGraph<VDijkstra, Edge> prepareGraph(Connection connection,
-                                                              String inputTable,
-                                                              String orientation,
-                                                              String weight) throws SQLException {
+    protected static KeyedGraph prepareGraph(Connection connection,
+                                             String inputTable,
+                                             String orientation,
+                                             String weight,
+                                             Class vertexClass) throws SQLException {
         GraphFunctionParser parser = new GraphFunctionParser();
         parser.parseWeightAndOrientation(orientation, weight);
 
-        return new GraphCreator<VDijkstra, Edge>(connection,
+        return new GraphCreator(connection,
                 inputTable,
                 parser.getGlobalOrientation(), parser.getEdgeOrientation(), parser.getWeightColumn(),
-                VDijkstra.class,
+                vertexClass,
                 Edge.class).prepareGraph();
     }
 }

@@ -220,6 +220,15 @@ public class GraphFunctionParser {
     }
 
     /**
+     * Returns true if the given string contains a comma.
+     * @param s String
+     * @return true if the given string contains a comma
+     */
+    protected static boolean isDestinationsString(String s) {
+        return s.contains(",");
+    }
+
+    /**
      * Returns an array of destination ids from a comma-separated list of
      * destinations.
      *
