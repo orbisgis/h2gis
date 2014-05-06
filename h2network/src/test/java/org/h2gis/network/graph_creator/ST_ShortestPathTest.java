@@ -25,6 +25,7 @@
 package org.h2gis.network.graph_creator;
 
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.*;
@@ -73,6 +74,14 @@ public class ST_ShortestPathTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+
+    private static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
+        if (expectedWKT != null) {
+            assertEquals(ValueGeometry.get(expectedWKT), ValueGeometry.get(valueWKB));
+        } else {
+            assertEquals(null, valueWKB);
+        }
     }
 
     // ************************** One-to-One ****************************************
@@ -719,7 +728,7 @@ public class ST_ShortestPathTest {
         for (int i = 0; i < pathEdges.length; i++) {
             assertTrue(rs.next());
             PathEdge e = pathEdges[i];
-//            assertGeometryEquals(e.getGeom(), rs.getBytes(ST_ShortestPath.GEOM_INDEX));
+            assertGeometryEquals(e.getGeom(), rs.getBytes(ST_ShortestPath.GEOM_INDEX));
             assertEquals(e.getEdgeID(), rs.getInt(ST_ShortestPath.EDGE_ID_INDEX));
             assertEquals(e.getPathID(), rs.getInt(ST_ShortestPath.PATH_ID_INDEX));
             assertEquals(e.getPathedgeID(), rs.getInt(ST_ShortestPath.PATH_EDGE_ID_INDEX));
