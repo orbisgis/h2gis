@@ -49,31 +49,6 @@ import static org.h2gis.utilities.GraphConstants.*;
  * vertices in a JGraphT graph produced from an edges table produced by {@link
  * org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}.
  *
- * <p>Possible signatures:
- * <ol>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s) </code> - One-to-All</li>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'sdt') </code> - Many-to-Many</li>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, d) </code> - One-to-One</li>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'ds') </code> - One-to-Several</li>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s) </code> - One-to-All weighted</li>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'sdt') </code> - Many-to-Many weighted</li>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, d) </code> - One-to-One weighted</li>
- * <li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, 'ds') </code> - One-to-Several weighted</li>
- * </ol>
- * where
- * <ul>
- * <li><code>input_edges</code> = Edges table produced by <code>ST_Graph</code> from table <code>input</code></li>
- * <li><code>o</code> = Global orientation (directed, reversed or undirected)</li>
- * <li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 =
- * undirected). Required if global orientation is directed or reversed.</li>
- * <li><code>w</code> = Name of column containing edge weights as doubles</li>
- * <li><code>s</code> = Source vertex id</li>
- * <li><code>d</code> = Destination vertex id</li>
- * <li><code>sdt</code> = Source-Destination table name (must contain columns
- * SOURCE and DESTINATION containing integer vertex ids)</li>
- * <li><code>ds</code> = Comma-separated Destination string ("dest1, dest2, ...")</li>
- * </ul>
- *
  * @author Adam Gouge
  */
 public class ST_ShortestPathLength extends GraphFunction implements ScalarFunction {
@@ -83,32 +58,29 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
     public static final int DISTANCE_INDEX = 3;
 
     public static final String REMARKS =
-            "ST_ShortestPathLength calculates the length(s) of shortest path(s) among " +
-            "vertices in a graph. " +
-            "<p>Possible signatures: " +
-            "<ol> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s) </code> - One-to-All</li> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'sdt') </code> - Many-to-Many</li> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, d) </code> - One-to-One</li> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'ds') </code> - One-to-Several</li> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s) </code> - One-to-All weighted</li> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'sdt') </code> - Many-to-Many weighted</li> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, d) </code> - One-to-One weighted</li> " +
-            "<li><code> ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, 'ds') </code> - One-to-Several weighted</li> " +
-            "</ol> " +
-            "where " +
-            "<ul> " +
-            "<li><code>input_edges</code> = Edges table produced by <code>ST_Graph</code> from table <code>input</code></li> " +
-            "<li><code>o</code> = Global orientation (directed, reversed or undirected)</li> " +
-            "<li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 = " +
-            "undirected). Required if global orientation is directed or reversed.</li> " +
-            "<li><code>w</code> = Name of column containing edge weights as doubles</li> " +
-            "<li><code>s</code> = Source vertex id</li> " +
-            "<li><code>d</code> = Destination vertex id</li> " +
-            "<li><code>sdt</code> = Source-Destination table name (must contain columns " +
-            SOURCE + " and " + DESTINATION + " containing integer vertex ids)</li> " +
-            "<li><code>ds</code> = Comma-separated Destination string ('dest1, dest2, ...')</li> " +
-            "</ul> ";
+            "`ST_ShortestPathLength` calculates the length(s) of shortest path(s) among\n" +
+            "vertices in a graph. Possible signatures:\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', s)` - One-to-All\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'sdt')` - Many-to-Many\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', s, d)` - One-to-One\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'ds')` - One-to-Several\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s)` - One-to-All weighted\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'sdt')` - Many-to-Many weighted\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, d)` - One-to-One weighted\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, 'ds')` - One-to-Several weighted\n" +
+            "\n" +
+            "where\n" +
+            "* `input_edges` = Edges table produced by `ST_Graph` from table `input`\n" +
+            "* `o` = Global orientation (directed, reversed or undirected)\n" +
+            "* `eo` = Edge orientation (1 = directed, -1 = reversed, 0 = undirected).\n" +
+            "  Required if global orientation is directed or reversed.\n" +
+            "* `w` = Name of column containing edge weights as doubles\n" +
+            "* `s` = Source vertex id\n" +
+            "* `d` = Destination vertex id\n" +
+            "* `sdt` = Source-Destination table name (must contain columns\n" +
+            "  " + SOURCE + " and " + DESTINATION + " containing integer vertex ids)\n" +
+            "* `ds` = Comma-separated Destination string ('dest1, dest2, ...')\n";
+
 
     public ST_ShortestPathLength() {
         addProperty(PROP_REMARKS, REMARKS);
