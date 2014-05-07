@@ -66,15 +66,11 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                                         String weight)
             throws SQLException, InvocationTargetException, NoSuchMethodException,
             InstantiationException, IllegalAccessException {
-        final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, weight,
-                VWCent.class, EdgeCent.class);
-        GraphAnalyzer analyzer = (weight == null) ?
-                new UnweightedGraphAnalyzer(graph) :
-                new WeightedGraphAnalyzer((WeightedGraph) graph);
-        analyzer.computeAll();
-
         ST_GraphAnalysis f = new ST_GraphAnalysis(connection, inputTable);
         createTables(f);
+
+        final KeyedGraph graph =
+                doAnalysisAndReturnGraph(connection, inputTable, orientation, weight);
 
         final boolean previousAutoCommit = connection.getAutoCommit();
         connection.setAutoCommit(false);
@@ -84,6 +80,21 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
 
         connection.setAutoCommit(previousAutoCommit);
         return null;
+    }
+
+    private static KeyedGraph doAnalysisAndReturnGraph(Connection connection,
+                                                       String inputTable,
+                                                       String orientation,
+                                                       String weight)
+            throws SQLException, NoSuchMethodException, InstantiationException,
+            IllegalAccessException, InvocationTargetException {
+        final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, weight,
+                VWCent.class, EdgeCent.class);
+        GraphAnalyzer analyzer = (weight == null) ?
+                new UnweightedGraphAnalyzer(graph) :
+                new WeightedGraphAnalyzer((WeightedGraph) graph);
+        analyzer.computeAll();
+        return graph;
     }
 
     private static void createTables(ST_GraphAnalysis f) throws SQLException {
