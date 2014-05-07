@@ -74,7 +74,20 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         analyzer.computeAll();
 
         ST_GraphAnalysis f = new ST_GraphAnalysis(connection, inputTable);
-        final Statement st = f.connection.createStatement();
+        createTables(f);
+
+        final boolean previousAutoCommit = connection.getAutoCommit();
+        connection.setAutoCommit(false);
+
+        storeNodeCentrality(f, graph);
+        storeEdgeCentrality(f, graph);
+
+        connection.setAutoCommit(previousAutoCommit);
+        return null;
+    }
+
+    private static void createTables(ST_GraphAnalysis f) throws SQLException {
+        final Statement st = connection.createStatement();
         try {
             st.execute("CREATE TABLE " + f.nodesName + "(" +
                     NODE_ID + " INTEGER PRIMARY KEY, " +
@@ -86,20 +99,11 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         } finally {
             st.close();
         }
-
-        final boolean previousAutoCommit = f.connection.getAutoCommit();
-        f.connection.setAutoCommit(false);
-
-        storeNodeCentrality(f, graph);
-        storeEdgeCentrality(f, graph);
-
-        f.connection.setAutoCommit(previousAutoCommit);
-        return null;
     }
 
     private static void storeNodeCentrality(ST_GraphAnalysis f, KeyedGraph graph) throws SQLException {
         final PreparedStatement nodeSt =
-                f.connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?,?)");
+                connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?,?)");
         try {
             int count = 0;
             for (VWCent v : (Set<VWCent>) graph.vertexSet()) {
@@ -118,10 +122,10 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 nodeSt.executeBatch();
                 nodeSt.clearBatch();
             }
-            f.connection.commit();
+            connection.commit();
         } catch (SQLException e) {
             LOGGER.error("Problem creating node centrality table.");
-            final Statement statement = f.connection.createStatement();
+            final Statement statement = connection.createStatement();
             try {
                 statement.execute("DROP TABLE " + f.nodesName);
             } finally {
@@ -134,7 +138,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
 
     private static void storeEdgeCentrality(ST_GraphAnalysis f, KeyedGraph graph) throws SQLException {
         final PreparedStatement edgeSt =
-                f.connection.prepareStatement("INSERT INTO " + f.edgesName + " VALUES(?,?)");
+                connection.prepareStatement("INSERT INTO " + f.edgesName + " VALUES(?,?)");
         try {
             int count = 0;
             for (EdgeCent e : (Set<EdgeCent>) graph.edgeSet()) {
@@ -152,10 +156,10 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 edgeSt.executeBatch();
                 edgeSt.clearBatch();
             }
-            f.connection.commit();
+            connection.commit();
         } catch (SQLException e) {
             LOGGER.error("Problem creating edge centrality table.");
-            final Statement statement = f.connection.createStatement();
+            final Statement statement = connection.createStatement();
             try {
                 statement.execute("DROP TABLE " + f.edgesName);
             } finally {
