@@ -41,25 +41,8 @@ import java.util.Set;
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 
 /**
- * ST_ShortestPath calculates the shortest path(s) between
- * vertices in a JGraphT graph produced from an edges table produced by {@link
- * org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}.
- *
- * <p>Possible signatures:
- * <ol>
- * <li><code> ST_ShortestPath('input_edges', 'o[ - eo]', s, d) </code> - One-to-One</li>
- * <li><code> ST_ShortestPath('input_edges', 'o[ - eo]', 'w', s, d) </code> - One-to-One weighted</li>
- * </ol>
- * where
- * <ul>
- * <li><code>input_edges</code> = Edges table produced by <code>ST_Graph</code> from table <code>input</code></li>
- * <li><code>o</code> = Global orientation (directed, reversed or undirected)</li>
- * <li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 =
- * undirected). Required if global orientation is directed or reversed.</li>
- * <li><code>w</code> = Name of column containing edge weights as doubles</li>
- * <li><code>s</code> = Source vertex id</li>
- * <li><code>d</code> = Destination vertex id</li>
- * </ul>
+ * Calculates the shortest path(s) between vertices in a JGraphT graph produced
+ * from the input_edges table produced by ST_Graph.
  *
  * @author Adam Gouge
  */
