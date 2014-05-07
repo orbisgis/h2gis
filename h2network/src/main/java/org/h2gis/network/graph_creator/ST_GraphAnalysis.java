@@ -89,6 +89,15 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
 
         final boolean previousAutoCommit = f.connection.getAutoCommit();
         f.connection.setAutoCommit(false);
+
+        storeNodeCentrality(f, graph);
+        storeEdgeCentrality(f, graph);
+
+        f.connection.setAutoCommit(previousAutoCommit);
+        return null;
+    }
+
+    private static void storeNodeCentrality(ST_GraphAnalysis f, KeyedGraph graph) throws SQLException {
         final PreparedStatement nodeSt =
                 f.connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?,?)");
         try {
@@ -112,7 +121,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
             f.connection.commit();
         } catch (SQLException e) {
             LOGGER.error("Problem creating node centrality table.");
-            final Statement statement = connection.createStatement();
+            final Statement statement = f.connection.createStatement();
             try {
                 statement.execute("DROP TABLE " + f.nodesName);
             } finally {
@@ -121,6 +130,9 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         } finally {
             nodeSt.close();
         }
+    }
+
+    private static void storeEdgeCentrality(ST_GraphAnalysis f, KeyedGraph graph) throws SQLException {
         final PreparedStatement edgeSt =
                 f.connection.prepareStatement("INSERT INTO " + f.edgesName + " VALUES(?,?)");
         try {
@@ -143,7 +155,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
             f.connection.commit();
         } catch (SQLException e) {
             LOGGER.error("Problem creating edge centrality table.");
-            final Statement statement = connection.createStatement();
+            final Statement statement = f.connection.createStatement();
             try {
                 statement.execute("DROP TABLE " + f.edgesName);
             } finally {
@@ -152,7 +164,5 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         } finally {
             edgeSt.close();
         }
-        f.connection.setAutoCommit(previousAutoCommit);
-        return null;
     }
 }
