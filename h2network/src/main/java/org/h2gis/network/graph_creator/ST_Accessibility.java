@@ -40,8 +40,8 @@ import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
- * Calculates, for each vertex, the (distance to the) closest destination among
- * several possible destinations.
+ * Calculates, for each vertex, the closest destination among several possible
+ * destinations, as well as the distance to this destination.
  *
  * @author Adam Gogue
  */

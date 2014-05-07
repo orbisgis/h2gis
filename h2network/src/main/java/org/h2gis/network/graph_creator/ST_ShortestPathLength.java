@@ -45,9 +45,8 @@ import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
- * ST_ShortestPathLength calculates the length(s) of shortest path(s) among
- * vertices in a JGraphT graph produced from an edges table produced by {@link
- * org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}.
+ * Calculates the length(s) of shortest path(s) between vertices in a JGraphT
+ * graph produced from the input_edges table produced by ST_Graph.
  *
  * @author Adam Gouge
  */

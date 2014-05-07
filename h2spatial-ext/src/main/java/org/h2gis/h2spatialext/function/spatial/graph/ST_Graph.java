@@ -37,28 +37,9 @@ import java.sql.*;
 import java.util.List;
 
 /**
- * ST_Graph produces two tables (nodes and edges) from an input table
- * containing LINESTRINGs or MULTILINESTRINGs in the given column and using the
- * given tolerance, and potentially orienting edges by slope. If the input
- * table has name 'input', then the output tables are named 'input_nodes' and
- * 'input_edges'. The nodes table consists of an integer node_id and a POINT
- * geometry representing each node. The edges table is a copy of the input
- * table with three extra columns: edge_id, start_node, and end_node. The
- * start_node and end_node correspond to the node_ids in the nodes table.
- * <p/>
- * If the specified geometry column of the input table contains geometries
- * other than LINESTRINGs or MULTILINESTRINGs, the operation will fail.
- * <p/>
- * A tolerance value may be given to specify the side length of a square
- * Envelope around each node used to snap together other nodes within the same
- * Envelope. Note, however, that edge geometries are left untouched.  Note also
- * that coordinates within a given tolerance of each other are not necessarily
- * snapped together. Only the first and last coordinates of a geometry are
- * considered to be potential nodes, and only nodes within a given tolerance of
- * each other are snapped together. The tolerance works only in metric units.
- * <p/>
- * A boolean value may be set to true to specify that edges should be oriented
- * by the z-value of their first and last coordinates (decreasing).
+ * Assigns integer node and edge ids to LINESTRING or MULTILINESTRING
+ * geometries from a table named input, resulting in two new tables:
+ * input_nodes and input_edges.
  *
  * @author Adam Gouge
  * @author Erwan Bocher
