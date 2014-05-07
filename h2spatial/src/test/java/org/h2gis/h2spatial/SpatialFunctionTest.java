@@ -39,6 +39,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Arrays;
 
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
+
 import static org.junit.Assert.*;
 
 /**
@@ -66,10 +68,6 @@ public class SpatialFunctionTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
-    }
-
-    private static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
-        assertEquals(ValueGeometry.get(expectedWKT), ValueGeometry.get(valueWKB));
     }
 
     @Test

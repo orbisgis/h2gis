@@ -25,7 +25,6 @@
 package org.h2gis.network.graph_creator;
 
 import org.h2.jdbc.JdbcSQLException;
-import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.*;
@@ -38,7 +37,7 @@ import java.sql.Statement;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
-
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 /**
  * Created by adam on 3/24/14.
  */
@@ -74,14 +73,6 @@ public class ST_ShortestPathTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
-    }
-
-    private static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
-        if (expectedWKT != null) {
-            assertEquals(ValueGeometry.get(expectedWKT), ValueGeometry.get(valueWKB));
-        } else {
-            assertEquals(null, valueWKB);
-        }
     }
 
     // ************************** One-to-One ****************************************

@@ -25,6 +25,7 @@ package org.h2gis.h2spatialext.function.spatial.create;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
@@ -40,7 +41,6 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
 
     private static final String CAP_STYLE_SQUARE = "square";
-    private static final String CAP_STYLE_BUTT = "butt";
     private static final String CAP_STYLE_ROUND = "round";
     private static final GeometryFactory GF = new GeometryFactory();
 
@@ -48,7 +48,7 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
         addProperty(PROP_REMARKS, "Compute a ring buffer around a geometry.\n"
                 + "Avalaible arguments are :\n"
                 + " (1) the geometry, (2) the size of each ring, "
-                + "(3) the number of rings, (4) the end cap style (square, butt, round)\n"
+                + "(3) the number of rings, (4) the end cap style (square, round)\n"
                 + "This last argument is optional. Default is round.");
     }
 
@@ -79,6 +79,10 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
      */
     public static Geometry ringBuffer(Geometry geom, double bufferDistance,
             int numBuffer, String endCapStyle) throws SQLException {
+        if(!(bufferDistance > 0)) {
+            // If buffer distance is not superior than zero return the same geometry.
+            return geom;
+        }
         Polygon[] buffers = new Polygon[numBuffer];
         Geometry previous = geom;
         double distance = 0;
@@ -109,11 +113,6 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
                     BufferParameters.DEFAULT_QUADRANT_SEGMENTS,
                     BufferParameters.CAP_SQUARE));
             return bufOp.getResultGeometry(bufferSize);
-        } else if (endCapStyle.equalsIgnoreCase(CAP_STYLE_BUTT)) {
-            bufOp = new BufferOp(geom, new BufferParameters(
-                    BufferParameters.DEFAULT_QUADRANT_SEGMENTS,
-                    BufferParameters.CAP_FLAT));
-            return bufOp.getResultGeometry(bufferSize);
         } else if (endCapStyle.equalsIgnoreCase(CAP_STYLE_ROUND)){
             bufOp = new BufferOp(geom, new BufferParameters(
                     BufferParameters.DEFAULT_QUADRANT_SEGMENTS,
@@ -121,6 +120,6 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
             return bufOp.getResultGeometry(bufferSize);
         }
         throw new SQLException("Invalid cap style value. Please use "+ CAP_STYLE_ROUND + " or "
-                + CAP_STYLE_SQUARE+ " or "+ CAP_STYLE_BUTT);        
+                + CAP_STYLE_SQUARE);
     }
 }

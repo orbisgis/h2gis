@@ -35,6 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 import static org.h2gis.utilities.GraphConstants.*;
 import static org.junit.Assert.*;
 
@@ -69,14 +70,6 @@ public class ST_GraphTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
-    }
-
-    public static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
-        if (expectedWKT != null) {
-            assertEquals(ValueGeometry.get(expectedWKT), ValueGeometry.get(valueWKB));
-        } else {
-            assertEquals(null, valueWKB);
-        }
     }
 
     private void checkNode(ResultSet nodesResult, int nodeID, String nodeGeom) throws SQLException {

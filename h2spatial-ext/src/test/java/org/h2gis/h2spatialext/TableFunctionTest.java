@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -21,7 +22,6 @@ import static org.junit.Assert.assertTrue;
  * @author Nicolas Fortin
  */
 public class TableFunctionTest {
-    private static final double EPSILON = .01;
     private static Connection connection;
 
     @BeforeClass
@@ -36,24 +36,6 @@ public class TableFunctionTest {
         connection.close();
     }
 
-    public static void assertGeometryBarelyEquals(String expectedWKT, Object resultSetObject) {
-        assertGeometryBarelyEquals(expectedWKT, resultSetObject, EPSILON);
-    }
-
-    public static void assertGeometryBarelyEquals(String expectedWKT, Object resultSetObject, double epsilon) {
-        assertTrue(resultSetObject instanceof Geometry);
-        Geometry expectedGeometry = ValueGeometry.get(expectedWKT).getGeometry();
-        Geometry result = (Geometry) resultSetObject;
-        assertEquals(expectedGeometry.getGeometryType(), result.getGeometryType());
-        assertEquals(expectedGeometry.getNumPoints(), result.getNumPoints());
-        Coordinate[] expectedCoordinates = expectedGeometry.getCoordinates();
-        Coordinate[] resultCoordinates = result.getCoordinates();
-        for(int idPoint = 0; idPoint < expectedCoordinates.length; idPoint++) {
-            assertEquals(expectedCoordinates[idPoint].x, resultCoordinates[idPoint].x, epsilon);
-            assertEquals(expectedCoordinates[idPoint].y, resultCoordinates[idPoint].y, epsilon);
-            assertEquals(expectedCoordinates[idPoint].z, resultCoordinates[idPoint].z, epsilon);
-        }
-    }
 
     @Test
     public void testST_TriangleContouringWithZ() throws SQLException {
