@@ -11,11 +11,12 @@ import org.jgrapht.WeightedGraph;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Set;
 
 /**
- * Created by adam on 5/6/14.
+ * @author Adam Gouge
  */
 public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
 
@@ -30,13 +31,14 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
 //        getGraphAnalysis(connection, inputTable, orientation, null);
 //    }
 
-    public static void doGraphAnalysis(Connection connection,
+    public static ResultSet doGraphAnalysis(Connection connection,
                                         String inputTable,
                                         String orientation,
                                         String weight)
             throws SQLException, InvocationTargetException, NoSuchMethodException,
             InstantiationException, IllegalAccessException {
-        final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, weight, VWCent.class);
+        final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, weight,
+                VWCent.class, EdgeCent.class);
         GraphAnalyzer analyzer = (weight == null) ?
                 new UnweightedGraphAnalyzer(graph) :
                 new WeightedGraphAnalyzer((WeightedGraph) graph);
@@ -50,5 +52,6 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
             e.getID();
             e.getBetweenness();
         }
+        return null;
     }
 }

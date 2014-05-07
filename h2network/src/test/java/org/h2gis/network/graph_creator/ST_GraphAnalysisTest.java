@@ -120,7 +120,7 @@ public class ST_GraphAnalysisTest {
     public void WDO() throws Exception {
         // SELECT * FROM ST_GraphAnalysis('cormen_edges_all',
         //     'directed - edge_orientation', 'weight')
-//        compute(DO, W);
+        compute(DO, W);
 //        check(compute(DO, W), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
 //        // SELECT * FROM ST_Accessibility('cormen_edges_all',
 //        //     'directed - edge_orientation', 'weight', 'dest15')
