@@ -95,7 +95,7 @@
         <dependency>
             <groupId>org.orbisgis</groupId>
             <artifactId>java-network-analyzer</artifactId>
-            <version>0.1.5</version>
+            <version>0.1.6</version>
         </dependency>
         <dependency>
             <groupId>${h2-package}</groupId>
