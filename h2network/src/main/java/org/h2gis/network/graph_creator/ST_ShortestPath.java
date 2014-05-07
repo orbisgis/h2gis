@@ -85,23 +85,19 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
     private TableLocation tableName;
 
     public static final String REMARKS =
-            "ST_ShortestPath calculates the shortest path(s) between " +
-            "vertices in a graph. " +
-            "<p>Possible signatures: " +
-            "<ol> " +
-            "<li><code> ST_ShortestPath('input_edges', 'o[ - eo]', s, d) </code> - One-to-One</li> " +
-            "<li><code> ST_ShortestPath('input_edges', 'o[ - eo]', 'w', s, d) </code> - One-to-One weighted</li> " +
-            "</ol> " +
-            "where " +
-            "<ul> " +
-            "<li><code>input_edges</code> = Edges table produced by <code>ST_Graph</code> from table <code>input</code></li> " +
-            "<li><code>o</code> = Global orientation (directed, reversed or undirected)</li> " +
-            "<li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 = " +
-            "undirected). Required if global orientation is directed or reversed.</li> " +
-            "<li><code>w</code> = Name of column containing edge weights as doubles</li> " +
-            "<li><code>s</code> = Source vertex id</li> " +
-            "<li><code>d</code> = Destination vertex id</li> " +
-            "</ul> ";
+            "`ST_ShortestPath` calculates the shortest path(s) between vertices in a graph.\n" +
+            "Possible signatures:\n" +
+            "* `ST_ShortestPath('input_edges', 'o[ - eo]', s, d)`  - One-to-One\n" +
+            "* `ST_ShortestPath('input_edges', 'o[ - eo]', 'w', s, d)`  - One-to-One weighted\n" +
+            "\n" +
+            "where\n" +
+            "* `input_edges` = Edges table produced by `ST_Graph` from table `input`\n" +
+            "* `o` = Global orientation (directed, reversed or undirected)\n" +
+            "* `eo` = Edge orientation (1 = directed, -1 = reversed, 0 = undirected). Required\n" +
+            "  if global orientation is directed or reversed.\n" +
+            "* `w` = Name of column containing edge weights as doubles\n" +
+            "* `s` = Source vertex id\n" +
+            "* `d` = Destination vertex id\n";
 
     public ST_ShortestPath() {
         this(null, null);
