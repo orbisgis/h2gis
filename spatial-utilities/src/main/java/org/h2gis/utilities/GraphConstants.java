@@ -17,4 +17,6 @@ public interface GraphConstants {
     public static final String DISTANCE  = "DISTANCE";
     public static final String BETWEENNESS  = "BETWEENNESS";
     public static final String CLOSENESS  = "CLOSENESS";
+    public static final String NODE_CENT_SUFFIX = "_NODE_CENT";
+    public static final String EDGE_CENT_SUFFIX = "_EDGE_CENT";
 }

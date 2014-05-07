@@ -34,8 +34,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.h2gis.utilities.GraphConstants.CLOSEST_DEST;
-import static org.h2gis.utilities.GraphConstants.SOURCE;
+import static org.h2gis.utilities.GraphConstants.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Adam Gouge
@@ -118,19 +119,15 @@ public class ST_GraphAnalysisTest {
 
     @Test
     public void WDO() throws Exception {
-        // SELECT * FROM ST_GraphAnalysis('cormen_edges_all',
+        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'weight')
-        compute(DO, W);
-//        check(compute(DO, W), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
-//        // SELECT * FROM ST_Accessibility('cormen_edges_all',
-//        //     'directed - edge_orientation', 'weight', 'dest15')
-//        check(compute(DO, W, "'dest15'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
-//        // SELECT * FROM ST_Accessibility('cormen_edges_all',
-//        //     'directed - edge_orientation', 'weight', '2, 3, 4')
-//        check(compute(DO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 4}, new double[]{5.0, 0.0, 0.0, 0.0, 6.0});
-//        // SELECT * FROM ST_Accessibility('cormen_edges_all',
-//        //     'directed - edge_orientation', 'weight', 'dest234')
-//        check(compute(DO, W, "'dest234'"), new int[]{3, 2, 3, 4, 4}, new double[]{5.0, 0.0, 0.0, 0.0, 6.0});
+        final ResultSet rs = compute(DO, W);
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+        assertFalse(rs.next());
+
+        final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
+        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
     }
 //
 //    @Test
@@ -250,15 +247,15 @@ public class ST_GraphAnalysisTest {
 //        check(compute(U, W, "'dest234'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
 //    }
 
-    private void compute(String orientation, String weight) throws SQLException {
-        st.execute(
-                "SELECT * FROM ST_GraphAnalysis('cormen_edges_all', "
+    private ResultSet compute(String orientation, String weight) throws SQLException {
+        return st.executeQuery(
+                "SELECT ST_GraphAnalysis('CORMEN_EDGES_ALL', "
                         + orientation + ((weight != null) ? ", " + weight : "") + ")");
     }
 
-//    private ResultSet compute(String orientation) throws SQLException {
-//        return compute(orientation, null);
-//    }
+    private ResultSet compute(String orientation) throws SQLException {
+        return compute(orientation, null);
+    }
 
     private void check(ResultSet rs, int[] closestDests, double[] distances) throws SQLException {
         int count = 0;

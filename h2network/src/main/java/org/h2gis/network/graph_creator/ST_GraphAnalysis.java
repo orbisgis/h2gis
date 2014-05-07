@@ -27,8 +27,6 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
     private TableLocation tableName;
     private TableLocation nodesName;
     private TableLocation edgesName;
-    private static final String NODE_CENT_SUFFIX = "_NODE_CENT";
-    private static final String EDGE_CENT_SUFFIX = "_EDGE_CENT";
     private static final int BATCH_SIZE = 100;
     private static final Logger LOGGER = LoggerFactory.getLogger(ST_GraphAnalysis.class);
 
@@ -60,7 +58,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
 //        getGraphAnalysis(connection, inputTable, orientation, null);
 //    }
 
-    public static ResultSet doGraphAnalysis(Connection connection,
+    public static boolean doGraphAnalysis(Connection connection,
                                         String inputTable,
                                         String orientation,
                                         String weight)
@@ -79,7 +77,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         storeEdgeCentrality(f, graph);
 
         connection.setAutoCommit(previousAutoCommit);
-        return null;
+        return true;
     }
 
     private static KeyedGraph doAnalysisAndReturnGraph(Connection connection,
