@@ -26,6 +26,7 @@ package org.h2gis.network.graph_creator;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.GraphConstants;
 import org.junit.*;
 
 import java.sql.Connection;
@@ -35,6 +36,7 @@ import java.sql.Statement;
 
 import static org.h2gis.utilities.GraphConstants.EDGE_CENT_SUFFIX;
 import static org.h2gis.utilities.GraphConstants.NODE_CENT_SUFFIX;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
@@ -103,6 +105,18 @@ public class ST_GraphAnalysisTest {
         assertFalse(rs.next());
 
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
+        // Check closeness.
+        double[] closeness = new double[]{
+                4.0 / (0.0 + 8.0 + 5.0 + 13.0 + 7.0),
+                4.0 / (11.0 + 0.0 + 2.0 + 10.0 + 4.0),
+                4.0 / (9.0 + 3.0 + 0.0 + 8.0 + 2.0),
+                4.0 / (11.0 + 1.0 + 3.0 + 0.0 + 4.0),
+                4.0 / (7.0 + 7.0 + 9.0 + 6.0 + 0.0)};
+        while (nodeCent.next()) {
+            final int nodeID = nodeCent.getInt(GraphConstants.NODE_ID);
+            assertEquals(closeness[nodeID - 1], nodeCent.getDouble(GraphConstants.CLOSENESS), TOLERANCE);
+//            nodeCent.getDouble(GraphConstants.BETWEENNESS);
+        }
         final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
     }
 
