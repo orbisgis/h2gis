@@ -48,26 +48,23 @@ import static org.h2gis.utilities.GraphConstants.*;
 public class ST_Accessibility extends GraphFunction implements ScalarFunction {
 
     public static final String REMARKS =
-            "ST_Accessibility calculates, for each vertex in a graph, the (distance to " +
-            "the) closest destination among several possible destinations. " +
-            "<p>Possible signatures: " +
-            "<ol> " +
-            "<li><code> ST_Accessibility('input_edges', 'o[ - eo]', 'ds') </code></li> " +
-            "<li><code> ST_Accessibility('input_edges', 'o[ - eo]', 'dt') </code></li> " +
-            "<li><code> ST_Accessibility('input_edges', 'o[ - eo]', 'w', 'ds') </code></li> " +
-            "<li><code> ST_Accessibility('input_edges', 'o[ - eo]', 'w', 'dt') </code></li> " +
-            "</ol> " +
-            "where " +
-            "<ul> " +
-            "<li><code>input_edges</code> = Edges table produced by <code>ST_Graph</code> from table <code>input</code></li> " +
-            "<li><code>o</code> = Global orientation (directed, reversed or undirected)</li> " +
-            "<li><code>eo</code> = Edge orientation (1 = directed, -1 = reversed, 0 = " +
-            "undirected). Required if global orientation is directed or reversed.</li> " +
-            "<li><code>w</code> = Name of column containing edge weights as doubles</li> " +
-            "<li><code>ds</code> = Comma-separated Destination string ('dest1, dest2, ...')</li> " +
-            "<li><code>dt</code> = Destination table name (must contain column " +
-            DESTINATION + "containing integer vertex ids)</li> " +
-            "</ul> ";
+            "`ST_Accessibility` calculates, for each vertex in a graph, the closest\n" +
+            "destination among several possible destinations as well as the distance to this\n" +
+            "destination. Possible signatures: \n" +
+            "* `ST_Accessibility('input_edges', 'o[ - eo]', 'ds')`\n" +
+            "* `ST_Accessibility('input_edges', 'o[ - eo]', 'dt')`\n" +
+            "* `ST_Accessibility('input_edges', 'o[ - eo]', 'w', 'ds')`\n" +
+            "* `ST_Accessibility('input_edges', 'o[ - eo]', 'w', 'dt')` \n" +
+            "\n" +
+            "where \n" +
+            "* `input_edges` = Edges table produced by `ST_Graph` from table `input`\n" +
+            "* `o` = Global orientation (directed, reversed or undirected)\n" +
+            "* `eo` = Edge orientation (1 = directed, -1 = reversed, 0 = undirected).\n" +
+            "  Required if global orientation is directed or reversed.\n" +
+            "* `w` = Name of column containing edge weights as doubles\n" +
+            "* `ds` = Comma-separated Destination string ('dest1, dest2, ...')\n" +
+            "* `dt` = Destination table name (must contain column containing integer vertex\n" +
+            "  ids)\n";
 
     public ST_Accessibility() {
         addProperty(PROP_REMARKS, REMARKS);
