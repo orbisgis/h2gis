@@ -26,6 +26,7 @@ package org.h2gis.utilities;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
@@ -149,6 +150,10 @@ public class URIUtility {
             rel.append(separator);
             rel.append(targetPart);
         }
-        return URI.create(rel.toString());
+        try {
+            return new URI(null, null, rel.toString(), null, null);
+        } catch (URISyntaxException ex) {
+            throw new IllegalArgumentException("Illegal URI provided:\n"+base.toString()+"\n"+target.toString());
+        }
     }
 }

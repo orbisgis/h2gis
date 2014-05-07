@@ -26,6 +26,7 @@ package org.h2gis.utilities;
 
 import org.junit.Test;
 
+import java.io.File;
 import java.net.URI;
 import java.util.Map;
 import static org.junit.Assert.assertEquals;
@@ -87,5 +88,12 @@ public class URIUtilityTest {
         folder = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/bla.ows");
         rel = new URI("file:///home/user/OrbisGIS/maps/landcover/data/data.shp");
         assertEquals("../data/data.shp", URIUtility.relativize(folder, rel).toString());
+    }
+
+    @Test
+    public void testRelativizeSpace() throws Exception {
+        URI rel = new URI("file:///home/user/OrbisGIS/maps/landcover/bla%20bla/text.txt");
+        URI folder = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/");
+        assertEquals("../bla%20bla/text.txt", URIUtility.relativize(folder, rel).toString());
     }
 }
