@@ -24,9 +24,6 @@
  */
 package org.h2gis.h2spatialext;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.dbf.DBFRead;
 import org.h2gis.drivers.dbf.DBFWrite;
@@ -42,58 +39,32 @@ import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_Force2D;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_Force3D;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_Holes;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiPoint;
-import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiSegments;
+import org.h2gis.h2spatialext.function.spatial.convert.*;
 import org.h2gis.h2spatialext.function.spatial.create.*;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_LocateAlong;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeLine;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_RemoveRepeatedPoints;
-import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircle;
-import org.h2gis.h2spatialext.function.spatial.create.ST_Expand;
-import org.h2gis.h2spatialext.function.spatial.create.ST_Extrude;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeEnvelope;
+import org.h2gis.h2spatialext.function.spatial.edit.*;
+import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
-import org.h2gis.h2spatialext.function.spatial.create.ST_MinimumRectangle;
-import org.h2gis.h2spatialext.function.spatial.create.ST_OctogonalEnvelope;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_AddPoint;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_AddZ;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_UpdateZ;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_Densify;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_Interpolate3DLine;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_MultiplyZ;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_Normalize;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_RemoveHoles;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_RemovePoint;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse3DLine;
-import org.h2gis.h2spatialext.function.spatial.processing.ST_Snap;
-import org.h2gis.h2spatialext.function.spatial.processing.ST_Split;
-import org.h2gis.h2spatialext.function.spatial.edit.ST_ZUpdateLineExtremities;
-import org.h2gis.h2spatialext.function.spatial.processing.ST_Polygonize;
-import org.h2gis.h2spatialext.function.spatial.processing.ST_PrecisionReducer;
-import org.h2gis.h2spatialext.function.spatial.processing.ST_Simplify;
-import org.h2gis.h2spatialext.function.spatial.processing.ST_SimplifyPreserveTopology;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
+import org.h2gis.h2spatialext.function.spatial.processing.*;
 import org.h2gis.h2spatialext.function.spatial.properties.*;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.h2spatialext.function.spatial.trigonometry.ST_Azimuth;
-import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
+import org.h2gis.network.graph_creator.ST_Accessibility;
 import org.h2gis.network.graph_creator.ST_ShortestPath;
 import org.h2gis.network.graph_creator.ST_ShortestPathLength;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -189,6 +160,7 @@ public class CreateSpatialExtension {
                 new ST_IsValidReason(),
                 new ST_IsValidDetail(),
                 // h2network functions
+                new ST_Accessibility(),
                 new ST_Graph(),
                 new ST_ShortestPath(),
                 new ST_ShortestPathLength()};
