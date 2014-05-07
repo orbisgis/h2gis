@@ -5,6 +5,8 @@ import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.analyzers.GraphAnalyzer;
 import org.javanetworkanalyzer.analyzers.UnweightedGraphAnalyzer;
 import org.javanetworkanalyzer.analyzers.WeightedGraphAnalyzer;
+import org.javanetworkanalyzer.data.VCent;
+import org.javanetworkanalyzer.data.VUCent;
 import org.javanetworkanalyzer.data.VWCent;
 import org.javanetworkanalyzer.model.EdgeCent;
 import org.javanetworkanalyzer.model.KeyedGraph;
@@ -13,7 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Set;
 
 import static org.h2gis.utilities.GraphConstants.*;
@@ -52,16 +57,18 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         return "doGraphAnalysis";
     }
 
-//    public static void doGraphAnalysis(Connection connection,
-//                                        String inputTable,
-//                                        String orientation) throws SQLException {
-//        getGraphAnalysis(connection, inputTable, orientation, null);
-//    }
+    public static boolean doGraphAnalysis(Connection connection,
+                                       String inputTable,
+                                       String orientation)
+            throws SQLException, NoSuchMethodException, InstantiationException,
+            IllegalAccessException, InvocationTargetException {
+        return doGraphAnalysis(connection, inputTable, orientation, null);
+    }
 
     public static boolean doGraphAnalysis(Connection connection,
-                                        String inputTable,
-                                        String orientation,
-                                        String weight)
+                                          String inputTable,
+                                          String orientation,
+                                          String weight)
             throws SQLException, InvocationTargetException, NoSuchMethodException,
             InstantiationException, IllegalAccessException {
         ST_GraphAnalysis f = new ST_GraphAnalysis(connection, inputTable);
@@ -87,7 +94,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
             throws SQLException, NoSuchMethodException, InstantiationException,
             IllegalAccessException, InvocationTargetException {
         final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, weight,
-                VWCent.class, EdgeCent.class);
+                (weight == null) ? VUCent.class : VWCent.class, EdgeCent.class);
         GraphAnalyzer analyzer = (weight == null) ?
                 new UnweightedGraphAnalyzer(graph) :
                 new WeightedGraphAnalyzer((WeightedGraph) graph);
@@ -115,7 +122,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?,?)");
         try {
             int count = 0;
-            for (VWCent v : (Set<VWCent>) graph.vertexSet()) {
+            for (VCent v : (Set<VCent>) graph.vertexSet()) {
                 nodeSt.setInt(1, v.getID());
                 nodeSt.setDouble(2, v.getBetweenness());
                 nodeSt.setDouble(3, v.getCloseness());
