@@ -74,6 +74,12 @@
       <version>${sl4j-version}</version>
       <scope>test</scope>
     </dependency>
+      <dependency>
+          <groupId>${project.groupId}</groupId>
+          <artifactId>test-utilities</artifactId>
+          <version>${project.version}</version>
+          <scope>test</scope>
+      </dependency>
   </dependencies>
   <build>
     <plugins>

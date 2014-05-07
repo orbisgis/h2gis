@@ -21,6 +21,7 @@
     <modules>
         <module>spatial-utilities</module>
         <module>h2spatial-api</module>
+        <module>test-utilities</module>
         <module>h2spatial</module>
         <module>h2spatial-ext</module>
         <module>h2drivers</module>
