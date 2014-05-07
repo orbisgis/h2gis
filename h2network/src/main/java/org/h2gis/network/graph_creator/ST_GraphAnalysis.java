@@ -86,6 +86,9 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         } finally {
             st.close();
         }
+
+        final boolean previousAutoCommit = f.connection.getAutoCommit();
+        f.connection.setAutoCommit(false);
         final PreparedStatement nodeSt =
                 f.connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?,?)");
         try {
@@ -106,6 +109,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 nodeSt.executeBatch();
                 nodeSt.clearBatch();
             }
+            f.connection.commit();
         } catch (SQLException e) {
             LOGGER.error("Problem creating node centrality table.");
             final Statement statement = connection.createStatement();
@@ -136,6 +140,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 edgeSt.executeBatch();
                 edgeSt.clearBatch();
             }
+            f.connection.commit();
         } catch (SQLException e) {
             LOGGER.error("Problem creating edge centrality table.");
             final Statement statement = connection.createStatement();
@@ -147,6 +152,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         } finally {
             edgeSt.close();
         }
+        f.connection.setAutoCommit(previousAutoCommit);
         return null;
     }
 }
