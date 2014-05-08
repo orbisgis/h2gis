@@ -82,7 +82,7 @@ public class BundleTest {
                 mavenBundle("org.orbisgis", "h2drivers").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-osgi"),
                 mavenBundle("org.orbisgis", "h2spatial-ext-osgi"),
-                mavenBundle("org.orbisgis", "java-network-analyzer").version("0.1.5"),
+                mavenBundle("org.orbisgis", "java-network-analyzer").version("0.1.6"),
                 mavenBundle("org.jgrapht", "jgrapht-core").version("0.9.0"),
                 mavenBundle("org.orbisgis", "h2network").noStart(),
                 junitBundles());
