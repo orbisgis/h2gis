@@ -2004,6 +2004,22 @@ public class SpatialFunctionTest {
         assertGeometryEquals("LINESTRING(-70.01 42.87,-70.11 42.88)", rs.getBytes(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Translate3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINT(0 0 0)'::GEOMETRY, 5, 12, 3);");
+        rs.next();
+        assertGeometryEquals("POINT(5 12 3)", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_Translate4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINT(1 2 3)'::GEOMETRY, 10, 20, 30);");
+        rs.next();
+        assertGeometryEquals("POINT(11 22 33)", rs.getBytes(1));
+        rs.close();
+    }
 
     @Test
     public void test_ST_Reverse1() throws Exception {
