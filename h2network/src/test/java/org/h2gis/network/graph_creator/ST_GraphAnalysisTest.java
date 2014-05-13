@@ -95,7 +95,8 @@ public class ST_GraphAnalysisTest {
                         4.0 / (3.0 + 0.0 + 1.0 + 2.0 + 2.0),
                         4.0 / (2.0 + 1.0 + 0.0 + 1.0 + 1.0),
                         4.0 / (2.0 + 1.0 + 2.0 + 0.0 + 1.0),
-                        4.0 / (1.0 + 2.0 + 2.0 + 1.0 + 0.0)}
+                        4.0 / (1.0 + 2.0 + 2.0 + 1.0 + 0.0)},
+                new double[]{1./3, 1./6, 1., 0., 1.}
         );
         final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
     }
@@ -119,7 +120,8 @@ public class ST_GraphAnalysisTest {
                         4.0 / (11.0 + 0.0 + 2.0 + 10.0 + 4.0),
                         4.0 / (9.0 + 3.0 + 0.0 + 8.0 + 2.0),
                         4.0 / (11.0 + 1.0 + 3.0 + 0.0 + 4.0),
-                        4.0 / (7.0 + 7.0 + 9.0 + 6.0 + 0.0)}
+                        4.0 / (7.0 + 7.0 + 9.0 + 6.0 + 0.0)},
+                new double[]{0., 1./3, 5./6, 1./3, 1.}
         );
 
         final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
@@ -144,7 +146,8 @@ public class ST_GraphAnalysisTest {
                         4.0 / (1.0 + 0.0 + 1.0 + 1.0 + 2.0),
                         4.0 / (1.0 + 1.0 + 0.0 + 2.0 + 2.0),
                         4.0 / (2.0 + 2.0 + 1.0 + 0.0 + 1.0),
-                        4.0 / (1.0 + 2.0 + 1.0 + 1.0 + 0.0)}
+                        4.0 / (1.0 + 2.0 + 1.0 + 1.0 + 0.0)},
+                new double[]{1./3, 1./6, 1., 0., 1.}
         );
     }
 
@@ -167,7 +170,8 @@ public class ST_GraphAnalysisTest {
                         4.0 / (8.0 + 0.0 + 3.0 + 1.0 + 7.0),
                         4.0 / (5.0 + 2.0 + 0.0 + 3.0 + 9.0),
                         4.0 / (13.0 + 10.0 + 8.0 + 0.0 + 6.0),
-                        4.0 / (7.0 + 4.0 + 2.0 + 4.0 + 0.0)}
+                        4.0 / (7.0 + 4.0 + 2.0 + 4.0 + 0.0)},
+                new double[]{0., 1./3, 5./6, 1./3, 1.}
         );
     }
 
@@ -184,14 +188,15 @@ public class ST_GraphAnalysisTest {
         assertFalse(rs.next());
 
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
-       checkNodes(nodeCent,
-               new double[]{
-                        4.0 / (0.0 +  1.0 +  1.0 +  2.0 +  1.0),
-                        4.0 / (1.0 +  0.0 +  1.0 +  1.0 +  2.0),
-                        4.0 / (1.0 +  1.0 +  0.0 +  1.0 +  1.0),
-                        4.0 / (2.0 +  1.0 +  1.0 +  0.0 +  1.0),
-                        4.0 / (1.0 +  2.0 +  1.0 +  1.0 +  0.0)}
-       );
+        checkNodes(nodeCent,
+                new double[]{
+                        4.0 / (0.0 + 1.0 + 1.0 + 2.0 + 1.0),
+                        4.0 / (1.0 + 0.0 + 1.0 + 1.0 + 2.0),
+                        4.0 / (1.0 + 1.0 + 0.0 + 1.0 + 1.0),
+                        4.0 / (2.0 + 1.0 + 1.0 + 0.0 + 1.0),
+                        4.0 / (1.0 + 2.0 + 1.0 + 1.0 + 0.0)},
+                new double[]{0., 1. / 9, 11. / 10, 4. / 9, 2. / 3}
+        );
     }
 
     @Test
@@ -207,14 +212,15 @@ public class ST_GraphAnalysisTest {
         assertFalse(rs.next());
 
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
-       checkNodes(nodeCent,
-               new double[]{
+        checkNodes(nodeCent,
+                new double[]{
                         4.0 / (0.0 + 7.0 + 5.0 + 8.0 + 7.0),
                         4.0 / (7.0 + 0.0 + 2.0 + 1.0 + 4.0),
                         4.0 / (5.0 + 2.0 + 0.0 + 3.0 + 2.0),
                         4.0 / (8.0 + 1.0 + 3.0 + 0.0 + 4.0),
-                        4.0 / (7.0 + 4.0 + 2.0 + 4.0 + 0.0)}
-       );
+                        4.0 / (7.0 + 4.0 + 2.0 + 4.0 + 0.0)},
+                new double[]{0., 4. / 7, 1., 0., 0.}
+        );
     }
 
     private ResultSet compute(String orientation, String weight) throws SQLException {
@@ -227,12 +233,15 @@ public class ST_GraphAnalysisTest {
         return compute(orientation, null);
     }
 
-    private void checkNodes(ResultSet nodeCent, double[] closeness) throws SQLException {
+    private void checkNodes(ResultSet nodeCent,
+                            double[] closeness,
+                            double[] betweenness) throws SQLException {
         try {
             while (nodeCent.next()) {
                 final int nodeID = nodeCent.getInt(GraphConstants.NODE_ID);
                 // Check closeness.
                 assertEquals(closeness[nodeID - 1], nodeCent.getDouble(GraphConstants.CLOSENESS), TOLERANCE);
+                assertEquals(betweenness[nodeID - 1], nodeCent.getDouble(GraphConstants.BETWEENNESS), TOLERANCE);
             }
         } finally {
             nodeCent.close();
