@@ -96,4 +96,11 @@ public class URIUtilityTest {
         URI folder = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/");
         assertEquals("../bla%20bla/text.txt", URIUtility.relativize(folder, rel).toString());
     }
+
+    @Test
+    public void testFileFromURI() throws Exception {
+        assertEquals(new File("/mnt/stock/hello.png"), URIUtility.fileFromString("/mnt/stock/hello.png"));
+        assertEquals(new File("/mnt/stock/hello.png"),
+                URIUtility.fileFromString(new File("/mnt/stock/hello.png").toURI().toString()));
+    }
 }

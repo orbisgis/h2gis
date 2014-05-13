@@ -27,6 +27,7 @@ package org.h2gis.drivers.gpx;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.URIUtility;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -63,7 +64,7 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
             throw new FileNotFoundException("The following file does not exists:\n" + fileName);
         }
         GPXDriverFunction gpxdf = new GPXDriverFunction();
-        gpxdf.importFile(connection, tableReference, new File(fileName), new EmptyProgressVisitor());
+        gpxdf.importFile(connection, tableReference, URIUtility.fileFromString(fileName), new EmptyProgressVisitor());
     }
 
     /**
@@ -76,7 +77,7 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void readGPX(Connection connection, String fileName) throws IOException, SQLException {
-        final String name = new File(fileName).getName();
+        final String name = URIUtility.fileFromString(fileName).getName();
         readGPX(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
     }
 }

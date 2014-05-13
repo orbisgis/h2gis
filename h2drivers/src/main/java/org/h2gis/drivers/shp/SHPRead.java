@@ -24,14 +24,18 @@
  */
 package org.h2gis.drivers.shp;
 
+import org.h2gis.drivers.dbf.DBFEngine;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.URIUtility;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -53,23 +57,24 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * Copy data from Shape File into a new table in specified connection.
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path of the SHP file
+     * @param fileName File path of the SHP file or URI
      * @param forceEncoding Use this encoding instead of DBF file header encoding property.
      */
     public static void readShape(Connection connection, String fileName, String tableReference,String forceEncoding) throws IOException, SQLException {
-        File file = new File(fileName);
+        File file = URIUtility.fileFromString(fileName);
         if(!file.exists()) {
             throw new FileNotFoundException("The following file does not exists:\n"+fileName);
         }
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(true), new File(fileName), new EmptyProgressVisitor(), forceEncoding);
+        shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(true),
+                file, new EmptyProgressVisitor(), forceEncoding);
     }
 
     /**
      * Copy data from Shape File into a new table in specified connection.
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path of the SHP file
+     * @param fileName File path of the SHP file or URI
      */
     public static void readShape(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         readShape(connection, fileName, tableReference, null);
@@ -82,10 +87,10 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * exception is thrown.
      *
      * @param connection Active connection
-     * @param fileName   File path of the SHP file
+     * @param fileName   File path of the SHP file or URI
      */
     public static void readShape(Connection connection, String fileName) throws IOException, SQLException {
-        final String name = new File(fileName).getName();
+        final String name = URIUtility.fileFromString(fileName).getName();
         readShape(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
     }
 }
