@@ -67,7 +67,7 @@ public class DelaunayTools {
     /**
      * Convert a list of triangles to a JTS MultiLineString
      *
-     * @param triangles
+     * @param edges
      * @return
      */
     public static MultiLineString toMultiLineString(List<DEdge> edges) {

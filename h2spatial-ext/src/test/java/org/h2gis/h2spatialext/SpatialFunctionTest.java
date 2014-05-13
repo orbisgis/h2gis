@@ -39,7 +39,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
@@ -395,6 +394,14 @@ public class SpatialFunctionTest {
         assertEquals(Math.sqrt(241) + Math.sqrt(270) + Math.sqrt(2) + 2 * Math.sqrt(5)
                 + Math.sqrt(10), rs.getDouble(1), 0.0);
         st.execute("DROP TABLE input_table;");
+    }
+    
+    @Test
+    public void test_ST_3DLength2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DLength('MULTIPOLYGON (((898458.2 6245894.6, 898493.4 6245894.5, 898492.3 6245888.4, 898458.7 6245888.5, 898458.2 6245894.6)))')");
+        rs.next();        
+        assertEquals(81.11, rs.getDouble(1),0.01);
+        rs.close();
     }
 
     @Test
@@ -1091,7 +1098,7 @@ public class SpatialFunctionTest {
     public void test_ST_DelaunayWithPoints1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1))'::GEOMETRY);");
         rs.next();
-        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON(((0 0, 10 0, 10 10, 0 0)))"));
+        assertGeometryEquals("MULTIPOLYGON (((0 0 1, 10 0 1, 10 10 1, 0 0 1)))",rs.getBytes(1));
         rs.close();
     }
 
@@ -1099,7 +1106,7 @@ public class SpatialFunctionTest {
     public void test_ST_DelaunayWithPoints2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);");
         rs.next();
-        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((0 0, 10 0, 5 5, 0 0)), ((10 0, 5 5, 10 10, 10 0)))"));
+        assertGeometryEquals("MULTIPOLYGON(((0 0 1, 10 0 1, 5 5 1, 0 0 1)),  ((10 0 1, 5 5 1, 10 10 1, 10 0 1)))",  rs.getBytes(1));
         rs.close();
     }
 
@@ -1107,8 +1114,7 @@ public class SpatialFunctionTest {
     public void test_ST_DelaunayWithLines() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTILINESTRING ((1.1 8 1, 8 8 1), (2 3.1 1, 8 5.1 1))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON ( ((1.1 8, 2 3.1, 8 5.1, 1.1 8)),"
-                + " ((1.1 8, 8 5.1, 8 8, 1.1 8)))")));
+        assertGeometryEquals("MULTIPOLYGON (((1.1 8 1, 2 3.1 1, 8 5.1 1, 1.1 8 1)), ((8 5.1 1, 1.1 8 1, 8 8 1, 8 5.1 1)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -1116,11 +1122,7 @@ public class SpatialFunctionTest {
     public void test_ST_DelaunayAsMultiPolygon() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 0);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON (((1.1 9, 1.1 3, 5 8, 1.1 9)), \n"
-                + " ((1.1 9, 5 8, 8.8 9.9, 1.1 9)), \n"
-                + " ((8.8 9.9, 5 8, 9.5 6.4, 8.8 9.9)), \n"
-                + " ((5.1 1.1, 9.5 6.4, 5 8, 5.1 1.1)), \n"
-                + " ((5.1 1.1, 5 8, 1.1 3, 5.1 1.1)))")));
+        assertGeometryEquals("MULTIPOLYGON(((1.1 3 1, 5 8 1, 1.1 9 1, 1.1 3 1)),   ((1.1 3 1, 5 8 1, 5.1 1.1 1, 1.1 3 1)),  ((5 8 1, 9.5 6.4 1, 5.1 1.1 1, 5 8 1)),  ((5 8 1, 1.1 9 1, 8.8 9.9 1, 5 8 1)),  ((5 8 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1)))",  rs.getBytes(1));
         rs.close();
     }
 
@@ -1128,11 +1130,7 @@ public class SpatialFunctionTest {
     public void test_ST_DelaunayAsMultiLineString() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 1);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTILINESTRING ((1.1 9, 1.1 3, 5 8, 1.1 9), \n"
-                + " (1.1 9, 5 8, 8.8 9.9, 1.1 9), \n"
-                + " (8.8 9.9, 5 8, 9.5 6.4, 8.8 9.9), \n"
-                + " (5.1 1.1, 9.5 6.4, 5 8, 5.1 1.1), \n"
-                + " (5.1 1.1, 5 8, 1.1 3, 5.1 1.1))")));
+        assertGeometryEquals("MULTILINESTRING((1.1 3 1, 1.1 9 1), (1.1 3 1, 5 8 1),  (1.1 9 1, 5 8 1), (1.1 3 1, 5.1 1.1 1),  (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1),  (5 8 1, 8.8 9.9 1), (1.1 9 1, 8.8 9.9 1),(5.1 1.1 1, 9.5 6.4 1),  (8.8 9.9 1, 9.5 6.4 1))",rs.getBytes(1));
         rs.close();
     }
 
@@ -1140,12 +1138,12 @@ public class SpatialFunctionTest {
     public void test_ST_ConstrainedDelaunayWithPolygon() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('POLYGON ((1.9 8, 2.1 2.2, 7.1 2.2, 4.9 3.5, 7.5 8.1, 3.2 6, 1.9 8))'::GEOMETRY);");
         rs.next();
-        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((1.9 8, 2.1 2.2, 3.2 6, 1.9 8)), \n"
-                + " ((2.1 2.2, 3.2 6, 4.9 3.5, 2.1 2.2)), \n"
-                + " ((2.1 2.2, 4.9 3.5, 7.1 2.2, 2.1 2.2)), \n"
-                + " ((7.1 2.2, 4.9 3.5, 7.5 8.1, 7.1 2.2)), \n"
-                + " ((4.9 3.5, 3.2 6, 7.5 8.1, 4.9 3.5)), \n"
-                + " ((3.2 6, 1.9 8, 7.5 8.1, 3.2 6)))"));
+        assertGeometryEquals("MULTIPOLYGON (((1.9 8 0, 2.1 2.2 0, 3.2 6 0, 1.9 8 0)),"
+                + " ((2.1 2.2 0, 3.2 6 0, 4.9 3.5 0, 2.1 2.2 0)),"
+                + " ((2.1 2.2 0, 4.9 3.5 0, 7.1 2.2 0, 2.1 2.2 0)),"
+                + " ((7.1 2.2 0, 4.9 3.5 0, 7.5 8.1 0, 7.1 2.2 0)),"
+                + " ((4.9 3.5 0, 3.2 6 0, 7.5 8.1 0, 4.9 3.5 0)),"
+                + " ((3.2 6 0, 1.9 8 0, 7.5 8.1 0, 3.2 6 0)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -1153,19 +1151,10 @@ public class SpatialFunctionTest {
     public void test_ST_ConstrainedDelaunayWithLines() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7), (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 1);");
         rs.next();
-        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTILINESTRING ((2 7, 3.2 4.6), \n"
-                + " (3.2 4.6, 4.1 5), \n"
-                + " (4.1 5, 4.1818181818181825 7), \n"
-                + " (3.2 4.6, 4.1818181818181825 7), \n"
-                + " (2 7, 4.1818181818181825 7), \n"
-                + " (4.1818181818181825 7, 5 9), \n"
-                + " (2 7, 5 9), \n"
-                + " (3.2 4.6, 6 5), \n"
-                + " (4.1 5, 6 5), \n"
-                + " (4.1818181818181825 7, 6 5), \n"
-                + " (6 5, 6 7), \n"
-                + " (4.1818181818181825 7, 6 7), \n"
-                + " (5 9, 6 7))"));
+        assertGeometryEquals("MULTILINESTRING ((2 7 0, 3.2 4.6 0), (3.2 4.6 0, 4.1 5 0), (4.1 5 0, 4.1818181818181825 7 0), "
+                + "(3.2 4.6 0, 4.1818181818181825 7 0), (2 7 0, 4.1818181818181825 7 0), (4.1818181818181825 7 0, 5 9 0), "
+                + "(2 7 0, 5 9 0), (3.2 4.6 0, 6 5 0), (4.1 5 0, 6 5 0), (4.1818181818181825 7 0, 6 5 0), (6 5 0, 6 7 0), "
+                + "(4.1818181818181825 7 0, 6 7 0), (5 9 0, 6 7 0))", rs.getBytes(1));
         rs.close();
     }
 
@@ -1173,12 +1162,29 @@ public class SpatialFunctionTest {
     public void test_ST_ConstrainedDelaunayWithLines2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7), (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 0);");
         rs.next();
-        assertEquals((Geometry) rs.getObject(1), WKT_READER.read("MULTIPOLYGON (((3.2 4.6, 4.1 5, 4.1818181818181825 7, 3.2 4.6)), "
-                + "((2 7, 3.2 4.6, 4.1818181818181825 7, 2 7)), ((4.1818181818181825 7, 2 7, 5 9, 4.1818181818181825 7)), "
-                + "((3.2 4.6, 4.1 5, 6 5, 3.2 4.6)), ((4.1 5, 4.1818181818181825 7, 6 5, 4.1 5)), "
-                + "((6 5, 4.1818181818181825 7, 6 7, 6 5)), ((4.1818181818181825 7, 5 9, 6 7, 4.1818181818181825 7)))"));
+        assertGeometryEquals("MULTIPOLYGON (((3.2 4.6 0, 4.1 5 0, 4.1818181818181825 7 0, 3.2 4.6 0)), "
+                + "((2 7 0, 3.2 4.6 0, 4.1818181818181825 7 0, 2 7 0)), ((4.1818181818181825 7 0, 2 7 0, 5 9 0, 4.1818181818181825 7 0)), "
+                + "((3.2 4.6 0, 4.1 5 0, 6 5 0, 3.2 4.6 0)), ((4.1 5 0, 4.1818181818181825 7 0, 6 5 0, 4.1 5 0)), "
+                + "((6 5 0, 4.1818181818181825 7 0, 6 7 0, 6 5 0)), ((4.1818181818181825 7 0, 5 9 0, 6 7 0, 4.1818181818181825 7 0)))", rs.getBytes(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_ConstrainedDelaunayWithLines3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRING (0 0, 10 0, 10 10, 0 10, 0 0)'::GEOMETRY, 1);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING ((0 0 0, 0 10 0), (0 0 0, 10 0 0), (0 10 0, 10 0 0), (10 0 0, 10 10 0), (0 10 0, 10 10 0))", rs.getBytes(1));
+        rs.close();                
+    }
+    
+     @Test
+    public void test_ST_ConstrainedDelaunayWithLines4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRING (0 0 1, 10 0 1, 10 10 1, 0 10 1, 0 0 1)'::GEOMETRY, 1);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING ((0 0 1, 0 10 1), (0 0 1, 10 0 1), (0 10 1, 10 0 1), (10 0 1, 10 10 1), (0 10 1, 10 10 1))", rs.getBytes(1));
+        rs.close();                
+    }
+    
 
     @Test
     public void test_ST_MakeGrid() throws Exception {
@@ -1633,10 +1639,8 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('LINESTRING (0 0, 1 0)'::GEOMETRY, 10);");
         rs.next();
         //Test if the wall is created
-        Coordinate[] wallCoords = ((Geometry) rs.getObject(1)).getGeometryN(1).getCoordinates();
-        assertTrue(wallCoords.length == 5);
-        Geometry wallTarget = WKT_READER.read("MULTIPOLYGON(((0 0 0, 0 0 10, 1 0 10, 1 0 0, 0 0 0)))");
-        assertTrue(CoordinateArrays.equals(wallCoords, wallTarget.getCoordinates()));
+        assertGeometryEquals("MULTIPOLYGON(((0 0 0, 0 0 10, 1 0 10, 1 0 0, 0 0 0)))", 
+                ValueGeometry.getFromGeometry(((Geometry) rs.getObject(1)).getGeometryN(1)).getBytes());
         rs.close();
     }
 
@@ -1646,45 +1650,35 @@ public class SpatialFunctionTest {
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
-        assertTrue(outputGeom.getGeometryN(0).equalsTopo(WKT_READER.read("POLYGON(( 0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))")));
+        assertGeometryEquals("POLYGON ((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(0)).getBytes());
 
-        Geometry walls = outputGeom.getGeometryN(1);
         //Test if the walls are created
-        assertTrue(walls.getCoordinates().length == 20);
-        Geometry wallTarget = WKT_READER.read("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
+        assertGeometryEquals("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
                 + "((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), "
-                + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))");
-        assertTrue(CoordinateArrays.equals(walls.getCoordinates(), wallTarget.getCoordinates()));
+                + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getBytes());
 
         //Test the roof
-        assertTrue(outputGeom.getGeometryN(2).equalsTopo(WKT_READER.read("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))")));
+        assertGeometryEquals("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(2)).getBytes());
 
         rs.close();
     }
 
     @Test
     public void test_ST_ExtrudePolygonWithHole() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10), \n"
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10),"
                 + " (1 3, 3 3, 3 1, 1 1, 1 3))'::GEOMETRY, 10);");
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
-        assertTrue(outputGeom.getGeometryN(0).equals(WKT_READER.read("POLYGON ((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0), \n"
-                + " (1 3 0, 3 3 0, 3 1 0, 1 1 0, 1 3 0))")));
-
-        Geometry walls = outputGeom.getGeometryN(1);
+        assertGeometryEquals("POLYGON ((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0), (1 3 0, 1 1 0, 3 1 0, 3 3 0, 1 3 0))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(0)).getBytes());
+          
         //Test if the walls are created
-        assertTrue(walls.getCoordinates().length == 40);
-        Geometry wallTarget = WKT_READER.read("MULTIPOLYGON (((0 10, 0 10, 10 10, 10 10, 0 10)), "
-                + "((10 10, 10 10, 10 0, 10 0, 10 10)), ((10 0, 10 0, 0 0, 0 0, 10 0)), "
-                + "((0 0, 0 0, 0 10, 0 10, 0 0)), ((1 3, 1 3, 1 1, 1 1, 1 3)), "
-                + "((1 1, 1 1, 3 1, 3 1, 1 1)), ((3 1, 3 1, 3 3, 3 3, 3 1)), ((3 3, 3 3, 1 3, 1 3, 3 3)))");
-        assertTrue(CoordinateArrays.equals(walls.getCoordinates(), wallTarget.getCoordinates()));
+        assertGeometryEquals("MULTIPOLYGON (((0 10 0, 0 10 10, 10 10 10, 10 10 0, 0 10 0)), ((10 10 0, 10 10 10, 10 0 10, 10 0 0, 10 10 0)), ((10 0 0, 10 0 10, 0 0 10, 0 0 0, 10 0 0)), ((0 0 0, 0 0 10, 0 10 10, 0 10 0, 0 0 0)), ((1 3 0, 1 3 10, 1 1 10, 1 1 0, 1 3 0)), ((1 1 0, 1 1 10, 3 1 10, 3 1 0, 1 1 0)), ((3 1 0, 3 1 10, 3 3 10, 3 3 0, 3 1 0)), ((3 3 0, 3 3 10, 1 3 10, 1 3 0, 3 3 0)))",
+                ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getBytes());
 
-        //Test the roof
-        assertTrue(outputGeom.getGeometryN(2).equalsExact(WKT_READER.read("POLYGON ((0 10 10, 0 0 10, 10 0 10, 10 10 10, 0 10 10),"
-                + " (1 3 10, 3 3 10, 3 1 10, 1 1 10, 1 3 10)))")));
-
+        //Test the roof        
+        assertGeometryEquals("POLYGON ((0 10 10, 0 0 10, 10 0 10, 10 10 10, 0 10 10), (1 3 10, 3 3 10, 3 1 10, 1 1 10, 1 3 10))",
+                ValueGeometry.getFromGeometry(outputGeom.getGeometryN(2)).getBytes());
         rs.close();
     }
 
@@ -1692,13 +1686,8 @@ public class SpatialFunctionTest {
     public void test_ST_ExtrudePolygonWalls() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10, 1);");
         rs.next();
-        Geometry walls = (Geometry) rs.getObject(1);
         //Test if the walls are created
-        assertTrue(walls.getCoordinates().length == 20);
-        Geometry wallTarget = WKT_READER.read("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
-                + "((0 1 0, 0 1 10, 1 1 0, 1 1 10, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), "
-                + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))");
-        assertTrue(CoordinateArrays.equals(walls.getCoordinates(), wallTarget.getCoordinates()));
+        assertGeometryEquals("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), ((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), ((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0)))", rs.getBytes(1));        
         rs.close();
     }
 
@@ -1706,9 +1695,8 @@ public class SpatialFunctionTest {
     public void test_ST_ExtrudePolygonRoof() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10, 2);");
         rs.next();
-        Geometry roof = (Geometry) rs.getObject(1);
         //Test the roof
-        assertTrue(roof.equalsExact(WKT_READER.read("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))")));
+        assertGeometryEquals("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))", rs.getBytes(1));
         rs.close();
     }
 
@@ -2015,6 +2003,22 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Translate('LINESTRING(-71.01 42.37,-71.11 42.38)'::GEOMETRY, 1, 0.5);");
         rs.next();
         assertGeometryEquals("LINESTRING(-70.01 42.87,-70.11 42.88)", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_Translate3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINT(0 0 0)'::GEOMETRY, 5, 12, 3);");
+        rs.next();
+        assertGeometryEquals("POINT(5 12 3)", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_Translate4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINT(1 2 3)'::GEOMETRY, 10, 20, 30);");
+        rs.next();
+        assertGeometryEquals("POINT(11 22 33)", rs.getBytes(1));
         rs.close();
     }
 
@@ -2327,14 +2331,30 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0, 5 0 , 10 0)'::GEOMETRY, 0, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('MULTILINESTRING((0 0 12, 5 0 200 , 10 0 20),(0 0 1, 5 0 , 10 0 2))'::GEOMETRY, 0, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
+        assertGeometryEquals("MULTILINESTRING((0 0 0, 5 0 5, 10 0 10),(0 0 0, 5 0 5, 10 0 10))", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_ZUpdateExtremities5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('MULTILINESTRING((0 0 12, 5 0 200 , 10 0 20),(0 0 1, 5 0 , 10 0 2))'::GEOMETRY, 0, 10, true);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING((0 0 0, 5 0 5, 10 0 10),(0 0 0, 5 0 5, 10 0 10))", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_ZUpdateExtremities6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('MULTILINESTRING((0 0 12, 5 0 200 , 10 0 20),(0 0 1, 5 0 , 10 0 2))'::GEOMETRY, 0, 10, false);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING((0 0 0, 5 0 200, 10 0 10),(0 0 0, 5 0 , 10 0 10))", rs.getBytes(1));
         rs.close();
     }
 
     @Test
-    public void test_ST_Normalize2() throws Exception {
+    public void test_ST_Normalize() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Normalize('POLYGON ((170 180, 310 180, 308 190, 310 206, 340 320, 135 333, 140 260, 170 180))'::GEOMETRY);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((135 333, 340 320, 310 206, 308 190, 310 180, 170 180, 140 260, 135 333))")));
@@ -2631,6 +2651,31 @@ public class SpatialFunctionTest {
         } catch (JdbcSQLException e) {
             throw e.getOriginalCause();
         }
+    }
+    
+    
+    @Test
+    public void test_ST_IsValidRDetail8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,3 0))'::geometry,0);");
+        rs.next();
+        Object[] results = (Object[]) rs.getObject(1);
+        assertNotNull(results);
+        assertFalse((Boolean) results[0]);
+        assertEquals("Ring Self-intersection", results[1]);
+        assertGeometryEquals("POINT(3 0)", ValueGeometry.getFromGeometry(results[2]).getBytes());
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_IsValidRDetail9() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_IsvalidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,3 0))'::geometry,1)");
+        rs.next();
+        Object[] results = (Object[]) rs.getObject(1);
+        assertNotNull(results);
+        assertTrue((Boolean) results[0]);
+        assertEquals("Valid Geometry", results[1]);
+        assertNull(results[2]);
+        rs.close();
     }
 
     @Test

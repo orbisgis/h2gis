@@ -72,7 +72,7 @@ public final class AltitudeMode {
      * 
      *
      * @param altitudeMode
-     * @return aString the string representation of altitudeMode
+     * @param sb
      */
     public static void append(int altitudeMode, StringBuilder sb) {
         switch (altitudeMode) {
@@ -86,11 +86,18 @@ public final class AltitudeMode {
                 sb.append("<kml:altitudeMode>absolute</kml:altitudeMode>");
                 return;
             case GX_CLAMPTOSEAFLOOR:
-                sb.append("<kml:altitudeMode>clampToSeaFloor</kml:altitudeMode>");
+                sb.append("<gx:altitudeMode>clampToSeaFloor</gx:altitudeMode>");
                 return;
             case GX_RELATIVETOSEAFLOOR:
-                sb.append("<kml:altitudeMode>relativeToSeaFloor</kml:altitudeMode>");
+                sb.append("<gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>");
+                return;
+            case NONE:
+                return;
             default:
+                throw new IllegalArgumentException("Supported altitude modes are: \n"
+                        + " For KML profils: CLAMPTOGROUND = 1; RELATIVETOGROUND = 2; ABSOLUTE = 4;\n"
+                        + "For GX profils: CLAMPTOSEAFLOOR = 8; RELATIVETOSEAFLOOR = 16; \n"
+                        + " No altitude: NONE = 0");
         }
     }
 }

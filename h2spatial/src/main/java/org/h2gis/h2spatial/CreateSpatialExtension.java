@@ -158,7 +158,8 @@ public class CreateSpatialExtension {
                 new ST_SetSRID(),
                 new ST_CoordDim(),
                 new ST_GeometryTypeCode(),
-                new ST_OrderingEquals()};
+                new ST_OrderingEquals(),
+                new ST_Is3D()};
     }
 
     /**
