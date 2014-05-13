@@ -48,8 +48,9 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
         addProperty(PROP_REMARKS, "Compute a ring buffer around a geometry.\n"
                 + "Avalaible arguments are :\n"
                 + " (1) the geometry, (2) the size of each ring, "
-                + "(3) the number of rings, (4) the end cap style (square, round)\n"
-                + "This last argument is optional. Default is round.");
+                + " (3) the number of rings, (4) the end cap style (square, round)\n"
+                + "This last argument is optional. Default is round." +
+                  " (5) optional - createHole True if you want to keep only difference between buffers");
     }
 
     @Override
@@ -69,6 +70,19 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
     }
 
     /**
+     *
+     * @param geom
+     * @param bufferDistance
+     * @param numBuffer
+     * @param endCapStyle
+     * @return
+     */
+    public static Geometry ringBuffer(Geometry geom, double bufferDistance,
+                                      int numBuffer, String endCapStyle) throws SQLException {
+        return ringBuffer(geom, bufferDistance, numBuffer, endCapStyle, true);
+    }
+
+    /**
      * Compute a ring buffer around a geometry
      * @param geom
      * @param bufferDistance
@@ -78,7 +92,7 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
      * @return 
      */
     public static Geometry ringBuffer(Geometry geom, double bufferDistance,
-            int numBuffer, String endCapStyle) throws SQLException {
+            int numBuffer, String endCapStyle, boolean doDifference) throws SQLException {
         if(!(bufferDistance > 0)) {
             // If buffer distance is not superior than zero return the same geometry.
             return geom;
@@ -89,8 +103,11 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
         for (int i = 0; i < numBuffer; i++) {
             distance += bufferDistance;
             Geometry newBuffer = runBuffer(geom, distance, endCapStyle);
-            Geometry geomBufferExternal = newBuffer.difference(previous);
-            buffers[i] = (Polygon) geomBufferExternal;
+            if(doDifference) {
+                buffers[i] = (Polygon) newBuffer.difference(previous);
+            } else {
+                buffers[i] = (Polygon) newBuffer;
+            }
             previous = newBuffer;
         }
         return GF.createMultiPolygon(buffers);
