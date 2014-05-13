@@ -33,6 +33,8 @@ import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 
 /**

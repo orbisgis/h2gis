@@ -24,13 +24,13 @@
  */
 package org.h2gis.drivers.kml;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.URIUtility;
 
 /**
  * SQL Function to export a spatial table to a KML file.
@@ -58,6 +58,6 @@ public class KMLWrite extends AbstractFunction implements ScalarFunction {
      */
     public static void writeKML(Connection connection, String fileName, String tableReference) throws SQLException, IOException {
         KMLDriverFunction kMLDriverFunction = new KMLDriverFunction();
-        kMLDriverFunction.exportTable(connection, tableReference, new  File(fileName), new EmptyProgressVisitor());
+        kMLDriverFunction.exportTable(connection, tableReference, URIUtility.fileFromString(fileName), new EmptyProgressVisitor());
     }
 }

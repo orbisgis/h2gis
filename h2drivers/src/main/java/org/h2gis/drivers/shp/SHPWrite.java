@@ -27,8 +27,8 @@ package org.h2gis.drivers.shp;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.URIUtility;
 
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -51,7 +51,7 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
     /**
      * Read a table and write it into a shape file.
      * @param connection Active connection
-     * @param fileName Shape file name
+     * @param fileName Shape file name or URI
      * @param tableReference Table name
      * @throws IOException
      * @throws SQLException
@@ -63,7 +63,7 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
     /**
      * Read a table and write it into a shape file.
      * @param connection Active connection
-     * @param fileName Shape file name
+     * @param fileName Shape file name or URI
      * @param tableReference Table name
      * @param encoding File encoding
      * @throws IOException
@@ -71,6 +71,6 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
      */
     public static void exportTable(Connection connection, String fileName, String tableReference,String encoding) throws IOException, SQLException {
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        shpDriverFunction.exportTable(connection, tableReference, new File(fileName), new EmptyProgressVisitor(), encoding);
+        shpDriverFunction.exportTable(connection, tableReference, URIUtility.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
     }
 }

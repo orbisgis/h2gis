@@ -272,4 +272,13 @@ public class SHPImportExportTest {
         assertEquals(2, row[0]);
         assertEquals("MULTILINESTRING ((90 109, 190 109, 190 9, 90 9))", ((Geometry)row[1]).toText());
     }
+
+    @Test
+    public void readSHPURITest() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS WATERNETWORK");
+        final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").toURI().toString());
+        st.execute("CALL SHPRead(" + path + ", 'WATERNETWORK');");
+        checkSHPReadResult(st);
+    }
 }

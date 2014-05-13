@@ -36,6 +36,7 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.URIUtility;
 
 import java.io.File;
 import java.io.IOException;
@@ -92,8 +93,8 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 Statement st = connection.createStatement();
                 st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
-                        TableLocation.parse(tableName, isH2).toString(isH2),StringUtils.quoteStringSQL(new File(fileName).toURI().toString()),
-                        StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
+                        TableLocation.parse(tableName, isH2).toString(isH2),StringUtils.quoteStringSQL(URIUtility.fileFromString(fileName).toURI().toString()),
+                        StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(URIUtility.fileFromString(fileName).toString())));
                 st.close();
                 return;
             }

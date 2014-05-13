@@ -156,4 +156,17 @@ public class URIUtility {
             throw new IllegalArgumentException("Illegal URI provided:\n"+base.toString()+"\n"+target.toString());
         }
     }
+
+    /**
+     * @param fileName File name using Path or URI
+     * @return File path
+     */
+    public static File fileFromString(String fileName) {
+        try {
+            return new File(new URI(fileName).getPath());
+        } catch (URISyntaxException ex ) {
+            // Not a valid uri
+            return new File(fileName);
+        }
+    }
 }
