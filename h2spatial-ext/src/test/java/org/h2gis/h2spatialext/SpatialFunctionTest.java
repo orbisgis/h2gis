@@ -2450,6 +2450,14 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_RingBufferNoHole() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RingBuffer('POINT(2 2)', 2, 2, 'square', false);");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTIPOLYGON(((4 4, 4 0, 0 0, 0 4, 4 4)), ((6 6, 6 -2, -2 -2, -2 6, 6 6)))", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
     public void test_ST_MinimumDiameter1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MinimumDiameter('LINESTRING (50 240, 62 250, 199 425, 250 240)'::GEOMETRY);");
         rs.next();
