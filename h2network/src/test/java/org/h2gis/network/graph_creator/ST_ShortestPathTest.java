@@ -38,8 +38,9 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
+
 /**
- * Created by adam on 3/24/14.
+ * @author Adam Gouge
  */
 public class ST_ShortestPathTest {
 
