@@ -111,6 +111,7 @@ public class ST_GraphAnalysisTest {
                 new double[]{1./3, 1./6, 1., 0., 1.}
         );
         final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
+        checkEdges(edgeCent, new double[]{1./9, 1./3, 8./9, 0., 1./3, 1./3, 2./3, 2./9, 2./9, 1., 1./9});
     }
 
     @Test
@@ -308,12 +309,24 @@ public class ST_GraphAnalysisTest {
         try {
             while (nodeCent.next()) {
                 final int nodeID = nodeCent.getInt(GraphConstants.NODE_ID);
-                // Check closeness.
                 assertEquals(closeness[nodeID - 1], nodeCent.getDouble(GraphConstants.CLOSENESS), TOLERANCE);
                 assertEquals(betweenness[nodeID - 1], nodeCent.getDouble(GraphConstants.BETWEENNESS), TOLERANCE);
             }
         } finally {
             nodeCent.close();
+        }
+    }
+
+    private void checkEdges(ResultSet edgeCent,
+                            double[] betweenness) throws SQLException {
+        try {
+            while (edgeCent.next()) {
+                final int edgeID = edgeCent.getInt(GraphConstants.EDGE_ID);
+                assertEquals(betweenness[(edgeID > 0) ? edgeID - 1 : -edgeID],
+                        edgeCent.getDouble(GraphConstants.BETWEENNESS), TOLERANCE);
+            }
+        } finally {
+            edgeCent.close();
         }
     }
 }
