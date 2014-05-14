@@ -47,7 +47,7 @@ public class ST_GraphAnalysisTest {
 
     private static Connection connection;
     private Statement st;
-    private static final double TOLERANCE = 0.0;
+    private static final double TOLERANCE = 10E-16;
     private static final String DO = "'directed - edge_orientation'";
     private static final String RO = "'reversed - edge_orientation'";
     private static final String U = "'undirected'";
@@ -195,7 +195,7 @@ public class ST_GraphAnalysisTest {
                         4.0 / (1.0 + 1.0 + 0.0 + 1.0 + 1.0),
                         4.0 / (2.0 + 1.0 + 1.0 + 0.0 + 1.0),
                         4.0 / (1.0 + 2.0 + 1.0 + 1.0 + 0.0)},
-                new double[]{0., 1. / 9, 11. / 10, 4. / 9, 2. / 3}
+                new double[]{0., 1. / 7, 1., 2. / 7, 1. / 2}
         );
     }
 
