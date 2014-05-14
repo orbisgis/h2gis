@@ -181,6 +181,12 @@ public class ST_GraphAnalysisTest {
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
 
+        // σ(1)  σ(2)  σ(3)  σ(4)  σ(5)  σ
+        // |---- 0|000 01|00 000|0 0111| 11111
+        // |0000 -|--- 10|00 000|1 0000| 11111
+        // |0000 0|011 --|-- 000|1 0000| 11111
+        // |0000 0|000 11|00 ---|- 2110| 21111
+        // |0000 0|000 11|00 000|0 ----| 21111
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         checkNodes(nodeCent,
                 new double[]{
