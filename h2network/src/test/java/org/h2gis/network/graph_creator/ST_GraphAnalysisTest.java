@@ -94,6 +94,12 @@ public class ST_GraphAnalysisTest {
         // |0000 0|000 --|-- 000|0 1000| 11111
         // |0000 0|100 00|00 ---|- 1000| 11111
         // |1100 0|000 00|00 010|0 ----| 12111
+        //
+        // 1: 1+1/2 = 3/2
+        // 2:         1
+        // 3: 1/2+3 = 7/2
+        // 4:         1/2
+        // 5: 1/2+3 = 7/2
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         checkNodes(nodeCent,
                 new double[]{
@@ -125,6 +131,12 @@ public class ST_GraphAnalysisTest {
         // |0000 0|000 --|-- 000|0 1001| 11111
         // |0000 0|100 00|00 ---|- 1000| 11111
         // |0000 0|100 00|00 011|0 ----| 11111
+        //
+        // 1:            0
+        // 2:            2
+        // 3: 4+2(1/2) = 5
+        // 4:            2
+        // 5: 5+2/2 =    6
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         checkNodes(nodeCent,
                 new double[]{
@@ -157,6 +169,12 @@ public class ST_GraphAnalysisTest {
         // |0001 0|010 --|-- 000|0 0000| 11111
         // |0000 0|000 11|00 ---|- 1000| 21111
         // |0000 0|000 01|00 000|0 ----| 11111
+        //
+        // 1: 1/2+1 = 3/2
+        // 2:         1
+        // 3: 1/2+3 = 7/2
+        // 4:         1/2
+        // 5: 3+1/2 = 7/2
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         checkNodes(nodeCent,
                 new double[]{
@@ -187,6 +205,12 @@ public class ST_GraphAnalysisTest {
         // |0000 0|011 --|-- 000|1 0000| 11111
         // |0000 0|000 11|00 ---|- 2110| 21111
         // |0000 0|000 11|00 000|0 ----| 21111
+        //
+        // 1:         0
+        // 2:         2
+        // 3: 4+2/2 = 5
+        // 4:         2
+        // 5: 5+2/2 = 6
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         checkNodes(nodeCent,
                 new double[]{
@@ -217,6 +241,9 @@ public class ST_GraphAnalysisTest {
         // |0000 0|000 --|-- 000|0 0000| 12111
         // |0000 1|000 10|00 ---|- 2000| 41112
         // |1000 0|000 02|00 020|0 ----| 15121
+        //
+        // We don't put the calculation here because of Brande's assumption
+        // about unique edges from v to w in Theorem 6.
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         checkNodes(nodeCent,
                 new double[]{
@@ -247,6 +274,12 @@ public class ST_GraphAnalysisTest {
         // |0000 0|010 --|-- 000|0 0000| 11111
         // |0000 1|100 10|00 ---|- 0000| 11111
         // |0000 0|000 11|00 000|0 ----| 21111
+        //
+        // 1: 0
+        // 2: 4
+        // 3: 7
+        // 4: 0
+        // 5: 0
         final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         checkNodes(nodeCent,
                 new double[]{
