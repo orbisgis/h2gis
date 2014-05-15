@@ -45,6 +45,14 @@ import static org.junit.Assert.assertTrue;
  */
 public class ST_GraphAnalysisTest {
 
+    public static final double[] DO_RO_NODE_BETWEENNESS =
+            new double[]{1./3, 1./6, 1., 0., 1.};
+    public static final double[] WDO_WRO_NODE_BETWEENNESS =
+            new double[]{0., 1./3, 5./6, 1./3, 1.};
+    public static final double[] DO_RO_EDGE_BETWEENNESS =
+            new double[]{1./9, 1./3, 8./9, 0., 1./3, 1./3, 2./3, 2./9, 2./9, 1., 1./9};
+    public static final double[] WDO_WRO_EDGE_BETWEENNESS =
+            new double[]{0., 4./7, 6./7, 2./7, 3./7, 0., 1., 2./7, 6./7, 4./7, 1./7};
     private static Connection connection;
     private Statement st;
     private static final double TOLERANCE = 10E-16;
@@ -108,7 +116,7 @@ public class ST_GraphAnalysisTest {
                         4.0 / (2.0 + 1.0 + 0.0 + 1.0 + 1.0),
                         4.0 / (2.0 + 1.0 + 2.0 + 0.0 + 1.0),
                         4.0 / (1.0 + 2.0 + 2.0 + 1.0 + 0.0)},
-                new double[]{1./3, 1./6, 1., 0., 1.}
+                DO_RO_NODE_BETWEENNESS
         );
         //   1: 1+1/2 = 3/2
         //   2: 2+1/2 = 5/2
@@ -122,7 +130,7 @@ public class ST_GraphAnalysisTest {
         //  10: 5+1/2 = 11/2
         // -10: 1+1/2 = 3/2
         final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, new double[]{1./9, 1./3, 8./9, 0., 1./3, 1./3, 2./3, 2./9, 2./9, 1., 1./9});
+        checkEdges(edgeCent, DO_RO_EDGE_BETWEENNESS);
     }
 
     @Test
@@ -157,7 +165,7 @@ public class ST_GraphAnalysisTest {
                         4.0 / (9.0 + 3.0 + 0.0 + 8.0 + 2.0),
                         4.0 / (11.0 + 1.0 + 3.0 + 0.0 + 4.0),
                         4.0 / (7.0 + 7.0 + 9.0 + 6.0 + 0.0)},
-                new double[]{0., 1./3, 5./6, 1./3, 1.}
+                WDO_WRO_NODE_BETWEENNESS
         );
         //   1:         0
         //   2:         4
@@ -171,7 +179,7 @@ public class ST_GraphAnalysisTest {
         //  10:         4
         // -10: 2/2   = 1
         final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, new double[]{0., 4./7, 6./7, 2./7, 3./7, 0., 1., 2./7, 6./7, 4./7, 1./7});
+        checkEdges(edgeCent, WDO_WRO_EDGE_BETWEENNESS);
     }
 
     @Test
@@ -206,7 +214,7 @@ public class ST_GraphAnalysisTest {
                         4.0 / (1.0 + 1.0 + 0.0 + 2.0 + 2.0),
                         4.0 / (2.0 + 2.0 + 1.0 + 0.0 + 1.0),
                         4.0 / (1.0 + 2.0 + 1.0 + 1.0 + 0.0)},
-                new double[]{1./3, 1./6, 1., 0., 1.}
+                DO_RO_NODE_BETWEENNESS
         );
         //   1: 1+1/2 = 3/2
         //   2: 2+1/2 = 5/2
@@ -220,7 +228,7 @@ public class ST_GraphAnalysisTest {
         //  10: 5+1/2 = 11/2
         // -10: 1+1/2 = 3/2
         final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, new double[]{1./9, 1./3, 8./9, 0., 1./3, 1./3, 2./3, 2./9, 2./9, 1., 1./9});
+        checkEdges(edgeCent, DO_RO_EDGE_BETWEENNESS);
     }
 
     @Test
@@ -255,7 +263,7 @@ public class ST_GraphAnalysisTest {
                         4.0 / (5.0 + 2.0 + 0.0 + 3.0 + 9.0),
                         4.0 / (13.0 + 10.0 + 8.0 + 0.0 + 6.0),
                         4.0 / (7.0 + 4.0 + 2.0 + 4.0 + 0.0)},
-                new double[]{0., 1./3, 5./6, 1./3, 1.}
+                WDO_WRO_NODE_BETWEENNESS
         );
         //   1:         0
         //   2:         4
@@ -269,7 +277,7 @@ public class ST_GraphAnalysisTest {
         //  10:         4
         // -10: 2/2   = 1
         final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, new double[]{0., 4./7, 6./7, 2./7, 3./7, 0., 1., 2./7, 6./7, 4./7, 1./7});
+        checkEdges(edgeCent, WDO_WRO_EDGE_BETWEENNESS);
     }
 
     @Test
@@ -301,7 +309,7 @@ public class ST_GraphAnalysisTest {
                         4.0 / (1.0 + 1.0 + 0.0 + 1.0 + 1.0),
                         4.0 / (2.0 + 1.0 + 1.0 + 0.0 + 1.0),
                         4.0 / (1.0 + 2.0 + 1.0 + 1.0 + 0.0)},
-                new double[]{0., 1. / 7, 1., 2. / 7, 1. / 2}
+                new double[]{0., 1./7, 1., 2./7, 1./2}
         );
         //   1: 2+2/4+2/5   = 29/10
         //   2: 2+2/4+4/5   = 33/10
@@ -350,7 +358,7 @@ public class ST_GraphAnalysisTest {
                         4.0 / (5.0 + 2.0 + 0.0 + 3.0 + 2.0),
                         4.0 / (8.0 + 1.0 + 3.0 + 0.0 + 4.0),
                         4.0 / (7.0 + 4.0 + 2.0 + 4.0 + 0.0)},
-                new double[]{0., 4. / 7, 1., 0., 0.}
+                new double[]{0., 4./7, 1., 0., 0.}
         );
         //   1:         0
         //   2:         6
