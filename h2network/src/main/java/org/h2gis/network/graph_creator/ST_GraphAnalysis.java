@@ -25,6 +25,9 @@ import java.util.Set;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
+ * Calculates closeness and betweenness centrality for nodes, as well as
+ * betweenness centrality for edges.
+ *
  * @author Adam Gouge
  */
 public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
@@ -36,12 +39,26 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
     private static final int BATCH_SIZE = 100;
     private static final Logger LOGGER = LoggerFactory.getLogger(ST_GraphAnalysis.class);
 
+    public static final String REMARKS =
+            "`ST_GraphAnalysis` calculates closeness and betweenness centrality for nodes,\n" +
+            "as well as betweenness centrality for edges. Possible signatures:\n" +
+            "* `ST_GraphAnalysis('input_edges', 'o[ - eo]')`\n" +
+            "* `ST_GraphAnalysis('input_edges', 'o[ - eo]', 'w')`\n" +
+            "\n" +
+            "where\n" +
+            "* `input_edges` = Edges table produced by `ST_Graph` from table `input`\n" +
+            "* `o` = Global orientation (directed, reversed or undirected)\n" +
+            "* `eo` = Edge orientation (1 = directed, -1 = reversed, 0 = undirected).\n" +
+            "  Required if global orientation is directed or reversed.\n" +
+            "* `w` = Name of column containing edge weights as doubles\n";
+
     public ST_GraphAnalysis() {
         this(null, null);
     }
 
     public ST_GraphAnalysis(Connection connection,
                             String inputTable) {
+        addProperty(PROP_REMARKS, REMARKS);
         if (connection != null) {
             this.connection = connection;
         }
