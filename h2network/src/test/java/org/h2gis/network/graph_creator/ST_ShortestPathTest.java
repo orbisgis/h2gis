@@ -794,18 +794,6 @@ public class ST_ShortestPathTest {
 
     @Test
     public void testUnreachableVertices() throws SQLException {
-        // We add another connected component consisting of the edge w(6, 7)=1.0.
-        // (Simulating ST_Graph).
-        st.execute("DROP TABLE IF EXISTS copy_nodes");
-        st.execute("CREATE TABLE copy_nodes AS SELECT * FROM cormen_nodes");
-        st.execute("INSERT INTO copy_nodes VALUES " +
-                "(6, 'POINT (3 1)')," +
-                "(7, 'POINT (4 2)'),");
-        st.execute("DROP TABLE IF EXISTS copy_edges_all");
-        st.execute("CREATE TABLE copy_edges_all AS SELECT * FROM cormen_edges_all");
-        st.execute("INSERT INTO copy_edges_all VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1, 11, 6, 7)");
-        st.execute("ALTER TABLE copy_edges_all ALTER COLUMN ID SET NOT NULL");
-        st.execute("CREATE PRIMARY KEY ON copy_edges_all(ID)");
         // Vertices 3 and 6 are in different connected components.
         check(oneToOne("COPY_EDGES_ALL", DO, W, 3, 6), new PathEdge[]{
                 new PathEdge(null, -1, -1, -1, 3, 6, Double.POSITIVE_INFINITY)});
@@ -818,8 +806,6 @@ public class ST_ShortestPathTest {
         // It is, however, in an undirected graph.
         check(oneToOne("COPY_EDGES_ALL", U, W, 7, 6), new PathEdge[]{
                 new PathEdge("LINESTRING (3 1, 4 2)", 11, 1, 1, 7, 6, 1.0)});
-        st.execute("DROP TABLE copy_nodes");
-        st.execute("DROP TABLE copy_edges_all");
     }
 
     private ResultSet oneToOne(String table, String orientation, String weight,
