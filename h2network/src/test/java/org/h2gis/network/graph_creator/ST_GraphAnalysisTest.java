@@ -257,6 +257,19 @@ public class ST_GraphAnalysisTest {
                         4.0 / (7.0 + 4.0 + 2.0 + 4.0 + 0.0)},
                 new double[]{0., 1./3, 5./6, 1./3, 1.}
         );
+        //   1:         0
+        //   2:         4
+        //   3:         6
+        //   4:         2
+        //   5: 2+2/2 = 3
+        //   6:         0
+        //   7: 6+2/2 = 7
+        //   8:         2
+        //   9: 5+2/2 = 6
+        //  10:         4
+        // -10: 2/2   = 1
+        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
+        checkEdges(edgeCent, new double[]{0., 4./7, 6./7, 2./7, 3./7, 0., 1., 2./7, 6./7, 4./7, 1./7});
     }
 
     @Test
