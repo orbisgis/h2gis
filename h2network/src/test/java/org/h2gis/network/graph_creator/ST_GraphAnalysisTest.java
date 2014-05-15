@@ -339,6 +339,19 @@ public class ST_GraphAnalysisTest {
                         4.0 / (7.0 + 4.0 + 2.0 + 4.0 + 0.0)},
                 new double[]{0., 4. / 7, 1., 0., 0.}
         );
+        //   1:         0
+        //   2:         6
+        //   3:         10
+        //   4:         0
+        //   5: 6+2/2 = 7
+        //   6:         0
+        //   7: 4+2/2 = 5
+        //   8:         2
+        //   9:         0
+        //  10: 2/2   = 1
+        // -10:         0
+        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
+        checkEdges(edgeCent, new double[]{0., 3./5, 1., 0., 7./10, 0., 1./2, 1./5, 0., 1./10, 0.});
     }
 
     private ResultSet compute(String orientation, String weight) throws SQLException {
