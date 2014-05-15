@@ -89,12 +89,8 @@ public class ST_GraphAnalysisTest {
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
 
-        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL',
-        //     'directed - edge_orientation')
-        final ResultSet rs = compute(DO);
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
+        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL', 'directed - edge_orientation')
+        checkBoolean(compute(DO));
 
         // σ(1)  σ(2)  σ(3)  σ(4)  σ(5)  σ
         // |---- 0|000 00|10 000|0 0001| 11121
@@ -108,8 +104,7 @@ public class ST_GraphAnalysisTest {
         // 3: 1/2+3 = 7/2
         // 4:         1/2
         // 5: 1/2+3 = 7/2
-        final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
-        checkNodes(nodeCent,
+        checkNodes(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX),
                 new double[]{
                         4.0 / (0.0 + 1.0 + 1.0 + 2.0 + 1.0),
                         4.0 / (3.0 + 0.0 + 1.0 + 2.0 + 2.0),
@@ -129,8 +124,8 @@ public class ST_GraphAnalysisTest {
         //   9: 1+2/2 = 2
         //  10: 5+1/2 = 11/2
         // -10: 1+1/2 = 3/2
-        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, DO_RO_EDGE_BETWEENNESS);
+        checkEdges(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX),
+                DO_RO_EDGE_BETWEENNESS);
     }
 
     @Test
@@ -138,12 +133,8 @@ public class ST_GraphAnalysisTest {
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
 
-        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL',
-        //     'directed - edge_orientation', 'weight')
-        final ResultSet rs = compute(DO, W);
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
+        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL', 'directed - edge_orientation', 'weight')
+        checkBoolean(compute(DO, W));
 
         // σ(1)  σ(2)  σ(3)  σ(4)  σ(5)  σ
         // |---- 0|000 01|11 000|0 0002| 11122
@@ -157,8 +148,7 @@ public class ST_GraphAnalysisTest {
         // 3: 4+2(1/2) = 5
         // 4:            2
         // 5: 5+2/2 =    6
-        final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
-        checkNodes(nodeCent,
+        checkNodes(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX),
                 new double[]{
                         4.0 / (0.0 + 8.0 + 5.0 + 13.0 + 7.0),
                         4.0 / (11.0 + 0.0 + 2.0 + 10.0 + 4.0),
@@ -178,8 +168,8 @@ public class ST_GraphAnalysisTest {
         //   9: 5+2/2 = 6
         //  10:         4
         // -10: 2/2   = 1
-        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, WDO_WRO_EDGE_BETWEENNESS);
+        checkEdges(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX),
+                WDO_WRO_EDGE_BETWEENNESS);
     }
 
     @Test
@@ -187,12 +177,8 @@ public class ST_GraphAnalysisTest {
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
 
-        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL',
-        //     'reversed - edge_orientation')
-        final ResultSet rs = compute(RO);
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
+        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL', 'reversed - edge_orientation')
+        checkBoolean(compute(RO));
 
         // σ(1)  σ(2)  σ(3)  σ(4)  σ(5)  σ
         // |---- 0|000 01|00 000|0 0111| 11111
@@ -206,8 +192,7 @@ public class ST_GraphAnalysisTest {
         // 3: 1/2+3 = 7/2
         // 4:         1/2
         // 5: 3+1/2 = 7/2
-        final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
-        checkNodes(nodeCent,
+        checkNodes(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX),
                 new double[]{
                         4.0 / (0.0 + 3.0 + 2.0 + 2.0 + 1.0),
                         4.0 / (1.0 + 0.0 + 1.0 + 1.0 + 2.0),
@@ -227,8 +212,8 @@ public class ST_GraphAnalysisTest {
         //   9: 1+2/2 = 2
         //  10: 5+1/2 = 11/2
         // -10: 1+1/2 = 3/2
-        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, DO_RO_EDGE_BETWEENNESS);
+        checkEdges(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX),
+                DO_RO_EDGE_BETWEENNESS);
     }
 
     @Test
@@ -236,12 +221,8 @@ public class ST_GraphAnalysisTest {
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
 
-        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL',
-        //     'reversed - edge_orientation', 'weight')
-        final ResultSet rs = compute(RO, W);
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
+        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL', 'reversed - edge_orientation', 'weight')
+        checkBoolean(compute(RO, W));
 
         // σ(1)  σ(2)  σ(3)  σ(4)  σ(5)  σ
         // |---- 0|000 01|00 000|0 0111| 11111
@@ -255,8 +236,7 @@ public class ST_GraphAnalysisTest {
         // 3: 4+2/2 = 5
         // 4:         2
         // 5: 5+2/2 = 6
-        final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
-        checkNodes(nodeCent,
+        checkNodes(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX),
                 new double[]{
                         4.0 / (0.0 + 11.0 + 9.0 + 11.0 + 7.0),
                         4.0 / (8.0 + 0.0 + 3.0 + 1.0 + 7.0),
@@ -276,8 +256,8 @@ public class ST_GraphAnalysisTest {
         //   9: 5+2/2 = 6
         //  10:         4
         // -10: 2/2   = 1
-        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, WDO_WRO_EDGE_BETWEENNESS);
+        checkEdges(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX),
+                WDO_WRO_EDGE_BETWEENNESS);
     }
 
     @Test
@@ -285,12 +265,8 @@ public class ST_GraphAnalysisTest {
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
 
-        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL',
-        //     'undirected')
-        final ResultSet rs = compute(U);
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
+        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL', 'undirected')
+        checkBoolean(compute(U));
 
         // σ(1)  σ(2)  σ(3)  σ(4)  σ(5)  σ
         // |---- 0|010 00|10 000|0 0002| 11141
@@ -301,8 +277,7 @@ public class ST_GraphAnalysisTest {
         //
         // We don't put the calculation here because of Brande's assumption
         // about unique edges from v to w in Theorem 6.
-        final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
-        checkNodes(nodeCent,
+        checkNodes(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX),
                 new double[]{
                         4.0 / (0.0 + 1.0 + 1.0 + 2.0 + 1.0),
                         4.0 / (1.0 + 0.0 + 1.0 + 1.0 + 2.0),
@@ -322,8 +297,8 @@ public class ST_GraphAnalysisTest {
         //   9: 2/2+2/4+2/5 = 19/10
         //  10: 2+4/4+2/5   = 17/5
         // Note: Edge -10 does not exist in this unweighted undirected graph.
-        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, new double[]{3./4, 19./20, 0., 0., 11./20, 11./20, 7./10, 1./4, 1./4, 1.0});
+        checkEdges(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX),
+                new double[]{3./4, 19./20, 0., 0., 11./20, 11./20, 7./10, 1./4, 1./4, 1.0});
     }
 
     @Test
@@ -331,12 +306,8 @@ public class ST_GraphAnalysisTest {
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
 
-        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL',
-        //     'undirected', 'weight')
-        final ResultSet rs = compute(U, W);
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
+        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL', 'undirected', 'weight')
+        checkBoolean(compute(U, W));
 
         // σ(1)  σ(2)  σ(3)  σ(4)  σ(5)  σ
         // |---- 0|010 01|11 000|0 0000| 11112
@@ -350,8 +321,7 @@ public class ST_GraphAnalysisTest {
         // 3: 7
         // 4: 0
         // 5: 0
-        final ResultSet nodeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX);
-        checkNodes(nodeCent,
+        checkNodes(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_CENT_SUFFIX),
                 new double[]{
                         4.0 / (0.0 + 7.0 + 5.0 + 8.0 + 7.0),
                         4.0 / (7.0 + 0.0 + 2.0 + 1.0 + 4.0),
@@ -371,8 +341,8 @@ public class ST_GraphAnalysisTest {
         //   9:         0
         //  10: 2/2   = 1
         // -10:         0
-        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
-        checkEdges(edgeCent, new double[]{0., 3./5, 1., 0., 7./10, 0., 1./2, 1./5, 0., 1./10, 0.});
+        checkEdges(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX),
+                new double[]{0., 3./5, 1., 0., 7./10, 0., 1./2, 1./5, 0., 1./10, 0.});
     }
 
     private ResultSet compute(String orientation, String weight) throws SQLException {
@@ -383,6 +353,16 @@ public class ST_GraphAnalysisTest {
 
     private ResultSet compute(String orientation) throws SQLException {
         return compute(orientation, null);
+    }
+
+    private void checkBoolean(ResultSet rs) throws SQLException {
+        try{
+            assertTrue(rs.next());
+            assertTrue(rs.getBoolean(1));
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
     }
 
     private void checkNodes(ResultSet nodeCent,
