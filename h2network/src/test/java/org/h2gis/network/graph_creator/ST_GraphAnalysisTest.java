@@ -303,6 +303,19 @@ public class ST_GraphAnalysisTest {
                         4.0 / (1.0 + 2.0 + 1.0 + 1.0 + 0.0)},
                 new double[]{0., 1. / 7, 1., 2. / 7, 1. / 2}
         );
+        //   1: 2+2/4+2/5   = 29/10
+        //   2: 2+2/4+4/5   = 33/10
+        //   3: 2/2+2/5     = 7/5
+        //   4: 2/2+2/5     = 7/5
+        //   5: 2+2/4       = 5/2
+        //   6: 2+2/4       = 5/2
+        //   7: 2+4/5       = 14/5
+        //   8: 2/2+2/4+2/5 = 19/10
+        //   9: 2/2+2/4+2/5 = 19/10
+        //  10: 2+4/4+2/5   = 17/5
+        // Note: Edge -10 does not exist in this unweighted undirected graph.
+        final ResultSet edgeCent = st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + EDGE_CENT_SUFFIX);
+        checkEdges(edgeCent, new double[]{3./4, 19./20, 0., 0., 11./20, 11./20, 7./10, 1./4, 1./4, 1.0});
     }
 
     @Test
