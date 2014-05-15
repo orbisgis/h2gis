@@ -59,6 +59,7 @@ import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.h2spatialext.function.spatial.trigonometry.ST_Azimuth;
 import org.h2gis.network.graph_creator.ST_Accessibility;
+import org.h2gis.network.graph_creator.ST_GraphAnalysis;
 import org.h2gis.network.graph_creator.ST_ShortestPath;
 import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 
@@ -162,6 +163,7 @@ public class CreateSpatialExtension {
                 // h2network functions
                 new ST_Accessibility(),
                 new ST_Graph(),
+                new ST_GraphAnalysis(),
                 new ST_ShortestPath(),
                 new ST_ShortestPathLength()};
     }
