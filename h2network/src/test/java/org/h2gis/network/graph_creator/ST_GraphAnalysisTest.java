@@ -36,9 +36,7 @@ import java.sql.Statement;
 
 import static org.h2gis.utilities.GraphConstants.EDGE_CENT_SUFFIX;
 import static org.h2gis.utilities.GraphConstants.NODE_CENT_SUFFIX;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Adam Gouge
@@ -345,6 +343,74 @@ public class ST_GraphAnalysisTest {
                 new double[]{0., 3./5, 1., 0., 7./10, 0., 1./2, 1./5, 0., 1./10, 0.});
     }
 
+    @Test
+    public void testDisconnectedGraph() throws Exception {
+        st.execute("DROP TABLE IF EXISTS COPY_EDGES_ALL" + NODE_CENT_SUFFIX);
+        st.execute("DROP TABLE IF EXISTS COPY_EDGES_ALL" + EDGE_CENT_SUFFIX);
+
+        checkBoolean(st.executeQuery(
+                "SELECT ST_GraphAnalysis('COPY_EDGES_ALL', " +
+                        "'directed - edge_orientation', 'weight');"));
+        // σ
+        // 11122000
+        // 11111000
+        // 11111000
+        // 11111000
+        // 11111000
+        // 00000111
+        // 00000011
+        // 00000001
+        //
+        // Nodes
+        // | 1         | 2       | 3         | 4                  | 5              | 6 | 7     | 8       |
+        // |-----------|---------|-----------|--------------------|----------------|---|-------|---------|
+        // | *         | (1,3,2) | (1,3)     | (1,3,5,4), (1,5,4) | (1,5), (1,3,5) | - | -     | -       |
+        // | (2,3,5,1) | *       | (2,3)     | (2,3,5,4)          | (2,3,5)        | - | -     | -       |
+        // | (3,5,1)   | (3,2)   | *         | (3,5,4)            | (3,5)          | - | -     | -       |
+        // | (4,5,1)   | (4,2)   | (4,2,3)   | *                  | (4,5)          | - | -     | -       |
+        // | (5,1)     | (5,4,2) | (5,4,2,3) | (5,4)              | *              | - | -     | -       |
+        // | -         | -       | -         | -                  | -              | * | (6,7) | (6,7,8) |
+        // | -         | -       | -         | -                  | -              | - | *     | (7,8)   |
+        // | -         | -       | -         | -                  | -              | - | -     | *       |
+        //
+        // 6: 0
+        // 7: 1
+        // 8: 0
+        checkNodes(st.executeQuery("SELECT * FROM COPY_EDGES_ALL" + NODE_CENT_SUFFIX),
+                // All closeness values are zero since the graph is disconnected!
+                // For every node i, there exists a node j which is unreachable from i.
+                // That is, d(i,j)=Infinity, so C_C(i)=0. I.e., C_C(v)=0 for all v in V.
+                new double[]{0., 0., 0., 0., 0., 0., 0., 0.},
+                // The betweenness values for nodes 1 to 5 remain the same as
+                // in the original WDO case.
+                // Of nodes 6 to 8, only node 7 is between other nodes on
+                // shortest paths. Notice its normalized betweenness value is
+                // reasonable relative to the other betweenness values.
+                new double[]{0., 1./3, 5./6, 1./3, 1., 0., 1./6, 0.}
+        );
+        // Edges
+        //  | 1        | 2     | 3       | 4                | 5            | 6 | 7    | 8        |
+        //  |----------|-------|---------|------------------|--------------|---|------|----------|
+        //  | *        | (5,4) | (5)     | (5,7,9), (-10,9) | (5,7), (-10) | - | -    | -        |
+        //  | (3,7,10) | *     | (3)     | (3,7,9)          | (3,7)        | - | -    | -        |
+        //  | (7,10)   | (4)   | *       | (7,9)            | (7)          | - | -    | -        |
+        //  | (8,10)   | (2)   | (2,3)   | *                | (8)          | - | -    | -        |
+        //  | (10)     | (9,2) | (9,2,3) | (9)              | *            | - | -    | -        |
+        //  | -        | -     | -       | -                | -            | * | (11) | (11, 12) |
+        //  | -        | -     | -       | -                | -            | - | *    | (12)     |
+        //  | -        | -     | -       | -                | -            | - | -    | *        |
+        //
+        // 11: 2
+        // 12: 2
+        checkEdges(st.executeQuery("SELECT * FROM COPY_EDGES_ALL" + EDGE_CENT_SUFFIX),
+                // The betweenness values for edges 1 to 10 and -10 remain the
+                // same as in the original WDO case.
+                // Of edges 11 and 12 are on two shortest paths each.
+                // Notice their normalized betweenness values are reasonable
+                // relative to the other betweenness values.
+                new double[]{0., 4./7, 6./7, 2./7, 3./7, 0., 1., 2./7, 6./7, 4./7, 1./7, 2./7, 2./7});
+    }
+
     private ResultSet compute(String orientation, String weight) throws SQLException {
         return st.executeQuery(
                 "SELECT ST_GraphAnalysis('CORMEN_EDGES_ALL', "
@@ -384,7 +450,7 @@ public class ST_GraphAnalysisTest {
         try {
             while (edgeCent.next()) {
                 final int edgeID = edgeCent.getInt(GraphConstants.EDGE_ID);
-                assertEquals(betweenness[(edgeID > 0) ? edgeID - 1 : -edgeID],
+                assertEquals(betweenness[(edgeID > 0) ? ((edgeID > 10) ? edgeID : edgeID - 1) : -edgeID],
                         edgeCent.getDouble(GraphConstants.BETWEENNESS), TOLERANCE);
             }
         } finally {

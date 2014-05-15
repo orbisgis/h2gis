@@ -139,16 +139,18 @@ public class GraphCreatorTest {
 //        LINESTRING (2 2, 1.75 1, 2 0)   8       4.0      1               8         4            5
 //        LINESTRING (2 0, 2.25 1, 2 2)   9       6.0      1               9         5            4
 //        LINESTRING (2 0, 0 1)          10       7.0      0               10        5            1
-        // We add another connected component consisting of the edge w(6, 7)=1.0.
+        // We add another connected component consisting of edges w(6, 7)=1.0 and w(7, 8) = 2.0.
         // (Simulating ST_Graph).
         st.execute("DROP TABLE IF EXISTS copy_nodes");
         st.execute("CREATE TABLE copy_nodes AS SELECT * FROM cormen_nodes");
         st.execute("INSERT INTO copy_nodes VALUES " +
                 "(6, 'POINT (3 1)')," +
-                "(7, 'POINT (4 2)'),");
+                "(7, 'POINT (4 2)')," +
+                "(8, 'POINT (5 2)');");
         st.execute("DROP TABLE IF EXISTS copy_edges_all");
         st.execute("CREATE TABLE copy_edges_all AS SELECT * FROM cormen_edges_all");
-        st.execute("INSERT INTO copy_edges_all VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1, 11, 6, 7)");
+        st.execute("INSERT INTO copy_edges_all VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1, 11, 6, 7)," +
+                "('LINESTRING (4 2, 5 2)', 12, 2.0, 1, 12, 7, 8)");
         st.execute("ALTER TABLE copy_edges_all ALTER COLUMN ID SET NOT NULL");
         st.execute("CREATE PRIMARY KEY ON copy_edges_all(ID)");
     }

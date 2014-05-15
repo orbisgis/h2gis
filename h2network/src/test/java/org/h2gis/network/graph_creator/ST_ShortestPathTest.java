@@ -185,6 +185,7 @@ public class ST_ShortestPathTest {
 
     @Test
     public void oneToOneWDO() throws Exception {
+        // Nodes
         // | 1         | 2       | 3         | 4                  | 5              |
         // |-----------|---------|-----------|--------------------|----------------|
         // | *         | (1,3,2) | (1,3)     | (1,3,5,4), (1,5,4) | (1,5), (1,3,5) |
