@@ -52,10 +52,19 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
             "  Required if global orientation is directed or reversed.\n" +
             "* `w` = Name of column containing edge weights as doubles\n";
 
+    /**
+     * Constructor
+     */
     public ST_GraphAnalysis() {
         this(null, null);
     }
 
+    /**
+     * Constructor
+     *
+     * @param connection Connection
+     * @param inputTable Input table
+     */
     public ST_GraphAnalysis(Connection connection,
                             String inputTable) {
         addProperty(PROP_REMARKS, REMARKS);
@@ -70,19 +79,49 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                     tableName.getTable() + EDGE_CENT_SUFFIX);
         }
     }
+
     @Override
     public String getJavaStaticMethod() {
         return "doGraphAnalysis";
     }
 
+    /**
+     * Calculate centrality indices on the nodes and edges of a graph
+     * constructed from the input table.
+     *
+     * @param connection  Connection
+     * @param inputTable  Input table
+     * @param orientation Global orientation
+     * @return True if the calculation was successful
+     * @throws SQLException
+     * @throws NoSuchMethodException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     * @throws InvocationTargetException
+     */
     public static boolean doGraphAnalysis(Connection connection,
-                                       String inputTable,
-                                       String orientation)
+                                          String inputTable,
+                                          String orientation)
             throws SQLException, NoSuchMethodException, InstantiationException,
             IllegalAccessException, InvocationTargetException {
         return doGraphAnalysis(connection, inputTable, orientation, null);
     }
 
+    /**
+     * Calculate centrality indices on the nodes and edges of a graph
+     * constructed from the input table.
+     *
+     * @param connection  Connection
+     * @param inputTable  Input table
+     * @param orientation Global orientation
+     * @param weight      Edge weight column name
+     * @return True if the calculation was successful
+     * @throws SQLException
+     * @throws InvocationTargetException
+     * @throws NoSuchMethodException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
     public static boolean doGraphAnalysis(Connection connection,
                                           String inputTable,
                                           String orientation,
