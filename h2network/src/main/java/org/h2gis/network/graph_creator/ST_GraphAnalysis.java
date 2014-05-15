@@ -10,6 +10,7 @@ import org.javanetworkanalyzer.data.VUCent;
 import org.javanetworkanalyzer.data.VWCent;
 import org.javanetworkanalyzer.model.EdgeCent;
 import org.javanetworkanalyzer.model.KeyedGraph;
+import org.javanetworkanalyzer.progress.DefaultProgressMonitor;
 import org.jgrapht.WeightedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,9 +96,10 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
             IllegalAccessException, InvocationTargetException {
         final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, weight,
                 (weight == null) ? VUCent.class : VWCent.class, EdgeCent.class);
+        final DefaultProgressMonitor pm = new DefaultProgressMonitor();
         GraphAnalyzer analyzer = (weight == null) ?
-                new UnweightedGraphAnalyzer(graph) :
-                new WeightedGraphAnalyzer((WeightedGraph) graph);
+                new UnweightedGraphAnalyzer(graph, pm) :
+                new WeightedGraphAnalyzer((WeightedGraph) graph, pm);
         analyzer.computeAll();
         return graph;
     }
