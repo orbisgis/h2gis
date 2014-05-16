@@ -29,13 +29,10 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GraphConstants;
 import org.junit.*;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
-import static org.h2gis.utilities.GraphConstants.EDGE_CENT_SUFFIX;
-import static org.h2gis.utilities.GraphConstants.NODE_CENT_SUFFIX;
+import static org.h2gis.network.graph_creator.ST_GraphAnalysis.BATCH_SIZE;
+import static org.h2gis.utilities.GraphConstants.*;
 import static org.junit.Assert.*;
 
 /**
@@ -411,6 +408,82 @@ public class ST_GraphAnalysisTest {
                 new double[]{0., 4./7, 6./7, 2./7, 3./7, 0., 1., 2./7, 6./7, 4./7, 1./7, 2./7, 2./7});
     }
 
+    @Test
+    public void testLineGraphOdd() throws Exception {
+        testBatchComputation(5 * BATCH_SIZE + 1);
+    }
+
+    @Test
+    public void testLineGraphEven() throws Exception {
+        testBatchComputation(5 * BATCH_SIZE);
+    }
+
+    private void testBatchComputation(final int n) throws SQLException {
+        // Here we test the closeness and betweenness centrality computations
+        // on an undirected unweighted graph, with nodes n and edges (e)
+        // numbered as follows:
+        //
+        //        (1)             (2)                                 (n-1)
+        // 1 <-----------> 2 <-----------> 3 <---- ... ----> n-1 <-------------> n
+        //
+        // The formulas for unnormalized centrality are simple to work out:
+        //
+        // C_C(v) = 2(k(k-1)+(n-k)(n-k+1)
+        // C_B(v) = 2(k-1)(n-k)
+        // C_B(e) = 2k(n-k)
+        //
+        // To normalize betweenness, just find the extreme values of these
+        // functions and consider whether n is even or odd. Normalizing
+        // closeness amounts to multiplying by (n-1).
+        st.execute("DROP TABLE IF EXISTS LINE_GRAPH_EDGES");
+        st.execute("DROP TABLE IF EXISTS LINE_GRAPH_EDGES" + NODE_CENT_SUFFIX);
+        st.execute("DROP TABLE IF EXISTS LINE_GRAPH_EDGES" + EDGE_CENT_SUFFIX);
+        st.execute("CREATE TEMPORARY TABLE LINE_GRAPH_EDGES(" +
+                EDGE_ID + " INT, " +
+                START_NODE + " INT, " +
+                END_NODE + " INT)");
+        final PreparedStatement ps =
+                connection.prepareStatement("INSERT INTO LINE_GRAPH_EDGES VALUES (?, ?, ?);");
+        try {
+            for (int i = 1; i < n; i++) {
+                ps.setInt(1, i);
+                ps.setInt(2, i);
+                ps.setInt(3, i + 1);
+                ps.addBatch();
+            }
+            ps.executeBatch();
+            checkBoolean(st.executeQuery("SELECT ST_GraphAnalysis('LINE_GRAPH_EDGES', 'undirected');"));
+            ResultSet nodeCent = st.executeQuery("SELECT * FROM LINE_GRAPH_EDGES_NODE_CENT");
+            try {
+                // The minimum betweenness value is zero.
+                final double max = (n % 2 == 0) ? n * (n - 2.) / 2 : (n - 1.) * (n - 1) / 2;
+                while (nodeCent.next()) {
+                    final int k = nodeCent.getInt(GraphConstants.NODE_ID);
+                    assertEquals(2. * (n - 1) / (k * (k - 1) + (n - k) * (n - k + 1)),
+                            nodeCent.getDouble(GraphConstants.CLOSENESS), TOLERANCE);
+                    assertEquals(2. * (k - 1) * (n - k) / max,
+                            nodeCent.getDouble(GraphConstants.BETWEENNESS), TOLERANCE);
+                }
+            } finally {
+                nodeCent.close();
+            }
+            ResultSet edgeCent = st.executeQuery("SELECT * FROM LINE_GRAPH_EDGES_EDGE_CENT");
+            try {
+                final double min = 2. * (n - 1);
+                final double max = (n % 2 == 0) ? n * n / 2 : (n - 1.) * (n + 1) / 2;
+                while (edgeCent.next()) {
+                    final int k = edgeCent.getInt(GraphConstants.EDGE_ID);
+                    assertEquals((2. * k * (n - k) - min) / (max - min),
+                            edgeCent.getDouble(GraphConstants.BETWEENNESS), TOLERANCE);
+                }
+            } finally {
+                edgeCent.close();
+            }
+        } finally {
+            ps.close();
+        }
+    }
+
     private ResultSet compute(String orientation, String weight) throws SQLException {
         return st.executeQuery(
                 "SELECT ST_GraphAnalysis('CORMEN_EDGES_ALL', "
@@ -449,7 +522,7 @@ public class ST_GraphAnalysisTest {
                             double[] betweenness) throws SQLException {
         try {
             while (edgeCent.next()) {
-                final int edgeID = edgeCent.getInt(GraphConstants.EDGE_ID);
+                final int edgeID = edgeCent.getInt(EDGE_ID);
                 assertEquals(betweenness[(edgeID > 0) ? ((edgeID > 10) ? edgeID : edgeID - 1) : -edgeID],
                         edgeCent.getDouble(GraphConstants.BETWEENNESS), TOLERANCE);
             }

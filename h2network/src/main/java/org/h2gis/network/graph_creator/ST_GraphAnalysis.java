@@ -36,7 +36,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
     private TableLocation tableName;
     private TableLocation nodesName;
     private TableLocation edgesName;
-    private static final int BATCH_SIZE = 100;
+    protected static final int BATCH_SIZE = 100;
     private static final Logger LOGGER = LoggerFactory.getLogger(ST_GraphAnalysis.class);
 
     public static final String REMARKS =
