@@ -129,18 +129,26 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
             throws SQLException, InvocationTargetException, NoSuchMethodException,
             InstantiationException, IllegalAccessException {
         ST_GraphAnalysis f = new ST_GraphAnalysis(connection, inputTable);
-        createTables(f);
-
-        final KeyedGraph graph =
-                doAnalysisAndReturnGraph(connection, inputTable, orientation, weight);
-
-        final boolean previousAutoCommit = connection.getAutoCommit();
-        connection.setAutoCommit(false);
-
-        storeNodeCentrality(f, graph);
-        storeEdgeCentrality(f, graph);
-
-        connection.setAutoCommit(previousAutoCommit);
+        try {
+            createTables(f);
+            final KeyedGraph graph =
+                    doAnalysisAndReturnGraph(connection, inputTable, orientation, weight);
+            final boolean previousAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            storeNodeCentrality(f, graph);
+            storeEdgeCentrality(f, graph);
+            connection.setAutoCommit(previousAutoCommit);
+        } catch (SQLException e) {
+            LOGGER.error("Problem creating centrality tables.");
+            final Statement statement = connection.createStatement();
+            try {
+                statement.execute("DROP TABLE IF EXISTS " + f.nodesName);
+                statement.execute("DROP TABLE IF EXISTS " + f.edgesName);
+            } finally {
+                statement.close();
+            }
+            return false;
+        }
         return true;
     }
 
@@ -197,14 +205,6 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 nodeSt.clearBatch();
             }
             connection.commit();
-        } catch (SQLException e) {
-            LOGGER.error("Problem creating node centrality table.");
-            final Statement statement = connection.createStatement();
-            try {
-                statement.execute("DROP TABLE " + f.nodesName);
-            } finally {
-                statement.close();
-            }
         } finally {
             nodeSt.close();
         }
@@ -231,14 +231,6 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                 edgeSt.clearBatch();
             }
             connection.commit();
-        } catch (SQLException e) {
-            LOGGER.error("Problem creating edge centrality table.");
-            final Statement statement = connection.createStatement();
-            try {
-                statement.execute("DROP TABLE " + f.edgesName);
-            } finally {
-                statement.close();
-            }
         } finally {
             edgeSt.close();
         }
