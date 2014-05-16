@@ -38,8 +38,9 @@ import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
+
 /**
- * Created by adam on 3/24/14.
+ * @author Adam Gouge
  */
 public class ST_ShortestPathTest {
 
@@ -79,6 +80,24 @@ public class ST_ShortestPathTest {
 
     @Test
     public void oneToOneDO() throws Exception {
+        // Nodes
+        // | 1         | 2                | 3       | 4                | 5       |
+        // |-----------|------------------|---------|------------------|---------|
+        // | *         | (1,2)            | (1,3)   | (1,3,4), (1,5,4) | (1,5)   |
+        // | (2,3,5,1) | *                | (2,3)   | (2,3,4)          | (2,3,5) |
+        // | (3,5,1)   | (3,2)            | *       | (3,4)            | (3,5)   |
+        // | (4,5,1)   | (4,2)            | (4,2,3) | *                | (4,5)   |
+        // | (5,1)     | (5,1,2), (5,4,2) | (5,1,3) | (5,4)            | *       |
+        //
+        // Edges
+        // | 1        | 2             | 3      | 4              | 5     |
+        // |----------|---------------|--------|----------------|-------|
+        // | *        | (1)           | (5)    | (5,6), (-10,9) | (-10) |
+        // | (3,7,10) | *             | (3)    | (3,6)          | (3,7) |
+        // | (7,10)   | (4)           | *      | (6)            | (7)   |
+        // | (8,10)   | (2)           | (2,3)  | *              | (8)   |
+        // | (10)     | (10,1), (9,2) | (10,5) | (9)            | *     |
+        //
         // SELECT * FROM ST_ShortestPath('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', i, j)
         check(oneToOne(DO, 1, 1), EMPTY);
@@ -166,6 +185,24 @@ public class ST_ShortestPathTest {
 
     @Test
     public void oneToOneWDO() throws Exception {
+        // Nodes
+        // | 1         | 2       | 3         | 4                  | 5              |
+        // |-----------|---------|-----------|--------------------|----------------|
+        // | *         | (1,3,2) | (1,3)     | (1,3,5,4), (1,5,4) | (1,5), (1,3,5) |
+        // | (2,3,5,1) | *       | (2,3)     | (2,3,5,4)          | (2,3,5)        |
+        // | (3,5,1)   | (3,2)   | *         | (3,5,4)            | (3,5)          |
+        // | (4,5,1)   | (4,2)   | (4,2,3)   | *                  | (4,5)          |
+        // | (5,1)     | (5,4,2) | (5,4,2,3) | (5,4)              | *              |
+        //
+        // Edges
+        // | 1        | 2     | 3       | 4                | 5            |
+        // |----------|-------|---------|------------------|--------------|
+        // | *        | (5,4) | (5)     | (5,7,9), (-10,9) | (5,7), (-10) |
+        // | (3,7,10) | *     | (3)     | (3,7,9)          | (3,7)        |
+        // | (7,10)   | (4)   | *       | (7,9)            | (7)          |
+        // | (8,10)   | (2)   | (2,3)   | *                | (8)          |
+        // | (10)     | (9,2) | (9,2,3) | (9)              | *            |
+        //
         // SELECT * FROM ST_ShortestPath('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'weight', i, j)
         check(oneToOne(DO, W, 1, 1), EMPTY);
@@ -257,6 +294,24 @@ public class ST_ShortestPathTest {
 
     @Test
     public void oneToOneRO() throws Exception {
+        // Nodes
+        // | 1                | 2         | 3       | 4       | 5                |
+        // |------------------|-----------|---------|---------|------------------|
+        // | *                | (1,5,3,2) | (1,5,3) | (1,5,4) | (1,5)            |
+        // | (2,1)            | *         | (2,3)   | (2,4)   | (2,1,5), (2,4,5) |
+        // | (3,1)            | (3,2)     | *       | (3,2,4) | (3,1,5)          |
+        // | (4,3,1), (4,5,1) | (4,3,2)   | (4,3)   | *       | (4,5)            |
+        // | (5,1)            | (5,3,2)   | (5,3)   | (5,4)   | *                |
+        //
+        // Edges
+        // | 1              | 2        | 3      | 4      | 5             |
+        // |----------------|----------|--------|--------|---------------|
+        // | *              | (10,7,3) | (10,7) | (10,8) | (10)          |
+        // | (1)            | *        | (4)    | (2)    | (1,10), (2,9) |
+        // | (5)            | (3)      | *      | (3,2)  | (5,10)        |
+        // | (6,5), (9,-10) | (6,3)    | (6)    | *      | (9)           |
+        // | (-10)          | (7,3)    | (7)    | (8)    | *             |
+        //
         // SELECT * FROM ST_ShortestPath('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', i, j)
         check(oneToOne(RO, 1, 1), EMPTY);
@@ -344,6 +399,24 @@ public class ST_ShortestPathTest {
 
     @Test
     public void oneToOneWRO() throws Exception {
+        // Nodes
+        // | 1                  | 2         | 3       | 4       | 5         |
+        // |--------------------|-----------|---------|---------|-----------|
+        // | *                  | (1,5,3,2) | (1,5,3) | (1,5,4) | (1,5)     |
+        // | (2,3,1)            | *         | (2,3)   | (2,4)   | (2,4,5)   |
+        // | (3,1)              | (3,2)     | *       | (3,2,4) | (3,2,4,5) |
+        // | (4,5,1), (4,5,3,1) | (4,5,3,2) | (4,5,3) | *       | (4,5)     |
+        // | (5,1), (5,3,1)     | (5,3,2)   | (5,3)   | (5,4)   | *         |
+        //
+        // Edges
+        // | 1                | 2        | 3      | 4      | 5       |
+        // |------------------|----------|--------|--------|---------|
+        // | *                | (10,7,3) | (10,7) | (10,8) | (10)    |
+        // | (4,5)            | *        | (4)    | (2)    | (2,9)   |
+        // | (5)              | (3)      | *      | (3,2)  | (3,2,9) |
+        // | (9,-10), (9,7,5) | (9,7,3)  | (9,7)  | *      | (9)     |
+        // | (-10), (7,5)     | (7,3)    | (7)    | (8)    | *       |
+        //
         // SELECT * FROM ST_ShortestPath('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', 'weight', i, j)
         check(oneToOne(RO, W, 1, 1), EMPTY);
@@ -436,6 +509,40 @@ public class ST_ShortestPathTest {
 
     @Test
     public void oneToOneU() throws Exception {
+        // Nodes
+        // | 1                                  | 2                                           |
+        // |------------------------------------|---------------------------------------------|
+        // | *                                  | (1,2)                                       |
+        // | (2,1)                              | *                                           |
+        // | (3,1)                              | (3,2)                                       |
+        // | (4,2,1), (4,3,1), (4,5,1), (4,5,1) | (4,2)                                       |
+        // | (5,1)                              | (5,1,2), (5,3,2), (5,3,2), (5,4,2), (5,4,2) |
+        //
+        // | 3            | 4                                  | 5                                           |
+        // |--------------|------------------------------------|---------------------------------------------|
+        // | (1,3)        | (1,2,4), (1,3,4), (1,5,4), (1,5,4) | (1,5)                                       |
+        // | (2,3), (2,3) | (2,4)                              | (2,1,5), (2,3,5), (2,3,5), (2,4,5), (2,4,5) |
+        // | *            | (3,4)                              | (3,5)                                       |
+        // | (4,3)        | *                                  | (4,5), (4,5)                                |
+        // | (5,3)        | (5,4), (5,4)                       | *                                           |
+        //
+        // Edges
+        // | 1                            | 2                                  |
+        // |------------------------------|------------------------------------|
+        // | *                            | (1)                                |
+        // | (1)                          | *                                  |
+        // | (5)                          | (3), (4)                           |
+        // | (2,1), (6,5), (8,10), (9,10) | (2)                                |
+        // | (10)                         | (10,1), (7,3), (7,4), (8,2), (9,2) |
+        //
+        // | 3        | 4                            | 5                                  |
+        // |----------|------------------------------|------------------------------------|
+        // | (5)      | (1,2), (5,6), (10,8), (10,9) | (10)                               |
+        // | (3), (4) | (2)                          | (1,10), (3,7), (4,7), (2,8), (2,9) |
+        // | *        | (6)                          | (7)                                |
+        // | (6)      | *                            | (8), (9)                           |
+        // | (7)      | (8), (9)                     | *                                  |
+        //
         // SELECT * FROM ST_ShortestPath('CORMEN_EDGES_ALL',
         //     'undirected', i, j)
         check(oneToOne(U, 1, 1), EMPTY);
@@ -563,6 +670,24 @@ public class ST_ShortestPathTest {
 
     @Test
     public void oneToOneWU() throws Exception {
+        // Nodes
+        // | 1              | 2       | 3       | 4         | 5              |
+        // |----------------|---------|---------|-----------|----------------|
+        // | *              | (1,3,2) | (1,3)   | (1,3,2,4) | (1,5), (1,3,5) |
+        // | (2,3,1)        | *       | (2,3)   | (2,4)     | (2,3,5)        |
+        // | (3,1)          | (3,2)   | *       | (3,2,4)   | (3,5)          |
+        // | (4,2,3,1)      | (4,2)   | (4,2,3) | *         | (4,5)          |
+        // | (5,1), (5,3,1) | (5,3,2) | (5,3)   | (5,4)     | *              |
+        //
+        // Edges
+        // | 1           | 2     | 3     | 4       | 5           |
+        // |-------------|-------|-------|---------|-------------|
+        // | *           | (5,3) | (5)   | (5,3,2) | (10), (5,7) |
+        // | (3,5)       | *     | (3)   | (2)     | (3,7)       |
+        // | (5)         | (3)   | *     | (3,2)   | (7)         |
+        // | (2,3,5)     | (2)   | (2,3) | *       | (8)         |
+        // | (10), (7,5) | (7,3) | (7)   | (8)     | *           |
+        //
         // SELECT * FROM ST_ShortestPath('CORMEN_EDGES_ALL',
         //     'undirected', 'weight', i, j)
         check(oneToOne(U, W, 1, 1), EMPTY);
@@ -670,18 +795,6 @@ public class ST_ShortestPathTest {
 
     @Test
     public void testUnreachableVertices() throws SQLException {
-        // We add another connected component consisting of the edge w(6, 7)=1.0.
-        // (Simulating ST_Graph).
-        st.execute("DROP TABLE IF EXISTS copy_nodes");
-        st.execute("CREATE TABLE copy_nodes AS SELECT * FROM cormen_nodes");
-        st.execute("INSERT INTO copy_nodes VALUES " +
-                "(6, 'POINT (3 1)')," +
-                "(7, 'POINT (4 2)'),");
-        st.execute("DROP TABLE IF EXISTS copy_edges_all");
-        st.execute("CREATE TABLE copy_edges_all AS SELECT * FROM cormen_edges_all");
-        st.execute("INSERT INTO copy_edges_all VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1, 11, 6, 7)");
-        st.execute("ALTER TABLE copy_edges_all ALTER COLUMN ID SET NOT NULL");
-        st.execute("CREATE PRIMARY KEY ON copy_edges_all(ID)");
         // Vertices 3 and 6 are in different connected components.
         check(oneToOne("COPY_EDGES_ALL", DO, W, 3, 6), new PathEdge[]{
                 new PathEdge(null, -1, -1, -1, 3, 6, Double.POSITIVE_INFINITY)});
@@ -694,8 +807,6 @@ public class ST_ShortestPathTest {
         // It is, however, in an undirected graph.
         check(oneToOne("COPY_EDGES_ALL", U, W, 7, 6), new PathEdge[]{
                 new PathEdge("LINESTRING (3 1, 4 2)", 11, 1, 1, 7, 6, 1.0)});
-        st.execute("DROP TABLE copy_nodes");
-        st.execute("DROP TABLE copy_edges_all");
     }
 
     private ResultSet oneToOne(String table, String orientation, String weight,

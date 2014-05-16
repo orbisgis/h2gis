@@ -1,7 +1,6 @@
 package org.h2gis.network.graph_creator;
 
 import org.h2gis.h2spatialapi.AbstractFunction;
-import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 
 import java.sql.Connection;
@@ -30,7 +29,8 @@ public class GraphFunction extends AbstractFunction {
                                              String inputTable,
                                              String orientation,
                                              String weight,
-                                             Class vertexClass) throws SQLException {
+                                             Class vertexClass,
+                                             Class edgeClass) throws SQLException {
         GraphFunctionParser parser = new GraphFunctionParser();
         parser.parseWeightAndOrientation(orientation, weight);
 
@@ -38,6 +38,6 @@ public class GraphFunction extends AbstractFunction {
                 inputTable,
                 parser.getGlobalOrientation(), parser.getEdgeOrientation(), parser.getWeightColumn(),
                 vertexClass,
-                Edge.class).prepareGraph();
+                edgeClass).prepareGraph();
     }
 }

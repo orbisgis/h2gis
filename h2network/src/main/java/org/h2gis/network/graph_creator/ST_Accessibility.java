@@ -110,7 +110,7 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
             return prepareResultSet();
         }
         final KeyedGraph<VAccess, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight, VAccess.class);
+                prepareGraph(connection, inputTable, orientation, weight, VAccess.class, Edge.class);
         // Decide whether this is a destination string or a table string.
         if (GraphFunctionParser.isDestinationsString(arg4)) {
             return compute(graph, prepareDestSet(graph, GraphFunctionParser.parseDestinationsString(arg4)));
