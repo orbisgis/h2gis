@@ -21,7 +21,7 @@ Computes the relation between two Geometries, as described in the SFS specificat
 * First, if only two Geometries are given, it returns a 9-character string representation that refers to the corresponding IntersectionMatrix (DE-9IM). 
 * Secondly, if two Geometries and an 9-character string representation (`iMatrix`) are given, it returns true if the computed `iMatrix` match with the given one. If no match, false is returned.
 
-<div class="note"><p>See <a href="http://en.wikipedia.org/wiki/DE-9IM">here</a> for more information about the DE9-IM.</p></div>
+<div class="note"><p>See <a href="http://en.wikipedia.org/wiki/DE-9IM">here</a> for more information about the DE-9IM.</p></div>
 
 {% include type-warning.html type='GEOMETRYCOLLECTION' %}
 
