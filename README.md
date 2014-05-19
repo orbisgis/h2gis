@@ -72,8 +72,8 @@ CALL SHPWRITE('/home/user/newshapefile.shp', 'tablename');
 
 The H2GIS team utilizes open source software. Specifically, we would like to thank  :
 
-* Thomas Mueller and Noel Grandin from [H2 database community] (http://www.h2database.com),
-* Martin Davis from [JTS community] (http://tsusiatsoftware.net/jts/main.html),
+* Thomas Mueller and Noel Grandin from the [H2 database community] (http://www.h2database.com)
+* Martin Davis from the [JTS community] (http://tsusiatsoftware.net/jts/main.html)
 
 
 
