@@ -11,17 +11,18 @@ permalink: /docs/dev/ST_Relate/
 ### Signatures
 
 {% highlight mysql %}
-varchar ST_Relate(GEOMETRY geomA, GEOMETRY geomB);
-boolean ST_Relate(GEOMETRY GeomA, GEOMETRY geomB, varchar iMatrix);
+VARCHAR ST_Relate(GEOMETRY geomA, GEOMETRY geomB);
+BOOLEAN ST_Relate(GEOMETRY geomA, GEOMETRY geomB, varchar iMatrix);
 {% endhighlight %}
 
 ### Description
 
-Computes the relation between two Geometries, as described in the SFS specification. It can be used in two ways: 
-* First, if only two Geometries are given, it returns a 9-character string representation that refers to the corresponding IntersectionMatrix (DE-9IM). 
-* Secondly, if two Geometries and an 9-character string representation (`iMatrix`) are given, it returns true if the computed `iMatrix` match with the given one. If no match, false is returned.
+Returns
 
-<div class="note"><p>See <a href="http://en.wikipedia.org/wiki/DE-9IM">here</a> for more information about the DE9-IM.</p></div>
+* the [DE-9IM][] intersection matrix
+for `geomA` and `geomB`, or
+* `TRUE` if `geomA` and `geomB` are related by the intersection matrix
+  specified by `iMatrix`.
 
 {% include type-warning.html type='GEOMETRYCOLLECTION' %}
 
@@ -30,7 +31,7 @@ Computes the relation between two Geometries, as described in the SFS specificat
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_Relate('LINESTRING(1 2, 3 4)', 
+SELECT ST_Relate('LINESTRING(1 2, 3 4)',
                  'LINESTRING(5 6, 7 3)');
 -- Answer: FF1FF0102
 {% endhighlight %}
@@ -38,11 +39,7 @@ SELECT ST_Relate('LINESTRING(1 2, 3 4)',
 <img class="displayed" src="../ST_Relate_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))', 
-                 'POLYGON((4 2, 7 2, 7 6, 4 6, 4 2))');
--- Answer: FF2F11212
-
-SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))', 
+SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
                  'POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))');
 -- Answer: 212101212
 {% endhighlight %}
@@ -50,15 +47,20 @@ SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
 <img class="displayed" src="../ST_Relate_2.png"/>
 
 {% highlight mysql %}
-SELECT ST_Relate('POINT(1 2)', ST_Buffer('POINT(1 2)',2), 
-           '0F*FFF212');
+SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
+                 'POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))',
+                 '212101212');
 -- Answer: TRUE
-Note: * = all values are accepted.
 
-SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))', 
-                 'POLYGON((4 2, 7 2, 7 6, 4 6, 4 2))', 
-           '0F1FFF212');
+SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
+                 'POLYGON((3 2, 6 2, 6 6, 3 6, 3 2))',
+                 '112101212');
 -- Answer: FALSE
+
+-- Note: * indicates that all values are accepted.
+SELECT ST_Relate('POINT(1 2)', ST_Buffer('POINT(1 2)', 2),
+                 '0F*FFF212');
+-- Answer: TRUE
 {% endhighlight %}
 
 ##### See also
@@ -68,3 +70,6 @@ SELECT ST_Relate('POLYGON((1 1, 4 1, 4 5, 1 5, 1 1))',
  [`ST_Overlaps`](../ST_Overlaps), [`ST_Touches`](../ST_Touches),
  [`ST_Within`](../ST_Within),
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_Relate.java" target="_blank">Source code</a>
+* Added: <a href="https://github.com/irstv/H2GIS/pull/11" target="_blank">#11</a>
+
+[DE-9IM]: http://en.wikipedia.org/wiki/DE-9IM
