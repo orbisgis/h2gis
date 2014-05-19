@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Relate
 category: h2spatial/predicates
-description: Return the <code>IntersectionMatrix code</code> for the two Geometries or true if the given <code>IntersectionMatrix code</code>  match the elements in intersectionPattern.
+description: Return the DE-9IM intersection matrix of the two Geometries or true if they are related by the given intersection matrix
 prev_section: ST_Overlaps
 next_section: ST_Touches
 permalink: /docs/dev/ST_Relate/
