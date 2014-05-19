@@ -293,7 +293,8 @@ public class CreateSpatialExtension {
                 nobuffer = " NOBUFFER";
             }
             // Create alias, H2 does not support prepare statement on create alias
-            st.execute("CREATE ALIAS IF NOT EXISTS " + functionAlias + deterministic + nobuffer + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
+            // "FORCE ALIAS means that the class not existing will not prevent the database from being opened."
+            st.execute("CREATE FORCE ALIAS IF NOT EXISTS " + functionAlias + deterministic + nobuffer + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
             // Set comment
             String functionRemarks = getStringProperty(function, Function.PROP_REMARKS);
             if(!functionRemarks.isEmpty()) {
@@ -302,7 +303,10 @@ public class CreateSpatialExtension {
                 ps.execute();
             }
         } else if(function instanceof Aggregate) {
-                st.execute("CREATE AGGREGATE IF NOT EXISTS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "\"");
+                if(dropAlias) {
+                    st.execute("DROP AGGREGATE IF EXISTS " + functionAlias);
+                }
+                st.execute("CREATE FORCE AGGREGATE IF NOT EXISTS " + functionAlias + " FOR \"" + packagePrepend + functionClass + "\"");
         } else {
                 throw new SQLException("Unsupported function "+functionClass);
         }
