@@ -293,7 +293,7 @@ public class CreateSpatialExtension {
                 nobuffer = " NOBUFFER";
             }
             // Create alias, H2 does not support prepare statement on create alias
-            // Force alias means, if the class does not exists then it will not prevent from opening the database.
+            // "FORCE ALIAS means that the class not existing will not prevent the database from being opened."
             st.execute("CREATE FORCE ALIAS IF NOT EXISTS " + functionAlias + deterministic + nobuffer + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
             // Set comment
             String functionRemarks = getStringProperty(function, Function.PROP_REMARKS);
