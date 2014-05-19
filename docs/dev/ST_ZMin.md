@@ -4,7 +4,7 @@ title: ST_ZMin
 category: h2spatial-ext/properties
 description: Return the minimum z-value of a Geometry
 prev_section: ST_ZMax
-next_section:
+next_section: /docs/dev/h2spatial-ext/triangulation/
 permalink: /docs/dev/ST_ZMin/
 ---
 
