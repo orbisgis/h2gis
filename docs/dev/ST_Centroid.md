@@ -67,7 +67,11 @@ SELECT ST_Centroid('GEOMETRYCOLLECTION(
 
 <img class="displayed" src="../ST_Centroid_4.png"/>
 
+##### Comparison with [`ST_PointOnSurface`](../ST_PointOnSurface)
+
+{% include centroid-pointonsurface-cf.html %}
 
 ##### See also
 
+* [`ST_PointOnSurface`](../ST_PointOnSurface)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Centroid.java" target="_blank">Source code</a>
