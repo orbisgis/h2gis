@@ -250,6 +250,20 @@ public class ST_AccessibilityTest {
         check(compute(U, W, "'dest234'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
     }
 
+    @Test
+    public void DOSingleDestination() throws Exception {
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'directed - edge_orientation', '5')
+        check(compute(DO, "'5'"), new int[]{5, 5, 5, 5, 5}, new double[]{1.0, 2.0, 1.0, 1.0, 0.0});
+    }
+
+    @Test
+    public void WDOSingleDestination() throws Exception {
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'directed - edge_orientation', 'weight', '5')
+        check(compute(DO, W, "'5'"), new int[]{5, 5, 5, 5, 5}, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
+    }
+
     private ResultSet compute(String orientation, String weight, String destinationString) throws SQLException {
         return st.executeQuery(
                 "SELECT * FROM ST_Accessibility('cormen_edges_all', "

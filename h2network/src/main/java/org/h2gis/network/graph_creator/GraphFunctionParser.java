@@ -225,7 +225,7 @@ public class GraphFunctionParser {
      * @return true if the given string contains a comma
      */
     protected static boolean isDestinationsString(String s) {
-        return s.contains(",");
+        return s.substring(0, 1).matches("[0-9]");
     }
 
     /**
@@ -237,6 +237,9 @@ public class GraphFunctionParser {
      * @return An array of destination ids
      */
     public static int[] parseDestinationsString(String s) {
+        if (!s.contains(",")) {
+            return new int[]{Integer.valueOf(s.trim())};
+        }
         String[] array = s.split(",");
         int[] destinations = new int[array.length];
         for (int i = 0; i < destinations.length; i++) {
