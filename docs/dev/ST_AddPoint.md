@@ -2,7 +2,7 @@
 layout: docs
 title: ST_AddPoint
 category: h2spatial-ext/edit-geometries
-description: Return a Geometry based on an existing Geometry with a specific <code>POINT</code> as a new vertex.
+description: Add a point to a Geometry
 prev_section: h2spatial-ext/edit-geometries
 next_section: ST_AddZ
 permalink: /docs/dev/ST_AddPoint/
@@ -12,80 +12,70 @@ permalink: /docs/dev/ST_AddPoint/
 
 {% highlight mysql %}
 GEOMETRY ST_AddPoint(GEOMETRY geom, POINT point);
-GEOMETRY ST_AddPoint(GEOMETRY geom, POINT point, double tolerance);
+GEOMETRY ST_AddPoint(GEOMETRY geom, POINT point, DOUBLE tolerance);
 {% endhighlight %}
 
 ### Description
-Returns a new `GEOMETRY` based on an existing one, with a specific `POINT` as a new vertex.
-A `tolerance` could be set to snap the POINT to the GEOMETRY. A 
-default distance 10E-6 is used to snap the input `POINT`.
-If the tolerance intersects several segments, the returned vertex is the closest and the first one.
+
+Snaps `point` to `geom` if it is within a distance of `tolerance` of
+`geom`.  If no `tolerance` is given, a default of `10E-6` is used.
+If there are several candidates within a minimal distance, snaps `point`
+to the first one found.
 
 ### Examples
 
 {% highlight mysql %}
 SELECT ST_AddPoint('POINT(0 0)', 'POINT(1 1)');
--- Answer: null
+-- Answer: NULL
 
 SELECT ST_AddPoint('MULTIPOINT((0 0), (3 3))', 'POINT(1 1)');
 -- Answer: MULTIPOINT((0 0), (3 3), (1 1))
 
-SELECT ST_AddPoint('LINESTRING(0 8, 1 8 , 3 8, 8 8, 
-                               10 8, 20 8)', 
-                   'POINT(1.5 4)', 
-                   4);
--- Answer: LINESTRING(0 8, 1 8, 1.5 8, 3 8, 8 8, 10 8, 20 8)
-
-SELECT ST_AddPoint('LINESTRING(1 2, 2 4, 3 4, 4 5, 5 2)', 
-                   'POINT(4 3)', 
-                   1);
+SELECT ST_AddPoint('LINESTRING(1 2, 2 4, 3 4, 4 5, 5 2)',
+                   'POINT(4 3)', 1);
 -- Answer: LINESTRING(1 2, 2 4, 3 4, 4 5, 4.6 3.2, 5 2)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_AddPoint_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_AddPoint('POLYGON((1 1, 1 4, 4 4, 4 1, 1 1))', 
-                   'POINT(3 8)', 
-                   4);  
--- Answer: POLYGON((1 1, 1 4, 3 4, 4 4, 4 1, 1 1))
-
-SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
-                            (2 2, 4 2, 4 4, 2 4, 2 2))', 
+-- Note: The point added depends on the input geometry's coordinate
+-- order.
+SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
+                            (2 2, 4 2, 4 4, 2 4, 2 2))',
                    'POINT(3 3)', 1);
- -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
---                  (2 2, 3 2, 4 2, 4 4, 2 4, 2 2)) 
+-- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
+--                  (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))
 
-SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
-                            (2 2, 2 4, 4 4, 4 2, 2 2))', 
+SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
+                            (2 2, 2 4, 4 4, 4 2, 2 2))',
                    'POINT(3 3)', 1);
- -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
---                  (2 2, 2 3, 2 4, 4 4, 4 2, 2 2)) 
+-- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
+--                  (2 2, 2 3, 2 4, 4 4, 4 2, 2 2))
 {% endhighlight %}
-
-*Note*: This function creates a vertex with the first result that is returned depending to the order of segments and vertices.
 
 <img class="displayed" src="../ST_AddPoint_3.png"/>
 
-|geomA POLYGON | geomB POINT|
-|--|--|
-| POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2)) | POINT(3 3) |
-
 {% highlight mysql %}
-SELECT ST_AddPoint(geomA,geomB, 0.5);
- -- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), (2 2, 4 2, 4 4, 2 4, 2 2))
+CREATE TABLE input(poly POLYGON, p POINT);
+INSERT INTO input VALUES('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
+                                  (2 2, 4 2, 4 4, 2 4, 2 2))',
+                         'POINT(3 3)');
 
-  SELECT ST_AddPoint(geomA,geomB, 1);     
--- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
---                  (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))       
+SELECT ST_AddPoint(poly, p, 0.5) FROM input;
+-- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
+--                 (2 2, 4 2, 4 4, 2 4, 2 2))
 
-SELECT ST_AddPoint(geomA,geomB, 2);  
--- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), 
+-- Note: In the next two examples, the result is the same regardless of
+-- the tolerance.
+SELECT ST_AddPoint(poly, p, 1) FROM input;
+-- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
+--                 (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))
+
+SELECT ST_AddPoint(poly, p, 2) FROM input;
+-- Answer: POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 --                 (2 2, 3 2, 4 2, 4 4, 2 4, 2 2))
 {% endhighlight %}
-
-*Note*: The tolerance is not the same but the result is same. 
-Indeed, this function return the closest vertex which is found.
 
 <img class="displayed" src="../ST_AddPoint_2.png"/>
 
