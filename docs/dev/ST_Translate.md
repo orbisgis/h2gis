@@ -12,11 +12,12 @@ permalink: /docs/dev/ST_Translate/
 
 {% highlight mysql %}
 GEOMETRY ST_Translate(GEOMETRY geom, DOUBLE x, DOUBLE y);
+GEOMETRY ST_Translate(GEOMETRY geom, DOUBLE x, DOUBLE y, DOUBLE z);
 {% endhighlight %}
 
 ### Description
 
-Translates `geom` by the vector (`x`, `y`).
+Translates `geom` by the vector (`x`, `y`) or (`x`, `y`, `z`).
 
 ### Examples
 
