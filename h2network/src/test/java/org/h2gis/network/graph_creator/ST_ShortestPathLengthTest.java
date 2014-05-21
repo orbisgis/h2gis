@@ -39,7 +39,7 @@ import static junit.framework.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Created by adam on 3/6/14.
+ * @author Adam Gouge
  */
 public class ST_ShortestPathLengthTest {
 
@@ -583,6 +583,10 @@ public class ST_ShortestPathLengthTest {
                 "SELECT * FROM ST_ShortestPathLength('cormen_edges_all', "
                         + orientation + ((weight != null) ? ", " + weight : "")
                         + ", " + sourceDestinationTable + ")");
+        checkManyToMany(rs, distances);
+    }
+
+    private void checkManyToMany(ResultSet rs, double[][] distances) throws SQLException {
         int count = 0;
         while (rs.next()) {
             final int source = rs.getInt(ST_ShortestPathLength.SOURCE_INDEX);
@@ -722,6 +726,21 @@ public class ST_ShortestPathLengthTest {
 
     private void oneToSeveral(String orientation, int source, String destinationString, double[] distances) throws SQLException {
         oneToSeveral(orientation, null, source, destinationString, distances);
+    }
+
+    @Test
+    public void edgesWithInfiniteWeights() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('inf_edges_all',
+        //     'undirected', 'source_dest')
+        final double[][] distances = {{0.0, 10.0, 5.0, 11.0, 7.0},
+                                      {10.0, 0.0, 9.0, 1.0, 7.0},
+                                      {5.0, 9.0, 0.0, 8.0, 2.0},
+                                      {11.0, 1.0, 8.0, 0.0, 6.0},
+                                      {7.0, 7.0, 2.0, 6.0, 0.0}};
+        checkManyToMany(
+                st.executeQuery("SELECT * FROM ST_ShortestPathLength('inf_edges_all', " +
+                        "'undirected', 'weight', 'source_dest')"),
+                distances);
     }
 
     @Test(expected = IllegalArgumentException.class)
