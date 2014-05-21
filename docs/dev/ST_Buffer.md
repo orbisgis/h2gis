@@ -20,7 +20,7 @@ GEOMETRY ST_Buffer(GEOMETRY geom, double bufferSize,
 
 ### Description
 
-Computes a buffer around a Geometry of size `bufferSize` (given in projection
+Computes a buffer around `geom` of size `bufferSize` (given in projection
 units).
 
 The optional third parameter can either specify the number of segments used to
