@@ -26,16 +26,16 @@ package org.h2gis.network.graph_creator;
 
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.utilities.GraphConstants;
 import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.h2gis.utilities.GraphConstants.CLOSEST_DEST;
-import static org.h2gis.utilities.GraphConstants.SOURCE;
+import static org.h2gis.utilities.GraphConstants.*;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -57,6 +57,7 @@ public class ST_AccessibilityTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase("ST_AccessibilityTest", true);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_Accessibility(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathLength(), "");
         GraphCreatorTest.registerCormenGraph(connection);
         registerDestinationTables(connection);
     }
@@ -250,6 +251,49 @@ public class ST_AccessibilityTest {
         check(compute(U, W, "'dest234'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
     }
 
+    @Test
+    public void DOSingleDestination() throws Exception {
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'directed - edge_orientation', '5')
+        check(compute(DO, "'5'"), new int[]{5, 5, 5, 5, 5}, new double[]{1.0, 2.0, 1.0, 1.0, 0.0});
+    }
+
+    @Test
+    public void WDOSingleDestination() throws Exception {
+        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        //     'directed - edge_orientation', 'weight', '5')
+        check(compute(DO, W, "'5'"), new int[]{5, 5, 5, 5, 5}, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
+    }
+
+    @Test
+    public void testST_AccST_SPLSingleDestEquivalence() throws Exception {
+        final ResultSet sPL = st.executeQuery(
+                "SELECT * FROM ST_ShortestPathLength('cormen_edges_all', " +
+                "'reversed - edge_orientation', 'weight', 5)");
+        final Map<Integer, Double> distancesMap = new HashMap<Integer, Double>();
+        try {
+            while (sPL.next()) {
+                assertEquals(5, sPL.getInt(SOURCE));
+                distancesMap.put(sPL.getInt(DESTINATION),
+                        sPL.getDouble(DISTANCE));
+            }
+        } finally {
+            sPL.close();
+        }
+        final ResultSet aCC = st.executeQuery(
+                "SELECT * FROM ST_Accessibility('cormen_edges_all', " +
+                "'directed - edge_orientation', 'weight', '5')");
+        try {
+            while (aCC.next()) {
+                assertEquals(5, aCC.getInt(CLOSEST_DEST));
+                assertEquals(distancesMap.get(aCC.getInt(SOURCE)),
+                        aCC.getDouble(DISTANCE), TOLERANCE);
+            }
+        } finally {
+            aCC.close();
+        }
+    }
+
     private ResultSet compute(String orientation, String weight, String destinationString) throws SQLException {
         return st.executeQuery(
                 "SELECT * FROM ST_Accessibility('cormen_edges_all', "
@@ -267,7 +311,7 @@ public class ST_AccessibilityTest {
             final int returnedSource = rs.getInt(SOURCE);
             final int closestDestination = rs.getInt(CLOSEST_DEST);
             assertEquals(closestDests[returnedSource - 1], closestDestination);
-            final double distance = rs.getDouble(GraphConstants.DISTANCE);
+            final double distance = rs.getDouble(DISTANCE);
             assertEquals(distances[returnedSource - 1], distance, TOLERANCE);
             count++;
         }
