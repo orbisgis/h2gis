@@ -33,6 +33,32 @@
   <defs
      id="defs3059">
     <marker
+       inkscape:stockid="SquareS"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="SquareS"
+       style="overflow:visible">
+      <path
+         id="path4419"
+         d="M -5.0,-5.0 L -5.0,5.0 L 5.0,5.0 L 5.0,-5.0 L -5.0,-5.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt"
+         transform="scale(0.2)" />
+    </marker>
+    <marker
+       inkscape:stockid="SquareM"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="SquareM"
+       style="overflow:visible">
+      <path
+         id="path4416"
+         d="M -5.0,-5.0 L -5.0,5.0 L 5.0,5.0 L 5.0,-5.0 L -5.0,-5.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt"
+         transform="scale(0.4)" />
+    </marker>
+    <marker
        inkscape:stockid="Arrow2Lend"
        orient="auto"
        refY="0"
@@ -354,9 +380,9 @@
      inkscape:window-height="824"
      id="namedview3057"
      showgrid="false"
-     inkscape:zoom="1.0414013"
-     inkscape:cx="242.55336"
-     inkscape:cy="-254.56058"
+     inkscape:zoom="1.4124204"
+     inkscape:cx="13.962316"
+     inkscape:cy="415.10328"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -1058,10 +1084,10 @@
   <rect
      style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;display:inline"
      id="rect3590"
-     width="344.12347"
-     height="159.30722"
-     x="-246.96082"
-     y="-190.08174"
+     width="342.12347"
+     height="158.38135"
+     x="-245.96082"
+     y="-189.6188"
      inkscape:export-filename="/home/mireille/projets-github/H2GIS/docs/dev/ST_Buffer_1.png"
      inkscape:export-xdpi="130.76701"
      inkscape:export-ydpi="130.76701" />
@@ -1219,15 +1245,21 @@
      id="path3650"
      inkscape:connector-curvature="0" />
   <path
-     sodipodi:type="arc"
-     style="opacity:0.7;fill:#afdcff;fill-opacity:1;stroke:#000000;stroke-width:0.90967077;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-     id="path3965"
-     sodipodi:cx="488.76453"
-     sodipodi:cy="-8.1620712"
-     sodipodi:rx="68.177368"
-     sodipodi:ry="71.538223"
-     d="m 556.94189,-8.1620712 a 68.177368,71.538223 0 1 1 -136.35473,0 68.177368,71.538223 0 1 1 136.35473,0 z"
-     transform="matrix(0.59041423,0,0,0.5544904,-448.23662,-102.17349)" />
+     sodipodi:type="star"
+     style="opacity:0.69999999999999996;fill:#afdcff;fill-opacity:1;stroke:#000000;stroke-width:0.40269649000000002;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-mid:url(#SquareM);marker-start:url(#SquareM)"
+     id="path3437"
+     sodipodi:sides="32"
+     sodipodi:cx="-175.85983"
+     sodipodi:cy="-207.12904"
+     sodipodi:r1="30.968821"
+     sodipodi:r2="21.898262"
+     sodipodi:arg1="-2.3639463"
+     sodipodi:arg2="-2.2657715"
+     inkscape:flatsided="true"
+     inkscape:rounded="0"
+     inkscape:randomized="0"
+     d="m -197.92719,-228.8569 4.66292,-3.88763 5.33175,-2.90325 5.7957,-1.80728 6.03693,-0.64187 6.04614,0.5482 5.82303,1.71722 5.37612,2.82024 4.72262,3.81487 3.88764,4.66291 2.90324,5.33176 1.80728,5.7957 0.64188,6.03692 -0.54821,6.04615 -1.71722,5.82303 -2.82023,5.37612 -3.81488,4.72262 -4.66291,3.88763 -5.33176,2.90325 -5.7957,1.80728 -6.03692,0.64188 -6.04615,-0.54821 -5.82302,-1.71722 -5.37613,-2.82023 -4.72262,-3.81488 -3.88763,-4.66291 -2.90324,-5.33176 -1.80729,-5.7957 -0.64187,-6.03692 0.5482,-6.04615 1.71722,-5.82302 2.82024,-5.37613 z"
+     transform="matrix(1.3006239,0.02034284,-0.02004716,1.2817195,65.095152,162.53632)" />
   <path
      inkscape:export-ydpi="111"
      inkscape:export-xdpi="111"
@@ -1395,7 +1427,7 @@
      inkscape:export-xdpi="111.6843"
      inkscape:export-ydpi="111.6843" />
   <path
-     style="opacity:0.7;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+     style="opacity:0.69999999999999996;fill:#ffaa59;fill-opacity:1;stroke:#000000;stroke-width:0.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-mid:url(#SquareM);marker-start:url(#SquareM)"
      d="m 16.804282,-66.496932 -29.76759,-11.522936 -10.56269,-29.287462 10.80276,-28.80734 28.80733,-10.80275 28.32722,11.04281 12.48318,28.80734 -11.763,32.168197 z"
      id="path3325"
      inkscape:connector-curvature="0" />
