@@ -5,7 +5,7 @@ find . -type f -name 'ST*.md' -exec sed -i 's/[[:space:]]*$//' {} \;
 # Put spaces after commas
 find . -type f -name 'ST*.md' -exec sed -i 's/\([^,]*\),\([^ ]\)/\1, \2/g' {} \;
 # Capitalize SQL types
-sql_type=(int double boolean varchar geometry)
+sql_type=(int double boolean varchar geometry geometrycollection)
 for f in $(find . -type f -name 'ST*.md'); do
     for name in ${sql_type[*]}; do
         upper_name=${name^^}
