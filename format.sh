@@ -1,12 +1,13 @@
 #!/bin/bash
 
-# Remove trailing whitespace
-find . -type f -name 'ST*.md' -exec sed -i 's/[[:space:]]*$//' {} \;
-# Put spaces after commas
-find . -type f -name 'ST*.md' -exec sed -i 's/\([^,]*\),\([^ ]\)/\1, \2/g' {} \;
-# Capitalize SQL types
 sql_type=(int double boolean varchar geometry geometrycollection)
-for f in $(find . -type f -name 'ST*.md'); do
+for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.md" \) | grep -v "top.html" | grep -v "README.md"); do
+    echo $f
+    # Remove trailing whitespace
+    sed -i 's/[[:space:]]*$//' $f
+    # Put spaces after commas
+    sed -i 's/\([^,]*\),\([^ ]\)/\1, \2/g' $f
+    # Capitalize SQL types
     for name in ${sql_type[*]}; do
         upper_name=${name^^}
         # Return type
