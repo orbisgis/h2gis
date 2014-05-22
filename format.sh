@@ -2,7 +2,6 @@
 
 sql_type=(int double boolean varchar geometry geometrycollection)
 for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.md" \) | grep -v "top.html" | grep -v "README.md"); do
-    echo $f
     # Remove trailing whitespace
     sed -i 's/[[:space:]]*$//' $f
     # Put spaces after commas
