@@ -291,11 +291,15 @@ public class ConnectionWrapper implements Connection {
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return connection.unwrap(iface);
+        if(iface.isInstance(connection)) {
+            return iface.cast(connection);
+        } else {
+            return connection.unwrap(iface);
+        }
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return iface.isInstance(this) || connection.isWrapperFor(iface);
+        return iface.isInstance(this) || iface.isInstance(connection) || connection.isWrapperFor(iface);
     }
 }
