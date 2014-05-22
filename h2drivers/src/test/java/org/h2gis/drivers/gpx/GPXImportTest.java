@@ -92,7 +92,7 @@ public class GPXImportTest {
         st.execute("drop table GPXDATA_WAYPOINT");
     }
     
-    @Test(expected = SQLException.class)
+    @Test(expected = RuntimeException.class)
     public void importGPXWaypoints1() throws Throwable {
         st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT,GPXDATA_TRACK");
         st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA');");
@@ -137,7 +137,7 @@ public class GPXImportTest {
         try {
         st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("route.gpx").getPath()) + ", 'gpxdata');");
         } catch (JdbcSQLException e) {
-            assertTrue(e.getMessage().equals("The table " + "GPXDATA_ROUTE" + " already exists."));
+            assertTrue(e.getOriginalCause().getMessage().equals("The table " + "\"GPXDATA_ROUTE\"" + " already exists."));
         }
     }
 

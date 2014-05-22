@@ -206,18 +206,17 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      * @throws SQLException
      */
     private void tablesExists(Connection connection, String[] tableNames) throws SQLException {
-        DatabaseMetaData dmd = connection.getMetaData();
+        Statement statement = connection.createStatement();
         for (String tableName : tableNames) {
-            ResultSet tables = dmd.getTables(null, null, tableName, null);
-            if (tables.next()) {
-                try {
-                    throw new SQLException("The table " + tableName + " already exists.");
-                } finally {
-                    tables.close();
-                }
+            try {
+                statement.execute("SELECT * FROM " + tableName + " LIMIT 0;");
+                statement.close();
+                throw new RuntimeException("The table " + tableName + " already exists.");
+            } catch (SQLException ex) {
+                //Do nothing
             }
-            tables.close();
         }
+        statement.close();
     }
 
     /**
