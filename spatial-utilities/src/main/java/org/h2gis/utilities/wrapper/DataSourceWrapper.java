@@ -55,11 +55,15 @@ public class DataSourceWrapper implements DataSource {
 
     @Override
     public <T> T unwrap(Class<T> iface) throws SQLException {
-        return dataSource.unwrap(iface);
+        if(iface.isInstance(dataSource)) {
+            return iface.cast(dataSource);
+        } else {
+            return dataSource.unwrap(iface);
+        }
     }
 
     @Override
     public boolean isWrapperFor(Class<?> iface) throws SQLException {
-        return iface.isInstance(this) || dataSource.isWrapperFor(iface);
+        return iface.isInstance(this) || iface.isInstance(dataSource) || dataSource.isWrapperFor(iface);
     }
 }
