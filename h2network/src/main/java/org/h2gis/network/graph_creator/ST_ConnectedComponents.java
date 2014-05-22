@@ -131,6 +131,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             connection.setAutoCommit(false);
             final List<Set<VUCent>> componentsList = getConnectedComponents(f, graph);
             storeNodeConnectedComponents(f, componentsList);
+            storeEdgeConnectedComponents(f);
             connection.setAutoCommit(previousAutoCommit);
         } catch (SQLException e) {
             LOGGER.error("Problem creating connected component tables.");
@@ -188,14 +189,38 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         }
     }
 
+    private static void storeEdgeConnectedComponents(ST_ConnectedComponents f) throws SQLException {
+        final Statement st = connection.createStatement();
+        try {
+            st.execute(
+                "CREATE TEMPORARY TABLE TMP(" + EDGE_ID + " INT PRIMARY KEY, SN_CC INT, EN_CC INT) " +
+                "AS SELECT A." + EDGE_ID + ", B." + CONNECTED_COMPONENT + ", NULL " +
+                "FROM " + f.tableName + " A, " + f.nodesName + " B " +
+                "WHERE A." + START_NODE + "=B." + NODE_ID + ";" +
+
+                "UPDATE TMP C " +
+                "SET EN_CC=(SELECT B." + CONNECTED_COMPONENT + " " +
+                "FROM " + f.tableName + " A, " + f.nodesName + " B " +
+                "WHERE A." + END_NODE + "=B." + NODE_ID + " AND C." + EDGE_ID + "=A." + EDGE_ID + ");" +
+
+                "CREATE TABLE " + f.edgesName + "(" + EDGE_ID + " INT PRIMARY KEY, CC INT) AS " +
+                "SELECT " + EDGE_ID + ", SN_CC " +
+                "FROM TMP WHERE SN_CC=EN_CC; " +
+                "insert into " + f.edgesName + "(" + EDGE_ID + ", cc) " +
+                "SELECT " + EDGE_ID + ", -1 FROM TMP WHERE SN_CC!=EN_CC;" +
+
+                "DROP TABLE IF EXISTS TMP;");
+        } finally {
+            st.close();
+        }
+
+    }
+
     private static void createTables(ST_ConnectedComponents f) throws SQLException {
         final Statement st = connection.createStatement();
         try {
             st.execute("CREATE TABLE " + f.nodesName + "(" +
                     NODE_ID + " INTEGER PRIMARY KEY, " +
-                    CONNECTED_COMPONENT + " INTEGER);");
-            st.execute("CREATE TABLE " + f.edgesName + "(" +
-                    EDGE_ID + " INTEGER PRIMARY KEY, " +
                     CONNECTED_COMPONENT + " INTEGER);");
         } finally {
             st.close();
