@@ -30,6 +30,7 @@ import org.javanetworkanalyzer.data.VUCent;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 import org.jgrapht.DirectedGraph;
+import org.jgrapht.Graph;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
 import org.jgrapht.alg.StrongConnectivityInspector;
@@ -37,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
@@ -55,6 +57,7 @@ import static org.h2gis.utilities.GraphConstants.*;
 public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunction {
 
     private static Connection connection;
+    private final String orientation;
     private TableLocation tableName;
     private TableLocation nodesName;
     private TableLocation edgesName;
@@ -76,7 +79,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
      * Constructor
      */
     public ST_ConnectedComponents() {
-        this(null, null);
+        this(null, null, null);
     }
 
     /**
@@ -86,7 +89,8 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
      * @param inputTable Input table
      */
     public ST_ConnectedComponents(Connection connection,
-                                  String inputTable) {
+                                  String inputTable,
+                                  String orientation) {
         addProperty(PROP_REMARKS, REMARKS);
         if (connection != null) {
             this.connection = connection;
@@ -98,6 +102,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             this.edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
                     tableName.getTable() + EDGE_COMP_SUFFIX);
         }
+        this.orientation = orientation;
     }
 
     @Override
@@ -122,13 +127,11 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             createTables(f);
             final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, null,
                     VUCent.class, Edge.class);
-            if (parseGlobalOrientation(orientation).equals(UNDIRECTED)) {
-                storeConnectedComponents(new ConnectivityInspector<VUCent, Edge>(
-                        (UndirectedGraph<VUCent, Edge>) graph).connectedSets());
-            } else {
-                storeConnectedComponents(new StrongConnectivityInspector<VUCent, Edge>(
-                        (DirectedGraph<VUCent, Edge>) graph).stronglyConnectedSets());
-            }
+            final boolean previousAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+            final List<Set<VUCent>> componentsList = getConnectedComponents(f, graph);
+            storeNodeConnectedComponents(f, componentsList);
+            connection.setAutoCommit(previousAutoCommit);
         } catch (SQLException e) {
             LOGGER.error("Problem creating connected component tables.");
             final Statement statement = connection.createStatement();
@@ -143,7 +146,46 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         return true;
     }
 
-    private static void storeConnectedComponents(List<Set<VUCent>> componentsList) {
+    private static List<Set<VUCent>> getConnectedComponents(ST_ConnectedComponents f,
+                                                            Graph<VUCent, Edge> graph) {
+        if (parseGlobalOrientation(f.orientation).equals(UNDIRECTED)) {
+            return new ConnectivityInspector<VUCent, Edge>(
+                    (UndirectedGraph<VUCent, Edge>) graph).connectedSets();
+        } else {
+            return new StrongConnectivityInspector<VUCent, Edge>(
+                    (DirectedGraph) graph).stronglyConnectedSets();
+        }
+    }
+
+    private static void storeNodeConnectedComponents(ST_ConnectedComponents f,
+                                                     List<Set<VUCent>> componentsList) throws SQLException {
+        final PreparedStatement nodeSt =
+                connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?)");
+        try {
+            int componentNumber = 0;
+            for (Set<VUCent> component : componentsList) {
+                componentNumber++;
+                int count = 0;
+                for (VUCent v : component) {
+                    nodeSt.setInt(1, v.getID());
+                    nodeSt.setInt(2, componentNumber);
+                    nodeSt.addBatch();
+                    count++;
+                    if (count >= BATCH_SIZE) {
+                        nodeSt.executeBatch();
+                        nodeSt.clearBatch();
+                        count = 0;
+                    }
+                }
+                if (count > 0) {
+                    nodeSt.executeBatch();
+                    nodeSt.clearBatch();
+                }
+                connection.commit();
+            }
+        } finally {
+            nodeSt.close();
+        }
     }
 
     private static void createTables(ST_ConnectedComponents f) throws SQLException {
