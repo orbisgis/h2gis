@@ -28,10 +28,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.xml.sax.Attributes;
@@ -121,15 +123,17 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
 
     /**
      * Return the table identifier in the best fit depending on database type
+     *
      * @param requestedTable Catalog and schema used
      * @param tableName Table without quotes
-     * @param isH2 True if H2, false if PostGRE
-     * @return Fin table identifier
+     * @param isH2 True if H2, false if PostGRES
+     * @return Find table identifier
      */
     private static String caseIdentifier(TableLocation requestedTable, String tableName, boolean isH2) {
         return new TableLocation(requestedTable.getCatalog(), requestedTable.getSchema(),
                 isH2 ? tableName.toUpperCase() : tableName.toLowerCase()).toString();
     }
+
     /**
      * Reads the document and parses it. The other methods are called
      * automatically when corresponding markup is found.
@@ -155,6 +159,10 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         String trackTableName = caseIdentifier(requestedTable, table + TRACK, isH2);
         String trackSegmentsTableName = caseIdentifier(requestedTable, table + TRACKSEGMENT, isH2);
         String trackPointsTableName = caseIdentifier(requestedTable, table + TRACKPOINT, isH2);
+
+        //Check if the tables exist             
+        tablesExists(connection, new String[]{wptTableName, routeTableName, routePointsTableName,
+            trackTableName, trackSegmentsTableName, trackPointsTableName});
 
         setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName));
         setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName));
@@ -191,9 +199,35 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     }
 
     /**
-     * This method is used to delete tables that contain any rows.
+     * Throw an exception if one of the tables already exists.
+     *
+     * @param dmd
+     * @param tableName
+     * @throws SQLException
      */
-    public void tablesCleaner(Connection connection, String[] tableNames) throws SQLException {
+    private void tablesExists(Connection connection, String[] tableNames) throws SQLException {
+        DatabaseMetaData dmd = connection.getMetaData();
+        for (String tableName : tableNames) {
+            ResultSet tables = dmd.getTables(null, null, tableName, null);
+            if (tables.next()) {
+                try {
+                    throw new SQLException("The table " + tableName + " already exists.");
+                } finally {
+                    tables.close();
+                }
+            }
+            tables.close();
+        }
+    }
+
+    /**
+     * This method is used to delete tables that contain any rows.
+     *
+     * @param connection The connection to the database.
+     * @param tableNames The name of the tables that must created.
+     * @throws java.sql.SQLException
+     */
+    private void tablesCleaner(Connection connection, String[] tableNames) throws SQLException {
         Statement statement = connection.createStatement();
         for (String tableName : tableNames) {
             ResultSet res = statement.executeQuery("SELECT count(id) FROM " + tableName + ";");

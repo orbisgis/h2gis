@@ -56,6 +56,8 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path of the SHP file
+     * @throws java.io.IOException
+     * @throws java.sql.SQLException
      */
     public static void readGPX(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         File file = new File(fileName);
