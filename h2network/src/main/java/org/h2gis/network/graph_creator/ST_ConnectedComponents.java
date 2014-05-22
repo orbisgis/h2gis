@@ -122,7 +122,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     public static boolean getConnectedComponents(Connection connection,
                                                    String inputTable,
                                                    String orientation) throws SQLException {
-        ST_ConnectedComponents f = new ST_ConnectedComponents(connection, inputTable);
+        ST_ConnectedComponents f = new ST_ConnectedComponents(connection, inputTable, orientation);
         try {
             createTables(f);
             final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, null,
@@ -193,10 +193,10 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         try {
             st.execute("CREATE TABLE " + f.nodesName + "(" +
                     NODE_ID + " INTEGER PRIMARY KEY, " +
-                    CONNECTED_COMPONENT + " DOUBLE);");
+                    CONNECTED_COMPONENT + " INTEGER);");
             st.execute("CREATE TABLE " + f.edgesName + "(" +
                     EDGE_ID + " INTEGER PRIMARY KEY, " +
-                    CONNECTED_COMPONENT + " DOUBLE);");
+                    CONNECTED_COMPONENT + " INTEGER);");
         } finally {
             st.close();
         }
