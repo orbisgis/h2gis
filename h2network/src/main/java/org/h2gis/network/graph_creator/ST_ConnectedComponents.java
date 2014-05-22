@@ -29,13 +29,21 @@ import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.data.VUCent;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
+import org.jgrapht.DirectedGraph;
+import org.jgrapht.UndirectedGraph;
+import org.jgrapht.alg.ConnectivityInspector;
+import org.jgrapht.alg.StrongConnectivityInspector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.List;
+import java.util.Set;
 
+import static org.h2gis.network.graph_creator.GraphFunctionParser.Orientation.UNDIRECTED;
+import static org.h2gis.network.graph_creator.GraphFunctionParser.parseGlobalOrientation;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
@@ -114,6 +122,13 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             createTables(f);
             final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, null,
                     VUCent.class, Edge.class);
+            if (parseGlobalOrientation(orientation).equals(UNDIRECTED)) {
+                storeConnectedComponents(new ConnectivityInspector<VUCent, Edge>(
+                        (UndirectedGraph<VUCent, Edge>) graph).connectedSets());
+            } else {
+                storeConnectedComponents(new StrongConnectivityInspector<VUCent, Edge>(
+                        (DirectedGraph<VUCent, Edge>) graph).stronglyConnectedSets());
+            }
         } catch (SQLException e) {
             LOGGER.error("Problem creating connected component tables.");
             final Statement statement = connection.createStatement();
@@ -126,6 +141,9 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             return false;
         }
         return true;
+    }
+
+    private static void storeConnectedComponents(List<Set<VUCent>> componentsList) {
     }
 
     private static void createTables(ST_ConnectedComponents f) throws SQLException {
