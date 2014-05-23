@@ -28,12 +28,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.xml.sax.Attributes;
@@ -160,9 +157,22 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         String trackSegmentsTableName = caseIdentifier(requestedTable, table + TRACKSEGMENT, isH2);
         String trackPointsTableName = caseIdentifier(requestedTable, table + TRACKPOINT, isH2);
 
-        //Check if the tables exist             
-        tablesExists(connection, new String[]{wptTableName, routeTableName, routePointsTableName,
-            trackTableName, trackSegmentsTableName, trackPointsTableName});
+        //Check if the tables exist
+        String[] tables = new String[]{wptTableName, routeTableName, routePointsTableName,
+            trackTableName, trackSegmentsTableName, trackPointsTableName};
+        Statement statement = null;
+        try {
+            statement = connection.createStatement();
+            for (String tName : tables) {
+                if (tableExists(statement, tName)) {
+                    throw new SQLException("The table "+ tName+ " already exists.");
+                }
+            }
+        } finally {
+            if (statement != null) {
+                statement.close();
+            }
+        }
 
         setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName));
         setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName));
@@ -199,24 +209,19 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
     }
 
     /**
-     * Throw an exception if one of the tables already exists.
+     * Return true if the table already exists.
      *
-     * @param dmd
+     * @param statement 
      * @param tableName
-     * @throws SQLException
+     * @return true or false
      */
-    private void tablesExists(Connection connection, String[] tableNames) throws SQLException {
-        Statement statement = connection.createStatement();
-        for (String tableName : tableNames) {
-            try {
-                statement.execute("SELECT * FROM " + tableName + " LIMIT 0;");
-                statement.close();
-                throw new RuntimeException("The table " + tableName + " already exists.");
-            } catch (SQLException ex) {
-                //Do nothing
-            }
+    private boolean tableExists(Statement statement, String tableName) {
+        try {
+            statement.execute("SELECT * FROM " + tableName + " LIMIT 0;");
+            return true;
+        } catch (SQLException ex) {
+            return false;
         }
-        statement.close();
     }
 
     /**
