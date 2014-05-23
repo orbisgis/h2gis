@@ -125,7 +125,6 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
                                                    String orientation) throws SQLException {
         ST_ConnectedComponents f = new ST_ConnectedComponents(connection, inputTable, orientation);
         try {
-            createTables(f);
             final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, null,
                     VUCent.class, Edge.class);
             final boolean previousAutoCommit = connection.getAutoCommit();
@@ -161,6 +160,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
 
     private static void storeNodeConnectedComponents(ST_ConnectedComponents f,
                                                      List<Set<VUCent>> componentsList) throws SQLException {
+        createNodeTable(f);
         final PreparedStatement nodeSt =
                 connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?)");
         try {
@@ -187,6 +187,17 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             }
         } finally {
             nodeSt.close();
+        }
+    }
+
+    private static void createNodeTable(ST_ConnectedComponents f) throws SQLException {
+        final Statement st = connection.createStatement();
+        try {
+            st.execute("CREATE TABLE " + f.nodesName + "(" +
+                    NODE_ID + " INTEGER PRIMARY KEY, " +
+                    CONNECTED_COMPONENT + " INTEGER);");
+        } finally {
+            st.close();
         }
     }
 
@@ -229,16 +240,5 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             st.close();
         }
 
-    }
-
-    private static void createTables(ST_ConnectedComponents f) throws SQLException {
-        final Statement st = connection.createStatement();
-        try {
-            st.execute("CREATE TABLE " + f.nodesName + "(" +
-                    NODE_ID + " INTEGER PRIMARY KEY, " +
-                    CONNECTED_COMPONENT + " INTEGER);");
-        } finally {
-            st.close();
-        }
     }
 }
