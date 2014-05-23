@@ -110,8 +110,8 @@ public class ST_ConnectedComponentsTest {
         checkBoolean(compute(DO));
         assertEquals(getVDOROPartition(),
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
-//        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
-//                new int[]{1, -1, 1, -1, 5, -1, 5, 5, 1, -1, 6, 6, 5, -1, 3, 3, -1, 2});
+        assertEquals(getEDOROPartition(),
+                getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
     }
 
     @Test
@@ -120,14 +120,10 @@ public class ST_ConnectedComponentsTest {
         st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'reversed - edge_orientation')
         checkBoolean(compute(RO));
-        // Notice that while the numbering changed due to the implementation (1
-        // and 3 were switched), the connected components are exactly the same
-        // as in the DO case.  Strongly connected components are invariant
-        // under global orientation reversal.
         assertEquals(getVDOROPartition(),
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
-//        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
-//                new int[]{6, -1, 6, -1, 5, -1, 5, 5, 6, -1, 4, 4, 5, -1, 3, 3, -1, 1});
+        assertEquals(getEDOROPartition(),
+                getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
     }
 
     @Test
@@ -208,6 +204,41 @@ public class ST_ConnectedComponentsTest {
         return vertexPartition;
     }
 
+    private Set<Set<Integer>> getEDOROPartition() {
+        Set<Set<Integer>> edgePartition = new HashSet<Set<Integer>>();
+        final HashSet<Integer> cc1 = new HashSet<Integer>();
+        cc1.add(1);
+        cc1.add(3);
+        cc1.add(9);
+        final HashSet<Integer> cc2 = new HashSet<Integer>();
+        cc2.add(5);
+        cc2.add(7);
+        cc2.add(8);
+        cc2.add(13);
+        final HashSet<Integer> cc3 = new HashSet<Integer>();
+        cc3.add(11);
+        cc3.add(12);
+        final HashSet<Integer> cc4 = new HashSet<Integer>();
+        cc4.add(15);
+        cc4.add(16);
+        final HashSet<Integer> cc5 = new HashSet<Integer>();
+        cc5.add(18);
+        final HashSet<Integer> cc6 = new HashSet<Integer>();
+        cc6.add(2);
+        cc6.add(4);
+        cc6.add(6);
+        cc6.add(10);
+        cc6.add(14);
+        cc6.add(17);
+        edgePartition.add(cc1);
+        edgePartition.add(cc2);
+        edgePartition.add(cc3);
+        edgePartition.add(cc4);
+        edgePartition.add(cc5);
+        edgePartition.add(cc6);
+        return edgePartition;
+    }
+
     private Set<Set<Integer>> getVertexPartition(ResultSet nodeComponents) throws SQLException {
         try {
             Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
@@ -228,16 +259,21 @@ public class ST_ConnectedComponentsTest {
         }
     }
 
-    private void checkEdges(ResultSet edgeComponents,
-                            int[] components) throws SQLException {
+    private Set<Set<Integer>> getEdgePartition(ResultSet edgeComponents) throws SQLException {
         try {
-            int count = 0;
+            Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
             while (edgeComponents.next()) {
-                count++;
-                final int edgeID = edgeComponents.getInt(GraphConstants.EDGE_ID);
-                assertEquals(components[edgeID - 1], edgeComponents.getInt(CONNECTED_COMPONENT));
+                final int ccID = edgeComponents.getInt(CONNECTED_COMPONENT);
+                if (map.get(ccID) == null) {
+                    map.put(ccID, new HashSet<Integer>());
+                }
+                map.get(ccID).add(edgeComponents.getInt(GraphConstants.EDGE_ID));
             }
-            assertEquals(components.length, count);
+            Set<Set<Integer>> edgePartition = new HashSet<Set<Integer>>();
+            for (Set<Integer> cc : map.values()) {
+                edgePartition.add(cc);
+            }
+            return edgePartition;
         } finally {
             edgeComponents.close();
         }
