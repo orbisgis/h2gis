@@ -62,6 +62,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     private TableLocation nodesName;
     private TableLocation edgesName;
     protected static final int BATCH_SIZE = 100;
+    public static final int NULL_CONNECTED_COMPONENT_NUMBER = -1;
     private static final Logger LOGGER = LoggerFactory.getLogger(ST_ConnectedComponents.class);
     public static final String REMARKS =
             "`ST_ConnectedComponents` the connected components (for undirected graphs) or\n" +
@@ -192,24 +193,38 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     private static void storeEdgeConnectedComponents(ST_ConnectedComponents f) throws SQLException {
         final Statement st = connection.createStatement();
         try {
+            final String tmpName = "TMP" + System.currentTimeMillis();
+            final String startNodeCC = "SN_CC";
+            final String endNodeCC = "EN_CC";
             st.execute(
-                "CREATE TEMPORARY TABLE TMP(" + EDGE_ID + " INT PRIMARY KEY, SN_CC INT, EN_CC INT) " +
+                // Create a temporary table containing the connected component
+                // of each start and end node.
+                "CREATE TEMPORARY TABLE " + tmpName +
+                "(" + EDGE_ID + " INT PRIMARY KEY, " + startNodeCC + " INT, " + endNodeCC + " INT) " +
                 "AS SELECT A." + EDGE_ID + ", B." + CONNECTED_COMPONENT + ", NULL " +
                 "FROM " + f.tableName + " A, " + f.nodesName + " B " +
                 "WHERE A." + START_NODE + "=B." + NODE_ID + ";" +
-
-                "UPDATE TMP C " +
-                "SET EN_CC=(SELECT B." + CONNECTED_COMPONENT + " " +
+                "UPDATE " + tmpName + " C " +
+                "SET " + endNodeCC + "=(" +
+                "SELECT B." + CONNECTED_COMPONENT + " " +
                 "FROM " + f.tableName + " A, " + f.nodesName + " B " +
                 "WHERE A." + END_NODE + "=B." + NODE_ID + " AND C." + EDGE_ID + "=A." + EDGE_ID + ");" +
-
-                "CREATE TABLE " + f.edgesName + "(" + EDGE_ID + " INT PRIMARY KEY, CC INT) AS " +
-                "SELECT " + EDGE_ID + ", SN_CC " +
-                "FROM TMP WHERE SN_CC=EN_CC; " +
-                "insert into " + f.edgesName + "(" + EDGE_ID + ", cc) " +
-                "SELECT " + EDGE_ID + ", -1 FROM TMP WHERE SN_CC!=EN_CC;" +
-
-                "DROP TABLE IF EXISTS TMP;");
+                // Use this temporary table to deduce the connected component
+                // of each edge. If the start and end node are in the same
+                // connected component, then so is the edge. If they are in
+                // different connected components (this is only possible for
+                // directed graphs), then we consider that this edge is not in
+                // a strongly connected component and so assign a connected
+                // component id of NULL_CONNECTED_COMPONENT_NUMBER.
+                "CREATE TABLE " + f.edgesName +
+                "(" + EDGE_ID + " INT PRIMARY KEY, " + CONNECTED_COMPONENT + " INT) AS " +
+                "SELECT " + EDGE_ID + ", " + startNodeCC + " " +
+                "FROM " + tmpName + " WHERE " + startNodeCC + "=" + endNodeCC + "; " +
+                "INSERT INTO " + f.edgesName + "(" + EDGE_ID + ", " + CONNECTED_COMPONENT + ") " +
+                "SELECT " + EDGE_ID + ", " + NULL_CONNECTED_COMPONENT_NUMBER +
+                " FROM " + tmpName + " WHERE " + startNodeCC + "!=" + endNodeCC + ";" +
+                // Drop the temporary table.
+                "DROP TABLE IF EXISTS " + tmpName + ";");
         } finally {
             st.close();
         }
