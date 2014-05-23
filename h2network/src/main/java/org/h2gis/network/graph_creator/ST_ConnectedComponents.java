@@ -65,10 +65,10 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     public static final int NULL_CONNECTED_COMPONENT_NUMBER = -1;
     private static final Logger LOGGER = LoggerFactory.getLogger(ST_ConnectedComponents.class);
     public static final String REMARKS =
-            "`ST_ConnectedComponents` the connected components (for undirected graphs) or\n" +
-            "strongly connected components (for directed graphs) of a graph.  It produces\n" +
-            "two tables (nodes and edges) containing a node or edge id and a connected\n" +
-            "component id. Signature: \n" +
+            "`ST_ConnectedComponents` calculates the connected components (for undirected\n" +
+            "graphs) or strongly connected components (for directed graphs) of a graph.  It\n" +
+            "produces two tables (nodes and edges) containing a node or edge id and a\n" +
+            "connected component id. Signature: \n" +
             "* `ST_ConnectedComponents('input_edges', 'o[ - eo]')`\n" +
             "\n" +
             "where \n" +
@@ -86,8 +86,9 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     /**
      * Constructor
      *
-     * @param connection Connection
-     * @param inputTable Input table
+     * @param connection  Connection
+     * @param inputTable  Input table
+     * @param orientation Orientation string
      */
     public ST_ConnectedComponents(Connection connection,
                                   String inputTable,
@@ -239,6 +240,5 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         } finally {
             st.close();
         }
-
     }
 }
