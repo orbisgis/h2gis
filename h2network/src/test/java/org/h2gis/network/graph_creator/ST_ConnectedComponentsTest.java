@@ -101,8 +101,7 @@ public class ST_ConnectedComponentsTest {
 
     @Test
     public void DO() throws Exception {
-        st.execute("DROP TABLE IF EXISTS " + EDGES + NODE_COMP_SUFFIX);
-        st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
+        dropTables();
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'directed - edge_orientation')
         checkBoolean(compute(DO));
         assertEquals(getDOROVertexPartition(),
@@ -115,8 +114,7 @@ public class ST_ConnectedComponentsTest {
     public void RO() throws Exception {
         // Note that strongly connected components are invariant under global
         // edge orientation reversal.
-        st.execute("DROP TABLE IF EXISTS " + EDGES + NODE_COMP_SUFFIX);
-        st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
+        dropTables();
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'reversed - edge_orientation')
         checkBoolean(compute(RO));
         assertEquals(getDOROVertexPartition(),
@@ -127,14 +125,18 @@ public class ST_ConnectedComponentsTest {
 
     @Test
     public void U() throws Exception {
-        st.execute("DROP TABLE IF EXISTS " + EDGES + NODE_COMP_SUFFIX);
-        st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
+        dropTables();
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'undirected')
         checkBoolean(compute(U));
         assertEquals(getUVertexPartition(),
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
         assertEquals(getUEdgePartition(),
                 getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
+    }
+
+    private void dropTables() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS " + EDGES + NODE_COMP_SUFFIX);
+        st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
     }
 
     private ResultSet compute(String orientation) throws SQLException {
