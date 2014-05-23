@@ -44,13 +44,14 @@ public class ST_ConnectedComponentsTest {
     private static final String DO = "'directed - edge_orientation'";
     private static final String RO = "'reversed - edge_orientation'";
     private static final String U = "'undirected'";
+    private static final String EDGES = "EDGES";
 
     @BeforeClass
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase("ST_ConnectedComponentsTest", true);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ConnectedComponents(), "");
-        GraphCreatorTest.registerCormenGraph(connection);
+        registerEdges(connection);
     }
 
     @Before
@@ -68,21 +69,43 @@ public class ST_ConnectedComponentsTest {
         connection.close();
     }
 
+    public static void registerEdges(Connection connection) throws SQLException {
+        final Statement st = connection.createStatement();
+        st.execute("CREATE TABLE " + EDGES + "(" +
+                "EDGE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                "START_NODE INT, END_NODE INT, EDGE_ORIENTATION INT);" +
+                "INSERT INTO " + EDGES + "(START_NODE, END_NODE, EDGE_ORIENTATION) VALUES "
+                + "(1, 2, 1),"
+                + "(2, 3, 1),"
+                + "(2, 5, 1),"
+                + "(2, 6, 1),"
+                + "(3, 4, 1),"
+                + "(3, 7, 1),"
+                + "(4, 3, 1),"
+                + "(4, 8, 1),"
+                + "(5, 1, 1),"
+                + "(5, 6, 1),"
+                + "(6, 7, 1),"
+                + "(7, 6, 1),"
+                + "(8, 4, 1),"
+                + "(8, 7, 1);");
+    }
+
     @Test
     public void DO() throws Exception {
-        st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + NODE_COMP_SUFFIX);
-        st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL" + EDGE_COMP_SUFFIX);
-
-        // SELECT * FROM ST_GraphAnalysis('CORMEN_EDGES_ALL', 'directed - edge_orientation')
+        st.execute("DROP TABLE IF EXISTS " + EDGES + "" + NODE_COMP_SUFFIX);
+        st.execute("DROP TABLE IF EXISTS " + EDGES + "" + EDGE_COMP_SUFFIX);
+        // SELECT * FROM ST_ConnectedComponents('" + EDGES + "', 'directed - edge_orientation')
         checkBoolean(compute(DO));
-
-        checkNodes(st.executeQuery("SELECT * FROM CORMEN_EDGES_ALL" + NODE_COMP_SUFFIX),
-                new int[]{1, 1, 1, 1, 1});
+        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + "" + NODE_COMP_SUFFIX),
+                new int[]{1, 1, 2, 2, 1, 3, 3, 2});
+        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + "" + EDGE_COMP_SUFFIX),
+                new int[]{1, -1, 1, -1, 2, -1, 2, 2, 1, -1, 3, 3, 2, -1});
     }
 
 
     private ResultSet compute(String orientation) throws SQLException {
-        return st.executeQuery("SELECT ST_ConnectedComponents('CORMEN_EDGES_ALL', " + orientation + ")");
+        return st.executeQuery("SELECT ST_ConnectedComponents('" + EDGES + "', " + orientation + ")");
     }
 
     private void checkBoolean(ResultSet rs) throws SQLException {
@@ -98,12 +121,30 @@ public class ST_ConnectedComponentsTest {
     private void checkNodes(ResultSet nodeComponents,
                             int[] components) throws SQLException {
         try {
+            int count = 0;
             while (nodeComponents.next()) {
+                count++;
                 final int nodeID = nodeComponents.getInt(GraphConstants.NODE_ID);
                 assertEquals(components[nodeID - 1], nodeComponents.getInt(CONNECTED_COMPONENT));
             }
+            assertEquals(components.length, count);
         } finally {
             nodeComponents.close();
+        }
+    }
+
+    private void checkEdges(ResultSet edgeComponents,
+                            int[] components) throws SQLException {
+        try {
+            int count = 0;
+            while (edgeComponents.next()) {
+                count++;
+                final int edgeID = edgeComponents.getInt(GraphConstants.EDGE_ID);
+                assertEquals(components[edgeID - 1], edgeComponents.getInt(CONNECTED_COMPONENT));
+            }
+            assertEquals(components.length, count);
+        } finally {
+            edgeComponents.close();
         }
     }
 }
