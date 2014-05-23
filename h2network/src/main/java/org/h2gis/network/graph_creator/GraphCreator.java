@@ -24,15 +24,14 @@
 
 package org.h2gis.network.graph_creator;
 
+import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.data.VId;
 import org.javanetworkanalyzer.model.*;
 import org.jgrapht.WeightedGraph;
 
 import java.sql.*;
 
-import static org.h2gis.utilities.GraphConstants.EDGE_ID;
-import static org.h2gis.utilities.GraphConstants.END_NODE;
-import static org.h2gis.utilities.GraphConstants.START_NODE;
+import static org.h2gis.utilities.GraphConstants.*;
 
 /**
  * Creates a JGraphT graph from an edges table produced by {@link
@@ -55,7 +54,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
     private int weightColumnIndex = -1;
     private int edgeOrientationIndex = -1;
 
-    private final String inputTable;
+    private TableLocation tableName;
     private final String weightColumn;
     private final GraphFunctionParser.Orientation globalOrientation;
     private final String edgeOrientationColumnName;
@@ -84,7 +83,9 @@ public class GraphCreator<V extends VId, E extends Edge> {
                         Class<? extends V> vertexClass,
                         Class<? extends E> edgeClass) throws SQLException {
         this.connection = connection;
-        this.inputTable = inputTable;
+        if (inputTable != null) {
+            this.tableName = TableLocation.parse(inputTable);
+        }
         this.weightColumn = weightColumn;
         this.globalOrientation = globalOrientation;
         this.edgeOrientationColumnName = edgeOrientationColumnName;
@@ -101,7 +102,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
      */
     protected KeyedGraph<V, E> prepareGraph() throws SQLException {
         final Statement st = connection.createStatement();
-        final ResultSet edges = st.executeQuery("SELECT * FROM " + inputTable);
+        final ResultSet edges = st.executeQuery("SELECT * FROM " + tableName);
         try {
             // Initialize the indices.
             initIndices(edges);
