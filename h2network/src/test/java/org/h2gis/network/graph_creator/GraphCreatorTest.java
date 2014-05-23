@@ -127,7 +127,7 @@ public class GraphCreatorTest {
         st.execute("DROP TABLE IF EXISTS CORMEN_EDGES_ALL;" +
                 "CREATE TABLE CORMEN_EDGES_ALL AS SELECT " +
                 "A.*, B.* FROM CORMEN A, CORMEN_EDGES B WHERE A.ID=B.EDGE_ID;");
-//        cormen_edges_all:
+//        CORMEN_EDGES_ALL:
 //        ROAD                           ID  EIGHT  EDGE_ORIENTATION   EDGE_ID   START_NODE   END_NODE
 //        LINESTRING (0 1, 1 2)           1       0.0      1               1         1            2
 //        LINESTRING (1 2, 2 2)           2       1.0     -1               2         2            4
@@ -147,12 +147,12 @@ public class GraphCreatorTest {
                 "(6, 'POINT (3 1)')," +
                 "(7, 'POINT (4 2)')," +
                 "(8, 'POINT (5 2)');");
-        st.execute("DROP TABLE IF EXISTS copy_edges_all");
-        st.execute("CREATE TABLE copy_edges_all AS SELECT * FROM cormen_edges_all");
-        st.execute("INSERT INTO copy_edges_all VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1, 11, 6, 7)," +
+        st.execute("DROP TABLE IF EXISTS COPY_EDGES_ALL");
+        st.execute("CREATE TABLE COPY_EDGES_ALL AS SELECT * FROM CORMEN_EDGES_ALL");
+        st.execute("INSERT INTO COPY_EDGES_ALL VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1, 11, 6, 7)," +
                 "('LINESTRING (4 2, 5 2)', 12, 2.0, 1, 12, 7, 8)");
-        st.execute("ALTER TABLE copy_edges_all ALTER COLUMN ID SET NOT NULL");
-        st.execute("CREATE PRIMARY KEY ON copy_edges_all(ID)");
+        st.execute("ALTER TABLE COPY_EDGES_ALL ALTER COLUMN ID SET NOT NULL");
+        st.execute("CREATE PRIMARY KEY ON COPY_EDGES_ALL(ID)");
         // Here we create a copy with edges 3, 4, 6, 8, 10 having a weight of
         // Infinity. Setting an edge's weight to Infinity is equivalent to
         // deleting the edge from the graph.
@@ -168,19 +168,19 @@ public class GraphCreatorTest {
 //         \       7:2       |
 //          > 3 -----------> 5
 //             INF_EDGES_ALL
-        st.execute("DROP TABLE IF EXISTS inf_edges_all");
-        st.execute("CREATE TABLE inf_edges_all AS SELECT * FROM cormen_edges_all");
-        st.execute("UPDATE inf_edges_all SET WEIGHT=POWER(0, -1) WHERE " +
+        st.execute("DROP TABLE IF EXISTS INF_EDGES_ALL");
+        st.execute("CREATE TABLE INF_EDGES_ALL AS SELECT * FROM CORMEN_EDGES_ALL");
+        st.execute("UPDATE INF_EDGES_ALL SET WEIGHT=POWER(0, -1) WHERE " +
                 "EDGE_ID=3 OR EDGE_ID=4 OR EDGE_ID=6 OR EDGE_ID=8 OR EDGE_ID=10;");
-        st.execute("ALTER TABLE inf_edges_all ALTER COLUMN ID SET NOT NULL");
-        st.execute("CREATE PRIMARY KEY ON inf_edges_all(ID)");
+        st.execute("ALTER TABLE INF_EDGES_ALL ALTER COLUMN ID SET NOT NULL");
+        st.execute("CREATE PRIMARY KEY ON INF_EDGES_ALL(ID)");
     }
 
     @Test
     public void testDO() throws SQLException {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
-                        "cormen_edges_all",
+                        "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
@@ -205,7 +205,7 @@ public class GraphCreatorTest {
     public void testWDO() throws SQLException {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
-                        "cormen_edges_all",
+                        "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", "weight",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
@@ -230,7 +230,7 @@ public class GraphCreatorTest {
     public void testRO() throws SQLException {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
-                        "cormen_edges_all",
+                        "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.REVERSED, "edge_orientation", null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
@@ -255,7 +255,7 @@ public class GraphCreatorTest {
     public void testWRO() throws SQLException {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
-                        "cormen_edges_all",
+                        "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.REVERSED, "edge_orientation", "weight",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
@@ -280,7 +280,7 @@ public class GraphCreatorTest {
     public void testU() throws SQLException {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
-                        "cormen_edges_all",
+                        "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.UNDIRECTED, null, null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
@@ -314,7 +314,7 @@ public class GraphCreatorTest {
     public void testWU() throws SQLException {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
-                        "cormen_edges_all",
+                        "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.UNDIRECTED, null, "weight",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
@@ -379,17 +379,17 @@ public class GraphCreatorTest {
 
     private void testOrientation(String newOrientation) throws SQLException {
         final Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS copy; CREATE TABLE copy AS SELECT * FROM cormen_edges_all");
-        st.execute("UPDATE copy SET edge_orientation=" + newOrientation + " WHERE edge_id=1");
+        st.execute("DROP TABLE IF EXISTS COPY; CREATE TABLE COPY AS SELECT * FROM CORMEN_EDGES_ALL");
+        st.execute("UPDATE COPY SET edge_orientation=" + newOrientation + " WHERE edge_id=1");
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
-                        "copy",
+                        "COPY",
                         GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", "weight",
                         VDijkstra.class, Edge.class);
         try {
             graphCreator.prepareGraph();
         } finally {
-            st.execute("DROP TABLE copy");
+            st.execute("DROP TABLE COPY");
             st.close();
         }
     }
