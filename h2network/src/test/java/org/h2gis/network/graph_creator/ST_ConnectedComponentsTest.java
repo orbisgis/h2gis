@@ -29,7 +29,14 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GraphConstants;
 import org.junit.*;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 import static org.h2gis.utilities.GraphConstants.*;
 import static org.junit.Assert.*;
@@ -88,7 +95,11 @@ public class ST_ConnectedComponentsTest {
                 + "(6, 7, 1),"
                 + "(7, 6, 1),"
                 + "(8, 4, 1),"
-                + "(8, 7, 1);");
+                + "(8, 7, 1),"
+                + "(9, 10, 1),"
+                + "(10, 9, 1),"
+                + "(10, 11, 1),"
+                + "(12, 12, 1);");
     }
 
     @Test
@@ -97,10 +108,10 @@ public class ST_ConnectedComponentsTest {
         st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'directed - edge_orientation')
         checkBoolean(compute(DO));
-        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX),
-                new int[]{1, 1, 2, 2, 1, 3, 3, 2});
-        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
-                new int[]{1, -1, 1, -1, 2, -1, 2, 2, 1, -1, 3, 3, 2, -1});
+        assertEquals(getVDOROPartition(),
+                getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
+//        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
+//                new int[]{1, -1, 1, -1, 5, -1, 5, 5, 1, -1, 6, 6, 5, -1, 3, 3, -1, 2});
     }
 
     @Test
@@ -113,10 +124,10 @@ public class ST_ConnectedComponentsTest {
         // and 3 were switched), the connected components are exactly the same
         // as in the DO case.  Strongly connected components are invariant
         // under global orientation reversal.
-        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX),
-                new int[]{3, 3, 2, 2, 3, 1, 1, 2});
-        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
-                new int[]{3, -1, 3, -1, 2, -1, 2, 2, 3, -1, 1, 1, 2, -1});
+        assertEquals(getVDOROPartition(),
+                getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
+//        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
+//                new int[]{6, -1, 6, -1, 5, -1, 5, 5, 6, -1, 4, 4, 5, -1, 3, 3, -1, 1});
     }
 
     @Test
@@ -125,10 +136,10 @@ public class ST_ConnectedComponentsTest {
         st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'undirected')
         checkBoolean(compute(U));
-        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX),
-                new int[]{1, 1, 1, 1, 1, 1, 1, 1});
-        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
-                new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
+        assertEquals(getVUPartition(),
+                getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
+//        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
+//                new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3});
     }
 
     private ResultSet compute(String orientation) throws SQLException {
@@ -145,16 +156,73 @@ public class ST_ConnectedComponentsTest {
         }
     }
 
-    private void checkNodes(ResultSet nodeComponents,
-                            int[] components) throws SQLException {
+    private Set<Set<Integer>> getVDOROPartition() {
+        Set<Set<Integer>> vertexPartition = new HashSet<Set<Integer>>();
+        final HashSet<Integer> vCC1 = new HashSet<Integer>();
+        vCC1.add(1);
+        vCC1.add(2);
+        vCC1.add(5);
+        final HashSet<Integer> vCC2 = new HashSet<Integer>();
+        vCC2.add(3);
+        vCC2.add(4);
+        vCC2.add(8);
+        final HashSet<Integer> vCC3 = new HashSet<Integer>();
+        vCC3.add(6);
+        vCC3.add(7);
+        final HashSet<Integer> vCC4 = new HashSet<Integer>();
+        vCC4.add(9);
+        vCC4.add(10);
+        final HashSet<Integer> vCC5 = new HashSet<Integer>();
+        vCC5.add(11);
+        final HashSet<Integer> vCC6 = new HashSet<Integer>();
+        vCC6.add(12);
+        vertexPartition.add(vCC1);
+        vertexPartition.add(vCC2);
+        vertexPartition.add(vCC3);
+        vertexPartition.add(vCC4);
+        vertexPartition.add(vCC5);
+        vertexPartition.add(vCC6);
+        return vertexPartition;
+    }
+
+    private Set<Set<Integer>> getVUPartition() {
+        Set<Set<Integer>> vertexPartition = new HashSet<Set<Integer>>();
+        final HashSet<Integer> vCC1 = new HashSet<Integer>();
+        vCC1.add(1);
+        vCC1.add(2);
+        vCC1.add(3);
+        vCC1.add(4);
+        vCC1.add(5);
+        vCC1.add(6);
+        vCC1.add(7);
+        vCC1.add(8);
+        final HashSet<Integer> vCC2 = new HashSet<Integer>();
+        vCC2.add(9);
+        vCC2.add(10);
+        vCC2.add(11);
+        final HashSet<Integer> vCC3 = new HashSet<Integer>();
+        vCC3.add(12);
+        vertexPartition.add(vCC1);
+        vertexPartition.add(vCC2);
+        vertexPartition.add(vCC3);
+        return vertexPartition;
+    }
+
+    private Set<Set<Integer>> getVertexPartition(ResultSet nodeComponents) throws SQLException {
         try {
-            int count = 0;
+            Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
             while (nodeComponents.next()) {
-                count++;
-                final int nodeID = nodeComponents.getInt(GraphConstants.NODE_ID);
-                assertEquals(components[nodeID - 1], nodeComponents.getInt(CONNECTED_COMPONENT));
+                final int ccID = nodeComponents.getInt(CONNECTED_COMPONENT);
+                if (map.get(ccID) == null) {
+                    map.put(ccID, new HashSet<Integer>());
+                }
+                map.get(ccID).add(nodeComponents.getInt(GraphConstants.NODE_ID));
             }
-            assertEquals(components.length, count);
+            Set<Set<Integer>> vertexPartition = new HashSet<Set<Integer>>();
+            for (Set<Integer> cc : map.values()) {
+                vertexPartition.add(cc);
+            }
+            return vertexPartition;
         } finally {
             nodeComponents.close();
         }
