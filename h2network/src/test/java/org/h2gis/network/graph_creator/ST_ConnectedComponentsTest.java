@@ -105,9 +105,9 @@ public class ST_ConnectedComponentsTest {
         st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'directed - edge_orientation')
         checkBoolean(compute(DO));
-        assertEquals(getVDOROPartition(),
+        assertEquals(getDOROVertexPartition(),
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
-        assertEquals(getEDOROPartition(),
+        assertEquals(getDOROEdgePartition(),
                 getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
     }
 
@@ -117,9 +117,9 @@ public class ST_ConnectedComponentsTest {
         st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'reversed - edge_orientation')
         checkBoolean(compute(RO));
-        assertEquals(getVDOROPartition(),
+        assertEquals(getDOROVertexPartition(),
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
-        assertEquals(getEDOROPartition(),
+        assertEquals(getDOROEdgePartition(),
                 getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
     }
 
@@ -129,9 +129,9 @@ public class ST_ConnectedComponentsTest {
         st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'undirected')
         checkBoolean(compute(U));
-        assertEquals(getVUPartition(),
+        assertEquals(getUVertexPartition(),
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
-        assertEquals(getEUPartition(),
+        assertEquals(getUEdgePartition(),
                 getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
     }
 
@@ -149,102 +149,47 @@ public class ST_ConnectedComponentsTest {
         }
     }
 
-    private Set<Set<Integer>> getVDOROPartition() {
-        Set<Set<Integer>> vertexPartition = new HashSet<Set<Integer>>();
-        final HashSet<Integer> vCC1 = new HashSet<Integer>();
-        vCC1.add(1);
-        vCC1.add(2);
-        vCC1.add(5);
-        final HashSet<Integer> vCC2 = new HashSet<Integer>();
-        vCC2.add(3);
-        vCC2.add(4);
-        vCC2.add(8);
-        final HashSet<Integer> vCC3 = new HashSet<Integer>();
-        vCC3.add(6);
-        vCC3.add(7);
-        final HashSet<Integer> vCC4 = new HashSet<Integer>();
-        vCC4.add(9);
-        vCC4.add(10);
-        final HashSet<Integer> vCC5 = new HashSet<Integer>();
-        vCC5.add(11);
-        final HashSet<Integer> vCC6 = new HashSet<Integer>();
-        vCC6.add(12);
-        vertexPartition.add(vCC1);
-        vertexPartition.add(vCC2);
-        vertexPartition.add(vCC3);
-        vertexPartition.add(vCC4);
-        vertexPartition.add(vCC5);
-        vertexPartition.add(vCC6);
-        return vertexPartition;
+    private Set<Set<Integer>> getDOROVertexPartition() {
+        Set<Set<Integer>> p = new HashSet<Set<Integer>>();
+        p.add(getIntSet(1, 2, 5));
+        p.add(getIntSet(3, 4, 8));
+        p.add(getIntSet(6, 7));
+        p.add(getIntSet(9, 10));
+        p.add(getIntSet(11));
+        p.add(getIntSet(12));
+        return p;
     }
 
-    private Set<Set<Integer>> getVUPartition() {
-        Set<Set<Integer>> vertexPartition = new HashSet<Set<Integer>>();
-        final HashSet<Integer> vCC1 = new HashSet<Integer>();
-        vCC1.add(1);
-        vCC1.add(2);
-        vCC1.add(3);
-        vCC1.add(4);
-        vCC1.add(5);
-        vCC1.add(6);
-        vCC1.add(7);
-        vCC1.add(8);
-        final HashSet<Integer> vCC2 = new HashSet<Integer>();
-        vCC2.add(9);
-        vCC2.add(10);
-        vCC2.add(11);
-        final HashSet<Integer> vCC3 = new HashSet<Integer>();
-        vCC3.add(12);
-        vertexPartition.add(vCC1);
-        vertexPartition.add(vCC2);
-        vertexPartition.add(vCC3);
-        return vertexPartition;
+    private Set<Set<Integer>> getDOROEdgePartition() {
+        Set<Set<Integer>> p = new HashSet<Set<Integer>>();
+        p.add(getIntSet(1, 3, 9));
+        p.add(getIntSet(1, 3, 9));
+        p.add(getIntSet(5, 7, 8, 13));
+        p.add(getIntSet(11, 12));
+        p.add(getIntSet(15, 16));
+        p.add(getIntSet(18));
+        p.add(getIntSet(2, 4, 6, 10, 14, 17));
+        return p;
     }
 
-    private Set<Set<Integer>> getEDOROPartition() {
-        Set<Set<Integer>> edgePartition = new HashSet<Set<Integer>>();
-        final HashSet<Integer> cc1 = new HashSet<Integer>();
-        cc1.add(1);
-        cc1.add(3);
-        cc1.add(9);
-        final HashSet<Integer> cc2 = new HashSet<Integer>();
-        cc2.add(5);
-        cc2.add(7);
-        cc2.add(8);
-        cc2.add(13);
-        final HashSet<Integer> cc3 = new HashSet<Integer>();
-        cc3.add(11);
-        cc3.add(12);
-        final HashSet<Integer> cc4 = new HashSet<Integer>();
-        cc4.add(15);
-        cc4.add(16);
-        final HashSet<Integer> cc5 = new HashSet<Integer>();
-        cc5.add(18);
-        final HashSet<Integer> cc6 = new HashSet<Integer>();
-        cc6.add(2);
-        cc6.add(4);
-        cc6.add(6);
-        cc6.add(10);
-        cc6.add(14);
-        cc6.add(17);
-        edgePartition.add(cc1);
-        edgePartition.add(cc2);
-        edgePartition.add(cc3);
-        edgePartition.add(cc4);
-        edgePartition.add(cc5);
-        edgePartition.add(cc6);
-        return edgePartition;
+    private Set<Set<Integer>> getUVertexPartition() {
+        Set<Set<Integer>> p = new HashSet<Set<Integer>>();
+        p.add(getIntSet(1, 2, 3, 4, 5, 6, 7, 8));
+        p.add(getIntSet(9, 10, 11));
+        p.add(getIntSet(12));
+        return p;
     }
 
-    private Set<Set<Integer>> getEUPartition() {
-        Set<Set<Integer>> edgePartition = new HashSet<Set<Integer>>();
-        edgePartition.add(new HashSet<Integer>(Arrays.asList(
-                new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14})));
-        edgePartition.add(new HashSet<Integer>(Arrays.asList(
-                new Integer[]{15, 16, 17})));
-        edgePartition.add(new HashSet<Integer>(Arrays.asList(
-                new Integer[]{18})));
-        return edgePartition;
+    private Set<Set<Integer>> getUEdgePartition() {
+        Set<Set<Integer>> p = new HashSet<Set<Integer>>();
+        p.add(getIntSet(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14));
+        p.add(getIntSet(15, 16, 17));
+        p.add(getIntSet(18));
+        return p;
+    }
+
+    private Set<Integer> getIntSet(Integer... ints) {
+        return new HashSet<Integer>(Arrays.asList(ints));
     }
 
     private Set<Set<Integer>> getVertexPartition(ResultSet nodeComponents) throws SQLException {
