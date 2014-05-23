@@ -193,42 +193,31 @@ public class ST_ConnectedComponentsTest {
     }
 
     private Set<Set<Integer>> getVertexPartition(ResultSet nodeComponents) throws SQLException {
-        try {
-            Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
-            while (nodeComponents.next()) {
-                final int ccID = nodeComponents.getInt(CONNECTED_COMPONENT);
-                if (map.get(ccID) == null) {
-                    map.put(ccID, new HashSet<Integer>());
-                }
-                map.get(ccID).add(nodeComponents.getInt(GraphConstants.NODE_ID));
-            }
-            Set<Set<Integer>> vertexPartition = new HashSet<Set<Integer>>();
-            for (Set<Integer> cc : map.values()) {
-                vertexPartition.add(cc);
-            }
-            return vertexPartition;
-        } finally {
-            nodeComponents.close();
-        }
+        return getPartition(nodeComponents, GraphConstants.NODE_ID);
     }
 
     private Set<Set<Integer>> getEdgePartition(ResultSet edgeComponents) throws SQLException {
+        return getPartition(edgeComponents, GraphConstants.EDGE_ID);
+    }
+
+    private Set<Set<Integer>> getPartition(ResultSet components,
+                                           String id) throws SQLException {
         try {
             Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
-            while (edgeComponents.next()) {
-                final int ccID = edgeComponents.getInt(CONNECTED_COMPONENT);
+            while (components.next()) {
+                final int ccID = components.getInt(CONNECTED_COMPONENT);
                 if (map.get(ccID) == null) {
                     map.put(ccID, new HashSet<Integer>());
                 }
-                map.get(ccID).add(edgeComponents.getInt(GraphConstants.EDGE_ID));
+                map.get(ccID).add(components.getInt(id));
             }
-            Set<Set<Integer>> edgePartition = new HashSet<Set<Integer>>();
+            Set<Set<Integer>> p = new HashSet<Set<Integer>>();
             for (Set<Integer> cc : map.values()) {
-                edgePartition.add(cc);
+                p.add(cc);
             }
-            return edgePartition;
+            return p;
         } finally {
-            edgeComponents.close();
+            components.close();
         }
     }
 }
