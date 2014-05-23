@@ -35,6 +35,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 
+import static org.h2gis.network.graph_creator.ST_ConnectedComponents.NULL_CONNECTED_COMPONENT_NUMBER;
 import static org.h2gis.utilities.GraphConstants.*;
 import static org.junit.Assert.*;
 
@@ -106,8 +107,7 @@ public class ST_ConnectedComponentsTest {
         checkBoolean(compute(DO));
         assertEquals(getDOROVertexPartition(),
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
-        assertEquals(getDOROEdgePartition(),
-                getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
+        checkStronglyConnectedComponentEdges(getDOROEdgeMap());
     }
 
     @Test
@@ -119,8 +119,7 @@ public class ST_ConnectedComponentsTest {
         checkBoolean(compute(RO));
         assertEquals(getDOROVertexPartition(),
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
-        assertEquals(getDOROEdgePartition(),
-                getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
+        checkStronglyConnectedComponentEdges(getDOROEdgeMap());
     }
 
     @Test
@@ -153,6 +152,17 @@ public class ST_ConnectedComponentsTest {
         }
     }
 
+    private void checkStronglyConnectedComponentEdges(Map<Integer, Set<Integer>> expectedEdgeMap)
+            throws SQLException {
+        final Map<Integer, Set<Integer>> actualEdgeMap =
+                getCCMap(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX), GraphConstants.EDGE_ID);
+        // Check edges in no strongly connected component.
+        assertEquals(expectedEdgeMap.get(NULL_CONNECTED_COMPONENT_NUMBER),
+                actualEdgeMap.get(NULL_CONNECTED_COMPONENT_NUMBER));
+        // Check edge partition.
+        assertEquals(getPartition(expectedEdgeMap), getPartition(actualEdgeMap));
+    }
+
     private Set<Set<Integer>> getDOROVertexPartition() {
         Set<Set<Integer>> p = new HashSet<Set<Integer>>();
         p.add(getIntSet(1, 2, 5));
@@ -164,15 +174,17 @@ public class ST_ConnectedComponentsTest {
         return p;
     }
 
-    private Set<Set<Integer>> getDOROEdgePartition() {
-        Set<Set<Integer>> p = new HashSet<Set<Integer>>();
-        p.add(getIntSet(1, 3, 9));
-        p.add(getIntSet(1, 3, 9));
-        p.add(getIntSet(5, 7, 8, 13));
-        p.add(getIntSet(11, 12));
-        p.add(getIntSet(15, 16));
-        p.add(getIntSet(18));
-        p.add(getIntSet(2, 4, 6, 10, 14, 17));
+    private Map<Integer, Set<Integer>> getDOROEdgeMap() {
+        Map<Integer, Set<Integer>> p = new HashMap<Integer, Set<Integer>>();
+        // We'll actually ignore all component numbers except for
+        // NULL_CONNECTED_COMPONENT_NUMBER.
+        p.put(1, getIntSet(1, 3, 9));
+        p.put(2, getIntSet(1, 3, 9));
+        p.put(3, getIntSet(5, 7, 8, 13));
+        p.put(4, getIntSet(11, 12));
+        p.put(5, getIntSet(15, 16));
+        p.put(6, getIntSet(18));
+        p.put(NULL_CONNECTED_COMPONENT_NUMBER, getIntSet(2, 4, 6, 10, 14, 17));
         return p;
     }
 
@@ -197,17 +209,24 @@ public class ST_ConnectedComponentsTest {
     }
 
     private Set<Set<Integer>> getVertexPartition(ResultSet nodeComponents) throws SQLException {
-        return getPartition(nodeComponents, GraphConstants.NODE_ID);
+        return getPartition(getCCMap(nodeComponents, GraphConstants.NODE_ID));
     }
 
     private Set<Set<Integer>> getEdgePartition(ResultSet edgeComponents) throws SQLException {
-        return getPartition(edgeComponents, GraphConstants.EDGE_ID);
+        return getPartition(getCCMap(edgeComponents, GraphConstants.EDGE_ID));
     }
 
-    private Set<Set<Integer>> getPartition(ResultSet components,
-                                           String id) throws SQLException {
+    private Set<Set<Integer>> getPartition(Map<Integer, Set<Integer>> map) {
+        Set<Set<Integer>> p = new HashSet<Set<Integer>>();
+        for (Set<Integer> cc : map.values()) {
+            p.add(cc);
+        }
+        return p;
+    }
+
+    private Map<Integer, Set<Integer>> getCCMap(ResultSet components, String id) throws SQLException {
+        Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
         try {
-            Map<Integer, Set<Integer>> map = new HashMap<Integer, Set<Integer>>();
             while (components.next()) {
                 final int ccID = components.getInt(CONNECTED_COMPONENT);
                 if (map.get(ccID) == null) {
@@ -215,11 +234,7 @@ public class ST_ConnectedComponentsTest {
                 }
                 map.get(ccID).add(components.getInt(id));
             }
-            Set<Set<Integer>> p = new HashSet<Set<Integer>>();
-            for (Set<Integer> cc : map.values()) {
-                p.add(cc);
-            }
-            return p;
+            return map;
         } finally {
             components.close();
         }
