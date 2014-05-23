@@ -20,6 +20,6 @@ public interface GraphConstants {
     public static final String NODE_CENT_SUFFIX = "_NODE_CENT";
     public static final String EDGE_CENT_SUFFIX = "_EDGE_CENT";
     public static final String CONNECTED_COMPONENT = "CONNECTED_COMPONENT";
-    public static final String NODE_COMP_SUFFIX = "_NODE_COMP";
-    public static final String EDGE_COMP_SUFFIX = "_EDGE_COMP";
+    public static final String NODE_COMP_SUFFIX = "_NODE_CC";
+    public static final String EDGE_COMP_SUFFIX = "_EDGE_CC";
 }
