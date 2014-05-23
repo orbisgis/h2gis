@@ -77,6 +77,14 @@ public class ST_ConnectedComponentsTest {
     }
 
     public static void registerEdges(Connection connection) throws SQLException {
+        //         1         2        5,7
+        //    1-------->2-------->3<------->4        12<-      11
+        //    |        /|         |         ^        /   |      ^
+        //    |    3 /  |         |         |       /    /18    |
+        //   9|    /   4|        6|        8|13     \___/       |17
+        //    |   /     |         |         |                   |
+        //    |<-/ 10   v  11,12  v    14   v            15,16  |
+        //    5-------->6<------->7<--------8         9<------>10
         final Statement st = connection.createStatement();
         st.execute("CREATE TABLE " + EDGES + "(" +
                 "EDGE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
