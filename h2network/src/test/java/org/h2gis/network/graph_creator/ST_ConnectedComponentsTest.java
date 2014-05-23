@@ -33,10 +33,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static org.h2gis.utilities.GraphConstants.*;
 import static org.junit.Assert.*;
@@ -134,8 +131,8 @@ public class ST_ConnectedComponentsTest {
         checkBoolean(compute(U));
         assertEquals(getVUPartition(),
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
-//        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
-//                new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3});
+        assertEquals(getEUPartition(),
+                getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
     }
 
     private ResultSet compute(String orientation) throws SQLException {
@@ -236,6 +233,17 @@ public class ST_ConnectedComponentsTest {
         edgePartition.add(cc4);
         edgePartition.add(cc5);
         edgePartition.add(cc6);
+        return edgePartition;
+    }
+
+    private Set<Set<Integer>> getEUPartition() {
+        Set<Set<Integer>> edgePartition = new HashSet<Set<Integer>>();
+        edgePartition.add(new HashSet<Integer>(Arrays.asList(
+                new Integer[]{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14})));
+        edgePartition.add(new HashSet<Integer>(Arrays.asList(
+                new Integer[]{15, 16, 17})));
+        edgePartition.add(new HashSet<Integer>(Arrays.asList(
+                new Integer[]{18})));
         return edgePartition;
     }
 
