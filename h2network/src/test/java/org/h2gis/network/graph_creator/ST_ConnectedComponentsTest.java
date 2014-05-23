@@ -113,6 +113,8 @@ public class ST_ConnectedComponentsTest {
 
     @Test
     public void RO() throws Exception {
+        // Note that strongly connected components are invariant under global
+        // edge orientation reversal.
         st.execute("DROP TABLE IF EXISTS " + EDGES + NODE_COMP_SUFFIX);
         st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
         // SELECT ST_ConnectedComponents('" + EDGES + "', 'reversed - edge_orientation')
