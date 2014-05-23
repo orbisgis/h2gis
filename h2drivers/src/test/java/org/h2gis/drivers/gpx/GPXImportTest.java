@@ -89,7 +89,6 @@ public class GPXImportTest {
         assertTrue(rs.next());
         assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
         rs.close();
-        st.execute("drop table GPXDATA_WAYPOINT");
     }
     
     @Test(expected = SQLException.class)
@@ -127,7 +126,6 @@ public class GPXImportTest {
         assertTrue(rs.next());
         assertEquals("LINESTRING (-71.107628 42.43095, -71.109236 42.43124, -71.109942 42.43498, -71.119676 42.456592, -71.119845 42.457388)", rs.getString("the_geom"));
         rs.close();
-        st.execute("drop table GPXDATA_ROUTE,  GPXDATA_ROUTEPOINT;");
     }
     
     @Test
@@ -170,13 +168,12 @@ public class GPXImportTest {
         assertEquals("MULTILINESTRING ((-71.09622 42.210009, -71.09622 42.210031), (-71.102335 42.209129, -71.1024 42.208958))"
                 , rs.getString("the_geom"));
         rs.close();
-        st.execute("DROP TABLE GPXDATA_TRACK, GPXDATA_TRACKSEGMENT,GPXDATA_TRACKPOINT;");
     }
     
     
     @Test
     public void importGPXWaypointsFileName() throws SQLException {
-        st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT, WAYPOINT_ROUTE, WAYPOINT_ROUTEPOINT,WAYPOINT_TRACK, WAYPOINT_TRACKSEGMENT, WAYPOINT_TRACKPOINT;");
+        st.execute("DROP TABLE IF EXISTS WAYPOINT_WAYPOINT, WAYPOINT_ROUTE, WAYPOINT_ROUTEPOINT,WAYPOINT_TRACK, WAYPOINT_TRACKSEGMENT, WAYPOINT_TRACKPOINT;");
         st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ");");
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WAYPOINT_WAYPOINT'");
         assertTrue(rs.next());
@@ -191,6 +188,5 @@ public class GPXImportTest {
         assertTrue(rs.next());
         assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
         rs.close();
-        st.execute("drop table WAYPOINT_WAYPOINT");
     }
 }
