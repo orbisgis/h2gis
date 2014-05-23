@@ -93,29 +93,29 @@ public class ST_ConnectedComponentsTest {
 
     @Test
     public void DO() throws Exception {
-        st.execute("DROP TABLE IF EXISTS " + EDGES + "" + NODE_COMP_SUFFIX);
-        st.execute("DROP TABLE IF EXISTS " + EDGES + "" + EDGE_COMP_SUFFIX);
-        // SELECT * FROM ST_ConnectedComponents('" + EDGES + "', 'directed - edge_orientation')
+        st.execute("DROP TABLE IF EXISTS " + EDGES + NODE_COMP_SUFFIX);
+        st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
+        // SELECT ST_ConnectedComponents('" + EDGES + "', 'directed - edge_orientation')
         checkBoolean(compute(DO));
-        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + "" + NODE_COMP_SUFFIX),
+        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX),
                 new int[]{1, 1, 2, 2, 1, 3, 3, 2});
-        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + "" + EDGE_COMP_SUFFIX),
+        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
                 new int[]{1, -1, 1, -1, 2, -1, 2, 2, 1, -1, 3, 3, 2, -1});
     }
 
     @Test
     public void RO() throws Exception {
-        st.execute("DROP TABLE IF EXISTS " + EDGES + "" + NODE_COMP_SUFFIX);
-        st.execute("DROP TABLE IF EXISTS " + EDGES + "" + EDGE_COMP_SUFFIX);
-        // SELECT * FROM ST_ConnectedComponents('" + EDGES + "', 'reversed - edge_orientation')
+        st.execute("DROP TABLE IF EXISTS " + EDGES + NODE_COMP_SUFFIX);
+        st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
+        // SELECT ST_ConnectedComponents('" + EDGES + "', 'reversed - edge_orientation')
         checkBoolean(compute(RO));
         // Notice that while the numbering changed due to the implementation (1
         // and 3 were switched), the connected components are exactly the same
         // as in the DO case.  Strongly connected components are invariant
         // under global orientation reversal.
-        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + "" + NODE_COMP_SUFFIX),
+        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX),
                 new int[]{3, 3, 2, 2, 3, 1, 1, 2});
-        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + "" + EDGE_COMP_SUFFIX),
+        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
                 new int[]{3, -1, 3, -1, 2, -1, 2, 2, 3, -1, 1, 1, 2, -1});
     }
 
