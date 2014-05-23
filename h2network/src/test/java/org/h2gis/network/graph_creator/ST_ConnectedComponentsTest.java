@@ -119,6 +119,18 @@ public class ST_ConnectedComponentsTest {
                 new int[]{3, -1, 3, -1, 2, -1, 2, 2, 3, -1, 1, 1, 2, -1});
     }
 
+    @Test
+    public void U() throws Exception {
+        st.execute("DROP TABLE IF EXISTS " + EDGES + NODE_COMP_SUFFIX);
+        st.execute("DROP TABLE IF EXISTS " + EDGES + EDGE_COMP_SUFFIX);
+        // SELECT ST_ConnectedComponents('" + EDGES + "', 'undirected')
+        checkBoolean(compute(U));
+        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX),
+                new int[]{1, 1, 1, 1, 1, 1, 1, 1});
+        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX),
+                new int[]{1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1});
+    }
+
     private ResultSet compute(String orientation) throws SQLException {
         return st.executeQuery("SELECT ST_ConnectedComponents('" + EDGES + "', " + orientation + ")");
     }
