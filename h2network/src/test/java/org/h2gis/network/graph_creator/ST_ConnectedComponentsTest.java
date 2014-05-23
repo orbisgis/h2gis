@@ -36,6 +36,8 @@ import java.sql.Statement;
 import java.util.*;
 
 import static org.h2gis.network.graph_creator.ST_ConnectedComponents.NULL_CONNECTED_COMPONENT_NUMBER;
+import static org.h2gis.network.graph_creator.ST_GraphAnalysisTest.LINE_GRAPH_TABLE;
+import static org.h2gis.network.graph_creator.ST_GraphAnalysisTest.createLineGraphTable;
 import static org.h2gis.utilities.GraphConstants.*;
 import static org.junit.Assert.*;
 
@@ -131,6 +133,28 @@ public class ST_ConnectedComponentsTest {
                 getVertexPartition(st.executeQuery("SELECT * FROM " + EDGES + NODE_COMP_SUFFIX)));
         assertEquals(getUEdgePartition(),
                 getEdgePartition(st.executeQuery("SELECT * FROM " + EDGES + EDGE_COMP_SUFFIX)));
+    }
+
+    @Test
+    public void testLineGraph() throws Exception {
+        final int n = 200;
+        final String name = LINE_GRAPH_TABLE + n;
+        createLineGraphTable(connection, n);
+        checkBoolean(st.executeQuery("SELECT ST_ConnectedComponents('" + name + "', " + U + ")"));
+        assertEquals(getOneElementPartition(n),
+                getVertexPartition(st.executeQuery("SELECT * FROM " + name + NODE_COMP_SUFFIX)));
+        assertEquals(getOneElementPartition(n - 1),
+                getEdgePartition(st.executeQuery("SELECT * FROM " + name + EDGE_COMP_SUFFIX)));
+    }
+
+    private Set<Set<Integer>> getOneElementPartition(int n) {
+        Set<Set<Integer>> p = new HashSet<Set<Integer>>();
+        Set<Integer> component = new HashSet<Integer>();
+        for (int i = 0; i < n; i++) {
+            component.add(i + 1);
+        }
+        p.add(component);
+        return p;
     }
 
     private void dropTables() throws SQLException {
