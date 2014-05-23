@@ -103,6 +103,21 @@ public class ST_ConnectedComponentsTest {
                 new int[]{1, -1, 1, -1, 2, -1, 2, 2, 1, -1, 3, 3, 2, -1});
     }
 
+    @Test
+    public void RO() throws Exception {
+        st.execute("DROP TABLE IF EXISTS " + EDGES + "" + NODE_COMP_SUFFIX);
+        st.execute("DROP TABLE IF EXISTS " + EDGES + "" + EDGE_COMP_SUFFIX);
+        // SELECT * FROM ST_ConnectedComponents('" + EDGES + "', 'reversed - edge_orientation')
+        checkBoolean(compute(RO));
+        // Notice that while the numbering changed due to the implementation (1
+        // and 3 were switched), the connected components are exactly the same
+        // as in the DO case.  Strongly connected components are invariant
+        // under global orientation reversal.
+        checkNodes(st.executeQuery("SELECT * FROM " + EDGES + "" + NODE_COMP_SUFFIX),
+                new int[]{3, 3, 2, 2, 3, 1, 1, 2});
+        checkEdges(st.executeQuery("SELECT * FROM " + EDGES + "" + EDGE_COMP_SUFFIX),
+                new int[]{3, -1, 3, -1, 2, -1, 2, 2, 3, -1, 1, 1, 2, -1});
+    }
 
     private ResultSet compute(String orientation) throws SQLException {
         return st.executeQuery("SELECT ST_ConnectedComponents('" + EDGES + "', " + orientation + ")");
