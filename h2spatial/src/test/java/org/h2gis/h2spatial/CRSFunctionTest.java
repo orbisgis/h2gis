@@ -94,8 +94,11 @@ public class CRSFunctionTest {
 
     @Test
     public void testST_Transform27572to2154WithNadgrid() throws Exception {
-        checkProjectedGeom("POINT(565767.906 2669005.730)", 320002120, 310024140,
-                "POINT(619119.4605077105 7102502.97947694)");
+        final int outProj = 310024140;
+        final ResultSet rs = compute("POINT(565767.906 2669005.730)", 320002120, outProj);
+        // Java 6: "POINT(619119.4605077105 7102502.97947694)"
+        // Java 7: "POINT(619119.4605077105 7102502.979476939)"
+        checkWithTolerance(rs, "POINT(619119.4605077105 7102502.9794769)", outProj, 10E-7);
     }
 
     @Test
@@ -110,14 +113,8 @@ public class CRSFunctionTest {
         final int inOutProj = 4326;
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM(ST_TRANSFORM(" +
                 "ST_GeomFromText('" + inGeom + "', " + inOutProj + "), 2154), " + inOutProj + ");");
-        try {
-            assertTrue(rs.next());
-            // The actual result is "MULTILINESTRING ((0 0, 0.9999999999999996 0))"
-            assertGeometryBarelyEquals(inGeom, inOutProj, rs.getObject(1), 10E-15);
-            assertFalse(rs.next());
-        } finally {
-            rs.close();
-        }
+        // The actual result is "MULTILINESTRING ((0 0, 0.9999999999999996 0))"
+        checkWithTolerance(rs, inGeom, inOutProj, 10E-15);
     }
 
     @Test
@@ -141,6 +138,17 @@ public class CRSFunctionTest {
         try {
             assertTrue(rs.next());
             assertGeometryEquals(expectedGeom, outProj, rs.getObject(1));
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
+    }
+
+    private void checkWithTolerance(ResultSet rs, String inGeom, int inOutProj, double tolerance)
+            throws SQLException {
+        try {
+            assertTrue(rs.next());
+            assertGeometryBarelyEquals(inGeom, inOutProj, rs.getObject(1), tolerance);
             assertFalse(rs.next());
         } finally {
             rs.close();
