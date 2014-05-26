@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -104,6 +105,22 @@ public class CRSFunctionTest {
     }
 
     @Test
+    public void testST_TransformProjectThenProjectBack() throws Exception {
+        final String inGeom = "MULTILINESTRING ((0 0, 1 0))";
+        final int inOutProj = 4326;
+        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM(ST_TRANSFORM(" +
+                "ST_GeomFromText('" + inGeom + "', " + inOutProj + "), 2154), " + inOutProj + ");");
+        try {
+            assertTrue(rs.next());
+            // The actual result is "MULTILINESTRING ((0 0, 0.9999999999999996 0))"
+            assertGeometryBarelyEquals(inGeom, inOutProj, rs.getObject(1), 10E-15);
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
+    }
+
+    @Test
     public void testST_TransformOnMULTILINESTRING() throws Exception {
         checkProjectedGeom("MULTILINESTRING ((0 0, 1 0))", 4326, 4326,
                 "MULTILINESTRING ((0 0, 1 0))");
@@ -112,14 +129,21 @@ public class CRSFunctionTest {
     }
 
     private void checkProjectedGeom(String inputGeom, int inProj, int outProj, String expectedGeom) throws SQLException {
-        ResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(" +
+        check(compute(inputGeom, inProj, outProj), expectedGeom, outProj);
+    }
+
+    private ResultSet compute(String inputGeom, int inProj, int outProj) throws SQLException {
+        return st.executeQuery("SELECT ST_TRANSFORM(" +
                 "ST_GeomFromText('" + inputGeom + "', " + inProj + "), " + outProj + ");");
+    }
+
+    private void check(ResultSet rs, String expectedGeom, int outProj) throws SQLException {
         try {
-            assertTrue(srs.next());
-            assertGeometryEquals(expectedGeom, outProj, srs.getObject(1));
-            assertFalse(srs.next());
+            assertTrue(rs.next());
+            assertGeometryEquals(expectedGeom, outProj, rs.getObject(1));
+            assertFalse(rs.next());
         } finally {
-            srs.close();
+            rs.close();
         }
     }
 }
