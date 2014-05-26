@@ -31,7 +31,7 @@
                <version>2.6</version>
                <configuration>
                    <check>
-                       <lineRate>85</lineRate>
+                       <lineRate>80</lineRate>
                        <branchRate>80</branchRate>
                        <haltOnFailure>true</haltOnFailure>
                        <totalLineRate>90</totalLineRate>

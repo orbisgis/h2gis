@@ -24,10 +24,13 @@
 
 package org.h2gis.network.graph_creator;
 
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.data.VId;
 import org.javanetworkanalyzer.model.*;
 import org.jgrapht.WeightedGraph;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
@@ -63,6 +66,8 @@ public class GraphCreator<V extends VId, E extends Edge> {
     public static final int REVERSED_EDGE = -DIRECTED_EDGE;
     public static final int UNDIRECTED_EDGE = DIRECTED_EDGE + REVERSED_EDGE;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GraphCreator.class);
+
     /**
      * Constructor.
      *
@@ -73,7 +78,6 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * @param weightColumn              Weight column name
      * @param vertexClass               Vertex class
      * @param edgeClass                 Edge class
-     * @throws SQLException If the input table is not found
      */
     public GraphCreator(Connection connection,
                         String inputTable,
@@ -81,7 +85,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
                         String edgeOrientationColumnName,
                         String weightColumn,
                         Class<? extends V> vertexClass,
-                        Class<? extends E> edgeClass) throws SQLException {
+                        Class<? extends E> edgeClass) {
         this.connection = connection;
         if (inputTable != null) {
             this.tableName = TableLocation.parse(inputTable);
@@ -96,36 +100,40 @@ public class GraphCreator<V extends VId, E extends Edge> {
     /**
      * Prepares a graph.
      *
-     * @return The newly prepared graph.
+     * @return The newly prepared graph, or null if the graph could not
+     * be created
      *
      * @throws java.sql.SQLException
      */
     protected KeyedGraph<V, E> prepareGraph() throws SQLException {
+        // Initialize the graph.
+        KeyedGraph<V, E> graph;
+        if (!globalOrientation.equals(GraphFunctionParser.Orientation.UNDIRECTED)) {
+            if (weightColumn != null) {
+                graph = new DirectedWeightedPseudoG<V, E>(vertexClass, edgeClass);
+            } else {
+                graph = new DirectedPseudoG<V, E>(vertexClass, edgeClass);
+            }
+        } else {
+            if (weightColumn != null) {
+                graph = new WeightedPseudoG<V, E>(vertexClass, edgeClass);
+            } else {
+                graph = new PseudoG<V, E>(vertexClass, edgeClass);
+            }
+        }
         final Statement st = connection.createStatement();
         final ResultSet edges = st.executeQuery("SELECT * FROM " + tableName);
+        // Initialize the indices.
+        initIndices(edges);
         try {
-            // Initialize the indices.
-            initIndices(edges);
-            // Initialize the graph.
-            KeyedGraph<V, E> graph;
-            if (!globalOrientation.equals(GraphFunctionParser.Orientation.UNDIRECTED)) {
-                if (weightColumn != null) {
-                    graph = new DirectedWeightedPseudoG<V, E>(vertexClass, edgeClass);
-                } else {
-                    graph = new DirectedPseudoG<V, E>(vertexClass, edgeClass);
-                }
-            } else {
-                if (weightColumn != null) {
-                    graph = new WeightedPseudoG<V, E>(vertexClass, edgeClass);
-                } else {
-                    graph = new PseudoG<V, E>(vertexClass, edgeClass);
-                }
-            }
             // Add the edges.
             while (edges.next()) {
                 loadEdge(graph, edges);
             }
             return graph;
+        } catch (SQLException e) {
+            LOGGER.error("Could not store edges in graph.", e);
+            return null;
         } finally {
             edges.close();
             st.close();
@@ -135,15 +143,19 @@ public class GraphCreator<V extends VId, E extends Edge> {
     /**
      * Recovers the indices from the metadata.
      */
-    private void initIndices(ResultSet edges) throws SQLException {
-        ResultSetMetaData metaData = edges.getMetaData();
-        for (int i = 1; i <= metaData.getColumnCount(); i++) {
-            final String columnName = metaData.getColumnName(i);
-            if (columnName.equalsIgnoreCase(START_NODE)) startNodeIndex = i;
-            if (columnName.equalsIgnoreCase(END_NODE)) endNodeIndex = i;
-            if (columnName.equalsIgnoreCase(EDGE_ID)) edgeIDIndex = i;
-            if (columnName.equalsIgnoreCase(edgeOrientationColumnName)) edgeOrientationIndex = i;
-            if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
+    private void initIndices(ResultSet edges) {
+        try {
+            ResultSetMetaData metaData = edges.getMetaData();
+            for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                final String columnName = metaData.getColumnName(i);
+                if (columnName.equalsIgnoreCase(START_NODE)) startNodeIndex = i;
+                if (columnName.equalsIgnoreCase(END_NODE)) endNodeIndex = i;
+                if (columnName.equalsIgnoreCase(EDGE_ID)) edgeIDIndex = i;
+                if (columnName.equalsIgnoreCase(edgeOrientationColumnName)) edgeOrientationIndex = i;
+                if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
+            }
+        } catch (SQLException e) {
+            LOGGER.error("Problem accessing edge table metadata.", e);
         }
         verifyIndex(startNodeIndex, START_NODE);
         verifyIndex(endNodeIndex, END_NODE);

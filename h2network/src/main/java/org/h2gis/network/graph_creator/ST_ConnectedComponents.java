@@ -125,27 +125,30 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
                                                    String inputTable,
                                                    String orientation) throws SQLException {
         ST_ConnectedComponents f = new ST_ConnectedComponents(connection, inputTable, orientation);
-        try {
-            final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, null,
-                    VUCent.class, Edge.class);
-            final boolean previousAutoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-            final List<Set<VUCent>> componentsList = getConnectedComponents(f, graph);
-            storeNodeConnectedComponents(f, componentsList);
-            storeEdgeConnectedComponents(f);
-            connection.setAutoCommit(previousAutoCommit);
-        } catch (SQLException e) {
-            LOGGER.error("Problem creating connected component tables.");
-            final Statement statement = connection.createStatement();
-            try {
-                statement.execute("DROP TABLE IF EXISTS " + f.nodesName);
-                statement.execute("DROP TABLE IF EXISTS " + f.edgesName);
-            } finally {
-                statement.close();
-            }
+        KeyedGraph graph = prepareGraph(connection, inputTable, orientation, null,
+                VUCent.class, Edge.class);
+        if (graph == null) {
             return false;
         }
-        return true;
+        final List<Set<VUCent>> componentsList = getConnectedComponents(f, graph);
+        if (storeNodeConnectedComponents(f, componentsList)) {
+            if (storeEdgeConnectedComponents(f)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static void cancel(ST_ConnectedComponents f, SQLException e, String msg)
+            throws SQLException {
+        LOGGER.error(msg, e);
+        final Statement statement = connection.createStatement();
+        try {
+            statement.execute("DROP TABLE IF EXISTS " + f.nodesName);
+            statement.execute("DROP TABLE IF EXISTS " + f.edgesName);
+        } finally {
+            statement.close();
+        }
     }
 
     private static List<Set<VUCent>> getConnectedComponents(ST_ConnectedComponents f,
@@ -159,12 +162,15 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         }
     }
 
-    private static void storeNodeConnectedComponents(ST_ConnectedComponents f,
-                                                     List<Set<VUCent>> componentsList) throws SQLException {
+    private static boolean storeNodeConnectedComponents(ST_ConnectedComponents f,
+                                                        List<Set<VUCent>> componentsList)
+            throws SQLException {
         createNodeTable(f);
         final PreparedStatement nodeSt =
                 connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?)");
         try {
+            final boolean previousAutoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
             int componentNumber = 0;
             for (Set<VUCent> component : componentsList) {
                 componentNumber++;
@@ -186,9 +192,14 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
                 }
                 connection.commit();
             }
+            connection.setAutoCommit(previousAutoCommit);
+        } catch (SQLException e) {
+            cancel(f, e, "Could not store node connected components.");
+            return false;
         } finally {
             nodeSt.close();
         }
+        return true;
     }
 
     private static void createNodeTable(ST_ConnectedComponents f) throws SQLException {
@@ -202,7 +213,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         }
     }
 
-    private static void storeEdgeConnectedComponents(ST_ConnectedComponents f) throws SQLException {
+    private static boolean storeEdgeConnectedComponents(ST_ConnectedComponents f) throws SQLException {
         final Statement st = connection.createStatement();
         try {
             final String tmpName = "TMP" + System.currentTimeMillis();
@@ -237,8 +248,12 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
                 " FROM " + tmpName + " WHERE " + startNodeCC + "!=" + endNodeCC + ";" +
                 // Drop the temporary table.
                 "DROP TABLE IF EXISTS " + tmpName + ";");
+        } catch (SQLException e) {
+            cancel(f, e, "Could not store edge connected components.");
+            return false;
         } finally {
             st.close();
         }
+        return true;
     }
 }
