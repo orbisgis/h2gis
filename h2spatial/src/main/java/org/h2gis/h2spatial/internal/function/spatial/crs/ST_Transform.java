@@ -47,8 +47,9 @@ import java.util.Map;
  * This class is used to transform a geometry from one CRS to another. 
  * Only integer codes available in the spatial_ref_sys table are allowed.
  * The default source CRS is the input geometry's internal CRS.
- * 
+ *
  * @author Erwan Bocher
+ * @author Adam Gouge
  */
 public class ST_Transform extends AbstractFunction implements ScalarFunction {
 
