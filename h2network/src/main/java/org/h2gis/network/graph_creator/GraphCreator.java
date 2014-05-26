@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 
+import static org.h2gis.network.graph_creator.GraphFunction.logTime;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
@@ -66,7 +67,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
     public static final int REVERSED_EDGE = -DIRECTED_EDGE;
     public static final int UNDIRECTED_EDGE = DIRECTED_EDGE + REVERSED_EDGE;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(GraphCreator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("gui." + GraphCreator.class);
 
     /**
      * Constructor.
@@ -106,6 +107,8 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * @throws java.sql.SQLException
      */
     protected KeyedGraph<V, E> prepareGraph() throws SQLException {
+        LOGGER.info("Loading graph into memory...");
+        final long start = System.currentTimeMillis();
         // Initialize the graph.
         KeyedGraph<V, E> graph;
         if (!globalOrientation.equals(GraphFunctionParser.Orientation.UNDIRECTED)) {
@@ -130,6 +133,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
             while (edges.next()) {
                 loadEdge(graph, edges);
             }
+            logTime(LOGGER, start);
             return graph;
         } catch (SQLException e) {
             LOGGER.error("Could not store edges in graph.", e);

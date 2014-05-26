@@ -63,7 +63,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     private TableLocation edgesName;
     protected static final int BATCH_SIZE = 100;
     public static final int NULL_CONNECTED_COMPONENT_NUMBER = -1;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ST_ConnectedComponents.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ST_ConnectedComponents.class);
     public static final String REMARKS =
             "`ST_ConnectedComponents` calculates the connected components (for undirected\n" +
             "graphs) or strongly connected components (for directed graphs) of a graph.  It\n" +
@@ -153,18 +153,25 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
 
     private static List<Set<VUCent>> getConnectedComponents(ST_ConnectedComponents f,
                                                             Graph<VUCent, Edge> graph) {
+        LOGGER.info("Calculating connected components... ");
+        final long start = System.currentTimeMillis();
+        List<Set<VUCent>> sets;
         if (parseGlobalOrientation(f.orientation).equals(UNDIRECTED)) {
-            return new ConnectivityInspector<VUCent, Edge>(
+            sets = new ConnectivityInspector<VUCent, Edge>(
                     (UndirectedGraph<VUCent, Edge>) graph).connectedSets();
         } else {
-            return new StrongConnectivityInspector<VUCent, Edge>(
+            sets = new StrongConnectivityInspector<VUCent, Edge>(
                     (DirectedGraph) graph).stronglyConnectedSets();
         }
+        logTime(LOGGER, start);
+        return sets;
     }
 
     private static boolean storeNodeConnectedComponents(ST_ConnectedComponents f,
                                                         List<Set<VUCent>> componentsList)
             throws SQLException {
+        LOGGER.info("Storing node connected components... ");
+        final long start = System.currentTimeMillis();
         createNodeTable(f);
         final PreparedStatement nodeSt =
                 connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?)");
@@ -199,6 +206,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         } finally {
             nodeSt.close();
         }
+        logTime(LOGGER, start);
         return true;
     }
 
@@ -214,6 +222,8 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     }
 
     private static boolean storeEdgeConnectedComponents(ST_ConnectedComponents f) throws SQLException {
+        LOGGER.info("Storing edge connected components...");
+        final long start = System.currentTimeMillis();
         final Statement st = connection.createStatement();
         try {
             final String tmpName = "TMP" + System.currentTimeMillis();
@@ -254,6 +264,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         } finally {
             st.close();
         }
+        logTime(LOGGER, start);
         return true;
     }
 }

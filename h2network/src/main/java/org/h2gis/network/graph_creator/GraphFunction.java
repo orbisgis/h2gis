@@ -3,7 +3,6 @@ package org.h2gis.network.graph_creator;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.javanetworkanalyzer.model.KeyedGraph;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -16,7 +15,6 @@ import java.sql.SQLException;
 public class GraphFunction extends AbstractFunction {
 
     public static final String ARG_ERROR  = "Unrecognized argument: ";
-    private static final Logger LOGGER = LoggerFactory.getLogger(GraphFunction.class);
 
     /**
      * Return a JGraphT graph from the input edges table.
@@ -41,5 +39,15 @@ public class GraphFunction extends AbstractFunction {
                 parser.getGlobalOrientation(), parser.getEdgeOrientation(), parser.getWeightColumn(),
                 vertexClass,
                 edgeClass).prepareGraph();
+    }
+
+    /**
+     * Log the time elapsed from startTime until now.
+     *
+     * @param logger    Logger
+     * @param startTime Start time in milliseconds
+     */
+    protected static void logTime(Logger logger, long startTime) {
+        logger.info("    " + (System.currentTimeMillis() - startTime) / 1000. + " seconds");
     }
 }
