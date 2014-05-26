@@ -40,11 +40,11 @@ import static org.junit.Assert.assertTrue;
  *
  * @author Erwan Bocher
  */
-public class CRSFuntionTest {
+public class CRSFunctionTest {
 
     private static Connection connection;
     private static Statement st;
-    private static final String DB_NAME = "CRSFuntionTest";
+    private static final String DB_NAME = "CRSFunctionTest";
 
     @BeforeClass
     public static void tearUp() throws Exception {
