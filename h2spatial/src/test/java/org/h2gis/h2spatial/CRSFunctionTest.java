@@ -102,7 +102,7 @@ public class CRSFunctionTest {
                 "ST_GeomFromText('" + inputGeom + "', " + inProj + "), " + outProj + ");");
         try {
             assertTrue(srs.next());
-            assertGeometryEquals(expectedGeom, srs.getString(1));
+            assertGeometryEquals(expectedGeom, outProj, srs.getObject(1));
             assertFalse(srs.next());
         } finally {
             srs.close();
