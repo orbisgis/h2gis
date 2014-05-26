@@ -49,8 +49,6 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.sql.*;
 import java.util.Properties;
-
-import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.*;
 
@@ -124,7 +122,7 @@ public class BundleTest {
             System.out.println(
                     "[" + String.format("%02d", bundle.getBundleId()) + "]\t"
                             + getStateString(bundle.getState()) + "\t"
-                            + bundle.getSymbolicName());
+                            + bundle.getSymbolicName()+"["+bundle.getVersion()+"]");
             // Print services
             ServiceReference[] refs = bundle.getRegisteredServices();
             if(refs!=null) {
@@ -264,10 +262,11 @@ public class BundleTest {
             Statement st = connection.createStatement();
             st.execute("CREATE TABLE init as SELECT ST_GeomFromText('POINT(584173.736059813 2594514.82833411)', 27572) as the_geom;");
             WKTReader wKTReader = new WKTReader();
-            Geometry targetGeom = wKTReader.read();
+            Geometry targetGeom = wKTReader.read("POINT(2.114551393 50.345609791)");
             ResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(the_geom, 4326) from init;");
             assertTrue(srs.next());
-            assertGeometryEquals("POINT(2.114551393 50.345609791)", 4326, srs.getObject(1));
+            assertTrue("POINT(2.114551393 50.345609791)", ((Geometry) srs.getObject(1)).equalsExact(targetGeom, 0.0001));
+            assertEquals(4326, ((Geometry) srs.getObject(1)).getSRID());
             st.execute("DROP TABLE IF EXISTS init;");
         } finally {
             connection.close();
