@@ -231,12 +231,20 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             final String endNodeCC = "EN_CC";
             st.execute(
                 // Create a temporary table containing the connected component
-                // of each start and end node.
+                // of each start node.
+                "CREATE INDEX ON " + f.tableName + "(" + START_NODE + ");" +
+                "CREATE INDEX ON " + f.nodesName + "(" + NODE_ID + ");" +
                 "CREATE TEMPORARY TABLE " + tmpName +
                 "(" + EDGE_ID + " INT PRIMARY KEY, " + startNodeCC + " INT, " + endNodeCC + " INT) " +
                 "AS SELECT A." + EDGE_ID + ", B." + CONNECTED_COMPONENT + ", NULL " +
                 "FROM " + f.tableName + " A, " + f.nodesName + " B " +
                 "WHERE A." + START_NODE + "=B." + NODE_ID + ";" +
+                // Add indices to speed up the UPDATE.
+                "CREATE INDEX ON " + f.tableName + "(" + END_NODE + ");" +
+                "CREATE INDEX ON " + f.tableName + "(" + EDGE_ID + ");" +
+                "CREATE INDEX ON " + tmpName + "(" + EDGE_ID + ");" +
+                // Update the temporary table with the connected component
+                // of each end node.
                 "UPDATE " + tmpName + " C " +
                 "SET " + endNodeCC + "=(" +
                 "SELECT B." + CONNECTED_COMPONENT + " " +
