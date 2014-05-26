@@ -13,6 +13,8 @@ import java.sql.Types;
  * DBMS should follow standard but it is not always the case, this class do some common operations.
  * Compatible with H2 and PostgreSQL.
  * @author Nicolas Fortin
+ * @author Erwan Bocher
+ * @author Adam Gouge
  */
 public class JDBCUtilities {
     public enum FUNCTION_TYPE { ALL, BUILT_IN, ALIAS}
@@ -154,12 +156,16 @@ public class JDBCUtilities {
     }
 
     /**
-     * @param meta DataBase meta data
+     * @param connection Connection
      * @param tableReference table identifier
      * @return The integer primary key used for edition[1-n]; 0 if the source is closed or if the table has no primary
      *         key or more than one column as primary key
      */
-    public static int getIntegerPrimaryKey(DatabaseMetaData meta, String tableReference) throws SQLException {
+    public static int getIntegerPrimaryKey(Connection connection, String tableReference) throws SQLException {
+        if (!tableExists(connection, tableReference)) {
+            throw new SQLException("Table " + tableReference + " not found.");
+        }
+        final DatabaseMetaData meta = connection.getMetaData();
         TableLocation tableLocation = TableLocation.parse(tableReference);
         String columnNamePK = null;
         ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(null), tableLocation.getSchema(null),
@@ -199,4 +205,22 @@ public class JDBCUtilities {
         return 0;
     }
 
+    /**
+     * Return true if the table exists.
+     *
+     * @param connection Connection
+     * @param tableName  Table name
+     * @return true if the table exists
+     */
+    public static boolean tableExists(Connection connection, String tableName) throws SQLException {
+        final Statement statement = connection.createStatement();
+        try {
+            statement.execute("SELECT * FROM " + TableLocation.parse(tableName) + " LIMIT 0;");
+            return true;
+        } catch (SQLException ex) {
+            return false;
+        } finally {
+            statement.close();
+        }
+    }
 }

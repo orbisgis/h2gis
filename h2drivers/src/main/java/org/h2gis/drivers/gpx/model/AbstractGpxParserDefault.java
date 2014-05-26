@@ -24,6 +24,13 @@
  */
 package org.h2gis.drivers.gpx.model;
 
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.XMLReaderFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -31,12 +38,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Main class to parse the GPX file
@@ -158,19 +159,10 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         String trackPointsTableName = caseIdentifier(requestedTable, table + TRACKPOINT, isH2);
 
         //Check if the tables exist
-        String[] tables = new String[]{wptTableName, routeTableName, routePointsTableName,
-            trackTableName, trackSegmentsTableName, trackPointsTableName};
-        Statement statement = null;
-        try {
-            statement = connection.createStatement();
-            for (String tName : tables) {
-                if (tableExists(statement, tName)) {
-                    throw new SQLException("The table "+ tName+ " already exists.");
-                }
-            }
-        } finally {
-            if (statement != null) {
-                statement.close();
+        for (String tName : new String[]{wptTableName, routeTableName, routePointsTableName,
+                trackTableName, trackSegmentsTableName, trackPointsTableName}) {
+            if (JDBCUtilities.tableExists(connection, tName)) {
+                throw new SQLException("The table " + tName + " already exists.");
             }
         }
 
@@ -206,22 +198,6 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
         }
 
         return success;
-    }
-
-    /**
-     * Return true if the table already exists.
-     *
-     * @param statement 
-     * @param tableName
-     * @return true or false
-     */
-    private boolean tableExists(Statement statement, String tableName) {
-        try {
-            statement.execute("SELECT * FROM " + tableName + " LIMIT 0;");
-            return true;
-        } catch (SQLException ex) {
-            return false;
-        }
     }
 
     /**
