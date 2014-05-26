@@ -105,18 +105,20 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                     g.setSRID(codeEpsg);
                     return g;
                 } else {
-                    if(inputCRS instanceof GeodeticCRS && targetCRS instanceof GeodeticCRS){
-                    List<CoordinateOperation> ops = CoordinateOperationFactory.createCoordinateOperations((GeodeticCRS) inputCRS, (GeodeticCRS) targetCRS);
-                    if (!ops.isEmpty()) {
-                        op = ops.get(0);
-                        Geometry g = getGeometryTransformer(op).transform(geom);
-                        g.setSRID(codeEpsg);
-                        copPool.put(epsg, op);
-                        return g;
-                    }
+                    if (inputCRS instanceof GeodeticCRS && targetCRS instanceof GeodeticCRS) {
+                        List<CoordinateOperation> ops = CoordinateOperationFactory
+                                .createCoordinateOperations((GeodeticCRS) inputCRS, (GeodeticCRS) targetCRS);
+                        if (!ops.isEmpty()) {
+                            op = ops.get(0);
+                            Geometry g = getGeometryTransformer(op).transform(geom);
+                            g.setSRID(codeEpsg);
+                            copPool.put(epsg, op);
+                            return g;
+                        }
                     }
                     else{
-                        throw new SQLException("This transformation from : "+ inputCRS + " to "+ codeEpsg+ " is not yet supported.");
+                        throw new SQLException("The transformation from " +
+                                inputCRS + " to " + codeEpsg + " is not yet supported.");
                     }
                 }
             }
