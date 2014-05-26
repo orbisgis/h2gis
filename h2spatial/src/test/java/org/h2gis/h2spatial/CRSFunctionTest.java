@@ -97,6 +97,12 @@ public class CRSFunctionTest {
                 "POINT(619119.4605077105 7102502.97947694)");
     }
 
+    @Test
+    public void testST_TransformAsIdentity() throws Exception {
+        checkProjectedGeom("POINT(565767.906 2669005.730)", 2154, 2154,
+                "POINT(565767.906 2669005.730)");
+    }
+
     private void checkProjectedGeom(String inputGeom, int inProj, int outProj, String expectedGeom) throws SQLException {
         ResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(" +
                 "ST_GeomFromText('" + inputGeom + "', " + inProj + "), " + outProj + ");");

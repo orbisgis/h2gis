@@ -28,11 +28,6 @@ import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.geom.util.GeometryTransformer;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.cts.CRSFactory;
 import org.cts.IllegalCoordinateException;
 import org.cts.crs.CRSException;
@@ -42,6 +37,12 @@ import org.cts.op.CoordinateOperation;
 import org.cts.op.CoordinateOperationFactory;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -94,6 +95,9 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
             } else {
                 CoordinateReferenceSystem inputCRS = crsf.getCRS(srr.getRegistryName() + ":" + String.valueOf(inputSRID));
                 CoordinateReferenceSystem targetCRS = crsf.getCRS(srr.getRegistryName() + ":" + String.valueOf(codeEpsg));
+                if (inputCRS.equals(targetCRS)) {
+                    return geom;
+                }
                 EPSGTuple epsg = new EPSGTuple(inputSRID, codeEpsg);
                 CoordinateOperation op = copPool.get(epsg);
                 if (op != null) {
