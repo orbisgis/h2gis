@@ -12,11 +12,11 @@ permalink: /docs/dev/ST_IsValidReason/
 
 {% highlight mysql %}
 varchar ST_IsValidReason(GEOMETRY geom);
-varchar ST_IsValidReason(GEOMETRY geom, int flag);
+varchar ST_IsValidReason(GEOMETRY geom, INT flag);
 {% endhighlight %}
 
 ### Description
-Returns text stating if a geometry is valid or not and if not valid, a reason why. 
+Returns text stating if a `geom` is valid or not and if not valid, a reason why. 
 The value for `flag` can be:
 * 0 = It will based on the OGC geometry model(Default value),
 * 1 = It will validate inverted shells and exverted holes according the ESRI SDE model. 

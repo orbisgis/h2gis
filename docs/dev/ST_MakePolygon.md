@@ -19,7 +19,7 @@ POLYGON ST_MakePolygon(GEOMETRY shell, GEOMETRY holes)
 Creates a Polygon formed by the given `shell` and optionally `holes`.
 
 <div class="note">
-	<h5>Input `GEOMETRIES` must be closed `LINESTRING`</h5>
+	<h5>Input `geom` must be closed `LINESTRING`</h5>
 </div>
 
 ### Examples
@@ -27,12 +27,12 @@ Creates a Polygon formed by the given `shell` and optionally `holes`.
 {% highlight mysql %}
 SELECT ST_MakePolygon('POINT(100 250)');
 -- Answer: Exception calling user-defined function: 
---    "makePolygon(POINT (100 250)): Only support linestring."
+--    "makePolygon(POINT(100 250)): Only support linestring."
 
 SELECT ST_MakePolygon('LINESTRING(100 250, 100 350, 200 350, 
                                   200 250)');
 -- Answer: Exception calling user-defined function: 
---    "makePolygon(LINESTRING (100 250, 100 350, 200 350, 200 250))
+--    "makePolygon(LINESTRING(100 250, 100 350, 200 350, 200 250))
 --    : The linestring must be closed."
 
 SELECT ST_MakePolygon('LINESTRING(100 250, 100 350, 200 350, 
@@ -41,8 +41,8 @@ SELECT ST_MakePolygon('LINESTRING(100 250, 100 350, 200 350,
 
 SELECT ST_MakePolygon('LINESTRING(0 5, 4 5, 4 0, 0 0, 0 5)', 
                       'LINESTRING(1 1, 1 2, 2 2, 2 1, 1 1)');
--- Answer: POLYGON ((0 5, 4 5, 4 0, 0 0, 0 5), 
---                  (1 1, 1 2, 2 2, 2 1, 1 1))
+-- Answer: POLYGON((0 5, 4 5, 4 0, 0 0, 0 5), 
+--                 (1 1, 1 2, 2 2, 2 1, 1 1))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_MakePolygon_1.png"/>

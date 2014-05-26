@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_MakeGridPoints/
 
 {% highlight mysql %}
 tableName[NODE_GEOM, ID, ID_COL, ID_ROW] ST_MakeGridPoints(
-    Value value, double deltaX, double deltaY);
+    VALUE value, DOUBLE deltaX, DOUBLE deltaY);
 {% endhighlight %}
 
 ### Description
@@ -52,7 +52,7 @@ SELECT * FROM grid;
 
 CREATE TABLE input_table(the_geom Geometry);
 INSERT INTO input_table VALUES('POLYGON((0 0, 2 0, 2 2, 0 0))');
-INSERT INTO input_table VALUES('POLYGON((1 1, 2 2, 1 2, 1 1 ))');
+INSERT INTO input_table VALUES('POLYGON((1 1, 2 2, 1 2, 1 1))');
 CREATE TABLE grid AS SELECT * FROM ST_MakeGridPoints((SELECT 
    ST_Union(ST_Accum(the_geom)) FROM input_table), 1, 1);
 SELECT * FROM grid;

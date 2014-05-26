@@ -15,7 +15,7 @@ double ST_Azimuth(GEOMETRY PointA, GEOMETRY PointB);
 {% endhighlight %}
 
 ### Description
-Returns the `azimuth` of the segment defined by the given `POINT`s, or null if the two `POINT`s are coincident. Return value is in radians. Angle is computed clockwise from the north equals to 0.
+Returns the azimuth of the segment defined by the given `POINT`s, or null if the two `POINT`s are coincident. Return value is in radians. Angle is computed clockwise from the north equals to 0.
 
 ### Examples
 

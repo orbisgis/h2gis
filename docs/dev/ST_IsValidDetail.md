@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_IsValidDetail/
 
 {% highlight mysql %}
 Object[] isValidDetail(GEOMETRY geom);
-Object[] isValidDetail(GEOMETRY geom, int flag);
+Object[] isValidDetail(GEOMETRY geom, INT flag);
 {% endhighlight %}
 
 ### Description

@@ -11,13 +11,13 @@ permalink: /docs/dev/ST_GeometryTypeCode/
 ### Signature
 
 {% highlight mysql %}
-int ST_GeometryTypeCode(GEOMETRY geom);
+INT ST_GeometryTypeCode(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
 Returns the geometry type code from OGC SFS 
 <a href="http://www.opengeospatial.org/standards/sfs" target="_blank">version 1.2.1</a>. 
-This function does not take account of Z or M values.
+This function does not take account of z or m values.
 This function is not part of SFS. It is used in constraints.
 
 | Code |    Geometry  type   |
@@ -45,10 +45,11 @@ SELECT ST_GeometryTypeCode('LINESTRING(1 1, 5 5)'::Geometry);
 
 SELECT ST_GeometryTypeCode(ST_Geomfromtext(
                             'MULTIPOLYGON(((1 1, 2 2, 5 3, 1 1)),
-                                          ((0 0, 2 2, 5 3, 0 0)))');
+                                          ((0 0, 2 2, 5 3, 0 0)))'));
 -- Answer: 6
 {% endhighlight %}
 
 ##### See also
 
+* [`ST_GeometryType`](../ST_GeometryType)
 * <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_GeometryTypeCode.java" target="_blank">Source code</a>

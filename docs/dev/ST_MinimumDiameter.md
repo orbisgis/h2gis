@@ -15,7 +15,7 @@ LINESTRING ST_MinimumDiameter(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Returns the minimum diameter for a input `GEOMETRY`. 
+Returns the minimum diameter for a `geom`. 
 The minimum diameter is computed from to the minimum rectangle which encloses a input
 Geometry.
 

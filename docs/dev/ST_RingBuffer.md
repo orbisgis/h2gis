@@ -11,14 +11,14 @@ permalink: /docs/dev/ST_RingBuffer/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_RingBuffer(GEOMETRY geom, double bufferSize, 
-                       int numBuffer);
-GEOMETRY ST_RingBuffer(GEOMETRY geom, double bufferSize, 
-                       int numBuffer, varchar endCapStyle);
+GEOMETRY ST_RingBuffer(GEOMETRY geom, DOUBLE bufferSize, 
+                       INT numBuffer);
+GEOMETRY ST_RingBuffer(GEOMETRY geom, DOUBLE bufferSize, 
+                       INT numBuffer, VARCHAR endCapStyle);
 {% endhighlight %}
 
 ### Description
-Returns a `ring buffer` around a Geometry. 
+Returns a ring buffer around a `geom`. 
 Avalaible arguments are : 
 - (1) the geometry, 
 - (2) the size of each ring, 

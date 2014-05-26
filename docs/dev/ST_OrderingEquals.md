@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_OrderingEquals/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_OrderingEquals(GEOMETRY geomA, GEOMETRY geomB);
+BOOLEAN ST_OrderingEquals(GEOMETRY geomA, GEOMETRY geomB);
 {% endhighlight %}
 
 ### Description
