@@ -61,22 +61,33 @@ public class GeometryAsserts {
     }
 
     /**
-     * Check Geometry type,X,Y,Z and SRID
+     * Check Geometry type,X,Y,Z
      *
      * @param expectedWKT Expected value, in WKT
      * @param valueObject Test value geometry ex rs.getObject(i)
      * @throws SQLException If WKT or WKB is not valid
      */
     public static void assertGeometryEquals(String expectedWKT, Object valueObject) throws SQLException {
+        assertGeometryEquals(expectedWKT, 0, valueObject);
+    }
+
+
+    /**
+     * Check Geometry type,X,Y,Z and SRID
+     *
+     * @param expectedWKT Expected value, in WKT
+     * @param valueObject Test value geometry ex rs.getObject(i)
+     * @throws SQLException If WKT or WKB is not valid
+     */
+    public static void assertGeometryEquals(String expectedWKT,int expectedSRID, Object valueObject) throws SQLException {
         if (expectedWKT == null) {
             assertNull(valueObject);
         } else {
-            ValueGeometry expected = ValueGeometry.get(expectedWKT);
+            ValueGeometry expected = ValueGeometry.get(expectedWKT, expectedSRID);
             ValueGeometry actual = ValueGeometry.getFromGeometry(valueObject);
             assertEquals("Expected:\n" + expected.getWKT() + "\nActual:\n" + actual.getWKT(), expected, actual);
         }
     }
-
     /**
      * Check only X,Y and geometry type
      *
@@ -98,9 +109,25 @@ public class GeometryAsserts {
         assertGeometryBarelyEquals(expectedWKT, resultSetObject, EPSILON);
     }
 
+    /**
+     * Equals test with epsilon error acceptance.
+     * @param expectedWKT Expected value, in WKT
+     * @param resultSetObject Geometry, rs.getObject(i)
+     * @param epsilon epsilon error acceptance
+     */
     public static void assertGeometryBarelyEquals(String expectedWKT, Object resultSetObject, double epsilon) {
+        assertGeometryBarelyEquals(expectedWKT, 0, resultSetObject, epsilon);
+    }
+
+    /**
+     * Equals test with epsilon error acceptance and SRID.
+     * @param expectedWKT Expected value, in WKT
+     * @param expectedSRID Expected SRID Value
+     * @param epsilon epsilon error acceptance
+     */
+    public static void assertGeometryBarelyEquals(String expectedWKT,int expectedSRID, Object resultSetObject, double epsilon) {
         assertTrue(resultSetObject instanceof Geometry);
-        Geometry expectedGeometry = ValueGeometry.get(expectedWKT).getGeometry();
+        Geometry expectedGeometry = ValueGeometry.get(expectedWKT, expectedSRID).getGeometry();
         Geometry result = (Geometry) resultSetObject;
         assertEquals(expectedGeometry.getGeometryType(), result.getGeometryType());
         assertEquals(expectedGeometry.getNumPoints(), result.getNumPoints());
