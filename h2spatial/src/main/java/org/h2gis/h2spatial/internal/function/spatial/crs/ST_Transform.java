@@ -23,9 +23,7 @@
  */
 package org.h2gis.h2spatial.internal.function.spatial.crs;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.geom.util.GeometryTransformer;
 import org.cts.CRSFactory;
@@ -103,7 +101,7 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                 if (op != null) {
                     Geometry g = getGeometryTransformer(op).transform(geom);
                     g.setSRID(codeEpsg);
-                    return g;
+                    return checkInputOutputType(g);
                 } else {
                     if (inputCRS instanceof GeodeticCRS && targetCRS instanceof GeodeticCRS) {
                         List<CoordinateOperation> ops = CoordinateOperationFactory
@@ -111,9 +109,9 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                         if (!ops.isEmpty()) {
                             op = ops.get(0);
                             Geometry g = getGeometryTransformer(op).transform(geom);
-                            g.setSRID(codeEpsg);
                             copPool.put(epsg, op);
-                            return g;
+                            g.setSRID(codeEpsg);
+                            return checkInputOutputType(g);
                         }
                     }
                     else{
@@ -128,6 +126,16 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
             srr.setConnection(null);
         }
         return null;
+    }
+
+    private static Geometry checkInputOutputType(Geometry g) {
+        if (g instanceof LineString) {
+            final MultiLineString multiLineString =
+                    g.getFactory().createMultiLineString(new LineString[]{(LineString) g});
+            multiLineString.setSRID(g.getSRID());
+            return multiLineString;
+        }
+        return g;
     }
 
     /**

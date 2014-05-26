@@ -105,10 +105,10 @@ public class CRSFunctionTest {
 
     @Test
     public void testST_TransformOnMULTILINESTRING() throws Exception {
-        checkProjectedGeom("MULTILINESTRING (" +
-//                        "(0.1694521 48.0192933, 0.1689231 48.0192773, 0.1681234 48.0192546, 0.1678298 48.0192496, 0.1675287 48.0192506, 0.1672488 48.0192595, 0.1669678 48.0192732, 0.1667162 48.0192916, 0.1664717 48.0193148, 0.1662647 48.0193379, 0.1659957 48.0193753, 0.1657474 48.0194128, 0.1651167 48.0195299, 0.1640464 48.0197309, 0.1638817 48.0197595, 0.1637123 48.0197833, 0.1634991 48.0198063, 0.1632601 48.0198229))", 4326, 2154,
-                        "(0 0, 1 0))", 4326, 2154,
-                "POINT(565767.906 2669005.730)");
+        checkProjectedGeom("MULTILINESTRING ((0 0, 1 0))", 4326, 4326,
+                "MULTILINESTRING ((0 0, 1 0))");
+        checkProjectedGeom("MULTILINESTRING ((0 0, 1 0))", 4326, 2154,
+                "MULTILINESTRING ((253531.13052374893 909838.9305578731, 402314.3004489759 905126.789845651))");
     }
 
     private void checkProjectedGeom(String inputGeom, int inProj, int outProj, String expectedGeom) throws SQLException {
