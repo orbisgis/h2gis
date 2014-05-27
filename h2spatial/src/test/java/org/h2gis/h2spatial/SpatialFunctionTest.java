@@ -130,6 +130,19 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_Accum_LeftJoin() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS LEFT_TEST, RIGHT_TEST");
+        st.execute("CREATE TABLE LEFT_TEST(GID serial, the_geom POINT)");
+        st.execute("CREATE TABLE RIGHT_TEST(GID serial, the_geom POINT)");
+        st.execute("INSERT INTO LEFT_TEST(the_geom) VALUES ('POINT(1 1)')");
+        ResultSet rs = st.executeQuery("SELECT ST_Accum(r.the_geom) FROM LEFT_TEST L LEFT JOIN RIGHT_TEST R ON (L.GID = R.GID) group by l.gid");
+        assertTrue(rs.next());
+        assertGeometryEquals("GEOMETRYCOLLECTION EMPTY", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
     public void testFunctionRemarks() throws SQLException {
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DummyFunction(), "");
         ResultSet procedures = connection.getMetaData().getProcedures(null, null, "DUMMYFUNCTION");

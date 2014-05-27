@@ -77,8 +77,8 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
         if(o instanceof Geometry) {
             Geometry geom = (Geometry)o;
             addGeometry(geom);
-        } else {
-            throw new SQLException();
+        } else if(o != null) {
+            throw new SQLException("ST_ACCUM accept only Geometry values not "+o.getClass().getSimpleName());
         }
     }
 
