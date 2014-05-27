@@ -233,12 +233,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       boolean orientBySlope) throws SQLException {
         ST_Graph f = new ST_Graph(connection, tableName, tolerance, orientBySlope);
         // Check for a primary key
-        final DatabaseMetaData md = connection.getMetaData();
-        final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(md, f.tableName.getTable());
+        final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, f.tableName.getTable());
         if (pkIndex == 0) {
             throw new IllegalStateException("Table " + f.tableName.getTable()
                     + " must contain a single integer primary key.");
         }
+        final DatabaseMetaData md = connection.getMetaData();
         final String pkColName = JDBCUtilities.getFieldName(md, f.tableName.getTable(), pkIndex);
         // Check the geometry column type;
         f.getSpatialFieldIndexAndColumnCount(spatialFieldName);

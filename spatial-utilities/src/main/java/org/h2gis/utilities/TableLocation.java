@@ -143,7 +143,7 @@ public class TableLocation {
     }
 
     /**
-     * Change case of parameters in order to it more user friendly.
+     * Change case of parameters in order to make it more user friendly.
      * @param identifier Table, Catalog, Schema, or column name.
      * @param isH2Database True if H2, False if PostGreSQL, null if unknown.
      * @return Upper or lower case version of identifier.
