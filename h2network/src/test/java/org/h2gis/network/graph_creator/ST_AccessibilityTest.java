@@ -93,17 +93,17 @@ public class ST_AccessibilityTest {
     public void DO() throws Exception {
         final int[] closestDests15 = new int[]{1, 5, 5, 5, 5};
         final double[] dists15 = new double[]{0.0, 2.0, 1.0, 1.0, 0.0};
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', '1, 5')
         check(compute(DO, "'1, 5'"), closestDests15, dists15);
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'dest15')
         check(compute(DO, "'dest15'"), closestDests15, dists15);
         final double[] dists234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', '2, 3, 4')
         check234DO(compute(DO, "'2, 3, 4'"), dists234);
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', '2, 3, 4')
         check234DO(compute(DO, "'dest234'"), dists234);
     }
@@ -120,33 +120,33 @@ public class ST_AccessibilityTest {
 
     @Test
     public void WDO() throws Exception {
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'weight', '1, 5')
         check(compute(DO, W, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'weight', 'dest15')
         check(compute(DO, W, "'dest15'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'weight', '2, 3, 4')
         check(compute(DO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 4}, new double[]{5.0, 0.0, 0.0, 0.0, 6.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'weight', 'dest234')
         check(compute(DO, W, "'dest234'"), new int[]{3, 2, 3, 4, 4}, new double[]{5.0, 0.0, 0.0, 0.0, 6.0});
     }
 
     @Test
     public void RO() throws Exception {
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', '1, 5')
         check(compute(RO, "'1, 5'"), new int[]{1, 1, 1, 5, 5}, new double[]{0.0, 1.0, 1.0, 1.0, 0.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', 'dest15')
         check(compute(RO, "'dest15'"), new int[]{1, 1, 1, 5, 5}, new double[]{0.0, 1.0, 1.0, 1.0, 0.0});
         final double[] dist234 = new double[]{2.0, 0.0, 0.0, 0.0, 1.0};
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', '2, 3, 4')
         check234RO(compute(RO, "'2, 3, 4'"), dist234);
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', 'dest234')
         check234RO(compute(RO, "'dest234'"), dist234);
     }
@@ -173,16 +173,16 @@ public class ST_AccessibilityTest {
 
     @Test
     public void WRO() throws Exception {
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', 'weight', '1, 5')
         check(compute(RO, W, "'1, 5'"), new int[]{1, 5, 1, 5, 5}, new double[]{0.0, 7.0, 5.0, 6.0, 0.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', 'weight', 'dest15')
         check(compute(RO, W, "'dest15'"), new int[]{1, 5, 1, 5, 5}, new double[]{0.0, 7.0, 5.0, 6.0, 0.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', 'weight', '2, 3, 4')
         check(compute(RO, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{9.0, 0.0, 0.0, 0.0, 2.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'reversed - edge_orientation', 'weight', 'dest234')
         check(compute(RO, W, "'dest234'"), new int[]{3, 2, 3, 4, 3}, new double[]{9.0, 0.0, 0.0, 0.0, 2.0});
     }
@@ -190,17 +190,17 @@ public class ST_AccessibilityTest {
     @Test
     public void U() throws Exception {
         final double[] dist15 = new double[]{0.0, 1.0, 1.0, 1.0, 0.0};
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'undirected', '1, 5')
         check15U(compute(U, "'1, 5'"), dist15);
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'undirected', 'dest15')
         check15U(compute(U, "'dest15'"), dist15);
         final double[] dist234 = new double[]{1.0, 0.0, 0.0, 0.0, 1.0};
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'undirected', '2, 3, 4')
         check234U(compute(U, "'2, 3, 4'"), dist234);
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'undirected', 'dest234')
         check234U(compute(U, "'dest234'"), dist234);
     }
@@ -237,30 +237,30 @@ public class ST_AccessibilityTest {
 
     @Test
     public void WU() throws Exception {
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'undirected', 'weight', '1, 5')
         check(compute(U, W, "'1, 5'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'undirected', 'weight', 'dest15')
         check(compute(U, W, "'dest15'"), new int[]{1, 5, 5, 5, 5}, new double[]{0.0, 4.0, 2.0, 4.0, 0.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'undirected', 'weight', '2, 3, 4')
         check(compute(U, W, "'2, 3, 4'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'undirected', 'weight', 'dest234')
         check(compute(U, W, "'dest234'"), new int[]{3, 2, 3, 4, 3}, new double[]{5.0, 0.0, 0.0, 0.0, 2.0});
     }
 
     @Test
     public void DOSingleDestination() throws Exception {
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', '5')
         check(compute(DO, "'5'"), new int[]{5, 5, 5, 5, 5}, new double[]{1.0, 2.0, 1.0, 1.0, 0.0});
     }
 
     @Test
     public void WDOSingleDestination() throws Exception {
-        // SELECT * FROM ST_Accessibility('cormen_edges_all',
+        // SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'weight', '5')
         check(compute(DO, W, "'5'"), new int[]{5, 5, 5, 5, 5}, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
     }
@@ -268,7 +268,7 @@ public class ST_AccessibilityTest {
     @Test
     public void testST_AccST_SPLSingleDestEquivalence() throws Exception {
         final ResultSet sPL = st.executeQuery(
-                "SELECT * FROM ST_ShortestPathLength('cormen_edges_all', " +
+                "SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
                 "'reversed - edge_orientation', 'weight', 5)");
         final Map<Integer, Double> distancesMap = new HashMap<Integer, Double>();
         try {
@@ -281,7 +281,7 @@ public class ST_AccessibilityTest {
             sPL.close();
         }
         final ResultSet aCC = st.executeQuery(
-                "SELECT * FROM ST_Accessibility('cormen_edges_all', " +
+                "SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL', " +
                 "'directed - edge_orientation', 'weight', '5')");
         try {
             while (aCC.next()) {
@@ -296,7 +296,7 @@ public class ST_AccessibilityTest {
 
     private ResultSet compute(String orientation, String weight, String destinationString) throws SQLException {
         return st.executeQuery(
-                "SELECT * FROM ST_Accessibility('cormen_edges_all', "
+                "SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL', "
                         + orientation + ((weight != null) ? ", " + weight : "")
                         + ", " + destinationString + ")");
     }

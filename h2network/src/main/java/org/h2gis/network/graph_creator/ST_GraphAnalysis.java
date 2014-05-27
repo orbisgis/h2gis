@@ -50,7 +50,11 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
             "* `o` = Global orientation (directed, reversed or undirected)\n" +
             "* `eo` = Edge orientation (1 = directed, -1 = reversed, 0 = undirected).\n" +
             "  Required if global orientation is directed or reversed.\n" +
-            "* `w` = Name of column containing edge weights as doubles\n";
+            "* `w` = Name of column containing edge weights as doubles\n" +
+            "\n" +
+            "**WARNING**: If ST_GraphAnalysis is called on a graph with more than one\n" +
+            "(strongly) connected component, all closeness centrality scores will be zero.\n" +
+            "See ST_ConnectedComponents.\n";
 
     /**
      * Constructor

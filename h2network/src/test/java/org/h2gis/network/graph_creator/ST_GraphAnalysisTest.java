@@ -55,6 +55,7 @@ public class ST_GraphAnalysisTest {
     private static final String RO = "'reversed - edge_orientation'";
     private static final String U = "'undirected'";
     private static final String W = "'weight'";
+    public static final String LINE_GRAPH_TABLE = "LINE_GRAPH_EDGES";
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -420,12 +421,8 @@ public class ST_GraphAnalysisTest {
 
     private void testBatchComputation(final int n) throws SQLException {
         // Here we test the closeness and betweenness centrality computations
-        // on an undirected unweighted graph, with nodes n and edges (e)
-        // numbered as follows:
-        //
-        //        (1)             (2)                                 (n-1)
-        // 1 <-----------> 2 <-----------> 3 <---- ... ----> n-1 <-------------> n
-        //
+        // on a line graph.
+        final String tableName = createLineGraphTable(connection, n);
         // The formulas for unnormalized centrality are simple to work out:
         //
         // C_C(v) = 2(k(k-1)+(n-k)(n-k+1)
@@ -435,25 +432,8 @@ public class ST_GraphAnalysisTest {
         // To normalize betweenness, just find the extreme values of these
         // functions and consider whether n is even or odd. Normalizing
         // closeness amounts to multiplying by (n-1).
-        st.execute("DROP TABLE IF EXISTS LINE_GRAPH_EDGES");
-        st.execute("DROP TABLE IF EXISTS LINE_GRAPH_EDGES" + NODE_CENT_SUFFIX);
-        st.execute("DROP TABLE IF EXISTS LINE_GRAPH_EDGES" + EDGE_CENT_SUFFIX);
-        st.execute("CREATE TEMPORARY TABLE LINE_GRAPH_EDGES(" +
-                EDGE_ID + " INT, " +
-                START_NODE + " INT, " +
-                END_NODE + " INT)");
-        final PreparedStatement ps =
-                connection.prepareStatement("INSERT INTO LINE_GRAPH_EDGES VALUES (?, ?, ?);");
-        try {
-            for (int i = 1; i < n; i++) {
-                ps.setInt(1, i);
-                ps.setInt(2, i);
-                ps.setInt(3, i + 1);
-                ps.addBatch();
-            }
-            ps.executeBatch();
-            checkBoolean(st.executeQuery("SELECT ST_GraphAnalysis('LINE_GRAPH_EDGES', 'undirected');"));
-            ResultSet nodeCent = st.executeQuery("SELECT * FROM LINE_GRAPH_EDGES_NODE_CENT");
+        checkBoolean(st.executeQuery("SELECT ST_GraphAnalysis('" + tableName + "', 'undirected');"));
+            ResultSet nodeCent = st.executeQuery("SELECT * FROM " + tableName + "_NODE_CENT");
             try {
                 // The minimum betweenness value is zero.
                 final double max = (n % 2 == 0) ? n * (n - 2.) / 2 : (n - 1.) * (n - 1) / 2;
@@ -467,7 +447,7 @@ public class ST_GraphAnalysisTest {
             } finally {
                 nodeCent.close();
             }
-            ResultSet edgeCent = st.executeQuery("SELECT * FROM LINE_GRAPH_EDGES_EDGE_CENT");
+            ResultSet edgeCent = st.executeQuery("SELECT * FROM " + tableName + "_EDGE_CENT");
             try {
                 final double min = 2. * (n - 1);
                 final double max = (n % 2 == 0) ? n * n / 2 : (n - 1.) * (n + 1) / 2;
@@ -479,8 +459,41 @@ public class ST_GraphAnalysisTest {
             } finally {
                 edgeCent.close();
             }
+    }
+
+    protected static String createLineGraphTable(Connection connection, int n) throws SQLException {
+        final Statement st = connection.createStatement();
+        try {
+            // Here we create an an undirected unweighted graph, with nodes n and
+            // edges (e) numbered as follows:
+            //
+            //        (1)             (2)                                 (n-1)
+            // 1 <-----------> 2 <-----------> 3 <---- ... ----> n-1 <-------------> n
+            //
+            final String tableName = LINE_GRAPH_TABLE + n;
+            st.execute("DROP TABLE IF EXISTS " + tableName + "");
+            st.execute("DROP TABLE IF EXISTS " + tableName + "" + NODE_CENT_SUFFIX);
+            st.execute("DROP TABLE IF EXISTS " + tableName + "" + EDGE_CENT_SUFFIX);
+            st.execute("CREATE TEMPORARY TABLE " + tableName + "(" +
+                    EDGE_ID + " INT, " +
+                    START_NODE + " INT, " +
+                    END_NODE + " INT)");
+            final PreparedStatement ps =
+                    connection.prepareStatement("INSERT INTO " + tableName + " VALUES (?, ?, ?);");
+            try {
+                for (int i = 1; i < n; i++) {
+                    ps.setInt(1, i);
+                    ps.setInt(2, i);
+                    ps.setInt(3, i + 1);
+                    ps.addBatch();
+                }
+                ps.executeBatch();
+            } finally {
+                ps.close();
+            }
+            return tableName;
         } finally {
-            ps.close();
+            st.close();
         }
     }
 

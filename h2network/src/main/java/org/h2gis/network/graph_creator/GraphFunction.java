@@ -2,6 +2,7 @@ package org.h2gis.network.graph_creator;
 
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.javanetworkanalyzer.model.KeyedGraph;
+import org.slf4j.Logger;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -23,7 +24,6 @@ public class GraphFunction extends AbstractFunction {
      * @param orientation Orientation string
      * @param weight      Weight column name, null for unweighted graphs
      * @return Graph
-     * @throws SQLException
      */
     protected static KeyedGraph prepareGraph(Connection connection,
                                              String inputTable,
@@ -39,5 +39,15 @@ public class GraphFunction extends AbstractFunction {
                 parser.getGlobalOrientation(), parser.getEdgeOrientation(), parser.getWeightColumn(),
                 vertexClass,
                 edgeClass).prepareGraph();
+    }
+
+    /**
+     * Log the time elapsed from startTime until now.
+     *
+     * @param logger    Logger
+     * @param startTime Start time in milliseconds
+     */
+    protected static void logTime(Logger logger, long startTime) {
+        logger.info("    " + (System.currentTimeMillis() - startTime) / 1000. + " seconds");
     }
 }

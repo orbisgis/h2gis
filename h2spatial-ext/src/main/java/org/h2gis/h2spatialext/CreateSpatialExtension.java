@@ -58,10 +58,7 @@ import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.h2spatialext.function.spatial.trigonometry.ST_Azimuth;
-import org.h2gis.network.graph_creator.ST_Accessibility;
-import org.h2gis.network.graph_creator.ST_GraphAnalysis;
-import org.h2gis.network.graph_creator.ST_ShortestPath;
-import org.h2gis.network.graph_creator.ST_ShortestPathLength;
+import org.h2gis.network.graph_creator.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -162,6 +159,7 @@ public class CreateSpatialExtension {
                 new ST_IsValidDetail(),
                 // h2network functions
                 new ST_Accessibility(),
+                new ST_ConnectedComponents(),
                 new ST_Graph(),
                 new ST_GraphAnalysis(),
                 new ST_ShortestPath(),
