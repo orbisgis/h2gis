@@ -98,6 +98,15 @@ public class JDBCUtilitiesTest {
     }
 
     @Test
+    public void testTableExists() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS TEMPTABLE");
+        st.execute("CREATE TABLE TEMPTABLE(id integer, name varchar)");
+        assertTrue(JDBCUtilities.tableExists(connection, "TEMPTABLE"));
+        assertTrue(JDBCUtilities.tableExists(connection, "teMpTAbLE"));
+        assertFalse(JDBCUtilities.tableExists(connection, "\"teMpTAbLE\""));
+    }
+
+    @Test
     public void isH2() throws SQLException {
         assertTrue(JDBCUtilities.isH2DataBase(connection.getMetaData()));
     }
