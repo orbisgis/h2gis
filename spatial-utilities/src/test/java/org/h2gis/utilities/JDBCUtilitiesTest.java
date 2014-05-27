@@ -88,6 +88,17 @@ public class JDBCUtilitiesTest {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
     }
 
+    @Test(expected = SQLException.class)
+    public void testPrimaryKeyExtractOnNonexistantTable() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS TEMPTABLE");
+        try {
+            JDBCUtilities.getIntegerPrimaryKey(connection, "TEMPTABLE");
+        } catch (SQLException e) {
+            assertTrue(e.getMessage().contains("Table TEMPTABLE not found"));
+            throw e;
+        }
+    }
+
     @Test
     public void testGetFieldNameFromIndex() throws SQLException {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
