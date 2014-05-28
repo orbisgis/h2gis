@@ -352,15 +352,10 @@ public class DbaseFileReader {
                                                     object = null;
                                                 }
                                         } catch (NumberFormatException e) {
-                                                // todo: use progresslistener, this isn't a grave error,
-                                                // though it
-                                                // does indicate something is wrong
-
-                                                // okay, now whatever we got was truly undigestable. Lets go
-                                                // with
-                                                // a zero Double.
-                                                object = 0.0d;
-                                                LOG.warn("Unparseable numeric value ("+numberString+"). 0.0 used: ");
+                                            // May be the decimal operator is exotic
+                                            if(numberString.contains(",")) {
+                                                object = Double.parseDouble(numberString.replace(",","."));
+                                            }
                                         }
                                         break;
                                 default:

@@ -312,4 +312,18 @@ public class  DBFEngineTest {
         rs.close();
         st.execute("drop table dbftable");
     }
+
+
+    @Test
+    public void readDBFCommaSeparatorNumericTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("comma_separator.dbf").getPath())+", 'DBFTABLE');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
+        assertTrue(rs.next());
+        assertEquals(1.,rs.getDouble("PREC_PLANI"),1e-12);
+        rs.close();
+        st.execute("drop table dbftable");
+    }
 }
