@@ -12,6 +12,7 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class GeometryTypeNameFromConstraint extends DeterministicScalarFunction {
+
     private static final Map<Integer, String> TYPE_MAP = new HashMap<Integer, String>();
     static {
         // Cache GeometryTypeCodes into a static HashMap
@@ -41,6 +42,10 @@ public class GeometryTypeNameFromConstraint extends DeterministicScalarFunction 
      */
     public static String getGeometryTypeNameFromConstraint(String constraint, int numericPrecision) {
         int geometryTypeCode = GeometryTypeFromConstraint.geometryTypeFromConstraint(constraint, numericPrecision);
+        return getGeometryTypeNameFromCode(geometryTypeCode);
+    }
+
+    public static String getGeometryTypeNameFromCode(int geometryTypeCode) {
         return TYPE_MAP.get(geometryTypeCode);
     }
 }
