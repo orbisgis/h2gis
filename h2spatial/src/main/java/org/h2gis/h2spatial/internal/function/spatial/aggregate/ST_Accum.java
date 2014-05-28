@@ -37,7 +37,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * Construct an array of Geometry.
+ * Construct an array of Geometries.
+ *
  * @author Nicolas Fortin
  */
 public class ST_Accum extends AbstractFunction implements Aggregate {
@@ -53,11 +54,11 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
 
     @Override
     public int getInternalType(int[] inputTypes) throws SQLException {
-        if(inputTypes.length!=1) {
-            throw new SQLException(ST_Accum.class.getSimpleName()+" expect 1 argument.");
+        if (inputTypes.length != 1) {
+            throw new SQLException(ST_Accum.class.getSimpleName() + " expects 1 argument.");
         }
-        if(inputTypes[0]!= Value.GEOMETRY) {
-            throw new SQLException(ST_Accum.class.getSimpleName()+" expect a geometry argument");
+        if (inputTypes[0] != Value.GEOMETRY) {
+            throw new SQLException(ST_Accum.class.getSimpleName() + " expects a Geometry argument");
         }
         return Value.GEOMETRY;
     }
@@ -74,11 +75,12 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
 
     @Override
     public void add(Object o) throws SQLException {
-        if(o instanceof Geometry) {
-            Geometry geom = (Geometry)o;
+        if (o instanceof Geometry) {
+            Geometry geom = (Geometry) o;
             addGeometry(geom);
-        } else {
-            throw new SQLException();
+        } else if (o != null) {
+            throw new SQLException("ST_Accum accepts only Geometry values. Input: " +
+                    o.getClass().getSimpleName());
         }
     }
 
