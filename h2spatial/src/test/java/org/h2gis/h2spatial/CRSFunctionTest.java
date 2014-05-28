@@ -121,8 +121,29 @@ public class CRSFunctionTest {
     public void testST_TransformOnMULTILINESTRING() throws Exception {
         checkProjectedGeom("MULTILINESTRING ((0 0, 1 0))", 4326, 4326,
                 "MULTILINESTRING ((0 0, 1 0))");
-        checkProjectedGeom("MULTILINESTRING ((0 0, 1 0))", 4326, 2154,
-                "MULTILINESTRING ((253531.13052374893 909838.9305578731, 402314.3004489759 905126.789845651))");
+        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM(" +
+                "ST_GeomFromText('MULTILINESTRING ((2.11 50.34, 2.15 51))',  4326 ), 2154);");
+        checkWithTolerance(rs, 
+                "MULTILINESTRING ((636559.3165826919 7027274.112512174, 640202.1706468144 7100786.438815401))", 2154,10E-15 );
+    }
+    
+    @Test
+    public void testST_TransformOnMULTIPOINT() throws Exception {
+        checkProjectedGeom("MULTIPOINT ((0 0), (1 0))", 4326, 4326,
+                "MULTIPOINT ((0 0), (1 0))");
+        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "ST_GeomFromText('MULTIPOINT ((2.11 50.34), (2.11 50.34))',  4326 ), 2154);");
+        checkWithTolerance(rs,
+                "MULTIPOINT ((636559.3165826919 7027274.112512174), (636559.3165826919 7027274.112512174))", 2154, 10E-15);
+    }
+    
+     @Test
+    public void testST_TransformOnMULTIPOLYGON() throws Exception {
+        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "ST_GeomFromText('MULTIPOLYGON (((2 40, 3 40, 3 3, 2 3, 2 40)))',  4326 ), 2154);");
+        checkWithTolerance(rs,
+                "MULTIPOLYGON (((614156.72100231 5877577.312128516, 700000 5877033.734723133, 700000 1336875.474634381, "
+                        + "556660.5833028702 1337783.1294808295, 614156.72100231 5877577.312128516)))", 2154, 10E-15);
     }
 
     private void checkProjectedGeom(String inputGeom, int inProj, int outProj, String expectedGeom) throws SQLException {
