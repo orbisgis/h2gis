@@ -28,6 +28,7 @@ package org.h2gis.osgi.test;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.io.WKTReader;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -48,7 +49,6 @@ import javax.sql.DataSource;
 import java.io.File;
 import java.sql.*;
 import java.util.Properties;
-
 import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.*;
 
@@ -72,7 +72,7 @@ public class BundleTest {
                 mavenBundle("org.osgi", "org.osgi.compendium"),
                 mavenBundle("org.orbisgis", "h2spatial-api"),
                 mavenBundle("org.orbisgis", "spatial-utilities"),
-                mavenBundle("org.orbisgis", "cts"),
+                mavenBundle("org.orbisgis", "cts").version("1.3.3"),
                 mavenBundle("org.orbisgis", "jts"),
                 mavenBundle("org.orbisgis", "jdelaunay"),
                 mavenBundle("com.h2database", "h2").version("1.3.176"),
@@ -122,7 +122,7 @@ public class BundleTest {
             System.out.println(
                     "[" + String.format("%02d", bundle.getBundleId()) + "]\t"
                             + getStateString(bundle.getState()) + "\t"
-                            + bundle.getSymbolicName());
+                            + bundle.getSymbolicName()+"["+bundle.getVersion()+"]");
             // Print services
             ServiceReference[] refs = bundle.getRegisteredServices();
             if(refs!=null) {
@@ -250,6 +250,24 @@ public class BundleTest {
             rs.close();
             stat.execute("drop table area");
             stat.execute("drop table roads");
+        } finally {
+            connection.close();
+        }
+    }
+
+    @Test
+    public void test_ST_Transform27572To4326() throws Exception {
+        Connection connection = getConnection();
+        try {
+            Statement st = connection.createStatement();
+            st.execute("CREATE TABLE init as SELECT ST_GeomFromText('POINT(584173.736059813 2594514.82833411)', 27572) as the_geom;");
+            WKTReader wKTReader = new WKTReader();
+            Geometry targetGeom = wKTReader.read("POINT(2.114551393 50.345609791)");
+            ResultSet srs = st.executeQuery("SELECT ST_TRANSFORM(the_geom, 4326) from init;");
+            assertTrue(srs.next());
+            assertTrue("POINT(2.114551393 50.345609791)", ((Geometry) srs.getObject(1)).equalsExact(targetGeom, 0.0001));
+            assertEquals(4326, ((Geometry) srs.getObject(1)).getSRID());
+            st.execute("DROP TABLE IF EXISTS init;");
         } finally {
             connection.close();
         }
