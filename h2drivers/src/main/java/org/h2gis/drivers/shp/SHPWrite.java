@@ -40,7 +40,7 @@ import java.sql.SQLException;
 public class SHPWrite extends AbstractFunction implements ScalarFunction {
 
     public SHPWrite() {
-        addProperty(PROP_REMARKS, "Transfer the content of a table into a new shape file");
+        addProperty(PROP_REMARKS, "Transfer the content of a table into a new shape file\nCALL SHPWRITE('FILENAME', 'TABLE'[,'ENCODING'])");
     }
 
     @Override

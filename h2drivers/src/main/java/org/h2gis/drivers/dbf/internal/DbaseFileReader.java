@@ -346,19 +346,16 @@ public class DbaseFileReader {
                                     String numberString = extractNumberString(charBuffer, fieldOffset,
                                             fieldLen);
                                         try {
-
-                                                object = Double.parseDouble(numberString);
+                                                if(!numberString.trim().isEmpty()) {
+                                                    object = Double.parseDouble(numberString);
+                                                } else {
+                                                    object = null;
+                                                }
                                         } catch (NumberFormatException e) {
-                                                // todo: use progresslistener, this isn't a grave error,
-                                                // though it
-                                                // does indicate something is wrong
-
-                                                // okay, now whatever we got was truly undigestable. Lets go
-                                                // with
-                                                // a zero Double.
-                                                object = 0.0d;
-                                                LOG.warn("Unparseable numeric value. 0.0 used: "
-                                                        + numberString);
+                                            // May be the decimal operator is exotic
+                                            if(numberString.contains(",")) {
+                                                object = Double.parseDouble(numberString.replace(",","."));
+                                            }
                                         }
                                         break;
                                 default:
