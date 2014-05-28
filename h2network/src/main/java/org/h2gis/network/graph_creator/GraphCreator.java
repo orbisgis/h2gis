@@ -86,10 +86,10 @@ public class GraphCreator<V extends VId, E extends Edge> {
                         String edgeOrientationColumnName,
                         String weightColumn,
                         Class<? extends V> vertexClass,
-                        Class<? extends E> edgeClass) {
+                        Class<? extends E> edgeClass) throws SQLException {
         this.connection = connection;
         if (inputTable != null) {
-            this.tableName = TableLocation.parse(inputTable);
+            this.tableName = TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
         }
         this.weightColumn = weightColumn;
         this.globalOrientation = globalOrientation;

@@ -85,7 +85,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     public static final String TYPE_ERROR = "Only LINESTRINGs and MULTILINESTRINGs are accepted. Type code: ";
 
-    public ST_Graph() {
+    public ST_Graph() throws SQLException {
         this(null, null, 0.0, false);
     }
 
@@ -101,7 +101,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     public ST_Graph(Connection connection,
                     String inputTable,
                     double tolerance,
-                    boolean orientBySlope) {
+                    boolean orientBySlope) throws SQLException {
         if (tolerance < 0) {
             throw new IllegalArgumentException("Only positive tolerances are allowed.");
         }
@@ -109,7 +109,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             this.connection = SFSUtilities.wrapConnection(connection);
         }
         if (inputTable != null) {
-            this.tableName = TableLocation.parse(inputTable);
+            this.tableName = TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
             this.nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
                     tableName.getTable() + "_NODES");
             this.edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),

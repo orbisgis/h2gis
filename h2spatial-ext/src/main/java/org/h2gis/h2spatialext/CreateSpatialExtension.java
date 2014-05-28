@@ -75,7 +75,7 @@ public class CreateSpatialExtension {
     /**
      * @return instance of all built-ins functions
      */
-    public static Function[] getBuiltInsFunctions() {
+    public static Function[] getBuiltInsFunctions() throws SQLException {
         return new Function[] {
                 new DBFRead(),
                 new DBFWrite(),

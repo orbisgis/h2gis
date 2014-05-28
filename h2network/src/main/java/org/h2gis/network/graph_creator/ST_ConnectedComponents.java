@@ -25,6 +25,7 @@
 package org.h2gis.network.graph_creator;
 
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.data.VUCent;
 import org.javanetworkanalyzer.model.Edge;
@@ -79,7 +80,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     /**
      * Constructor
      */
-    public ST_ConnectedComponents() {
+    public ST_ConnectedComponents() throws SQLException {
         this(null, null, null);
     }
 
@@ -92,13 +93,13 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
      */
     public ST_ConnectedComponents(Connection connection,
                                   String inputTable,
-                                  String orientation) {
+                                  String orientation) throws SQLException {
         addProperty(PROP_REMARKS, REMARKS);
         if (connection != null) {
             this.connection = connection;
         }
         if (inputTable != null) {
-            this.tableName = TableLocation.parse(inputTable);
+            this.tableName = TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
             this.nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
                     tableName.getTable() + NODE_COMP_SUFFIX);
             this.edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),

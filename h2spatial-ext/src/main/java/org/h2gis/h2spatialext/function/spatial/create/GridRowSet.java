@@ -16,23 +16,15 @@
  */
 package org.h2gis.h2spatialext.function.spatial.create;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.List;
+import com.vividsolutions.jts.geom.*;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+
+import java.sql.*;
+import java.util.List;
 
 /**
  * GridRowSet is used to populate a result set with all grid cells. A cell could
@@ -204,7 +196,7 @@ public class GridRowSet implements SimpleRowSource {
      */
     private static String getFirstGeometryField(String tableName, Connection connection) throws SQLException {
         // Find first geometry column
-        List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
+        List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
         if (!geomFields.isEmpty()) {
             return geomFields.get(0);
         } else {

@@ -159,7 +159,7 @@ public class KMLWriterDriver {
      */
     private void writeKMLDocument(ProgressVisitor progress, OutputStream outputStream) throws SQLException {
         // Read Geometry Index and type
-        List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName));
+        List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
         if (spatialFieldNames.isEmpty()) {
             throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
         }

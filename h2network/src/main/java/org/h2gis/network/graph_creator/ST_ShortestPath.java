@@ -28,6 +28,7 @@ package org.h2gis.network.graph_creator;
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.alg.Dijkstra;
@@ -85,17 +86,17 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
             "* `s` = Source vertex id\n" +
             "* `d` = Destination vertex id\n";
 
-    public ST_ShortestPath() {
+    public ST_ShortestPath() throws SQLException {
         this(null, null);
     }
 
     public ST_ShortestPath(Connection connection,
-                           String inputTable) {
+                           String inputTable) throws SQLException {
         if (connection != null) {
             this.connection = SFSUtilities.wrapConnection(connection);
         }
         if (inputTable != null) {
-            this.tableName = TableLocation.parse(inputTable);
+            this.tableName = TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
         }
         addProperty(PROP_REMARKS, REMARKS);
     }
@@ -165,7 +166,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
             // Create index on table if it doesn't already exist.
             final Statement st = connection.createStatement();
             try {
-                st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + TableLocation.parse(inputTable)
+                st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()))
                         + "(" + EDGE_ID + ")");
             } finally {
                 st.close();

@@ -26,6 +26,7 @@ package org.h2gis.network.graph_creator;
 
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.analyzers.AccessibilityAnalyzer;
 import org.javanetworkanalyzer.data.VAccess;
@@ -145,7 +146,7 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
         Set<VAccess> destinations = new HashSet<VAccess>();
         try {
             final ResultSet rs = st.executeQuery(
-                    "SELECT * FROM " + TableLocation.parse(destTable).getTable());
+                    "SELECT * FROM " + TableLocation.parse(destTable, JDBCUtilities.isH2DataBase(connection.getMetaData())).getTable());
             while (rs.next()) {
                 destinations.add(graph.getVertex(rs.getInt(DESTINATION)));
             }

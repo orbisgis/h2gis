@@ -215,7 +215,7 @@ public class ST_Explode extends DeterministicScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            TableFunctionUtil.copyFields(connection, rs, TableLocation.parse(tableName));
+            TableFunctionUtil.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
             rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
             return rs;
         }
