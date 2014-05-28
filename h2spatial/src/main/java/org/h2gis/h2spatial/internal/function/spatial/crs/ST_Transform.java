@@ -23,16 +23,9 @@
  */
 package org.h2gis.h2spatial.internal.function.spatial.crs;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import com.vividsolutions.jts.geom.util.GeometryTransformer;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 import org.cts.CRSFactory;
 import org.cts.IllegalCoordinateException;
 import org.cts.crs.CRSException;
@@ -43,13 +36,20 @@ import org.cts.op.CoordinateOperationFactory;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 
 /**
  * This class is used to transform a geometry from one CRS to another. 
  * Only integer codes available in the spatial_ref_sys table are allowed.
  * The default source CRS is the input geometry's internal CRS.
- * 
+ *
  * @author Erwan Bocher
+ * @author Adam Gouge
  */
 public class ST_Transform extends AbstractFunction implements ScalarFunction {
 
@@ -94,25 +94,30 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
             } else {
                 CoordinateReferenceSystem inputCRS = crsf.getCRS(srr.getRegistryName() + ":" + String.valueOf(inputSRID));
                 CoordinateReferenceSystem targetCRS = crsf.getCRS(srr.getRegistryName() + ":" + String.valueOf(codeEpsg));
+                if (inputCRS.equals(targetCRS)) {
+                    return geom;
+                }
                 EPSGTuple epsg = new EPSGTuple(inputSRID, codeEpsg);
                 CoordinateOperation op = copPool.get(epsg);
                 if (op != null) {
                     Geometry g = getGeometryTransformer(op).transform(geom);
                     g.setSRID(codeEpsg);
-                    return g;
+                    return checkInputOutputType(g);
                 } else {
-                    if(inputCRS instanceof GeodeticCRS && targetCRS instanceof GeodeticCRS){
-                    List<CoordinateOperation> ops = CoordinateOperationFactory.createCoordinateOperations((GeodeticCRS) inputCRS, (GeodeticCRS) targetCRS);
-                    if (!ops.isEmpty()) {
-                        op = ops.get(0);
-                        Geometry g = getGeometryTransformer(op).transform(geom);
-                        g.setSRID(codeEpsg);
-                        copPool.put(epsg, op);
-                        return g;
-                    }
+                    if (inputCRS instanceof GeodeticCRS && targetCRS instanceof GeodeticCRS) {
+                        List<CoordinateOperation> ops = CoordinateOperationFactory
+                                .createCoordinateOperations((GeodeticCRS) inputCRS, (GeodeticCRS) targetCRS);
+                        if (!ops.isEmpty()) {
+                            op = ops.get(0);
+                            Geometry g = getGeometryTransformer(op).transform(geom);
+                            copPool.put(epsg, op);
+                            g.setSRID(codeEpsg);
+                            return checkInputOutputType(g);
+                        }
                     }
                     else{
-                        throw new SQLException("This transformation from : "+ inputCRS + " to "+ codeEpsg+ " is not yet supported.");
+                        throw new SQLException("The transformation from " +
+                                inputCRS + " to " + codeEpsg + " is not yet supported.");
                     }
                 }
             }
@@ -122,6 +127,16 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
             srr.setConnection(null);
         }
         return null;
+    }
+
+    private static Geometry checkInputOutputType(Geometry g) {
+        if (g instanceof LineString) {
+            final MultiLineString multiLineString =
+                    g.getFactory().createMultiLineString(new LineString[]{(LineString) g});
+            multiLineString.setSRID(g.getSRID());
+            return multiLineString;
+        }
+        return g;
     }
 
     /**
