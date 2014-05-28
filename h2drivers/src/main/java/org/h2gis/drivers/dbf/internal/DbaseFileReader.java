@@ -346,8 +346,11 @@ public class DbaseFileReader {
                                     String numberString = extractNumberString(charBuffer, fieldOffset,
                                             fieldLen);
                                         try {
-
-                                                object = Double.parseDouble(numberString);
+                                                if(!numberString.trim().isEmpty()) {
+                                                    object = Double.parseDouble(numberString);
+                                                } else {
+                                                    object = null;
+                                                }
                                         } catch (NumberFormatException e) {
                                                 // todo: use progresslistener, this isn't a grave error,
                                                 // though it
@@ -357,8 +360,7 @@ public class DbaseFileReader {
                                                 // with
                                                 // a zero Double.
                                                 object = 0.0d;
-                                                LOG.warn("Unparseable numeric value. 0.0 used: "
-                                                        + numberString);
+                                                LOG.warn("Unparseable numeric value ("+numberString+"). 0.0 used: ");
                                         }
                                         break;
                                 default:

@@ -40,6 +40,7 @@ import java.sql.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -288,4 +289,27 @@ public class  DBFEngineTest {
         st.execute("drop table dbftable");
     }
 
+
+    @Test
+    public void readDBFNullDataTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("null_values.dbf").getPath())+", 'DBFTABLE');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
+        assertTrue(rs.next());
+        assertNull(rs.getObject("MAXSPEED"));
+        assertTrue(rs.next());
+        assertEquals(130, rs.getObject("MAXSPEED"));
+        assertTrue(rs.next());
+        assertEquals(130, rs.getObject("MAXSPEED"));
+        assertTrue(rs.next());
+        assertEquals(130, rs.getObject("MAXSPEED"));
+        assertTrue(rs.next());
+        assertEquals(90, rs.getObject("MAXSPEED"));
+        assertTrue(rs.next());
+        assertNull(rs.getObject("MAXSPEED"));
+        rs.close();
+        st.execute("drop table dbftable");
+    }
 }
