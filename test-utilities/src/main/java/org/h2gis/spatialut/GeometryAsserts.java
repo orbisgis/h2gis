@@ -76,6 +76,7 @@ public class GeometryAsserts {
      * Check Geometry type,X,Y,Z and SRID
      *
      * @param expectedWKT Expected value, in WKT
+     * @param expectedSRID Expected SRID code,
      * @param valueObject Test value geometry ex rs.getObject(i)
      * @throws SQLException If WKT or WKB is not valid
      */

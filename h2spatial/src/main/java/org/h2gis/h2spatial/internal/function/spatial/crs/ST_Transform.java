@@ -24,8 +24,6 @@
 package org.h2gis.h2spatial.internal.function.spatial.crs;
 
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import com.vividsolutions.jts.geom.util.GeometryTransformer;
 import org.cts.CRSFactory;
 import org.cts.IllegalCoordinateException;
 import org.cts.crs.CRSException;
@@ -100,19 +98,21 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                 EPSGTuple epsg = new EPSGTuple(inputSRID, codeEpsg);
                 CoordinateOperation op = copPool.get(epsg);
                 if (op != null) {
-                    Geometry g = getGeometryTransformer(op).transform(geom);
-                    g.setSRID(codeEpsg);
-                    return checkInputOutputType(g);
+                    Geometry outPutGeom = (Geometry)geom.clone();
+                    outPutGeom.apply(new CRSTransformFilter(op));
+                    outPutGeom.setSRID(codeEpsg);
+                    return outPutGeom;
                 } else {
                     if (inputCRS instanceof GeodeticCRS && targetCRS instanceof GeodeticCRS) {
                         List<CoordinateOperation> ops = CoordinateOperationFactory
                                 .createCoordinateOperations((GeodeticCRS) inputCRS, (GeodeticCRS) targetCRS);
                         if (!ops.isEmpty()) {
                             op = ops.get(0);
-                            Geometry g = getGeometryTransformer(op).transform(geom);
+                            Geometry outPutGeom = (Geometry)geom.clone();
+                            outPutGeom.apply(new CRSTransformFilter(op));
                             copPool.put(epsg, op);
-                            g.setSRID(codeEpsg);
-                            return checkInputOutputType(g);
+                            outPutGeom.setSRID(codeEpsg);
+                            return outPutGeom;
                         }
                     }
                     else{
@@ -129,55 +129,41 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
         return null;
     }
 
-    private static Geometry checkInputOutputType(Geometry g) {
-        if (g instanceof LineString) {
-            final MultiLineString multiLineString =
-                    g.getFactory().createMultiLineString(new LineString[]{(LineString) g});
-            multiLineString.setSRID(g.getSRID());
-            return multiLineString;
-        }
-        return g;
-    }
-
+  
     /**
      * This method is used to apply a {@link CoordinateOperation} to a geometry.
-     * The transformation loops on each coordinate.
-     *
-     * @param coordinateOperation The CoordinateOperation to apply
-     * @return {@link GeometryTransformer}
-     * @throws SQLException
+     * The transformation loops on each coordinate. 
      */
-    public static GeometryTransformer getGeometryTransformer(final CoordinateOperation coordinateOperation) throws SQLException {
-        GeometryTransformer gt = new GeometryTransformer() {
-                @Override
-                protected CoordinateSequence transformCoordinates(
-                        CoordinateSequence cs, Geometry geom) {
-                    Coordinate[] cc = geom.getCoordinates();
-                    CoordinateSequence newcs = new CoordinateArraySequence(cc);
-                    for (int i = 0; i < cc.length; i++) {
-                        Coordinate c = cc[i];
-                        try {
-                            if (Double.isNaN(c.z)) {
-                                c.z = 0;
-                            }
-                            double[] xyz = coordinateOperation
-                                    .transform(new double[]{c.x, c.y, c.z});
-                            newcs.setOrdinate(i, 0, xyz[0]);
-                            newcs.setOrdinate(i, 1, xyz[1]);
-                            if (xyz.length > 2) {
-                                newcs.setOrdinate(i, 2, xyz[2]);
-                            } else {
-                                newcs.setOrdinate(i, 2, Double.NaN);
-                            }
-                        } catch (IllegalCoordinateException ice) {
-                            throw new RuntimeException("Cannot transform the coordinate" + c.toString(), ice);
-                        }
-                    }
-                    return newcs;
-                }
-            };        
-        return gt;
+    public static class CRSTransformFilter implements CoordinateFilter{
+        private final CoordinateOperation coordinateOperation;
 
+      
+        public CRSTransformFilter(final CoordinateOperation coordinateOperation){
+            this.coordinateOperation=coordinateOperation;            
+        }
+       
+        @Override
+        public void filter(Coordinate coord) {
+            try {
+                if (Double.isNaN(coord.z)) {
+                    coord.z = 0;
+                }
+                double[] xyz = coordinateOperation
+                        .transform(new double[]{coord.x, coord.y, coord.z});
+                coord.x = xyz[0];
+                coord.y = xyz[1];
+                if (xyz.length > 2) {
+                    coord.z = xyz[2];
+                } else {
+                    coord.z = Double.NaN;
+                }
+            } catch (IllegalCoordinateException ice) {
+                throw new RuntimeException("Cannot transform the coordinate" + coord.toString(), ice);
+            }
+
+        }
+        
+    
     }
 
     /**
