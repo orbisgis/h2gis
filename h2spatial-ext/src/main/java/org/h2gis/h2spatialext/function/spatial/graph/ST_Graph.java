@@ -274,7 +274,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 final int type = geomTypeCodes.getInt(1);
                 if (type != GeometryTypeCodes.LINESTRING && type != GeometryTypeCodes.MULTILINESTRING) {
                     throw new IllegalArgumentException(TYPE_ERROR +
-                            GeometryTypeNameFromConstraint.getGeometryTypeNameFromCode(type));
+                            SFSUtilities.getGeometryTypeNameFromCode(type));
                 }
             }
         } finally {
