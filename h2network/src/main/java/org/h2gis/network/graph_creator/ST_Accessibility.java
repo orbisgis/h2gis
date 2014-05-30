@@ -146,7 +146,7 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
         Set<VAccess> destinations = new HashSet<VAccess>();
         try {
             final ResultSet rs = st.executeQuery(
-                    "SELECT * FROM " + TableLocation.parse(destTable, JDBCUtilities.isH2DataBase(connection.getMetaData())).getTable());
+                    "SELECT * FROM " + TableLocation.parse(destTable, JDBCUtilities.isH2DataBase(connection.getMetaData())));
             while (rs.next()) {
                 destinations.add(graph.getVertex(rs.getInt(DESTINATION)));
             }
