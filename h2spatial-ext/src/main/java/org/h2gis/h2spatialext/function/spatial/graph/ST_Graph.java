@@ -387,7 +387,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private void nodesTable(Statement st) throws SQLException {
         logger.info("Creating the nodes table...");
         // Creating nodes table by removing copies from the pts table.
-        st.execute("DROP TABLE IF EXISTS " + nodesName + ";");
         if (tolerance > 0) {
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -417,7 +416,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     private void edgesTable(Statement st) throws SQLException {
         logger.info("Creating the edges table...");
-        st.execute("DROP TABLE IF EXISTS " + edgesName + ";");
         if (tolerance > 0) {
             st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(EXP);");
             st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT_EXP);");
