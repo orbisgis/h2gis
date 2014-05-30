@@ -30,6 +30,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,6 +47,8 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class SFSUtilities {
+
+    private static final Map<Integer, String> TYPE_MAP = new HashMap<Integer, String>();
     private static final Map<String, Integer> GEOM_TYPE_TO_SFS_CODE;
     static {
         GEOM_TYPE_TO_SFS_CODE = new HashMap<String, Integer>();
@@ -57,6 +60,18 @@ public class SFSUtilities {
         GEOM_TYPE_TO_SFS_CODE.put("multipolygon", GeometryTypeCodes.MULTIPOLYGON);
         GEOM_TYPE_TO_SFS_CODE.put("geometry", GeometryTypeCodes.GEOMETRY);
         GEOM_TYPE_TO_SFS_CODE.put("geometrycollection", GeometryTypeCodes.GEOMCOLLECTION);
+        // Cache GeometryTypeCodes into a static HashMap
+        for(Field field : GeometryTypeCodes.class.getDeclaredFields()) {
+            try {
+                TYPE_MAP.put(field.getInt(null),field.getName());
+            } catch (IllegalAccessException ex) {
+                //pass
+            }
+        }
+    }
+
+    public static String getGeometryTypeNameFromCode(int geometryTypeCode) {
+        return TYPE_MAP.get(geometryTypeCode);
     }
 
     /**

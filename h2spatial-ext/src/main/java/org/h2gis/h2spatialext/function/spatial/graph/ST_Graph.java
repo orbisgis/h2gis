@@ -24,6 +24,7 @@
 
 package org.h2gis.h2spatialext.function.spatial.graph;
 
+import org.h2gis.h2spatial.internal.type.GeometryTypeNameFromConstraint;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
@@ -81,6 +82,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private Integer spatialFieldIndex;
 
     private final Logger logger = LoggerFactory.getLogger("gui." + ST_Graph.class);
+
+    public static final String TYPE_ERROR = "Only LINESTRINGs and MULTILINESTRINGs are accepted. Type code: ";
 
     public ST_Graph() {
         this(null, null, 0.0, false);
@@ -261,11 +264,21 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     private void checkGeometryType() throws SQLException {
-        final String fieldName = JDBCUtilities.getFieldName(connection.getMetaData(), tableName.getTable(), spatialFieldIndex);
-        final int type = SFSUtilities.getGeometryType(connection, tableName, fieldName);
-        if (type != GeometryTypeCodes.LINESTRING && type != GeometryTypeCodes.MULTILINESTRING) {
-            throw new IllegalArgumentException("Column " + fieldName + " must be of type LINESTRING " +
-                    "or MULTILINESTRING.");
+        final Statement st = connection.createStatement();
+        try {
+            final String fieldName =
+                    JDBCUtilities.getFieldName(connection.getMetaData(), tableName.getTable(), spatialFieldIndex);
+            final ResultSet geomTypeCodes =
+                    st.executeQuery("SELECT DISTINCT ST_GeometryTypeCode(" + fieldName + ") FROM " + tableName);
+            while (geomTypeCodes.next()) {
+                final int type = geomTypeCodes.getInt(1);
+                if (type != GeometryTypeCodes.LINESTRING && type != GeometryTypeCodes.MULTILINESTRING) {
+                    throw new IllegalArgumentException(TYPE_ERROR +
+                            SFSUtilities.getGeometryTypeNameFromCode(type));
+                }
+            }
+        } finally {
+            st.close();
         }
     }
 
