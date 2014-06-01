@@ -56,7 +56,7 @@ public class DBFDriverFunction implements DriverFunction {
 
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         // Read table content
         Statement st = connection.createStatement();
         ProgressVisitor lineProgress = null;
@@ -140,14 +140,14 @@ public class DBFDriverFunction implements DriverFunction {
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceFileEncoding) throws SQLException, IOException {
         DBFDriver dbfDriver = new DBFDriver();
         dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
         try {
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
             st.execute(String.format("CREATE TABLE %s (%s)", parsedTable,
-                    getSQLColumnTypes(dbfHeader, JDBCUtilities.isH2DataBase(connection.getMetaData()))));
+                    getSQLColumnTypes(dbfHeader, isH2)));
             st.close();
             try {
                 PreparedStatement preparedStatement = connection.prepareStatement(

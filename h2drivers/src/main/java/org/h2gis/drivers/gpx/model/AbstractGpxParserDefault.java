@@ -144,9 +144,9 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      */
     public boolean read(File inputFile, String tableName, Connection connection) throws SQLException {
         // Initialisation
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
-        TableLocation requestedTable = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+        TableLocation requestedTable = TableLocation.parse(tableName, isH2);
         String table = requestedTable.getTable();
 
         clear();

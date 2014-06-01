@@ -163,21 +163,20 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         if (distance == Double.POSITIVE_INFINITY) {
             output.addRow(null, -1, -1, -1, source, destination, distance);
         } else {
-            // Create index on table if it doesn't already exist.
-            final Statement st = connection.createStatement();
-            try {
-                st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()))
-                        + "(" + EDGE_ID + ")");
-            } finally {
-                st.close();
-            }
-
             // Record the results.
             ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
             // TODO: Warn the user if there are multiple geometry fields.
             final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, f.tableName);
             if (geometryFields.isEmpty()) {
                 throw new IllegalArgumentException(NO_GEOM_FIELD_ERROR);
+            }
+            // Create index on table if it doesn't already exist.
+            final Statement st = connection.createStatement();
+            try {
+                st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + f.tableName
+                        + "(" + EDGE_ID + ")");
+            } finally {
+                st.close();
             }
             final PreparedStatement ps = connection.prepareStatement("SELECT " +
                     geometryFields.get(0) +

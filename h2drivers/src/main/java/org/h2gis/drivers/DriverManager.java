@@ -88,7 +88,7 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
      */
     public static void openFile(Connection connection, String fileName, String tableName) throws SQLException {
         String ext = fileName.substring(fileName.lastIndexOf('.') + 1,fileName.length());
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
                 Statement st = connection.createStatement();
