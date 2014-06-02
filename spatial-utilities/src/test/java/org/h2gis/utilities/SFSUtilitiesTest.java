@@ -31,77 +31,11 @@ import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 
 /**
- * Test SFSUtilitiesTest
+ * Test SFSUtilities
+ *
  * @author Nicolas Fortin
  */
 public class SFSUtilitiesTest {
-    @Test
-    public void testSplitCatalogSchemaTableName() {
-        TableLocation location = TableLocation.parse("mytable");
-        assertEquals("mytable",location.getTable());
-        location = TableLocation.parse("myschema.mytable");
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        location = TableLocation.parse("mydb.myschema.mytable");
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        location = TableLocation.parse(location.toString());
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-    }
-
-    @Test
-    public void testSplitCatalogSchemaTableNameWithQuotes() {
-        TableLocation location = TableLocation.parse("`mytable`");
-        assertEquals("mytable",location.getTable());
-        location = TableLocation.parse("`myschema`.`mytable`");
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        location = TableLocation.parse("`mydb`.`myschema`.`mytable`");
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        location = TableLocation.parse("`mydb`.`myschema`.`mytable.hello`");
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable.hello",location.getTable());
-        assertEquals("\"mydb\".\"myschema\".\"mytable.hello\"", location.toString(true));
-        assertEquals("\"mydb\".\"myschema\".\"mytable.hello\"", location.toString());
-        location = TableLocation.parse("`mydb`.`my schema`.`my table`");
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("my schema",location.getSchema());
-        assertEquals("my table",location.getTable());
-        assertEquals("\"mydb\".\"my schema\".\"my table\"", location.toString());
-        assertEquals("mydb.\"my schema\".\"my table\"", location.toString(false));
-        location = TableLocation.parse(location.toString());
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("my schema",location.getSchema());
-        assertEquals("my table",location.getTable());
-        assertEquals("mydb.\"my schema\".\"my table\"", location.toString(false));
-        assertEquals("\"mydb\".\"my schema\".\"my table\"", location.toString());
-        location = TableLocation.parse("public.MYTABLE");
-        assertEquals("",location.getCatalog());
-        assertEquals("public",location.getSchema());
-        assertEquals("MYTABLE",location.getTable());
-        assertEquals("public.\"MYTABLE\"", location.toString(false));
-        assertEquals("\"public\".MYTABLE", location.toString(true));
-        assertEquals("\"public\".\"MYTABLE\"", location.toString());
-    }
-
-    @Test
-    public void testTableLocationDataBaseType() {
-        TableLocation location = TableLocation.parse("MyTable", true);
-        assertEquals("MYTABLE", location.getTable());
-        assertEquals("MYTABLE", location.toString(true));
-        location = TableLocation.parse("\"MyTable\"", true);
-        assertEquals("MyTable", location.getTable());
-        assertEquals("\"MyTable\"", location.toString(true));
-        location = TableLocation.parse("\"MyTable\"", false);
-        assertEquals("MyTable", location.getTable());
-        assertEquals("\"MyTable\"", location.toString(false));
-    }
 
     @Test
     public void testGeometryTypeConvert() throws ParseException {
