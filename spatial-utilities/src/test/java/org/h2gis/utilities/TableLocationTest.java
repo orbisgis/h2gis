@@ -37,87 +37,21 @@ public class TableLocationTest {
 
     @Test
     public void testSplitCatalogSchemaTableName() {
-        TableLocation location = TableLocation.parse("mytable");
-        assertEquals("",location.getCatalog());
-        assertEquals("",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        assertEquals("\"mytable\"", location.toString());
-        assertEquals("\"mytable\"", location.toString(true));
-        assertEquals("mytable", location.toString(false));
-        location = TableLocation.parse("myschema.mytable");
-        assertEquals("",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        assertEquals("\"myschema\".\"mytable\"", location.toString());
-        assertEquals("\"myschema\".\"mytable\"", location.toString(true));
-        assertEquals("myschema.mytable", location.toString(false));
-        location = TableLocation.parse("mydb.myschema.mytable");
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        assertEquals("\"mydb\".\"myschema\".\"mytable\"", location.toString());
-        assertEquals("\"mydb\".\"myschema\".\"mytable\"", location.toString(true));
-        assertEquals("mydb.myschema.mytable", location.toString(false));
-        location = TableLocation.parse(location.toString());
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        assertEquals("\"mydb\".\"myschema\".\"mytable\"", location.toString());
-        assertEquals("\"mydb\".\"myschema\".\"mytable\"", location.toString(true));
-        assertEquals("mydb.myschema.mytable", location.toString(false));
+        check("mytable", "", "", "mytable", "\"mytable\"", "\"mytable\"", "mytable");
+        check("myschema.mytable", "", "myschema", "mytable", "\"myschema\".\"mytable\"", "\"myschema\".\"mytable\"", "myschema.mytable");
+        check("mydb.myschema.mytable", "mydb", "myschema", "mytable", "\"mydb\".\"myschema\".\"mytable\"", "\"mydb\".\"myschema\".\"mytable\"", "mydb.myschema.mytable");
+        check(location.toString(), "mydb", "myschema", "mytable", "\"mydb\".\"myschema\".\"mytable\"", "\"mydb\".\"myschema\".\"mytable\"", "mydb.myschema.mytable");
     }
 
     @Test
     public void testSplitCatalogSchemaTableNameWithQuotes() {
-        TableLocation location = TableLocation.parse("`mytable`");
-        assertEquals("",location.getCatalog());
-        assertEquals("",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        assertEquals("\"mytable\"", location.toString());
-        assertEquals("\"mytable\"", location.toString(true));
-        assertEquals("mytable", location.toString(false));
-        location = TableLocation.parse("`myschema`.`mytable`");
-        assertEquals("",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        assertEquals("\"myschema\".\"mytable\"", location.toString());
-        assertEquals("\"myschema\".\"mytable\"", location.toString(true));
-        assertEquals("myschema.mytable", location.toString(false));
-        location = TableLocation.parse("`mydb`.`myschema`.`mytable`");
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable",location.getTable());
-        assertEquals("\"mydb\".\"myschema\".\"mytable\"", location.toString());
-        assertEquals("\"mydb\".\"myschema\".\"mytable\"", location.toString(true));
-        assertEquals("mydb.myschema.mytable", location.toString(false));
-        location = TableLocation.parse("`mydb`.`myschema`.`mytable.hello`");
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("myschema",location.getSchema());
-        assertEquals("mytable.hello",location.getTable());
-        assertEquals("\"mydb\".\"myschema\".\"mytable.hello\"", location.toString());
-        assertEquals("\"mydb\".\"myschema\".\"mytable.hello\"", location.toString(true));
-        assertEquals("mydb.myschema.\"mytable.hello\"", location.toString(false));
-        location = TableLocation.parse("`mydb`.`my schema`.`my table`");
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("my schema",location.getSchema());
-        assertEquals("my table",location.getTable());
-        assertEquals("\"mydb\".\"my schema\".\"my table\"", location.toString());
-        assertEquals("\"mydb\".\"my schema\".\"my table\"", location.toString(true));
-        assertEquals("mydb.\"my schema\".\"my table\"", location.toString(false));
-        location = TableLocation.parse(location.toString());
-        assertEquals("mydb",location.getCatalog());
-        assertEquals("my schema",location.getSchema());
-        assertEquals("my table",location.getTable());
-        assertEquals("\"mydb\".\"my schema\".\"my table\"", location.toString());
-        assertEquals("\"mydb\".\"my schema\".\"my table\"", location.toString(true));
-        assertEquals("mydb.\"my schema\".\"my table\"", location.toString(false));
-        location = TableLocation.parse("public.MYTABLE");
-        assertEquals("",location.getCatalog());
-        assertEquals("public",location.getSchema());
-        assertEquals("MYTABLE",location.getTable());
-        assertEquals("\"public\".\"MYTABLE\"", location.toString());
-        assertEquals("\"public\".MYTABLE", location.toString(true));
-        assertEquals("public.\"MYTABLE\"", location.toString(false));
+        check("`mytable`", "", "", "mytable", "\"mytable\"", "\"mytable\"", "mytable");
+        check("`myschema`.`mytable`", "", "myschema", "mytable", "\"myschema\".\"mytable\"", "\"myschema\".\"mytable\"", "myschema.mytable");
+        check("`mydb`.`myschema`.`mytable`", "mydb", "myschema", "mytable", "\"mydb\".\"myschema\".\"mytable\"", "\"mydb\".\"myschema\".\"mytable\"", "mydb.myschema.mytable");
+        check("`mydb`.`myschema`.`mytable.hello`", "mydb", "myschema", "mytable.hello", "\"mydb\".\"myschema\".\"mytable.hello\"", "\"mydb\".\"myschema\".\"mytable.hello\"", "mydb.myschema.\"mytable.hello\"");
+        check("`mydb`.`my schema`.`my table`", "mydb", "my schema", "my table", "\"mydb\".\"my schema\".\"my table\"", "\"mydb\".\"my schema\".\"my table\"", "mydb.\"my schema\".\"my table\"");
+        check(location.toString(), "mydb", "my schema", "my table", "\"mydb\".\"my schema\".\"my table\"", "\"mydb\".\"my schema\".\"my table\"", "mydb.\"my schema\".\"my table\"");
+        check("public.MYTABLE", "", "public", "MYTABLE", "\"public\".\"MYTABLE\"", "\"public\".MYTABLE", "public.\"MYTABLE\"");
     }
 
     @Test
@@ -143,5 +77,16 @@ public class TableLocationTest {
         assertEquals("\"MyTable\"", location.toString());
         assertEquals("\"MyTable\"", location.toString(true));
         assertEquals("\"MyTable\"", location.toString(false));
+    }
+
+    private void check(String input, String catalog, String schema, String table,
+                       String toString, String toStringTrue, String toStringFalse) {
+        TableLocation location = TableLocation.parse(input);
+        assertEquals(catalog,location.getCatalog());
+        assertEquals(schema,location.getSchema());
+        assertEquals(table, location.getTable());
+        assertEquals(toString, location.toString());
+        assertEquals(toStringTrue, location.toString(true));
+        assertEquals(toStringFalse, location.toString(false));
     }
 }
