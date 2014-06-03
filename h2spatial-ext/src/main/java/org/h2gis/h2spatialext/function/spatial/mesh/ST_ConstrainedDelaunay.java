@@ -45,8 +45,9 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
 
  
     public ST_ConstrainedDelaunay() {
-        addProperty(PROP_REMARKS, "Returns polygons that represent a Constrained Delaunay Triangulation from a geometry\n."
-                + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1");
+        addProperty(PROP_REMARKS, "Returns polygons that represent a Constrained Delaunay Triangulation from a geometry.\n"
+                + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1.\n"
+                + "If the input geometry doesn't contain any lines them a delaunay triangulation is computed.");
     }
 
     @Override
@@ -99,11 +100,13 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
         //We actually fill the mesh
         mesh.setPoints(delaunayData.getDelaunayPoints());
         ArrayList<DEdge> edges = delaunayData.getDelaunayEdges();
-        //We have filled the input of our mesh. We can close our source.
-        Collections.sort(edges);
-        mesh.setConstraintEdges(edges);
-        //If needed, we use the intersection algorithm
-        mesh.forceConstraintIntegrity();
+        if (!edges.isEmpty()) {
+            //We have filled the input of our mesh. We can close our source.
+            Collections.sort(edges);
+            mesh.setConstraintEdges(edges);
+            //If needed, we use the intersection algorithm
+            mesh.forceConstraintIntegrity();
+        }
         //we process delaunay
         mesh.processDelaunay();
         return mesh;
