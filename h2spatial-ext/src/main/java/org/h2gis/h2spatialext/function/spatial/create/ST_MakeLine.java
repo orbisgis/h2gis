@@ -59,7 +59,10 @@ public class ST_MakeLine extends DeterministicScalarFunction {
      * @return The LINESTRING constructed from the given POINTs or MULTIPOINTs
      */
     public static LineString createLine(Geometry pointA, Geometry... optionalPoints) throws SQLException {
-        if (!atLeastTwoPoints(optionalPoints, countPoints(pointA))) {
+        if( pointA == null || optionalPoints.length > 0 && optionalPoints[0] == null) {
+            return null;
+        }
+        if (pointA.getNumGeometries() == 1 && !atLeastTwoPoints(optionalPoints, countPoints(pointA))) {
             throw new SQLException("At least two points are required to make a line.");
         }
         List<Coordinate> coordinateList = new LinkedList<Coordinate>();
@@ -80,6 +83,9 @@ public class ST_MakeLine extends DeterministicScalarFunction {
      * and/or MULTIPOINTs
      */
     public static LineString createLine(GeometryCollection points) throws SQLException {
+        if(points == null) {
+            return null;
+        }
         final int size = points.getNumGeometries();
         if (!atLeastTwoPoints(points)) {
             throw new SQLException("At least two points are required to make a line.");
