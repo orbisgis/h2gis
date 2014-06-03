@@ -591,6 +591,37 @@ public class SpatialFunctionTest {
         rs.close();
         st.execute("DROP TABLE input_table;");
     }
+    @Test
+    public void test_ST_MakeLineNull() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeLine(null, 'POINT(4 5 6)')");
+        try {
+            assertTrue(rs.next());
+            assertNull(rs.getObject(1));
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT ST_MakeLine('POINT(4 5 6)', null)");
+        try {
+            assertTrue(rs.next());
+            assertNull(rs.getObject(1));
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT ST_MakeLine(null, null)");
+        try {
+            assertTrue(rs.next());
+            assertNull(rs.getObject(1));
+        } finally {
+            rs.close();
+        }
+        rs = st.executeQuery("SELECT ST_MakeLine(null)");
+        try {
+            assertTrue(rs.next());
+            assertNull(rs.getObject(1));
+        } finally {
+            rs.close();
+        }
+    }
 
     @Test
     public void test_ST_ToMultiPoint() throws Exception {
