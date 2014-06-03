@@ -77,6 +77,7 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      * @throws SQLException, DelaunayError
      */
     public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
+        if(geometry!=null){
         if (flag == 0) {
             return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
         } else if (flag == 1) {
@@ -84,6 +85,8 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
         } else {
             throw new SQLException("Only flag 0 or 1 is supported.");
         }
+        }
+        return null;
     }
 
     /**
