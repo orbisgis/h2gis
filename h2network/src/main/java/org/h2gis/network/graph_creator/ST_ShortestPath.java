@@ -36,6 +36,7 @@ import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 
 import java.sql.*;
+import java.util.List;
 import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
@@ -66,6 +67,8 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
     private static Connection connection;
     private TableLocation tableName;
+
+    public static final String NO_GEOM_FIELD_ERROR = "The input table must contain a geometry field.";
 
     public static final String REMARKS =
             "`ST_ShortestPath` calculates the shortest path(s) between vertices in a graph.\n" +
@@ -171,8 +174,12 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
             // Record the results.
             ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
             // TODO: Warn the user if there are multiple geometry fields.
+            final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, f.tableName);
+            if (geometryFields.isEmpty()) {
+                throw new IllegalArgumentException(NO_GEOM_FIELD_ERROR);
+            }
             final PreparedStatement ps = connection.prepareStatement("SELECT " +
-                    SFSUtilities.getGeometryFields(connection, f.tableName).get(0) +
+                    geometryFields.get(0) +
                     " FROM " + f.tableName +
                     " WHERE " + EDGE_ID + "=? LIMIT 1");
             try {
