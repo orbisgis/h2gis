@@ -170,8 +170,11 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
             // Record the results.
             ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
-            final PreparedStatement ps = connection.prepareStatement(
-                    "SELECT * FROM " + f.tableName + " WHERE " + EDGE_ID + "=?");
+            // TODO: Warn the user if there are multiple geometry fields.
+            final PreparedStatement ps = connection.prepareStatement("SELECT " +
+                    SFSUtilities.getGeometryFields(connection, f.tableName).get(0) +
+                    " FROM " + f.tableName +
+                    " WHERE " + EDGE_ID + "=? LIMIT 1");
             try {
                 f.addPredEdges(graph, vDestination, output, ps, 1);
             } finally {
@@ -215,10 +218,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         ResultSet edgesTable = ps.executeQuery();
         try {
             edgesTable.next();
-            // TODO: Recover the spatial field index properly.
             geom = (Geometry) edgesTable.getObject(1);
-            // Should contain a unique result.
-            assert !edgesTable.next();
         } finally {
             edgesTable.close();
         }
