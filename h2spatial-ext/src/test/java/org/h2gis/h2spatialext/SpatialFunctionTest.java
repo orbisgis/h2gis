@@ -26,11 +26,9 @@ package org.h2gis.h2spatialext;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import org.h2.jdbc.JdbcSQLException;
-import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.function.spatial.processing.ST_PrecisionReducer;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.*;
@@ -1092,6 +1090,15 @@ public class SpatialFunctionTest {
                 equalsTopo(WKT_READER.read("POINT(1 1)")));
         assertFalse(rs.next());
         rs.close();
+    }    
+   
+    
+    @Test
+    public void test_ST_DelaunayNullValue() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay(null);");
+        rs.next();
+        assertTrue(rs.getObject(1)==null);
+        rs.close();
     }
 
     @Test
@@ -1107,6 +1114,15 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("MULTIPOLYGON(((0 0 1, 10 0 1, 5 5 1, 0 0 1)),  ((10 0 1, 5 5 1, 10 10 1, 10 0 1)))",  rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_DelaunayWithCollection() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Delaunay('GEOMETRYCOLLECTION (POLYGON ((150 380 1, 110 230 1, 180 190 1, 230 300 1, 320 280 1, 320 380 1, 150 380 1)),"
+                + "  LINESTRING (70 330 1, 280 220 1))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTIPOLYGON (((70 330 1, 110 230 1, 150 380 1, 70 330 1)), ((110 230 1, 230 300 1, 180 190 1, 110 230 1)), ((110 230 1, 230 300 1, 150 380 1, 110 230 1)), ((180 190 1, 230 300 1, 280 220 1, 180 190 1)), ((280 220 1, 230 300 1, 320 280 1, 280 220 1)), ((230 300 1, 320 380 1, 320 280 1, 230 300 1)), ((230 300 1, 320 380 1, 150 380 1, 230 300 1))) ", rs.getBytes(1));
         rs.close();
     }
 
@@ -1131,6 +1147,23 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 1);");
         rs.next();
         assertGeometryEquals("MULTILINESTRING((1.1 3 1, 1.1 9 1), (1.1 3 1, 5 8 1),  (1.1 9 1, 5 8 1), (1.1 3 1, 5.1 1.1 1),  (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1),  (5 8 1, 8.8 9.9 1), (1.1 9 1, 8.8 9.9 1),(5.1 1.1 1, 9.5 6.4 1),  (8.8 9.9 1, 9.5 6.4 1))",rs.getBytes(1));
+        rs.close();
+    }
+    
+    
+    @Test
+    public void test_ST_ConstrainedDelaunayNullValue() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(null);");
+        rs.next();
+        assertTrue(rs.getObject(1)==null);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_ConstrainedDelaunayWithPoints() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTIPOLYGON(((0 0 1, 10 0 1, 5 5 1, 0 0 1)),  ((10 0 1, 5 5 1, 10 10 1, 10 0 1)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -1183,6 +1216,23 @@ public class SpatialFunctionTest {
         rs.next();
         assertGeometryEquals("MULTILINESTRING ((0 0 1, 0 10 1), (0 0 1, 10 0 1), (0 10 1, 10 0 1), (10 0 1, 10 10 1), (0 10 1, 10 10 1))", rs.getBytes(1));
         rs.close();                
+    }    
+    
+    @Test
+    public void test_ST_ConstrainedDelaunayWithCollection() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('GEOMETRYCOLLECTION (POLYGON ((150 380, 110 230, 180 190, 230 300, 320 280, 320 380, 150 380)), \n"
+                + "  LINESTRING (70 330, 280 220))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTIPOLYGON (((70 330 0, 110 230 0, 128.4958217270195 299.3593314763231 0, 70 330 0)), ((128.4958217270195 299.3593314763231 0, 70 330 0, 150 380 0, 128.4958217270195 299.3593314763231 0)), ((110 230 0, 210.2447552447552 256.53846153846155 0, 180 190 0, 110 230 0)), ((110 230 0, 210.2447552447552 256.53846153846155 0, 128.4958217270195 299.3593314763231 0, 110 230 0)), ((128.4958217270195 299.3593314763231 0, 230 300 0, 210.2447552447552 256.53846153846155 0, 128.4958217270195 299.3593314763231 0)), ((128.4958217270195 299.3593314763231 0, 230 300 0, 150 380 0, 128.4958217270195 299.3593314763231 0)), ((180 190 0, 210.2447552447552 256.53846153846155 0, 280 220 0, 180 190 0)), ((210.2447552447552 256.53846153846155 0, 230 300 0, 280 220 0, 210.2447552447552 256.53846153846155 0)), ((280 220 0, 230 300 0, 320 280 0, 280 220 0)), ((230 300 0, 320 380 0, 320 280 0, 230 300 0)), ((230 300 0, 320 380 0, 150 380 0, 230 300 0)))", rs.getBytes(1));
+        rs.close();
+    }
+    
+     @Test
+    public void test_ST_ConstrainedDelaunayWithCollection1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('GEOMETRYCOLLECTION(POINT (0 0 1), POINT (10 0 1), POINT (10 10 1), POINT (5 5 1))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTIPOLYGON (((0 0 1, 10 0 1, 5 5 1, 0 0 1)), ((10 0 1, 5 5 1, 10 10 1, 10 0 1)))", rs.getBytes(1));
+        rs.close();
     }
     
 

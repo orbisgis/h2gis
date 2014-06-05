@@ -123,6 +123,14 @@ public class DelaunayData {
      */
     private void addGeometry(Geometry geom) throws DelaunayError {
         if (geom.isValid()) {
+            //Special case when a geometrycollection contains point or multipoint
+            if(geom instanceof Point){
+                addPoint((Point) geom);                
+            }
+            else if ( geom instanceof MultiPoint){
+                addMultiPoint((MultiPoint) geom);
+            }
+            else{
             Coordinate[] coords = geom.getCoordinates();
             Coordinate c1 = coords[0];
             c1.z = Double.isNaN(c1.z) ? 0 : c1.z;
@@ -132,6 +140,7 @@ public class DelaunayData {
                 c2.z = Double.isNaN(c2.z) ? 0 : c2.z;
                 delaunayEdges.add(new DEdge(new DPoint(c1), new DPoint(c2)));
                 c1 = c2;
+            }
             }
         }
     }
