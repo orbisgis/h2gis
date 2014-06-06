@@ -4,7 +4,7 @@
     <parent>
         <artifactId>h2gis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>1.0.3-SNAPSHOT</version>
+        <version>1.1.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
   </parent>
     <artifactId>h2spatial-ext-osgi</artifactId>
