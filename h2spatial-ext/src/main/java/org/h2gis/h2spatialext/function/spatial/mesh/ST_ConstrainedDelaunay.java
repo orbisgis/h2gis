@@ -47,7 +47,7 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
     public ST_ConstrainedDelaunay() {
         addProperty(PROP_REMARKS, "Returns polygons that represent a Constrained Delaunay Triangulation from a geometry.\n"
                 + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1.\n"
-                + "If the input geometry doesn't contain any lines them a delaunay triangulation is computed.");
+                + "If the input geometry does not contain any lines, a delaunay triangulation will be computed.");
     }
 
     @Override
@@ -56,14 +56,14 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
     }
 
     /**
-     * Build a delaunay constrained delaunay triangulation based on a
-     * geometry (point, line, polygon)
+     * Build a delaunay constrained delaunay triangulation based on a geometry
+     * (point, line, polygon)
      *
      * @param geometry
      * @return a set of polygons (triangles)
      * @throws SQLException,DelaunayError
      */
-    public static GeometryCollection createCDT(Geometry geometry) throws SQLException, DelaunayError {        
+    public static GeometryCollection createCDT(Geometry geometry) throws SQLException, DelaunayError {
         return createCDT(geometry, 0);
     }
 
@@ -77,14 +77,14 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      * @throws SQLException, DelaunayError
      */
     public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
-        if(geometry!=null){
-        if (flag == 0) {
-            return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
-        } else if (flag == 1) {
-            return DelaunayTools.toMultiLineString(buildDelaunay(geometry).getEdges());
-        } else {
-            throw new SQLException("Only flag 0 or 1 is supported.");
-        }
+        if (geometry != null) {
+            if (flag == 0) {
+                return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
+            } else if (flag == 1) {
+                return DelaunayTools.toMultiLineString(buildDelaunay(geometry).getEdges());
+            } else {
+                throw new SQLException("Only flag 0 or 1 is supported.");
+            }
         }
         return null;
     }
