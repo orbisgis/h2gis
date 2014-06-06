@@ -4,7 +4,7 @@
     <groupId>org.orbisgis</groupId>
     <artifactId>h2gis</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.3-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
     <name>H2GIS</name>
     <description>H2GIS is a spatial extension of the H2 database engine in the spirit of PostGIS.  It adds support for the Open Geospatial Consortium (OGC) Simple Features for SQL (SFSQL) functions.</description>
     <organization>
@@ -105,13 +105,6 @@
             <organization>IRSTV CNRS-FR-2488</organization>
         </developer>
     </developers>
-    <repositories>
-        <repository>
-            <id>IRSTV</id>
-            <name>IRSTV repository</name>
-            <url>http://repo.orbisgis.org</url>
-        </repository>
-    </repositories>
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-nexus</artifactId>
