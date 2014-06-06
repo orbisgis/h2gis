@@ -72,13 +72,16 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @throws SQLException, DelaunayError
      */
     public static GeometryCollection createDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
-        if (flag == 0) {
-            return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
-        } else if (flag == 1) {
-            return DelaunayTools.toMultiLineString(buildDelaunay(geometry).getEdges());
-        } else {
-            throw new SQLException("Only flag 0 or 1 is supported.");
+        if (geometry != null) {
+            if (flag == 0) {
+                return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
+            } else if (flag == 1) {
+                return DelaunayTools.toMultiLineString(buildDelaunay(geometry).getEdges());
+            } else {
+                throw new SQLException("Only flag 0 or 1 is supported.");
+            }
         }
+        return null;
     }
 
     /**

@@ -45,8 +45,9 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
 
  
     public ST_ConstrainedDelaunay() {
-        addProperty(PROP_REMARKS, "Returns polygons that represent a Constrained Delaunay Triangulation from a geometry\n."
-                + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1");
+        addProperty(PROP_REMARKS, "Returns polygons that represent a Constrained Delaunay Triangulation from a geometry.\n"
+                + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1.\n"
+                + "If the input geometry does not contain any lines, a delaunay triangulation will be computed.");
     }
 
     @Override
@@ -55,14 +56,14 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
     }
 
     /**
-     * Build a delaunay constrained delaunay triangulation based on a
-     * geometry (point, line, polygon)
+     * Build a delaunay constrained delaunay triangulation based on a geometry
+     * (point, line, polygon)
      *
      * @param geometry
      * @return a set of polygons (triangles)
      * @throws SQLException,DelaunayError
      */
-    public static GeometryCollection createCDT(Geometry geometry) throws SQLException, DelaunayError {        
+    public static GeometryCollection createCDT(Geometry geometry) throws SQLException, DelaunayError {
         return createCDT(geometry, 0);
     }
 
@@ -76,13 +77,16 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      * @throws SQLException, DelaunayError
      */
     public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
-        if (flag == 0) {
-            return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
-        } else if (flag == 1) {
-            return DelaunayTools.toMultiLineString(buildDelaunay(geometry).getEdges());
-        } else {
-            throw new SQLException("Only flag 0 or 1 is supported.");
+        if (geometry != null) {
+            if (flag == 0) {
+                return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
+            } else if (flag == 1) {
+                return DelaunayTools.toMultiLineString(buildDelaunay(geometry).getEdges());
+            } else {
+                throw new SQLException("Only flag 0 or 1 is supported.");
+            }
         }
+        return null;
     }
 
     /**
@@ -99,11 +103,13 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
         //We actually fill the mesh
         mesh.setPoints(delaunayData.getDelaunayPoints());
         ArrayList<DEdge> edges = delaunayData.getDelaunayEdges();
-        //We have filled the input of our mesh. We can close our source.
-        Collections.sort(edges);
-        mesh.setConstraintEdges(edges);
-        //If needed, we use the intersection algorithm
-        mesh.forceConstraintIntegrity();
+        if (!edges.isEmpty()) {
+            //We have filled the input of our mesh. We can close our source.
+            Collections.sort(edges);
+            mesh.setConstraintEdges(edges);
+            //If needed, we use the intersection algorithm
+            mesh.forceConstraintIntegrity();
+        }
         //we process delaunay
         mesh.processDelaunay();
         return mesh;
