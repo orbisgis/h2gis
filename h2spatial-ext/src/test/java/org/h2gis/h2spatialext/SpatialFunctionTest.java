@@ -150,6 +150,17 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_NULL_ST_Extent() throws Exception {
+        st.execute("drop table if exists ptClouds");
+        st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);");
+        ResultSet rs = st.executeQuery("select ST_Extent(the_geom) tableEnv from ptClouds;");
+        assertTrue(rs.next());
+        assertNull(rs.getObject(1));
+        assertFalse(rs.next());
+        st.execute("drop table ptClouds");
+    }
+
+    @Test
     public void test_TableEnvelope() throws Exception {
         st.execute("drop table if exists ptClouds");
         st.execute("create table ptClouds(id INTEGER PRIMARY KEY AUTO_INCREMENT, the_geom MultiPoint);"

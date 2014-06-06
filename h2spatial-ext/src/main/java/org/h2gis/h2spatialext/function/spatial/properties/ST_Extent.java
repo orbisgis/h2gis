@@ -40,7 +40,7 @@ import java.sql.SQLException;
  * @author Nicolas Fortin
  */
 public class ST_Extent extends AbstractFunction implements Aggregate {
-    private Envelope aggregatedEnvelope;
+    private Envelope aggregatedEnvelope = new Envelope();
 
     public ST_Extent() {
         addProperty(PROP_REMARKS, "Return an envelope of the aggregation of all geometries in the table.");
@@ -48,7 +48,7 @@ public class ST_Extent extends AbstractFunction implements Aggregate {
 
     @Override
     public void init(Connection connection) throws SQLException {
-        aggregatedEnvelope = null;
+        aggregatedEnvelope = new Envelope();
     }
 
     @Override
@@ -64,20 +64,18 @@ public class ST_Extent extends AbstractFunction implements Aggregate {
 
     @Override
     public void add(Object o) throws SQLException {
-        if(o instanceof Geometry) {
-            Geometry geom = (Geometry)o;
-            if(aggregatedEnvelope!=null) {
-                aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
-            } else {
-                aggregatedEnvelope = geom.getEnvelopeInternal();
-            }
-        } else {
-            throw new SQLException();
+        if (o instanceof Geometry) {
+            Geometry geom = (Geometry) o;
+            aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
         }
     }
 
     @Override
     public Geometry getResult() throws SQLException {
-        return new GeometryFactory().toGeometry(aggregatedEnvelope);
+        if(aggregatedEnvelope.isNull()) {
+            return null;
+        } else {
+            return new GeometryFactory().toGeometry(aggregatedEnvelope);
+        }
     }
 }
