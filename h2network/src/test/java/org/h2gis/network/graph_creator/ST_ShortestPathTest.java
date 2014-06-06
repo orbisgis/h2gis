@@ -36,8 +36,8 @@ import java.sql.Statement;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Adam Gouge
@@ -281,8 +281,8 @@ public class ST_ShortestPathTest {
         check(oneToOne(DO, W, 5, 1), new PathEdge[]{
                         new PathEdge("LINESTRING (2 0, 0 1)", 10, 1, 1, 5, 1, 7.0)});
         check(oneToOne(DO, W, 5, 2), new PathEdge[]{
-                        new PathEdge("LINESTRING (1 2, 2 2)", 2, 1, 1, 4, 2, 1.0),
-                        new PathEdge("LINESTRING (2 0, 2.25 1, 2 2)", 9, 1, 2, 5, 4, 6.0)});
+                new PathEdge("LINESTRING (1 2, 2 2)", 2, 1, 1, 4, 2, 1.0),
+                new PathEdge("LINESTRING (2 0, 2.25 1, 2 2)", 9, 1, 2, 5, 4, 6.0)});
         check(oneToOne(DO, W, 5, 4), new PathEdge[]{
                         new PathEdge("LINESTRING (2 0, 2.25 1, 2 2)", 9, 1, 1, 5, 4, 6.0)});
         check(oneToOne(DO, W, 5, 3), new PathEdge[]{
@@ -840,6 +840,21 @@ public class ST_ShortestPathTest {
         }
         assertFalse(rs.next());
         rs.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNoGeometryField() throws Throwable {
+        try {
+            st.execute("DROP TABLE IF EXISTS NO_GEOM;" +
+                    "CREATE TABLE NO_GEOM AS " +
+                    "SELECT EDGE_ID, START_NODE, END_NODE, WEIGHT " +
+                    "FROM CORMEN_EDGES_ALL;");
+            st.executeQuery("SELECT * FROM ST_ShortestPath('NO_GEOM', 'UNDIRECTED', 3, 4);");
+        } catch (JdbcSQLException e) {
+            final Throwable cause = e.getOriginalCause();
+            assertEquals(ST_ShortestPath.NO_GEOM_FIELD_ERROR, cause.getMessage());
+            throw cause;
+        }
     }
 
     private class PathEdge {
