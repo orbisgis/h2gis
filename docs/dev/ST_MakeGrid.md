@@ -36,7 +36,11 @@ SELECT * FROM grid;
 -- | POLYGON((1 0, 2 0, 2 1, 1 1, 1 0)) |   1 |      2 |      1 |
 -- | POLYGON((0 1, 1 1, 1 2, 0 2, 0 1)) |   2 |      1 |      2 |
 -- | POLYGON((1 1, 2 1, 2 2, 1 2, 1 1)) |   3 |      2 |      2 |
+{% endhighlight %}
 
+<img class="displayed" src="../ST_MakeGrid_1.png"/>
+
+{% highlight mysql %}
 CREATE TABLE input_table(the_geom Geometry);
 INSERT INTO input_table VALUES('POLYGON((0 0, 2 0, 2 2, 0 0))');
 CREATE TABLE grid AS SELECT * FROM ST_MakeGrid('input_table', 1, 1);
@@ -64,7 +68,7 @@ SELECT * FROM grid;
 -- | POLYGON((1 1, 2 1, 2 2, 1 2, 1 1)) |   3 |      2 |      2 |
 {% endhighlight %}
 
-<img class="displayed" src="../ST_MakeGrid_1.png"/>
+<img class="displayed" src="../ST_MakeGrid_2.png"/>
 
 ##### See also
 
