@@ -23,7 +23,7 @@ Returns the azimuth of the segment defined by the given `POINT`s, or null if the
 SELECT ST_Azimuth('Linestring(0 0, 5 5)', 'Point(10 0)');
 -- Answer: null
 
-SELECT degrees(ST_Azimuth('Point(0 1)', 'Point(10 1)'));
+SELECT Degrees(ST_Azimuth('Point(0 1)', 'Point(10 1)'));
 -- Answer: 90.0
 
 SELECT ST_Azimuth('Point(0 1)', 'Point(10 1)');
