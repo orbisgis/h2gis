@@ -15,7 +15,7 @@ MULTIPOLYGON ST_Polygonize(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Creates a `MULTIPOLYGON` containing possible POLYGONs formed from a `LINESTRING` or `MULTILINESTRING`. 
+Creates a MULTIPOLYGON containing possible POLYGONs formed from a `LINESTRING` or `MULTILINESTRING`. 
 If the endpoints of the Geometries are not properly joined this function return
 null.
 
@@ -40,7 +40,7 @@ SELECT ST_Polygonize('LINESTRING(1 2, 2 4, 4 4, 5 2, 2 2)');
 <img class="displayed" src="../ST_Polygonize_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_Polygonize('LINESTRING(1 2, 2 4, 4 4, 5 2,1 2)');
+SELECT ST_Polygonize('LINESTRING(1 2, 2 4, 4 4, 5 2, 1 2)');
 -- Answer: MULTIPOLYGON(((1 2, 2 4, 4 4, 5 2, 1 2)))
 {% endhighlight %}
 

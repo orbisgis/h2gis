@@ -17,7 +17,7 @@ double tolerance);
 {% endhighlight %}
 
 ### Description
-Returns a `GEOMETRY` resulting from split between two `GEOMETRY`.
+Returns a GEOMETRY resulting from split between `geomA` and `geomB`.
 Split `GeomA` according `GeomB`.
 Supported operations are : 
 
@@ -66,7 +66,7 @@ SELECT ST_Split(geomB, geomA);
 
 #####POLYGON by a  LINESTRING
 {% highlight mysql %}
-SELECT ST_Split('POLYGON(( 0 0, 5 0, 5 5, 0 5, 0 0))', 
+SELECT ST_Split('POLYGON((0 0, 5 0, 5 5, 0 5, 0 0))', 
                 'LINESTRING(2 0, 2 5)');
 -- Answer: MULTIPOLYGON(((2 0, 0 0, 0 5, 2 5, 2 0)), 
                         ((5 5, 5 0, 2 0, 2 5, 5 5)))
@@ -75,12 +75,12 @@ SELECT ST_Split('POLYGON(( 0 0, 5 0, 5 5, 0 5, 0 0))',
 <img class="displayed" src="../ST_Split_3.png"/>
 
 {% highlight mysql %}
-SELECT ST_Split('POLYGON(( 0 0, 10 0, 10 10, 0 10, 0 0))', 
+SELECT ST_Split('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))', 
                 'LINESTRING(5 1, 5 12)');
 -- Answer: null
 
-SELECT ST_Split('POLYGON(( 0 0, 10 0, 10 10, 0 10, 0 0), 
-                          (2 2, 7 2, 7 7, 2 7, 2 2))', 
+SELECT ST_Split('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0), 
+                         (2 2, 7 2, 7 7, 2 7, 2 2))', 
                 'LINESTRING(5 0, 5 10)');
 -- Answer: MULTIPOLYGON(((5 0, 0 0, 0 10, 5 10, 5 7, 2 7, 
                            2 2, 5 2, 5 0)), 
