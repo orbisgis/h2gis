@@ -11,8 +11,8 @@ permalink: /docs/dev/ST_IsValidDetail/
 ### Signatures
 
 {% highlight mysql %}
-Object[] isValidDetail(GEOMETRY geom);
-Object[] isValidDetail(GEOMETRY geom, INT flag);
+Object[] ST_IsValidDetail(GEOMETRY geom);
+Object[] ST_IsValidDetail(GEOMETRY geom, INT flag);
 {% endhighlight %}
 
 ### Description
