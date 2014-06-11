@@ -35,12 +35,13 @@ CALL SHPWrite('/home/user/donnees_sig/Data/area_export.shp',
 CALL SHPread('/home/user/donnees_sig/Data/area_export.shp', 
              'AREA2');
 Select * from AREA2;
--- Answer: The driver can not create POLYGON, it creates 
---         MULTIPOLYGON.
+-- Answer: 
 -- |                     THE_GEOM                     | IDAREA |
 -- | ------------------------------------------------ | ------ |
 -- | MULTIPOLYGON(((-10 109,, 90 9, -10 9, -10 109))) |      1 |
 -- | MULTIPOLYGON(((90 109, 190 109, 90 9, 90 109)))  |      2 |
+
+-- Note: The driver can not create POLYGON, it creates MULTIPOLYGON.
 {% endhighlight %}
 
 ##### See also

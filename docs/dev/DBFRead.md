@@ -40,14 +40,16 @@ CALL DBFRead('donnees_sig/IGN - BD Topo/SHP_LAMB93_D044-ED113/
               H_ADMINISTRATIF/COMMUNE.DBF', 'commune44utf',
              'utf-8');
 select * from commune44utf limit 2;
--- Answer: Encoding UTF-8 is not the good encoding for this file. 
--- Some characters are not written correctly like the name Sévérac 
--- which became S. Encoding UTF-8 doesn't know the character é  
--- so doesn't translate in this encoding.
+-- Answer: 
 -- |  NOM   | CODE_INSEE |      DEPART      |      REGION      |
 -- |--------|------------|------------------|------------------|
 -- | Puceul |   44138    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
 -- | S      |   44196    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
+
+-- Note: Encoding UTF-8 is not the good encoding for this file. 
+-- Some characters are not written correctly like the name Sévérac 
+-- which became S. Encoding UTF-8 doesn't know the character é  
+-- so doesn't translate in this encoding.
 {% endhighlight %}
 
 ##### See also

@@ -51,10 +51,7 @@ CALL SHPRead('donnees_sig/IGN - BD Topo/SHP_LAMB93_D044-ED113/
               H_ADMINISTRATIF/COMMUNE.SHP', 'commune44utf',
              'utf-8');
 select * from commune44utf limit 2;
--- Answer: Encoding UTF-8 is not the good encoding for this file. 
--- Some characters are not written correctly like the name Sévérac 
--- which became S. Encoding UTF-8 doesn't know the character é  
--- so doesn't translate in this encoding.
+-- Answer:
 -- |                 the_geom                  |   NOM   |
 -- | ----------------------------------------- | ------- |
 -- | MULTIPOLYGON(((350075.2 6719771.8,        | Puceul  |
@@ -63,6 +60,11 @@ select * from commune44utf limit 2;
 -- | MULTIPOLYGON(((317341.5 6727021,          | S       |
 -- |   317309.9 6727036.8, 317193.3 6727066.5, |         |
 -- |   317341.5 6727021)))                     |         |
+
+-- Note:  Encoding UTF-8 is not the good encoding for this file. 
+-- Some characters are not written correctly like the name Sévérac 
+-- which became S. Encoding UTF-8 doesn't know the character é  
+-- so doesn't translate in this encoding.
 {% endhighlight %}
 
 ##### See also

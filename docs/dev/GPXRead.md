@@ -11,8 +11,8 @@ permalink: /docs/dev/GPXRead/
 ### Signatures
 
 {% highlight mysql %}
-GPXRead(varchar fileName, varchar tableReference);
 GPXRead(varchar fileName);
+GPXRead(varchar fileName, varchar tableReference);
 {% endhighlight %}
 
 ### Description
