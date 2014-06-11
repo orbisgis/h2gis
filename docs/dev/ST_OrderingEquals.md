@@ -20,6 +20,10 @@ Returns true if the given Geometries represent the same Geometry and points are 
 ### Examples
 
 {% highlight mysql %}
+SELECT ST_OrderingEquals('LINESTRING(0 0 1, 0 0, 10 10 3)', 
+                         'LINESTRING(0 0 1, 0 0, 10 10 3)');
+-- Answer: TRUE
+
 SELECT ST_OrderingEquals('LINESTRING(0 0, 10 10)', 
                          'LINESTRING(0 0, 10 10)');
 -- Answer: TRUE
@@ -31,10 +35,6 @@ SELECT ST_OrderingEquals('LINESTRING(0 0, 10 10)',
 SELECT ST_OrderingEquals('POLYGON(0 0, 10 10, 10 5, 0 0)', 
                          'POLYGON(0 0, 10 5, 10 10, 0 0)');
 -- Answer: FALSE
-
-SELECT ST_OrderingEquals('LINESTRING(0 0 1, 0 0, 10 10 3)', 
-                         'LINESTRING(0 0 1, 0 0, 10 10 3)');
--- Answer: TRUE
 
 SELECT ST_OrderingEquals('LINESTRING(0 0 1, 0 0, 10 10)', 
                          'LINESTRING(0 0, 0 0, 10 10)');
