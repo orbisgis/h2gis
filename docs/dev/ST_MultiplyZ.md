@@ -35,7 +35,7 @@ SELECT ST_MultiplyZ('MULTIPOINT((190 300 10), (10 11))', 10);
 
 SELECT ST_MultiplyZ('MULTIPOINT((190 300 100), (10 11 50))', 
                     0.1);
--- Answer: MULTIPOINT((190 300 10), (10 11 5)
+-- Answer: MULTIPOINT((190 300 10), (10 11 5))
 {% endhighlight %}
 
 ##### See also

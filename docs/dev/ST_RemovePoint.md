@@ -53,8 +53,8 @@ SELECT ST_RemovePoint('POLYGON((0 1, 5 4, 5 7, 2 6, 0 1))',
 
 {% highlight mysql %}
 SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-                                (3 4, 3 5, 4 5, 4 4, 3 4),
-                                (2 3, 3 3, 3 2, 2 2, 2 3))',
+                               (3 4, 3 5, 4 5, 4 4, 3 4),
+                               (2 3, 3 3, 3 2, 2 2, 2 3))',
                        ST_Buffer('POINT(6 7)', 4.5));
 -- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (2 3, 3 3, 3 2, 2 2, 2 3))
 {% endhighlight %}
@@ -63,7 +63,7 @@ SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
 
 {% highlight mysql %}
 SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-                              (3 4, 3 5, 4 5, 4 4, 3 4))', 
+                               (3 4, 3 5, 4 5, 4 4, 3 4))', 
                     ST_Buffer('POINT(6 7)', 3));
 -- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (3 4, 3 5, 4 4, 3 4))
 {% endhighlight %}
@@ -72,7 +72,7 @@ SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
 
 {% highlight mysql %}
 SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-                                (2 2, 2 5, 4 5, 4 2, 2 2))', 
+                               (2 2, 2 5, 4 5, 4 2, 2 2))', 
                       ST_Buffer('POINT(4 7)', 2));
 -- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (2 2, 2 5, 4 5, 4 2, 2 2))
 -- POLYGON is not valid 

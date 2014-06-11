@@ -34,7 +34,7 @@ SELECT ST_RemoveHoles('POLYGON((1 5, 0 4, 0 1, 1 0, 4 0,
                                 4 2, 5 4, 5 4, 1 5), 
                                (1 3, 1 4, 2 4, 2 3, 1 3), 
                                (2 2, 1 1, 2 1, 2 2))');
--- Answer: POLYGON((1 5, 0 4, 0 1, 1 0, 4 0, 4 2, 5 4, 5 4, 1 5)
+-- Answer: POLYGON((1 5, 0 4, 0 1, 1 0, 4 0, 4 2, 5 4, 5 4, 1 5))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_RemoveHoles.png"/>

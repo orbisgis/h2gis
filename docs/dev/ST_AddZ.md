@@ -15,7 +15,7 @@ GEOMETRY ST_AddZ(GEOMETRY geom, double z);
 {% endhighlight %}
 
 ### Description
-Returns a `GEOMETRY` where the output z value is the sum to the `z` value and the input z value (each vertex of).
+Returns a `GEOMETRY` where the output z value is the sum to the `z` value and the input z value of each vertex.
 NaN values are not updated.
 
 ### Examples

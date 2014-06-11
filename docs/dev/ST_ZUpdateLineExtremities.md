@@ -43,15 +43,15 @@ SELECT ST_ZUpdateLineExtremities('MULTILINESTRING((1 1 1, 1 6 2,
 --                          -1 2 10), 
 --                         (1 2 0, 4 2 5.7142, 4 6 10))
 
-SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0, 5 0 1 , 15 0)', 
+SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0, 5 0 1, 15 0)', 
                                   0, 20);
 -- Answer: LINESTRING(0 0 0, 5 0 13.333333333333332, 15 0 20)
 
-SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0 , 5 0 1, 15 0 )',
+SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0, 5 0 1, 15 0)',
                                   0, 20, 'true');
 -- Answer: LINESTRING(0 0 0, 5 0 13.333333333333332, 15 0 20)
 
-SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0 , 5 0 1, 10 0 )',
+SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0, 5 0 1, 10 0)',
                                   0, 20, 'false');
 -- Answer: LINESTRING(0 0 0, 5 0 1, 10 0 20)
 {% endhighlight %}
