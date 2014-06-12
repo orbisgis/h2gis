@@ -3,7 +3,7 @@ layout: docs
 title: ST_Graph
 category: h2network/graph-functions
 description: Produce nodes and edges tables from an input table containing <code>(MULTI)LINESTRINGS</code>
-prev_section: h2network/graph-functions
+prev_section: ST_Accessibility
 next_section: ST_ShortestPath
 permalink: /docs/dev/ST_Graph/
 ---
