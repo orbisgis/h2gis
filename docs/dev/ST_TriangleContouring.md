@@ -19,7 +19,7 @@ tableName[the_geom, , idiso] ST_TriangleContouring(varchar
 {% endhighlight %}
 
 ### Description
-Splits triangle into POLYGONs within the specified range of values.
+Splits triangle into POLYGONs within the specified range of values (`varArgs`).
 Iso contouring using Z or table columns as value of vertex.
 
 <img class="displayed" src="../ST_TriangleContouring_0.png"/>
