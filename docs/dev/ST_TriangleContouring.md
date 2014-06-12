@@ -13,7 +13,7 @@ permalink: /docs/dev/ST_TriangleContouring/
 
 {% highlight mysql %}
 tableName[the_geom, idiso] ST_TriangleContouring(varchar 
-    tableName, int iso);
+    tableName, int varArgs);
 tableName[the_geom, , idiso] ST_TriangleContouring(varchar 
     tableName, varchar colName, int varArgs);
 {% endhighlight %}
@@ -66,6 +66,9 @@ SELECT * FROM ST_TriangleContouring('TIN','m1','m2','m3',2,3,5);
 -- |          1.2 0 0.6, 2.4 0 0.2))      |     |     |     |       |
 -- | POLYGON((3 1.5 2, 3 3 4, 1.2 0 0.6,  | 1.0 |   6 | 4.0 |     2 |
 -- |          3 1.5 2))                   |     |     |     |       |
+
+-- Note: Iso Contouring not takes into account the Z or table 
+-- columns as value of vertex which is above of last varArgs.
 {% endhighlight %}
 
 <img class="displayed" src="../ST_TriangleContouring_2.png"/>
