@@ -4,7 +4,7 @@ title: ST_Z
 category: geom3D/properties
 is_function: true
 description: Return the z-value of the first coordinate of a Geometry
-prev_section: geom3D/properties
+prev_section: ST_Is3D
 next_section: ST_ZMax
 permalink: /docs/dev/ST_Z/
 ---
