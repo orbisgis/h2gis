@@ -3,7 +3,7 @@ layout: docs
 title: file_table
 category: h2drivers/file_table
 description: Open a specified file in a special table
-prev_section: h2drivers/list-drivers
+prev_section: h2drivers/CSV
 next_section: h2drivers/DBF
 permalink: /docs/dev/h2drivers/file_table/
 ---
