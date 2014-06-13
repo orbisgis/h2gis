@@ -3,7 +3,7 @@ layout: docs
 title: ST_ShortestPath
 category: h2network/graph-functions
 description: 
-prev_section: ST_Graph
+prev_section: ST_GraphAnalysis
 next_section: ST_ShortestPathLength
 permalink: /docs/dev/ST_ShortestPath/
 ---
