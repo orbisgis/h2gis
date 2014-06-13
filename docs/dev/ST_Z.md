@@ -3,7 +3,7 @@ layout: docs
 title: ST_Z
 category: Geometry3D/properties
 description: Return the z-value of the first coordinate of a Geometry
-prev_section: Geometry3D/properties
+prev_section: ST_Is3D
 next_section: ST_ZMax
 permalink: /docs/dev/ST_Z/
 ---
