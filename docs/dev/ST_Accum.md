@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Accum
 category: Geometry2D/geometry-creation
-description: Construct a `GEOMETRYCOLLECTION` from a column of Geometries
+description: Construct a <code>GEOMETRYCOLLECTION</code> from a column of Geometries
 prev_section: Geometry2D/geometry-creation
 next_section: ST_BoundingCircle
 permalink: /docs/dev/ST_Accum/
