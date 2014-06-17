@@ -15,7 +15,8 @@ GEOMETRY ST_BoundingCircle(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Returns the minimum bounding circle of a `GEOMETRY`.
+
+Returns the minimum bounding circle of `geom`.
 Each circle contains 32 line segments.
 
 ### Examples
