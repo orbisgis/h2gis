@@ -501,4 +501,14 @@ public class SpatialFunctionTest {
         assertTrue(rs.getBoolean(1));
         rs.close();
     }
+
+    @Test
+    public void test_ST_PointFromTextNullWKT() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_PointFromText(NULL, 2154);");
+        rs.next();
+        assertEquals(null, rs.getObject(1));
+        assertFalse(rs.next());
+        rs.close();
+    }
 }
