@@ -11,14 +11,14 @@ permalink: /docs/dev/ST_Extrude/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRYCOLLECTION ST_Extrude(GEOMETRY geom, double height);
-GEOMETRYCOLLECTION ST_Extrude(GEOMETRY geom, double height, int
+GEOMETRYCOLLECTION ST_Extrude(GEOMETRY geom, DOUBLE height);
+GEOMETRYCOLLECTION ST_Extrude(GEOMETRY geom, DOUBLE height, int
 flag);
 {% endhighlight %}
 
 ### Description
-Returns a 3D representation in a `GEOMETRYCOLLECTION` containing 
-floor (input `GEOMETRY`), wall and roof Geometries from to 
+Returns a 3D representation in a `GEOMETRYCOLLECTION` containing
+floor (input `GEOMETRY`), wall and roof Geometries from to
 `LINESTRING` or `POLYGON`.
 
 The value for `flag` is 1 to extracts walls and 2 to extracts the roof.
@@ -28,9 +28,9 @@ The value for `flag` is 1 to extracts walls and 2 to extracts the roof.
 {% highlight mysql %}
 SELECT ST_Extrude('LINESTRING(1 1, 4 4)', 5);
 -- Answer: GEOMETRYCOLLECTION(
---    (floor)      LINESTRING(1 1 0, 4 4 0), 
---    (wall)       MULTIPOLYGON(((1 1 0, 1 1 5, 4 4 5, 
---                                4 4 0, 1 1 0))), 
+--    (floor)      LINESTRING(1 1 0, 4 4 0),
+--    (wall)       MULTIPOLYGON(((1 1 0, 1 1 5, 4 4 5,
+--                                4 4 0, 1 1 0))),
 --    (roof)       LINESTRING(1 1 5, 4 4 5))
 {% endhighlight %}
 
@@ -39,12 +39,12 @@ SELECT ST_Extrude('LINESTRING(1 1, 4 4)', 5);
 {% highlight mysql %}
 SELECT ST_Extrude('POLYGON((0 0, 3 0, 3 3, 0 3, 0 0))', 5);
 -- Answer: GEOMETRYCOLLECTION(
---             POLYGON((0 0 0, 0 3 0, 3 3 0, 3 0 0, 0 0 0)), 
---             MULTIPOLYGON(((0 0 0, 0 0 5, 0 3 5, 0 3 0, 0 0 0)), 
---                          ((0 3 0, 0 3 5, 3 3 5, 3 3 0, 0 3 0)), 
---                          ((3 3 0, 3 3 5, 3 0 5, 3 0 0, 3 3 0)), 
---                          ((3 0 0, 3 0 5, 0 0 5, 0 0 0, 3 0 0))),  
---             POLYGON((0 0 5, 3 0 5, 3 3 5, 0 3 5, 0 0 5))) 
+--             POLYGON((0 0 0, 0 3 0, 3 3 0, 3 0 0, 0 0 0)),
+--             MULTIPOLYGON(((0 0 0, 0 0 5, 0 3 5, 0 3 0, 0 0 0)),
+--                          ((0 3 0, 0 3 5, 3 3 5, 3 3 0, 0 3 0)),
+--                          ((3 3 0, 3 3 5, 3 0 5, 3 0 0, 3 3 0)),
+--                          ((3 0 0, 3 0 5, 0 0 5, 0 0 0, 3 0 0))),
+--             POLYGON((0 0 5, 3 0 5, 3 3 5, 0 3 5, 0 0 5)))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Extrude_2.png"/>
@@ -52,28 +52,28 @@ SELECT ST_Extrude('POLYGON((0 0, 3 0, 3 3, 0 3, 0 0))', 5);
 ###### POLYGON with hole:
 
 {% highlight mysql %}
-SELECT ST_Extrude('POLYGON((0 10, 10 10, 10 0, 0 0, 0 10), 
+SELECT ST_Extrude('POLYGON((0 10, 10 10, 10 0, 0 0, 0 10),
                       (1 3, 3 3, 3 1, 1 1, 1 3))', 10);
 -- Answer: GEOMETRYCOLLECTION(
---             POLYGON ((0 10 0, 10 10 0, 10 0 0, 0 0 0, 
---                       0 10 0), 
---                      (1 3, 1 1, 3 1, 3 3, 1 3)), 
---             MULTIPOLYGON(((0 10 0, 0 10 10, 10 10 10, 
---                            10 10 0, 0 10 0)), 
---                          ((10 10 0, 10 10 10, 10 0 10, 
---                            10 0 0, 10 10 0)), 
---                          ((10 0 0, 10 0 10, 0 0 10, 
---                            0 0 0, 10 0 0)), 
---                          ((0 0 0, 0 0 10, 0 10 10, 
---                            0 10 0, 0 0 0)), 
---                          ((1 3 0, 1 3 10, 1 1 10, 1 1 0, 
---                            1 3 0)), 
---                          ((1 1 0, 1 1 10, 3 1 10, 3 1 0, 
---                            1 1 0)), 
---                          ((3 1 0, 3 1 10, 3 3 10, 3 3 0, 
---                            3 1 0)), 
---                          ((3 3 0, 3 3 10, 1 3 10, 
---                            1 3 0, 3 3 0))), 
+--             POLYGON((0 10 0, 10 10 0, 10 0 0, 0 0 0,
+--                       0 10 0),
+--                      (1 3, 1 1, 3 1, 3 3, 1 3)),
+--             MULTIPOLYGON(((0 10 0, 0 10 10, 10 10 10,
+--                            10 10 0, 0 10 0)),
+--                          ((10 10 0, 10 10 10, 10 0 10,
+--                            10 0 0, 10 10 0)),
+--                          ((10 0 0, 10 0 10, 0 0 10,
+--                            0 0 0, 10 0 0)),
+--                          ((0 0 0, 0 0 10, 0 10 10,
+--                            0 10 0, 0 0 0)),
+--                          ((1 3 0, 1 3 10, 1 1 10, 1 1 0,
+--                            1 3 0)),
+--                          ((1 1 0, 1 1 10, 3 1 10, 3 1 0,
+--                            1 1 0)),
+--                          ((3 1 0, 3 1 10, 3 3 10, 3 3 0,
+--                            3 1 0)),
+--                          ((3 3 0, 3 3 10, 1 3 10,
+--                            1 3 0, 3 3 0))),
 --             POLYGON((0 10 10, 0 0 10, 10 0 10, 10 10 10, 0 10 10),
 --                (1 3 10, 3 3 10, 3 1 10, 1 1 10, 1 3 10))))
 {% endhighlight %}
@@ -82,9 +82,9 @@ SELECT ST_Extrude('POLYGON((0 10, 10 10, 10 0, 0 0, 0 10),
 
 {% highlight mysql %}
 SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))', 10, 1);
--- Answer: MULTIPOLYGON(((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), 
---            ((0 1 0, 0 1 10, 1 1 0, 1 1 10, 0 1 0)), 
---            ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), 
+-- Answer: MULTIPOLYGON(((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)),
+--            ((0 1 0, 0 1 10, 1 1 0, 1 1 10, 0 1 0)),
+--            ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)),
 --            ((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))
 
 SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))', 10, 2);

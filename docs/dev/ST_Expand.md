@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_Expand/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_Expand(GEOMETRY geom, double deltaX, double deltaY);
+GEOMETRY ST_Expand(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY);
 {% endhighlight %}
 
 ### Description
@@ -47,7 +47,7 @@ SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))',
 <img class="displayed" src="../ST_Expand_3.png"/>
 
 *Note*: If the value absolut of delta is greater than the difference
-between the maximum coordinate and the minimum coordinate then the 
+between the maximum coordinate and the minimum coordinate then the
 delta who are applicate is the difference between the
 minimum coordinate and the maximum coordinate divide by two.
 For this example, delta y=-10 => |delta y|=10, ymax=7 ymin=1, ymax-ymin=6, 10>6
@@ -57,7 +57,7 @@ Ymin= ymin-delta y= 1-(-3)= 4; Ymax= ymax+delta y= 7+(-3)= 4.
 
 {% highlight mysql %}
 SELECT ST_Expand('GEOMETRYCOLLECTION(
-                   LINESTRING(3 2, 7 5, 2 7), 
+                   LINESTRING(3 2, 7 5, 2 7),
                    POINT(10 10),
                    POLYGON((0.5 0, 0.5 7, 1.5 7, 1.5 1, 0.5 0)))',
                  2, 2);

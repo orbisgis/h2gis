@@ -36,12 +36,12 @@ Returns the envelope of `geom` as a Geometry, optionally setting its SRID to
 {% highlight mysql %}
 -- The envelope of a point is a point.
 SELECT ST_Envelope('POINT(1 2)', 2154);
--- Answer: POINT (1 2)
+-- Answer: POINT(1 2)
 
 -- This is a line parallel to the x-axis, so only the endpoints are
 -- conserved.
 SELECT ST_Envelope('LINESTRING(1 1, 5 1, 9 1)');
--- Answer: LINESTRING (1 1, 9 1)
+-- Answer: LINESTRING(1 1, 9 1)
 
 -- (minx miny, maxx miny, maxx maxy, minx maxy, minx miny)
 SELECT ST_Envelope('MULTIPOINT(1 2, 3 1, 2 2, 5 1, 1 -1)');

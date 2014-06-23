@@ -16,18 +16,18 @@ GEOMETRY ST_OctogonalEnvelope(GEOMETRY geom);
 
 ### Description
 Returns the octogonal envelope of a `GEOMETRY`.
-The octogonal envelope of a `Geometry` is tight along the four 
+The octogonal envelope of a `Geometry` is tight along the four
 extremal rectilineal parallels and along the four extremal diagonal parallels.
-The octogonal envelope may be degenerate to any extreme depending on the 
+The octogonal envelope may be degenerate to any extreme depending on the
 `Geometry` (e.g. it may be a rectangle, a line, or a point).
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_OctogonalEnvelope('POLYGON((2 1, 1 2, 2 2, 2 4, 3 5, 
-                                      3 3, 5 5, 7 2, 5 2, 6 1, 
+SELECT ST_OctogonalEnvelope('POLYGON((2 1, 1 2, 2 2, 2 4, 3 5,
+                                      3 3, 5 5, 7 2, 5 2, 6 1,
                                       2 1))');
--- Answer: POLYGON ((1 2, 1 3, 3 5, 5 5, 7 3, 7 2, 6 1, 2 1, 1 2))
+-- Answer: POLYGON((1 2, 1 3, 3 5, 5 5, 7 3, 7 2, 6 1, 2 1, 1 2))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_OctogonalEnvelope_0.png"/>
@@ -57,10 +57,10 @@ SELECT ST_OctogonalEnvelope('MULTIPOINT((1 1), (2 3))');
 <img class="displayed" src="../ST_OctogonalEnvelope_3.png"/>
 
 {% highlight mysql %}
-SELECT ST_OctogonalEnvelope('POLYGON((170 350, 95 214, 220 120, 
-                                      210 210, 159 205, 170 240, 
+SELECT ST_OctogonalEnvelope('POLYGON((170 350, 95 214, 220 120,
+                                      210 210, 159 205, 170 240,
                                       170 350))');
--- Answer: POLYGON((95 214, 95 275, 170 350, 220 300, 220 120, 
+-- Answer: POLYGON((95 214, 95 275, 170 350, 220 300, 220 120,
 --                  189 120, 95 214))
 {% endhighlight %}
 

@@ -34,9 +34,9 @@ SELECT ST_MinimumRectangle('LINESTRING(1 2, 2 4, 5 5, 2 1, 6 1)');
 -- Answer:POLYGON((6 1, 6 5, 1 5, 1 1, 6 1))
 
 SELECT ST_MinimumRectangle('GEOMETRYCOLLECTION(
-                               POLYGON((0 0, 3 -1, 1.5 2, 0 0)), 
-                               POLYGON((2 0, 3 3, 4 2, 2 0)), 
-                               POINT(5 6), 
+                               POLYGON((0 0, 3 -1, 1.5 2, 0 0)),
+                               POLYGON((2 0, 3 3, 4 2, 2 0)),
+                               POINT(5 6),
                                LINESTRING(1 1, 1 6))');
 -- Answer: POLYGON((5 6, 1.2352941176470589 6.9411764705882355, -0.5294117647058824 -0.1176470588235294, 3.235294117647059 -1.0588235294117647, 5 6))
 {% endhighlight %}
