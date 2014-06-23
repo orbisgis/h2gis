@@ -33,10 +33,6 @@ import static org.h2gis.utilities.GraphConstants.*;
  */
 public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
 
-    private static Connection connection;
-    private TableLocation tableName;
-    private TableLocation nodesName;
-    private TableLocation edgesName;
     protected static final int BATCH_SIZE = 100;
     private static final Logger LOGGER = LoggerFactory.getLogger(ST_GraphAnalysis.class);
 
@@ -61,28 +57,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
      * Constructor
      */
     public ST_GraphAnalysis() throws SQLException {
-        this(null, null);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param connection Connection
-     * @param inputTable Input table
-     */
-    public ST_GraphAnalysis(Connection connection,
-                            String inputTable) throws SQLException {
         addProperty(PROP_REMARKS, REMARKS);
-        if (connection != null) {
-            this.connection = connection;
-        }
-        if (inputTable != null) {
-            this.tableName = TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
-            this.nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
-                    tableName.getTable() + NODE_CENT_SUFFIX);
-            this.edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
-                    tableName.getTable() + EDGE_CENT_SUFFIX);
-        }
     }
 
     @Override
@@ -133,22 +108,27 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                                           String weight)
             throws SQLException, InvocationTargetException, NoSuchMethodException,
             InstantiationException, IllegalAccessException {
-        ST_GraphAnalysis f = new ST_GraphAnalysis(connection, inputTable);
+        final TableLocation tableName =
+                TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+        final TableLocation nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
+                tableName.getTable() + NODE_CENT_SUFFIX);
+        final TableLocation edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
+                tableName.getTable() + EDGE_CENT_SUFFIX);
         try {
-            createTables(f);
+            createTables(connection, nodesName, edgesName);
             final KeyedGraph graph =
                     doAnalysisAndReturnGraph(connection, inputTable, orientation, weight);
             final boolean previousAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
-            storeNodeCentrality(f, graph);
-            storeEdgeCentrality(f, graph);
+            storeNodeCentrality(connection, nodesName, graph);
+            storeEdgeCentrality(connection, edgesName, graph);
             connection.setAutoCommit(previousAutoCommit);
         } catch (SQLException e) {
             LOGGER.error("Problem creating centrality tables.");
             final Statement statement = connection.createStatement();
             try {
-                statement.execute("DROP TABLE IF EXISTS " + f.nodesName);
-                statement.execute("DROP TABLE IF EXISTS " + f.edgesName);
+                statement.execute("DROP TABLE IF EXISTS " + nodesName);
+                statement.execute("DROP TABLE IF EXISTS " + edgesName);
             } finally {
                 statement.close();
             }
@@ -173,14 +153,16 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         return graph;
     }
 
-    private static void createTables(ST_GraphAnalysis f) throws SQLException {
+    private static void createTables(Connection connection,
+                                     TableLocation nodesName,
+                                     TableLocation edgesName) throws SQLException {
         final Statement st = connection.createStatement();
         try {
-            st.execute("CREATE TABLE " + f.nodesName + "(" +
+            st.execute("CREATE TABLE " + nodesName + "(" +
                     NODE_ID + " INTEGER PRIMARY KEY, " +
                     BETWEENNESS + " DOUBLE, " +
                     CLOSENESS + " DOUBLE);");
-            st.execute("CREATE TABLE " + f.edgesName + "(" +
+            st.execute("CREATE TABLE " + edgesName + "(" +
                     EDGE_ID + " INTEGER PRIMARY KEY, " +
                     BETWEENNESS + " DOUBLE);");
         } finally {
@@ -188,9 +170,11 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         }
     }
 
-    private static void storeNodeCentrality(ST_GraphAnalysis f, KeyedGraph graph) throws SQLException {
+    private static void storeNodeCentrality(Connection connection,
+                                            TableLocation nodesName,
+                                            KeyedGraph graph) throws SQLException {
         final PreparedStatement nodeSt =
-                connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?,?)");
+                connection.prepareStatement("INSERT INTO " + nodesName + " VALUES(?,?,?)");
         try {
             int count = 0;
             for (VCent v : (Set<VCent>) graph.vertexSet()) {
@@ -215,9 +199,11 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
         }
     }
 
-    private static void storeEdgeCentrality(ST_GraphAnalysis f, KeyedGraph graph) throws SQLException {
+    private static void storeEdgeCentrality(Connection connection,
+                                            TableLocation edgesName,
+                                            KeyedGraph graph) throws SQLException {
         final PreparedStatement edgeSt =
-                connection.prepareStatement("INSERT INTO " + f.edgesName + " VALUES(?,?)");
+                connection.prepareStatement("INSERT INTO " + edgesName + " VALUES(?,?)");
         try {
             int count = 0;
             for (EdgeCent e : (Set<EdgeCent>) graph.edgeSet()) {

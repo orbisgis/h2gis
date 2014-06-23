@@ -57,11 +57,6 @@ import static org.h2gis.utilities.GraphConstants.*;
  */
 public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunction {
 
-    private static Connection connection;
-    private final String orientation;
-    private TableLocation tableName;
-    private TableLocation nodesName;
-    private TableLocation edgesName;
     protected static final int BATCH_SIZE = 100;
     public static final int NULL_CONNECTED_COMPONENT_NUMBER = -1;
     private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ST_ConnectedComponents.class);
@@ -81,31 +76,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
      * Constructor
      */
     public ST_ConnectedComponents() throws SQLException {
-        this(null, null, null);
-    }
-
-    /**
-     * Constructor
-     *
-     * @param connection  Connection
-     * @param inputTable  Input table
-     * @param orientation Orientation string
-     */
-    public ST_ConnectedComponents(Connection connection,
-                                  String inputTable,
-                                  String orientation) throws SQLException {
         addProperty(PROP_REMARKS, REMARKS);
-        if (connection != null) {
-            this.connection = connection;
-        }
-        if (inputTable != null) {
-            this.tableName = TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
-            this.nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
-                    tableName.getTable() + NODE_COMP_SUFFIX);
-            this.edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
-                    tableName.getTable() + EDGE_COMP_SUFFIX);
-        }
-        this.orientation = orientation;
     }
 
     @Override
@@ -123,41 +94,52 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
      * @throws SQLException
      */
     public static boolean getConnectedComponents(Connection connection,
-                                                   String inputTable,
-                                                   String orientation) throws SQLException {
-        ST_ConnectedComponents f = new ST_ConnectedComponents(connection, inputTable, orientation);
+                                                 String inputTable,
+                                                 String orientation) throws SQLException {
         KeyedGraph graph = prepareGraph(connection, inputTable, orientation, null,
                 VUCent.class, Edge.class);
         if (graph == null) {
             return false;
         }
-        final List<Set<VUCent>> componentsList = getConnectedComponents(f, graph);
-        if (storeNodeConnectedComponents(f, componentsList)) {
-            if (storeEdgeConnectedComponents(f)) {
+        final List<Set<VUCent>> componentsList = getConnectedComponents(graph, orientation);
+
+        final TableLocation tableName =
+                TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+        final TableLocation nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
+                tableName.getTable() + NODE_COMP_SUFFIX);
+        final TableLocation edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
+                tableName.getTable() + EDGE_COMP_SUFFIX);
+
+        if (storeNodeConnectedComponents(connection, nodesName, edgesName, componentsList)) {
+            if (storeEdgeConnectedComponents(connection, tableName, nodesName, edgesName)) {
                 return true;
             }
         }
         return false;
     }
 
-    private static void cancel(ST_ConnectedComponents f, SQLException e, String msg)
+    private static void cancel(Connection connection,
+                               TableLocation nodesName,
+                               TableLocation edgesName,
+                               SQLException e,
+                               String msg)
             throws SQLException {
         LOGGER.error(msg, e);
         final Statement statement = connection.createStatement();
         try {
-            statement.execute("DROP TABLE IF EXISTS " + f.nodesName);
-            statement.execute("DROP TABLE IF EXISTS " + f.edgesName);
+            statement.execute("DROP TABLE IF EXISTS " + nodesName);
+            statement.execute("DROP TABLE IF EXISTS " + edgesName);
         } finally {
             statement.close();
         }
     }
 
-    private static List<Set<VUCent>> getConnectedComponents(ST_ConnectedComponents f,
-                                                            Graph<VUCent, Edge> graph) {
+    private static List<Set<VUCent>> getConnectedComponents(Graph<VUCent, Edge> graph,
+                                                            String orientation) {
         LOGGER.info("Calculating connected components... ");
         final long start = System.currentTimeMillis();
         List<Set<VUCent>> sets;
-        if (parseGlobalOrientation(f.orientation).equals(UNDIRECTED)) {
+        if (parseGlobalOrientation(orientation).equals(UNDIRECTED)) {
             sets = new ConnectivityInspector<VUCent, Edge>(
                     (UndirectedGraph<VUCent, Edge>) graph).connectedSets();
         } else {
@@ -168,14 +150,16 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         return sets;
     }
 
-    private static boolean storeNodeConnectedComponents(ST_ConnectedComponents f,
+    private static boolean storeNodeConnectedComponents(Connection connection,
+                                                        TableLocation nodesName,
+                                                        TableLocation edgesName,
                                                         List<Set<VUCent>> componentsList)
             throws SQLException {
         LOGGER.info("Storing node connected components... ");
         final long start = System.currentTimeMillis();
-        createNodeTable(f);
+        createNodeTable(connection, nodesName);
         final PreparedStatement nodeSt =
-                connection.prepareStatement("INSERT INTO " + f.nodesName + " VALUES(?,?)");
+                connection.prepareStatement("INSERT INTO " + nodesName + " VALUES(?,?)");
         try {
             final boolean previousAutoCommit = connection.getAutoCommit();
             connection.setAutoCommit(false);
@@ -202,7 +186,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             }
             connection.setAutoCommit(previousAutoCommit);
         } catch (SQLException e) {
-            cancel(f, e, "Could not store node connected components.");
+            cancel(connection, nodesName, edgesName, e, "Could not store node connected components.");
             return false;
         } finally {
             nodeSt.close();
@@ -211,10 +195,11 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         return true;
     }
 
-    private static void createNodeTable(ST_ConnectedComponents f) throws SQLException {
+    private static void createNodeTable(Connection connection,
+                                        TableLocation nodesName) throws SQLException {
         final Statement st = connection.createStatement();
         try {
-            st.execute("CREATE TABLE " + f.nodesName + "(" +
+            st.execute("CREATE TABLE " + nodesName + "(" +
                     NODE_ID + " INTEGER PRIMARY KEY, " +
                     CONNECTED_COMPONENT + " INTEGER);");
         } finally {
@@ -222,7 +207,10 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         }
     }
 
-    private static boolean storeEdgeConnectedComponents(ST_ConnectedComponents f) throws SQLException {
+    private static boolean storeEdgeConnectedComponents(Connection connection,
+                                                        TableLocation tableName,
+                                                        TableLocation nodesName,
+                                                        TableLocation edgesName) throws SQLException {
         LOGGER.info("Storing edge connected components...");
         final long start = System.currentTimeMillis();
         final Statement st = connection.createStatement();
@@ -233,23 +221,23 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             st.execute(
                 // Create a temporary table containing the connected component
                 // of each start node.
-                "CREATE INDEX ON " + f.tableName + "(" + START_NODE + ");" +
-                "CREATE INDEX ON " + f.nodesName + "(" + NODE_ID + ");" +
+                "CREATE INDEX ON " + tableName + "(" + START_NODE + ");" +
+                "CREATE INDEX ON " + nodesName + "(" + NODE_ID + ");" +
                 "CREATE TEMPORARY TABLE " + tmpName +
                 "(" + EDGE_ID + " INT PRIMARY KEY, " + startNodeCC + " INT, " + endNodeCC + " INT) " +
                 "AS SELECT A." + EDGE_ID + ", B." + CONNECTED_COMPONENT + ", NULL " +
-                "FROM " + f.tableName + " A, " + f.nodesName + " B " +
+                "FROM " + tableName + " A, " + nodesName + " B " +
                 "WHERE A." + START_NODE + "=B." + NODE_ID + ";" +
                 // Add indices to speed up the UPDATE.
-                "CREATE INDEX ON " + f.tableName + "(" + END_NODE + ");" +
-                "CREATE INDEX ON " + f.tableName + "(" + EDGE_ID + ");" +
+                "CREATE INDEX ON " + tableName + "(" + END_NODE + ");" +
+                "CREATE INDEX ON " + tableName + "(" + EDGE_ID + ");" +
                 "CREATE INDEX ON " + tmpName + "(" + EDGE_ID + ");" +
                 // Update the temporary table with the connected component
                 // of each end node.
                 "UPDATE " + tmpName + " C " +
                 "SET " + endNodeCC + "=(" +
                 "SELECT B." + CONNECTED_COMPONENT + " " +
-                "FROM " + f.tableName + " A, " + f.nodesName + " B " +
+                "FROM " + tableName + " A, " + nodesName + " B " +
                 "WHERE A." + END_NODE + "=B." + NODE_ID + " AND C." + EDGE_ID + "=A." + EDGE_ID + ");" +
                 // Use this temporary table to deduce the connected component
                 // of each edge. If the start and end node are in the same
@@ -258,17 +246,17 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
                 // directed graphs), then we consider that this edge is not in
                 // a strongly connected component and so assign a connected
                 // component id of NULL_CONNECTED_COMPONENT_NUMBER.
-                "CREATE TABLE " + f.edgesName +
+                "CREATE TABLE " + edgesName +
                 "(" + EDGE_ID + " INT PRIMARY KEY, " + CONNECTED_COMPONENT + " INT) AS " +
                 "SELECT " + EDGE_ID + ", " + startNodeCC + " " +
                 "FROM " + tmpName + " WHERE " + startNodeCC + "=" + endNodeCC + "; " +
-                "INSERT INTO " + f.edgesName + "(" + EDGE_ID + ", " + CONNECTED_COMPONENT + ") " +
+                "INSERT INTO " + edgesName + "(" + EDGE_ID + ", " + CONNECTED_COMPONENT + ") " +
                 "SELECT " + EDGE_ID + ", " + NULL_CONNECTED_COMPONENT_NUMBER +
                 " FROM " + tmpName + " WHERE " + startNodeCC + "!=" + endNodeCC + ";" +
                 // Drop the temporary table.
                 "DROP TABLE IF EXISTS " + tmpName + ";");
         } catch (SQLException e) {
-            cancel(f, e, "Could not store edge connected components.");
+            cancel(connection, nodesName, edgesName, e, "Could not store edge connected components.");
             return false;
         } finally {
             st.close();
