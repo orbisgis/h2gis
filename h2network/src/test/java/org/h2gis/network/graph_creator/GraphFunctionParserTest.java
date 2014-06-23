@@ -50,7 +50,7 @@ public class GraphFunctionParserTest {
     @BeforeClass
     public static void setUp() throws Exception {
         parser = new GraphFunctionParser();
-        connection = SpatialH2UT.createSpatialDataBase("ST_AccessibilityTest", true);
+        connection = SpatialH2UT.createSpatialDataBase(GraphFunctionParserTest.class.getSimpleName(), true);
     }
 
     @AfterClass
