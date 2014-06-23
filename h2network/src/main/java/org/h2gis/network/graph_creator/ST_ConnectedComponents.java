@@ -25,7 +25,6 @@
 package org.h2gis.network.graph_creator;
 
 import org.h2gis.h2spatialapi.ScalarFunction;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.data.VUCent;
 import org.javanetworkanalyzer.model.Edge;
@@ -46,7 +45,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.h2gis.network.graph_creator.GraphFunctionParser.Orientation.UNDIRECTED;
-import static org.h2gis.network.graph_creator.GraphFunctionParser.parseGlobalOrientation;
+import static org.h2gis.network.graph_creator.GraphFunctionParser.*;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
@@ -103,12 +102,9 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         }
         final List<Set<VUCent>> componentsList = getConnectedComponents(graph, orientation);
 
-        final TableLocation tableName =
-                TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
-        final TableLocation nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
-                tableName.getTable() + NODE_COMP_SUFFIX);
-        final TableLocation edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
-                tableName.getTable() + EDGE_COMP_SUFFIX);
+        final TableLocation tableName = parseInputTable(connection, inputTable);
+        final TableLocation nodesName = suffixTableLocation(tableName, NODE_COMP_SUFFIX);
+        final TableLocation edgesName = suffixTableLocation(tableName, EDGE_COMP_SUFFIX);
 
         if (storeNodeConnectedComponents(connection, nodesName, edgesName, componentsList)) {
             if (storeEdgeConnectedComponents(connection, tableName, nodesName, edgesName)) {

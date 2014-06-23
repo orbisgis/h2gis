@@ -24,9 +24,14 @@
 
 package org.h2gis.network.graph_creator;
 
-import org.junit.Before;
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.TableLocation;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import static junit.framework.Assert.assertTrue;
@@ -39,11 +44,18 @@ import static org.junit.Assert.assertEquals;
  */
 public class GraphFunctionParserTest {
 
-    private GraphFunctionParser parser;
+    private static GraphFunctionParser parser;
+    private static Connection connection;
 
-    @Before
-    public void setUp() {
+    @BeforeClass
+    public static void setUp() throws Exception {
         parser = new GraphFunctionParser();
+        connection = SpatialH2UT.createSpatialDataBase("ST_AccessibilityTest", true);
+    }
+
+    @AfterClass
+    public static void tearDown() throws Exception {
+        connection.close();
     }
 
     private void checkOrientation(String input, GraphFunctionParser.Orientation global, String local) {
@@ -188,5 +200,22 @@ public class GraphFunctionParserTest {
     public void testDestinationsStringFail() {
         assertTrue(Arrays.equals(new int[]{1, 2, 3},
                 parser.parseDestinationsString("1, 2,,3")));
+    }
+
+    @Test
+    public void testParseInputTable() throws SQLException {
+        final TableLocation roads_edges = GraphFunctionParser.parseInputTable(connection, "ROADS_EDGES");
+        assertEquals("", roads_edges.getCatalog());
+        assertEquals("", roads_edges.getSchema());
+        assertEquals("ROADS_EDGES", roads_edges.getTable());
+    }
+
+    @Test
+    public void testSuffixTableLocation() throws SQLException {
+        final TableLocation roads_edges = GraphFunctionParser.parseInputTable(connection, "ROADS_EDGES");
+        final TableLocation suffixed = GraphFunctionParser.suffixTableLocation(roads_edges, "_SUFFIX");
+        assertEquals("", suffixed.getCatalog());
+        assertEquals("", suffixed.getSchema());
+        assertEquals("ROADS_EDGES_SUFFIX", suffixed.getTable());
     }
 }
