@@ -89,7 +89,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
     /**
      * Constructor
      */
-    public ST_ShortestPath() throws SQLException {
+    public ST_ShortestPath() {
         addProperty(PROP_REMARKS, REMARKS);
     }
 

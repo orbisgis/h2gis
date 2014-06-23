@@ -74,7 +74,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     /**
      * Constructor
      */
-    public ST_ConnectedComponents() throws SQLException {
+    public ST_ConnectedComponents() {
         addProperty(PROP_REMARKS, REMARKS);
     }
 

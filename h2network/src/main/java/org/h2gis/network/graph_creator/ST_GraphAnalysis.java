@@ -57,7 +57,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
     /**
      * Constructor
      */
-    public ST_GraphAnalysis() throws SQLException {
+    public ST_GraphAnalysis() {
         addProperty(PROP_REMARKS, REMARKS);
     }
 
