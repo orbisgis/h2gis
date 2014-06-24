@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Extrude
 category: h2spatial-ext/geometry-creation
-description: Return a 3D representation in a <code>GEOMETRYCOLLECTION</code>
+description: Extrude a geometry
 prev_section: ST_Expand
 next_section: ST_MakeEllipse
 permalink: /docs/dev/ST_Extrude/
@@ -12,16 +12,16 @@ permalink: /docs/dev/ST_Extrude/
 
 {% highlight mysql %}
 GEOMETRYCOLLECTION ST_Extrude(GEOMETRY geom, DOUBLE height);
-GEOMETRYCOLLECTION ST_Extrude(GEOMETRY geom, DOUBLE height, int
-flag);
+GEOMETRYCOLLECTION ST_Extrude(GEOMETRY geom, DOUBLE height,
+                              int flag);
 {% endhighlight %}
 
 ### Description
-Returns a 3D representation in a `GEOMETRYCOLLECTION` containing
-floor (input `GEOMETRY`), wall and roof Geometries from to
-`LINESTRING` or `POLYGON`.
 
-The value for `flag` is 1 to extracts walls and 2 to extracts the roof.
+Extrudes `geom` by `height`, returning a `GEOMETRYCOLLECTION`
+containing the floor (`geom`), the walls and the roof.
+
+To extract walls, set `flag=1`; to extract the roof, set `flag=2`.
 
 ### Examples
 
