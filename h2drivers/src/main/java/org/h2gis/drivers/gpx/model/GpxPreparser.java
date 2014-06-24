@@ -27,7 +27,6 @@ package org.h2gis.drivers.gpx.model;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.sql.SQLException;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -36,9 +35,9 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * GpxPreparser class juste read the document. It says what type of element
+ * GpxPreparser class just reads the document. It says what type of elements
  * (waypoints, routes ,routepoints, tracks, track segments, trackpoints) the
- * document contains. It also count each type of element.
+ * document contains. It also counts each type of elements.
  *
  * @author Antonin Piasco
  * @author Erwan Bocher
