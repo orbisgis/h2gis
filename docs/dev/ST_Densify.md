@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Densify
 category: h2spatial-ext/edit-geometries
-description: Return a Geometry with more vertex
+description: Insert extra vertices along the line segments of a Geometry using a distance tolerance
 prev_section: ST_AddZ
 next_section: ST_Interpolate3DLine
 permalink: /docs/dev/ST_Densify/
@@ -15,11 +15,14 @@ GEOMETRY ST_Densify(GEOMETRY geom, DOUBLE tolerance);
 {% endhighlight %}
 
 ### Description
-Densifies a `GEOMETRY` by inserting extra vertices along the line segments contained in the `GEOMETRY` using the given distance `tolerance`.
+
+Densifies `geom` by inserting extra vertices along the line segments
+it contains using a distance `tolerance`.
 
 ### Examples
 
 {% highlight mysql %}
+-- Points are invariant under densification
 SELECT ST_Densify('POINT(14 2)', 10);
 -- Answer: POINT(14 2)
 
@@ -42,4 +45,7 @@ SELECT ST_Densify('POLYGON((2 0, 2 8, 4 8, 4 0, 2 0))', 4.5)
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_Densify.java" target="_blank">Source code</a>
+* JTS [Densifier#densify][jts]
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
+
+[jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/densify/Densifier.html#densify(com.vividsolutions.jts.geom.Geometry, double)
