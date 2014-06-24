@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_Densify/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_Densify(GEOMETRY geom, double tolerance);
+GEOMETRY ST_Densify(GEOMETRY geom, DOUBLE tolerance);
 {% endhighlight %}
 
 ### Description
@@ -24,8 +24,8 @@ SELECT ST_Densify('POINT(14 2)', 10);
 -- Answer: POINT(14 2)
 
 SELECT ST_Densify('LINESTRING(1 11, 8 1)', 2);
--- Answer: LINESTRING(1 11, 2 9.5714, 3 8.1428, 
---                    4 6.7142, 5 5.2857, 6 3.85714, 
+-- Answer: LINESTRING(1 11, 2 9.5714, 3 8.1428,
+--                    4 6.7142, 5 5.2857, 6 3.85714,
 --                    7 2.4285, 8 1)
 
 SELECT ST_Densify('LINESTRING(1 11, 8 1)', 10);

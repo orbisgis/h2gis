@@ -22,23 +22,23 @@ Remove all vertices that are located within a `POLYGON`.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_RemovePoint('POINT(1 1)', 
+SELECT ST_RemovePoint('POINT(1 1)',
                       'POLYGON((0 2, 2 2, 2 0, 0 0, 0 2))');
 -- Answer: null
 
-SELECT ST_RemovePoint('MULTIPOINT((5 5), (10 10), (100 100))', 
+SELECT ST_RemovePoint('MULTIPOINT((5 5), (10 10), (100 100))',
                       ST_Buffer('POINT(10 10)', 1));
 -- Answer: MULTIPOINT((5 5), (100 100))
 
-SELECT ST_RemovePoint('MULTIPOINT((5 5), (3 1))', 
-                      ST_Buffer('POINT(4 2)',2));
+SELECT ST_RemovePoint('MULTIPOINT((5 5), (3 1))',
+                      ST_Buffer('POINT(4 2)', 2));
 -- Answer: MULTIPOINT((5 5))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_RemovePoint_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_RemovePoint('POLYGON((0 1, 5 4, 5 7, 2 6, 0 1))', 
+SELECT ST_RemovePoint('POLYGON((0 1, 5 4, 5 7, 2 6, 0 1))',
                       ST_Buffer('POINT(6 8)', 1.5));
 -- Answer: POLYGON((0 1, 5 4, 2 6, 0 1))
 
@@ -52,7 +52,7 @@ SELECT ST_RemovePoint('POLYGON((0 1, 5 4, 5 7, 2 6, 0 1))',
 #####POLYGON with holes
 
 {% highlight mysql %}
-SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
+SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
                                (3 4, 3 5, 4 5, 4 4, 3 4),
                                (2 3, 3 3, 3 2, 2 2, 2 3))',
                        ST_Buffer('POINT(6 7)', 4.5));
@@ -62,8 +62,8 @@ SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
 <img class="displayed" src="../ST_RemovePoint_3.png"/>
 
 {% highlight mysql %}
-SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-                               (3 4, 3 5, 4 5, 4 4, 3 4))', 
+SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
+                               (3 4, 3 5, 4 5, 4 4, 3 4))',
                     ST_Buffer('POINT(6 7)', 3));
 -- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (3 4, 3 5, 4 4, 3 4))
 {% endhighlight %}
@@ -71,11 +71,11 @@ SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
 <img class="displayed" src="../ST_RemovePoint_4.png"/>
 
 {% highlight mysql %}
-SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), 
-                               (2 2, 2 5, 4 5, 4 2, 2 2))', 
+SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
+                               (2 2, 2 5, 4 5, 4 2, 2 2))',
                       ST_Buffer('POINT(4 7)', 2));
 -- Answer: POLYGON((1 1, 1 6, 5 1, 1 1), (2 2, 2 5, 4 5, 4 2, 2 2))
--- POLYGON is not valid 
+-- POLYGON is not valid
 {% endhighlight %}
 
 <img class="displayed" src="../ST_RemovePoint_5.png"/>
@@ -95,7 +95,7 @@ SELECT ST_RemovePoint(geomA, ST_Buffer(geomB, 3.01));
 -- Answer: LINESTRING(0 3, 1 1, 6 5, 7 6, 7 7, 6 8)
 
 SELECT ST_RemovePoint('LINESTRING(0 3, 1 1, 3 3, 5 2, 5 4, 6 5,
-                                  7 6, 7 7, 6 8)', 
+                                  7 6, 7 7, 6 8)',
                       ST_Buffer('POINT(3 4)', 6));
 -- Answer: null
 {% endhighlight %}

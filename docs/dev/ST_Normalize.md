@@ -15,8 +15,8 @@ GEOMETRY ST_Normalize(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Converts a `GEOMETRY` to normal form (or canonical form). Normal form is a unique representation for Geometry. 
-The definitions for normal form use the standard lexicographical ordering for coordinates. 
+Converts a `GEOMETRY` to normal form (or canonical form). Normal form is a unique representation for Geometry.
+The definitions for normal form use the standard lexicographical ordering for coordinates.
 
 ### Examples
 
@@ -24,7 +24,7 @@ The definitions for normal form use the standard lexicographical ordering for co
 SELECT ST_Normalize('POLYGON((2 4, 1 3, 2 1, 6 1, 6 3, 4 4, 2 4))');
 -- Answer: POLYGON((1 3, 2 4, 4 4, 6 3, 6 1, 2 1, 1 3))
 
-SELECT ST_Normalize('MULTIPOINT((2 2), (2 5), (10 3), (7 1), 
+SELECT ST_Normalize('MULTIPOINT((2 2), (2 5), (10 3), (7 1),
                                 (5 1), (5 3))');
 -- Answer: MULTIPOINT((2 2), (2 5), (5 1), (5 3), (7 1), (10 3))
 

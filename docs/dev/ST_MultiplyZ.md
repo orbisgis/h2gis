@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_MultiplyZ/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_MultiplyZ(GEOMETRY geom, double z);
+GEOMETRY ST_MultiplyZ(GEOMETRY geom, DOUBLE z);
 {% endhighlight %}
 
 ### Description
@@ -33,7 +33,7 @@ SELECT ST_MultiplyZ('MULTIPOINT((190 300 1), (10 11 50))',
 SELECT ST_MultiplyZ('MULTIPOINT((190 300 10), (10 11))', 10);
 -- Answer: MULTIPOINT((190 300 100), (10 11))
 
-SELECT ST_MultiplyZ('MULTIPOINT((190 300 100), (10 11 50))', 
+SELECT ST_MultiplyZ('MULTIPOINT((190 300 100), (10 11 50))',
                     0.1);
 -- Answer: MULTIPOINT((190 300 10), (10 11 5))
 {% endhighlight %}

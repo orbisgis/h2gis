@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_Reverse3DLine/
 
 {% highlight mysql %}
 GEOMETRY ST_Reverse3DLine(GEOMETRY geom);
-GEOMETRY ST_Reverse3DLine(GEOMETRY geom, varchar orderReverse);
+GEOMETRY ST_Reverse3DLine(GEOMETRY geom, VARCHAR orderReverse);
 {% endhighlight %}
 
 ### Description
@@ -23,31 +23,31 @@ If the  start or the end z values are equal to NaN return the input Geometry.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_Reverse3DLine('POLYGON((190 300, 140 180, 300 110, 
-                                   313 117, 430 270, 380 430, 
+SELECT ST_Reverse3DLine('POLYGON((190 300, 140 180, 300 110,
+                                   313 117, 430 270, 380 430,
                                    190 300))');
 -- Answer: null
 
 SELECT ST_Reverse3DLine('LINESTRING(1 1, 1 6 2, 2 2, -1 2)');
 -- Answer: LINESTRING(1 1, 1 6 2, 2 2, -1 2)
 
-SELECT ST_Reverse3DLine('LINESTRING(105 353 10, 150 180, 
+SELECT ST_Reverse3DLine('LINESTRING(105 353 10, 150 180,
                                     300 280 0)');
 -- Answer: LINESTRING(300 280 0, 150 180, 105 353 10)
 
-SELECT ST_Reverse3DLine('LINESTRING(105 353 10, 150 180, 
+SELECT ST_Reverse3DLine('LINESTRING(105 353 10, 150 180,
                                     300 280 0)', 'desc');
 -- Answer: LINESTRING(105 353 10, 150 180, 300 280 0)
 
-SELECT ST_Reverse3DLine('LINESTRING(105 353 0, 150 180, 
+SELECT ST_Reverse3DLine('LINESTRING(105 353 0, 150 180,
                                     300 280 10)', 'desc');
 -- Answer: LINESTRING(300 280 10, 150 180, 105 353 0)
 
-SELECT ST_Reverse3DLine('MULTILINESTRING((1 1 1, 1 6 2, 2 2 1, 
-                                          -1 2 3), 
+SELECT ST_Reverse3DLine('MULTILINESTRING((1 1 1, 1 6 2, 2 2 1,
+                                          -1 2 3),
                                          (1 2 0, 4 2, 4 6 2))',
                         'desc');
--- Answer: MULTILINESTRING((-1 2 3, 2 2 1, 1 6 2, 1 1 1), 
+-- Answer: MULTILINESTRING((-1 2 3, 2 2 1, 1 6 2, 1 1 1),
 --                         (4 6 2, 4 2, 1 2 0))
 {% endhighlight %}
 

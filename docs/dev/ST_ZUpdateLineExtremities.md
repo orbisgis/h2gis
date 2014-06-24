@@ -11,22 +11,22 @@ permalink: /docs/dev/ST_ZUpdateLineExtremities/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_ZUpdateLineExtremities(GEOMETRY geom, double startZ, 
+GEOMETRY ST_ZUpdateLineExtremities(GEOMETRY geom, DOUBLE startZ,
                                    double endZ);
-GEOMETRY ST_ZUpdateLineExtremities(GEOMETRY geom, double startZ, 
-                                   double endZ, boolean interpolate);
+GEOMETRY ST_ZUpdateLineExtremities(GEOMETRY geom, DOUBLE startZ,
+                                   double endZ, BOOLEAN interpolate);
 {% endhighlight %}
 
 ### Description
-Replaces the start and end z values of a `LINESTRING` or `MULTILINESTRING`. By default the other z values are interpolated according the length of the line. 
+Replaces the start and end z values of a `LINESTRING` or `MULTILINESTRING`. By default the other z values are interpolated according the length of the line.
 If the `interpolate` is true the vertices are interpolated according the `startZ` and `endZ` values.
 Set false if you want to update only the start and end z values.
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_ZUpdateLineExtremities('POLYGON((1 1, 1 7, 7 7 -1, 
-                                           7 1 -1, 1 1))', 
+SELECT ST_ZUpdateLineExtremities('POLYGON((1 1, 1 7, 7 7 -1,
+                                           7 1 -1, 1 1))',
                                   10, 15);
 -- Answer: null
 
@@ -34,16 +34,16 @@ SELECT ST_ZUpdateLineExtremities('LINESTRING(250 250, 280 290)',
                                   40, 10);
 -- Answer: LINESTRING(250 250 40, 280 290 10)
 
-SELECT ST_ZUpdateLineExtremities('MULTILINESTRING((1 1 1, 1 6 2, 
+SELECT ST_ZUpdateLineExtremities('MULTILINESTRING((1 1 1, 1 6 2,
                                                    2 2 1, -1 2 3),
-                                                  (1 2 0, 4 2, 
-                                                   4 6 2))', 
+                                                  (1 2 0, 4 2,
+                                                   4 6 2))',
                                  0, 10);
--- Answer: MULTILINESTRING((1 1 0, 1 6 3.6889, 2 2 2.4746, 
---                          -1 2 10), 
+-- Answer: MULTILINESTRING((1 1 0, 1 6 3.6889, 2 2 2.4746,
+--                          -1 2 10),
 --                         (1 2 0, 4 2 5.7142, 4 6 10))
 
-SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0, 5 0 1, 15 0)', 
+SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0, 5 0 1, 15 0)',
                                   0, 20);
 -- Answer: LINESTRING(0 0 0, 5 0 13.333333333333332, 15 0 20)
 

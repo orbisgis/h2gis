@@ -11,17 +11,17 @@ permalink: /docs/dev/ST_UpdateZ/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_UpdateZ(GEOMETRY geom, double z);
-GEOMETRY ST_UpdateZ(GEOMETRY geom, double z, int updateCondition);
+GEOMETRY ST_UpdateZ(GEOMETRY geom, DOUBLE z);
+GEOMETRY ST_UpdateZ(GEOMETRY geom, DOUBLE z, INT updateCondition);
 {% endhighlight %}
 
 ### Description
-Replaces the z value of (each vertex of) the geometric parameter to the corresponding value given by a field.The first argument is used to give the new z values.The second argument is a condition: 
+Replaces the z value of (each vertex of) the geometric parameter to the corresponding value given by a field.The first argument is used to give the new z values.The second argument is a condition:
 * 1 to replace all z values.
 * 2 to replace all z values excepted the NaN values.
 * 3 to replace only the NaN z values.
 
-If the `updateCondition` is not defined, `z` replace all z value. 
+If the `updateCondition` is not defined, `z` replace all z value.
 
 ### Examples
 
@@ -39,9 +39,9 @@ SELECT ST_UpdateZ('POLYGON((1 1, 1 7 8, 7 7 -1, 7 1 -1, 1 1))',
                    10, 2);
 -- Answer: POLYGON((1 1, 1 7 10, 7 7 10, 7 1 10, 1 1))
 
-SELECT ST_UpdateZ('LINESTRING(250 250 10, 280 290, 300 230 0, 
+SELECT ST_UpdateZ('LINESTRING(250 250 10, 280 290, 300 230 0,
                               340 300)', 5, 3);
--- Answer: LINESTRING(250 250 10, 280 290 5, 300 230 0, 
+-- Answer: LINESTRING(250 250 10, 280 290 5, 300 230 0,
 --                     340 300 5)
 {% endhighlight %}
 
