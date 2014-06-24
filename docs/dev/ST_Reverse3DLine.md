@@ -26,7 +26,7 @@ If the  start or the end z values are equal to NaN return the input Geometry.
 SELECT ST_Reverse3DLine('POLYGON((190 300, 140 180, 300 110,
                                    313 117, 430 270, 380 430,
                                    190 300))');
--- Answer: null
+-- Answer: NULL
 
 SELECT ST_Reverse3DLine('LINESTRING(1 1, 1 6 2, 2 2, -1 2)');
 -- Answer: LINESTRING(1 1, 1 6 2, 2 2, -1 2)

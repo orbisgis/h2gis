@@ -22,11 +22,11 @@ If z input value is equal to NaN, Nan is returned in the output Geometry.
 
 {% highlight mysql %}
 SELECT ST_Interpolate3DLine('POINT(0 0 0)');
--- Answer: null
+-- Answer: NULL
 
 SELECT ST_Interpolate3DLine('POLYGON((2 0 1, 2 8 0, 4 8,
                                       4 0, 2 0))');
--- Answer: null
+-- Answer: NULL
 
 SELECT ST_Interpolate3DLine('LINESTRING(0 8, 1 8, 3 8)');
 -- Answer: LINESTRING(0 8, 1 8, 3 8)

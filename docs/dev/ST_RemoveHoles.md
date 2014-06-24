@@ -23,7 +23,7 @@ If the input Geometry is not a POLYGON or MULTIPOLYGON return null.
 
 {% highlight mysql %}
 SELECT ST_RemoveHoles('POINT(1 5)');
--- Answer: null
+-- Answer: NULL
 
 SELECT ST_RemoveHoles('POLYGON((1 5, 0 4, 0 1, 1 0, 4 0,
                                 4 2, 5 4, 5 4, 1 5))');

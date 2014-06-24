@@ -28,7 +28,7 @@ Set false if you want to update only the start and end z values.
 SELECT ST_ZUpdateLineExtremities('POLYGON((1 1, 1 7, 7 7 -1,
                                            7 1 -1, 1 1))',
                                   10, 15);
--- Answer: null
+-- Answer: NULL
 
 SELECT ST_ZUpdateLineExtremities('LINESTRING(250 250, 280 290)',
                                   40, 10);
