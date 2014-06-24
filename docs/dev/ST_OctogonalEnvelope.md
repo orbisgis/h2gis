@@ -15,6 +15,7 @@ GEOMETRY ST_OctogonalEnvelope(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
+
 Returns the octogonal envelope of a `GEOMETRY`.
 The octogonal envelope of a `Geometry` is tight along the four
 extremal rectilineal parallels and along the four extremal diagonal parallels.
@@ -36,7 +37,8 @@ SELECT ST_OctogonalEnvelope('POLYGON((2 1, 1 2, 2 2, 2 4, 3 5,
 SELECT ST_OctogonalEnvelope('POLYGON((2 2, 2 4, 4 4, 4 2, 2 2))');
 -- Answer: POLYGON((2 2, 2 4, 4 4, 4 2, 2 2))
 
-SELECT ST_OctogonalEnvelope('POLYGON((1 2, 3 0, 5 2, 3 2, 2 3, 1 2))');
+SELECT ST_OctogonalEnvelope(
+    'POLYGON((1 2, 3 0, 5 2, 3 2, 2 3, 1 2))');
 -- Answer: POLYGON((1 2, 2 3, 4 3, 5 2, 3 0, 1 2))
 {% endhighlight %}
 
@@ -67,6 +69,8 @@ SELECT ST_OctogonalEnvelope('POLYGON((170 350, 95 214, 220 120,
 ##### See also
 
 * [`ST_Envelope`](../ST_Envelope),
-[`ST_MinimumRectangle`](../ST_MinimumRectangle)
+  [`ST_Extent`](../ST_Extent),
+  [`ST_MinimumRectangle`](../ST_MinimumRectangle),
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_OctogonalEnvelope.java" target="_blank">Source code</a>
+* JTS [OctogonalEnvelope](http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/geom/OctagonalEnvelope.html)
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
