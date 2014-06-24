@@ -86,4 +86,7 @@ SELECT ST_SRID(ST_Envelope(
 * [`ST_Extent`](../ST_Extent),
   [`ST_MinimumRectangle`](../ST_MinimumRectangle),
   [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope)
+* JTS [Geometry#getEnvelope][jts]
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Envelope.java" target="_blank">Source code</a>
+
+[jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/geom/Geometry.html#getEnvelope()

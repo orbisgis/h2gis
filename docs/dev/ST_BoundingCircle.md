@@ -45,4 +45,7 @@ SELECT ST_BoundingCircle('LINESTRING(1 1, 4 5, 3 2)');
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_BoundingCircle.java" target="_blank">Source code</a>
+* JTS [MinimumBoundingCircle][jts]
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
+
+[jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/algorithm/MinimumBoundingCircle.html
