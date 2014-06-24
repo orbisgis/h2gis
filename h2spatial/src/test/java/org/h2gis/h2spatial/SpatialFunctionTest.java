@@ -26,6 +26,7 @@ package org.h2gis.h2spatial;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_GeomFromText;
+import org.h2gis.h2spatial.internal.function.spatial.convert.ST_PointFromText;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.AfterClass;
@@ -37,10 +38,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
-
 import static org.junit.Assert.*;
 
 /**
@@ -510,5 +509,17 @@ public class SpatialFunctionTest {
         assertEquals(null, rs.getObject(1));
         assertFalse(rs.next());
         rs.close();
+    }
+
+    @Test(expected = SQLException.class)
+    public void test_ST_PointFromTextWrongType() throws Throwable {
+        Statement st = connection.createStatement();
+        try {
+            st.executeQuery("SELECT ST_PointFromText('LINESTRING(0 0, 1 0)', 2154);");
+        } catch (JdbcSQLException e) {
+            final Throwable originalCause = e.getOriginalCause();
+            assertTrue(e.getMessage().contains(ST_PointFromText.TYPE_ERROR + "LineString"));
+            throw originalCause;
+        }
     }
 }

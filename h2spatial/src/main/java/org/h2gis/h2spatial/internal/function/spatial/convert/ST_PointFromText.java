@@ -38,6 +38,8 @@ import java.sql.SQLException;
  */
 public class ST_PointFromText extends DeterministicScalarFunction {
 
+    public static final String TYPE_ERROR =
+            "The provided WKT Geometry is not a POINT. Type: ";
     /**
      * Default constructor
      */
@@ -65,7 +67,7 @@ public class ST_PointFromText extends DeterministicScalarFunction {
         Geometry geometry = ST_GeomFromText.toGeometry(wKT, srid);
         final String geometryType = geometry.getGeometryType();
         if (!geometryType.equalsIgnoreCase("POINT")) {
-            throw new SQLException("The provided WKT Geometry is not a POINT. Type: " + geometryType);
+            throw new SQLException(TYPE_ERROR + geometryType);
         }
         return geometry;
     }
