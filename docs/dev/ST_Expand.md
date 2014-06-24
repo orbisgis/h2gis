@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Expand
 category: h2spatial-ext/geometry-creation
-description: Return a Geometry's envelope by the given <code>delta X</code> and <code>delta Y</code>
+description: Expand a Geometry's envelope
 prev_section: ST_BoundingCircle
 next_section: ST_Extrude
 permalink: /docs/dev/ST_Expand/
@@ -15,8 +15,9 @@ GEOMETRY ST_Expand(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY);
 {% endhighlight %}
 
 ### Description
-Returns a `GEOMETRY`'s envelope by the given `delta X` and `delta Y`.
- Both positive and negative distances are supported.
+
+Returns a Geometry's envelope expanded by `delta X` and `delta Y`.
+Both positive and negative distances are supported.
 
 ### Examples
 
@@ -39,21 +40,14 @@ SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))',
                  5, -1);
 -- ANswer: POLYGON((-4.5 2, -4.5 6, 6.5 6, 6.5 2, -4.5 2))
 
+-- In this example, |deltaY| > ymax-ymin, so ST_Expand uses a deltaY
+-- of (ymax-ymin)/2.
 SELECT ST_Expand('POLYGON((0.5 1, 0.5 7, 1.5 7, 1.5 1, 0.5 1))',
                  5, -10);
 -- Answer: LINESTRING(-4.5 4, 6.5 4)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Expand_3.png"/>
-
-*Note*: If the value absolut of delta is greater than the difference
-between the maximum coordinate and the minimum coordinate then the
-delta who are applicate is the difference between the
-minimum coordinate and the maximum coordinate divide by two.
-For this example, delta y=-10 => |delta y|=10, ymax=7 ymin=1, ymax-ymin=6, 10>6
-|delta y|>ymax-ymin. So the delta y who are applicate is
-(ymin-ymax)/2= (1-7)/2= -3 =>
-Ymin= ymin-delta y= 1-(-3)= 4; Ymax= ymax+delta y= 7+(-3)= 4.
 
 {% highlight mysql %}
 SELECT ST_Expand('GEOMETRYCOLLECTION(
