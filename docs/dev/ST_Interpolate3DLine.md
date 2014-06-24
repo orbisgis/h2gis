@@ -15,34 +15,42 @@ GEOMETRY ST_Interpolate3DLine(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Interpolate the z values of a `LINESTRING` or `MULTILINESTRING` based on the start and the end z values.
-If z input value is equal to NaN, Nan is returned in the output Geometry.
+
+Interpolate the *z*-values of `geom` based on the *z*-values of its
+first and last coordinates.
+Does an interpolation on each indiviual Geometry of `geom` if it is
+a `GEOMETRYCOLLECTION`.
+
+Returns `geom` untouched if its first or last coordinate has no
+*z*-value.
+Returns `NULL` if `geom` is not a `LINESTRING` or a
+`MULTILINESTRING`.
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_Interpolate3DLine('POINT(0 0 0)');
--- Answer: NULL
+SELECT ST_Interpolate3DLine('LINESTRING(0 0 1, 5 0, 10 0 10)');
+-- Answer:                   LINESTRING(0 0 1, 5 0 5.5, 10 0 10)
 
-SELECT ST_Interpolate3DLine('POLYGON((2 0 1, 2 8 0, 4 8,
-                                      4 0, 2 0))');
--- Answer: NULL
+SELECT ST_Interpolate3DLine(
+          'MULTILINESTRING((0 0 0, 5 0, 10 0 10),
+                           (0 0 0, 50 0, 100 0 100))');
+-- Answer: MULTILINESTRING((0 0 0, 5 0 5, 10 0 10),
+--                         (0 0 0, 50 0 50, 100 0 100))
+{% endhighlight %}
 
+###### Nonexamples
+
+{% highlight mysql %}
+-- Returns the Geometry untouched:
 SELECT ST_Interpolate3DLine('LINESTRING(0 8, 1 8, 3 8)');
 -- Answer: LINESTRING(0 8, 1 8, 3 8)
-SELECT ST_Z(ST_PointN(ST_Interpolate3DLine('LINESTRING(0 8, 1 8,
-                                                       3 8)'), 1));
--- Answer: NaN
 
-SELECT ST_Interpolate3DLine('LINESTRING(0 0 1, 5 0, 10 0 10)');
--- Answer: LINESTRING(0 0 1, 5 0 5.5, 10 0 10)
-
-SELECT ST_Interpolate3DLine('MULTILINESTRING((0 0 0, 5 0,
-                                              10 0 10),
-                                             (0 0 0, 50 0,
-                                              100 0 100))');
--- Answer: MULTILINESTRING((0 0 0, 5 0 5, 10 0 10),
---                          (0 0 0, 50 0 50, 100 0 100))
+-- Returns NULL for Geometries other than LINESTRINGs and
+-- MULTILINESTRINGs:
+SELECT ST_Interpolate3DLine(
+            'POLYGON((2 0 1, 2 8 0, 4 8, 4 0, 2 0))');
+-- Answer: NULL
 {% endhighlight %}
 
 ##### See also
