@@ -2,7 +2,7 @@
 layout: docs
 title: ST_RemoveRepeatedPoints
 category: h2spatial-ext/edit-geometries
-description: Return a version of the given Geometry with duplicated points removed
+description: Remove repeated points from a Geometry
 prev_section: ST_RemovePoint
 next_section: ST_Reverse
 permalink: /docs/dev/ST_RemoveRepeatedPoints/
@@ -15,35 +15,37 @@ GEOMETRY ST_RemoveRepeatedPoints(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Removes duplicated points on a Geometry.
+
+Removes repeated points from `geom`.
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_RemoveRepeatedPoints('MULTIPOINT((4 4), (1 1), (1 0),
-                                           (0 3), (4 4))');
--- Answer: MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))
--- The POINT(4 4) is not duplicated is two geometries
---  independent then it's not removed.
+SELECT ST_RemoveRepeatedPoints(
+            'LINESTRING(1 1, 2 2, 2 2, 1 3, 1 3,
+                        3 3, 3 3, 5 2, 5 2, 5 1)');
+-- Answer:   LINESTRING(1 1, 2 2,      1 3,
+--                      3 3,      5 2,      5 1)
 
-SELECT ST_RemoveRepeatedPoints('LINESTRING(1 1, 2 2, 2 2, 1 3,
-                                           1 3, 3 3, 3 3, 5 2,
-                                           5 2, 5 1)');
--- Answer: LINESTRING(1 1, 2 2, 1 3, 3 3, 5 2, 5 1)
+SELECT ST_RemoveRepeatedPoints(
+            'POLYGON((2 4, 1 3, 2 1, 2 1, 6 1,
+                      6 3, 4 4, 4 4, 2 4))');
+-- Answer:   POLYGON((2 4, 1 3, 2 1,      6 1,
+--                    6 3, 4 4,      2 4))
 
-SELECT ST_RemoveRepeatedPoints('POLYGON((2 4, 1 3, 2 1, 2 1,
-                                         6 1, 6 3, 4 4, 4 4,
-                                         2 4))');
--- Answer: POLYGON((2 4, 1 3, 2 1, 6 1, 6 3, 4 4, 2 4))
+SELECT ST_RemoveRepeatedPoints(
+        'GEOMETRYCOLLECTION(
+             POLYGON((1 2, 4 2, 4 6, 1 6, 1 6, 1 2)),
+             MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
+-- Answer: GEOMETRYCOLLECTION(
+--           POLYGON((1 2, 4 2, 4 6, 1 6,      1 2)),
+--           MULTIPOINT((4 4), (1 1), (1 0), (0 3)))
 
-SELECT ST_RemoveRepeatedPoints('GEOMETRYCOLLECTION(
-                      POLYGON((1 2, 4 2, 4 6, 1 6, 1 6, 1 2)),
-                      LINESTRING(2 6, 6 2),
-                      MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
--- Answer: GEOMETRYCOLLECTION(POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)),
---                            LINESTRING(2 6, 6 2),
---                            MULTIPOINT((4 4), (1 1), (1 0),
---                                        (0 3)))
+-- Here POINT(4 4) is not removed since it is an independant
+-- geometry:
+SELECT ST_RemoveRepeatedPoints(
+            'MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))');
+-- Answer:   MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))
 {% endhighlight %}
 
 ##### See also
