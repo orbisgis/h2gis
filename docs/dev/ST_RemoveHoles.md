@@ -35,7 +35,7 @@ SELECT ST_RemoveHoles(
 ##### Non-examples
 
 {% highlight mysql %}
--- There are no holes to remove:
+-- Here are no holes to remove:
 SELECT ST_RemoveHoles(
           'POLYGON((1 5, 0 4, 0 1, 1 0, 4 0, 4 2, 5 4, 5 4, 1 5))');
 -- Answer: POLYGON((1 5, 0 4, 0 1, 1 0, 4 0, 4 2, 5 4, 5 4, 1 5))

@@ -72,7 +72,7 @@ SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
 <img class="displayed" src="../ST_RemovePoint_4.png"/>
 
 {% highlight mysql %}
--- There the resulting POLYGON is not valid:
+-- Here the resulting POLYGON is not valid:
 SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1),
                                (2 2, 2 5, 4 5, 4 2, 2 2))',
                       ST_Buffer('POINT(4 7)', 2));
