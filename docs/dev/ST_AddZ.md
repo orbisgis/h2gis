@@ -2,7 +2,7 @@
 layout: docs
 title: ST_AddZ
 category: h2spatial-ext/edit-geometries
-description: Return a Geometry with the z value updated
+description: Add a value to the <i>z</i>-coordinate of a Geometry
 prev_section: ST_AddPoint
 next_section: ST_Densify
 permalink: /docs/dev/ST_AddZ/
@@ -11,21 +11,25 @@ permalink: /docs/dev/ST_AddZ/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_AddZ(GEOMETRY geom, DOUBLE z);
+GEOMETRY ST_AddZ(GEOMETRY geom, DOUBLE zToAdd);
 {% endhighlight %}
 
 ### Description
-Returns a `GEOMETRY` where the output z value is the sum to the `z` value and the input z value of each vertex.
-NaN values are not updated.
+
+Returns Geometry whose *z* coordinates are the sum of `zToAdd` and
+the corresponding *z* coordinate of `geom`. Coordinates with no *z*
+coordinate are not updated.
 
 ### Examples
 
 {% highlight mysql %}
 SELECT ST_AddZ('MULTIPOINT((190 300 1), (10 11))', 10);
 -- Answer: MULTIPOINT((190 300 11), (10 11))
-SELECT ST_Z(ST_GeometryN(ST_AddZ('MULTIPOINT((190 300 1),
-                                              (10 11))',
-                                  10), 2));
+
+-- The second point has no z-value, so it is not updated.
+SELECT ST_Z(ST_GeometryN(
+                ST_AddZ('MULTIPOINT((190 300 1), (10 11))', 10),
+                2));
 -- Answer: NaN
 
 SELECT ST_AddZ('MULTIPOINT((190 300 10), (10 11 5))', -10)
