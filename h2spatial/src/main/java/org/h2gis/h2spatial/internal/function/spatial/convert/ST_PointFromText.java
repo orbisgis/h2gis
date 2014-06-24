@@ -59,12 +59,13 @@ public class ST_PointFromText extends DeterministicScalarFunction {
      * @throws SQLException Invalid argument or the geometry type is wrong.
      */
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
-        Geometry geometry = ST_GeomFromText.toGeometry(wKT, srid);
-        if (geometry == null) {
+        if (wKT == null) {
             return null;
         }
-        if (!geometry.getGeometryType().equalsIgnoreCase("POINT")) {
-            throw new SQLException("The provided WKT Geometry is not a POINT.");
+        Geometry geometry = ST_GeomFromText.toGeometry(wKT, srid);
+        final String geometryType = geometry.getGeometryType();
+        if (!geometryType.equalsIgnoreCase("POINT")) {
+            throw new SQLException("The provided WKT Geometry is not a POINT. Type: " + geometryType);
         }
         return geometry;
     }
