@@ -15,7 +15,7 @@ GEOMETRY ST_Normalize(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Converts a `GEOMETRY` to normal form (or canonical form). Normal form is a unique representation for Geometry.
+Converts a Geometry to normal form (or canonical form). Normal form is a unique representation for Geometry.
 The definitions for normal form use the standard lexicographical ordering for coordinates.
 
 ### Examples

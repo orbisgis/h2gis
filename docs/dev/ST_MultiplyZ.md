@@ -15,7 +15,7 @@ GEOMETRY ST_MultiplyZ(GEOMETRY geom, DOUBLE z);
 {% endhighlight %}
 
 ### Description
-Multiply the z value of each vertex of the `GEOMETRY` by a `z` value
+Multiply the z value of each vertex of the Geometry by a `z` value
 NaN values are not updated.
 
 ### Examples

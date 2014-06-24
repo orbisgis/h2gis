@@ -15,7 +15,7 @@ GEOMETRY ST_RemoveRepeatedPoints(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Removes duplicated points on a `GEOMETRY`.
+Removes duplicated points on a Geometry.
 
 ### Examples
 
