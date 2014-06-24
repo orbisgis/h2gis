@@ -16,9 +16,9 @@ GEOMETRY ST_AddZ(GEOMETRY geom, DOUBLE zToAdd);
 
 ### Description
 
-Returns Geometry whose *z* coordinates are the sum of `zToAdd` and
-the corresponding *z* coordinate of `geom`. Coordinates with no *z*
-coordinate are not updated.
+Returns Geometry whose *z*-coordinates are the sum of `zToAdd` and
+the corresponding *z*-coordinate of `geom`. Coordinates with no
+*z*-coordinate are not updated.
 
 ### Examples
 
