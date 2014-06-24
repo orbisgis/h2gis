@@ -35,10 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
 
 /**
  * Main class to parse the GPX file
@@ -119,7 +116,8 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      * @return
      */
     abstract String getCopyright();
-
+    
+    
     /**
      * Return the table identifier in the best fit depending on database type
      *
@@ -130,7 +128,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
      */
     private static String caseIdentifier(TableLocation requestedTable, String tableName, boolean isH2) {
         return new TableLocation(requestedTable.getCatalog(), requestedTable.getSchema(),
-                isH2 ? tableName.toUpperCase() : tableName.toLowerCase()).toString();
+                TableLocation.parse(tableName, isH2).getTable()).toString();
     }
 
     /**
