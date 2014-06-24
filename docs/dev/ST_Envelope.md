@@ -83,5 +83,7 @@ SELECT ST_SRID(ST_Envelope(
 
 ##### See also
 
-* [`ST_Extent`](../ST_Extent), [`ST_MinimumRectangle`](../ST_MinimumRectangle)
+* [`ST_Extent`](../ST_Extent),
+  [`ST_MinimumRectangle`](../ST_MinimumRectangle),
+  [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Envelope.java" target="_blank">Source code</a>
