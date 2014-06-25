@@ -32,10 +32,14 @@ import java.sql.SQLException;
 
 /**
  * Convert a WKT String into a Point.
+ *
  * @author Nicolas Fortin
+ * @author Adam Gouge
  */
 public class ST_PointFromText extends DeterministicScalarFunction {
 
+    public static final String TYPE_ERROR =
+            "The provided WKT Geometry is not a POINT. Type: ";
     /**
      * Default constructor
      */
@@ -49,15 +53,21 @@ public class ST_PointFromText extends DeterministicScalarFunction {
     }
 
     /**
-     * @param wKT WellKnown text value
+     * Convert the WKT String to a Geometry with the given SRID.
+     *
+     * @param wKT  Well Known Text value
      * @param srid Valid SRID
      * @return Geometry
      * @throws SQLException Invalid argument or the geometry type is wrong.
      */
     public static Geometry toGeometry(String wKT, int srid) throws SQLException {
-        Geometry geometry = ST_GeomFromText.toGeometry(wKT,srid);
-        if(!geometry.getGeometryType().equalsIgnoreCase("POINT")) {
-            throw new SQLException("The provided WKT Geometry is not a POINT.");
+        if (wKT == null) {
+            return null;
+        }
+        Geometry geometry = ST_GeomFromText.toGeometry(wKT, srid);
+        final String geometryType = geometry.getGeometryType();
+        if (!geometryType.equalsIgnoreCase("POINT")) {
+            throw new SQLException(TYPE_ERROR + geometryType);
         }
         return geometry;
     }
