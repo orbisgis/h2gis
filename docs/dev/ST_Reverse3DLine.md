@@ -34,10 +34,7 @@ Returns `geom` untouched if the start or end coordinate has no
     <p>Intermediate <i>z</i>-values have no effect on the sorting.</p>
 </div>
 
-<div class="note">
-    <h5>Returns <code>NULL</code> if <code>geom</code> is not a <code>LINESTRING</code> or a
-    <code>MULTILINESTRING</code>.</h5>
-</div>
+{% include other-line-multiline.html %}
 
 ### Examples
 

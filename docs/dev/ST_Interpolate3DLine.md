@@ -23,8 +23,8 @@ a `GEOMETRYCOLLECTION`.
 
 Returns `geom` untouched if its first or last coordinate has no
 *z*-value.
-Returns `NULL` if `geom` is not a `LINESTRING` or a
-`MULTILINESTRING`.
+
+{% include other-line-multiline.html %}
 
 ### Examples
 
