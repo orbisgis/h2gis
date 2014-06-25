@@ -39,7 +39,7 @@ description: A spatial extension of the H2 database. Compliant, Solid, Tested.
         <h4>Getting started<br>couldn't be simpler.<br></h4>
         <p style="text-align:center">
           <div id="cf">
-            <a href="http://tinyurl.com/h2gis-zip" onclick=”_gaq.push(['_trackEvent','Download','h2gis-jar',this.href]);setTimeout(function(){return true;},200);”>
+            <a href="http://central.maven.org/maven2/org/orbisgis/h2-dist/1.1.0/h2-dist-1.1.0-bin.zip" onclick="_gaq.push(['_trackEvent','Download','h2gis-jar',this.href]);setTimeout(function(){return true;},200);">
                 <img class="bottom" src="{{ site.baseurl }}/img/download_button_hover.png" alt="Download"/>
                 <img class="top" src="{{ site.baseurl }}/img/download_button.png" alt="Download"/>
             </a>
@@ -55,15 +55,7 @@ description: A spatial extension of the H2 database. Compliant, Solid, Tested.
         <p class="line">
           <span class="path">~</span>
           <span class="prompt">$</span>
-          <span class="command">wget http://tinyurl.com/h2gis-zip</span>
-        </p>
-        <p class="line">
-          <span class="path"></span>
-          <span class="prompt"></span>
-          <!-- Double path and prompt for alignment -->
-          <span class="path"></span>
-          <span class="prompt"></span>
-          <span class="command">-O h2gis.zip</span>
+          <span class="command">wget http://goo.gl/cdfi7b -O h2gis.zip</span>
         </p>
         <p class="line">
           <span class="path">~</span>
@@ -78,7 +70,7 @@ description: A spatial extension of the H2 database. Compliant, Solid, Tested.
         <p class="line">
           <span class="path">~/h2gis-standalone</span>
           <span class="prompt">$</span>
-          <span class="command">./run.sh</span>
+          <span class="command">java -jar h2-dist-1.1.0.jar</span>
         </p>
         <p class="line">
           <span class="output"># => Click Connect in the web interface</span>
