@@ -2,7 +2,7 @@
 layout: docs
 title: ST_UpdateZ
 category: h2spatial-ext/edit-geometries
-description: Return a Geometry with the z values updated
+description: Update the <i>z</i>-values of a Geometry
 prev_section: ST_Reverse3DLine
 next_section: ST_ZUpdateLineExtremities
 permalink: /docs/dev/ST_UpdateZ/
@@ -11,44 +11,47 @@ permalink: /docs/dev/ST_UpdateZ/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_UpdateZ(GEOMETRY geom, DOUBLE z);
-GEOMETRY ST_UpdateZ(GEOMETRY geom, DOUBLE z, INT updateCondition);
+GEOMETRY ST_UpdateZ(GEOMETRY geom, DOUBLE newZ);
+GEOMETRY ST_UpdateZ(GEOMETRY geom, DOUBLE newZ, INT updateCondition);
 {% endhighlight %}
 
 ### Description
-Replaces the z value of (each vertex of) the geometric parameter to the corresponding value given by a field.The first argument is used to give the new z values.The second argument is a condition:
-* 1 to replace all z values.
-* 2 to replace all z values excepted the NaN values.
-* 3 to replace only the NaN z values.
 
-If the `updateCondition` is not defined, `z` replace all z value.
+Replaces the *z*-values of some or all of the coordinates of `geom`
+by `newZ`.
+The optional parameter `updateCondition` determines which
+coordinates are updated:
+
+| Value | Meaning                                       |
+|-------|-----------------------------------------------|
+| 1     | all *z*-values (by default)                   |
+| 2     | all *z*-values except non-existant *z*-values |
+| 3     | only non-existant *z*-values                  |
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_UpdateZ('POINT(190 300 1)', 10, 4);
--- Answer: Available values are 1, 2 or 3.
-
+-- Update all z-values by default:
 SELECT ST_UpdateZ('MULTIPOINT((190 300), (10 11 2))', 10);
--- Answer: MULTIPOINT((190 300 10), (10 11 10))
+-- Answer:         MULTIPOINT((190 300 10), (10 11 10))
 
+-- Update all z-values:
 SELECT ST_UpdateZ('MULTIPOINT((190 300), (10 11 2))', 10, 1);
--- Answer: MULTIPOINT((190 300 10), (10 11 10))
+-- Answer:         MULTIPOINT((190 300 10), (10 11 10))
 
-SELECT ST_UpdateZ('POLYGON((1 1, 1 7 8, 7 7 -1, 7 1 -1, 1 1))',
-                   10, 2);
--- Answer: POLYGON((1 1, 1 7 10, 7 7 10, 7 1 10, 1 1))
+-- Update all z-values except non-existant ones:
+SELECT ST_UpdateZ('MULTIPOINT((190 300), (10 11 2))', 10, 2);
+-- Answer:         MULTIPOINT((190 300), (10 11 10))
 
-SELECT ST_UpdateZ('LINESTRING(250 250 10, 280 290, 300 230 0,
-                              340 300)', 5, 3);
--- Answer: LINESTRING(250 250 10, 280 290 5, 300 230 0,
---                     340 300 5)
+-- Update only non-existant z-values:
+SELECT ST_UpdateZ('MULTIPOINT((190 300), (10 11 2))', 10, 3);
+-- Answer:         MULTIPOINT((190 300 10), (10 11 2))
 {% endhighlight %}
 
 ##### See also
 
 * [`ST_ZUpdateLineExtremities`](../ST_ZUpdateLineExtremities),
-[`ST_MultiplyZ`](../ST_MultiplyZ),
-[`ST_AddZ`](../ST_AddZ)
+  [`ST_MultiplyZ`](../ST_MultiplyZ),
+  [`ST_AddZ`](../ST_AddZ)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_UpdateZ.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
