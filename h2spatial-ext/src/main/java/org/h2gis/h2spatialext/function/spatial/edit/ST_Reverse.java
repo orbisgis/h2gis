@@ -24,12 +24,15 @@
 package org.h2gis.h2spatialext.function.spatial.edit;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.Point;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Returns the geometry with vertex order reversed.
  *
  * @author Erwan Bocher
+ * @author Adam Gouge
  */
 public class ST_Reverse extends DeterministicScalarFunction {
 
@@ -45,10 +48,32 @@ public class ST_Reverse extends DeterministicScalarFunction {
     /**
      * Returns the geometry with vertex order reversed.
      *
-     * @param geometry
-     * @return
+     * @param geometry Geometry
+     * @return geometry with vertex order reversed
      */
     public static Geometry reverse(Geometry geometry) {
+        if (geometry == null) {
+            return null;
+        }
+        if (geometry instanceof MultiPoint) {
+            return reverseMultiPoint((MultiPoint) geometry);
+        }
         return geometry.reverse();
+    }
+
+    /**
+     * Returns the MultiPoint with vertex order reversed. We do our own
+     * implementation here because JTS does not handle it.
+     *
+     * @param mp MultiPoint
+     * @return MultiPoint with vertex order reversed
+     */
+    public static Geometry reverseMultiPoint(MultiPoint mp) {
+        int nPoints = mp.getNumGeometries();
+        Point[] revPoints = new Point[nPoints];
+        for (int i = 0; i < nPoints; i++) {
+            revPoints[nPoints - 1 - i] = (Point) mp.getGeometryN(i).reverse();
+        }
+        return mp.getFactory().createMultiPoint(revPoints);
     }
 }

@@ -2115,6 +2115,22 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_ReverseNULL() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse(NULL);");
+        rs.next();
+        assertGeometryEquals(null, rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_ReverseMultiPoint() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse('MULTIPOINT((4 4), (1 1), (1 0), (0 3))');");
+        rs.next();
+        assertGeometryEquals("MULTIPOINT((0 3), (1 0), (1 1), (4 4))", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
     public void test_ST_Reverse1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Reverse('LINESTRING (105 353, 150 180, 300 280)'::GEOMETRY);");
         rs.next();
