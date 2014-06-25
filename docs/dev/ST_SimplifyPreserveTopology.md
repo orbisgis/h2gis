@@ -86,6 +86,13 @@ SELECT ST_SimplyPreserveTopology(
 SELECT ST_SimplifyPreserveTopology(
             'MULTIPOINT((190 300), (10 11))', 4);
 -- Answer:   MULTIPOINT((190 300), (10 11))
+
+-- Simplify a LINESTRING:
+SELECT ST_SimplifyPreserveTopology(
+            'LINESTRING(250 250, 280 290, 300 230, 340 300, 360 260,
+                        440 310, 470 360, 604 286)',
+            40);
+-- Answer:   LINESTRING(250 250, 280 290, 300 230, 470 360, 604 286)
 {% endhighlight %}
 
 ##### Comparison with [`ST_Simplify`](../ST_Simplify)

@@ -59,6 +59,12 @@ SELECT ST_Simplify('POLYGON((2 1, 1 2, 2 2, 2 3, 3 3, 3 2,
 -- POINTs and MULTIPOINTs cannot be further simplified:
 SELECT ST_Simplify('MULTIPOINT((190 300), (10 11))', 4);
 -- Answer: MULTIPOINT((190 300), (10 11))
+
+-- Simplify a LINESTRING:
+SELECT ST_Simplify('LINESTRING(250 250, 280 290, 300 230, 340 300,
+                               360 260, 440 310, 470 360, 604 286)',
+                   40);
+-- Answer: LINESTRING(250 250, 280 290, 300 230, 470 360, 604 286)
 {% endhighlight %}
 
 ##### Comparison with [`ST_SimplifyPreserveTopology`](../ST_SimplifyPreserveTopology)
