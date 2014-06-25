@@ -156,14 +156,14 @@
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
      inkscape:window-width="1440"
-     inkscape:window-height="872"
+     inkscape:window-height="824"
      id="namedview3057"
      showgrid="false"
      inkscape:zoom="1.0414013"
-     inkscape:cx="486.15096"
-     inkscape:cy="213.1326"
-     inkscape:window-x="1440"
-     inkscape:window-y="0"
+     inkscape:cx="275.76325"
+     inkscape:cy="140.45843"
+     inkscape:window-x="0"
+     inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg3055" />
   <rect
@@ -809,4 +809,24 @@
      inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS.wiki.images/ST_MakePoint_1.png"
      inkscape:export-xdpi="99.89669"
      inkscape:export-ydpi="99.89669" />
+  <path
+     sodipodi:type="arc"
+     style="fill:#0000ff;fill-opacity:1;stroke:none"
+     id="path3101"
+     sodipodi:cx="153.63914"
+     sodipodi:cy="266.94803"
+     sodipodi:rx="9.6024466"
+     sodipodi:ry="10.562691"
+     d="m 163.24159,266.94803 a 9.6024466,10.562691 0 1 1 -19.20489,0 9.6024466,10.562691 0 1 1 19.20489,0 z"
+     transform="matrix(1.0909091,0,0,1.0909091,353.23907,-27.388798)" />
+  <path
+     transform="matrix(1.0909091,0,0,1.0909091,-17.560624,-27.388798)"
+     d="m 163.24159,266.94803 a 9.6024466,10.562691 0 1 1 -19.20489,0 9.6024466,10.562691 0 1 1 19.20489,0 z"
+     sodipodi:ry="10.562691"
+     sodipodi:rx="9.6024466"
+     sodipodi:cy="266.94803"
+     sodipodi:cx="153.63914"
+     id="path3103"
+     style="fill:#0000ff;fill-opacity:0.46666667000000001;stroke:#0000ff;opacity:1;stroke-opacity:1;stroke-width:1.00008332000000011;stroke-miterlimit:4;stroke-dasharray:2.00016665000000016, 2.00016665000000016;stroke-dashoffset:0"
+     sodipodi:type="arc" />
 </svg>

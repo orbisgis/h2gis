@@ -153,6 +153,16 @@ body > footer .align-right p, body > footer img {
   display: inline-block;
 }
 
+body > footer .align-left p:first-of-type {
+  font-size: 16px;
+  text-align: left;
+}
+
+body > footer .align-left p {
+  font-size: 13px;
+  text-align: left;
+}
+
 body > footer img {
   position: relative;
   top: 8px;
@@ -166,15 +176,28 @@ body > footer img {
   transition: opacity .2s;
 }
 
+body > footer img[src*="creativecommons"] {
+  position: relative;
+  top: 3px;
+  margin-left: 0px;
+  width: 80px;
+  height: 15px;
+  opacity: .8;
+  padding: 1px;
+  -webkit-transition: opacity .2s;
+  -moz-transition: opacity .2s;
+  transition: opacity .2s;
+}
+
 body > footer a:hover img {
   opacity: 1;
 }
 
 @media (max-width: 568px){
-  footer .one-third p {
+  footer .two-thirds p {
     margin-bottom: 0;
   }
-  footer .two-thirds p {
+  footer .one-third p {
     margin-top: -20px;
   }
 }
