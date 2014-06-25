@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Reverse3DLine
 category: h2spatial-ext/edit-geometries
-description: Return a Geometry with vertex order reversed according the Z values
+description: Potentially reverse a Geometry according to the <i>z</i>-values of its first and last coordinates
 prev_section: ST_Reverse
 next_section: ST_UpdateZ
 permalink: /docs/dev/ST_Reverse3DLine/
@@ -12,43 +12,74 @@ permalink: /docs/dev/ST_Reverse3DLine/
 
 {% highlight mysql %}
 GEOMETRY ST_Reverse3DLine(GEOMETRY geom);
-GEOMETRY ST_Reverse3DLine(GEOMETRY geom, VARCHAR orderReverse);
+GEOMETRY ST_Reverse3DLine(GEOMETRY geom, VARCHAR sortOrder);
 {% endhighlight %}
 
 ### Description
-Reverses order ascending or descending of z values of a `LINESTRING` or `MULTILINESTRING` according the start and the end z values.
-If the `orderReverse` is not defined, it's ascending order which applies.
-If the  start or the end z values are equal to NaN return the input Geometry.
+
+Potentially reverses `geom` according to the *z*-values of its first
+and last coordinates and the optional parameter `sortOrder`, which
+can take the following values:
+
+| Value  | Meaning                   |
+|--------|---------------------------|
+| `asc`  | ascending (default value) |
+| `desc` | descending                |
+
+Returns `geom` untouched if the start or end coordinate has no
+*z*-value.
+
+<div class="note info">
+    <h5>Only the first and last coordinates are considered.</h5>
+    <p>Intermediate <i>z</i>-values have no effect on the sorting.</p>
+</div>
+
+<div class="note">
+    <h5>Returns <code>NULL</code> if <code>geom</code> is not a <code>LINESTRING</code> or a
+    <code>MULTILINESTRING</code>.</h5>
+</div>
 
 ### Examples
 
 {% highlight mysql %}
+-- Reverses the order since the default value of sortOrder is asc
+-- and 10 > 0:
+SELECT ST_Reverse3DLine(
+            'LINESTRING(105 353 10, 150 180, 300 280 0)');
+-- Answer:   LINESTRING(300 280 0, 150 180, 105 353 10)
+
+-- Makes no change since the LINESTRING is already in descending
+-- order:
+SELECT ST_Reverse3DLine(
+            'LINESTRING(105 353 10, 150 180, 300 280 0)', 'desc');
+-- Answer:   LINESTRING(105 353 10, 150 180, 300 280 0)
+
+-- Puts the LINESTRING in descending order:
+SELECT ST_Reverse3DLine(
+            'LINESTRING(105 353 0, 150 180, 300 280 10)', 'desc');
+-- Answer:   LINESTRING(300 280 10, 150 180, 105 353 0)
+
+-- Puts each component LINESTRING in descending order:
+SELECT ST_Reverse3DLine(
+            'MULTILINESTRING((1 1 1, 1 6 2, 2 2 1, -1 2 3),
+                             (1 2 0, 4 2, 4 6 2))', 'desc');
+-- Answer:   MULTILINESTRING((-1 2 3, 2 2 1, 1 6 2, 1 1 1),
+--                           (4 6 2, 4 2, 1 2 0))
+{% endhighlight %}
+
+##### Non-examples
+
+{% highlight mysql %}
+-- Returns the Geometry untouched since its first coordinate
+-- contains no z-value:
+SELECT ST_Reverse3DLine('LINESTRING(1 1, 1 6 2, 2 2, -1 2 3)');
+-- Answer:               LINESTRING(1 1, 1 6 2, 2 2, -1 2 3)
+
+-- Returns NULL for Geometries other than LINESTRINGs and
+-- MULTILINESTRINGs:
 SELECT ST_Reverse3DLine('POLYGON((190 300, 140 180, 300 110,
-                                   313 117, 430 270, 380 430,
-                                   190 300))');
+                                  313 117, 430 270, 190 300))');
 -- Answer: NULL
-
-SELECT ST_Reverse3DLine('LINESTRING(1 1, 1 6 2, 2 2, -1 2)');
--- Answer: LINESTRING(1 1, 1 6 2, 2 2, -1 2)
-
-SELECT ST_Reverse3DLine('LINESTRING(105 353 10, 150 180,
-                                    300 280 0)');
--- Answer: LINESTRING(300 280 0, 150 180, 105 353 10)
-
-SELECT ST_Reverse3DLine('LINESTRING(105 353 10, 150 180,
-                                    300 280 0)', 'desc');
--- Answer: LINESTRING(105 353 10, 150 180, 300 280 0)
-
-SELECT ST_Reverse3DLine('LINESTRING(105 353 0, 150 180,
-                                    300 280 10)', 'desc');
--- Answer: LINESTRING(300 280 10, 150 180, 105 353 0)
-
-SELECT ST_Reverse3DLine('MULTILINESTRING((1 1 1, 1 6 2, 2 2 1,
-                                          -1 2 3),
-                                         (1 2 0, 4 2, 4 6 2))',
-                        'desc');
--- Answer: MULTILINESTRING((-1 2 3, 2 2 1, 1 6 2, 1 1 1),
---                         (4 6 2, 4 2, 1 2 0))
 {% endhighlight %}
 
 ##### See also
