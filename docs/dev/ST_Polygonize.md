@@ -15,7 +15,7 @@ MULTIPOLYGON ST_Polygonize(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Creates a MULTIPOLYGON containing possible POLYGONs formed from a `LINESTRING` or `MULTILINESTRING`. 
+Creates a MULTIPOLYGON containing possible POLYGONs formed from a `LINESTRING` or `MULTILINESTRING`.
 If the endpoints of the Geometries are not properly joined this function return
 null.
 
@@ -23,18 +23,18 @@ null.
 
 {% highlight mysql %}
 SELECT ST_Polygonize('POINT(1 2)');
--- Answer: null
+-- Answer: NULL
 
-SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 5 2), 
+SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 5 2),
                                       (1 4, 4 1, 4 4))')
--- Answer: null
+-- Answer: NULL
 
-SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 4 4, 5 2), 
+SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 4 4, 5 2),
                                       (5 2, 2 1, 2 4, 1 5))');
--- Answer: null
+-- Answer: NULL
 
 SELECT ST_Polygonize('LINESTRING(1 2, 2 4, 4 4, 5 2, 2 2)');
--- Answer: null
+-- Answer: NULL
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Polygonize_1.png"/>
@@ -47,7 +47,7 @@ SELECT ST_Polygonize('LINESTRING(1 2, 2 4, 4 4, 5 2, 1 2)');
 <img class="displayed" src="../ST_Polygonize_2.png"/>
 
 {% highlight mysql %}
-SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 4 4, 5 2), 
+SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 4 4, 5 2),
                                       (5 2, 2 1, 1 2))');
 -- Answer: MULTIPOLYGON(((1 2, 2 4, 4 4, 5 2, 2 1, 1 2)))
 {% endhighlight %}
@@ -58,9 +58,9 @@ SELECT ST_Polygonize('MULTILINESTRING((1 2, 2 4, 4 4, 5 2),
 SELECT ST_Polygonize('POLYGON((2 2, 2 4, 5 4, 5 2, 2 2))');
 -- Answer: MULTIPOLYGON((2 2, 2 4, 5 4, 5 2, 2 2))
 
-SELECT ST_Polygonize(st_union('MULTILINESTRING((1 2, 2 4, 5 2), 
+SELECT ST_Polygonize(st_union('MULTILINESTRING((1 2, 2 4, 5 2),
                                                (1 4, 4 1, 4 4))'));
--- Answer: MULTIPOLYGON (((4 2.6666, 4 1, 1.6666 3.3333, 
+-- Answer: MULTIPOLYGON(((4 2.6666, 4 1, 1.6666 3.3333,
 --                         2 4, 4 2.6666)))
 
 {% endhighlight %}

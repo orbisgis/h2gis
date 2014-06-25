@@ -11,7 +11,7 @@ permalink: /docs/dev/ST_PrecisionReducer/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_PrecisionReducer(GEOMETRY geom, int nbDec);
+GEOMETRY ST_PrecisionReducer(GEOMETRY geom, INT nbDec);
 {% endhighlight %}
 
 ### Description
@@ -20,7 +20,7 @@ Reduces the Geometry precision. `nbDec` is the number of decimals to keep.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_PrecisionReducer('MULTIPOINT((190.1239999997 300), 
+SELECT ST_PrecisionReducer('MULTIPOINT((190.1239999997 300),
                                        (10 11.1233))', 3);
 -- Answer: MULTIPOINT((190.124 300), (10 11.123))
 

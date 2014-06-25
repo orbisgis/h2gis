@@ -11,13 +11,13 @@ permalink: /docs/dev/ST_Snap/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_Snap(GEOMETRY geomA, GEOMETRY geomB, double distance);
+GEOMETRY ST_Snap(GEOMETRY geomA, GEOMETRY geomB, DOUBLE distance);
 {% endhighlight %}
 
 ### Description
 
 Returns a GEOMETRY that was a snapping between `geomA` and `geomB` with a given tolerance.
-Snaps the vertices and segments of a GEOMETRY to another GEOMETRY's vertices. A snap `distance tolerance` is used to control where snapping is performed. 
+Snaps the vertices and segments of a GEOMETRY to another GEOMETRY's vertices. A snap `distance tolerance` is used to control where snapping is performed.
 
 ### Examples
 | geomA LINESTRING | geomB LINESTRING |
@@ -37,18 +37,17 @@ SELECT ST_Snap(geomA, geomB, 3) FROM input_table;
 
 <img class="displayed" src="../ST_Snap_1.png"/>
 
-
 | geomA POLYGON | geomB POLYGON |
 |--|--|
 | POLYGON((1 1, 1 7, 7 7, 7 1, 1 1)) | POLYGON((3 3, 1 2, 0 2, 0 1, -2 1, -1 7, 3 6, 4 8, 7 8, 6 6, 9 6, 8 1, 8 1, 3 3)) |
 
 {% highlight mysql %}
 SELECT ST_Snap(geomA, geomB, 2) FROM input_table;
--- Answer: POLYGON((0 1, 1 2, 0 2, -1 7, 1 7, 3 6, 6 6, 
+-- Answer: POLYGON((0 1, 1 2, 0 2, -1 7, 1 7, 3 6, 6 6,
 --                  8 1, 0 1))
 
 SELECT ST_Snap(geomB, geomA, 2) FROM input_table;
--- Answer: POLYGON((3 3, 1 1, 1 1, 1 1, -2 1, -1 7, 1 7,  
+-- Answer: POLYGON((3 3, 1 1, 1 1, 1 1, -2 1, -1 7, 1 7,
 --                  3 6, 4 8, 7 7, 7 7, 9 6, 7 1, 7 1, 3 3))
 {% endhighlight %}
 

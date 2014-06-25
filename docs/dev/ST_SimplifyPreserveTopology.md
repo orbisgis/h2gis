@@ -11,15 +11,15 @@ permalink: /docs/dev/ST_SimplifyPreserveTopology/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_SimplyPreserveTopology(GEOMETRY geom, 
+GEOMETRY ST_SimplyPreserveTopology(GEOMETRY geom,
                                    double distance);
 {% endhighlight %}
 
 ### Description
-Returns a simplified `GEOMETRY` and ensures that the result having the same dimension and number of components as the input, and with the components having the same topological relationship.
+Returns a simplified Geometry and ensures that the result having the same dimension and number of components as the input, and with the components having the same topological relationship.
 
 <div class="note warning">
-    <h5>If the input `GEOMETRY` is invalid then the output GEOMETRY can
+    <h5>If the input Geometry is invalid then the output GEOMETRY can
     	be invalid.</h5>
 </div>
 
@@ -31,9 +31,9 @@ Returns a simplified `GEOMETRY` and ensures that the result having the same dime
 
 {% highlight mysql %}
 SELECT st_simplifypreservetopology(geom, 10);
--- Answer: POLYGON((8 25, 28 22, 28 20, 15 11, 33 3, 
---                  56 30, 46 33, 46 34, 47 44, 35 36, 
---                  45 33, 43 19, 29 21, 29 22, 35 26, 
+-- Answer: POLYGON((8 25, 28 22, 28 20, 15 11, 33 3,
+--                  56 30, 46 33, 46 34, 47 44, 35 36,
+--                  45 33, 43 19, 29 21, 29 22, 35 26,
 --                  24 39, 8 25))
 
 SELECT st_simplifypreservetopology(geom, 20);
@@ -46,15 +46,15 @@ SELECT st_simplifypreservetopology(geom, 30);
 <img class="displayed" src="../ST_SimplifyPreserveTopology.png"/>
 
 {% highlight mysql %}
-SELECT ST_SimplifyPreserveTopology('MULTIPOINT((190 300), 
-                                               (10 11))', 
+SELECT ST_SimplifyPreserveTopology('MULTIPOINT((190 300),
+                                               (10 11))',
                                     4);
 -- Answer: MULTIPOINT((190 300), (10 11))
 
-SELECT ST_SimplifyPreserveTopology('LINESTRING(250 250, 280 290, 
-                                               300 230, 340 300, 
-                                               360 260, 440 310, 
-                                               470 360, 604 286)', 
+SELECT ST_SimplifyPreserveTopology('LINESTRING(250 250, 280 290,
+                                               300 230, 340 300,
+                                               360 260, 440 310,
+                                               470 360, 604 286)',
                                     40);
 -- Answer: LINESTRING(250 250, 280 290, 300 230, 470 360, 604 286)
 {% endhighlight %}
