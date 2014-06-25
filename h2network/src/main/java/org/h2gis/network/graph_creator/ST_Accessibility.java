@@ -37,6 +37,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
+import static org.h2gis.network.graph_creator.GraphFunctionParser.parseInputTable;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
@@ -66,6 +67,9 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
             "* `dt` = Destination table name (must contain column containing integer vertex\n" +
             "  ids)\n";
 
+    /**
+     * Constructor
+     */
     public ST_Accessibility() {
         addProperty(PROP_REMARKS, REMARKS);
     }
@@ -144,8 +148,9 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
         final Statement st = connection.createStatement();
         Set<VAccess> destinations = new HashSet<VAccess>();
         try {
+            final TableLocation destinationTable = parseInputTable(connection, destTable);
             final ResultSet rs = st.executeQuery(
-                    "SELECT * FROM " + TableLocation.parse(destTable).getTable());
+                    "SELECT * FROM " + destinationTable);
             while (rs.next()) {
                 destinations.add(graph.getVertex(rs.getInt(DESTINATION)));
             }

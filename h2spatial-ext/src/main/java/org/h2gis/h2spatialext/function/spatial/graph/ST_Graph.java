@@ -24,18 +24,19 @@
 
 package org.h2gis.h2spatialext.function.spatial.graph;
 
-import org.h2gis.h2spatial.internal.type.GeometryTypeNameFromConstraint;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
-import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
 import java.util.List;
+
+import static org.h2gis.network.graph_creator.GraphFunctionParser.parseInputTable;
+import static org.h2gis.network.graph_creator.GraphFunctionParser.suffixTableLocation;
+import static org.h2gis.utilities.GraphConstants.EDGES_SUFFIX;
+import static org.h2gis.utilities.GraphConstants.NODES_SUFFIX;
 
 /**
  * Assigns integer node and edge ids to LINESTRING or MULTILINESTRING
@@ -73,50 +74,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             "A boolean value may be set to true to specify that edges should be oriented by\n" +
             "the z-value of their first and last coordinates (decreasing).\n";
 
-    private TableLocation tableName;
-    private TableLocation nodesName;
-    private TableLocation edgesName;
-
-    private double tolerance;
-    private boolean orientBySlope;
-    private Integer spatialFieldIndex;
-
-    private final Logger logger = LoggerFactory.getLogger("gui." + ST_Graph.class);
-
-    public static final String TYPE_ERROR = "Only LINESTRINGs and MULTILINESTRINGs are accepted. Type code: ";
-
-    public ST_Graph() {
-        this(null, null, 0.0, false);
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ST_Graph.class);
+    public static final String TYPE_ERROR = "Only LINESTRINGs and MULTILINESTRINGs " +
+            "are accepted. Type code: ";
 
     /**
      * Constructor
-     *
-     * @param connection    Connection
-     * @param inputTable    Input table name
-     * @param tolerance     Tolerance
-     * @param orientBySlope True if edges should be oriented by the z-value of
-     *                      their first and last coordinates (decreasing)
      */
-    public ST_Graph(Connection connection,
-                    String inputTable,
-                    double tolerance,
-                    boolean orientBySlope) {
-        if (tolerance < 0) {
-            throw new IllegalArgumentException("Only positive tolerances are allowed.");
-        }
-        if (connection != null) {
-            this.connection = SFSUtilities.wrapConnection(connection);
-        }
-        if (inputTable != null) {
-            this.tableName = TableLocation.parse(inputTable);
-            this.nodesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
-                    tableName.getTable() + "_NODES");
-            this.edgesName = new TableLocation(tableName.getCatalog(), tableName.getSchema(),
-                    tableName.getTable() + "_EDGES");
-        }
-        this.tolerance = tolerance;
-        this.orientBySlope = orientBySlope;
+    public ST_Graph() {
         addProperty(PROP_REMARKS, REMARKS);
     }
 
@@ -220,7 +185,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * 'input_nodes' and 'input_edges'.
      *
      * @param connection       Connection
-     * @param tableName        Input table
+     * @param inputTable        Input table
      * @param spatialFieldName Name of column containing LINESTRINGs or
      *                         MULTILINESTRINGs
      * @param tolerance        Tolerance
@@ -230,32 +195,37 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static boolean createGraph(Connection connection,
-                                      String tableName,
+                                      String inputTable,
                                       String spatialFieldName,
                                       double tolerance,
                                       boolean orientBySlope) throws SQLException {
-        ST_Graph f = new ST_Graph(connection, tableName, tolerance, orientBySlope);
+        if (tolerance < 0) {
+            throw new IllegalArgumentException("Only positive tolerances are allowed.");
+        }
+        final TableLocation tableName = parseInputTable(connection, inputTable);
         // Check for a primary key
-        final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, f.tableName.getTable());
+        final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableName.getTable());
         if (pkIndex == 0) {
-            throw new IllegalStateException("Table " + f.tableName.getTable()
+            throw new IllegalStateException("Table " + tableName.getTable()
                     + " must contain a single integer primary key.");
         }
         final DatabaseMetaData md = connection.getMetaData();
-        final String pkColName = JDBCUtilities.getFieldName(md, f.tableName.getTable(), pkIndex);
+        final String pkColName = JDBCUtilities.getFieldName(md, tableName.getTable(), pkIndex);
         // Check the geometry column type;
-        f.getSpatialFieldIndexAndColumnCount(spatialFieldName);
-        f.checkGeometryType();
-        final String geomCol = JDBCUtilities.getFieldName(md, f.tableName.getTable(), f.spatialFieldIndex);
+        final int spatialFieldIndex = getSpatialFieldIndex(connection, tableName, spatialFieldName);
+        checkGeometryType(connection, tableName, spatialFieldIndex);
+        final String geomCol = JDBCUtilities.getFieldName(md, tableName.getTable(), spatialFieldIndex);
         final Statement st = connection.createStatement();
         try {
-            f.firstFirstLastLast(st, pkColName, geomCol);
-            f.makeEnvelopes(st);
-            f.nodesTable(st);
-            f.edgesTable(st);
-            f.checkForNullEdgeEndpoints(st);
-            if (f.orientBySlope) {
-                f.orientBySlope(st);
+            final TableLocation nodesName = suffixTableLocation(tableName, NODES_SUFFIX);
+            final TableLocation edgesName = suffixTableLocation(tableName, EDGES_SUFFIX);
+            firstFirstLastLast(st, tableName, pkColName, geomCol, tolerance);
+            makeEnvelopes(st, tolerance);
+            nodesTable(st, nodesName, tolerance);
+            edgesTable(st, nodesName, edgesName, tolerance);
+            checkForNullEdgeEndpoints(st, edgesName);
+            if (orientBySlope) {
+                orientBySlope(st, nodesName, edgesName);
             }
         } finally {
             st.close();
@@ -263,7 +233,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return true;
     }
 
-    private void checkGeometryType() throws SQLException {
+    private static void checkGeometryType(Connection connection,
+                                          TableLocation tableName,
+                                          int spatialFieldIndex) throws SQLException {
         final Statement st = connection.createStatement();
         try {
             final String fieldName =
@@ -287,9 +259,12 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * if none is given (specified by null).
      *
      * @param spatialFieldName Spatial field name
+     * @return Spatial field index
      * @throws SQLException
      */
-    private void getSpatialFieldIndexAndColumnCount(String spatialFieldName) throws SQLException {
+    private static int getSpatialFieldIndex(Connection connection,
+                                            TableLocation tableName,
+                                            String spatialFieldName) throws SQLException {
         // Find the name of the first geometry column if not provided by the user.
         if (spatialFieldName == null) {
             List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableName);
@@ -302,6 +277,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         // Set up tables
         final ResultSet columns = connection.getMetaData()
                 .getColumns(tableName.getCatalog(null), tableName.getSchema(null), tableName.getTable(), null);
+        int spatialFieldIndex = -1;
         try {
             while (columns.next()) {
                 if (columns.getString("COLUMN_NAME").equalsIgnoreCase(spatialFieldName)) {
@@ -311,17 +287,22 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         } finally {
             columns.close();
         }
-        if (spatialFieldIndex == null) {
+        if (spatialFieldIndex == -1) {
             throw new SQLException("Geometry field " + spatialFieldName + " of table " + tableName + " not found");
         }
+        return spatialFieldIndex;
     }
 
-    private String expand(String geom, double tol) {
+    private static String expand(String geom, double tol) {
         return "ST_Expand(" + geom + ", " + tol + ", " + tol + ")";
     }
 
-    private void firstFirstLastLast(Statement st, String pkCol, String geomCol) throws SQLException {
-        logger.info("Selecting the first coordinate of the first geometry and " +
+    private static void firstFirstLastLast(Statement st,
+                                           TableLocation tableName,
+                                           String pkCol,
+                                           String geomCol,
+                                           double tolerance) throws SQLException {
+        LOGGER.info("Selecting the first coordinate of the first geometry and " +
                 "the last coordinate of the last geometry...");
         final String numGeoms = "ST_NumGeometries(" + geomCol + ")";
         final String firstGeom = "ST_GeometryN(" + geomCol + ", 1)";
@@ -351,10 +332,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Make a big table of all points in the coords table with an envelope around each point.
      * We will use this table to remove duplicate points.
      */
-    private void makeEnvelopes(Statement st) throws SQLException {
+    private static void makeEnvelopes(Statement st, double tolerance) throws SQLException {
         st.execute("DROP TABLE IF EXISTS PTS;");
         if (tolerance > 0) {
-            logger.info("Calculating envelopes around coordinates...");
+            LOGGER.info("Calculating envelopes around coordinates...");
             // Putting all points and their envelopes together...
             st.execute("CREATE CACHED LOCAL TEMPORARY TABLE PTS( " +
                     "ID INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -367,7 +348,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             // Putting a spatial index on the envelopes...
             st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
         } else {
-            logger.info("Preparing temporary nodes table from coordinates...");
+            LOGGER.info("Preparing temporary nodes table from coordinates...");
             // If the tolerance is zero, we just put all points together
             st.execute("CREATE CACHED LOCAL TEMPORARY TABLE PTS( " +
                     "ID INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -384,10 +365,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     /**
      * Create the nodes table.
      */
-    private void nodesTable(Statement st) throws SQLException {
-        logger.info("Creating the nodes table...");
+    private static void nodesTable(Statement st,
+                                   TableLocation nodesName,
+                                   double tolerance) throws SQLException {
+        LOGGER.info("Creating the nodes table...");
         // Creating nodes table by removing copies from the pts table.
-        st.execute("DROP TABLE IF EXISTS " + nodesName + ";");
         if (tolerance > 0) {
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
@@ -415,9 +397,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     /**
      * Create the edges table.
      */
-    private void edgesTable(Statement st) throws SQLException {
-        logger.info("Creating the edges table...");
-        st.execute("DROP TABLE IF EXISTS " + edgesName + ";");
+    private static void edgesTable(Statement st,
+                                   TableLocation nodesName,
+                                   TableLocation edgesName,
+                                   double tolerance) throws SQLException {
+        LOGGER.info("Creating the edges table...");
         if (tolerance > 0) {
             st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(EXP);");
             st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT_EXP);");
@@ -448,8 +432,10 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
     }
 
-    private void orientBySlope(Statement st) throws SQLException {
-        logger.info("Orienting edges by slope...");
+    private static void orientBySlope(Statement st,
+                                      TableLocation nodesName,
+                                      TableLocation edgesName) throws SQLException {
+        LOGGER.info("Orienting edges by slope...");
         st.execute("UPDATE " + edgesName + " c " +
                     "SET START_NODE=END_NODE, " +
                     "    END_NODE=START_NODE " +
@@ -458,8 +444,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                             "WHERE C.START_NODE=A.NODE_ID AND C.END_NODE=B.NODE_ID);");
     }
 
-    private void checkForNullEdgeEndpoints(Statement st) throws SQLException {
-        logger.info("Checking for null edge endpoints...");
+    private static void checkForNullEdgeEndpoints(Statement st,
+                                                  TableLocation edgesName) throws SQLException {
+        LOGGER.info("Checking for null edge endpoints...");
         final ResultSet nullEdges = st.executeQuery("SELECT COUNT(*) FROM " + edgesName + " WHERE " +
                 "START_NODE IS NULL OR END_NODE IS NULL;");
         try {

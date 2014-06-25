@@ -403,6 +403,66 @@ public class ST_GraphTest {
         rs.close();
     }
 
+    @Test
+    public void test_ST_GraphCase() throws SQLException {
+        // Prepare the input table.
+        multiTestPrep();
+        checkMultiTest(st.executeQuery("SELECT ST_Graph('test')"));
+        st.execute("DROP TABLE IF EXISTS test_nodes; DROP TABLE IF EXISTS test_edges");
+        checkMultiTest(st.executeQuery("SELECT ST_Graph('TeST')"));
+        st.execute("DROP TABLE IF EXISTS test_nodes; DROP TABLE IF EXISTS test_edges");
+        checkMultiTest(st.executeQuery("SELECT ST_Graph('TEST')"));
+    }
+
+    @Test(expected = SQLException.class)
+    public void test_ST_GraphCaseError() throws Throwable {
+        multiTestPrep();
+        try {
+            st.executeQuery("SELECT ST_Graph('\"TeST\"')");
+        } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains("Table TeST not found"));
+            throw e.getOriginalCause();
+        }
+    }
+
+    private void multiTestPrep() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS test; DROP TABLE IF EXISTS test_nodes; DROP TABLE IF EXISTS test_edges");
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR NOT NULL, " +
+                "id INT AUTO_INCREMENT PRIMARY KEY);" +
+                "INSERT INTO test VALUES " +
+                "('LINESTRING (0 0, 0 2)', 'road1', DEFAULT)," +
+                "('LINESTRING (1 0, 1 2)', 'road2', DEFAULT)," +
+                "('LINESTRING (2 0, 2 2)', 'road3', DEFAULT);");
+    }
+
+    private void checkMultiTest(ResultSet rs) throws SQLException {
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+        assertFalse(rs.next());
+        // Test nodes table.
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
+        assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
+        checkNode(nodesResult, 1, "POINT (0 0)");
+        checkNode(nodesResult, 2, "POINT (1 0)");
+        checkNode(nodesResult, 3, "POINT (2 0)");
+        checkNode(nodesResult, 4, "POINT (0 2)");
+        checkNode(nodesResult, 5, "POINT (1 2)");
+        checkNode(nodesResult, 6, "POINT (2 2)");
+        assertFalse(nodesResult.next());
+        nodesResult.close();
+
+        // Test edges table.
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
+        // This is a copy of the original table with three columns added.
+        assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
+        checkEdge(edgesResult, 1, 1, 4);
+        checkEdge(edgesResult, 2, 2, 5);
+        checkEdge(edgesResult, 3, 3, 6);
+        assertFalse(edgesResult.next());
+        edgesResult.close();
+        rs.close();
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void test_ST_Graph_ErrorWithNoLINESTRINGOrMULTILINESTRING() throws Throwable {
         // Prepare the input table.

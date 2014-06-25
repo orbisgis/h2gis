@@ -32,7 +32,6 @@ import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.drivers.shp.internal.ShapeType;
 import org.h2gis.drivers.shp.internal.ShapefileHeader;
 import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
@@ -41,12 +40,7 @@ import org.h2gis.utilities.TableLocation;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.List;
 
 /**
@@ -72,16 +66,17 @@ public class SHPDriverFunction implements DriverFunction {
      * @throws IOException
      */
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
-        TableLocation location = TableLocation.parse(tableReference);
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        TableLocation location = TableLocation.parse(tableReference, isH2);
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         ProgressVisitor copyProgress = progress.subProcess(recordCount);
         //
         // Read Geometry Index and type
-        List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableReference));
+        List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableReference, isH2));
         if(spatialFieldNames.isEmpty()) {
             throw new SQLException(String.format("The table %s does not contain a geometry field", tableReference));
         }
-        int geometryType = SFSUtilities.getGeometryType(connection, TableLocation.parse(tableReference), spatialFieldNames.get(0));
+        int geometryType = SFSUtilities.getGeometryType(connection, TableLocation.parse(tableReference, isH2), spatialFieldNames.get(0));
         ShapeType shapeType = getShapeTypeFromSFSGeometryTypeCode(geometryType);
         // Read table content
         Statement st = connection.createStatement();
@@ -172,6 +167,7 @@ public class SHPDriverFunction implements DriverFunction {
      * @throws IOException File read error
      */
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceEncoding) throws SQLException, IOException {
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         SHPDriver shpDriver = new SHPDriver();
         shpDriver.initDriverFromFile(fileName, forceEncoding);
         ProgressVisitor copyProgress = progress.subProcess((int)(shpDriver.getRowCount() / BATCH_MAX_SIZE));
@@ -182,27 +178,27 @@ public class SHPDriverFunction implements DriverFunction {
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
-            String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+            String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2);
             if(!types.isEmpty()) {
                 types = ", " + types;
             }
-            if(JDBCUtilities.isH2DataBase(connection.getMetaData())) {
+            final TableLocation parse = TableLocation.parse(tableReference, isH2);
+            if(isH2) {
                 //H2 Syntax
-                st.execute(String.format("CREATE TABLE %s (the_geom %s %s)", TableLocation.parse(tableReference),
+                st.execute(String.format("CREATE TABLE %s (the_geom %s %s)", parse,
                     getSFSGeometryType(shpHeader), types));
             } else {
                 // PostgreSQL Syntax
                 int srid = 0;
-                lastSql = String.format("CREATE TABLE %s (the_geom GEOMETRY(%s, %d) %s)", TableLocation.parse(tableReference),
+                lastSql = String.format("CREATE TABLE %s (the_geom GEOMETRY(%s, %d) %s)", parse,
                         getPostGISSFSGeometryType(shpHeader),srid, types);
                 st.execute(lastSql);
 
             }
             st.close();
             try {
-                        lastSql =
-                                String.format("INSERT INTO %s VALUES ( %s )", TableLocation.parse(tableReference),
-                                        DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
+                        lastSql = String.format("INSERT INTO %s VALUES ( %s )", parse,
+                                DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
                         PreparedStatement preparedStatement = connection.prepareStatement(lastSql);
                 try {
                     long batchSize = 0;

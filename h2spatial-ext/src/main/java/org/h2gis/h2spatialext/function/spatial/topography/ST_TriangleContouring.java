@@ -35,24 +35,14 @@ import org.h2.value.Value;
 import org.h2.value.ValueString;
 import org.h2gis.h2spatial.TableFunctionUtil;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.jts_utils.Contouring;
 import org.h2gis.utilities.jts_utils.TriMarkers;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
+import java.sql.*;
+import java.util.*;
 
 /**
  * Split triangle into area within the specified range values.
@@ -257,7 +247,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            TableFunctionUtil.copyFields(connection, rs, TableLocation.parse(tableName));
+            TableFunctionUtil.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
             rs.addColumn(ISO_FIELD_NAME, Types.INTEGER,10,0);
             return rs;
         }

@@ -215,9 +215,7 @@ public class JDBCUtilities {
     public static boolean tableExists(Connection connection, String tableName) throws SQLException {
         final Statement statement = connection.createStatement();
         try {
-            statement.execute("SELECT * FROM " +
-                    TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())) +
-                    " LIMIT 0;");
+            statement.execute("SELECT * FROM " + TableLocation.parse(tableName) + " LIMIT 0;");
             return true;
         } catch (SQLException ex) {
             return false;

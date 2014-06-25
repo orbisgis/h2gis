@@ -110,11 +110,27 @@ public class JDBCUtilitiesTest {
 
     @Test
     public void testTableExists() throws SQLException {
-        st.execute("DROP TABLE IF EXISTS TEMPTABLE");
-        st.execute("CREATE TABLE TEMPTABLE(id integer, name varchar)");
+        // Don't use quotes
+        st.execute("DROP TABLE IF EXISTS temptable");
+        st.execute("CREATE TABLE temptable(id integer, name varchar)");
         assertTrue(JDBCUtilities.tableExists(connection, "TEMPTABLE"));
-        assertTrue(JDBCUtilities.tableExists(connection, "teMpTAbLE"));
+        assertFalse(JDBCUtilities.tableExists(connection, "temptable"));
+        assertFalse(JDBCUtilities.tableExists(connection, "teMpTAbLE"));
         assertFalse(JDBCUtilities.tableExists(connection, "\"teMpTAbLE\""));
+        st.execute("DROP TABLE IF EXISTS teMpTAbLE");
+        st.execute("CREATE TABLE teMpTAbLE(id integer, name varchar)");
+        assertTrue(JDBCUtilities.tableExists(connection, "TEMPTABLE"));
+        assertFalse(JDBCUtilities.tableExists(connection, "temptable"));
+        assertFalse(JDBCUtilities.tableExists(connection, "teMpTAbLE"));
+        assertFalse(JDBCUtilities.tableExists(connection, "\"teMpTAbLE\""));
+        // Use quotes
+        st.execute("DROP TABLE IF EXISTS TEMPTABLE");
+        st.execute("DROP TABLE IF EXISTS \"teMpTAbLE\"");
+        st.execute("CREATE TABLE \"teMpTAbLE\"(id integer, name varchar)");
+        assertTrue(JDBCUtilities.tableExists(connection, "\"teMpTAbLE\""));
+        assertTrue(JDBCUtilities.tableExists(connection, "teMpTAbLE"));
+        assertFalse(JDBCUtilities.tableExists(connection, "temptable"));
+        assertFalse(JDBCUtilities.tableExists(connection, "TEMPTABLE"));
     }
 
     @Test

@@ -50,7 +50,6 @@ public class ST_AccessibilityTest {
     private static final String RO = "'reversed - edge_orientation'";
     private static final String U = "'undirected'";
     private static final String W = "'weight'";
-    private static final String DEST_TABLE = "'dest_table'";
 
     @BeforeClass
     public static void setUp() throws Exception {

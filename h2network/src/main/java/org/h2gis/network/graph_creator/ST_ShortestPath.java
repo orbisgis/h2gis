@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
+import static org.h2gis.network.graph_creator.GraphFunctionParser.parseInputTable;
 
 /**
  * Calculates the shortest path(s) between vertices in a JGraphT graph produced
@@ -85,18 +86,10 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
             "* `s` = Source vertex id\n" +
             "* `d` = Destination vertex id\n";
 
+    /**
+     * Constructor
+     */
     public ST_ShortestPath() {
-        this(null, null);
-    }
-
-    public ST_ShortestPath(Connection connection,
-                           String inputTable) {
-        if (connection != null) {
-            this.connection = SFSUtilities.wrapConnection(connection);
-        }
-        if (inputTable != null) {
-            this.tableName = TableLocation.parse(inputTable);
-        }
         addProperty(PROP_REMARKS, REMARKS);
     }
 
@@ -162,28 +155,28 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         if (distance == Double.POSITIVE_INFINITY) {
             output.addRow(null, -1, -1, -1, source, destination, distance);
         } else {
+            // Record the results.
+            final TableLocation tableName = parseInputTable(connection, inputTable);
+            // TODO: Warn the user if there are multiple geometry fields.
+            final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableName);
+            if (geometryFields.isEmpty()) {
+                throw new IllegalArgumentException(NO_GEOM_FIELD_ERROR);
+            }
             // Create index on table if it doesn't already exist.
             final Statement st = connection.createStatement();
             try {
-                st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + TableLocation.parse(inputTable)
+                st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + tableName
                         + "(" + EDGE_ID + ")");
             } finally {
                 st.close();
             }
-
-            // Record the results.
-            ST_ShortestPath f = new ST_ShortestPath(connection, inputTable);
-            // TODO: Warn the user if there are multiple geometry fields.
-            final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, f.tableName);
-            if (geometryFields.isEmpty()) {
-                throw new IllegalArgumentException(NO_GEOM_FIELD_ERROR);
-            }
             final PreparedStatement ps = connection.prepareStatement("SELECT " +
                     geometryFields.get(0) +
-                    " FROM " + f.tableName +
+                    " FROM " + tableName +
                     " WHERE " + EDGE_ID + "=? LIMIT 1");
             try {
-                f.addPredEdges(graph, vDestination, output, ps, 1);
+                // Need to create an object for the globalID recursion.
+                new ST_ShortestPath().addPredEdges(graph, vDestination, output, ps, 1);
             } finally {
                 ps.close();
             }

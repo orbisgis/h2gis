@@ -35,6 +35,7 @@ import org.slf4j.LoggerFactory;
 import java.sql.*;
 
 import static org.h2gis.network.graph_creator.GraphFunction.logTime;
+import static org.h2gis.network.graph_creator.GraphFunctionParser.parseInputTable;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
@@ -58,7 +59,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
     private int weightColumnIndex = -1;
     private int edgeOrientationIndex = -1;
 
-    private TableLocation tableName;
+    private final String inputTable;
     private final String weightColumn;
     private final GraphFunctionParser.Orientation globalOrientation;
     private final String edgeOrientationColumnName;
@@ -88,9 +89,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
                         Class<? extends V> vertexClass,
                         Class<? extends E> edgeClass) {
         this.connection = connection;
-        if (inputTable != null) {
-            this.tableName = TableLocation.parse(inputTable);
-        }
+        this.inputTable = inputTable;
         this.weightColumn = weightColumn;
         this.globalOrientation = globalOrientation;
         this.edgeOrientationColumnName = edgeOrientationColumnName;
@@ -125,7 +124,8 @@ public class GraphCreator<V extends VId, E extends Edge> {
             }
         }
         final Statement st = connection.createStatement();
-        final ResultSet edges = st.executeQuery("SELECT * FROM " + tableName);
+        final ResultSet edges = st.executeQuery("SELECT * FROM " +
+                parseInputTable(connection, inputTable));
         // Initialize the indices.
         initIndices(edges);
         try {

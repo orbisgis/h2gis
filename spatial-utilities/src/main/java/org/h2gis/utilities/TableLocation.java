@@ -133,33 +133,26 @@ public class TableLocation {
     }
 
     /**
-     * Convert catalog.schema.table, schema.table or table into TableLocation instance.
-     * Not specified schema or catalog are converted into an empty string.
+     * Convert catalog.schema.table, schema.table or table into a TableLocation
+     * instance. Non-specified schema or catalogs are converted to the empty
+     * string.
+     *
      * @param concatenatedTableLocation Table location [[Catalog.]Schema.]Table
-     * @return Java beans for table location   Sample Text
+     * @return Java beans for table location
      */
     public static TableLocation parse(String concatenatedTableLocation) {
         return parse(concatenatedTableLocation, null);
     }
 
     /**
-     * Change case of parameters in order to make it more user friendly.
-     * @param identifier Table, Catalog, Schema, or column name.
-     * @param isH2Database True if H2, False if PostGreSQL, null if unknown.
-     * @return Upper or lower case version of identifier.
+     * Convert catalog.schema.table, schema.table or table into a TableLocation
+     * instance. Non-specified schema or catalogs are converted to the empty
+     * string.
+     *
+     * @param concatenatedTableLocation Table location [[Catalog.]Schema.]Table
+     * @param isH2Database              True if H2, False if PostGreSQL, null if unknown
+     * @return Java beans for table location
      */
-    public static String capsIdentifier(String identifier, Boolean isH2Database) {
-        if(isH2Database != null) {
-            if(isH2Database) {
-                return identifier.toUpperCase();
-            } else {
-                return identifier.toLowerCase();
-            }
-        } else {
-            return identifier;
-        }
-    }
-
     public static TableLocation parse(String concatenatedTableLocation, Boolean isH2Database) {
         List<String> parts = new LinkedList<String>();
         String catalog,schema,table;
@@ -191,7 +184,6 @@ public class TableLocation {
             parts.add(sb.toString());
         }
         String[] values = parts.toArray(new String[parts.size()]);
-
         switch (values.length) {
             case 1:
                 table = values[0].trim();
@@ -206,6 +198,25 @@ public class TableLocation {
                 table = values[2].trim();
         }
         return new TableLocation(catalog,schema,table);
+    }
+
+    /**
+     * Change case of parameters to make it more user-friendly.
+     *
+     * @param identifier   Table, Catalog, Schema, or column name
+     * @param isH2Database True if H2, False if PostGreSQL, null if unknown
+     * @return Upper or lower case version of identifier
+     */
+    public static String capsIdentifier(String identifier, Boolean isH2Database) {
+        if(isH2Database != null) {
+            if(isH2Database) {
+                return identifier.toUpperCase();
+            } else {
+                return identifier.toLowerCase();
+            }
+        } else {
+            return identifier;
+        }
     }
 
     /**

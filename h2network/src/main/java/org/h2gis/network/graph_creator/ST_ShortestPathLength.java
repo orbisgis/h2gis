@@ -81,6 +81,9 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             "* `ds` = Comma-separated Destination string ('dest1, dest2, ...')\n";
 
 
+    /**
+     * Constructor
+     */
     public ST_ShortestPathLength() {
         addProperty(PROP_REMARKS, REMARKS);
     }
