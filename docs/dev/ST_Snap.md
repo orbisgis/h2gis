@@ -53,7 +53,7 @@ SELECT ST_Snap('POLYGON((3 3, 1 2, 0 2, 0 1, -2 1, -1 7, 3 6,
                2);
 SELECT ST_Snap(geomB, geomA, 2) FROM input_table;
 -- Answer: POLYGON((3 3, 1 1, 1 1, 1 1, -2 1, -1 7, 1 7, 3 6,
-                    4 8, 7 7, 7 7, 9 6, 7 1, 7 1, 3 3))
+--                  4 8, 7 7, 7 7, 9 6, 7 1, 7 1, 3 3))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Snap_2.png"/>
@@ -62,4 +62,3 @@ SELECT ST_Snap(geomB, geomA, 2) FROM input_table;
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_Snap.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
-
