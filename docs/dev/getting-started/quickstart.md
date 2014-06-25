@@ -16,7 +16,7 @@ Command-line gurus, just execute the following commands:
 ~ $ wget http://tinyurl.com/h2gis-zip -O h2gis.zip
 ~ $ unzip h2gis.zip
 ~ $ cd h2gis-standalone
-~/h2gis-standalone $ ./run.sh
+~/h2gis-standalone $ java -jar h2-dist-1.1.0.jar
 {% endhighlight %}
 
 ## Initialize the spatial extension
