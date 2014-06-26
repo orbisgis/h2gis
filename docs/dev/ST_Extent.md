@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Extent
 category: geom2D/properties
+is_function: true
 description: Return the minimum bounding box of a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_Explode
 next_section: ST_ExteriorRing

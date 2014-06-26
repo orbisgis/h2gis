@@ -2,6 +2,7 @@
 layout: docs
 title: ST_IsSimple
 category: geom2D/properties
+is_function: true
 description: Return true if a Geometry is simple
 prev_section: ST_IsRing
 next_section: ST_IsValid

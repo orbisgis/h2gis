@@ -2,6 +2,7 @@
 layout: docs
 title: ST_AsGeoJson
 category: h2drivers/GeoJson
+is_function: true
 description: 
 prev_section: GeoJsonWrite
 next_section: h2drivers/GPX

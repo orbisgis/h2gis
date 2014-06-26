@@ -2,6 +2,7 @@
 layout: docs
 title: ST_LineFromText
 category: geom2D/geometry-conversion
+is_function: true
 description: Well Known Text &rarr; <code>LINESTRING</code>
 prev_section: ST_Holes
 next_section: ST_LineFromWKB

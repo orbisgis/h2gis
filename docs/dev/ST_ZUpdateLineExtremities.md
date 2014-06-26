@@ -2,6 +2,7 @@
 layout: docs
 title: ST_ZUpdateLineExtremities
 category: geom3D/edit-geometries
+is_function: true
 description: 
 prev_section: ST_UpdateZ
 next_section: geom3D/distance-functions

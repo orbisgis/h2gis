@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Interpolate3DLine
 category: geom3D/edit-geometries
+is_function: true
 description: Return a Geometry with a interpolation of z values.
 prev_section: ST_AddZ
 next_section: ST_MultiplyZ

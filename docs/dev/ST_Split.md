@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Split
 category: geom2D/process-geometries
+is_function: true
 description: Split Geometry A by Geometry B
 prev_section: ST_Snap
 next_section: geom2D/projections

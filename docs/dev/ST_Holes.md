@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Holes
 category: geom2D/geometry-conversion
+is_function: true
 description: Return a Geometry's holes
 prev_section: ST_GeometryTypeCode
 next_section: ST_LineFromText

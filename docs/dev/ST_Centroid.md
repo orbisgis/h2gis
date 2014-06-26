@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Centroid
 category: geom2D/properties
+is_function: true
 description: Return the centroid of a Geometry
 prev_section: ST_Boundary
 next_section: ST_CompactnessRatio

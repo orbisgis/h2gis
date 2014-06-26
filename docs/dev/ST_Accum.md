@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Accum
 category: geom2D/geometry-creation
+is_function: true
 description: Construct a <code>GEOMETRYCOLLECTION</code> from a column of Geometries
 prev_section: geom2D/geometry-creation
 next_section: ST_BoundingCircle

@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Transform
 category: geom2D/projections
+is_function: true
 description: Transform a Geometry from one CRS to another
 prev_section: ST_SetSRID
 next_section: geom2D/properties

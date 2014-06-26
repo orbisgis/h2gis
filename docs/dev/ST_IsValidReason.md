@@ -2,6 +2,7 @@
 layout: docs
 title: ST_IsValidReason
 category: geom2D/properties
+is_function: true
 description: 
 prev_section: ST_IsValidDetail
 next_section: ST_NumGeometries

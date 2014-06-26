@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Overlaps
 category: geom2D/predicates
+is_function: true
 description: Return true if Geometry A overlaps Geometry B
 prev_section: ST_OrderingEquals
 next_section: ST_Relate

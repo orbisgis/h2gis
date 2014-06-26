@@ -2,6 +2,7 @@
 layout: docs
 title: ST_AsKml
 category: h2drivers/KML
+is_function: true
 description: 
 prev_section: KMLWrite
 next_section: h2drivers/SHP

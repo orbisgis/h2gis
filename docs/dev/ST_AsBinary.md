@@ -2,6 +2,7 @@
 layout: docs
 title: ST_AsBinary
 category: geom2D/geometry-conversion
+is_function: true
 description: Geometry &rarr; Well Known Binary
 prev_section: geom2D/geometry-conversion
 next_section: ST_AsText

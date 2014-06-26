@@ -2,6 +2,7 @@
 layout: docs
 title: GeoJsonRead
 category: h2drivers/GeoJson
+is_function: true
 description: 
 prev_section: h2drivers/GeoJson
 next_section: GeoJsonWrite

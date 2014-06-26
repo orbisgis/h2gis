@@ -2,6 +2,7 @@
 layout: docs
 title: ST_RingBuffer
 category: geom2D/geometry-creation
+is_function: true
 description: 
 prev_section: ST_OctogonalEnvelope
 next_section: geom2D/edit-geometries

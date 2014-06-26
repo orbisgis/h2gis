@@ -2,6 +2,7 @@
 layout: docs
 title: ST_IsRing
 category: geom2D/properties
+is_function: true
 description: Return true if a <code>LINESTRING</code> is ring
 prev_section: ST_IsRectangle
 next_section: ST_IsSimple

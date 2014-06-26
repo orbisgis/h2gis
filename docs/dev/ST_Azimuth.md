@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Azimuth
 category: geom2D/trigonometry
+is_function: true
 description: 
 prev_section: geom2D/trigonometry
 next_section: geom3D/list

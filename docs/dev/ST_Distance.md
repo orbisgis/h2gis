@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Distance
 category: geom2D/properties
+is_function: true
 description: Return the distance between two Geometries
 prev_section: ST_Dimension
 next_section: ST_EndPoint

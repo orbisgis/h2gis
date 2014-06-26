@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Union
 category: geom2D/operators
+is_function: true
 description: Compute the union of two or more Geometries
 prev_section: ST_SymDifference
 next_section: geom2D/predicates

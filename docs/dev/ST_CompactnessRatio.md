@@ -2,6 +2,7 @@
 layout: docs
 title: ST_CompactnessRatio
 category: geom2D/properties
+is_function: true
 description: Return the square root of a <code>POLYGON</code>'s area divided by the area of the circle with circumference equal to its perimeter
 prev_section: ST_Centroid
 next_section: ST_CoordDim

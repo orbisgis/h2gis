@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Rotate
 category: geom2D/affine-transformations
+is_function: true
 description: Rotate a Geometry counter-clockwise by an angle (in radians) about a point 
 prev_section: geom2D/affine-transformations
 next_section: ST_Scale

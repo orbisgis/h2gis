@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Force3D
 category: geom3D/geometry-conversion
+is_function: true
 description: 
 prev_section: geom3D/geometry-conversion
 next_section: geom3D/geometry-creation

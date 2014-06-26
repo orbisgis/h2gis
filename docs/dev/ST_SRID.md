@@ -2,6 +2,7 @@
 layout: docs
 title: ST_SRID
 category: geom2D/properties
+is_function: true
 description: Return a SRID value
 prev_section: ST_PointOnSurface
 next_section: ST_StartPoint

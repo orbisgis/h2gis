@@ -2,6 +2,7 @@
 layout: docs
 title: SHPRead
 category: h2drivers/SHP
+is_function: true
 description: 
 prev_section: h2drivers/SHP
 next_section: SHPWrite

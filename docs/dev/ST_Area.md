@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Area
 category: geom2D/distance-functions
+is_function: true
 description: Return a Geometry's area
 prev_section: geom2D/distance-functions
 next_section: ST_ClosestCoordinate

@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Delaunay
 category: geom3D/triangulation
+is_function: true
 description: 
 prev_section: ST_ConstrainedDelaunay
 next_section: raster/list

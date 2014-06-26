@@ -2,6 +2,7 @@
 layout: docs
 title: ST_MakeGrid
 category: geom2D/geometry-creation
+is_function: true
 description: 
 prev_section: ST_MakeEnvelope
 next_section: ST_MakeGridPoints

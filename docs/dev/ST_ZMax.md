@@ -2,6 +2,7 @@
 layout: docs
 title: ST_ZMax
 category: geom3D/properties
+is_function: true
 description: Return the maximum z-value of a Geometry
 prev_section: ST_Z
 next_section: ST_ZMin

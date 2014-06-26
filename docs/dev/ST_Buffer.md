@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Buffer
 category: geom2D/operators
+is_function: true
 description: Compute a buffer around a Geometry
 prev_section: geom2D/operators
 next_section: ST_ConvexHull

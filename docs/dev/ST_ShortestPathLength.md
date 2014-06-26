@@ -2,6 +2,7 @@
 layout: docs
 title: ST_ShortestPathLength
 category: applications/h2network
+is_function: true
 description: 
 prev_section: ST_ShortestPath
 next_section:

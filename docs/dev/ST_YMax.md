@@ -2,6 +2,7 @@
 layout: docs
 title: ST_YMax
 category: geom2D/properties
+is_function: true
 description: Return the maximum y-value of a Geometry
 prev_section: ST_Y
 next_section: ST_YMin

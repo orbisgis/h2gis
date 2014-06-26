@@ -2,6 +2,7 @@
 layout: docs
 title: ST_GeometryType
 category: geom2D/properties
+is_function: true
 description: Return the type of a Geometry
 prev_section: ST_GeometryN
 next_section: ST_InteriorRingN

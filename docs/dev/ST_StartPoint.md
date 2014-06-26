@@ -2,6 +2,7 @@
 layout: docs
 title: ST_StartPoint
 category: geom2D/properties
+is_function: true
 description: Return the first coordinate of a <code>LINESTRING</code>
 prev_section: ST_SRID
 next_section: ST_X

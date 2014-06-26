@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Reverse3DLine
 category: geom3D/edit-geometries
+is_function: true
 description: Potentially reverse a Geometry according to the <i>z</i>-values of its first and last coordinates
 prev_section: ST_MultiplyZ
 next_section: ST_UpdateZ

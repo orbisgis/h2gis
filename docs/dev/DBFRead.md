@@ -2,6 +2,7 @@
 layout: docs
 title: DBFRead
 category: h2drivers/DBF
+is_function: true
 description: 
 prev_section: h2drivers/DBF
 next_section: DBFWrite

@@ -2,6 +2,7 @@
 layout: docs
 title: ST_ToMultiPoint
 category: geom2D/geometry-conversion
+is_function: true
 description: Geometry's coordinates &rarr; <code>MULTIPOINT</code>
 prev_section: ST_ToMultiLine
 next_section: ST_ToMultiSegments

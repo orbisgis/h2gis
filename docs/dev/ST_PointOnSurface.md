@@ -2,6 +2,7 @@
 layout: docs
 title: ST_PointOnSurface
 category: geom2D/properties
+is_function: true
 description: Return an interior or boundary point of a Geometry
 prev_section: ST_PointN
 next_section: ST_SRID

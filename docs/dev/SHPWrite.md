@@ -2,6 +2,7 @@
 layout: docs
 title: SHPWrite
 category: h2drivers/SHP
+is_function: true
 description: 
 prev_section: SHPRead
 next_section: geom2D/list

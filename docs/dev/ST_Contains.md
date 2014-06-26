@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Contains
 category: geom2D/predicates
+is_function: true
 description: 
 prev_section: geom2D/predicates
 next_section: ST_Covers

@@ -2,6 +2,7 @@
 layout: docs
 title: ST_AddZ
 category: geom3D/edit-geometries
+is_function: true
 description: Add a value to the <i>z</i>-coordinate of a Geometry
 prev_section: geom3D/edit-geometries
 next_section: ST_Interpolate3DLine

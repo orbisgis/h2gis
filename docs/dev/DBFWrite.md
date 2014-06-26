@@ -2,6 +2,7 @@
 layout: docs
 title: DBFWrite
 category: h2drivers/DBF
+is_function: true
 description: 
 prev_section: DBFRead
 next_section: h2drivers/GeoJson

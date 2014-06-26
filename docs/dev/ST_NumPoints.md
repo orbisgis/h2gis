@@ -2,6 +2,7 @@
 layout: docs
 title: ST_NumPoints
 category: geom2D/properties
+is_function: true
 description: Return the number of points in a Geometry
 prev_section: ST_NumInteriorRings
 next_section: ST_PointN

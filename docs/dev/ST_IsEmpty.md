@@ -2,6 +2,7 @@
 layout: docs
 title: ST_IsEmpty
 category: geom2D/properties
+is_function: true
 description: Return true if a Geometry is empty
 prev_section: ST_IsClosed
 next_section: ST_IsRectangle

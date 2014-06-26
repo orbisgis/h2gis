@@ -2,6 +2,7 @@
 layout: docs
 title: ST_MultiplyZ
 category: geom3D/edit-geometries
+is_function: true
 description: Return a Geometry's <i>z</i>-values by a factor
 prev_section: ST_Interpolate3DLine
 next_section: ST_Reverse3DLine

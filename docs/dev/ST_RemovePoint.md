@@ -2,6 +2,7 @@
 layout: docs
 title: ST_RemovePoint
 category: geom2D/edit-geometries
+is_function: true
 description: Return a Geometry with vertices less
 prev_section: ST_RemoveHoles
 next_section: ST_RemoveRepeatedPoints

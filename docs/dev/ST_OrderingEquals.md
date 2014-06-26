@@ -2,6 +2,7 @@
 layout: docs
 title: ST_OrderingEquals
 category: geom2D/predicates
+is_function: true
 description: 
 prev_section: ST_Intersects
 next_section: ST_Overlaps

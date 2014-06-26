@@ -2,6 +2,7 @@
 layout: docs
 title: GPXRead
 category: h2drivers/GPX
+is_function: true
 description: 
 prev_section: h2drivers/GPX
 next_section: h2drivers/KML

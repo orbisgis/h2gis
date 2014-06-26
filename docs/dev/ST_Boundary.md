@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Boundary
 category: geom2D/properties
+is_function: true
 description: Return a Geometry's boundary
 prev_section: geom2D/projections
 next_section: ST_Centroid

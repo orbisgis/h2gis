@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Covers
 category: geom2D/predicates
+is_function: true
 description: Return true if no point in Geometry B is outside Geometry A
 prev_section: ST_Contains
 next_section: ST_Crosses

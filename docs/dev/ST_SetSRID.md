@@ -2,6 +2,7 @@
 layout: docs
 title: ST_SetSRID
 category: geom2D/projections
+is_function: true
 description: Return a copy of a Geometry with a new SRID
 prev_section: geom2D/projections
 next_section: ST_Transform

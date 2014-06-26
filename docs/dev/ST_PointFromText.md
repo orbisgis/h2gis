@@ -2,6 +2,7 @@
 layout: docs
 title: ST_PointFromText
 category: geom2D/geometry-conversion
+is_function: true
 description: Well Known Text &rarr; <code>POINT</code>
 prev_section: ST_MPolyFromText
 next_section: ST_PolyFromText
