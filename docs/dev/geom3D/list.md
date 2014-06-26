@@ -7,6 +7,5 @@ next_section: geom3D/geometry-conversion
 permalink: /docs/dev/geom3D/list/
 ---
 
-Here is a list of all functions on 3D geometries included in H2GIS.
 
 {% include all_3D_functions.html %}

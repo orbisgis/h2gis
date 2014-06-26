@@ -7,6 +7,5 @@ next_section: h2drivers/DBF
 permalink: /docs/dev/h2drivers/list/
 ---
 
-Here is a list of all drivers included in H2GIS.
 
 {% include all_drivers.html %}

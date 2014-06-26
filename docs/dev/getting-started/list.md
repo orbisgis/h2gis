@@ -6,6 +6,5 @@ next_section: h2drivers/list
 permalink: /docs/dev/functions/
 ---
 
-Here is a list of all functions included in H2GIS.
 
 {% include all_functions.html %}
