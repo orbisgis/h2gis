@@ -2,7 +2,7 @@
 layout: docs
 title: Thematic functions
 category: h2network/list-thematic-function
-prev_section: raster/list-raster-function
+prev_section: raster/list
 next_section: h2network/graph-functions
 permalink: /docs/dev/h2network/list-thematic-function/
 ---

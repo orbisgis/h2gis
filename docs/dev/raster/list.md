@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: Raster functions
-category: raster/list-raster-function
+category: raster/list
 prev_section: Geometry3D/triangulation
 next_section: h2network/list-thematic-function
-permalink: /docs/dev/raster/list-raster-function/
+permalink: /docs/dev/raster/list/
 ---
 
 Here is a list of all raster functions included in H2GIS.
