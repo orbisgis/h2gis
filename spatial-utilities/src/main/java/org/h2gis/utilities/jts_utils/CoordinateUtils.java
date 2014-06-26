@@ -112,6 +112,24 @@ public final class CoordinateUtils {
         return false;
     }
 
+    public static boolean containsCoordsOfMixedDimension(Coordinate[] coords) {
+        if (coords.length < 2) {
+            return false;
+        } else {
+            boolean mixed = false;
+            double prevZ = coords[0].getOrdinate(Coordinate.Z);
+            for (int i = 1; i < coords.length; i++) {
+                final double z = coords[i].getOrdinate(Coordinate.Z);
+                if ((Double.isNaN(prevZ) && !Double.isNaN(z)) ||
+                        !Double.isNaN(prevZ) && Double.isNaN(z)) {
+                    mixed = true;
+                }
+                prevZ = z;
+            }
+            return mixed;
+        }
+    }
+
     /**
      * Private constructor for utility class.
      */
