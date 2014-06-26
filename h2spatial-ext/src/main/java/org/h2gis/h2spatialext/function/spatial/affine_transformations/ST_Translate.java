@@ -27,16 +27,22 @@ package org.h2gis.h2spatialext.function.spatial.affine_transformations;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.utilities.jts_utils.CoordinateUtils;
 
 /**
- * Translates a geometry a certain offset along the axis X,Y,Z.
- * 
+ * Translates a geometry using X, Y (and possibly Z) offsets.
+ *
  * @author Erwan Bocher
+ * @author Adam Gouge
  */
 public class ST_Translate extends DeterministicScalarFunction {
 
+    public static final String MIXED_DIM_ERROR =
+            "Cannot translate geometries of mixed dimension";
+
     public ST_Translate() {
-        addProperty(PROP_REMARKS, "Translates the geometry to a new location using the numeric parameters as X and Y  or X, Y and Z offsets .");
+        addProperty(PROP_REMARKS,
+                "Translates a geometry using X, Y (and possibly Z) offsets.");
     }
 
     @Override
@@ -45,39 +51,53 @@ public class ST_Translate extends DeterministicScalarFunction {
     }
 
     /**
-     * Translates the geometry to a new location using the numeric parameters as
-     * X and Y offsets.
+     * Translates a geometry using X and Y offsets.
      *
-     * @param geom
-     * @param x
-     * @param y
-     * @return
+     * @param geom Geometry
+     * @param x    X
+     * @param y    Y
+     * @return Translated geometry
      */
     public static Geometry translate(Geometry geom, double x, double y) {
-        if (geom != null) {
-            return AffineTransformation.translationInstance(x, y).transform(geom);
-        } else {
+        if (geom == null) {
             return null;
         }
+        checkMixed(geom);
+        return AffineTransformation.translationInstance(x, y).transform(geom);
     }
-    
-    
+
     /**
-     * Translates the geometry to a new location using the numeric parameters as
-     * X, Y and Z offsets.
+     * Translates a geometry using X, Y and Z offsets.
      *
-     * @param geom
-     * @param x
-     * @param y
-     * @param z
-     * @return
+     * @param geom Geometry
+     * @param x    X
+     * @param y    Y
+     * @param z    Z
+     * @return Translated geometry
      */
     public static Geometry translate(Geometry geom, double x, double y, double z) {
-        if (geom != null) {
-             geom.apply(new ZAffineTransformation(x, y, z));
-             return geom;
-        } else {
+        if (geom == null) {
             return null;
+        }
+        checkMixed(geom);
+        // For all 2D geometries, we only translate by (x, y).
+        if (CoordinateUtils.is2D(geom.getCoordinates())) {
+            return AffineTransformation.translationInstance(x, y).transform(geom);
+        } else {
+            geom.apply(new ZAffineTransformation(x, y, z));
+            return geom;
+        }
+    }
+
+    /**
+     * Throws an exception if the geometry contains coordinates of mixed
+     * dimension.
+     *
+     * @param geom Geometry
+     */
+    private static void checkMixed(Geometry geom) {
+        if (CoordinateUtils.containsCoordsOfMixedDimension(geom.getCoordinates())) {
+            throw new IllegalArgumentException(MIXED_DIM_ERROR);
         }
     }
 }
