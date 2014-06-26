@@ -130,6 +130,20 @@ public final class CoordinateUtils {
         }
     }
 
+    public static boolean is2D(Coordinate[] coords) {
+        if (coords.length < 1) {
+            return false;
+        } else {
+            for (Coordinate c : coords) {
+                final double z = c.getOrdinate(Coordinate.Z);
+                if (!Double.isNaN(z)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
     /**
      * Private constructor for utility class.
      */

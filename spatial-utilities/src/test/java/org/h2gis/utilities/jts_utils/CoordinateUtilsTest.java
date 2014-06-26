@@ -34,4 +34,28 @@ public class CoordinateUtilsTest {
                         new Coordinate(0.0, 1.0, 2.0)}
         ));
     }
+
+    @Test
+    public void testis2D() {
+        assertFalse(CoordinateUtils.is2D(new Coordinate[]{}));
+        assertTrue(CoordinateUtils.is2D(
+                new Coordinate[]{new Coordinate(0.0, 1.0)}));
+        assertFalse(CoordinateUtils.is2D(
+                new Coordinate[]{new Coordinate(0.0, 1.0, 2.0)}));
+        assertFalse(CoordinateUtils.is2D(
+                new Coordinate[]{
+                        new Coordinate(0.0, 1.0),
+                        new Coordinate(0.0, 1.0, 2.0)}
+        ));
+        assertTrue(CoordinateUtils.is2D(
+                new Coordinate[]{
+                        new Coordinate(0.0, 1.0),
+                        new Coordinate(0.0, 1.0)}
+        ));
+        assertFalse(CoordinateUtils.is2D(
+                new Coordinate[]{
+                        new Coordinate(0.0, 1.0, 2.0),
+                        new Coordinate(0.0, 1.0, 2.0)}
+        ));
+    }
 }
