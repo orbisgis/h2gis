@@ -24,11 +24,10 @@
  */
 package org.h2gis.h2spatialext.function.spatial.affine_transformations;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.CoordinateUtils;
+import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
 
 /**
  * Translates a geometry using X, Y (and possibly Z) offsets.
@@ -63,7 +62,10 @@ public class ST_Translate extends DeterministicScalarFunction {
         if (geom == null) {
             return null;
         }
-        checkMixed(geom.getCoordinates());
+        final CoordinateSequenceDimensionFilter filter =
+                new CoordinateSequenceDimensionFilter();
+        geom.apply(filter);
+        checkMixed(filter);
         return AffineTransformation.translationInstance(x, y).transform(geom);
     }
 
@@ -80,14 +82,17 @@ public class ST_Translate extends DeterministicScalarFunction {
         if (geom == null) {
             return null;
         }
-        final Coordinate[] coords = geom.getCoordinates();
-        checkMixed(coords);
+        final CoordinateSequenceDimensionFilter filter =
+                new CoordinateSequenceDimensionFilter();
+        geom.apply(filter);
+        checkMixed(filter);
         // For all 2D geometries, we only translate by (x, y).
-        if (CoordinateUtils.is2D(coords)) {
+        if (filter.is2D()) {
             return AffineTransformation.translationInstance(x, y).transform(geom);
         } else {
-            geom.apply(new ZAffineTransformation(x, y, z));
-            return geom;
+            final Geometry clone = (Geometry) geom.clone();
+            clone.apply(new ZAffineTransformation(x, y, z));
+            return clone;
         }
     }
 
@@ -95,10 +100,10 @@ public class ST_Translate extends DeterministicScalarFunction {
      * Throws an exception if the geometry contains coordinates of mixed
      * dimension.
      *
-     * @param coords Coordinates
+     * @param filter Filter
      */
-    private static void checkMixed(Coordinate[] coords) {
-        if (CoordinateUtils.containsCoordsOfMixedDimension(coords)) {
+    private static void checkMixed(CoordinateSequenceDimensionFilter filter) {
+        if (filter.isMixed()) {
             throw new IllegalArgumentException(MIXED_DIM_ERROR);
         }
     }
