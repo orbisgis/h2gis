@@ -2,7 +2,7 @@
 layout: docs
 title: Convert geometries
 category: Geometry3D/geometry-conversion
-prev_section: Geometry3D/list-function-3d
+prev_section: Geometry3D/list
 next_section: Geometry3D/geometry-creation
 permalink: /docs/dev/Geometry3D/geometry-conversion/
 ---

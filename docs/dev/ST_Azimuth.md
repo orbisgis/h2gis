@@ -4,7 +4,7 @@ title: ST_Azimuth
 category: Geometry2D/trigonometry
 description: 
 prev_section: Geometry2D/trigonometry
-next_section: Geometry3D/list-function-3d
+next_section: Geometry3D/list
 permalink: /docs/dev/ST_Azimuth/
 ---
 
