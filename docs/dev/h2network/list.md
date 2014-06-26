@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: Thematic functions
-category: h2network/list-thematic-function
+category: h2network/list
 prev_section: raster/list
 next_section: h2network/graph-functions
-permalink: /docs/dev/h2network/list-thematic-function/
+permalink: /docs/dev/h2network/list/
 ---
 
 Here is a list of all thematic functions included in H2GIS.

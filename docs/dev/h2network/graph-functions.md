@@ -2,7 +2,7 @@
 layout: docs
 title: Graph
 category: h2network/graph-functions
-prev_section: h2network/list-thematic-function/
+prev_section: h2network/list/
 permalink: /docs/dev/h2network/graph-functions/
 ---
 
