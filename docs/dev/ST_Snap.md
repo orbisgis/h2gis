@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Snap
-category: Geometry2D/process-geometries
+category: geom2D/process-geometries
 description: Snap two Geometries together
 prev_section: ST_SimplifyPreserveTopology
 next_section: ST_Split

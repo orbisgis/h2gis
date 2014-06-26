@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_NumGeometries
-category: Geometry2D/properties
+category: geom2D/properties
 description: Return the number of Geometries in a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_IsValidReason
 next_section: ST_NumInteriorRing

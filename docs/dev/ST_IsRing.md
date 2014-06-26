@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_IsRing
-category: Geometry2D/properties
+category: geom2D/properties
 description: Return true if a <code>LINESTRING</code> is ring
 prev_section: ST_IsRectangle
 next_section: ST_IsSimple

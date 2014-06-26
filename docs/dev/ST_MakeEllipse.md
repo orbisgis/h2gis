@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MakeEllipse
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
 description: Construct an ellipse
 prev_section: ST_Expand
 next_section: ST_MakeEnvelope

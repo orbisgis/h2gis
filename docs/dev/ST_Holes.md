@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Holes
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
 description: Return a Geometry's holes
 prev_section: ST_GeometryTypeCode
 next_section: ST_LineFromText

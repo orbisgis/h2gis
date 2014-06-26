@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Y
-category: Geometry2D/properties
+category: geom2D/properties
 description: Return the y-value of the first coordinate of a Geometry
 prev_section: ST_XMin
 next_section: ST_YMax

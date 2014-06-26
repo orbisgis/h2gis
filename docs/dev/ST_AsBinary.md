@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_AsBinary
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
 description: Geometry &rarr; Well Known Binary
-prev_section: Geometry2D/geometry-conversion
+prev_section: geom2D/geometry-conversion
 next_section: ST_AsText
 permalink: /docs/dev/ST_AsBinary/
 ---

@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_AddPoint
-category: Geometry2D/edit-geometries
+category: geom2D/edit-geometries
 description: Add a point to a Geometry
-prev_section: Geometry2D/edit-geometries
+prev_section: geom2D/edit-geometries
 next_section: ST_Densify
 permalink: /docs/dev/ST_AddPoint/
 ---

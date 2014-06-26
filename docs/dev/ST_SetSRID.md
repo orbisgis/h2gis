@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_SetSRID
-category: Geometry2D/projections
+category: geom2D/projections
 description: Return a copy of a Geometry with a new SRID
-prev_section: Geometry2D/projections
+prev_section: geom2D/projections
 next_section: ST_Transform
 permalink: /docs/dev/ST_SetSRID/
 ---

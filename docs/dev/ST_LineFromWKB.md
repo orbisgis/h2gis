@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_LineFromWKB
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
 description: Well Known Binary &rarr; <code>LINESTRING</code>
 prev_section: ST_LineFromText
 next_section: ST_MLineFromText

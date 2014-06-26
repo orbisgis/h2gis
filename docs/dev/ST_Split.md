@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Split
-category: Geometry2D/process-geometries
+category: geom2D/process-geometries
 description: Split Geometry A by Geometry B
 prev_section: ST_Snap
-next_section: Geometry2D/projections
+next_section: geom2D/projections
 permalink: /docs/dev/ST_Split/
 ---
 

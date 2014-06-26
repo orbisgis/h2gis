@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Translate
-category: Geometry2D/affine-transformations
+category: geom2D/affine-transformations
 description: Translate a Geometry
 prev_section: ST_Scale
-next_section: Geometry2D/geometry-conversion
+next_section: geom2D/geometry-conversion
 permalink: /docs/dev/ST_Translate/
 ---
 

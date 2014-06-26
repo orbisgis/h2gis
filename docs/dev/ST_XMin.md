@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_XMin
-category: Geometry2D/properties
+category: geom2D/properties
 description: Return the minimum x-value of a Geometry
 prev_section: ST_XMax
 next_section: ST_Y

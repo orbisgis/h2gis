@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_SimplifyPreserveTopology
-category: Geometry2D/process-geometries
+category: geom2D/process-geometries
 description: Simplify a Geometry, preserving its topology
 prev_section: ST_Simplify
 next_section: ST_Snap

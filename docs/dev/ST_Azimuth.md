@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Azimuth
-category: Geometry2D/trigonometry
+category: geom2D/trigonometry
 description: 
-prev_section: Geometry2D/trigonometry
-next_section: Geometry3D/list
+prev_section: geom2D/trigonometry
+next_section: geom3D/list
 permalink: /docs/dev/ST_Azimuth/
 ---
 

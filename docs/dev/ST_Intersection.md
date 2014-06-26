@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Intersection
-category: Geometry2D/operators
+category: geom2D/operators
 description: Compute the intersection of two Geometries
 prev_section: ST_Difference
 next_section: ST_SymDifference

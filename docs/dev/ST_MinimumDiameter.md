@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MinimumDiameter
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
 description: 
 prev_section: ST_MakePolygon
 next_section: ST_MinimumRectangle

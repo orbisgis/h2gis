@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Intersects
-category: Geometry2D/predicates
+category: geom2D/predicates
 description: Return true if Geometry A intersects Geometry B
 prev_section: ST_Equals
 next_section: ST_OrderingEquals

@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_OrderingEquals
-category: Geometry2D/predicates
+category: geom2D/predicates
 description: 
 prev_section: ST_Intersects
 next_section: ST_Overlaps

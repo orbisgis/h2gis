@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_X
-category: Geometry2D/properties
+category: geom2D/properties
 description: Return the x-value of the first coordinate of a Geometry
 prev_section: ST_StartPoint
 next_section: ST_XMax

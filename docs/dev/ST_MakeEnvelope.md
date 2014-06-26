@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MakeEnvelope
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
 description: Create a rectangular Polygon
 prev_section: ST_MakeEllipse
 next_section: ST_MakeGrid

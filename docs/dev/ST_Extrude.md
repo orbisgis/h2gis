@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Extrude
-category: Geometry3D/geometry-creation
+category: geom3D/geometry-creation
 description: Extrude a geometry
-prev_section: Geometry3D/geometry-creation
-next_section: Geometry3D/edit-geometries
+prev_section: geom3D/geometry-creation
+next_section: geom3D/edit-geometries
 permalink: /docs/dev/ST_Extrude/
 ---
 

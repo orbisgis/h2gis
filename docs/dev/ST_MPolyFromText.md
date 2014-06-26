@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MPolyFromText
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
 description: Well Known Text &rarr; <code>MULTIPOLYGON</code>
 prev_section: ST_MPointFromText
 next_section: ST_PointFromText

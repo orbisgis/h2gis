@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: Triangulation
-category: Geometry3D/triangulation
-prev_section: Geometry3D/topography
+category: geom3D/triangulation
+prev_section: geom3D/topography
 next_section: raster/list
-permalink: /docs/dev/Geometry3D/triangulation/
+permalink: /docs/dev/geom3D/triangulation/
 ---
 
 The following triangulation functions are available:

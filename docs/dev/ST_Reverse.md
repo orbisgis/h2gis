@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Reverse
-category: Geometry2D/edit-geometries
+category: geom2D/edit-geometries
 description: Reverse the vertex order of a Geometry
 prev_section: ST_RemoveRepeatedPoints
-next_section: Geometry2D/distance-functions
+next_section: geom2D/distance-functions
 permalink: /docs/dev/ST_Reverse/
 ---
 

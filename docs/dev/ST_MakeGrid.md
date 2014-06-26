@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MakeGrid
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
 description: 
 prev_section: ST_MakeEnvelope
 next_section: ST_MakeGridPoints

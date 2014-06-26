@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Delaunay
-category: Geometry3D/triangulation
+category: geom3D/triangulation
 description: 
 prev_section: ST_ConstrainedDelaunay
 next_section: raster/list

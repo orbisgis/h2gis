@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_BoundingCircle
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
 description: Return the minimum bounding circle of a Geometry
 prev_section: ST_Accum
 next_section: ST_Expand

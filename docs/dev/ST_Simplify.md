@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Simplify
-category: Geometry2D/process-geometries
+category: geom2D/process-geometries
 description: Simplify a Geometry
 prev_section: ST_PrecisionReducer
 next_section: ST_SimplifyPreserveTopology

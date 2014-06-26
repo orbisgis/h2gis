@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Relate
-category: Geometry2D/predicates
+category: geom2D/predicates
 description: Return the DE-9IM intersection matrix of the two Geometries or true if they are related by the given intersection matrix
 prev_section: ST_Overlaps
 next_section: ST_Touches

@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Force2D
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
 description: 
 prev_section: ST_AsWKT
 next_section: ST_GeomFromText

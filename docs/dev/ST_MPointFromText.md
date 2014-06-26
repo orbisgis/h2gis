@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MPointFromText
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
 description: Well Known Text &rarr; <code>MULTIPOINT</code>
 prev_section: ST_MLineFromText
 next_section: ST_MPolyFromText

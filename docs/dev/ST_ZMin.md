@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_ZMin
-category: Geometry3D/properties
+category: geom3D/properties
 description: Return the minimum z-value of a Geometry
 prev_section: ST_ZMax
-next_section: Geometry3D/topography
+next_section: geom3D/topography
 permalink: /docs/dev/ST_ZMin/
 ---
 

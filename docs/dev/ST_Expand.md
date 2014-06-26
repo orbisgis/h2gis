@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Expand
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
 description: Expand a Geometry's envelope
 prev_section: ST_BoundingCircle
 next_section: ST_MakeEllipse

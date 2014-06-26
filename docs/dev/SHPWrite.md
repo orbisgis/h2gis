@@ -4,7 +4,7 @@ title: SHPWrite
 category: h2drivers/SHP
 description: 
 prev_section: SHPRead
-next_section: Geometry2D/list
+next_section: geom2D/list
 permalink: /docs/dev/SHPWrite/
 ---
 

@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_Union
-category: Geometry2D/operators
+category: geom2D/operators
 description: Compute the union of two or more Geometries
 prev_section: ST_SymDifference
-next_section: Geometry2D/predicates
+next_section: geom2D/predicates
 permalink: /docs/dev/ST_Union/
 ---
 

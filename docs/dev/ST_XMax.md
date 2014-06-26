@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_XMax
-category: Geometry2D/properties
+category: geom2D/properties
 description: Return the maximum x-value of a Geometry
 prev_section: ST_X
 next_section: ST_XMin

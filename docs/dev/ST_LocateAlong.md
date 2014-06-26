@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_LocateAlong
-category: Geometry2D/distance-functions
+category: geom2D/distance-functions
 description: Return a <code>MULTIPOINT</code> containing points along the line segments of a Geometry at a given segment length fraction and offset distance
 prev_section: ST_Length
-next_section: Geometry2D/operators
+next_section: geom2D/operators
 permalink: /docs/dev/ST_LocateAlong/
 ---
 

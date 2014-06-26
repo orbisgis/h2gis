@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_MinimumRectangle
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
 description: Return the minimum rectangle enclosing a Geometry
 prev_section: ST_MinimumDiameter
 next_section: ST_OctogonalEnvelope

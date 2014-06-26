@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_Contains
-category: Geometry2D/predicates
+category: geom2D/predicates
 description: 
-prev_section: Geometry2D/predicates
+prev_section: geom2D/predicates
 next_section: ST_Covers
 permalink: /docs/dev/ST_Contains/
 description: Return true if Geometry A contains Geometry B

@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: ST_YMin
-category: Geometry2D/properties
+category: geom2D/properties
 description: Return the minimum y-value of a Geometry
 prev_section: ST_YMax
-next_section: Geometry2D/trigonometry
+next_section: geom2D/trigonometry
 permalink: /docs/dev/ST_YMin/
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_PrecisionReducer
-category: Geometry2D/process-geometries
+category: geom2D/process-geometries
 description: Reduce a Geometry's precision
 prev_section: ST_Polygonize
 next_section: ST_Simplify

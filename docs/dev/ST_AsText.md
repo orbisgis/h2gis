@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_AsText
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
 description: Alias for <code>ST_AsWKT</code>
 prev_section: ST_AsBinary
 next_section: ST_AsWKT

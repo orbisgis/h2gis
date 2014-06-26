@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_TriangleContouring
-category: Geometry3D/topography
+category: geom3D/topography
 description: 
 prev_section: ST_TriangleAspect
 next_section: ST_TriangleDirection

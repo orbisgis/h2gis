@@ -2,7 +2,7 @@
 layout: docs
 title: Raster functions
 category: raster/list
-prev_section: Geometry3D/triangulation
+prev_section: geom3D/triangulation
 next_section: applications/list
 permalink: /docs/dev/raster/list/
 ---

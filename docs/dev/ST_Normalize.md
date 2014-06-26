@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Normalize
-category: Geometry2D/edit-geometries
+category: geom2D/edit-geometries
 description: Return a Geometry with a normal form
 prev_section: ST_Densify
 next_section: ST_RemoveHoles

@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_Buffer
-category: Geometry2D/operators
+category: geom2D/operators
 description: Compute a buffer around a Geometry
-prev_section: Geometry2D/operators
+prev_section: geom2D/operators
 next_section: ST_ConvexHull
 permalink: /docs/dev/ST_Buffer/
 ---

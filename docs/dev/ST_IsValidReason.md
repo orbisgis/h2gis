@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_IsValidReason
-category: Geometry2D/properties
+category: geom2D/properties
 description: 
 prev_section: ST_IsValidDetail
 next_section: ST_NumGeometries

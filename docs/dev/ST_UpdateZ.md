@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_UpdateZ
-category: Geometry3D/edit-geometries
+category: geom3D/edit-geometries
 description: Update the <i>z</i>-values of a Geometry
 prev_section: ST_Reverse3DLine
 next_section: ST_ZUpdateLineExtremities

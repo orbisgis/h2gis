@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_SRID
-category: Geometry2D/properties
+category: geom2D/properties
 description: Return a SRID value
 prev_section: ST_PointOnSurface
 next_section: ST_StartPoint

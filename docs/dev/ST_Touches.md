@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_Touches
-category: Geometry2D/predicates
+category: geom2D/predicates
 description: Return true if Geometry A touches Geometry B
 prev_section: ST_Relate
 next_section: ST_Within

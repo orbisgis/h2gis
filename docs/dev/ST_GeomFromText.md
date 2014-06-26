@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_GeomFromText
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
 description: Well Known Text &rarr; Geometry
 prev_section: ST_Force2D
 next_section: ST_GeometryTypeCode

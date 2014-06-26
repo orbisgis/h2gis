@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_IsClosed
-category: Geometry2D/properties
+category: geom2D/properties
 description: Return true if a Geometry is a closed `LINESTRING` or `MULTILINESTRING`
 prev_section: ST_InteriorRingN
 next_section: ST_IsEmpty

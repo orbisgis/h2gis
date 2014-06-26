@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_NumInteriorRing
-category: Geometry2D/properties
+category: geom2D/properties
 description: Alias for <code>ST_NumInteriorRings</code>
 prev_section: ST_NumGeometries
 next_section: ST_NumInteriorRings
