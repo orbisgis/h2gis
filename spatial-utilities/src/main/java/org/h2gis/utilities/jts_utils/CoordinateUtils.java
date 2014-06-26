@@ -113,51 +113,6 @@ public final class CoordinateUtils {
     }
 
     /**
-     * Returns true if the Coordinate array contains Coordinate(s) of dimension
-     * 2 (with z=NaN) and Coordinate(s) of dimension 3.
-     *
-     * @param coords Coordinates
-     * @return True if coords is of mixed dimension
-     */
-    public static boolean containsCoordsOfMixedDimension(Coordinate[] coords) {
-        if (coords.length < 2) {
-            return false;
-        } else {
-            double prevZ = coords[0].getOrdinate(Coordinate.Z);
-            for (int i = 1; i < coords.length; i++) {
-                final double z = coords[i].getOrdinate(Coordinate.Z);
-                if ((Double.isNaN(prevZ) && !Double.isNaN(z)) ||
-                        !Double.isNaN(prevZ) && Double.isNaN(z)) {
-                    return true;
-                }
-                prevZ = z;
-            }
-            return false;
-        }
-    }
-
-    /**
-     * Returns true if the Coordinate array contains only Coordinates of
-     * dimension 2 (with z=NaN).
-     *
-     * @param coords Coordinates
-     * @return True if contains only 2-dimensional coords
-     */
-    public static boolean is2D(Coordinate[] coords) {
-        if (coords.length < 1) {
-            return false;
-        } else {
-            for (Coordinate c : coords) {
-                final double z = c.getOrdinate(Coordinate.Z);
-                if (!Double.isNaN(z)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-    }
-
-    /**
      * Private constructor for utility class.
      */
     private CoordinateUtils() {
