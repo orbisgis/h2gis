@@ -123,17 +123,16 @@ public final class CoordinateUtils {
         if (coords.length < 2) {
             return false;
         } else {
-            boolean mixed = false;
             double prevZ = coords[0].getOrdinate(Coordinate.Z);
             for (int i = 1; i < coords.length; i++) {
                 final double z = coords[i].getOrdinate(Coordinate.Z);
                 if ((Double.isNaN(prevZ) && !Double.isNaN(z)) ||
                         !Double.isNaN(prevZ) && Double.isNaN(z)) {
-                    mixed = true;
+                    return true;
                 }
                 prevZ = z;
             }
-            return mixed;
+            return false;
         }
     }
 
