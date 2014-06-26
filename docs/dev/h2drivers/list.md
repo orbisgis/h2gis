@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: Drivers
-category: h2drivers/list-drivers
+category: h2drivers/list
 prev_section: functions
 next_section: h2drivers/DBF
-permalink: /docs/dev/h2drivers/list-drivers/
+permalink: /docs/dev/h2drivers/list/
 ---
 
 Here is a list of all drivers included in H2GIS.
