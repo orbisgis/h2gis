@@ -3,7 +3,7 @@ layout: docs
 title: Raster functions
 category: raster/list
 prev_section: Geometry3D/triangulation
-next_section: h2network/list
+next_section: applications/list
 permalink: /docs/dev/raster/list/
 ---
 
