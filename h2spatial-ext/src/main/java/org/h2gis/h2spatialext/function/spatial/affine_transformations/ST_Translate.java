@@ -24,6 +24,7 @@
  */
 package org.h2gis.h2spatialext.function.spatial.affine_transformations;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.util.AffineTransformation;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
@@ -62,7 +63,7 @@ public class ST_Translate extends DeterministicScalarFunction {
         if (geom == null) {
             return null;
         }
-        checkMixed(geom);
+        checkMixed(geom.getCoordinates());
         return AffineTransformation.translationInstance(x, y).transform(geom);
     }
 
@@ -79,9 +80,10 @@ public class ST_Translate extends DeterministicScalarFunction {
         if (geom == null) {
             return null;
         }
-        checkMixed(geom);
+        final Coordinate[] coords = geom.getCoordinates();
+        checkMixed(coords);
         // For all 2D geometries, we only translate by (x, y).
-        if (CoordinateUtils.is2D(geom.getCoordinates())) {
+        if (CoordinateUtils.is2D(coords)) {
             return AffineTransformation.translationInstance(x, y).transform(geom);
         } else {
             geom.apply(new ZAffineTransformation(x, y, z));
@@ -93,10 +95,10 @@ public class ST_Translate extends DeterministicScalarFunction {
      * Throws an exception if the geometry contains coordinates of mixed
      * dimension.
      *
-     * @param geom Geometry
+     * @param coords Coordinates
      */
-    private static void checkMixed(Geometry geom) {
-        if (CoordinateUtils.containsCoordsOfMixedDimension(geom.getCoordinates())) {
+    private static void checkMixed(Coordinate[] coords) {
+        if (CoordinateUtils.containsCoordsOfMixedDimension(coords)) {
             throw new IllegalArgumentException(MIXED_DIM_ERROR);
         }
     }
