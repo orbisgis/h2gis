@@ -6,6 +6,6 @@ next_section: geom2D/list
 permalink: /docs/dev/functions/
 ---
 
-Here is a list of all functions include in H2GIS.
+Here is a list of all functions included in H2GIS.
 
 {% include all_functions.html %}
