@@ -12,45 +12,44 @@ permalink: /docs/dev/DBFRead/
 ### Signatures
 
 {% highlight mysql %}
-DBFRead(VARCHAR fileName, VARCHAR tableReference);
-DBFRead(VARCHAR fileName, VARCHAR tableReference,
-        varchar fileEncoding);
+DBFRead(VARCHAR fileName, VARCHAR tableName);
+DBFRead(VARCHAR fileName, VARCHAR tableName, VARCHAR fileEncoding);
 {% endhighlight %}
 
 ### Description
-Reads a DBase III file and copy the content into a new table in the database.
-If you define `fileEncoding`, you can read a DBF where the encoding is missing in header.
+
+Reads `fileName` as a dBase III file and copies its contents into a
+new table `tableName` in the database.
+Define `fileEncoding` to force encoding (useful when the header is
+missing encoding information).
 
 ### Examples
 
 {% highlight mysql %}
-CALL DBFRead('/home/user/data/file.DBF',
-             'database.schema.tableName');
+-- Basic syntax (database and schema may be omitted):
+CALL DBFRead('/home/user/file.DBF', 'database.schema.tableName');
 
-CALL DBFRead('donnees_sig/IGN - BD Topo/SHP_LAMB93_D044-ED113/
-              H_ADMINISTRATIF/COMMUNE.DBF', 'commune44iso',
-             'iso-8859-1');
-select * from commune44iso limit 2;
--- Answer:
--- |   NOM   | CODE_INSEE |      DEPART      |      REGION      |
--- |---------|------------|------------------|------------------|
--- | Puceul  |   44138    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
--- | Sévérac |   44196    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
-
-CALL DBFRead('donnees_sig/IGN - BD Topo/SHP_LAMB93_D044-ED113/
-              H_ADMINISTRATIF/COMMUNE.DBF', 'commune44utf',
-             'utf-8');
-select * from commune44utf limit 2;
+-- In the next two examples, we show what happens when we attempt to
+-- read a DBF file with the wrong encoding, and how to fix it. Here
+-- UTF-8 doesn't understand accented characters, so "Sévérac" is
+-- displayed as "S".
+CALL DBFRead('/home/user/COMMUNE.DBF', 'commune44utf', 'utf-8');
+SELECT * FROM commune44utf LIMIT 2;
 -- Answer:
 -- |  NOM   | CODE_INSEE |      DEPART      |      REGION      |
 -- |--------|------------|------------------|------------------|
 -- | Puceul |   44138    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
 -- | S      |   44196    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
 
--- Note: Encoding UTF-8 is not the good encoding for this file.
--- Some characters are not written correctly like the name Sévérac
--- which became S. Encoding UTF-8 doesn't know the character é
--- so doesn't translate in this encoding.
+-- To fix this problem, we specify the right encoding:
+CALL DBFRead('/home/user/COMMUNE.DBF', 'commune44iso',
+             'iso-8859-1');
+SELECT * FROM commune44iso LIMIT 2;
+-- Answer:
+-- |   NOM   | CODE_INSEE |      DEPART      |      REGION      |
+-- |---------|------------|------------------|------------------|
+-- | Puceul  |   44138    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
+-- | Sévérac |   44196    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
 {% endhighlight %}
 
 ##### See also
