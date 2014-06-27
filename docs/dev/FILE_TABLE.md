@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: FILE_TABLE
-category: h2drivers/file_table
+category: h2drivers
 is_function: true
 description: Open a specified file in a special table
 prev_section: DBFWrite

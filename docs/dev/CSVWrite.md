@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: CSVWrite
-category: h2drivers/CSV
+category: h2drivers
 is_function: true
 description: Write a CSV file
 prev_section: CSVRead

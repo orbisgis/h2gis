@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: CSVRead
-category: h2drivers/CSV
+category: h2drivers
 is_function: true
 description: Read a CSV file
 prev_section: h2drivers
