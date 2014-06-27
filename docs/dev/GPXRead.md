@@ -12,43 +12,29 @@ permalink: /docs/dev/GPXRead/
 ### Signatures
 
 {% highlight mysql %}
-GPXRead(VARCHAR fileName);
-GPXRead(VARCHAR fileName, VARCHAR tableReference);
+GPXRead(VARCHAR path);
+GPXRead(VARCHAR path, VARCHAR tableName);
 {% endhighlight %}
 
 ### Description
-Reads a GPX file and copy the content in the specified tables.
+
+Reads a [GPX][wiki] file from `path` and creates several tables
+prefixed by `tableName` representing the file's contents.
+By default, the `tableName` is taken from the filename
+given in `path`.
 
 ### Examples
 
 {% highlight mysql %}
-CALL GPXRead('route.gpx', 'DATABASE.PUBLIC.GPXDATA');
-SELECT a.the_geom line, b.the_geom point, c.the_geom segment
-FROM GPXDATA_track a, GPXDATA_trackPoint b, GPXDATA_trackSegment c;
--- Answer:
--- |         line         |       point        |       segment       |
--- | -------------------- | ------------------ | ------------------- |
--- | MULTILINESTRING(     | POINT(-1.55 47.16) | LINESTRING(         |
--- | (-1.55 47.16,        | POINT(-1.60 47.10) | -1.55 47.16,        |
--- | -1.60 47.10, -1 47)) | POINT(-1 47)       | -1.60 47.10, -1 47) |
+-- Produces GPXDATA_TRACK, GPXDATA_TRACKPOINT, GPXDATA_TRACKSEGMENT
+CALL GPXRead('/home/user/route.gpx', 'GPXDATA');
 
-SELECT * FROM GPXDATA_track;
--- Answer:
--- |                       THE_GEOM                      |  ID |         NAME         | CMT  | DESC | SRC  | HREF | HREF_TITLE | NUMBER | TYPE | EXTENSIONS |
--- | --------------------------------------------------- | --- | -------------------- | ---- | ---- | ---- | ---- | ---------- | ------ | ---- | ---------- |
--- | MULTILINESTRING((-1.55 47.16, -1.60 47.10, -1 47))  |   1 | 2014-04-23T10:55:03Z | null | null | null | null | null       | null   | null | null       |
-
-SELECT * FROM GPXDATA_trackPoint;
--- Answer:
--- |       THE_GEOM      |  ID |  LAT  |  LON  | ELE | TIME | MAGVAR | GEOIDHEIGHT | NAME | CMT  | DESC | SRC  | HREF | HREF_TITLE | SYM  | TYPE | FIX  | SAT  | HDOP | VDOP | PDOP | AGEOFDGPSDATA | DGPSID | EXTENSIONS | TRACK_SEGMENT_ID |
--- | ------------------- | --- | ----- | ----- | --- | ---- | ------ | ----------- | ---- | ---- | ---- | ---- | ---- | ---------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ------------- | ------ | ---------- | ---------------- |
--- | POINT(-1.55 47.16)  |   2 | 47.16 | -1.55 | NaN | null | null   | null        | null | null | null | null | null | null       | null | null | null | null | null | null | null | null          | null   | null       |                2 |
-
-CALL GPXRead('station.gpx');
-SELECT * FROM station_WAYPOINT;
--- Answer: POINT(-71.119277 42.438878)
+-- Produces ROUTE_TRACK, ROUTE_TRACKPOINT, ROUTE_TRACKSEGMENT
+CALL GPXRead('/home/user/route.gpx');
 {% endhighlight %}
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2drivers/src/main/java/org/h2gis/drivers/gpx/GPXRead.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2drivers/src/main/java/org/h2gis/drivers/gpx/GPXRead.java" target="_blank">Source code</a>
+
+[wiki]: http://en.wikipedia.org/wiki/GPS_eXchange_Format
