@@ -12,25 +12,29 @@ permalink: /docs/dev/DBFWrite/
 ### Signatures
 
 {% highlight mysql %}
-DBFWrite(VARCHAR fileName, VARCHAR tableReference);
-DBFWrite(VARCHAR fileName, VARCHAR tableReference,
-         varchar fileEncoding);
+DBFWrite(VARCHAR fileName, VARCHAR tableName);
+DBFWrite(VARCHAR fileName, VARCHAR tableName, VARCHAR fileEncoding);
 {% endhighlight %}
 
 ### Description
-Transfers the content of a table into a DBF file.
+
+Writes the contents of table `tableName` to a DBF file `fileName`.
+The default value of `fileEncoding` is `ISO-8859-1`.
 
 ### Examples
 
 {% highlight mysql %}
-CALL DBFWrite('/home/user/data/file.DBF',
-              'database.schema.tableName');
+-- Basic syntax (database and schema may be omitted):
+CALL DBFWrite('/home/user/file.DBF', 'database.schema.tableName');
 
-CALL DBFWrite('/home/user/Data/COMMUNE44.DBF', 'COMMUNE44iso-8859-1',
+-- Write a DBF file with UTF-8 encoding that was read with
+-- ISO-8859-1 encoding:
+CALL DBFWrite('/home/user/COMMUNE44.DBF', 'COMMUNE44iso-8859-1',
               'utf-8');
 
-CALL DBFRead('/home/user/Data/COMMUNE44.DBF', 'commune44');
-select * from commune44 limit 2;
+-- Read it back, using the encoding present in the header:
+CALL DBFRead('/home/user/COMMUNE44.DBF', 'commune44');
+SELECT * FROM commune44 LIMIT 2;
 -- Answer:
 -- |   NOM   | CODE_INSEE |      DEPART      |      REGION      |
 -- |---------|------------|------------------|------------------|
