@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: GeoJsonRead
-category: h2drivers/GeoJson
+category: h2drivers
 is_function: true
 description: 
-prev_section: h2drivers/GeoJson
+prev_section: GPXRead
 next_section: GeoJsonWrite
 permalink: /docs/dev/GeoJsonRead/
 ---

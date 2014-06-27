@@ -2,7 +2,7 @@
 layout: docs
 title: Geometry 2D
 category: geom2D/list
-prev_section: h2drivers/SHP
+prev_section: functions
 next_section: geom2D/affine-transformations
 permalink: /docs/dev/geom2D/list/
 ---

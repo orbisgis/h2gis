@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: SHPRead
-category: h2drivers/SHP
+category: h2drivers
 is_function: true
 description: 
-prev_section: h2drivers/SHP
+prev_section: KMLWrite
 next_section: SHPWrite
 permalink: /docs/dev/SHPRead/
 ---

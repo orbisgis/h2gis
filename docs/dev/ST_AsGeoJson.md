@@ -1,11 +1,11 @@
 ---
 layout: docs
 title: ST_AsGeoJson
-category: h2drivers/GeoJson
+category: h2drivers
 is_function: true
 description: 
-prev_section: GeoJsonWrite
-next_section: h2drivers/GPX
+prev_section: SHPWrite
+next_section: ST_AsKml
 permalink: /docs/dev/ST_AsGeoJson/
 ---
 

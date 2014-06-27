@@ -1,11 +1,11 @@
 ---
 layout: docs
 title: ST_AsKml
-category: h2drivers/KML
+category: h2drivers
 is_function: true
 description: 
-prev_section: KMLWrite
-next_section: h2drivers/SHP
+prev_section: ST_AsGeoJson
+next_section: spatial-indices
 permalink: /docs/dev/ST_AsKml/
 ---
 

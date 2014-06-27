@@ -2,7 +2,7 @@
 layout: docs
 title: Quick-start guide
 prev_section: home
-next_section: spatial-indices
+next_section: h2drivers
 permalink: /docs/dev/quickstart/
 ---
 

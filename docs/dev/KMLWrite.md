@@ -1,11 +1,11 @@
 ---
 layout: docs
 title: KMLWrite
-category: h2drivers/KML
+category: h2drivers
 is_function: true
 description: 
-prev_section: h2drivers/KML
-next_section: ST_AsKml
+prev_section: GeoJsonWrite
+next_section: SHPRead
 permalink: /docs/dev/KMLWrite/
 ---
 

@@ -1,11 +1,11 @@
 ---
 layout: docs
 title: GeoJsonWrite
-category: h2drivers/GeoJson
+category: h2drivers
 is_function: true
 description: 
 prev_section: GeoJsonRead
-next_section: ST_AsGeoJson
+next_section: KMLWrite
 permalink: /docs/dev/GeoJsonWrite/
 ---
 

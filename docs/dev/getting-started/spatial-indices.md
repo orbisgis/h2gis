@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: Spatial indices
-prev_section: quickstart
+prev_section: h2drivers
 next_section: spatial-jdbc
 permalink: /docs/dev/spatial-indices/
 ---

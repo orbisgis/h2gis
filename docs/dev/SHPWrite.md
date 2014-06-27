@@ -1,11 +1,11 @@
 ---
 layout: docs
 title: SHPWrite
-category: h2drivers/SHP
+category: h2drivers
 is_function: true
 description: 
 prev_section: SHPRead
-next_section: geom2D/list
+next_section: ST_AsGeoJson
 permalink: /docs/dev/SHPWrite/
 ---
 
