@@ -12,8 +12,8 @@ permalink: /docs/dev/GPXRead/
 ### Signatures
 
 {% highlight mysql %}
-GPXRead(varchar fileName);
-GPXRead(varchar fileName, varchar tableReference);
+GPXRead(VARCHAR fileName);
+GPXRead(VARCHAR fileName, VARCHAR tableReference);
 {% endhighlight %}
 
 ### Description
@@ -23,9 +23,9 @@ Reads a GPX file and copy the content in the specified tables.
 
 {% highlight mysql %}
 CALL GPXRead('route.gpx', 'DATABASE.PUBLIC.GPXDATA');
-SELECT a.the_geom line, b.the_geom point, c.the_geom segment 
+SELECT a.the_geom line, b.the_geom point, c.the_geom segment
 FROM GPXDATA_track a, GPXDATA_trackPoint b, GPXDATA_trackSegment c;
--- Answer: 
+-- Answer:
 -- |         line         |       point        |       segment       |
 -- | -------------------- | ------------------ | ------------------- |
 -- | MULTILINESTRING(     | POINT(-1.55 47.16) | LINESTRING(         |
@@ -33,21 +33,20 @@ FROM GPXDATA_track a, GPXDATA_trackPoint b, GPXDATA_trackSegment c;
 -- | -1.60 47.10, -1 47)) | POINT(-1 47)       | -1.60 47.10, -1 47) |
 
 SELECT * FROM GPXDATA_track;
--- Answer: 
+-- Answer:
 -- |                       THE_GEOM                      |  ID |         NAME         | CMT  | DESC | SRC  | HREF | HREF_TITLE | NUMBER | TYPE | EXTENSIONS |
 -- | --------------------------------------------------- | --- | -------------------- | ---- | ---- | ---- | ---- | ---------- | ------ | ---- | ---------- |
--- | MULTILINESTRING ((-1.55 47.16, -1.60 47.10, -1 47)) |   1 | 2014-04-23T10:55:03Z | null | null | null | null | null       | null   | null | null       |
+-- | MULTILINESTRING((-1.55 47.16, -1.60 47.10, -1 47))  |   1 | 2014-04-23T10:55:03Z | null | null | null | null | null       | null   | null | null       |
 
 SELECT * FROM GPXDATA_trackPoint;
--- Answer: 
+-- Answer:
 -- |       THE_GEOM      |  ID |  LAT  |  LON  | ELE | TIME | MAGVAR | GEOIDHEIGHT | NAME | CMT  | DESC | SRC  | HREF | HREF_TITLE | SYM  | TYPE | FIX  | SAT  | HDOP | VDOP | PDOP | AGEOFDGPSDATA | DGPSID | EXTENSIONS | TRACK_SEGMENT_ID |
 -- | ------------------- | --- | ----- | ----- | --- | ---- | ------ | ----------- | ---- | ---- | ---- | ---- | ---- | ---------- | ---- | ---- | ---- | ---- | ---- | ---- | ---- | ------------- | ------ | ---------- | ---------------- |
--- | POINT (-1.55 47.16) |   2 | 47.16 | -1.55 | NaN | null | null   | null        | null | null | null | null | null | null       | null | null | null | null | null | null | null | null          | null   | null       |                2 |
-
+-- | POINT(-1.55 47.16)  |   2 | 47.16 | -1.55 | NaN | null | null   | null        | null | null | null | null | null | null       | null | null | null | null | null | null | null | null          | null   | null       |                2 |
 
 CALL GPXRead('station.gpx');
 SELECT * FROM station_WAYPOINT;
--- Answer: POINT (-71.119277 42.438878)
+-- Answer: POINT(-71.119277 42.438878)
 {% endhighlight %}
 
 ##### See also

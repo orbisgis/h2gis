@@ -12,8 +12,8 @@ permalink: /docs/dev/DBFWrite/
 ### Signatures
 
 {% highlight mysql %}
-DBFWrite(varchar fileName, varchar tableReference);
-DBFWrite(varchar fileName, varchar tableReference, 
+DBFWrite(VARCHAR fileName, VARCHAR tableReference);
+DBFWrite(VARCHAR fileName, VARCHAR tableReference,
          varchar fileEncoding);
 {% endhighlight %}
 
@@ -23,10 +23,10 @@ Transfers the content of a table into a DBF file.
 ### Examples
 
 {% highlight mysql %}
-CALL DBFWrite('/home/user/data/file.DBF', 
+CALL DBFWrite('/home/user/data/file.DBF',
               'database.schema.tableName');
 
-CALL DBFWrite('/home/user/Data/COMMUNE44.DBF', 'COMMUNE44iso-8859-1', 
+CALL DBFWrite('/home/user/Data/COMMUNE44.DBF', 'COMMUNE44iso-8859-1',
               'utf-8');
 
 CALL DBFRead('/home/user/Data/COMMUNE44.DBF', 'commune44');

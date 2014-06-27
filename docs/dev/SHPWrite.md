@@ -12,8 +12,8 @@ permalink: /docs/dev/SHPWrite/
 ### Signatures
 
 {% highlight mysql %}
-SHPWrite(varchar fileName, varchar tableReference);
-SHPWrite(varchar fileName, varchar tableReference, 
+SHPWrite(VARCHAR fileName, VARCHAR tableReference);
+SHPWrite(VARCHAR fileName, VARCHAR tableReference,
          varchar fileEncoding);
 {% endhighlight %}
 
@@ -26,17 +26,17 @@ Shape files don't support to have different Geometry type in the same table.
 ### Examples
 
 {% highlight mysql %}
-create table area(the_geom GEOMETRY, idarea int primary key); 
-insert into area values('POLYGON((-10 109, 90 9, -10 9, 
-                                  -10 109))', 1); 
-insert into area values('POLYGON((90 109, 190 9, 90 9, 
-                                  90 109))', 2); 
-CALL SHPWrite('/home/user/donnees_sig/Data/area_export.shp', 
-              'AREA'); 
-CALL SHPread('/home/user/donnees_sig/Data/area_export.shp', 
+create table area(the_geom GEOMETRY, idarea int primary key);
+insert into area values('POLYGON((-10 109, 90 9, -10 9,
+                                  -10 109))', 1);
+insert into area values('POLYGON((90 109, 190 9, 90 9,
+                                  90 109))', 2);
+CALL SHPWrite('/home/user/donnees_sig/Data/area_export.shp',
+              'AREA');
+CALL SHPread('/home/user/donnees_sig/Data/area_export.shp',
              'AREA2');
 Select * from AREA2;
--- Answer: 
+-- Answer:
 -- |                     THE_GEOM                     | IDAREA |
 -- | ------------------------------------------------ | ------ |
 -- | MULTIPOLYGON(((-10 109,, 90 9, -10 9, -10 109))) |      1 |

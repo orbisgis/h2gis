@@ -12,7 +12,7 @@ permalink: /docs/dev/FILE_TABLE/
 ### Signature
 
 {% highlight mysql %}
-FILE_TABLE(varchar fileName,varchar tableName);
+FILE_TABLE(VARCHAR fileName, VARCHAR tableName);
 {% endhighlight %}
 
 ### Description

@@ -12,7 +12,7 @@ permalink: /docs/dev/GeoJsonWrite/
 ### Signature
 
 {% highlight mysql %}
-GeoJsonWrite(varchar fileName, varchar tableReference);
+GeoJsonWrite(VARCHAR fileName, VARCHAR tableReference);
 {% endhighlight %}
 
 ### Description
@@ -21,18 +21,18 @@ Transfers the content of a spatial table to a GeoJSON 1.0 file.
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE table_multipolygon(idarea int primary key, 
+CREATE TABLE table_multipolygon(idarea int primary key,
                                 the_geom MULTIPOLYGON);
-INSERT INTO table_multipolygon values(1, 
-    'MULTIPOLYGON(((120 370, 180 370, 120 370)),  
+INSERT INTO table_multipolygon values(1,
+    'MULTIPOLYGON(((120 370, 180 370, 120 370)),
                   ((162 245, 234 245, 234 175, 162 245)))');
-CALL GeoJsonWrite('/home/user/Data/area.geojson', 
+CALL GeoJsonWrite('/home/user/Data/area.geojson',
                   'table_multipolygon');
 
 CALL GeoJsonRead('/home/user/Data/area.geojson',
                  'table_area');
 select * from table_area;
--- Answer: 
+-- Answer:
 -- |                  THE_GEOM                 | IDAREA |
 -- | ----------------------------------------- | ------ |
 -- | MULTIPOLYGON((120 370, 180 370, 120 370)) |      1 |

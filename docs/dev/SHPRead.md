@@ -12,9 +12,9 @@ permalink: /docs/dev/SHPRead/
 ### Signatures
 
 {% highlight mysql %}
-SHPRead(varchar fileName);
-SHPRead(varchar fileName, varchar tableReference);
-SHPRead(varchar fileName, varchar tableReference, 
+SHPRead(VARCHAR fileName);
+SHPRead(VARCHAR fileName, VARCHAR tableReference);
+SHPRead(VARCHAR fileName, VARCHAR tableReference,
         varchar forceEncoding);
 {% endhighlight %}
 
@@ -25,7 +25,7 @@ database.
 ### Examples
 
 {% highlight mysql %}
-CALL SHPRead('/home/user/data/file.shp', 
+CALL SHPRead('/home/user/data/file.shp',
              'database.schema.tableName');
 
 CALL SHPRead('donnees_sig/IGN - BD Topo/SHP_LAMB93_D044-ED113/
@@ -62,9 +62,9 @@ select * from commune44utf limit 2;
 -- |   317309.9 6727036.8, 317193.3 6727066.5, |         |
 -- |   317341.5 6727021)))                     |         |
 
--- Note:  Encoding UTF-8 is not the good encoding for this file. 
--- Some characters are not written correctly like the name Sévérac 
--- which became S. Encoding UTF-8 doesn't know the character é  
+-- Note:  Encoding UTF-8 is not the good encoding for this file.
+-- Some characters are not written correctly like the name Sévérac
+-- which became S. Encoding UTF-8 doesn't know the character é
 -- so doesn't translate in this encoding.
 {% endhighlight %}
 

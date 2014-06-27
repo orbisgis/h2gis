@@ -12,7 +12,7 @@ permalink: /docs/dev/GeoJsonRead/
 ### Signature
 
 {% highlight mysql %}
-GeoJsonRead(varchar fileName, varchar tableReference);
+GeoJsonRead(VARCHAR fileName, VARCHAR tableReference);
 {% endhighlight %}
 
 ### Description
@@ -21,13 +21,13 @@ Reads a GeoJSON 1.0 file and creates the corresponding spatial table.
 ### Examples
 
 {% highlight mysql %}
-CALL GeoJsonRead('/home/user/data/file.GeoJson', 
+CALL GeoJsonRead('/home/user/data/file.GeoJson',
              'database.schema.tableName');
 
 CALL GeoJsonRead('/home/user/Data/multi.geojson',
                  'table_polygon');
 select * from table_polygon;
--- Answer: 
+-- Answer:
 -- |               THE_GEOM               | IDAREA | CLIMAT |
 -- | ------------------------------------ | ------ | ------ |
 -- | POLYGON((120 370, 180 370, 120 370)) |      1 | bad    |

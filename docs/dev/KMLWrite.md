@@ -12,7 +12,7 @@ permalink: /docs/dev/KMLWrite/
 ### Signature
 
 {% highlight mysql %}
-KMLWrite(varchar fileName, varchar tableReference);
+KMLWrite(VARCHAR fileName, VARCHAR tableReference);
 {% endhighlight %}
 
 ### Description
@@ -24,13 +24,13 @@ Transfers the content of a spatial table to a KML or KMZ file.
 CALL KMLWrite('/home/user/Data/kml_points.kml',
               'database.schema.tableName');
 
-CREATE TABLE KML_POINTS(id int primary key, the_geom POINT, 
+CREATE TABLE KML_POINTS(id int primary key, the_geom POINT,
                         response boolean);
 INSERT INTO KML_POINTS values(1, ST_Geomfromtext(
-                                  'POINT(2.19 47.58)', 4326), 
+                                  'POINT(2.19 47.58)', 4326),
                               true);
 INSERT INTO KML_POINTS values(2, ST_Geomfromtext(
-                                  'POINT(1.06 47.59)', 4326), 
+                                  'POINT(1.06 47.59)', 4326),
                               false);
 
 CALL KMLWrite('/home/user/Data/kml_points.kml', 'KML_POINTS');

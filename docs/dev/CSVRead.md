@@ -12,24 +12,24 @@ permalink: /docs/dev/CSVRead/
 ### Signatures
 
 {% highlight mysql %}
-tableName[*]CSVRead(varchar fileName);
-tableName[*]CSVRead(varchar fileName, varchar columnNameHeader, 
+tableName[*]CSVRead(VARCHAR fileName);
+tableName[*]CSVRead(VARCHAR fileName, VARCHAR columnNameHeader,
          varchar stringDecode);
 {% endhighlight %}
 
 ### Description
 Reads a CSV file.
-By default the stringDecode is :
+By default the stringDecode is:
 
-* charset =UTF-8 
-* fieldDelimiter =" 
-* fieldSeparator =, 
+* charset =UTF-8
+* fieldDelimiter ="
+* fieldSeparator =,
 * lineSeparator =\n
 * writeColumnHeader =true
 
 ### Examples
 
-#### CSV field separator is `,`
+#### CSV field separator is `, `
 
 {% highlight mysql %}
 create table area as select * from CSVRead('/home/Documents/
@@ -45,9 +45,9 @@ create table area as select * from CSVRead('/home/Documents/
 
 {% highlight mysql %}
 CREATE TABLE area2 AS SELECT * FROM CSVRead(
-   '/home/Documents/area.csv', null, 
+   '/home/Documents/area.csv', null,
    'fieldSeparator=;');
--- Answer: 
+-- Answer:
 -- |                     THE_GEOM             | IDAREA |
 -- | ---------------------------------------- | ------ |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
@@ -58,9 +58,9 @@ CREATE TABLE area2 AS SELECT * FROM CSVRead(
 
 {% highlight mysql %}
 CREATE TABLE area2 AS SELECT * FROM CSVRead(
-   '/home/Documents/area.csv', 'column1 ; column2', 
+   '/home/Documents/area.csv', 'column1; column2',
    'fieldSeparator=;');
--- Answer: 
+-- Answer:
 -- |                     column1              | column2 |
 -- | ---------------------------------------- | ------- |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |       1 |
