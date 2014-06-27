@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_SymDifference
-category: Geometry2D/operators
+category: geom2D/operators
+is_function: true
 description: Compute the symmetric difference between two Geometries
 prev_section: ST_Intersection
 next_section: ST_Union

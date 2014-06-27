@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: DBFWrite
-category: h2drivers/DBF
+category: h2drivers
+is_function: true
 description: Write DBase III files
 prev_section: DBFRead
-next_section: h2drivers/GeoJson
+next_section: GPXRead
 permalink: /docs/dev/DBFWrite/
 ---
 

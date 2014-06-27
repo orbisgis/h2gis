@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_EndPoint
-category: Geometry2D/properties
+category: geom2D/properties
+is_function: true
 description: Return the last coordinate of a <code>LINESTRING</code>
 prev_section: ST_Distance
 next_section: ST_Envelope

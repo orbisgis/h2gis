@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_MakePolygon
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
+is_function: true
 description: 
 prev_section: ST_MakePoint
 next_section: ST_MinimumDiameter

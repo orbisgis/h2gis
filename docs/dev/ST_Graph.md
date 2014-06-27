@@ -1,9 +1,10 @@
 ---
 layout: docs
 title: ST_Graph
-category: h2network/graph-functions
+category: applications/h2network
+is_function: true
 description: Produce nodes and edges tables from an input table containing <code>(MULTI)LINESTRINGS</code>
-prev_section: h2network/graph-functions
+prev_section: applications/h2network
 next_section: ST_ShortestPath
 permalink: /docs/dev/ST_Graph/
 ---

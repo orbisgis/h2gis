@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: SHPWrite
-category: h2drivers/SHP
+category: h2drivers
+is_function: true
 description: Write shape files
 prev_section: SHPRead
-next_section: Geometry2D/list-function-2d
+next_section: ST_AsGeoJson
 permalink: /docs/dev/SHPWrite/
 ---
 

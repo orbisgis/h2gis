@@ -9,7 +9,7 @@
 <tbody>
 {% assign pages = site.pages | sort: 'name' %}
 {% for p in pages %}
-    {% if p.title contains 'ST_' %}
+    {% if p.is_function %}
         {% if p.description %}
             {% capture described %}{{ described | plus:1 }}{% endcapture %}
         {% endif %}

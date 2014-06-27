@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_TriangleDirection
-category: Geometry3D/topography
+category: geom3D/topography
+is_function: true
 description: 
 prev_section: ST_TriangleContouring
 next_section: ST_TriangleSlope

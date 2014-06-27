@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: GPXRead
-category: h2drivers/GPX
+category: h2drivers
+is_function: true
 description: Read a GPX file
-prev_section: h2drivers/GPX
-next_section: h2drivers/KML
+prev_section: DBFWrite
+next_section: GeoJsonRead
 permalink: /docs/dev/GPXRead/
 ---
 

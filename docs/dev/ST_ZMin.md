@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: ST_ZMin
-category: Geometry3D/properties
+category: geom3D/properties
+is_function: true
 description: Return the minimum z-value of a Geometry
 prev_section: ST_ZMax
-next_section: Geometry3D/topography
+next_section: geom3D/topography
 permalink: /docs/dev/ST_ZMin/
 ---
 
@@ -32,3 +33,4 @@ SELECT ST_ZMin('LINESTRING(1 2 3, 4 5 6)');
 * [`ST_XMin`](../ST_XMin), [`ST_XMax`](../ST_XMax), [`ST_YMax`](../ST_YMax), [`ST_YMin`](../ST_YMin), [`ST_ZMax`](../ST_ZMax)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_ZMin.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/28" target="_blank">#28</a>
+

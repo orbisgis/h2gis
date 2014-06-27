@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_PolyFromWKB
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
+is_function: true
 description: Well Known Binary &rarr; <code>POLYGON</code>
 prev_section: ST_PolyFromText
 next_section: ST_ToMultiLine

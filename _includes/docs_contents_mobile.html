@@ -2,22 +2,26 @@
   <select onchange="if (this.value) window.location.href=this.value">
     <option value="">Navigate the docs…</option>
     <optgroup label="Getting started">
+<<<<<<< HEAD
       {% include docs_option.html items='home quickstart spatial-indices spatial-jdbc function-aliases embedded-spatial-db functions' %}
     </optgroup>
     <optgroup label="DRIVERS">
       {% include docs_option.html items='h2drivers/CSV h2drivers/file_table h2drivers/DBF h2drivers/GeoJson h2drivers/GPX h2drivers/KML h2drivers/SHP' %}
+=======
+      {% include docs_option.html items='home quickstart h2drivers spatial-indices spatial-jdbc function-aliases embedded-spatial-db functions' %}
+>>>>>>> upstream/gh-pages
     </optgroup>
     <optgroup label="Geometry 2D">
-      {% include docs_option.html items='Geometry2D/affine-transformations Geometry2D/geometry-conversion Geometry2D/geometry-creation Geometry2D/edit-geometries Geometry2D/distance-functions Geometry2D/operators Geometry2D/predicates Geometry2D/process-geometries Geometry2D/projections Geometry2D/properties Geometry2D/trigonometry' %}
+      {% include docs_option.html items='geom2D/affine-transformations geom2D/geometry-conversion geom2D/geometry-creation geom2D/edit-geometries geom2D/distance-functions geom2D/operators geom2D/predicates geom2D/process-geometries geom2D/projections geom2D/properties geom2D/trigonometry' %}
     </optgroup>
-    <optgroup label="Geomery 3D">
-      {% include docs_option.html items='Geometry3D/geometry-conversion Geometry3D/geometry-creation Geometry3D/edit-geometries Geometry3D/distance-functions Geometry3D/properties Geometry3D/topography Geometry3D/triangulation'%}
+    <optgroup label="Geometry 3D">
+      {% include docs_option.html items='geom3D/geometry-conversion geom3D/geometry-creation geom3D/edit-geometries geom3D/distance-functions geom3D/properties geom3D/topography geom3D/triangulation'%}
     </optgroup>
     <optgroup label="Raster">
       {% include docs_option.html items='' %}
     </optgroup>
-    <optgroup label="Thematic functions">
-      {% include docs_option.html items='h2network/graph-functions' %}
+    <optgroup label="Applications">
+      {% include docs_option.html items='applications/h2network' %}
     </optgroup>
   </select>
 </div>

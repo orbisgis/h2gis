@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_NumInteriorRings
-category: Geometry2D/properties
+category: geom2D/properties
+is_function: true
 description: Return the number of interior rings of a Geometry
 prev_section: ST_NumInteriorRing
 next_section: ST_NumPoints

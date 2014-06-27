@@ -1,9 +1,10 @@
 ---
 layout: docs
 title: DBFRead
-category: h2drivers/DBF
+category: h2drivers
+is_function: true
 description: Read DBase III files
-prev_section: h2drivers/DBF
+prev_section: h2drivers
 next_section: DBFWrite
 permalink: /docs/dev/DBFRead/
 ---

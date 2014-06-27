@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_Explode
-category: Geometry2D/properties
+category: geom2D/properties
+is_function: true
 description: Explode <CODE>GEOMETRYCOLLECTION</CODE>s into multiple Geometries
 prev_section: ST_Envelope
 next_section: ST_Extent

@@ -1,9 +1,10 @@
 ---
 layout: docs
 title: ST_Area
-category: Geometry2D/distance-functions
+category: geom2D/distance-functions
+is_function: true
 description: Return a Geometry's area
-prev_section: Geometry2D/distance-functions
+prev_section: geom2D/distance-functions
 next_section: ST_ClosestCoordinate
 permalink: /docs/dev/ST_Area/
 ---
