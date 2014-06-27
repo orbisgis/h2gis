@@ -4,7 +4,7 @@ title: DBFRead
 category: h2drivers
 is_function: true
 description: Read DBase III files
-prev_section: h2drivers
+prev_section: CSVWrite
 next_section: DBFWrite
 permalink: /docs/dev/DBFRead/
 ---

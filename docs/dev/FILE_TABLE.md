@@ -1,11 +1,12 @@
 ---
 layout: docs
-title: file_table
+title: FILE_TABLE
 category: h2drivers/file_table
+is_function: true
 description: Open a specified file in a special table
-prev_section: h2drivers/CSV
-next_section: h2drivers/DBF
-permalink: /docs/dev/h2drivers/file_table/
+prev_section: DBFWrite
+next_section: GPXRead
+permalink: /docs/dev/FILE_TABLE/
 ---
 
 ### Signature

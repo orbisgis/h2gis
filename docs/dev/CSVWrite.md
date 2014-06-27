@@ -2,9 +2,10 @@
 layout: docs
 title: CSVWrite
 category: h2drivers/CSV
+is_function: true
 description: Write a CSV file
 prev_section: CSVRead
-next_section: h2drivers/file_table
+next_section: DBFRead
 permalink: /docs/dev/CSVWrite/
 ---
 

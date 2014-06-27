@@ -5,7 +5,7 @@ category: h2drivers
 is_function: true
 description: Write DBase III files
 prev_section: DBFRead
-next_section: GPXRead
+next_section: FILE_TABLE
 permalink: /docs/dev/DBFWrite/
 ---
 

@@ -2,8 +2,9 @@
 layout: docs
 title: CSVRead
 category: h2drivers/CSV
+is_function: true
 description: Read a CSV file
-prev_section: h2drivers/CSV
+prev_section: h2drivers
 next_section: CSVWrite
 permalink: /docs/dev/CSVRead/
 ---

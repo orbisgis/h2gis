@@ -4,7 +4,7 @@ title: GPXRead
 category: h2drivers
 is_function: true
 description: Read a GPX file
-prev_section: DBFWrite
+prev_section: FILE_TABLE
 next_section: GeoJsonRead
 permalink: /docs/dev/GPXRead/
 ---
