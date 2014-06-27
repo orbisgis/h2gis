@@ -3,7 +3,7 @@ layout: docs
 title: FILE_TABLE
 category: h2drivers
 is_function: true
-description: Open a specified file in a special table
+description: Create a table linked to a file
 prev_section: DBFWrite
 next_section: GPXRead
 permalink: /docs/dev/FILE_TABLE/
@@ -12,35 +12,44 @@ permalink: /docs/dev/FILE_TABLE/
 ### Signature
 
 {% highlight mysql %}
-FILE_TABLE(VARCHAR fileName, VARCHAR tableName);
+FILE_TABLE(VARCHAR path, VARCHAR tableName);
 {% endhighlight %}
 
 ### Description
-Creates a special table in database. The content of this special table will always be synchronized with the source file content.
-The source file content isn't imported and copied in a table in the database.
+
+Uses an appropriate driver to open the file at `path` and create a
+linked (read-only) table `tableName`.
+This table is always in-sync with the source file.
+
+Currently supported:
+
+* SHP
+* DBF
 
 <div class="note warning">
-  <h5>If the source file is moved or removed, the special table always exists but is empty.</h5>
+  <h5>If the source file is moved or deleted, the special table will still
+  exist but will be empty.</h5>
 </div>
 
 ### Examples
 
 {% highlight mysql %}
+-- Basic syntax:
 CALL FILE_TABLE('/home/user/myshapefile.shp', 'tableName');
 CALL FILE_TABLE('/home/user/dbase.dbf', 'tableName');
 
-CALL FILE_TABLE('donnees_sig/IGN - BD Topo/H_ADMINISTRATIF/
-                 COMMUNE.DBF', 'commune');
-select * from commune limit 2;
+-- The next two examples show that which driver to use is detected
+-- automatically from the file extension:
+CALL FILE_TABLE('/home/user/COMMUNE.DBF', 'commune');
+SELECT * FROM commune LIMIT 2;
 -- Answer:
 -- |   NOM   | CODE_INSEE |      DEPART      |      REGION      |
 -- |---------|------------|------------------|------------------|
 -- | Puceul  |   44138    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
 -- | Sévérac |   44196    | LOIRE-ATLANTIQUE | PAYS DE LA LOIRE |
 
-CALL FILE_TABLE('donnees_sig/IGN - BD Topo/H_ADMINISTRATIF/
-                 COMMUNE.SHP', 'commune44');
-select * from commune44 limit 2;
+CALL FILE_TABLE('/home/user/COMMUNE.SHP', 'commune44');
+SELECT * FROM commune44 LIMIT 2;
 -- Answer:
 -- |                 the_geom                  |   NOM   |
 -- | ----------------------------------------- | ------- |
