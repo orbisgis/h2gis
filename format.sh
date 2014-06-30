@@ -22,4 +22,6 @@ for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.m
     sed -i "s/| \([A-Z]\+\) (\([^|]*\)/| \1(\2 /g" $f
     # In regular text, we don't have to worry about alignment.
     sed -i "s/\([A-Z]\+\) (\([^A-Z]*\)/\1(\2/g" $f
+    # Remove multiple blank lines
+    sed -i "/^$/N;/\n$/D" $f
 done
