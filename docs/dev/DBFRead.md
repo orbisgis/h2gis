@@ -26,8 +26,8 @@ missing encoding information).
 ### Examples
 
 {% highlight mysql %}
--- Basic syntax (database and schema may be omitted):
-CALL DBFRead('/home/user/file.DBF', 'database.schema.tableName');
+-- Basic syntax:
+CALL DBFRead('/home/user/file.dbf', 'tableName');
 
 -- In the next two examples, we show what happens when we attempt to
 -- read a DBF file with the wrong encoding, and how to fix it. Here

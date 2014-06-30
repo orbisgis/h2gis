@@ -27,7 +27,8 @@ missing encoding information).
 ### Examples
 
 {% highlight mysql %}
-CALL SHPRead('/home/user/file.shp', 'database.schema.tableName');
+-- Basic syntax:
+CALL SHPRead('/home/user/file.shp', 'tableName');
 
 -- In the next two examples, we show what happens when we attempt to
 -- read a SHP file with the wrong encoding, and how to fix it. Here

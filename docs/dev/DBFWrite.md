@@ -25,8 +25,8 @@ The default value of `fileEncoding` is `ISO-8859-1`.
 ### Examples
 
 {% highlight mysql %}
--- Basic syntax (database and schema may be omitted):
-CALL DBFWrite('/home/user/file.DBF', 'database.schema.tableName');
+-- Basic syntax:
+CALL DBFWrite('/home/user/file.dbf', 'tableName');
 
 -- Write a DBF file with UTF-8 encoding that was read with
 -- ISO-8859-1 encoding:
