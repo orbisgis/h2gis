@@ -29,6 +29,7 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.*;
@@ -2105,13 +2106,65 @@ public class SpatialFunctionTest {
         assertGeometryEquals("POINT(5 12 3)", rs.getBytes(1));
         rs.close();
     }
-    
+
     @Test
     public void test_ST_Translate4() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Translate('POINT(1 2 3)'::GEOMETRY, 10, 20, 30);");
         rs.next();
         assertGeometryEquals("POINT(11 22 33)", rs.getBytes(1));
         rs.close();
+    }
+
+    @Test
+    public void test_ST_TranslateNull() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_Translate(NULL, 1, 2), " +
+                "ST_Translate(NULL, 1, 2, 3);");
+        rs.next();
+        assertNull(rs.getBytes(1));
+        assertNull(rs.getBytes(2));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_TranslateSameDimension() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT " +
+                "ST_Translate('LINESTRING(0 0, 1 0)', 1, 2), " +
+                "ST_Translate('LINESTRING(0 0, 1 0)', 1, 2, 3), " +
+                "ST_Translate('LINESTRING(0 0 0, 1 0 0)', 1, 2), " +
+                "ST_Translate('LINESTRING(0 0 0, 1 0 0)', 1, 2, 3);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(1 2, 2 2)", rs.getBytes(1));
+        assertGeometryEquals("LINESTRING(1 2, 2 2)", rs.getBytes(2));
+        assertGeometryEquals("LINESTRING(1 2 0, 2 2 0)", rs.getBytes(3));
+        assertGeometryEquals("LINESTRING(1 2 3, 2 2 3)", rs.getBytes(4));
+        rs.close();
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_TranslateMixedDimensionXY() throws Throwable {
+        try {
+            st.executeQuery("SELECT " +
+                    "ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2);");
+        } catch (JdbcSQLException e) {
+            final Throwable originalCause = e.getOriginalCause();
+            assertEquals(ST_Translate.MIXED_DIM_ERROR,
+                    originalCause.getMessage());
+            throw originalCause;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_TranslateMixedDimensionXYZ() throws Throwable {
+        try {
+            st.executeQuery("SELECT " +
+                    "ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2, 3);");
+        } catch (JdbcSQLException e) {
+            final Throwable originalCause = e.getOriginalCause();
+            assertEquals(ST_Translate.MIXED_DIM_ERROR,
+                    originalCause.getMessage());
+            throw originalCause;
+        }
     }
 
     @Test
