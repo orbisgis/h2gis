@@ -3,7 +3,7 @@ layout: docs
 title: GeoJsonWrite
 category: h2drivers
 is_function: true
-description: Write a GeoJSON 1.0 file
+description: Write a table to a GeoJSON file
 prev_section: GeoJsonRead
 next_section: KMLWrite
 permalink: /docs/dev/GeoJsonWrite/
@@ -12,35 +12,34 @@ permalink: /docs/dev/GeoJsonWrite/
 ### Signature
 
 {% highlight mysql %}
-GeoJsonWrite(VARCHAR fileName, VARCHAR tableReference);
+GeoJsonWrite(VARCHAR path, VARCHAR tableName);
 {% endhighlight %}
 
 ### Description
-Transfers the content of a spatial table to a GeoJSON 1.0 file.
+
+Writes table `tableName` to a [GeoJSON][wiki] file located at
+`path`.
 
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE table_multipolygon(idarea int primary key,
-                                the_geom MULTIPOLYGON);
-INSERT INTO table_multipolygon values(1,
-    'MULTIPOLYGON(((120 370, 180 370, 120 370)),
-                  ((162 245, 234 245, 234 175, 162 245)))');
-CALL GeoJsonWrite('/home/user/Data/area.geojson',
-                  'table_multipolygon');
+-- Write a spatial table to a GeoJSON file:
+CREATE TABLE TEST(ID INT PRIMARY KEY, THE_GEOM POINT);
+INSERT INTO TEST VALUES(1, 'POINT(0 1)');
+CALL GeoJsonWrite('/home/user/test.geojson', 'TEST');
 
-CALL GeoJsonRead('/home/user/Data/area.geojson',
-                 'table_area');
-select * from table_area;
+-- Read it back:
+CALL GeoJsonRead('/home/user/test.geojson', 'TEST2');
+SELECT * FROM TEST2;
 -- Answer:
--- |                  THE_GEOM                 | IDAREA |
--- | ----------------------------------------- | ------ |
--- | MULTIPOLYGON((120 370, 180 370, 120 370)) |      1 |
--- |   ((162 245, 234 245, 234 175, 162 245))) |        |
-
+-- | THE_GEOM    | ID |
+-- |-------------|----|
+-- | POINT (0 1) | 1  |
 {% endhighlight %}
 
 ##### See also
 
 * [`GeoJsonRead`](../GeoJsonRead)
 * <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2drivers/src/main/java/org/h2gis/drivers/geojson/GeoJsonWrite.java" target="_blank">Source code</a>
+
+[wiki]: http://en.wikipedia.org/wiki/GeoJSON
