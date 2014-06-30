@@ -4,7 +4,7 @@ title: ST_ShortestPath
 category: applications/h2network
 is_function: true
 description: 
-prev_section: ST_Graph
+prev_section: ST_GraphAnalysis
 next_section: ST_ShortestPathLength
 permalink: /docs/dev/ST_ShortestPath/
 ---
