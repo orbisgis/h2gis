@@ -3,7 +3,7 @@ layout: docs
 title: KMLWrite
 category: h2drivers
 is_function: true
-description: Write KML or KMZ files
+description: Write KML / KMZ files
 prev_section: GeoJsonWrite
 next_section: SHPRead
 permalink: /docs/dev/KMLWrite/
@@ -12,31 +12,28 @@ permalink: /docs/dev/KMLWrite/
 ### Signature
 
 {% highlight mysql %}
-KMLWrite(VARCHAR fileName, VARCHAR tableReference);
+KMLWrite(VARCHAR path, VARCHAR tableName);
 {% endhighlight %}
 
 ### Description
-Transfers the content of a spatial table to a KML or KMZ file.
+
+Writes table `tableName` to a [KML][wiki] file located at `path`.
+A coordinate reference system must be set to save a KML file.
 
 ### Examples
 
 {% highlight mysql %}
-CALL KMLWrite('/home/user/Data/kml_points.kml',
-              'database.schema.tableName');
+-- Create an example table to write to a KML file:
+CREATE TABLE TEST(ID INT PRIMARY KEY, THE_GEOM POINT);
+INSERT INTO TEST
+    VALUES(1, ST_GeomFromText('POINT(2.19 47.58)', 4326));
 
-CREATE TABLE KML_POINTS(id int primary key, the_geom POINT,
-                        response boolean);
-INSERT INTO KML_POINTS values(1, ST_Geomfromtext(
-                                  'POINT(2.19 47.58)', 4326),
-                              true);
-INSERT INTO KML_POINTS values(2, ST_Geomfromtext(
-                                  'POINT(1.06 47.59)', 4326),
-                              false);
-
-CALL KMLWrite('/home/user/Data/kml_points.kml', 'KML_POINTS');
-CALL KMLWrite('/home/user/Data/kml_points.kmz', 'KML_POINTS');
+-- Write it:
+CALL KMLWrite('/home/user/test.kml', 'TEST');
 {% endhighlight %}
 
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2drivers/src/main/java/org/h2gis/drivers/kml/KMLWrite.java" target="_blank">Source code</a>
+
+[wiki]: http://en.wikipedia.org/wiki/Keyhole_Markup_Language
