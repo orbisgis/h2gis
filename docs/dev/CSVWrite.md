@@ -14,57 +14,58 @@ permalink: /docs/dev/CSVWrite/
 {% highlight mysql %}
 CSVWrite(VARCHAR path, VARCHAR sqlSelectTable);
 CSVWrite(VARCHAR path, VARCHAR sqlSelectTable,
-         varchar stringDecode);
+         VARCHAR stringDecode);
 {% endhighlight %}
 
 ### Description
 
-Writes a CSV file.
-By default the stringDecode is:
+<div class="note">
+  <h5>This function is a part of H2.</h5>
+  <p>Please first consult its
+  <a href="http://www.h2database.com/html/functions.html#csvwrite"
+  target="_blank">documentation</a> on the H2 website.</p>
+</div>
 
-* charset =UTF-8
-* fieldDelimiter ="
-* fieldSeparator =,
-* lineSeparator =\n
-* writeColumnHeader =true
+Writes a CSV file from the SQL select statement `sqlSelectTable` to
+the CSV file specified by `path`.
+
+{% include stringDecode.html %}
 
 ### Examples
 
 {% highlight mysql %}
-create table area(the_geom varchar(100), idarea int primary key);
-insert into area values('POLYGON((-10 109, 90 9, -10 9,
-                                  -10 109))', 1);
-insert into area values('POLYGON((90 109, 190 9, 90 9,
-                                  90 109))', 2);
-
-CALL CSVWRITE('/home/Documents/area.csv',
-              'SELECT * FROM area');
-CREATE TABLE area2 AS SELECT * FROM CSVRead(
-   '/home/Documents/area.csv');
-Select * from AREA2;
+-- Create an example table to use with CSVWrite:
+CREATE TABLE AREA(THE_GEOM VARCHAR(100), ID INT PRIMARY KEY);
+INSERT INTO AREA VALUES
+    ('POLYGON((-10 109, 90 9, -10 9, -10 109))', 1),
+    ('POLYGON((90 109, 190 9, 90 9, 90 109))', 2);
+-- Write it to a CSV file:
+CALL CSVWrite('/home/user/area.csv', 'SELECT * FROM AREA');
+-- Read it back:
+SELECT * FROM CSVRead('/home/user/area.csv');
 -- Answer:
--- |                 the_geom                 | idarea |
+-- |                 THE_GEOM                 |   ID   |
 -- | ---------------------------------------- | ------ |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
 
-CALL CSVWRITE('/home/Documents/area.csv',
-              'SELECT * FROM area', 'charset=UTF-8
+-- Try writing it with a specific charset and field separator:
+CALL CSVWRITE('/home/user/area.csv',
+              'SELECT * FROM AREA', 'charset=UTF-8
                                      fieldSeparator=;');
-CREATE TABLE area2 AS SELECT * FROM CSVRead(
-   '/home/Documents/area.csv', null,
-   'charset=UTF-8 fieldSeparator=;');
-Select * from AREA2;
+-- Read it back:
+SELECT * FROM CSVRead('/home/user/area.csv',
+                      NULL,
+                      'charset=UTF-8 fieldSeparator=;');
 -- Answer:
--- |                     THE_GEOM             | IDAREA |
+-- |                     THE_GEOM             |   ID   |
 -- | ---------------------------------------- | ------ |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
-
 {% endhighlight %}
 
 ##### See also
 
 * [`CSVRead`](../CSVRead)
-* <a href="http://www.h2database.com/html/functions.html#csvwrite"
-target="_blank">H2 Functions</a>
+* H2 <a href="http://www.h2database.com/html/functions.html#csvwrite"
+target="_blank">CSVWrite</a>

@@ -33,13 +33,7 @@ Optional variable `columnNameHeader` is a list of column names
 separated by the field separator. If `NULL`, the first line of the
 file is interpreted as the column names.
 
-Optional variable `stringDecode` is a space-separated string for
-setting CSV options. If `NULL`, its default value is used:
-
-```
-charset=UTF-8 fieldDelimiter=" fieldSeparator=, lineSeparator=\n
-writeColumnHeader=true
-```
+{% include stringDecode.html %}
 
 ### Examples
 
