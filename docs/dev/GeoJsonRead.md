@@ -17,7 +17,7 @@ GeoJsonRead(VARCHAR path, VARCHAR tableName);
 
 ### Description
 
-Reads a [GeoJSON][wiki] 1.0 file from `path` and creates the
+Reads a [GeoJSON][wiki] file from `path` and creates the
 corresponding spatial table `tableName`.
 
 ### Examples
