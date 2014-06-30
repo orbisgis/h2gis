@@ -59,6 +59,8 @@ SELECT ST_Expand('GEOMETRYCOLLECTION(
 -- Answer: POLYGON((-1.5 -2, -1.5 12, 12 12, 12 -2, -1.5 -2))
 {% endhighlight %}
 
+<img class="displayed" src="../ST_Expand_4.png"/>
+
 ##### See also
 
 * [`ST_Buffer`](../ST_Buffer)
