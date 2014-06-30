@@ -12,12 +12,13 @@ permalink: /docs/dev/CSVWrite/
 ### Signatures
 
 {% highlight mysql %}
-CSVWrite(VARCHAR fileName, VARCHAR sqlSelectTable);
-CSVWrite(VARCHAR fileName, VARCHAR sqlSelectTable,
+CSVWrite(VARCHAR path, VARCHAR sqlSelectTable);
+CSVWrite(VARCHAR path, VARCHAR sqlSelectTable,
          varchar stringDecode);
 {% endhighlight %}
 
 ### Description
+
 Writes a CSV file.
 By default the stringDecode is:
 

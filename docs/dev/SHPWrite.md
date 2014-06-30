@@ -18,7 +18,8 @@ SHPWrite(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
 
 ### Description
 
-Writes the contents of table `tableName` to a shapefile `fileName`.
+Writes the contents of table `tableName` to a shapefile located at
+`path`.
 The default value of `fileEncoding` is `ISO-8859-1`.
 
 <div class="note warning">

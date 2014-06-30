@@ -12,13 +12,13 @@ permalink: /docs/dev/DBFWrite/
 ### Signatures
 
 {% highlight mysql %}
-DBFWrite(VARCHAR fileName, VARCHAR tableName);
-DBFWrite(VARCHAR fileName, VARCHAR tableName, VARCHAR fileEncoding);
+DBFWrite(VARCHAR path, VARCHAR tableName);
+DBFWrite(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
 {% endhighlight %}
 
 ### Description
 
-Writes the contents of table `tableName` to a DBF file `fileName`.
+Writes the contents of table `tableName` to a DBF file located at `path`.
 The default value of `fileEncoding` is `ISO-8859-1`.
 
 ### Examples

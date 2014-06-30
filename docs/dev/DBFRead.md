@@ -12,14 +12,14 @@ permalink: /docs/dev/DBFRead/
 ### Signatures
 
 {% highlight mysql %}
-DBFRead(VARCHAR fileName, VARCHAR tableName);
-DBFRead(VARCHAR fileName, VARCHAR tableName, VARCHAR fileEncoding);
+DBFRead(VARCHAR path, VARCHAR tableName);
+DBFRead(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
 {% endhighlight %}
 
 ### Description
 
-Reads `fileName` as a dBase III file and copies its contents into a
-new table `tableName` in the database.
+Reads the file specified by `path` as a dBase III file and copies
+its contents into a new table `tableName` in the database.
 Define `fileEncoding` to force encoding (useful when the header is
 missing encoding information).
 

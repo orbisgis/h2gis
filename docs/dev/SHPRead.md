@@ -19,8 +19,8 @@ SHPRead(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
 
 ### Description
 
-Reads `fileName` as a [shapefile][wiki] and copies its contents into a
-new table `tableName` in the database.
+Reads the file specified by `path` as a [shapefile][wiki] and copies its
+contents into a new table `tableName` in the database.
 Define `fileEncoding` to force encoding (useful when the header is
 missing encoding information).
 

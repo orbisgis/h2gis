@@ -12,12 +12,13 @@ permalink: /docs/dev/CSVRead/
 ### Signatures
 
 {% highlight mysql %}
-tableName[*]CSVRead(VARCHAR fileName);
-tableName[*]CSVRead(VARCHAR fileName, VARCHAR columnNameHeader,
-         varchar stringDecode);
+tableName[*]CSVRead(VARCHAR path);
+tableName[*]CSVRead(VARCHAR path, VARCHAR columnNameHeader,
+                    varchar stringDecode);
 {% endhighlight %}
 
 ### Description
+
 Reads a CSV file.
 By default the stringDecode is:
 
