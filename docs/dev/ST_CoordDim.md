@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_CoordDim
-category: Geometry2D/properties
+category: geom2D/properties
+is_function: true
 description: Return the dimension of the coordinates of a Geometry
 prev_section: ST_CompactnessRatio
 next_section: ST_Dimension

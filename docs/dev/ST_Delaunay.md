@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: ST_Delaunay
-category: Geometry3D/triangulation
+category: geom3D/triangulation
+is_function: true
 description: 
 prev_section: ST_ConstrainedDelaunay
-next_section: raster/list-raster-function
+next_section: raster/list
 permalink: /docs/dev/ST_Delaunay/
 ---
 

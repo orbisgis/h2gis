@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_OrderingEquals
-category: Geometry2D/predicates
+category: geom2D/predicates
+is_function: true
 description: Return true if the given Geometries represent the same Geometry and points are in the same directional order
 prev_section: ST_Intersects
 next_section: ST_Overlaps

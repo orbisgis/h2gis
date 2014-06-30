@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: ST_Force3D
-category: Geometry3D/geometry-conversion
+category: geom3D/geometry-conversion
+is_function: true
 description: 
-prev_section: Geometry3D/geometry-conversion
-next_section: Geometry3D/geometry-creation
+prev_section: geom3D/geometry-conversion
+next_section: geom3D/geometry-creation
 permalink: /docs/dev/ST_Force3D/
 ---
 

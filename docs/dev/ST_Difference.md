@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_Difference
-category: Geometry2D/operators
+category: geom2D/operators
+is_function: true
 description: Compute the difference between two geometries
 prev_section: ST_ConvexHull
 next_section: ST_Intersection

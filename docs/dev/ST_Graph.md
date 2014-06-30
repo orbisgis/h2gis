@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: ST_Graph
-category: h2network/graph-functions
+category: applications/h2network
+is_function: true
 description: Produce nodes and edges tables from an input table containing <code>(MULTI)LINESTRINGS</code>
-prev_section: h2network/graph-functions
-next_section: ST_ShortestPath
+prev_section: ST_ConnectedComponents
+next_section: ST_GraphAnalysis
 permalink: /docs/dev/ST_Graph/
 ---
 
@@ -291,5 +292,5 @@ SELECT * FROM test_edges;
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_Graph.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/graph/ST_Graph.java" target="_blank">Source code</a>
 * Added: <a href="https://github.com/irstv/H2GIS/pull/191" target="_blank">#191</a>

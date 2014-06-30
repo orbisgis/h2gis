@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: ST_Within
-category: Geometry2D/predicates
+category: geom2D/predicates
+is_function: true
 description: Return true if Geometry A is within Geometry B
 prev_section: ST_Touches
-next_section: Geometry2D/process-geometries
+next_section: geom2D/process-geometries
 permalink: /docs/dev/ST_Within/
 ---
 

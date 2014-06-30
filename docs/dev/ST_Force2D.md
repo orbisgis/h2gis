@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_Force2D
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
+is_function: true
 description: Convert a XYZ geometry to XY
 prev_section: ST_AsWKT
 next_section: ST_GeomFromText

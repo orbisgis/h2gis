@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: ST_Azimuth
-category: Geometry2D/trigonometry
+category: geom2D/trigonometry
+is_function: true
 description: Return the azimuth of the segment defined by the given <code>POINT</code>s
-prev_section: Geometry2D/trigonometry
-next_section: Geometry3D/list-function-3d
+prev_section: geom2D/trigonometry
+next_section: geom3D/list
 permalink: /docs/dev/ST_Azimuth/
 ---
 
@@ -35,4 +36,3 @@ SELECT ST_Azimuth('Point(0 1)', 'Point(10 1)');
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/51910b27b5dc2b3b4353bb43a683f8649628ea8d/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/trigonometry/ST_Azimuth.java" target="_blank">Source code</a>
-

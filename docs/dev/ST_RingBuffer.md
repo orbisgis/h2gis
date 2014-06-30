@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: ST_RingBuffer
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
+is_function: true
 description: Return a ring buffer around a Geometry
 prev_section: ST_OctogonalEnvelope
-next_section: Geometry2D/edit-geometries
+next_section: geom2D/edit-geometries
 permalink: /docs/dev/ST_RingBuffer/
 ---
 

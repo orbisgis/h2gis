@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_IsValidDetail
-category: Geometry2D/properties
+category: geom2D/properties
+is_function: true
 description: Return a valid detail as an array of objects
 prev_section: ST_IsValid
 next_section: ST_IsValidReason

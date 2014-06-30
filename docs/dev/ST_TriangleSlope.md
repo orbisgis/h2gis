@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: ST_TriangleSlope
-category: Geometry3D/topography
+category: geom3D/topography
+is_function: true
 description: 
 prev_section: ST_TriangleDirection
-next_section: Geometry3D/triangulation
+next_section: geom3D/triangulation
 permalink: /docs/dev/ST_TriangleSlope/
 ---
 

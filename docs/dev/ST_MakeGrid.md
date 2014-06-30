@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_MakeGrid
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
+is_function: true
 description: Create a regular grid based on a table or a geometry envelope
 prev_section: ST_MakeEnvelope
 next_section: ST_MakeGridPoints

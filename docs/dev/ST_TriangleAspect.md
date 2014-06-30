@@ -1,9 +1,10 @@
 ---
 layout: docs
 title: ST_TriangleAspect
-category: Geometry3D/topography
+category: geom3D/topography
+is_function: true
 description: 
-prev_section: Geometry3D/topography
+prev_section: geom3D/topography
 next_section: ST_TriangleContouring
 permalink: /docs/dev/ST_TriangleAspect/
 ---

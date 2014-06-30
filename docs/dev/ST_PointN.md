@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_PointN
-category: Geometry2D/properties
+category: geom2D/properties
+is_function: true
 description: Return the <i>n</i>th point of a <code>LINESTRING</code>
 prev_section: ST_NumPoints
 next_section: ST_PointOnSurface

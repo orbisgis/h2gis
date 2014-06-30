@@ -1,10 +1,11 @@
 ---
 layout: docs
 title: ST_3DLength
-category: Geometry3D/distance-functions
+category: geom3D/distance-functions
+is_function: true
 description: Return the 3D length or the 3D perimeter a Geometry
-prev_section: Geometry3D/distance-functions
-next_section: Geometry3D/properties
+prev_section: geom3D/distance-functions
+next_section: geom3D/properties
 permalink: /docs/dev/ST_3DLength/
 ---
 
