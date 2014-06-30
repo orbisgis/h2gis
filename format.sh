@@ -6,8 +6,15 @@ for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.m
     sed -i "/^$/N;/\n$/D" $f
     # Remove trailing whitespace
     sed -i 's/[[:space:]]*$//' $f
+    # Put only one space after Answer:
+    sed -i "s/\(Answer: \)\([ ]\+\)/\1/g" $f
     # Put spaces after commas
     sed -i 's/\([^,]*\),\([^ ]\)/\1, \2/g' $f
+    # Remove spaces before left parentheses following capitalized words.
+    # In tables, preserve | alignment by adding a space just before the |.
+    sed -i "s/| \([A-Z]\+\) (\([^|]*\)/| \1(\2 /g" $f
+    # In regular text, we don't have to worry about alignment.
+    sed -i "s/\([A-Z]\+\) (\([^A-Z]*\)/\1(\2/g" $f
     # Capitalize SQL types
     for name in ${sql_type[*]}; do
         # Return type
@@ -17,9 +24,4 @@ for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.m
         # Any other parameter
         sed -i "s/, $name /, $name /gi" $f
     done
-    # Remove spaces before left parentheses following capitalized words.
-    # In tables, preserve | alignment by adding a space just before the |.
-    sed -i "s/| \([A-Z]\+\) (\([^|]*\)/| \1(\2 /g" $f
-    # In regular text, we don't have to worry about alignment.
-    sed -i "s/\([A-Z]\+\) (\([^A-Z]*\)/\1(\2/g" $f
 done
