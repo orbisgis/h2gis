@@ -18,8 +18,8 @@ SHPWrite(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
 
 ### Description
 
-Writes the contents of table `tableName` to a shapefile located at
-`path`.
+Writes the contents of table `tableName` to a [shapefile][wiki]
+located at `path`.
 The default value of `fileEncoding` is `ISO-8859-1`.
 
 <div class="note warning">
@@ -58,3 +58,5 @@ SELECT * FROM AREA2;
 
 * [`SHPRead`](../SHPRead)
 * <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2drivers/src/main/java/org/h2gis/drivers/shp/SHPWrite.java" target="_blank">Source code</a>
+
+[wiki]: http://en.wikipedia.org/wiki/Shapefile

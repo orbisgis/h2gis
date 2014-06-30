@@ -18,8 +18,8 @@ DBFRead(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
 
 ### Description
 
-Reads the file specified by `path` as a dBase III file and copies
-its contents into a new table `tableName` in the database.
+Reads the file specified by `path` as a [dBase][wiki] file and
+copies its contents into a new table `tableName` in the database.
 Define `fileEncoding` to force encoding (useful when the header is
 missing encoding information).
 
@@ -56,3 +56,5 @@ SELECT * FROM commune44iso LIMIT 2;
 
 * [`DBFWrite`](../DBFWrite)
 * <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2drivers/src/main/java/org/h2gis/drivers/dbf/DBFRead.java" target="_blank">Source code</a>
+
+[wiki]: http://en.wikipedia.org/wiki/DBase

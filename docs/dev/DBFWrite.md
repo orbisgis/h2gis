@@ -18,7 +18,8 @@ DBFWrite(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
 
 ### Description
 
-Writes the contents of table `tableName` to a DBF file located at `path`.
+Writes the contents of table `tableName` to a [dBase][wiki] file
+located at `path`.
 The default value of `fileEncoding` is `ISO-8859-1`.
 
 ### Examples
@@ -46,3 +47,5 @@ SELECT * FROM commune44 LIMIT 2;
 
 * [`DBFRead`](../DBFRead)
 * <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2drivers/src/main/java/org/h2gis/drivers/dbf/DBFWrite.java" target="_blank">Source code</a>
+
+[wiki]: http://en.wikipedia.org/wiki/DBase

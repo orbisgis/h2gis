@@ -23,8 +23,8 @@ This table is always in-sync with the source file.
 
 Currently supported:
 
-* SHP
-* DBF
+* [shapefile][wikishp] (`.shp`)
+* [dBase][wikidbf] file (`.dbf`)
 
 <div class="note warning">
   <h5>If the source file is moved or deleted, the special table will still
@@ -64,3 +64,6 @@ SELECT * FROM commune44 LIMIT 2;
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/ec8fa27fcfd8474531e3b7455ff5d9941e462897/h2drivers/src/main/java/org/h2gis/drivers/DriverManager.java" target="_blank">Source code</a>
+
+[wikidbf]: http://en.wikipedia.org/wiki/DBase
+[wikishp]: http://en.wikipedia.org/wiki/Shapefile
