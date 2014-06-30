@@ -66,5 +66,5 @@ Select * from AREA2;
 ##### See also
 
 * [`CSVRead`](../CSVRead)
-* <a href="http://www.h2database.com/html/grammar.html#csv_options"
-target="_blank">H2 grammar</a>
+* <a href="http://www.h2database.com/html/functions.html#csvwrite"
+target="_blank">H2 Functions</a>

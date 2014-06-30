@@ -71,5 +71,5 @@ CREATE TABLE area2 AS SELECT * FROM CSVRead(
 ##### See also
 
 * [`CSVWrite`](../CSVWrite)
-* <a href="http://www.h2database.com/html/grammar.html#csv_options"
-target="_blank">H2 grammar</a>
+* <a href="http://www.h2database.com/html/functions.html#csvread"
+target="_blank">H2 Functions</a>
