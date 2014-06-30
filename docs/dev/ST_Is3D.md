@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_Is3D
-category: Geometry3D/properties
+category: geom3D/properties
 description: Return 1 if a Geometry has a z-coordinate, otherwise 0.
-prev_section: Geometry3D/properties
+prev_section: geom3D/properties
 next_section: ST_Z
 permalink: /docs/dev/ST_Is3D/
 ---
