@@ -16,4 +16,9 @@ for f in $(find . -type f -name 'ST*.md'); do
         # Any other parameter
         sed -i "s/, $name /, $upper_name /gi" $f
     done
+    # Remove spaces before left parentheses following capitalized words.
+    # In tables, preserve | alignment by adding a space just before the |.
+    sed -i "s/| \([A-Z]\+\) (\([^|]*\)/| \1(\2 /g" $f
+    # In regular text, we don't have to worry about alignment.
+    sed -i "s/\([A-Z]\+\) (\([^A-Z]*\)/\1(\2/g" $f
 done
