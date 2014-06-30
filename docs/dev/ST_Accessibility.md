@@ -1,9 +1,9 @@
 ---
 layout: docs
 title: ST_Accessibility
-category: h2network/graph-functions
+category: applications/h2network
 description: Calculate the closest destination among several possible destinations as well as the distance to this destination.
-prev_section: h2network/graph-functions
+prev_section: applications/h2network
 next_section: ST_ConnectedComponents
 permalink: /docs/dev/ST_Accessibility/
 ---

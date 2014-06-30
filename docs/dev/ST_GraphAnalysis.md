@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_GraphAnalysis
-category: h2network/graph-functions
+category: applications/h2network
 description: 
 prev_section: ST_Graph
 next_section: ST_ShortestPath

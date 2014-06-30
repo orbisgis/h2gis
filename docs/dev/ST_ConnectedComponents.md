@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_ConnectedComponents
-category: h2network/graph-functions
+category: applications/h2network
 description: 
 prev_section: ST_Accessibility
 next_section: ST_Graph
