@@ -1,66 +1,77 @@
 ---
 layout: docs
-title: ST_AsKml
+title: ST_AsKML
 category: h2drivers
 is_function: true
-description: Convert Geometry to a KML Geometry representation
+description: Convert a Geometry to its KML representation
 prev_section: ST_AsGeoJson
 next_section: spatial-indices
-permalink: /docs/dev/ST_AsKml/
+permalink: /docs/dev/ST_AsKML/
 ---
 
 ### Signatures
 
 {% highlight mysql %}
-VARCHAR ST_AsKml(GEOMETRY geom);
-VARCHAR ST_AsKml(GEOMETRY geom, BOOLEAN extrude, INT altitudeModeEnum);
+VARCHAR ST_AsKML(GEOMETRY geom);
+VARCHAR ST_AsKML(GEOMETRY geom, BOOLEAN extrude, INT altitudeMode);
 {% endhighlight %}
 
 ### Description
-Returns the Geometry as a Keyhole Markup Language (KML) element.
-Available extrude values are true, false or none. Supported altitude mode:
 
-For KML profil: clampToGround = 1; relativeToGround = 2; absolute = 4;
+Converts `geom` to its [KML][wiki] representation.
 
-For GX profil: clampToSeaFloor = 8; relativeToSeaFloor = 16;
+Supported values of `altitudeMode`:
 
-No altitude: NONE = 0;
+| Value | Meaning              |
+|-------|----------------------|
+| 0     | none                 |
+| 1     | `clampToGround`      |
+| 2     | `relativeToGround`   |
+| 4     | `absolute`           |
+| 8     | `clampToSeaFloor`    |
+| 16    | `relativeToSeaFloor` |
 
 ### Examples
 
-|               Geometry POINT              |     |
-| ----------------------------------------- | --- |
-| ST_Geomfromtext('POINT(2.19 47.58), 4326') |     |
-
 {% highlight mysql %}
-SELECT ST_AsKml(the_geom) FROM input_table;
--- Answer: <Point><coordinates>2.19, 47.58</coordinates></Point>
-
-SELECT ST_AsKml(the_geom, true, 1) FROM input_table;
--- Answer: <Point><extrude>1</extrude>
---    <kml:altitudeMode>clampToGround</kml:altitudeMode>
---    <coordinates>2.19, 47.58</coordinates>
+SELECT ST_AsKML(ST_GeomFromText('POINT(2.19 47.58), 4326'));
+-- Answer: <Point>
+--             <coordinates>2.19,47.58</coordinates>
 --         </Point>
 
-SELECT ST_AsKml(the_geom, false, 16) FROM input_table;
--- Answer: <Point><extrude>0</extrude>
---    <kml:altitudeMode>relativeToSeaFloor</kml:altitudeMode>
---    <coordinates>2.19, 47.58</coordinates>
+SELECT ST_AsKML(ST_GeomFromText('POINT(2.19 47.58), 4326'),
+                TRUE, 1);
+-- Answer: <Point>
+--             <extrude>1</extrude>
+--             <kml:altitudeMode>clampToGround</kml:altitudeMode>
+--             <coordinates>2.19,47.58</coordinates>
+--          </Point>
+
+SELECT ST_AsKML(ST_GeomFromText('POINT(2.19 47.58), 4326'),
+                FALSE, 16);
+-- Answer: <Point>
+--             <extrude>0</extrude>
+--             <gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode>
+--             <coordinates>2.19,47.58</coordinates>
 --         </Point>
 
-CREATE TABLE kml_line(id int primary key, the_geom LINESTRING,
-                       response boolean);
-INSERT INTO kml_line values(1, ST_Geomfromtext(
-    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,
-                -1.49 47.17 100)', 4326), true);
-SELECT ST_AsKml(the_geom, true, 2) FROM kml_line;
--- Answer: <LineString><extrude>1</extrude>
---    <kml:altitudeMode>relativeToGround</kml:altitudeMode>
---    <coordinates>-1.53, 47.24, 100.0 -1.51, 47.22, 100.0
---                 -1.5, 47.19, 100.0 -1.49, 47.17, 100.0</coordinates>
+SELECT ST_AsKML(
+    ST_GeomFromText('LINESTRING(-1.53 47.24 100, -1.51 47.22 100,
+                                -1.50 47.19 100, -1.49 47.17 100)',
+                    4326),
+    TRUE, 2);
+-- Answer: <LineString>
+--             <extrude>1</extrude>
+--             <kml:altitudeMode>relativeToGround</kml:altitudeMode>
+--             <coordinates>
+--                 -1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,
+--                 47.19,100.0 -1.49,47.17,100.0
+--             </coordinates>
 --         </LineString>
 {% endhighlight %}
 
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2drivers/src/main/java/org/h2gis/drivers/kml/ST_AsKml.java" target="_blank">Source code</a>
+
+[wiki]: http://en.wikipedia.org/wiki/Keyhole_Markup_Language
