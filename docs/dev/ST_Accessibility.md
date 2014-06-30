@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Accessibility
 category: applications/h2network
+is_function: true
 description:
 prev_section: applications/h2network
 next_section: ST_ConnectedComponents
