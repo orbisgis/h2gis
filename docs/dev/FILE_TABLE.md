@@ -3,7 +3,7 @@ layout: docs
 title: FILE_TABLE
 category: h2drivers
 is_function: true
-description: Create a table linked to a file
+description: Link a table to a file
 prev_section: DBFWrite
 next_section: GPXRead
 permalink: /docs/dev/FILE_TABLE/

@@ -3,7 +3,7 @@ layout: docs
 title: GeoJsonWrite
 category: h2drivers
 is_function: true
-description: Write a table to a GeoJSON file
+description: Table &rarr; GeoJSON
 prev_section: GeoJsonRead
 next_section: KMLWrite
 permalink: /docs/dev/GeoJsonWrite/

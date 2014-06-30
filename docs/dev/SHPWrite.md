@@ -3,7 +3,7 @@ layout: docs
 title: SHPWrite
 category: h2drivers
 is_function: true
-description: Write SHP files
+description: Table &rarr; SHP
 prev_section: SHPRead
 next_section: ST_AsGeoJson
 permalink: /docs/dev/SHPWrite/

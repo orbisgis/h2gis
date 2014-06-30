@@ -3,7 +3,7 @@ layout: docs
 title: GeoJsonRead
 category: h2drivers
 is_function: true
-description: Read a GeoJSON file to a table
+description: GeoJSON &rarr; Table
 prev_section: GPXRead
 next_section: GeoJsonWrite
 permalink: /docs/dev/GeoJsonRead/

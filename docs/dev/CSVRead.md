@@ -3,7 +3,7 @@ layout: docs
 title: CSVRead
 category: h2drivers
 is_function: true
-description: Read a CSV file
+description: CSV &rarr; Table
 prev_section: h2drivers
 next_section: CSVWrite
 permalink: /docs/dev/CSVRead/

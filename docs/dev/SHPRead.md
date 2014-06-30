@@ -3,7 +3,7 @@ layout: docs
 title: SHPRead
 category: h2drivers
 is_function: true
-description: Read a SHP file to a table
+description: SHP &rarr; Table
 prev_section: KMLWrite
 next_section: SHPWrite
 permalink: /docs/dev/SHPRead/

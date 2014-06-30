@@ -3,7 +3,7 @@ layout: docs
 title: GPXRead
 category: h2drivers
 is_function: true
-description: Read a GPX file
+description: GPX &rarr; Table
 prev_section: FILE_TABLE
 next_section: GeoJsonRead
 permalink: /docs/dev/GPXRead/

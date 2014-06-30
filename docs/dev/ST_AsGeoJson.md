@@ -3,7 +3,7 @@ layout: docs
 title: ST_AsGeoJson
 category: h2drivers
 is_function: true
-description: Convert a Geometry to its GeoJSON representation
+description: Geometry &rarr; GeoJSON
 prev_section: SHPWrite
 next_section: ST_AsKML
 permalink: /docs/dev/ST_AsGeoJson/

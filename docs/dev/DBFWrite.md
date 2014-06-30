@@ -3,7 +3,7 @@ layout: docs
 title: DBFWrite
 category: h2drivers
 is_function: true
-description: Write DBase III files
+description: Table &rarr; DBF
 prev_section: DBFRead
 next_section: FILE_TABLE
 permalink: /docs/dev/DBFWrite/

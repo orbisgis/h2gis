@@ -3,7 +3,7 @@ layout: docs
 title: KMLWrite
 category: h2drivers
 is_function: true
-description: Write KML / KMZ files
+description: KML, KMZ &rarr; Table
 prev_section: GeoJsonWrite
 next_section: SHPRead
 permalink: /docs/dev/KMLWrite/

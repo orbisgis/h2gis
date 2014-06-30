@@ -3,7 +3,7 @@ layout: docs
 title: DBFRead
 category: h2drivers
 is_function: true
-description: Read DBase III files
+description: DBF &rarr; Table
 prev_section: CSVWrite
 next_section: DBFWrite
 permalink: /docs/dev/DBFRead/

@@ -3,7 +3,7 @@ layout: docs
 title: ST_AsKML
 category: h2drivers
 is_function: true
-description: Convert a Geometry to its KML representation
+description: Geometry &rarr; KML
 prev_section: ST_AsGeoJson
 next_section: spatial-indices
 permalink: /docs/dev/ST_AsKML/
