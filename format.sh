@@ -1,7 +1,7 @@
 #!/bin/bash
 
 sql_type=(INT DOUBLE BOOLEAN VARCHAR GEOMETRY GEOMETRYCOLLECTION)
-for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.md" \) | grep -v "top.html" | grep -v "README.md"); do
+for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.md" \) | grep -v "analytics.html" | grep -v "top.html" | grep -v "README.md"); do
     # Remove multiple blank lines
     sed -i "/^$/N;/\n$/D" $f
     # Remove trailing whitespace
@@ -10,6 +10,8 @@ for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.m
     sed -i "s/\(Answer: \)\([ ]\+\)/\1/g" $f
     # Put spaces after commas
     sed -i 's/\([^,]*\),\([^ ]\)/\1, \2/g' $f
+    # Remove spaces before ":" and ";"
+    sed -i 's/ \([:;]\)/\1/g' $f
     # Remove spaces before left parentheses following capitalized words.
     # In tables, preserve | alignment by adding a space just before the |.
     sed -i "s/| \([A-Z]\+\) (\([^|]*\)/| \1(\2 /g" $f
