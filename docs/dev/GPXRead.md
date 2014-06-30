@@ -20,17 +20,36 @@ GPXRead(VARCHAR path, VARCHAR tableName);
 
 Reads a [GPX][wiki] file from `path` and creates several tables
 prefixed by `tableName` representing the file's contents.
-By default, the `tableName` is taken from the filename
-given in `path`.
+Which tables are produced depends on the content of the GPX file,
+and may include:
+
+* `TABLENAME_WAYPOINT`
+* `TABLENAME_ROUTE`
+* `TABLENAME_ROUTEPOINT`
+* `TABLENAME_TRACK`
+* `TABLENAME_TRACKPOINT`
+* `TABLENAME_TRACKSEGMENT`
+
+By default, the `tableName` is the filename given in `path` without
+the extension.
 
 ### Examples
 
 {% highlight mysql %}
--- Produces GPXDATA_TRACK, GPXDATA_TRACKPOINT, GPXDATA_TRACKSEGMENT
+-- Takes the table name from the filename, producing
+-- * ROUTE_TRACK
+-- * ROUTE_TRACKPOINT
+-- * ROUTE_TRACKSEGMENT
+CALL GPXRead('/home/user/route.gpx');
+
+-- Uses the given table name, producing
+-- * GPXDATA_TRACK
+-- * GPXDATA_TRACKPOINT
+-- * GPXDATA_TRACKSEGMENT
 CALL GPXRead('/home/user/route.gpx', 'GPXDATA');
 
--- Produces ROUTE_TRACK, ROUTE_TRACKPOINT, ROUTE_TRACKSEGMENT
-CALL GPXRead('/home/user/route.gpx');
+-- Produces STATION_WAYPOINT.
+CALL GPXRead('/home/user/station.gpx');
 {% endhighlight %}
 
 ##### See also
