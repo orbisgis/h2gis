@@ -12,57 +12,69 @@ permalink: /docs/dev/CSVRead/
 ### Signatures
 
 {% highlight mysql %}
-tableName[*]CSVRead(VARCHAR path);
-tableName[*]CSVRead(VARCHAR path, VARCHAR columnNameHeader,
-                    varchar stringDecode);
+CSVRead(VARCHAR path);
+CSVRead(VARCHAR path, VARCHAR columnNameHeader,
+        VARCHAR stringDecode);
 {% endhighlight %}
 
 ### Description
 
-Reads a CSV file.
-By default the stringDecode is:
+<div class="note">
+  <h5>This function is a part of H2.</h5>
+  <p>Please first consult its
+  <a href="http://www.h2database.com/html/functions.html#csvread"
+  target="_blank">documentation</a> on the H2 website.</p>
+</div>
 
-* charset =UTF-8
-* fieldDelimiter ="
-* fieldSeparator =,
-* lineSeparator =\n
-* writeColumnHeader =true
+Reads a CSV file.
+All columns are of type `VARCHAR`.
+
+Optional variable `columnNameHeader` is a list of column names
+separated by the field separator. If `NULL`, the first line of the
+file is interpreted as the column names.
+
+Optional variable `stringDecode` is a space-separated string for
+setting CSV options. If `NULL`, its default value is used:
+
+```
+charset=UTF-8 fieldDelimiter=" fieldSeparator=, lineSeparator=\n
+writeColumnHeader=true
+```
 
 ### Examples
 
-#### CSV field separator is `, `
-
 {% highlight mysql %}
-create table area as select * from CSVRead('/home/Documents/
-                                            area.csv');
+-- A ,-separated file:
+CREATE TABLE AREA AS
+    SELECT * FROM CSVRead('/home/user/area.csv') LIMIT 2;
 -- Answer:
--- |                 the_geom                 | idarea |
+-- |                 THE_GEOM                 |   ID   |
 -- | ---------------------------------------- | ------ |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
 {% endhighlight %}
 
-#### CSV field separator is `;` and contains the column header
-
 {% highlight mysql %}
-CREATE TABLE area2 AS SELECT * FROM CSVRead(
-   '/home/Documents/area.csv', null,
-   'fieldSeparator=;');
+-- A ;-separated file containing the column names on the first line:
+CREATE TABLE AREA2 AS
+    SELECT * FROM CSVRead('/home/user/area.csv',
+                          NULL,
+                          'fieldSeparator=;') LIMIT 2;
 -- Answer:
--- |                     THE_GEOM             | IDAREA |
+-- |                  THE_GEOM                |   ID   |
 -- | ---------------------------------------- | ------ |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |      1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
 {% endhighlight %}
 
-#### CSV field separator is `;` and don't contains the column header
-
 {% highlight mysql %}
-CREATE TABLE area2 AS SELECT * FROM CSVRead(
-   '/home/Documents/area.csv', 'column1; column2',
-   'fieldSeparator=;');
+-- A ;-separated file with no column names on the first line:
+CREATE TABLE AREA2 AS
+    SELECT * FROM CSVRead('/home/user/area.csv',
+                          'COLUMN1; COLUMN2',
+                          'fieldSeparator=;') LIMIT 2;
 -- Answer:
--- |                     column1              | column2 |
+-- |                  COLUMN1                 | COLUMN2 |
 -- | ---------------------------------------- | ------- |
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |       1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |       2 |
@@ -71,5 +83,5 @@ CREATE TABLE area2 AS SELECT * FROM CSVRead(
 ##### See also
 
 * [`CSVWrite`](../CSVWrite)
-* <a href="http://www.h2database.com/html/functions.html#csvread"
-target="_blank">H2 Functions</a>
+* H2 <a href="http://www.h2database.com/html/functions.html#csvread"
+target="_blank">CSVRead</a>
