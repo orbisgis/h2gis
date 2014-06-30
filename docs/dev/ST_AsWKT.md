@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_AsWKT
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
+is_function: true
 description: Geometry &rarr; Well Known Text
 prev_section: ST_AsText
 next_section: ST_Force2D

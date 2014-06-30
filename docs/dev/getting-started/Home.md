@@ -13,6 +13,7 @@ of the [H2][] database engine.
 In a nutshell: H2GIS is to [H2][] as [PostGIS][] is to [PostgreSQL][].
 
 H2GIS adds support for
+
 * `(MULTI)POINT`, `(MULTI)LINESTRING` and `(MULTI)POLYGON` types
 * the functions specified by the [OpenGIS][] [Simple Features Implementation
   Specification for SQL][] and

@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_Centroid
-category: Geometry2D/properties
+category: geom2D/properties
+is_function: true
 description: Return the centroid of a Geometry
 prev_section: ST_Boundary
 next_section: ST_CompactnessRatio
@@ -24,7 +25,7 @@ Returns the centroid of `geom` as a `POINT`.
   <code>GEOMETRYCOLLECTION</code> are considered.</h5>
   <p>The lower-dimension Geometries contribute zero weight to the centroid.</p>
 </div>
- 
+
 {% include sfs-1-2-1.html %}
 
 ### Examples
@@ -50,7 +51,7 @@ SELECT ST_Centroid('MULTILINESTRING((1 5, 6 5), (5 1, 5 4))');
 SELECT ST_Centroid('POLYGON((1 5, 1 2, 6 2, 3 3, 3 4, 5 6, 1 5))');
 -- Answer: POINT(2.5964912280701755 3.666666666666667)
 
-SELECT ST_Centroid('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)), 
+SELECT ST_Centroid('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
                                  ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: POINT(2.142857142857143 3.5)
 {% endhighlight %}
@@ -59,15 +60,20 @@ SELECT ST_Centroid('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
 
 {% highlight mysql %}
 SELECT ST_Centroid('GEOMETRYCOLLECTION(
-                      POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)), 
-                      LINESTRING(2 6, 6 2), 
+                      POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)),
+                      LINESTRING(2 6, 6 2),
                       MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: POINT(2.5 4)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Centroid_4.png"/>
 
+##### Comparison with [`ST_PointOnSurface`](../ST_PointOnSurface)
+
+{% include centroid-pointonsurface-cf.html %}
 
 ##### See also
 
+* [`ST_PointOnSurface`](../ST_PointOnSurface)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Centroid.java" target="_blank">Source code</a>
+* Added: <a href="https://github.com/irstv/H2GIS/pull/11" target="_blank">#11</a>

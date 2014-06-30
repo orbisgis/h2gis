@@ -1,9 +1,10 @@
 ---
 layout: docs
 title: ST_Boundary
-category: Geometry2D/properties
+category: geom2D/properties
+is_function: true
 description: Return a Geometry's boundary
-prev_section: Geometry2D/projections
+prev_section: geom2D/projections
 next_section: ST_Centroid
 permalink: /docs/dev/ST_Boundary/
 ---

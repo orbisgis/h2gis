@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_Disjoint
-category: Geometry2D/predicates
+category: geom2D/predicates
+is_function: true
 description: Return true Geometries A and B are disjoint
 prev_section: ST_DWithin
 next_section: ST_EnvelopesIntersect

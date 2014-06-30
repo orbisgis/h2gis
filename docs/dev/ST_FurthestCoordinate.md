@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_FurthestCoordinate
-category: Geometry2D/distance-functions
+category: geom2D/distance-functions
+is_function: true
 description: Compute the furthest coordinate(s) contained in a Geometry starting from a <code>POINT</code>
 prev_section: ST_ClosestPoint
 next_section: ST_Length

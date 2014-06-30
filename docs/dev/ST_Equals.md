@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_Equals
-category: Geometry2D/predicates
+category: geom2D/predicates
+is_function: true
 description: Return true if Geometry A equals Geometry B
 prev_section: ST_EnvelopesIntersect
 next_section: ST_Intersects

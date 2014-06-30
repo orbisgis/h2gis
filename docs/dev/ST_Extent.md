@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_Extent
-category: Geometry2D/properties
+category: geom2D/properties
+is_function: true
 description: Return the minimum bounding box of a <code>GEOMETRYCOLLECTION</code>
 prev_section: ST_Explode
 next_section: ST_ExteriorRing
@@ -39,5 +40,7 @@ SELECT ST_Extent('POINT(5 6)'::Geometry);
 
 ##### See also
 
-* [`ST_Envelope`](../ST_Envelope)
+* [`ST_Envelope`](../ST_Envelope),
+  [`ST_MinimumRectangle`](../ST_MinimumRectangle),
+  [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_Extent.java" target="_blank">Source code</a>

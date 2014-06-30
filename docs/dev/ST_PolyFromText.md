@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_PolyFromText
-category: Geometry2D/geometry-conversion
+category: geom2D/geometry-conversion
+is_function: true
 description: Well Known Text &rarr; <code>POLYGON</code>
 prev_section: ST_PointFromText
 next_section: ST_PolyFromWKB

@@ -1,7 +1,8 @@
 ---
 layout: docs
 title: ST_MakeLine
-category: Geometry2D/geometry-creation
+category: geom2D/geometry-creation
+is_function: true
 description: <code>(MULTI)POINT</code> &rarr; <code>LINESTRING</code>
 prev_section: ST_MakeGridPoints
 next_section: ST_MakePoint
