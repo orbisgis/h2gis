@@ -5,7 +5,7 @@ category: geom2D/affine-transformations
 is_function: true
 description: Translate a Geometry
 prev_section: ST_Scale
-next_section:  geom2D/geometry-conversion
+next_section: geom2D/geometry-conversion
 permalink: /docs/dev/ST_Translate/
 ---
 
