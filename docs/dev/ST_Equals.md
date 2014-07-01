@@ -54,5 +54,7 @@ SELECT ST_Equals(geomA, geomB) FROM input_table;
 
 ##### See also
 
-* [`ST_Relate`](../ST_Relate), [`ST_Within`](../ST_Within)
+* [`ST_OrderingEquals`](../ST_OrderingEquals),
+  [`ST_Relate`](../ST_Relate),
+  [`ST_Within`](../ST_Within)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_Equals.java" target="_blank">Source code</a>
