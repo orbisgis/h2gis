@@ -2,7 +2,7 @@
 layout: docs
 title: ST_Is3D
 category: geom3D/properties
-description: Return 1 if a Geometry has a z-coordinate, otherwise 0.
+description: Return 1 if a Geometry has at least one z-coordinate; 0 otherwise
 prev_section: geom3D/properties
 next_section: ST_Z
 permalink: /docs/dev/ST_Is3D/
@@ -16,16 +16,22 @@ INT ST_Is3D(GEOMETRY geom);
 
 ### Description
 
-Returns 1 if a `geom` has a z-coordinate, otherwise 0.
+Returns 1 if a `geom` has at least one z-coordinate; 0 otherwise.
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_Is3D('LINESTRING(1 1, 2 1, 2 2, 1 2, 1 1)'::geometry);
+-- No z-coordinates
+SELECT ST_Is3D('LINESTRING(1 1, 2 1, 2 2, 1 2, 1 1)'::GEOMETRY);
 -- Answer: 0
 
+-- One z-coordinate
+SELECT ST_Is3D('LINESTRING(1 1 1, 2 1, 2 2, 1 2, 1 1)'::GEOMETRY);
+-- Answer: 1
+
+-- All z-coordinates
 SELECT ST_Is3D('LINESTRING(1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)'
-               ::geometry);
+               ::GEOMETRY);
 -- Answer: 1
 {% endhighlight %}
 
