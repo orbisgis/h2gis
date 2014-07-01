@@ -45,6 +45,9 @@ SELECT ST_Z('GEOMETRYCOLLECTION(
 
 ##### See also
 
-* [`ST_X`](../ST_X), [`ST_Y`](../ST_Y)
-* [`ST_GeometryN`](../ST_GeometryN), [`ST_PointN`](../ST_PointN), [`ST_ExteriorRing`](../ST_ExteriorRing)
+* [`ST_ExteriorRing`](../ST_ExteriorRing),
+  [`ST_GeometryN`](../ST_GeometryN),
+  [`ST_PointN`](../ST_PointN),
+  [`ST_X`](../ST_X),
+  [`ST_Y`](../ST_Y)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Z.java" target="_blank">Source code</a>
