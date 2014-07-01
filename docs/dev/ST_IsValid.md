@@ -19,6 +19,8 @@ boolean ST_IsValid(GEOMETRY geom);
 
 Returns true if `geom` is valid.
 
+{% include equivalence.html equiv='ST_IsValid(geom) = ARRAY_GET(ST_IsValidDetail(geom), 1)' %}
+
 ### Examples
 
 {% highlight mysql %}
