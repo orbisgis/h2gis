@@ -43,5 +43,6 @@ SELECT ST_GeometryType('GEOMETRYCOLLECTION(
 
 ##### See also
 
-* [`ST_Dimension`](../ST_Dimension)
+* [`ST_Dimension`](../ST_Dimension),
+  [`ST_GeometryTypeCode`](../ST_GeometryTypeCode)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_GeometryType.java" target="_blank">Source code</a>

@@ -30,7 +30,7 @@ for f in ${files[*]}; do
         # First parameter
         sed -i "s/($name /($name /gi" $f
         # First parameter on split line
-        sed -i "s/\( *\)$name /\1$name /gi" $f
+        sed -i "s/^\( *\)$name /\1$name /gi" $f
         # Any other parameter
         sed -i "s/, $name /, $name /gi" $f
         # After Answer:
