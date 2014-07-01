@@ -3,7 +3,7 @@ layout: docs
 title: ST_MakeGridPoints
 category: geom2D/geometry-creation
 is_function: true
-description: Create a regular grid of points based on a table or a geometry envelope
+description: Calculate a regular grid of <code>POINT</code>s based on a Geometry or a table of Geometries
 prev_section: ST_MakeGrid
 next_section: ST_MakeLine
 permalink: /docs/dev/ST_MakeGridPoints/
@@ -12,25 +12,27 @@ permalink: /docs/dev/ST_MakeGridPoints/
 ### Signature
 
 {% highlight mysql %}
-tableName[NODE_GEOM, ID, ID_COL, ID_ROW] ST_MakeGridPoints(
-    VALUE value, DOUBLE deltaX, DOUBLE deltaY);
+TABLE[NODE_GEOM, ID, ID_COL, ID_ROW]
+    ST_MakeGridPoints(GEOMETRY geom,
+                      DOUBLE deltaX, DOUBLE deltaY);
+TABLE[NODE_GEOM, ID, ID_COL, ID_ROW]
+    ST_MakeGridPoints(VARCHAR tableName,
+                      DOUBLE deltaX, DOUBLE deltaY);
 {% endhighlight %}
 
 ### Description
-Calculates a regular grid of Points using the first input value to compute the full extent.
-The first argument is either a Geometry or a table. The `deltaX` and `deltaY` cell grid are expressed in a cartesian plane.
 
-<div class="note">
-	<h5>The Geometry could be expressed using a subquery as (SELECT the_geom from myTable)</h5>
-</div>
+Calculates a regular grid of `POINT`s based on a single Geometry
+`geom` or a table `tableName` of Geometries with `deltaX` and
+`deltaY` as offsets in the Cartesian plane.
 
 ### Examples
 
 {% highlight mysql %}
-CREATE TABLE input_table(the_geom Geometry);
-INSERT INTO input_table VALUES('POLYGON((0 0, 2 0, 2 2, 0 0))');
-CREATE TABLE grid AS SELECT * FROM ST_MakeGridPoints(
-   'input_table', 1, 1);
+-- Using a Geometry:
+CREATE TABLE grid AS SELECT * FROM
+    ST_MakeGridPoints('POLYGON((0 0, 2 0, 2 2, 0 0))'::GEOMETRY,
+                      1, 1);
 SELECT * FROM grid;
 --Answer:
 -- |    NODE_GEOM    |  ID | ID_COL | ID_ROW |
@@ -40,8 +42,11 @@ SELECT * FROM grid;
 -- | POINT(0.5 1.5)  |   2 |      1 |      2 |
 -- | POINT(1.5 1.5)  |   3 |      2 |      2 |
 
-CREATE TABLE grid AS SELECT * FROM ST_MakeGridPoints(
-   'POLYGON((0 0, 2 0, 2 2, 0 0 ))'::GEOMETRY, 1, 1);
+-- Using a table:
+CREATE TABLE TEST(THE_GEOM GEOMETRY);
+INSERT INTO TEST VALUES('POLYGON((0 0, 2 0, 2 2, 0 0))');
+CREATE TABLE grid AS SELECT * FROM
+    ST_MakeGridPoints('TEST'::GEOMETRY, 1, 1);
 SELECT * FROM grid;
 --Answer:
 -- |    NODE_GEOM    |  ID | ID_COL | ID_ROW |
@@ -51,11 +56,15 @@ SELECT * FROM grid;
 -- | POINT(0.5 1.5)  |   2 |      1 |      2 |
 -- | POINT(1.5 1.5)  |   3 |      2 |      2 |
 
-CREATE TABLE input_table(the_geom Geometry);
-INSERT INTO input_table VALUES('POLYGON((0 0, 2 0, 2 2, 0 0))');
-INSERT INTO input_table VALUES('POLYGON((1 1, 2 2, 1 2, 1 1))');
-CREATE TABLE grid AS SELECT * FROM ST_MakeGridPoints((SELECT
-   ST_Union(ST_Accum(the_geom)) FROM input_table), 1, 1);
+-- Using a subquery to construct a Geometry:
+CREATE TABLE TEST2(THE_GEOM GEOMETRY);
+INSERT INTO TEST2 VALUES
+    ('POLYGON((0 0, 2 0, 2 2, 0 0))'),
+    ('POLYGON((1 1, 2 2, 1 2, 1 1))');
+CREATE TABLE grid AS SELECT * FROM
+    ST_MakeGridPoints(
+        (SELECT ST_Union(ST_Accum(THE_GEOM)) FROM TEST2),
+        1, 1);
 SELECT * FROM grid;
 --Answer:
 -- |    NODE_GEOM    |  ID | ID_COL | ID_ROW |
