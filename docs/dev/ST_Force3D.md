@@ -16,8 +16,8 @@ GEOMETRY ST_Force3D(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Returns a `GEOMETRY` in 3-dimensional. The output `GEOMETRY` will have the X, Y and Z coordinates.
-If a given `Geometry` has no Z component, then a 0 Z coordinate is tacked on.
+Returns a Geometry in 3-dimensional. The output Geometry will have the X, Y and Z coordinates.
+If a given Geometry has no Z component, then a 0 Z coordinate is tacked on.
 
 ### Examples
 

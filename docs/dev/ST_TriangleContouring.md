@@ -12,10 +12,10 @@ permalink: /docs/dev/ST_TriangleContouring/
 ### Signatures
 
 {% highlight mysql %}
-tableName[the_geom, idiso] ST_TriangleContouring(varchar 
-    tableName, int varArgs);
-tableName[the_geom, , idiso] ST_TriangleContouring(varchar 
-    tableName, varchar colName, int varArgs);
+tableName[the_geom, idiso] ST_TriangleContouring(varchar
+    tableName, INT varArgs);
+tableName[the_geom,, idiso] ST_TriangleContouring(varchar
+    tableName, VARCHAR colName, INT varArgs);
 {% endhighlight %}
 
 ### Description
@@ -29,8 +29,8 @@ Iso contouring using Z or table columns as value of vertex.
 {% highlight mysql %}
 CREATE TABLE TIN AS SELECT 'POLYGON((0 0 1, 3 0 0, 3 3 4, 0 0 1))
                                            '::geometry the_geom;
-SELECT * FROM ST_TriangleContouring('TIN', 2,3,4);
--- Answer: 
+SELECT * FROM ST_TriangleContouring('TIN', 2, 3, 4);
+-- Answer:
 -- |                    THE_GEOM                   | IDISO |
 -- | --------------------------------------------- | ----- |
 -- | POLYGON((3 1.5 2, 1 1 2, 0 0 1, 3 1.5 2))     |     0 |
@@ -44,10 +44,10 @@ SELECT * FROM ST_TriangleContouring('TIN', 2,3,4);
 
 {% highlight mysql %}
 CREATE TABLE TIN AS SELECT 'POLYGON((0 0 1, 3 0 0, 3 3 4, 0 0 1))
-                                           '::geometry the_geom, 
+                                           '::geometry the_geom,
                            1.0 as m1, 6 as m2, 4.0 as m3;
-SELECT * FROM ST_TriangleContouring('TIN','m1','m2','m3',2,3,5);
--- Answer: 
+SELECT * FROM ST_TriangleContouring('TIN', 'm1', 'm2', 'm3', 2, 3, 5);
+-- Answer:
 -- |               THE_GEOM               |  m1 |  m2 |  m3 | IDISO |
 -- | ------------------------------------ | --- | --- | --- | ----- |
 -- | POLYGON((0.6 0 0.8, 1 1 2, 0 0 1,    | 1.0 |   6 | 4.0 |     0 |
@@ -67,7 +67,7 @@ SELECT * FROM ST_TriangleContouring('TIN','m1','m2','m3',2,3,5);
 -- | POLYGON((3 1.5 2, 3 3 4, 1.2 0 0.6,  | 1.0 |   6 | 4.0 |     2 |
 -- |          3 1.5 2))                   |     |     |     |       |
 
--- Note: Iso Contouring not takes into account the Z or table 
+-- Note: Iso Contouring not takes into account the Z or table
 -- columns as value of vertex which is above of last varArgs.
 {% endhighlight %}
 
@@ -76,6 +76,6 @@ SELECT * FROM ST_TriangleContouring('TIN','m1','m2','m3',2,3,5);
 ##### See also
 
 * [`ST_TriangleAspect`](../ST_TriangleAspect),
-[`ST_TriangleDirection`](../ST_TriangleDirection),[`ST_TriangleSlope`](../ST_TriangleSlope)
+[`ST_TriangleDirection`](../ST_TriangleDirection), [`ST_TriangleSlope`](../ST_TriangleSlope)
 * <a href="https://github.com/irstv/H2GIS/blob/51910b27b5dc2b3b4353bb43a683f8649628ea8d/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/topography/ST_TriangleContouring.java" target="_blank">Source code</a>
 
