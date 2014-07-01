@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_Azimuth/
 ### Signature
 
 {% highlight mysql %}
-double ST_Azimuth(GEOMETRY PointA, GEOMETRY PointB);
+DOUBLE ST_Azimuth(GEOMETRY PointA, GEOMETRY PointB);
 {% endhighlight %}
 
 ### Description
@@ -22,7 +22,7 @@ Returns the azimuth of the segment defined by the given `POINT`s, or null if the
 
 {% highlight mysql %}
 SELECT ST_Azimuth('Linestring(0 0, 5 5)', 'Point(10 0)');
--- Answer: null
+-- Answer: NULL
 
 SELECT Degrees(ST_Azimuth('Point(0 1)', 'Point(10 1)'));
 -- Answer: 90.0

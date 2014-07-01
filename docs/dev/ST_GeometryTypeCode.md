@@ -16,8 +16,8 @@ INT ST_GeometryTypeCode(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Returns the geometry type code from OGC SFS 
-<a href="http://www.opengeospatial.org/standards/sfs" target="_blank">version 1.2.1</a>. 
+Returns the geometry type code from OGC SFS
+<a href="http://www.opengeospatial.org/standards/sfs" target="_blank">version 1.2.1</a>.
 This function does not take account of z or m values.
 This function is not part of SFS. It is used in constraints.
 

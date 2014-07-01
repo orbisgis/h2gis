@@ -16,7 +16,7 @@ GEOMETRY ST_Force2D(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
-Returns a `GEOMETRY` in 2-dimensional. The output `GEOMETRY` will only have the X and Y coordinates.
+Returns a Geometry in 2-dimensional. The output Geometry will only have the X and Y coordinates.
 
 ### Examples
 
