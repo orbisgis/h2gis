@@ -12,43 +12,59 @@ permalink: /docs/dev/ST_IsValidDetail/
 ### Signatures
 
 {% highlight mysql %}
-Object[] ST_IsValidDetail(GEOMETRY geom);
-Object[] ST_IsValidDetail(GEOMETRY geom, INT flag);
+ARRAY ST_IsValidDetail(GEOMETRY geom);
+ARRAY ST_IsValidDetail(GEOMETRY geom, INT selfTouchValid);
 {% endhighlight %}
 
 ### Description
-Returns a valid detail (isvalid, reason, errorLocation) as an array of objects.
 
-The value for `flag` can be:
-* 0 = It will based on the OGC geometry model(Default value),
-* 1 = It will validate inverted shells and exverted holes according the ESRI SDE model.
+Returns an H2 `ARRAY` containing 3 elements describing whether
+`geom` is valid:
+
+1. A `BOOLEAN` stating whether `geom` is valid or not
+2. The reason why
+3. The error location, or `NULL` if `geom` is valid
+
+Optional variable `selfTouchValid` sets whether polygons using
+**self-touching rings** to form holes are reported as valid. If this
+flag is set, the following self-touching conditions are treated as
+being valid:
+
+* The shell ring self-touches to create a hole touching the shell
+* A hole ring self-touches to create two holes touching at a point
+
+The default of `0` (following the OGC SFS standard) is that this
+condition is not valid. Set it to `1` to consider it valid (c.f.
+ESRI SDE model).
 
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_IsvalidDetail('POLYGON((210 440, 134 235, 145 233,
+SELECT ST_IsValidDetail('POLYGON((210 440, 134 235, 145 233,
                                   310 200, 340 360, 210 440))');
--- Answer: (TRUE, Valid Geometry, null)
+-- Answer: (TRUE, Valid Geometry, NULL)
 
-SELECT ST_IsvalidDetail('POLYGON((0 0 1, 10 0 1, 10 5 1, 6 -2 1,
-                                  0 0 1))');
+SELECT ST_IsValidDetail(
+            'POLYGON((0 0 1, 10 0 1, 10 5 1, 6 -2 1, 0 0 1))');
 -- Answer: (FALSE, Self-intersection, POINT(7.142857142857143 0 1))
 
-SELECT ST_IsvalidDetail('POLYGON((1 1, 1 6, 5 1, 1 1),
-                                 (3 4, 3 5, 4 4, 3 4))', 0);
+SELECT ST_IsValidDetail('POLYGON((1 1, 1 6, 5 1, 1 1),
+                                 (3 4, 3 5, 4 4, 3 4))');
 -- Answer: (FALSE, Hole lies outside shell, POINT(3 4))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_IsValidDetail_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_IsValidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,
-                                  3 0))', 0);
+-- The next two examples show that the validation model we choose
+-- is important.
+SELECT ST_IsValidDetail(
+            'POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2, 3 0))', 0);
 -- Answer: (FALSE, Ring Self-intersection, POINT(3 0))
 
-SELECT ST_IsValidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,
-                                  3 0))', 1);
--- Answer: (TRUE, Valid Geometry, null)
+SELECT ST_IsValidDetail(
+            'POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2, 3 0))', 1);
+-- Answer: (TRUE, Valid Geometry, NULL)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_IsValidDetail_2.png"/>
@@ -56,4 +72,7 @@ SELECT ST_IsValidDetail('POLYGON((3 0, 0 3, 6 3, 3 0, 4 2, 2 2,
 ##### See also
 
 * [`ST_IsValid`](../ST_IsValid), [`ST_IsValidReason`](../ST_IsValidReason)
-* <a href="https://github.com/irstv/H2GIS/blob/847a47a2bd304a556434b89c2d31ab3ba547bcd0/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_IsValidDetail.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_IsValidDetail.java" target="_blank">Source code</a>
+* JTS [IsValidOp][jts]
+
+[jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/operation/valid/IsValidOp.html
