@@ -33,5 +33,8 @@ SELECT ST_IsValid('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))');
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/predicates/ST_IsValid.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_IsValid.java" target="_blank">Source code</a>
+* JTS [IsValidOp][jts]
 * Added: <a href="https://github.com/irstv/H2GIS/pull/26" target="_blank">#26</a>
+
+[jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/operation/valid/IsValidOp.html
