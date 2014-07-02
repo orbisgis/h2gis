@@ -32,7 +32,7 @@ SELECT ST_Is3D('LINESTRING(1 1 1, 2 1, 2 2, 1 2, 1 1)'::GEOMETRY);
 
 -- All z-coordinates
 SELECT ST_Is3D('LINESTRING(1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)'
-               ::GEOMETRY);
+              ::GEOMETRY);
 -- Answer: 1
 {% endhighlight %}
 

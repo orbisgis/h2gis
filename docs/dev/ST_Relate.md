@@ -13,7 +13,7 @@ permalink: /docs/dev/ST_Relate/
 
 {% highlight mysql %}
 VARCHAR ST_Relate(GEOMETRY geomA, GEOMETRY geomB);
-BOOLEAN ST_Relate(GEOMETRY geomA, GEOMETRY geomB, varchar iMatrix);
+BOOLEAN ST_Relate(GEOMETRY geomA, GEOMETRY geomB, VARCHAR iMatrix);
 {% endhighlight %}
 
 ### Description

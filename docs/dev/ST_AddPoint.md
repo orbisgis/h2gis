@@ -59,7 +59,7 @@ SELECT ST_AddPoint('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
 
 {% highlight mysql %}
 CREATE TABLE input(poly POLYGON, p POINT);
-INSERT INTO input VALUES('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
+INSERT INTO input VALUES ('POLYGON((1 1, 1 5, 5 5, 5 1, 1 1),
                                   (2 2, 4 2, 4 4, 2 4, 2 2))',
                          'POINT(3 3)');
 

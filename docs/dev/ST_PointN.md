@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_PointN/
 ### Signature
 
 {% highlight mysql %}
-POINT ST_PointN(Geometry geometry, int n);
+POINT ST_PointN(GEOMETRY geometry, INT n);
 {% endhighlight %}
 
 ### Description

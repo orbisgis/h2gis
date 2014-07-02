@@ -8,7 +8,7 @@ prev_section: ST_Envelope
 next_section: ST_Extent
 permalink: /docs/dev/ST_Explode/
 ---
- 
+
 ### Signature
 
 {% highlight mysql %}
@@ -17,8 +17,8 @@ tableName[*, explod_id] ST_Explode('tableName', 'fieldName');
 {% endhighlight %}
 
 ### Description
-Explodes the `GEOMETRYCOLLECTION`s in the `fieldName` column of table `tableName` into multiple Geometries. 
-If no field name is specified, the first Geometry column is used. 
+Explodes the `GEOMETRYCOLLECTION`s in the `fieldName` column of table `tableName` into multiple Geometries.
+If no field name is specified, the first Geometry column is used.
 
 ### Examples
 
@@ -29,8 +29,8 @@ SELECT * FROM ST_Explode('test_point');
 -- Answer:
 --    |   THE_GEOM  | EXPLOD_ID |
 --    | ------------|-----------|
---    | POINT (1 1) |     1     |
---    | POINT (2 2) |     2     |
+--    | POINT(1 1)  |     1     |
+--    | POINT(2 2)  |     2     |
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Explode.png"/>
@@ -43,8 +43,8 @@ SELECT * FROM ST_Explode('test_point', 'the_geomB');
 -- Answer:
 --    |         THE_GEOMA         | THE_GEOMB   | EXPLOD_ID |
 --    |---------------------------|-------------|-----------|
---    | MULTIPOINT ((1 1), (2 2)) | POINT (3 3) |      1    |
---    | MULTIPOINT ((1 1), (2 2)) | POINT (2 6) |      2    |
+--    | MULTIPOINT((1 1), (2 2))  | POINT(3 3)  |      1    |
+--    | MULTIPOINT((1 1), (2 2))  | POINT(2 6)  |      2    |
 {% endhighlight %}
 
 ##### See also

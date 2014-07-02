@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_LineFromWKB/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_LineFromWKB(binary wkb, int srid);
+GEOMETRY ST_LineFromWKB(binary wkb, INT srid);
 {% endhighlight %}
 
 ### Description

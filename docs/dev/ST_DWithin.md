@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_DWithin/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_DWithin(Geometry geomA, Geometry geomB, double distance);
+BOOLEAN ST_DWithin(GEOMETRY geomA, GEOMETRY geomB, DOUBLE distance);
 {% endhighlight %}
 
 ### Description
@@ -20,7 +20,6 @@ boolean ST_DWithin(Geometry geomA, Geometry geomB, double distance);
 Returns true if `geomA` is within `distance` of `geomB`.
 
 ### Examples
-
 
 | geomA POLYGON                        | geomB POLYGON                           |
 |--------------------------------------|-----------------------------------------|
@@ -30,25 +29,25 @@ Returns true if `geomA` is within `distance` of `geomB`.
 
 {% highlight mysql %}
 SELECT ST_DWithin(geomA, geomB, 2.0) FROM input_table;
--- Answer:    true
+-- Answer:    TRUE
 
 SELECT ST_DWithin(geomA, geomB, 1.0) FROM input_table;
--- Answer:    false
+-- Answer:    FALSE
 
 SELECT ST_DWithin(geomA, geomB, -1.0) FROM input_table;
--- Answer:    false
+-- Answer:    FALSE
 
 SELECT ST_DWithin(geomA, geomB, 3.0) FROM input_table;
--- Answer:    true
+-- Answer:    TRUE
 
 SELECT ST_DWithin(geomA, geomA, -1.0) FROM input_table;
--- Answer:    false
+-- Answer:    FALSE
 
 SELECT ST_DWithin(geomA, geomA, 0.0) FROM input_table;
--- Answer:    true
+-- Answer:    TRUE
 
 SELECT ST_DWithin(geomA, geomA, 5000.0) FROM input_table;
--- Answer:    true
+-- Answer:    TRUE
 {% endhighlight %}
 
 ##### See also

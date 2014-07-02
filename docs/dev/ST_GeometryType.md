@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_GeometryType/
 ### Signature
 
 {% highlight mysql %}
-varchar ST_GeometryType(GEOMETRY geom);
+VARCHAR ST_GeometryType(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -38,7 +38,7 @@ SELECT ST_GeometryType('GEOMETRYCOLLECTION(
                           MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
                           LINESTRING(2 6, 6 2),
                           POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
--- Answer: GeometryCollection
+-- Answer: GEOMETRYCOLLECTION
 {% endhighlight %}
 
 ##### See also

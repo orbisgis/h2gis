@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_IsSimple/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_IsSimple(GEOMETRY geom);
+BOOLEAN ST_IsSimple(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -39,18 +39,18 @@ Simplicity is defined for each Geometry subclass as follows:
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_IsSimple('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0), 
-                            (1 1, 2 1, 2 5, 1 5, 1 1), 
+SELECT ST_IsSimple('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
+                            (1 1, 2 1, 2 5, 1 5, 1 1),
                             (8 5, 8 4, 9 4, 9 5, 8 5))');
 -- Answer: TRUE
 
-SELECT ST_IsSimple('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 2), 
+SELECT ST_IsSimple('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 2),
                                     (5 0, 7 0, 7 1, 5 1, 5 0))');
 -- Answer: TRUE
 
 SELECT ST_IsSimple('GEOMETRYCOLLECTION(
-                      MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                      LINESTRING(2 6, 6 2), 
+                      MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
+                      LINESTRING(2 6, 6 2),
                       POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: TRUE
 

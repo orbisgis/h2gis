@@ -26,7 +26,7 @@ For use in contraints.
 
 | CODE |    GEOMETRY TYPE    |
 | ---- | ------------------- |
-|    0 | `GEOMETRY`          |
+|    0 | Geometry          |
 |    1 | `POINT`             |
 |    2 | `LINESTRING`        |
 |    3 | `POLYGON`           |

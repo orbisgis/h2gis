@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_Dimension/
 ### Signature
 
 {% highlight mysql %}
-int ST_Dimension(GEOMETRY geom);
+INT ST_Dimension(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

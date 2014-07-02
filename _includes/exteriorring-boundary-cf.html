@@ -1,9 +1,9 @@
 {% highlight mysql %}
-SELECT ST_ExteriorRing('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0), 
+SELECT ST_ExteriorRing('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
                                 (1 1, 2 1, 2 5, 1 5, 1 1))') ER,
-       ST_Boundary('POLYGON ((0 0, 10 0, 10 6, 0 6, 0 0), 
+       ST_Boundary('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
                              (1 1, 2 1, 2 5, 1 5, 1 1))') BDRY;
--- Answer: 
+-- Answer:
 -- |              ER             |            BDRY              |
 -- |-----------------------------|------------------------------|
 -- | LINEARRING(0 0, 10 0, 10 6, | MULTILINESTRING(             |

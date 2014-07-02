@@ -7,5 +7,4 @@ next_section: geom2D/affine-transformations
 permalink: /docs/dev/geom2D/list/
 ---
 
-
 {% include all_2D_functions.html %}

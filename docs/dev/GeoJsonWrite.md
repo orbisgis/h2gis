@@ -25,7 +25,7 @@ Writes table `tableName` to a [GeoJSON][wiki] file located at
 {% highlight mysql %}
 -- Write a spatial table to a GeoJSON file:
 CREATE TABLE TEST(ID INT PRIMARY KEY, THE_GEOM POINT);
-INSERT INTO TEST VALUES(1, 'POINT(0 1)');
+INSERT INTO TEST VALUES (1, 'POINT(0 1)');
 CALL GeoJsonWrite('/home/user/test.geojson', 'TEST');
 
 -- Read it back:
@@ -34,7 +34,7 @@ SELECT * FROM TEST2;
 -- Answer:
 -- | THE_GEOM    | ID |
 -- |-------------|----|
--- | POINT (0 1) | 1  |
+-- | POINT(0 1)  | 1  |
 {% endhighlight %}
 
 ##### See also

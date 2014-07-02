@@ -3,7 +3,7 @@ layout: docs
 title: ST_ConnectedComponents
 category: applications/h2network
 is_function: true
-description: 
+description:
 prev_section: ST_Accessibility
 next_section: ST_Graph
 permalink: /docs/dev/ST_ConnectedComponents/
@@ -15,7 +15,6 @@ permalink: /docs/dev/ST_ConnectedComponents/
 {% endhighlight %}
 
 ### Description
-
 
 ### Examples
 

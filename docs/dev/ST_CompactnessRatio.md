@@ -8,11 +8,11 @@ prev_section: ST_Centroid
 next_section: ST_CoordDim
 permalink: /docs/dev/ST_CompactnessRatio/
 ---
- 
+
 ### Signature
 
 {% highlight mysql %}
-double ST_CompactnessRatio(POLYGON poly);
+DOUBLE ST_CompactnessRatio(POLYGON poly);
 {% endhighlight %}
 
 ### Description
@@ -29,8 +29,8 @@ This function accepts only `POLYGON`s.
 {% highlight mysql %}
 CREATE TABLE input_table(geom GEOMETRY);
 INSERT INTO input_table VALUES
-    ('POLYGON ((9 0, 9 11, 10 11, 10 0, 9 0))'),
-    ('POLYGON ((1 1, 1 7, 7 7, 7 1, 1 1))');
+    ('POLYGON((9 0, 9 11, 10 11, 10 0, 9 0))'),
+    ('POLYGON((1 1, 1 7, 7 7, 7 1, 1 1))');
 SELECT ST_CompactnessRatio(geom) ratio FROM input_table;
 -- Answer:
 --    |         RATIO       |
@@ -57,7 +57,7 @@ SELECT ST_CompactnessRatio(ST_MakeEllipse('POINT(1 2)', 10, 10));
 --    result is closer to 1 than the result from ST_Buffer.
 
 SELECT ST_CompactnessRatio(
-    'POLYGON ((4 12, 1 6, 6 3, 15 2, 17 5, 16 10, 9 14, 4 12), 
+    'POLYGON((4 12, 1 6, 6 3, 15 2, 17 5, 16 10, 9 14, 4 12),
               (7 9, 6 7, 10 6, 10 8, 7 9))');
 -- Answer: 0.7142366622175312
 
@@ -66,7 +66,7 @@ SELECT ST_CompactnessRatio(
 -- Answer: 0.8683215054699213
 
 SELECT ST_CompactnessRatio('POINT(1 2)');
--- Answer: null 
+-- Answer: NULL
 {% endhighlight %}
 
 ##### See also

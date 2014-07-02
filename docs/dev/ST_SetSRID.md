@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_SetSRID/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_SetSRID(GEOMETRY geom, int srid);
+GEOMETRY ST_SetSRID(GEOMETRY geom, INT srid);
 {% endhighlight %}
 
 ### Description

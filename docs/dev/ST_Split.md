@@ -55,7 +55,7 @@ SELECT ST_Split('LINESTRING(1 2, 3 5, 2 3)',
 SELECT ST_Split('LINESTRING(1 2, 3 5, 2 3)',
                 'POINT(1 4)',
                 2);
--- Answer: MULTILINESTRING ((1 2,
+-- Answer: MULTILINESTRING((1 2,
 --                           1.9230769230769231 3.3846153846153846),
 --                          (1.9230769230769231 3.3846153846153846,
 --                           3 5, 2 3))

@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_XMin/
 ### Signature
 
 {% highlight mysql %}
-double ST_XMin(GEOMETRY geom);
+DOUBLE ST_XMin(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_ZMax/
 ### Signature
 
 {% highlight mysql %}
-double ST_ZMax(GEOMETRY geom);
+DOUBLE ST_ZMax(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

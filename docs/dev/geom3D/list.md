@@ -7,5 +7,4 @@ next_section: geom3D/geometry-conversion
 permalink: /docs/dev/geom3D/list/
 ---
 
-
 {% include all_3D_functions.html %}

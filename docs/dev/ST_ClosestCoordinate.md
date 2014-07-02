@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_ClosestCoordinate/
 ### Signatures
 
 {% highlight mysql %}
-{POINT,MULTIPOINT} ST_ClosestCoordinate(POINT point, GEOMETRY geom);
+{POINT, MULTIPOINT} ST_ClosestCoordinate(POINT point, GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -25,7 +25,7 @@ Returns the coordinate of `geom` closest to `point` using 2D distances
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_ClosestCoordinate('POINT(0 0)', 
+SELECT ST_ClosestCoordinate('POINT(0 0)',
                             'POLYGON((2 2, 10 0, 10 5, 0 5, 2 2))');
 -- Answer: POINT(2 2)
 {% endhighlight %}
@@ -33,7 +33,7 @@ SELECT ST_ClosestCoordinate('POINT(0 0)',
 <img class="displayed" src="../ST_ClosestCoordinate_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_ClosestCoordinate('POINT(4 2.5)', 
+SELECT ST_ClosestCoordinate('POINT(4 2.5)',
                             'POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
 -- Answer: MULTIPOINT((0 0), (0 5))
 {% endhighlight %}
@@ -41,7 +41,7 @@ SELECT ST_ClosestCoordinate('POINT(4 2.5)',
 <img class="displayed" src="../ST_ClosestCoordinate_2.png"/>
 
 {% highlight mysql %}
-SELECT ST_ClosestCoordinate('POINT(4 2)', 
+SELECT ST_ClosestCoordinate('POINT(4 2)',
                             'LINESTRING(10 0, 10 5, 0 5)');
 -- Answer: POINT(0 5)
 {% endhighlight %}
@@ -56,16 +56,16 @@ INSERT INTO input_table VALUES
     ('POINT(5 2.5)'),
     ('POINT(6 2.5)'),
     ('POINT(5 7)');
-SELECT ST_ClosestCoordinate(point, 
+SELECT ST_ClosestCoordinate(point,
     'POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))') CLCOORD FROM input_table;
 -- Answer:
 --    |                 CLCOORD                   |
 --    |-------------------------------------------|
---    | POINT (0 0)                               |
---    | MULTIPOINT ((0 0), (0 5))                 |
---    | MULTIPOINT ((0 0), (10 0), (10 5), (0 5)) |
---    | MULTIPOINT ((10 0), (10 5))               |
---    | MULTIPOINT ((0 5), (10 5))                |
+--    | POINT(0 0)                                |
+--    | MULTIPOINT((0 0), (0 5))                  |
+--    | MULTIPOINT((0 0), (10 0), (10 5), (0 5))  |
+--    | MULTIPOINT((10 0), (10 5))                |
+--    | MULTIPOINT((0 5), (10 5))                 |
 {% endhighlight %}
 
 ##### See also

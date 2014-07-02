@@ -67,7 +67,7 @@ SELECT ST_Polygonize(ST_Union('MULTILINESTRING((1 2, 2 4, 5 2),
 SELECT ST_Polygonize(
             ST_Union('MULTILINESTRING((1 2, 2 4, 5 2),
                                       (1 2, 1 4, 4 1, 4 4, 5 2))'));
-Answer: MULTIPOLYGON (((4 2.6666666666666665, 4 1,
+Answer: MULTIPOLYGON(((4 2.6666666666666665, 4 1,
                         1.6666666666666667 3.3333333333333335,
                         2 4, 4 2.6666666666666665)),
                       ((1.6666666666666667 3.3333333333333335,

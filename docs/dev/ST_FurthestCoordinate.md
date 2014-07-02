@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_FurthestCoordinate/
 ### Signatures
 
 {% highlight mysql %}
-{POINT,MULTIPOINT} ST_FurthestCoordinate(POINT point, GEOMETRY geom);
+{POINT, MULTIPOINT} ST_FurthestCoordinate(POINT point, GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -25,7 +25,7 @@ Returns the coordinate of `geom` furthest from `point` using 2D distances
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_FurthestCoordinate('POINT(0 0)', 
+SELECT ST_FurthestCoordinate('POINT(0 0)',
                              'POLYGON((2 2, 10 0, 10 5, 0 5, 2 2))');
 -- Answer: POINT(10 5)
 {% endhighlight %}
@@ -33,7 +33,7 @@ SELECT ST_FurthestCoordinate('POINT(0 0)',
 <img class="displayed" src="../ST_FurthestCoordinate_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_FurthestCoordinate('POINT(5 2.5)', 
+SELECT ST_FurthestCoordinate('POINT(5 2.5)',
                              'LINESTRING(3 1, 2 2, 2 4, 4 5)');
 -- Answer: POINT(2 4)
 {% endhighlight %}
@@ -41,7 +41,7 @@ SELECT ST_FurthestCoordinate('POINT(5 2.5)',
 <img class="displayed" src="../ST_FurthestCoordinate_2.png"/>
 
 {% highlight mysql %}
-SELECT ST_FurthestCoordinate('POINT(5 2.5)', 
+SELECT ST_FurthestCoordinate('POINT(5 2.5)',
                              'POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
 -- Answer: MULTIPOINT((10 5), (0 0), (0 5), (10 0))
 {% endhighlight %}

@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_Length/
 ### Signature
 
 {% highlight mysql %}
-double ST_Length(GEOMETRY geom);
+DOUBLE ST_Length(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -39,13 +39,13 @@ SELECT ST_Length('LINESTRING(2 1, 1 3, 5 2)');
 SELECT ST_Length('POLYGON((1 2, 4 2, 4 6, 1 6, 1 2))');
 -- Answer: 14.0
 
-SELECT ST_Length('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)), 
+SELECT ST_Length('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
                                ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: 20.0
 
 SELECT ST_Length('GEOMETRYCOLLECTION(
-                    MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                    LINESTRING(2 1, 1 3, 5 2), 
+                    MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
+                    LINESTRING(2 1, 1 3, 5 2),
                     POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: 20.35917360311745
 {% endhighlight %}

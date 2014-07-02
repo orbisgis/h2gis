@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_Transform/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_Transform(GEOMETRY geom, int srid);
+GEOMETRY ST_Transform(GEOMETRY geom, INT srid);
 {% endhighlight %}
 
 ### Description
@@ -28,7 +28,6 @@ CRS specified by `srid`.
     enriched by other CRSes.</p>
 </div>
 
-
 {% include sfs-1-2-1.html %}
 
 ### Examples
@@ -36,7 +35,7 @@ CRS specified by `srid`.
 {% highlight mysql %}
 SELECT ST_Transform(ST_GeomFromText(
     'POINT(584173 2594514)', 27572), 4326);
--- Answer: POINT (2.1145411092971056 50.345602339855326)
+-- Answer: POINT(2.1145411092971056 50.345602339855326)
 {% endhighlight %}
 
 ##### See also

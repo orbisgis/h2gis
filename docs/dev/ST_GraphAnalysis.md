@@ -3,7 +3,7 @@ layout: docs
 title: ST_GraphAnalysis
 category: applications/h2network
 is_function: true
-description: 
+description:
 prev_section: ST_Graph
 next_section: ST_ShortestPath
 permalink: /docs/dev/ST_GraphAnalysis/
@@ -15,7 +15,6 @@ permalink: /docs/dev/ST_GraphAnalysis/
 {% endhighlight %}
 
 ### Description
-
 
 ### Examples
 

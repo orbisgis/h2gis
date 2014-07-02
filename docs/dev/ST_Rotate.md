@@ -3,7 +3,7 @@ layout: docs
 title: ST_Rotate
 category: geom2D/affine-transformations
 is_function: true
-description: Rotate a Geometry counter-clockwise by an angle (in radians) about a point 
+description: Rotate a Geometry counter-clockwise by an angle (in radians) about a point
 prev_section: geom2D/affine-transformations
 next_section: ST_Scale
 permalink: /docs/dev/ST_Rotate/
@@ -12,9 +12,9 @@ permalink: /docs/dev/ST_Rotate/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_Rotate(GEOMETRY geom, double angle);
-GEOMETRY ST_Rotate(GEOMETRY geom, double angle, POINT origin);
-GEOMETRY ST_Rotate(GEOMETRY geom, double angle, double x, double y);
+GEOMETRY ST_Rotate(GEOMETRY geom, DOUBLE angle);
+GEOMETRY ST_Rotate(GEOMETRY geom, DOUBLE angle, POINT origin);
+GEOMETRY ST_Rotate(GEOMETRY geom, DOUBLE angle, DOUBLE x, DOUBLE y);
 {% endhighlight %}
 
 ### Description

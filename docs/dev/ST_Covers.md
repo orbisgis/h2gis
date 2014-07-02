@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_Covers/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_Covers(Geometry geomA, Geometry geomB);
+BOOLEAN ST_Covers(GEOMETRY geomA, GEOMETRY geomB);
 {% endhighlight %}
 
 ### Description
@@ -29,19 +29,19 @@ Returns true if no point in `geomB` is outside `geomA`.
 
 {% highlight mysql %}
 SELECT ST_Covers(smallc, smallc) FROM input_table;
--- Answer:    true
+-- Answer:    TRUE
 
 SELECT ST_Covers(smallc, bigc) FROM input_table;
--- Answer:    false
+-- Answer:    FALSE
 
 SELECT ST_Covers(bigc, smallc) FROM input_table;
--- Answer:    true
+-- Answer:    TRUE
 
 SELECT ST_Covers(bigc, ST_ExteriorRing(bigc)) FROM input_table;
--- Answer:    true
+-- Answer:    TRUE
 
 SELECT ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;
--- Answer:    false
+-- Answer:    FALSE
 {% endhighlight %}
 
 ##### See also

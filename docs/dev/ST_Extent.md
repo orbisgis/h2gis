@@ -8,7 +8,7 @@ prev_section: ST_Explode
 next_section: ST_ExteriorRing
 permalink: /docs/dev/ST_Extent/
 ---
- 
+
 ### Signature
 
 {% highlight mysql %}
@@ -24,7 +24,7 @@ Returns the minimum bounding box that encloses `geom` as a Geometry.
 
 {% highlight mysql %}
 SELECT ST_Extent('MULTIPOINT((5 6), (1 2), (3 4), (10 3))'::Geometry);
--- Answer: POLYGON ((1 2, 1 6, 10 6, 10 2, 1 2))
+-- Answer: POLYGON((1 2, 1 6, 10 6, 10 2, 1 2))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Extent1.png"/>

@@ -8,7 +8,7 @@ INSERT INTO INPUT_TABLE VALUES (
 -- Notice that the result of ST_SimplifyPreserveTopology contains
 -- more vertices than the result of ST_Simplify. In general, it will
 -- contain enough to ensure validity.
-SELECT ST_SimplifyPreserveTopology(geom, 20) SPT, 
+SELECT ST_SimplifyPreserveTopology(geom, 20) SPT,
        ST_Simplify(geom, 20) S FROM INPUT_TABLE;
 
 -- Answer:
@@ -29,7 +29,7 @@ INSERT INTO INPUT_TABLE VALUES (
 
 -- Here ST_SimplifyPreserveTopology keeps the hole whereas
 -- ST_Simplify removes it:
-SELECT ST_SimplifyPreserveTopology(geom, 3) SPT, 
+SELECT ST_SimplifyPreserveTopology(geom, 3) SPT,
        ST_Simplify(geom, 3) S FROM INPUT_TABLE;
 
 -- Answer:

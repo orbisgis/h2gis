@@ -3,7 +3,7 @@ layout: docs
 title: ST_Contains
 category: geom2D/predicates
 is_function: true
-description: 
+description:
 prev_section: geom2D/predicates
 next_section: ST_Covers
 permalink: /docs/dev/ST_Contains/
@@ -13,7 +13,7 @@ description: Return true if Geometry A contains Geometry B
 ### Signatures
 
 {% highlight mysql %}
-boolean ST_Contains(GEOMETRY geomA, GEOMETRY geomB);
+BOOLEAN ST_Contains(GEOMETRY geomA, GEOMETRY geomB);
 {% endhighlight %}
 
 ### Description
@@ -28,48 +28,48 @@ Returns true if `geomA` contains `geomB`.
 
 {% highlight mysql %}
 SELECT ST_Contains(geomA, geomB) FROM input_table;
--- Answer:    True
+-- Answer:    TRUE
 {% endhighlight %}
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
-| POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1)) | POLYGON ((2 2, 7 2, 7 5, 2 5, 2 2)) |
+| POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POLYGON((2 2, 7 2, 7 5, 2 5, 2 2))  |
 
 <img class="displayed" src="../ST_Contains_1.png"/>
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
-| POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1)) | POLYGON ((1 2, 6 2, 6 5, 1 5, 1 2)) |
+| POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POLYGON((1 2, 6 2, 6 5, 1 5, 1 2))  |
 
 <img class="displayed" src="../ST_Contains_4.png"/>
 
 | geomA POLYGON                       | geomB LINESTRING      |
 |-------------------------------------|-----------------------|
-| POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1)) | LINESTRING (2 6, 6 2) |
+| POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | LINESTRING(2 6, 6 2)  |
 
 <img class="displayed" src="../ST_Contains_2.png"/>
 
 | geomA POLYGON                       | geomB LINESTRING           |
 |-------------------------------------|----------------------------|
-| POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1)) | LINESTRING (1 2, 1 6, 5 2) |
+| POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | LINESTRING(1 2, 1 6, 5 2)  |
 
 <img class="displayed" src="../ST_Contains_5.png"/>
 
 | geomA POLYGON                       | geomB POINT |
 |-------------------------------------|-------------|
-| POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1)) | POINT (4 4) |
+| POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POINT(4 4)  |
 
 <img class="displayed" src="../ST_Contains_3.png"/>
 
 | geomA LINESTRING           | geomB LINESTRING      |
 |----------------------------|-----------------------|
-| LINESTRING (2 1, 5 3, 2 6) | LINESTRING (3 5, 5 3) |
+| LINESTRING(2 1, 5 3, 2 6)  | LINESTRING(3 5, 5 3)  |
 
 <img class="displayed" src="../ST_Contains_10.png"/>
 
 | geomA LINESTRING           | geomB POINT |
 |----------------------------|-------------|
-| LINESTRING (2 1, 5 3, 2 6) | POINT (4 4) |
+| LINESTRING(2 1, 5 3, 2 6)  | POINT(4 4)  |
 
 <img class="displayed" src="../ST_Contains_11.png"/>
 
@@ -77,40 +77,38 @@ SELECT ST_Contains(geomA, geomB) FROM input_table;
 
 {% highlight mysql %}
 SELECT ST_Contains(geomA, geomB) FROM input_table;
--- Answer:    False
+-- Answer:    FALSE
 {% endhighlight %}
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
-| POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1)) | POLYGON ((0 2, 5 2, 5 5, 0 5, 0 2)) |
+| POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POLYGON((0 2, 5 2, 5 5, 0 5, 0 2))  |
 
 <img class="displayed" src="../ST_Contains_7.png"/>
 
 | geomA POLYGON                       | geomB LINESTRING      |
 |-------------------------------------|-----------------------|
-| POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1)) | LINESTRING (2 6, 0 8) |
+| POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | LINESTRING(2 6, 0 8)  |
 
 <img class="displayed" src="../ST_Contains_8.png"/>
 
 | geomA POLYGON                       | geomB LINESTRING      |
 |-------------------------------------|-----------------------|
-| POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1)) | LINESTRING (1 2, 1 6) |
+| POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | LINESTRING(1 2, 1 6)  |
 
 <img class="displayed" src="../ST_Contains_12.png"/>
 
 | geomA POLYGON                       | geomB POINT |
 |-------------------------------------|-------------|
-| POLYGON ((1 1, 8 1, 8 7, 1 7, 1 1)) | POINT (8 4) |
+| POLYGON((1 1, 8 1, 8 7, 1 7, 1 1))  | POINT(8 4)  |
 
 <img class="displayed" src="../ST_Contains_6.png"/>
 
 | geomA POLYGON                       | geomB POINT |
 |-------------------------------------|-------------|
-| POLYGON ((1 1, 7 1, 7 7, 1 7, 1 1)) | POINT (8 4) |
+| POLYGON((1 1, 7 1, 7 7, 1 7, 1 1))  | POINT(8 4)  |
 
 <img class="displayed" src="../ST_Contains_9.png"/>
-
-
 
 ##### See also
 

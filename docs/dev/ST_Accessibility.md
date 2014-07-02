@@ -16,7 +16,6 @@ permalink: /docs/dev/ST_Accessibility/
 
 ### Description
 
-
 ### Examples
 
 {% highlight mysql %}

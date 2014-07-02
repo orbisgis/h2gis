@@ -25,10 +25,10 @@ Returns `GEOMETRYCOLLECTION EMPTY` for Geometries of dimension less than 2.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_Holes('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))');
+SELECT ST_Holes('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
 -- Answer: GEOMETRYCOLLECTION EMPTY
 
-SELECT ST_Holes('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0),
+SELECT ST_Holes('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0),
                           (1 1, 2 1, 2 4, 1 4, 1 1))');
 -- Answer: GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)))
 {% endhighlight %}
@@ -38,9 +38,9 @@ SELECT ST_Holes('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0),
 {% highlight mysql %}
 SELECT ST_Holes(
     'GEOMETRYCOLLECTION(
-       POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0),
+       POLYGON((0 0, 10 0, 10 5, 0 5, 0 0),
                 (1 1, 2 1, 2 4, 1 4, 1 1)),
-       POLYGON ((11 6, 14 6, 14 9, 11 9, 11 6),
+       POLYGON((11 6, 14 6, 14 9, 11 9, 11 6),
                 (12 7, 14 7, 14 8, 12 8, 12 7)))');
 -- Answer: GEOMETRYCOLLECTION(
 --           POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)),

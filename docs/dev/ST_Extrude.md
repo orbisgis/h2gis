@@ -14,7 +14,7 @@ permalink: /docs/dev/ST_Extrude/
 {% highlight mysql %}
 GEOMETRYCOLLECTION ST_Extrude(GEOMETRY geom, DOUBLE height);
 GEOMETRYCOLLECTION ST_Extrude(GEOMETRY geom, DOUBLE height,
-                              int flag);
+                              INT flag);
 {% endhighlight %}
 
 ### Description

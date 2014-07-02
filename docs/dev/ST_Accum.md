@@ -24,15 +24,15 @@ This aggregate function constructs a `GEOMETRYCOLLECTION` from a column of Geome
 {% highlight mysql %}
 CREATE TABLE input_table(geom GEOMETRY);
 INSERT INTO input_table VALUES
-    ('POLYGON ((9 0, 9 11, 10 11, 10 0, 9 0))'),
-    ('POLYGON ((1 1, 1 7, 7 7, 7 1, 1 1))'),
-    ('POINT (1 1)'),
-    ('POINT (2 2)');
+    ('POLYGON((9 0, 9 11, 10 11, 10 0, 9 0))'),
+    ('POLYGON((1 1, 1 7, 7 7, 7 1, 1 1))'),
+    ('POINT(1 1)'),
+    ('POINT(2 2)');
 SELECT ST_Accum(geom) FROM input_table;
--- Answer: GEOMETRYCOLLECTION (
---    POLYGON ((9 0, 9 11, 10 11, 10 0, 9 0)),
---    POLYGON ((1 1, 1 7, 7 7, 7 1, 1 1)),
---    POINT (1 1), POINT (2 2))
+-- Answer: GEOMETRYCOLLECTION(
+--    POLYGON((9 0, 9 11, 10 11, 10 0, 9 0)),
+--    POLYGON((1 1, 1 7, 7 7, 7 1, 1 1)),
+--    POINT(1 1), POINT(2 2))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Accum.png"/>
