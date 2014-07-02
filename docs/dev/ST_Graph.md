@@ -24,7 +24,7 @@ BOOLEAN ST_Graph(inputTable varchar, columnName varchar,
 
 Produces two tables (nodes and edges) from the geometries contained in column
 `columnName` of table `inputTable`. If no column is specified, then the first
-GEOMETRY column is used. Returns `true` if the operation is successful.
+Geometry column is used. Returns `true` if the operation is successful.
 
 | Variable        | Default value                   |
 |-----------------|---------------------------------|
@@ -68,7 +68,7 @@ GEOMETRY column is used. Returns `true` if the operation is successful.
   <li>Edge geometries are left untouched.</li>
   <li> <i>Coordinates</i> within a given tolerance of each other are not
   necessarily snapped together. Only the first and last coordinates of a
-  GEOMETRY are considered to be nodes, and only <i>nodes</i> within a given
+  Geometry are considered to be nodes, and only <i>nodes</i> within a given
   tolerance of each other are snapped together.</li>
   </ul>
   </p>

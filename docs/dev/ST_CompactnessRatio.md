@@ -58,7 +58,7 @@ SELECT ST_CompactnessRatio(ST_MakeEllipse('POINT(1 2)', 10, 10));
 
 SELECT ST_CompactnessRatio(
     'POLYGON((4 12, 1 6, 6 3, 15 2, 17 5, 16 10, 9 14, 4 12),
-              (7 9, 6 7, 10 6, 10 8, 7 9))');
+             (7 9, 6 7, 10 6, 10 8, 7 9))');
 -- Answer: 0.7142366622175312
 
 SELECT ST_CompactnessRatio(
