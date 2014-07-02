@@ -24,4 +24,4 @@ permalink: /docs/dev/ST_Accessibility/
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/d3c753049f80b83ab85271508550bf92365fb314/h2network/src/main/java/org/h2gis/network/graph_creator/ST_Accessibility.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_Accessibility.java" target="_blank">Source code</a>
