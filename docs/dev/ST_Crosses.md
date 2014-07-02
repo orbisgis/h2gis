@@ -20,9 +20,13 @@ boolean ST_Crosses(GEOMETRY geomA, GEOMETRY geomB);
 Returns true if `geomA` crosses `geomB`.
 
 Crosses means that:
-  * The intersection between `geomA` and `geomB` gives a new Geometry whose dimension is less than the maximum dimension of the input Geometries.
-  * `geomA` and `geomB` have some, but not all interior points in common.
-  * The intersection set is interior to both `geomA` and `geomB`.
+
+* The intersection between `geomA` and `geomB` gives a new Geometry
+  whose dimension is less than the maximum dimension of the input
+  Geometries.
+* `geomA` and `geomB` have some, but not all interior points in
+  common.
+* The intersection set is interior to both `geomA` and `geomB`.
 
 {% include sfs-1-2-1.html %}
 

@@ -20,12 +20,17 @@ boolean ST_Touches(GEOMETRY geomA, GEOMETRY geomB);
 Returns true if `geomA` touches `geomB`.
 
 Touches means that:
-  * `geomA` and `geomB` have at least one point in common.
-  * The interiors of `geomA` and `geomB` do not intersect.
+
+* `geomA` and `geomB` have at least one point in common.
+* The interiors of `geomA` and `geomB` do not intersect.
 
 ##### Remarks
-  * `ST_Touches` can only be used to determine the relation between pairs listed here : `(POLYGON, POLYGON)`, `(POLYGON, LINESTRING)`, `(POLYGON, POINT)`, `(LINESTRING, LINESTRING)` and `(LINESTRING, POINT)`. The relation `(POINT, POINT)` is excluded. 
-  * `GEOMETRYCOLLECTION`s are not taken into account.
+
+* `ST_Touches` can only be used to determine the relation between
+  pairs listed here: `(POLYGON, POLYGON)`, `(POLYGON, LINESTRING)`,
+  `(POLYGON, POINT)`, `(LINESTRING, LINESTRING)` and `(LINESTRING,
+  POINT)`. The relation `(POINT, POINT)` is excluded.
+* `GEOMETRYCOLLECTION`s are not taken into account.
 
 {% include sfs-1-2-1.html %}
 

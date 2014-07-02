@@ -23,6 +23,7 @@ Within means that every point of `geomA` is a point of `geomB`, and the
 interiors of the two geometries have at least one point in common.
 
 As a consequence, the following are equivalent:
+
 * `ST_Within(geomA, geomB)` and `ST_Within(geomB, geomA)` are true.
 * `ST_Equals(geomA, geomB)` is true.
 

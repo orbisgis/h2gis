@@ -18,6 +18,7 @@ int ST_Dimension(GEOMETRY geom);
 ### Description
 
 Return the dimension of `geom`:
+
 * 0 for `POINT`s
 * 1 for `LINESTRING`s
 * 2 for `POLYGON`s

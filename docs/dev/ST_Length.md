@@ -18,6 +18,7 @@ double ST_Length(GEOMETRY geom);
 ### Description
 
 Returns the length of `geom`:
+
 * Linear geometries return their length.
 * Areal geometries return their perimeter.
 * Others return 0.0.
