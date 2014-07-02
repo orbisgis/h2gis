@@ -62,4 +62,3 @@ SELECT ST_Snap(geomB, geomA, 2) FROM input_table;
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_Snap.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

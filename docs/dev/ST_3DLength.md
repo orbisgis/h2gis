@@ -53,4 +53,3 @@ SELECT ST_3DLength('GEOMETRYCOLLECTION(
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_3DLength.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/29" target="_blank">#29</a>

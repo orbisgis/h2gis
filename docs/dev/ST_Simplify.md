@@ -77,7 +77,6 @@ SELECT ST_Simplify('LINESTRING(250 250, 280 290, 300 230, 340 300,
 * [`ST_SimplifyPreserveTopology`](../ST_SimplifyPreserveTopology)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_Simplify.java" target="_blank">Source code</a>
 * JTS [DouglasPeuckerSimplifier#simplify][jts]
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
 
 [jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/simplify/DouglasPeuckerSimplifier.html#simplify(com.vividsolutions.jts.geom.Geometry, double)
 [wiki]: http://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm

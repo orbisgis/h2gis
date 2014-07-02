@@ -74,4 +74,3 @@ SELECT ST_OctogonalEnvelope('POLYGON((170 350, 95 214, 220 120,
   [`ST_MinimumRectangle`](../ST_MinimumRectangle),
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_OctogonalEnvelope.java" target="_blank">Source code</a>
 * JTS [OctogonalEnvelope](http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/geom/OctagonalEnvelope.html)
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

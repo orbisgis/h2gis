@@ -84,4 +84,3 @@ SELECT ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2, 3);
 
 * [`ST_Rotate`](../ST_Rotate)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/affine_transformations/ST_Translate.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

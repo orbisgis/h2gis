@@ -121,4 +121,3 @@ SELECT ST_RemovePoint(
 * [`ST_AddPoint`](../ST_AddPoint), [`ST_RemoveRepeatedPoints`](../ST_RemoveRepeatedPoints),
 [`ST_RemoveHoles`](../ST_RemoveHoles)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_RemovePoint.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

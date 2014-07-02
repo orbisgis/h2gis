@@ -37,4 +37,3 @@ SELECT ST_MultiplyZ('MULTIPOINT((190 300 10), (10 11))', 10);
 
 * [`ST_UpdateZ`](../ST_UpdateZ)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_MultiplyZ.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

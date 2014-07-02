@@ -32,4 +32,3 @@ SELECT ST_XMin('LINESTRING(1 2 3, 4 5 6)');
 
 * [`ST_XMax`](../ST_XMax), [`ST_YMax`](../ST_YMax), [`ST_YMin`](../ST_YMin), [`ST_ZMax`](../ST_ZMax), [`ST_ZMin`](../ST_ZMin)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_XMin.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/28" target="_blank">#28</a>

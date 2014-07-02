@@ -34,4 +34,3 @@ SELECT ST_IsRectangle('POLYGON ((0 0, 10 0, 10 7, 0 5, 0 0))');
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/predicates/ST_IsRectangle.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/26" target="_blank">#26</a>
