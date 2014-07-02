@@ -1,19 +1,17 @@
 #!/bin/bash
 
-sql_type=(INT DOUBLE BOOLEAN VARCHAR GEOMETRY GEOMETRYCOLLECTION NULL)
+sql_type=(INT DOUBLE BOOLEAN VARCHAR GEOMETRY GEOMETRYCOLLECTION NULL TRUE FALSE)
 # Place the files you want to format here
-files=()
+# files=()
 
 # Use the following for a global format:
-# for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.md" \) | grep -v "analytics.html" | grep -v "top.html" | grep -v "README.md"); do
+for f in $(find . -not -path "./_site/*" -type f \( -name "*.html" -o -name "*.md" \) | grep -v "analytics.html" | grep -v "top.html" | grep -v "README.md"); do
 # Local format:
-for f in ${files[*]}; do
+# for f in ${files[*]}; do
     # Remove multiple blank lines
     sed -i "/^$/N;/\n$/D" $f
     # Remove trailing whitespace
     sed -i 's/[[:space:]]*$//' $f
-    # Put only one space after Answer:
-    sed -i "s/\(Answer: \)\([ ]\+\)/\1/g" $f
     # Put spaces after commas unless followed by a | (in tables)
     sed -i 's/\([^,]*\),\([^ |]\)/\1, \2/g' $f
     # Remove spaces before ":" ";" and ","
@@ -38,4 +36,6 @@ for f in ${files[*]}; do
     done
     # Replace `GEOMETRY` with Geometry
     sed -i "s/\`GEOMETRY\`/Geometry/gi" $f
+    # Put space back between 'VALUES' and '('
+    sed -i "s/VALUES(/VALUES (/gi" $f
 done
