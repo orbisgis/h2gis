@@ -105,6 +105,5 @@ SELECT ST_Polygonize('LINESTRING(1 2, 2 4, 4 4, 5 2, 2 2)');
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_Polygonize.java" target="_blank">Source code</a>
 * JTS [Polygonizer#getPolygons][jts]
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
 
 [jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/operation/polygonize/Polygonizer.html#getPolygons()

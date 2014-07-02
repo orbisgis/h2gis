@@ -71,6 +71,5 @@ SELECT ST_Relate('POINT(1 2)', ST_Buffer('POINT(1 2)', 2),
  [`ST_Overlaps`](../ST_Overlaps), [`ST_Touches`](../ST_Touches),
  [`ST_Within`](../ST_Within),
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_Relate.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/11" target="_blank">#11</a>
 
 [DE-9IM]: http://en.wikipedia.org/wiki/DE-9IM

@@ -38,4 +38,4 @@ SELECT ST_Is3D('LINESTRING(1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)'
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/ce387709832710e8a2932c3be3c2d0535a3fdf71/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Is3D.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Is3D.java" target="_blank">Source code</a>

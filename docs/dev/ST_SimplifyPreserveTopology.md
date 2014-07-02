@@ -105,7 +105,6 @@ SELECT ST_SimplifyPreserveTopology(
 * [`ST_Simplify`](../ST_Simplify)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_SimplifyPreserveTopology.java" target="_blank">Source code</a>
 * JTS [TopologyPreservingSimplifier#simplify][jts]
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
 
 [jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/simplify/TopologyPreservingSimplifier.html#simplify(com.vividsolutions.jts.geom.Geometry, double)
 [wiki]: http://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm

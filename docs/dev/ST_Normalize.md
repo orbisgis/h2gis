@@ -40,6 +40,5 @@ SELECT ST_Normalize('LINESTRING(3 1, 6 1, 6 3, 3 3, 1 1)');
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_Normalize.java" target="_blank">Source code</a>
 * JTS [Geometry#normalize][jts]
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>
 
 [jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/geom/Geometry.html#normalize()

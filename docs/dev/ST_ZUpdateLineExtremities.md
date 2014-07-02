@@ -76,4 +76,3 @@ SELECT ST_ZUpdateLineExtremities(
 ##### See also
 * [`ST_UpdateZ`](../ST_UpdateZ)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_ZUpdateLineExtremities.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/80" target="_blank">#80</a>

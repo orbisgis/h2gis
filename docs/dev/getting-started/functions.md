@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: <b>Functions</b>
+title: Functions
 prev_section: embedded-spatial-db
 next_section: geom2D/list
 permalink: /docs/dev/functions/

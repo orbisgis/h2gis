@@ -52,4 +52,3 @@ SELECT ST_FurthestCoordinate('POINT(5 2.5)',
 
 * [`ST_ClosestCoordinate`](../ST_ClosestCoordinate)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_FurthestCoordinate.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/62" target="_blank">#62</a>

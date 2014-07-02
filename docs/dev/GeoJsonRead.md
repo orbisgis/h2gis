@@ -29,6 +29,6 @@ CALL GeoJsonRead('/home/user/data.geojson', 'NEW_DATA');
 ##### See also
 
 * [`GeoJsonWrite`](../GeoJsonWrite)
-* <a href="https://github.com/irstv/H2GIS/blob/a8e61ea7f1953d1bad194af926a568f7bc9aac96/h2drivers/src/main/java/org/h2gis/drivers/geojson/GeoJsonRead.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2drivers/src/main/java/org/h2gis/drivers/geojson/GeoJsonRead.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/GeoJSON

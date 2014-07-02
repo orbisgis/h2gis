@@ -125,5 +125,3 @@ SELECT ST_Buffer('GEOMETRYCOLLECTION(
 * [`ST_MakeEllipse`](../ST_MakeEllipse),
   [`ST_RingBuffer`](../ST_RingBuffer)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/operators/ST_Buffer.java" target="_blank">Source code</a>
-* Added: <a href="https://github.com/irstv/H2GIS/pull/11" target="_blank">#11</a>,
-  <a href="https://github.com/irstv/H2GIS/pull/254" target="_blank">#254</a>
