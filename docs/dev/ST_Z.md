@@ -4,7 +4,7 @@ title: ST_Z
 category: geom3D/properties
 is_function: true
 description: Return the z-value of the first coordinate of a Geometry
-prev_section: geom3D/properties
+prev_section: ST_Is3D
 next_section: ST_ZMax
 permalink: /docs/dev/ST_Z/
 ---
@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_Z/
 ### Signature
 
 {% highlight mysql %}
-double ST_Z(GEOMETRY geom);
+DOUBLE ST_Z(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -37,14 +37,17 @@ SELECT ST_Z(
 -- Answer: 3.0
 
 SELECT ST_Z('GEOMETRYCOLLECTION(
-               LINESTRING(2 1 0, 1 3 3, 5 2 1), 
-               MULTIPOINT((4 4 3), (1 1 1), (1 0 2), (0 3 6)), 
+               LINESTRING(2 1 0, 1 3 3, 5 2 1),
+               MULTIPOINT((4 4 3), (1 1 1), (1 0 2), (0 3 6)),
                POLYGON((1 2 2, 4 2 5, 4 6 3, 1 6 1, 1 2 1)))');
 -- Answer: 0.0
 {% endhighlight %}
 
 ##### See also
 
-* [`ST_X`](../ST_X), [`ST_Y`](../ST_Y)
-* [`ST_GeometryN`](../ST_GeometryN), [`ST_PointN`](../ST_PointN), [`ST_ExteriorRing`](../ST_ExteriorRing)
+* [`ST_ExteriorRing`](../ST_ExteriorRing),
+  [`ST_GeometryN`](../ST_GeometryN),
+  [`ST_PointN`](../ST_PointN),
+  [`ST_X`](../ST_X),
+  [`ST_Y`](../ST_Y)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Z.java" target="_blank">Source code</a>
