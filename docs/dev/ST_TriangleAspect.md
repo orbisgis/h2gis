@@ -41,5 +41,4 @@ SELECT ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 3 3 1, 0 0 1))');
 
 * [`ST_TriangleContouring`](../ST_TriangleContouring),
 [`ST_TriangleDirection`](../ST_TriangleDirection), [`ST_TriangleSlope`](../ST_TriangleSlope)
-* <a href="https://github.com/irstv/H2GIS/blob/51910b27b5dc2b3b4353bb43a683f8649628ea8d/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/topography/ST_TriangleAspect.java" target="_blank">Source code</a>
-
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/topography/ST_TriangleAspect.java" target="_blank">Source code</a>
