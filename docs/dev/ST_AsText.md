@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_AsText/
 ### Signatures
 
 {% highlight mysql %}
-varchar ST_AsText(GEOMETRY geom);
+VARCHAR ST_AsText(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

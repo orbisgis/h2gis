@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_LineFromText/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_LineFromText(varchar wkt, int srid);
+GEOMETRY ST_LineFromText(VARCHAR wkt, INT srid);
 {% endhighlight %}
 
 ### Description

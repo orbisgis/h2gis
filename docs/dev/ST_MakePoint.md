@@ -12,8 +12,8 @@ permalink: /docs/dev/ST_MakePoint/
 ### Signatures
 
 {% highlight mysql %}
-POINT ST_MakePoint(double x, double y);
-POINT ST_MakePoint(double x, double y, double z);
+POINT ST_MakePoint(DOUBLE x, DOUBLE y);
+POINT ST_MakePoint(DOUBLE x, DOUBLE y, DOUBLE z);
 {% endhighlight %}
 
 ### Description

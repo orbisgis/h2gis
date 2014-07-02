@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_SRID/
 ### Signature
 
 {% highlight mysql %}
-int ST_SRID(GEOMETRY geom);
+INT ST_SRID(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

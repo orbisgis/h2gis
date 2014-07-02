@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_IsRectangle/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_IsRectangle(GEOMETRY geom);
+BOOLEAN ST_IsRectangle(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -22,11 +22,11 @@ Returns true if `geom` is a rectangle.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_IsRectangle('POLYGON ((0 0, 10 0, 10 5, 0 5, 0 0))');
--- Answer:    true
+SELECT ST_IsRectangle('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
+-- Answer:    TRUE
 
-SELECT ST_IsRectangle('POLYGON ((0 0, 10 0, 10 7, 0 5, 0 0))');
--- Answer:    false
+SELECT ST_IsRectangle('POLYGON((0 0, 10 0, 10 7, 0 5, 0 0))');
+-- Answer:    FALSE
 {% endhighlight %}
 
 <img class="displayed" src="../ST_IsRectangle.png"/>

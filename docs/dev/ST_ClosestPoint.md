@@ -75,7 +75,7 @@ SELECT ST_ClosestPoint('LINESTRING(1 1, 1 5))',
 -- Answer:
 -- |      A      |      B      |
 -- |-------------|-------------|
--- | POINT (1 1) | POINT (1 5) |
+-- | POINT(1 1)  | POINT(1 5)  |
 {% endhighlight %}
 
 <img class="displayed" src="../ST_ClosestPoint_5.png"/>
@@ -92,7 +92,7 @@ SELECT ST_ClosestPoint('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))',
 -- Answer:
 -- |      A       |      B       |
 -- |--------------|--------------|
--- | POINT (10 2) | POINT (10 4) |
+-- | POINT(10 2)  | POINT(10 4)  |
 {% endhighlight %}
 
 <img class="displayed" src="../ST_ClosestPoint_4.png"/>

@@ -27,66 +27,66 @@ Computes the intersection between `geomA` and `geomB`.
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
-| POLYGON ((1 1, 7 1, 7 6, 1 6, 1 1)) | POLYGON ((3 2, 8 2, 8 8, 3 8, 3 2)) |
+| POLYGON((1 1, 7 1, 7 6, 1 6, 1 1))  | POLYGON((3 2, 8 2, 8 8, 3 8, 3 2))  |
 
 {% highlight mysql %}
 SELECT ST_Intersection(geomA, geomB) FROM input_table;
--- Answer:    POLYGON ((3 6, 7 6, 7 2, 3 2, 3 6))
+-- Answer:    POLYGON((3 6, 7 6, 7 2, 3 2, 3 6))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Intersection_1.png"/>
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
-| POLYGON ((1 1, 4 1, 4 6, 1 6, 1 1)) | POLYGON ((4 2, 8 2, 8 8, 4 8, 4 2)) |
+| POLYGON((1 1, 4 1, 4 6, 1 6, 1 1))  | POLYGON((4 2, 8 2, 8 8, 4 8, 4 2))  |
 
 {% highlight mysql %}
 SELECT ST_Intersection(geomA, geomB) FROM input_table;
--- Answer:    LINESTRING (4 2, 4 6)
+-- Answer:    LINESTRING(4 2, 4 6)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Intersection_2.png"/>
 
 | geomA POLYGON                       | geomB POLYGON                       |
 |-------------------------------------|-------------------------------------|
-| POLYGON ((1 1, 4 1, 4 6, 1 6, 1 1)) | POLYGON ((4 6, 8 6, 8 8, 4 8, 4 6)) |
+| POLYGON((1 1, 4 1, 4 6, 1 6, 1 1))  | POLYGON((4 6, 8 6, 8 8, 4 8, 4 6))  |
 
 {% highlight mysql %}
 SELECT ST_Intersection(geomA, geomB) FROM input_table;
--- Answer:    POINT (4 6)
+-- Answer:    POINT(4 6)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Intersection_6.png"/>
 
 | geomA POLYGON                       | geomB LINESTRING      |
 |-------------------------------------|-----------------------|
-| POLYGON ((1 1, 7 1, 7 6, 1 6, 1 1)) | LINESTRING (2 8, 8 2) |
+| POLYGON((1 1, 7 1, 7 6, 1 6, 1 1))  | LINESTRING(2 8, 8 2)  |
 
 {% highlight mysql %}
 SELECT ST_Intersection(geomA, geomB) FROM input_table;
--- Answer:    LINESTRING (4 6, 7 3)
+-- Answer:    LINESTRING(4 6, 7 3)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Intersection_3.png"/>
 
 | geomA LINESTRING      | geomB LINESTRING      |
 |-----------------------|-----------------------|
-| LINESTRING (2 2, 6 6) | LINESTRING (2 8, 8 2) |
+| LINESTRING(2 2, 6 6)  | LINESTRING(2 8, 8 2)  |
 
 {% highlight mysql %}
 SELECT ST_Intersection(geomA, geomB) FROM input_table;
--- Answer:    POINT (5 5)
+-- Answer:    POINT(5 5)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Intersection_4.png"/>
 
 | geomA POLYGON                       | geomB POINT |
 |-------------------------------------|-------------|
-| POLYGON ((1 1, 7 1, 7 6, 1 6, 1 1)) | POINT (3 5) |
+| POLYGON((1 1, 7 1, 7 6, 1 6, 1 1))  | POINT(3 5)  |
 
 {% highlight mysql %}
 SELECT ST_Intersection(geomA, geomB) FROM input_table;
--- Answer:    POINT (3 5)
+-- Answer:    POINT(3 5)
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Intersection_5.png"/>

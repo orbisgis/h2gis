@@ -24,9 +24,9 @@ Constructs a `MULTILINESTRING` from `geom`'s coordinates. Returns
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_ToMultiLine('POLYGON ((0 0, 10 0, 10 6, 0 6, 0 0), 
+SELECT ST_ToMultiLine('POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
                                 (1 1, 2 1, 2 5, 1 5, 1 1))');
--- Answer: MULTILINESTRING ((0 0, 10 0, 10 5, 0 5, 0 0), 
+-- Answer: MULTILINESTRING((0 0, 10 0, 10 5, 0 5, 0 0),
 --                          (1 1, 2 1, 2 4, 1 4, 1 1))
 {% endhighlight %}
 
@@ -35,9 +35,9 @@ SELECT ST_ToMultiLine('POLYGON ((0 0, 10 0, 10 6, 0 6, 0 0),
 {% highlight mysql %}
 SELECT ST_ToMultiLine(
     'GEOMETRYCOLLECTION(
-       LINESTRING(1 4 3, 10 7 9, 12 9 22), 
+       LINESTRING(1 4 3, 10 7 9, 12 9 22),
        POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))');
--- Answer: MULTILINESTRING ((1 4, 10 7, 12 9),
+-- Answer: MULTILINESTRING((1 4, 10 7, 12 9),
 --                          (1 1, 3 1, 3 2, 1 2, 1 1))
 {% endhighlight %}
 

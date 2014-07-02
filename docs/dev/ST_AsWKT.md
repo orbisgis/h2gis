@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_AsWKT/
 ### Signatures
 
 {% highlight mysql %}
-varchar ST_AsWKT(GEOMETRY geom);
+VARCHAR ST_AsWKT(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -25,7 +25,7 @@ Converts a Geometry into its Well Known Text value.
 
 {% highlight mysql %}
 SELECT ST_AsWKT('POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))');
--- Answer: POLYGON ((0 0, 0 1, 1 1, 1 0, 0 0))
+-- Answer: POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))
 {% endhighlight %}
 
 ##### See also

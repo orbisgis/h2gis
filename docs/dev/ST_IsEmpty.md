@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_IsEmpty/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_IsEmpty(GEOMETRY geom);
+BOOLEAN ST_IsEmpty(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -28,8 +28,8 @@ SELECT ST_IsEmpty('MULTIPOINT((4 4), (1 1), (1 0), (0 3)))');
 -- Answer: FALSE
 
 SELECT ST_IsEmpty('GEOMETRYCOLLECTION(
-                     MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-                     LINESTRING(2 6, 6 2), 
+                     MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
+                     LINESTRING(2 6, 6 2),
                      POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: FALSE
 

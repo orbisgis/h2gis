@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_XMax/
 ### Signature
 
 {% highlight mysql %}
-double ST_XMax(GEOMETRY geom);
+DOUBLE ST_XMax(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

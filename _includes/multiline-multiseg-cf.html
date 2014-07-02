@@ -1,15 +1,15 @@
 {% highlight mysql %}
 CREATE TABLE input(poly POLYGON);
-INSERT INTO input VALUES(
-    'POLYGON ((0 0, 10 0, 10 6, 0 6, 0 0),
+INSERT INTO input VALUES (
+    'POLYGON((0 0, 10 0, 10 6, 0 6, 0 0),
               (1 1, 2 1, 2 5, 1 5, 1 1),
               (7 1, 8 1, 8 3, 7 3, 7 1))');
 SELECT ST_ToMultiSegments(poly) SEG,
        ST_ToMultiLine(poly) LINE FROM input;
--- Answer: 
+-- Answer:
 -- |              SEG             |               LINE              |
 -- |------------------------------|---------------------------------|
--- |MULTILINESTRING ((0 0, 10 0), |MULTILINESTRING                  |
+-- |MULTILINESTRING((0 0, 10 0), |MULTILINESTRING                  |
 -- |    (10 0, 10 6), (10 6, 0 6),|    ((0 0, 10 0, 10 6, 0 6, 0 0),|
 -- |    (0 6, 0 0), (1 1, 2 1),   |    (1 1, 2 1, 2 5, 1 5, 1 1),   |
 -- |    (2 1, 2 5), (2 5, 1 5),   |    (7 1, 8 1, 8 3, 7 3, 7 1))   |

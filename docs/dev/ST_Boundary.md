@@ -13,7 +13,7 @@ permalink: /docs/dev/ST_Boundary/
 
 {% highlight mysql %}
 GEOMETRY ST_Boundary(GEOMETRY geom);
-GEOMETRY ST_Boundary(GEOMETRY geom, int srid);
+GEOMETRY ST_Boundary(GEOMETRY geom, INT srid);
 {% endhighlight %}
 
 ### Description
@@ -45,7 +45,7 @@ SELECT ST_Boundary('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))', 2154);
 -- This polygon has a hole.
 SELECT ST_Boundary('POLYGON((5 4, 5 1, 2 1, 2 4, 4 5, 5 4),
                     (3 2, 3 3, 4 3, 4 2, 3 2))');
--- Answer: MULTILINESTRING ((5 4, 5 1, 2 1, 2 4, 4 5, 5 4),
+-- Answer: MULTILINESTRING((5 4, 5 1, 2 1, 2 4, 4 5, 5 4),
 --                          (3 2, 3 3, 4 3, 4 2, 3 2))
 
 -- A point has no boundary.

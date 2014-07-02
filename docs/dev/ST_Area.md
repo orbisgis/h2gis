@@ -12,8 +12,8 @@ permalink: /docs/dev/ST_Area/
 ### Signature
 
 {% highlight mysql %}
-double ST_Area(GEOMETRY geom);
-double ST_Area(GEOMETRYCOLLECTION geom);
+DOUBLE ST_Area(GEOMETRY geom);
+DOUBLE ST_Area(GEOMETRYCOLLECTION geom);
 {% endhighlight %}
 
 ### Description
@@ -34,14 +34,14 @@ SELECT ST_Area('LINESTRING(5 4, 1 1, 3 4, 4 5)');
 SELECT ST_Area('POLYGON((0 0, 10 0, 10 10, 0 10, 0 0))');
 -- Answer: 100.0
 
-SELECT ST_Area('MULTIPOLYGON(((0 0, 10 0, 10 10, 0 10, 0 0), 
+SELECT ST_Area('MULTIPOLYGON(((0 0, 10 0, 10 10, 0 10, 0 0),
                               (5 4, 1 1, 3 4, 4 5, 5 4)))');
 -- Answer: 96.0
 
 SELECT ST_Area('GEOMETRYCOLLECTION(
-                  LINESTRING(5 4, 1 1, 3 4, 4 5), 
-                  POINT(0 12), 
-                  POLYGON((0 0, 10 0, 10 10, 0 10, 0 0)), 
+                  LINESTRING(5 4, 1 1, 3 4, 4 5),
+                  POINT(0 12),
+                  POLYGON((0 0, 10 0, 10 10, 0 10, 0 0)),
                   POLYGON((5 4, 1 1, 3 4, 4 5, 5 4)))');
 -- Answer: 104.0
 {% endhighlight %}

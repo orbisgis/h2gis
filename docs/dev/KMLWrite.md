@@ -26,7 +26,7 @@ A coordinate reference system must be set to save a KML file.
 -- Create an example table to write to a KML file:
 CREATE TABLE TEST(ID INT PRIMARY KEY, THE_GEOM POINT);
 INSERT INTO TEST
-    VALUES(1, ST_GeomFromText('POINT(2.19 47.58)', 4326));
+    VALUES (1, ST_GeomFromText('POINT(2.19 47.58)', 4326));
 
 -- Write it:
 CALL KMLWrite('/home/user/test.kml', 'TEST');

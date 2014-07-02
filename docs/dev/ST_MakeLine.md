@@ -25,7 +25,7 @@ Constructs a `LINESTRING` from the given `POINT`s or `MULTIPOINT`s.
 
 This function can be used as a scalar function, to draw a line between `POINT`s (at least 2), `POINT`s and `MULTIPOINT`s, `MULTIPOINT`s and `POINT`s, `MULTIPOINT`s and `MULTIPOINT`s or `GEOMETRYCOLLECTION`s.
 
-It also can be used as an aggregative function in order to draw lines between values listed in a table. 
+It also can be used as an aggregative function in order to draw lines between values listed in a table.
 
 ### Examples
 
@@ -69,7 +69,6 @@ ST_MakeLine('POINT(1 2)', 'POINT(4 5)', 'POINT(7 8)');
 SELECT ST_MakeLine('MULTIPOINT(1 2, 3 4)');
 -- Answer:     LINESTRING(1 2, 3 4)
 {% endhighlight %}
-
 
 #### Aggregate function
 {% highlight mysql %}

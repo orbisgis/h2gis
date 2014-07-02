@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_IsRing/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_IsRing(GEOMETRY geom);
+BOOLEAN ST_IsRing(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -41,11 +41,11 @@ SELECT ST_IsRing('LINESTRING(2 1, 1 3, 6 6, 5 7, 5 2)');
 <img class="displayed" src="../ST_IsRing.png"/>
 
 {% highlight mysql %}
-SELECT ST_IsRing('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 2), 
+SELECT ST_IsRing('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 2),
                                   (5 0, 7 0, 7 1, 5 1, 5 0))');
 -- Answer: TRUE
 
-SELECT ST_IsRing('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 1), 
+SELECT ST_IsRing('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 1),
                                   (5 0, 7 0, 7 1, 5 1, 5 0))');
 -- Answer: FALSE
 {% endhighlight %}

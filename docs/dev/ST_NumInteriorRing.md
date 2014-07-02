@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_NumInteriorRing/
 ### Signature
 
 {% highlight mysql %}
-int ST_NumInteriorRing(GEOMETRY geom);
+INT ST_NumInteriorRing(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description

@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_IsValid/
 ### Signature
 
 {% highlight mysql %}
-boolean ST_IsValid(GEOMETRY geom);
+BOOLEAN ST_IsValid(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -25,10 +25,10 @@ Returns true if `geom` is valid.
 
 {% highlight mysql %}
 SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))');
--- Answer:    true
+-- Answer:    TRUE
 
-SELECT ST_IsValid('POLYGON ((0 0, 10 0, 10 5, 6 -2, 0 0))');
--- Answer:    false
+SELECT ST_IsValid('POLYGON((0 0, 10 0, 10 5, 6 -2, 0 0))');
+-- Answer:    FALSE
 {% endhighlight %}
 
 <img class="displayed" src="../ST_IsValid.png"/>

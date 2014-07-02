@@ -33,7 +33,7 @@ SELECT ST_ExteriorRing('POLYGON((0 -1, 0 2, 3 2, 3 -1, 0 -1))');
 <img class="displayed" src="../ST_ExteriorRing_1.png"/>
 
 {% highlight mysql %}
-SELECT ST_ExteriorRing('MULTIPOLYGON (((0 0, 10 0, 5 5, 0 0)),
+SELECT ST_ExteriorRing('MULTIPOLYGON(((0 0, 10 0, 5 5, 0 0)),
                                       ((10 0, 5 5, 10 10, 10 0)))');
 -- Answer: NULL
 

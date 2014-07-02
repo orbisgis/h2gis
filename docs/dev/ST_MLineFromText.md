@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_MLineFromText/
 ### Signatures
 
 {% highlight mysql %}
-GEOMETRY ST_MLineFromText(varchar wkt, int srid);
+GEOMETRY ST_MLineFromText(VARCHAR wkt, INT srid);
 {% endhighlight %}
 
 ### Description
@@ -24,9 +24,9 @@ GEOMETRY ST_MLineFromText(varchar wkt, int srid);
 ### Example
 
 {% highlight mysql %}
-SELECT ST_MLineFromText('MULTILINESTRING((10 48, 10 21, 10 0), 
+SELECT ST_MLineFromText('MULTILINESTRING((10 48, 10 21, 10 0),
                                          (16 0, 16 23, 16 48))', 101);
--- Answer: MULTILINESTRING((10 48, 10 21, 10 0), 
+-- Answer: MULTILINESTRING((10 48, 10 21, 10 0),
 --                         (16 0, 16 23, 16 48))
 
 SELECT ST_MLineFromText('POINT(2 3)', 2154);

@@ -27,7 +27,7 @@ a single Geometry.
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_GeometryN('MULTIPOLYGON(((0 0, 3 -1, 1.5 2, 0 0)), 
+SELECT ST_GeometryN('MULTIPOLYGON(((0 0, 3 -1, 1.5 2, 0 0)),
                                   ((1 2, 4 2, 4 6, 1 6, 1 2)))', 1);
 -- Answer: POLYGON((0 0, 3 -1, 1.5 2, 0 0))
 
@@ -57,7 +57,7 @@ SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 1);
 -- Answer: NULL
 
 SELECT ST_GeometryN('MULTIPOINT((0 0), (1 6), (2 2), (1 2))', 0);
--- Answer: Geometry index out of range. Must be between 1 and
+-- Answer: GEOMETRY index out of range. Must be between 1 and
 -- ST_NumGeometries.
 {% endhighlight %}
 

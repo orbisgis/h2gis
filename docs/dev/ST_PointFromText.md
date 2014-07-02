@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_PointFromText/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_PointFromText(varchar wkt, int srid);
+GEOMETRY ST_PointFromText(VARCHAR wkt, INT srid);
 {% endhighlight %}
 
 ### Description

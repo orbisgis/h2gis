@@ -12,11 +12,11 @@ permalink: /docs/dev/ST_Graph/
 ### Signatures
 
 {% highlight mysql %}
-boolean ST_Graph(inputTable varchar);
-boolean ST_Graph(inputTable varchar, columnName varchar);
-boolean ST_Graph(inputTable varchar, columnName varchar,
+BOOLEAN ST_Graph(inputTable varchar);
+BOOLEAN ST_Graph(inputTable varchar, columnName varchar);
+BOOLEAN ST_Graph(inputTable varchar, columnName varchar,
                  tolerance double);
-boolean ST_Graph(inputTable varchar, columnName varchar,
+BOOLEAN ST_Graph(inputTable varchar, columnName varchar,
                  tolerance double, orientBySlope boolean);
 {% endhighlight %}
 
@@ -93,24 +93,24 @@ Geometry column is used. Returns `true` if the operation is successful.
 CREATE TABLE test(road LINESTRING, description VARCHAR,
                   way LINESTRING);
 INSERT INTO test VALUES
-('LINESTRING (0 0, 1 2)', 'road1', 'LINESTRING (1 1, 2 2, 3 1)'),
-('LINESTRING (1 2, 2 3, 4 3)', 'road2', 'LINESTRING (3 1, 2 0, 1 1)'),
-('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING (1 1, 2 1)'),
-('LINESTRING (4 3, 5 2)', 'road4', 'LINESTRING (2 1, 3 1)');
+('LINESTRING(0 0, 1 2)', 'road1', 'LINESTRING(1 1, 2 2, 3 1)'),
+('LINESTRING(1 2, 2 3, 4 3)', 'road2', 'LINESTRING(3 1, 2 0, 1 1)'),
+('LINESTRING(4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING(1 1, 2 1)'),
+('LINESTRING(4 3, 5 2)', 'road4', 'LINESTRING(2 1, 3 1)');
 
 -- We first demonstrate automatic Geometry column detection. ST_Graph
 -- finds and uses the 'road' column.
 SELECT ST_Graph('test');
--- Answer: True
+-- Answer: TRUE
 
 SELECT * FROM test_nodes;
 -- Answer:
 --     | NODE_ID |   THE_GEOM  |
 --     |---------|-------------|
---     |    1    | POINT (0 0) |
---     |    2    | POINT (1 2) |
---     |    3    | POINT (4 3) |
---     |    4    | POINT (5 2) |
+--     |    1    | POINT(0 0)  |
+--     |    2    | POINT(1 2)  |
+--     |    3    | POINT(4 3)  |
+--     |    4    | POINT(5 2)  |
 
 SELECT * FROM test_edges;
 -- Answer:
@@ -129,18 +129,18 @@ SELECT * FROM test_edges;
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
 SELECT ST_Graph('test', 'way');
--- Answer: True
+-- Answer: TRUE
 
 SELECT * FROM test_nodes;
 -- Answer:
 --     | NODE_ID |   THE_GEOM  |
 --     |---------|-------------|
---     |    1    | POINT (1 1) |
---     |    2    | POINT (3 1) |
---     |    3    | POINT (2 1) |
+--     |    1    | POINT(1 1)  |
+--     |    2    | POINT(3 1)  |
+--     |    3    | POINT(2 1)  |
 
 SELECT * FROM test_edges;
--- Answer: 
+-- Answer:
 -- | ROAD  |  DESCRIPTION   | WAY | EDGE_ID | START_NODE | END_NODE  |
 -- |-------|----------------|-----|---------|------------|-----------|
 -- | LINESTRING(0 0, 1 2) | road1 | LINESTRING(1 1, 2 2, | 1 | 1 | 2 |
@@ -156,39 +156,39 @@ SELECT * FROM test_edges;
 
 {% highlight mysql %}
 CREATE TABLE test(road LINESTRING, description VARCHAR);
-INSERT INTO test VALUES ('LINESTRING (0 0, 1 0)', 'road1'),
-                        ('LINESTRING (1.05 0, 2 0)', 'road2'),
-                        ('LINESTRING (2.05 0, 3 0)', 'road3'),
-                        ('LINESTRING (1 0.1, 1 1)', 'road4'),
-                        ('LINESTRING (2 0.05, 2 1)', 'road5');
+INSERT INTO test VALUES ('LINESTRING(0 0, 1 0)', 'road1'),
+                        ('LINESTRING(1.05 0, 2 0)', 'road2'),
+                        ('LINESTRING(2.05 0, 3 0)', 'road3'),
+                        ('LINESTRING(1 0.1, 1 1)', 'road4'),
+                        ('LINESTRING(2 0.05, 2 1)', 'road5');
 
 -- This example shows that coordinates within a tolerance of 0.05 of
 -- each other are considered to be a single node. Note, however, that
 -- edge geometries are left untouched.
 SELECT ST_Graph('test', 'road', 0.05);
--- Answer: true
+-- Answer: TRUE
 
 SELECT * FROM test_nodes;
 -- Answer:
 --     | NODE_ID |  THE_GEOM     |
 --     |---------|---------------|
---     |    1    | POINT (0 0)   |
---     |    2    | POINT (1 0)   |
---     |    3    | POINT (2 0)   |
---     |    4    | POINT (3 0)   |
---     |    5    | POINT (1 0.1) |
---     |    6    | POINT (1 1)   |
---     |    7    | POINT (2 1)   |
+--     |    1    | POINT(0 0)    |
+--     |    2    | POINT(1 0)    |
+--     |    3    | POINT(2 0)    |
+--     |    4    | POINT(3 0)    |
+--     |    5    | POINT(1 0.1)  |
+--     |    6    | POINT(1 1)    |
+--     |    7    | POINT(2 1)    |
 
 SELECT * FROM test_edges;
 -- Answer:
 -- |      ROAD       | DESCRIPTION | EDGE_ID | START_NODE | END_NODE |
 -- |-----------------|-------------|---------|------------|----------|
--- | LINESTRING (0 0, 1 0)    | road1 | 1 | 1 | 2 |
--- | LINESTRING (1.05 0, 2 0) | road2 | 2 | 2 | 3 |
--- | LINESTRING (2.05 0, 3 0) | road3 | 3 | 3 | 4 |
--- | LINESTRING (1 0.1, 1 1)  | road4 | 4 | 5 | 6 |
--- | LINESTRING (2 0.05, 2 1) | road5 | 5 | 3 | 7 |
+-- | LINESTRING(0 0, 1 0)     | road1 | 1 | 1 | 2 |
+-- | LINESTRING(1.05 0, 2 0)  | road2 | 2 | 2 | 3 |
+-- | LINESTRING(2.05 0, 3 0)  | road3 | 3 | 3 | 4 |
+-- | LINESTRING(1 0.1, 1 1)   | road4 | 4 | 5 | 6 |
+-- | LINESTRING(2 0.05, 2 1)  | road5 | 5 | 3 | 7 |
 {% endhighlight %}
 
 ##### Orienting by z-values
@@ -201,60 +201,60 @@ SELECT * FROM test_edges;
 
 -- CASE 1: 0 == 0.
 CREATE TABLE test(road LINESTRING, description VARCHAR);
-INSERT INTO test VALUES ('LINESTRING (0 0 0, 1 0 0)', 'road1');
+INSERT INTO test VALUES ('LINESTRING(0 0 0, 1 0 0)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
--- Answer: true
+-- Answer: TRUE
 SELECT * FROM test_nodes;
 -- Answer:
 --     | NODE_ID |  THE_GEOM   |
 --     |---------|-------------|
---     |    1    | POINT (0 0) |
---     |    2    | POINT (1 0) |
+--     |    1    | POINT(0 0)  |
+--     |    2    | POINT(1 0)  |
 SELECT * FROM test_edges;
 -- Answer:
 -- |      ROAD    |  DESCRIPTION   | EDGE_ID | START_NODE | END_NODE |
 -- |--------------|----------------|---------|------------|----------|
--- | LINESTRING (0 0, 1 0) | road1 |    1    |      1     |    2     |
+-- | LINESTRING(0 0, 1 0)  | road1 |    1    |      1     |    2     |
 
 -- CASE 2: 1 > 0.
 DROP TABLE test;
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
 CREATE TABLE test(road LINESTRING, description VARCHAR);
-INSERT INTO test VALUES ('LINESTRING (0 0 1, 1 0 0)', 'road1');
+INSERT INTO test VALUES ('LINESTRING(0 0 1, 1 0 0)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
--- Answer: true
+-- Answer: TRUE
 SELECT * FROM test_nodes;
 -- Answer:
 --     | NODE_ID |  THE_GEOM   |
 --     |---------|-------------|
---     |    1    | POINT (0 0) |
---     |    2    | POINT (1 0) |
+--     |    1    | POINT(0 0)  |
+--     |    2    | POINT(1 0)  |
 SELECT * FROM test_edges;
 -- Answer:
 -- |      ROAD    |  DESCRIPTION   | EDGE_ID | START_NODE | END_NODE |
 -- |--------------|----------------|---------|------------|----------|
--- | LINESTRING (0 0, 1 0) | road1 |    1    |      1     |    2     |
+-- | LINESTRING(0 0, 1 0)  | road1 |    1    |      1     |    2     |
 
 -- CASE 3: 0 < 1.
 DROP TABLE test;
 DROP TABLE test_nodes;
 DROP TABLE test_edges;
 CREATE TABLE test(road LINESTRING, description VARCHAR);
-INSERT INTO test VALUES ('LINESTRING (0 0 0, 1 0 1)', 'road1');
+INSERT INTO test VALUES ('LINESTRING(0 0 0, 1 0 1)', 'road1');
 SELECT ST_Graph('test', 'road', 0.0, true);
--- Answer: true
+-- Answer: TRUE
 SELECT * FROM test_nodes;
 -- Answer:
 --     | NODE_ID |  THE_GEOM   |
 --     |---------|-------------|
---     |    1    | POINT (0 0) |
---     |    2    | POINT (1 0) |
+--     |    1    | POINT(0 0)  |
+--     |    2    | POINT(1 0)  |
 SELECT * FROM test_edges;
 -- Answer:
 -- |      ROAD    |  DESCRIPTION   | EDGE_ID | START_NODE | END_NODE |
 -- |--------------|----------------|---------|------------|----------|
--- | LINESTRING (0 0, 1 0) | road1 |    1    |      2     |    1     |
+-- | LINESTRING(0 0, 1 0)  | road1 |    1    |      2     |    1     |
 {% endhighlight %}
 
 ##### Example with `MULTILINESTRING`s
@@ -267,17 +267,17 @@ SELECT * FROM test_edges;
 -- node 3=(5 2) even though its first LINESTRING ends on (1 2).
 CREATE TABLE test(road MULTILINESTRING, description VARCHAR);
 INSERT INTO test VALUES
-    ('MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1'),
-    ('MULTILINESTRING ((4 3, 4 4, 1 4, 1 2), (4 3, 5 2))', 'road2');
+    ('MULTILINESTRING((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1'),
+    ('MULTILINESTRING((4 3, 4 4, 1 4, 1 2), (4 3, 5 2))', 'road2');
 SELECT ST_Graph('test');
--- Answer: true
+-- Answer: TRUE
 SELECT * FROM test_nodes;
 -- Answer:
 --     | NODE_ID |  THE_GEOM   |
 --     |---------|-------------|
---     |    1    | POINT (0 0) |
---     |    2    | POINT (4 3) |
---     |    3    | POINT (5 2) |
+--     |    1    | POINT(0 0)  |
+--     |    2    | POINT(4 3)  |
+--     |    3    | POINT(5 2)  |
 SELECT * FROM test_edges;
 -- Answer:
 -- |      ROAD    |  DESCRIPTION   | EDGE_ID | START_NODE | END_NODE |

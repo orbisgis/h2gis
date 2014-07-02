@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_MakeEllipse/
 ### Signature
 
 {% highlight mysql %}
-POLYGON ST_MakeEllipse(POINT point, double width, double height);
+POLYGON ST_MakeEllipse(POINT point, DOUBLE width, DOUBLE height);
 {% endhighlight %}
 
 ### Description

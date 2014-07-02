@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_MPolyFromText/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_MPolyFromText(varchar wkt, int srid);
+GEOMETRY ST_MPolyFromText(VARCHAR wkt, INT srid);
 {% endhighlight %}
 
 ### Description
@@ -25,11 +25,11 @@ GEOMETRY ST_MPolyFromText(varchar wkt, int srid);
 
 {% highlight mysql %}
 SELECT ST_MPolyFromText(
-    'MULTIPOLYGON(((28 26, 28 0, 84 0, 84 42, 28 26), 
+    'MULTIPOLYGON(((28 26, 28 0, 84 0, 84 42, 28 26),
                    (52 18, 66 23, 73 9, 48 6, 52 18)),
                   ((59 18, 67 18, 67 13, 59 13, 59 18)))', 101);
--- Answer: MULTIPOLYGON(((28 26, 28 0, 84 0, 84 42, 28 26), 
---                       (52 18, 66 23, 73 9, 48 6, 52 18)), 
+-- Answer: MULTIPOLYGON(((28 26, 28 0, 84 0, 84 42, 28 26),
+--                       (52 18, 66 23, 73 9, 48 6, 52 18)),
 --                      ((59 18, 67 18, 67 13, 59 13, 59 18)))
 
 SELECT ST_MPolyFromText('POINT(2 3)', 2154);

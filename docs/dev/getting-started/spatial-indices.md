@@ -25,17 +25,17 @@ spatial index on their Geometry columns:
 {% highlight mysql %}
 CREATE TABLE area(idarea INT PRIMARY KEY, the_geom GEOMETRY);
 CREATE SPATIAL INDEX myspatialindex ON area(the_geom);
-INSERT INTO area VALUES(1,
-    'POLYGON ((0 0, 20 0, 20 10, 0 10, 0 0))');
-INSERT INTO area VALUES(2,
-    'POLYGON ((25 5, 40 5, 40 15, 25 15, 25 5))');
-INSERT INTO area VALUES(3,
-    'POLYGON ((45 10, 50 10, 50 13, 45 13, 45 10))');
+INSERT INTO area VALUES (1,
+    'POLYGON((0 0, 20 0, 20 10, 0 10, 0 0))');
+INSERT INTO area VALUES (2,
+    'POLYGON((25 5, 40 5, 40 15, 25 15, 25 5))');
+INSERT INTO area VALUES (3,
+    'POLYGON((45 10, 50 10, 50 13, 45 13, 45 10))');
 
 CREATE TABLE roads(idroad INT PRIMARY KEY, the_geom GEOMETRY);
 CREATE SPATIAL INDEX ON roads(the_geom);
-INSERT INTO roads VALUES(1, 'LINESTRING (2 2, 7 7)');
-INSERT INTO roads VALUES(2, 'LINESTRING (15 -1, 30 13)');
+INSERT INTO roads VALUES (1, 'LINESTRING(2 2, 7 7)');
+INSERT INTO roads VALUES (2, 'LINESTRING(15 -1, 30 13)');
 {% endhighlight %}
 
 Now we execute the request:

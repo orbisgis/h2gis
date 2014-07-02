@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_PolyFromText/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_PolyFromText(varchar wkt, int srid);
+GEOMETRY ST_PolyFromText(VARCHAR wkt, INT srid);
 {% endhighlight %}
 
 ### Description

@@ -30,8 +30,7 @@ Input Geometries can be `(MULTI)POINT`s, `(MULTI)LINESTRING`s, `(MULTI)POLYGON`s
 Computes the union of a set of Geometries.
 `geom` is a `GEOMETRYCOLLECTION` resulting from an `ST_Accum` operation on a table.
 
-
-##### In both cases: 
+##### In both cases:
   * If no input Geometriy is given, the result is `NULL`.
   * Output Geometries can be single or multiple.
 
@@ -61,7 +60,7 @@ INSERT INTO input_table VALUES
      ('POLYGON((3 2, 8 2, 8 8, 3 8, 3 2))'),
      ('POLYGON((1 7, 2 7, 2 8, 1 8, 1 7))');
 SELECT ST_Union(ST_Accum(geom)) FROM input_table;
--- Answer: MULTIPOLYGON (((7 2, 7 1, 1 1, 1 6, 3 6, 3 8, 8 8, 8 2, 7 2)),
+-- Answer: MULTIPOLYGON(((7 2, 7 1, 1 1, 1 6, 3 6, 3 8, 8 8, 8 2, 7 2)),
 --                       ((1 7, 2 7, 2 8, 1 8, 1 7)))
 {% endhighlight %}
 

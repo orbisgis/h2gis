@@ -17,11 +17,11 @@ GEOMETRY ST_OctogonalEnvelope(GEOMETRY geom);
 
 ### Description
 
-Returns the octogonal envelope of a `GEOMETRY`.
-The octogonal envelope of a `Geometry` is tight along the four
+Returns the octogonal envelope of a Geometry.
+The octogonal envelope of a Geometry is tight along the four
 extremal rectilineal parallels and along the four extremal diagonal parallels.
 The octogonal envelope may be degenerate to any extreme depending on the
-`Geometry` (e.g. it may be a rectangle, a line, or a point).
+Geometry (e.g. it may be a rectangle, a line, or a point).
 
 ### Examples
 

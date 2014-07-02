@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_PolyFromWKB/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_PolyFromWKB(binary wkb, int srid);
+GEOMETRY ST_PolyFromWKB(binary wkb, INT srid);
 {% endhighlight %}
 
 ### Description

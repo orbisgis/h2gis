@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_Y/
 ### Signature
 
 {% highlight mysql %}
-double ST_Y(GEOMETRY geom);
+DOUBLE ST_Y(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -45,13 +45,13 @@ SELECT ST_Y(
         ST_ExteriorRing('POLYGON((5 0, 7 0, 7 1, 5 1, 5 0))'), 3));
 -- Answer: 1.0
 
-SELECT ST_Y('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)), 
+SELECT ST_Y('MULTIPOLYGON(((0 2, 3 2, 3 6, 0 6, 0 2)),
                           ((5 0, 7 0, 7 1, 5 1, 5 0)))');
 -- Answer: 2.0
 
 SELECT ST_Y('GEOMETRYCOLLECTION(
-               MULTIPOINT((4 4), (1 1), (1 0), (0 3)), 
-               LINESTRING(2 1, 1 3, 5 2), 
+               MULTIPOINT((4 4), (1 1), (1 0), (0 3)),
+               LINESTRING(2 1, 1 3, 5 2),
                POLYGON((1 2, 4 2, 4 6, 1 6, 1 2)))');
 -- Answer: 4.0
 {% endhighlight %}
