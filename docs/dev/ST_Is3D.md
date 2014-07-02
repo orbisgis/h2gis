@@ -2,6 +2,7 @@
 layout: docs
 title: ST_Is3D
 category: geom3D/properties
+is_function: true
 description: Return 1 if a Geometry has at least one z-coordinate; 0 otherwise
 prev_section: geom3D/properties
 next_section: ST_Z
