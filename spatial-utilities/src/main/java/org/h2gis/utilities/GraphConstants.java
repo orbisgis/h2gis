@@ -10,7 +10,7 @@ public interface GraphConstants {
     public static final String START_NODE = "START_NODE";
     public static final String END_NODE = "END_NODE";
     public static final String NODE_ID = "NODE_ID";
-    public static final String NODE_GEOM = "THE_GEOM";
+    public static final String THE_GEOM = "THE_GEOM";
     public static final String SOURCE  = "SOURCE";
     public static final String DESTINATION  = "DESTINATION";
     public static final String CLOSEST_DEST  = "CLOSEST_DEST";
@@ -24,4 +24,7 @@ public interface GraphConstants {
     public static final String CONNECTED_COMPONENT = "CONNECTED_COMPONENT";
     public static final String NODE_COMP_SUFFIX = "_NODE_CC";
     public static final String EDGE_COMP_SUFFIX = "_EDGE_CC";
+    public static final String PATH_ID = "PATH_ID";
+    public static final String PATH_EDGE_ID = "PATH_EDGE_ID";
+    public static final String WEIGHT = "WEIGHT";
 }
