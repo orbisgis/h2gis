@@ -47,4 +47,5 @@ a new ID for this path.
 
 ##### See also
 
+* [`ST_ShortestPathLength`](../ST_ShortestPathLength)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPath.java" target="_blank">Source code</a>

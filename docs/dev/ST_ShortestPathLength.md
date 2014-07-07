@@ -57,4 +57,6 @@ graph.
 
 ##### See also
 
+* [`ST_ShortestPath`](../ST_ShortestPath),
+  [`ST_Accessibility`](../ST_Accessibility)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPathLength.java" target="_blank">Source code</a>
