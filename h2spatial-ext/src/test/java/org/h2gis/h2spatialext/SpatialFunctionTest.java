@@ -1510,11 +1510,15 @@ public class SpatialFunctionTest {
 
     @Test
     public void testMeasureFromNorth() throws Exception {
+        assertEquals(180., ST_TriangleAspect.measureFromNorth(-450.), 0.);
+        assertEquals(180., ST_TriangleAspect.measureFromNorth(-90.), 0.);
         assertEquals(90., ST_TriangleAspect.measureFromNorth(0.), 0.);
         assertEquals(0., ST_TriangleAspect.measureFromNorth(90.), 0.);
         assertEquals(270., ST_TriangleAspect.measureFromNorth(180.), 0.);
         assertEquals(180., ST_TriangleAspect.measureFromNorth(270.), 0.);
         assertEquals(90., ST_TriangleAspect.measureFromNorth(360.), 0.);
+        assertEquals(0., ST_TriangleAspect.measureFromNorth(450.), 0.);
+        assertEquals(0., ST_TriangleAspect.measureFromNorth(810.), 0.);
     }
 
     @Test
