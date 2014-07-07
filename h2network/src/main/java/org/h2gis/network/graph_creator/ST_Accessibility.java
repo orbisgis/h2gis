@@ -150,9 +150,9 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
         try {
             final TableLocation destinationTable = parseInputTable(connection, destTable);
             final ResultSet rs = st.executeQuery(
-                    "SELECT * FROM " + destinationTable);
+                    "SELECT " + DESTINATION + " FROM " + destinationTable);
             while (rs.next()) {
-                destinations.add(graph.getVertex(rs.getInt(DESTINATION)));
+                destinations.add(graph.getVertex(rs.getInt(1)));
             }
         } finally {
             st.close();
