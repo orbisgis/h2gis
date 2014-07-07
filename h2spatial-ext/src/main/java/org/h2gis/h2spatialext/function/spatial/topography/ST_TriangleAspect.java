@@ -27,7 +27,6 @@ package org.h2gis.h2spatialext.function.spatial.topography;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.math.Vector2D;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 import org.jdelaunay.delaunay.error.DelaunayError;
 import org.jdelaunay.delaunay.geometries.DPoint;
 import org.jdelaunay.delaunay.geometries.DTriangle;
@@ -63,7 +62,19 @@ public class ST_TriangleAspect extends DeterministicScalarFunction {
                 return 0d;
             } else {
                 Vector2D v = new Vector2D(steepestVector.getX(), steepestVector.getY());
-                return (Math.toDegrees(v.angle() + (Math.PI / 2)));
+                return measureFromNorth(Math.toDegrees(v.angle()));
             }
+    }
+
+    /**
+     * Transforms an angle measured in degrees counterclockwise from the x-axis
+     * (mathematicians) to an angle measured in degrees clockwise from the
+     * y-axis (geographers).
+     *
+     * @param angle Mathematician's angle
+     * @return Geographer's angle
+     */
+    public static double measureFromNorth(double angle) {
+        return (450 - angle) % 360;
     }
 }
