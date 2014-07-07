@@ -3,7 +3,7 @@ layout: docs
 title: ST_IsClosed
 category: geom2D/properties
 is_function: true
-description: Return true if a Geometry is a closed `LINESTRING` or `MULTILINESTRING`
+description: Return true if a Geometry is a closed <code>LINESTRING</code> or <code>MULTILINESTRING</code>
 prev_section: ST_InteriorRingN
 next_section: ST_IsEmpty
 permalink: /docs/dev/ST_IsClosed/
