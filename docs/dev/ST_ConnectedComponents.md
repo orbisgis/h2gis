@@ -34,6 +34,13 @@ and a connected component ID.
 | `o`           | Global orientation string: `directed`, `reversed` or `undirected`                                                                                                                     |
 | `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed` |
 
+<div class="note">
+  <h5>Edges in no strongly connected component are assigned a connected
+  component ID of -1.</h5>
+  <p>Such edges have a start nodes and end nodes in different strongly
+  connected components.</p>
+</div>
+
 ### Examples
 
 {% highlight mysql %}
