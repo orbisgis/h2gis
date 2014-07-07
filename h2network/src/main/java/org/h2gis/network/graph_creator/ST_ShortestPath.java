@@ -41,6 +41,7 @@ import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 import static org.h2gis.network.graph_creator.GraphFunctionParser.parseInputTable;
+import static org.h2gis.utilities.GraphConstants.*;
 
 /**
  * Calculates the shortest path(s) between vertices in a JGraphT graph produced
@@ -50,24 +51,14 @@ import static org.h2gis.network.graph_creator.GraphFunctionParser.parseInputTabl
  */
 public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
-    public static final String EDGE_GEOM = "THE_GEOM";
     public static final int GEOM_INDEX = 1;
-    public static final String EDGE_ID = "EDGE_ID";
     public static final int EDGE_ID_INDEX = 2;
-    public static final String PATH_ID = "PATH_ID";
     public static final int PATH_ID_INDEX = 3;
-    public static final String PATH_EDGE_ID = "PATH_EDGE_ID";
     public static final int PATH_EDGE_ID_INDEX = 4;
-    public static final String SOURCE = "SOURCE";
     public static final int SOURCE_INDEX = 5;
-    public static final String DESTINATION = "DESTINATION";
     public static final int DESTINATION_INDEX = 6;
-    public static final String WEIGHT = "WEIGHT";
     public static final int WEIGHT_INDEX = 7;
     private int globalID = 1;
-
-    private static Connection connection;
-    private TableLocation tableName;
 
     public static final String NO_GEOM_FIELD_ERROR = "The input table must contain a geometry field.";
 
@@ -233,7 +224,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
      */
     private static SimpleResultSet prepareResultSet() {
         SimpleResultSet output = new SimpleResultSet();
-        output.addColumn(EDGE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
+        output.addColumn(THE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
         output.addColumn(EDGE_ID, Types.INTEGER, 10, 0);
         output.addColumn(PATH_ID, Types.INTEGER, 10, 0);
         output.addColumn(PATH_EDGE_ID, Types.INTEGER, 10, 0);

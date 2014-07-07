@@ -75,7 +75,7 @@ public class ST_GraphTest {
     private void checkNode(ResultSet nodesResult, int nodeID, String nodeGeom) throws SQLException {
         assertTrue(nodesResult.next());
         assertEquals(nodeID, nodesResult.getInt(GraphConstants.NODE_ID));
-        assertGeometryEquals(nodeGeom, nodesResult.getBytes(GraphConstants.NODE_GEOM));
+        assertGeometryEquals(nodeGeom, nodesResult.getBytes(GraphConstants.THE_GEOM));
     }
 
     private void checkEdge(ResultSet edgesResult, int gid, int startNode, int endNode) throws SQLException {
@@ -365,10 +365,10 @@ public class ST_GraphTest {
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
         assertTrue(nodesResult.next());
         assertEquals(1, nodesResult.getInt(GraphConstants.NODE_ID));
-        assertGeometryEquals("POINT (0 0 1)", nodesResult.getBytes(GraphConstants.NODE_GEOM));
+        assertGeometryEquals("POINT (0 0 1)", nodesResult.getBytes(GraphConstants.THE_GEOM));
         assertTrue(nodesResult.next());
         assertEquals(2, nodesResult.getInt(GraphConstants.NODE_ID));
-        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(GraphConstants.NODE_GEOM));
+        assertGeometryEquals("POINT (1 0 0)", nodesResult.getBytes(GraphConstants.THE_GEOM));
         assertFalse(nodesResult.next());
         nodesResult.close();
         edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
