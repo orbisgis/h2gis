@@ -30,6 +30,7 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
+import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.*;
@@ -1504,6 +1505,32 @@ public class SpatialFunctionTest {
     @Test(expected = SQLException.class)
     public void test_ST_TriangleAspect3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 , 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
+        rs.close();
+    }
+
+    @Test
+    public void testMeasureFromNorth() throws Exception {
+        assertEquals(90., ST_TriangleAspect.measureFromNorth(0.), 0.);
+        assertEquals(0., ST_TriangleAspect.measureFromNorth(90.), 0.);
+        assertEquals(270., ST_TriangleAspect.measureFromNorth(180.), 0.);
+        assertEquals(180., ST_TriangleAspect.measureFromNorth(270.), 0.);
+        assertEquals(90., ST_TriangleAspect.measureFromNorth(360.), 0.);
+    }
+
+    @Test
+    public void test_ST_TriangleAspect() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT " +
+                        "ST_TriangleAspect('POLYGON((0 0 0, 3 0 0, 0 3 0, 0 0 0))')," +
+                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 0 3 1, 0 0 1))')," +
+                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 1, 0 3 0, 0 0 1))')," +
+                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 3 3 1, 0 0 1))');");
+        assertTrue(rs.next());
+        assertTrue(rs.getDouble(1) == 0);
+        assertTrue(rs.getDouble(2) == 90);
+        assertTrue(rs.getDouble(3) == 0);
+        assertTrue(rs.getDouble(4) == 135);
+        assertFalse(rs.next());
         rs.close();
     }
 
