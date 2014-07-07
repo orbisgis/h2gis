@@ -20,8 +20,9 @@ ST_ConnectedComponents('INPUT_EDGES', 'o[ - eo]');
 
 ### Description
 
-Calculates the connected components (for undirected graphs) or
-strongly connected components (for directed graphs) of a graph.
+Calculates the [connected components][cc] (for undirected graphs) or
+[strongly connected components][scc] (for directed graphs) of a
+graph.
 Produces two tables (nodes and edges) containing a node or edge ID
 and a connected component ID.
 
@@ -41,3 +42,6 @@ and a connected component ID.
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ConnectedComponents.java" target="_blank">Source code</a>
+
+[cc]: http://en.wikipedia.org/wiki/Connected_component_(graph_theory)
+[scc]: http://en.wikipedia.org/wiki/Strongly_connected_component
