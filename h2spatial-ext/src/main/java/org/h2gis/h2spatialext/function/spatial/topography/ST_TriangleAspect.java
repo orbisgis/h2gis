@@ -67,9 +67,9 @@ public class ST_TriangleAspect extends DeterministicScalarFunction {
     }
 
     /**
-     * Transforms an angle measured counterclockwise from the x-axis
-     * (mathematicians) to an angle measured clockwise from the y-axis
-     * (geographers).
+     * Transforms an angle measured in degrees counterclockwise from the x-axis
+     * (mathematicians) to an angle measured in degrees clockwise from the
+     * y-axis (geographers).
      *
      * @param angle Mathematician's angle
      * @return Geographer's angle
