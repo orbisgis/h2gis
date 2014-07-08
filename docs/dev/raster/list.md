@@ -2,8 +2,7 @@
 layout: docs
 title: Raster functions
 category: raster
-prev_section: geom3D/triangulation
-next_section: applications
+prev_section: h2network
 permalink: /docs/dev/raster/
 ---
 
