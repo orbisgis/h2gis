@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_ShortestPath
-category: h2network
+category: applications/h2network
 is_function: true
 description: Calculate shortest path(s) between vertices in a graph
 prev_section: ST_GraphAnalysis
