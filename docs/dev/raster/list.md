@@ -1,10 +1,10 @@
 ---
 layout: docs
 title: Raster functions
-category: raster/list
+category: raster
 prev_section: geom3D/triangulation
-next_section: applications/list
-permalink: /docs/dev/raster/list/
+next_section: applications
+permalink: /docs/dev/raster/
 ---
 
 We are currently working on implementing raster functionality in H2GIS.

@@ -5,7 +5,7 @@ category: geom2D/trigonometry
 is_function: true
 description: Return the azimuth of the segment from point A to point B
 prev_section: geom2D/trigonometry
-next_section: geom3D/list
+next_section: geom3D
 permalink: /docs/dev/ST_Azimuth/
 ---
 

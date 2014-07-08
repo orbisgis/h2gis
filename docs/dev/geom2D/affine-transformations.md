@@ -2,7 +2,7 @@
 layout: docs
 title: Affine transformations
 category: geom2D/affine-transformations
-prev_section: geom2D/list
+prev_section: geom2D
 next_section: geom2D/geometry-conversion
 permalink: /docs/dev/geom2D/affine-transformations/
 ---

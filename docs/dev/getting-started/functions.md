@@ -2,7 +2,7 @@
 layout: docs
 title: Functions
 prev_section: embedded-spatial-db
-next_section: geom2D/list
+next_section: geom2D
 permalink: /docs/dev/functions/
 ---
 

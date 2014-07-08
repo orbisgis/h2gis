@@ -5,7 +5,7 @@ category: geom3D/triangulation
 is_function: true
 description:
 prev_section: ST_ConstrainedDelaunay
-next_section: raster/list
+next_section: raster
 permalink: /docs/dev/ST_Delaunay/
 ---
 

@@ -3,7 +3,7 @@ layout: docs
 title: Trigonometry
 category: geom2D/trigonometry
 prev_section: geom2D/properties
-next_section: geom3D/list
+next_section: geom3D
 permalink: /docs/dev/geom2D/trigonometry/
 ---
 

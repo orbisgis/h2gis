@@ -2,7 +2,7 @@
 layout: docs
 title: H2Network
 category: applications/h2network
-prev_section: applications/list
+prev_section: applications
 permalink: /docs/dev/h2network/
 ---
 
