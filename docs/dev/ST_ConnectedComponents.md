@@ -1,7 +1,7 @@
 ---
 layout: docs
 title: ST_ConnectedComponents
-category: applications/h2network
+category: h2network
 is_function: true
 description: Calculate the (strongly) connected components of a graph
 prev_section: ST_Accessibility
