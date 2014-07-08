@@ -17,7 +17,8 @@ H2GIS adds support for
 * `(MULTI)POINT`, `(MULTI)LINESTRING` and `(MULTI)POLYGON` types
 * the functions specified by the [OpenGIS][] [Simple Features Implementation
   Specification for SQL][] and
-* additional spatial functions we develop.
+* additional spatial functions we develop, including our graph analysis package
+  [H2Network][]
 
 ## Get help
 
@@ -44,3 +45,4 @@ please [file an issue][] and we'll potentially include it in this guide.
 [developer]: http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html
 [H2 Google Group]: https://groups.google.com/forum/#!forum/h2-database
 [Javadoc page]: http://javadoc.orbisgis.org/latest/h2gis/classes.html
+[H2Network]: ../h2network
