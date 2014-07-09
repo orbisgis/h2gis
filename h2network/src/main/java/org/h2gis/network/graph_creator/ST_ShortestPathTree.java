@@ -26,10 +26,7 @@
 package org.h2gis.network.graph_creator;
 
 import org.h2.tools.SimpleResultSet;
-import org.h2.value.Value;
-import org.h2.value.ValueDouble;
-import org.h2.value.ValueInt;
-import org.h2.value.ValueString;
+import org.h2.value.*;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
@@ -120,7 +117,7 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
                                             Value arg5) throws SQLException {
         if (arg4 instanceof ValueInt) {
             final int source = arg4.getInt();
-            if (arg5 instanceof ValueDouble) {
+            if (arg5 instanceof ValueDecimal) {
                 final double radius = arg5.getDouble();
                 return oneToAll(connection, inputTable, orientation, null, source, radius);
             } else {
