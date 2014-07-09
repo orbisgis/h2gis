@@ -188,13 +188,14 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
         final PreparedStatement ps = ST_ShortestPath.prepareEdgeGeomStatement(connection, inputTable);
         int newID = 1;
         for (Edge e : shortestPathTree.edgeSet()) {
-            final int id = e.getBaseGraphEdge().getID();
+            final Edge baseGraphEdge = e.getBaseGraphEdge();
+            final int id = baseGraphEdge.getID();
             output.addRow(ST_ShortestPath.getEdgeGeometry(ps, id),
                     id,
                     newID++,
                     shortestPathTree.getEdgeSource(e).getID(),
                     shortestPathTree.getEdgeTarget(e).getID(),
-                    shortestPathTree.getEdgeWeight(e));
+                    graph.getEdgeWeight(baseGraphEdge));
         }
         return output;
     }
