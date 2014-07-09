@@ -24,6 +24,7 @@
 
 package org.h2gis.network.graph_creator;
 
+import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.*;
@@ -34,7 +35,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertTrue;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 
 /**
@@ -675,6 +677,45 @@ public class ST_ShortestPathTreeTest {
                 new Tree()
                         .add(11, new TreeEdge("LINESTRING (3 1, 4 2)", 6, 7, 1.0))
         );
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unrecognizedArg4() throws Throwable {
+        // The source vertex must be given as an INT and not a DOUBLE.
+        try {
+            st.executeQuery(
+                "SELECT * FROM ST_ShortestPathTree('COPY_EDGES_ALL', " +
+                        DO + ", 1.0, 1)");
+        } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "1.0"));
+            throw e.getOriginalCause();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void unrecognizedArg5() throws Throwable {
+        // The radius must be given as a DOUBLE and not an INT.
+        try {
+            st.executeQuery(
+                "SELECT * FROM ST_ShortestPathTree('COPY_EDGES_ALL', " +
+                        DO + ", 1, 5)");
+        } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "5"));
+            throw e.getOriginalCause();
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void otherUnrecognizedArg5() throws Throwable {
+        // The source vertex must be given as an INT and not a DOUBLE.
+        try {
+            st.executeQuery(
+                "SELECT * FROM ST_ShortestPathTree('COPY_EDGES_ALL', " +
+                        DO + ", " + W + ", 1.0)");
+        } catch (JdbcSQLException e) {
+            assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "1.0"));
+            throw e.getOriginalCause();
+        }
     }
 
     private ResultSet oneToAll(String table, String orientation, int source) throws SQLException {
