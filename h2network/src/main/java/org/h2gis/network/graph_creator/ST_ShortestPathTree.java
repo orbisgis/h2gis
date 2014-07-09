@@ -71,8 +71,8 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
             "* `eo` = Edge orientation (1 = directed, -1 = reversed, 0 = undirected).\n" +
             "   Required if global orientation is directed or reversed.\n" +
             "* `s` = Source vertex id\n" +
-            "* `r` = Radius by which to limit the search\n" +
-            "* `w` = Name of column containing edge weights as doubles\n";
+            "* `r` = Radius by which to limit the search (a `DOUBLE`)\n" +
+            "* `w` = Name of column containing edge weights as `DOUBLES`\n";
 
     /**
      * Constructor
