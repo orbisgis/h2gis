@@ -254,7 +254,7 @@ public class ST_ShortestPathTreeTest {
     }
 
     @Test
-    public void oneToOneRO() throws Exception {
+    public void RO() throws Exception {
         // Edges
         // | 1              | 2        | 3      | 4      | 5             |
         // |----------------|----------|--------|--------|---------------|
@@ -341,7 +341,7 @@ public class ST_ShortestPathTreeTest {
     }
 
     @Test
-    public void oneToOneWRO() throws Exception {
+    public void WRO() throws Exception {
         // Edges
         // | 1                | 2        | 3      | 4      | 5       |
         // |------------------|----------|--------|--------|---------|
@@ -437,7 +437,7 @@ public class ST_ShortestPathTreeTest {
     }
 
     @Test
-    public void oneToOneU() throws Exception {
+    public void U() throws Exception {
         // Edges
         // | 1                            | 2                                  |
         // |------------------------------|------------------------------------|
@@ -562,7 +562,7 @@ public class ST_ShortestPathTreeTest {
     }
 
     @Test
-    public void oneToOneWU() throws Exception {
+    public void WU() throws Exception {
         // Edges
         // | 1           | 2     | 3     | 4       | 5           |
         // |-------------|-------|-------|---------|-------------|
