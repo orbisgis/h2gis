@@ -388,6 +388,53 @@ public class ST_ShortestPathTreeTest {
     }
 
     @Test
+    public void WROlimitedBy6point1() throws Exception {
+        // Edges
+        // | 1                | 2        | 3      | 4      | 5       |
+        // |------------------|----------|--------|--------|---------|
+        // | *                | (10,7,3) | (10,7) | (10,8) | (10)    |
+        // | (4,5)            | *        | (4)    | (2)    | (2,9)   |
+        // | (5)              | (3)      | *      | (3,2)  | (3,2,9) |
+        // | (9,-10), (9,7,5) | (9,7,3)  | (9,7)  | *      | (9)     |
+        // | (-10), (7,5)     | (7,3)    | (7)    | (8)    | *       |
+        // Distances:
+        // {0.0, 11.0, 9.0, 11.0, 7.0}
+        // {8.0, 0.0, 3.0, 1.0, 7.0}
+        // {5.0, 2.0, 0.0, 3.0, 9.0}
+        // {13.0, 10.0, 8.0, 0.0, 6.0}
+        // {7.0, 4.0, 2.0, 4.0, 0.0}
+        check(oneToAll(CORMEN, RO, W, 1, 6.1),
+                new Tree()
+        );
+        check(oneToAll(CORMEN, RO, W, 2, 6.1),
+                new Tree()
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 2, 4, 1.0))
+                        .add(4, new TreeEdge("LINESTRING (1 0, 1.25 1, 1 2)", 2, 3, 3.0))
+        );
+        check(oneToAll(CORMEN, RO, W, 3, 6.1),
+                new Tree()
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 2, 4, 1.0))
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 2, 2.0))
+                        .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 3, 1, 5.0))
+        );
+        check(oneToAll(CORMEN, RO, W, 4, 6.1),
+                new Tree()
+                        .add(9, new TreeEdge("LINESTRING (2 0, 2.25 1, 2 2)", 4, 5, 6.0))
+        );
+        // We might expect edge 3 to be included in the SPT but it is not.
+        // This is because when we limit Dijkstra by a radius of 6.1,
+        // it stops after its first iteration after finding vertices
+        // 3 (distance 2.0), 4 (distance 4.0) and 1 (distance 7.0)
+        // since 7.0 > 6.1.
+        // TODO: Rethink how we limit Dijkstra to give the expected result?
+        check(oneToAll(CORMEN, RO, W, 5, 6.1),
+                new Tree()
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 5, 3, 2.0))
+                        .add(8, new TreeEdge("LINESTRING (2 2, 1.75 1, 2 0)", 5, 4, 4.0))
+        );
+    }
+
+    @Test
     public void oneToOneU() throws Exception {
         // Edges
         // | 1                            | 2                                  |
