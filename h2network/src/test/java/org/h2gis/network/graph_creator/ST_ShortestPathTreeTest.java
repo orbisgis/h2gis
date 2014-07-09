@@ -669,6 +669,14 @@ public class ST_ShortestPathTreeTest {
         );
     }
 
+    @Test
+    public void WDODisconnectedGraphLimitedBy1point1() throws SQLException {
+        check(oneToAll("COPY_EDGES_ALL", DO, W, 6, 1.1),
+                new Tree()
+                        .add(11, new TreeEdge("LINESTRING (3 1, 4 2)", 6, 7, 1.0))
+        );
+    }
+
     private ResultSet oneToAll(String table, String orientation, int source) throws SQLException {
         return oneToAll(table, orientation, null, source, Double.POSITIVE_INFINITY);
     }
