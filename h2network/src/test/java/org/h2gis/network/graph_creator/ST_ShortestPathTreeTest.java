@@ -608,6 +608,54 @@ public class ST_ShortestPathTreeTest {
         );
     }
 
+    @Test
+    public void WUlimitedBy6point1() throws Exception {
+        // Edges
+        // | 1           | 2     | 3     | 4       | 5           |
+        // |-------------|-------|-------|---------|-------------|
+        // | *           | (5,3) | (5)   | (5,3,2) | (10), (5,7) |
+        // | (3,5)       | *     | (3)   | (2)     | (3,7)       |
+        // | (5)         | (3)   | *     | (3,2)   | (7)         |
+        // | (2,3,5)     | (2)   | (2,3) | *       | (8)         |
+        // | (10), (7,5) | (7,3) | (7)   | (8)     | *           |
+        // Distances:
+        // {0.0, 7.0, 5.0, 8.0, 7.0}
+        // {7.0, 0.0, 2.0, 1.0, 4.0}
+        // {5.0, 2.0, 0.0, 3.0, 2.0}
+        // {8.0, 1.0, 3.0, 0.0, 4.0}
+        // {7.0, 4.0, 2.0, 4.0, 0.0}
+        check(oneToAll(CORMEN, U, W, 1, 6.1),
+                new Tree()
+                        .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 1, 3, 5.0))
+        );
+        check(oneToAll(CORMEN, U, W, 2, 6.1),
+                new Tree()
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 2, 4, 1.0))
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 2, 3, 2.0))
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 3, 5, 2.0))
+        );
+        check(oneToAll(CORMEN, U, W, 3, 6.1),
+                new Tree()
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 2, 4, 1.0))
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 2, 2.0))
+                        .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 3, 1, 5.0))
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 3, 5, 2.0))
+        );
+        check(oneToAll(CORMEN, U, W, 4, 6.1),
+                new Tree()
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 4, 2, 1.0))
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 2, 3, 2.0))
+                        .add(8, new TreeEdge("LINESTRING (2 2, 1.75 1, 2 0)", 4, 5, 4.0))
+        );
+        // Note: Edge 3 is not included here for the same reason as in
+        // {@link #WROlimitedBy6point1}.
+        check(oneToAll(CORMEN, U, W, 5, 6.1),
+                new Tree()
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 5, 3, 2.0))
+                        .add(8, new TreeEdge("LINESTRING (2 2, 1.75 1, 2 0)", 5, 4, 4.0))
+        );
+    }
+
     private ResultSet oneToAll(String table, String orientation, int source) throws SQLException {
         return oneToAll(table, orientation, null, source, Double.POSITIVE_INFINITY);
     }
