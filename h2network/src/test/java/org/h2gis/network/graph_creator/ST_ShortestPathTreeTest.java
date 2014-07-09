@@ -416,6 +416,61 @@ public class ST_ShortestPathTreeTest {
     }
 
     @Test
+    public void UlimitedBy1point1() throws Exception {
+        // Edges
+        // | 1                            | 2                                  |
+        // |------------------------------|------------------------------------|
+        // | *                            | (1)                                |
+        // | (1)                          | *                                  |
+        // | (5)                          | (3), (4)                           |
+        // | (2,1), (6,5), (8,10), (9,10) | (2)                                |
+        // | (10)                         | (10,1), (7,3), (7,4), (8,2), (9,2) |
+        //
+        // | 3        | 4                            | 5                                  |
+        // |----------|------------------------------|------------------------------------|
+        // | (5)      | (1,2), (5,6), (10,8), (10,9) | (10)                               |
+        // | (3), (4) | (2)                          | (1,10), (3,7), (4,7), (2,8), (2,9) |
+        // | *        | (6)                          | (7)                                |
+        // | (6)      | *                            | (8), (9)                           |
+        // | (7)      | (8), (9)                     | *                                  |
+        check(oneToAll(CORMEN, U, 1, 1.1),
+                new Tree()
+                        .add(1, new TreeEdge("LINESTRING (0 1, 1 2)", 1, 2, 1.0))
+                        .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 1, 3, 1.0))
+                        .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 1, 5, 1.0))
+        );
+        check(oneToAll(CORMEN, U, 2, 1.1),
+                new Tree()
+                        .add(1, new TreeEdge("LINESTRING (0 1, 1 2)", 2, 1, 1.0))
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 2, 4, 1.0))
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 2, 3, 1.0))
+                        .add(4, new TreeEdge("LINESTRING (1 0, 1.25 1, 1 2)", 2, 3, 1.0))
+        );
+        check(oneToAll(CORMEN, U, 3, 1.1),
+                new Tree()
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 2, 1.0))
+                        .add(4, new TreeEdge("LINESTRING (1 0, 1.25 1, 1 2)", 3, 2, 1.0))
+                        .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 3, 1, 1.0))
+                        .add(6, new TreeEdge("LINESTRING (1 0, 2 2)", 3, 4, 1.0))
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 3, 5, 1.0))
+        );
+        check(oneToAll(CORMEN, U, 4, 1.1),
+                new Tree()
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 4, 2, 1.0))
+                        .add(6, new TreeEdge("LINESTRING (1 0, 2 2)", 4, 3, 1.0))
+                        .add(8, new TreeEdge("LINESTRING (2 2, 1.75 1, 2 0)", 4, 5, 1.0))
+                        .add(9, new TreeEdge("LINESTRING (2 0, 2.25 1, 2 2)", 4, 5, 1.0))
+        );
+        check(oneToAll(CORMEN, U, 5, 1.1),
+                new Tree()
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 5, 3, 1.0))
+                        .add(8, new TreeEdge("LINESTRING (2 2, 1.75 1, 2 0)", 5, 4, 1.0))
+                        .add(9, new TreeEdge("LINESTRING (2 0, 2.25 1, 2 2)", 5, 4, 1.0))
+                        .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 5, 1, 1.0))
+        );
+    }
+
+    @Test
     public void oneToOneWU() throws Exception {
         // Edges
         // | 1           | 2     | 3     | 4       | 5           |
