@@ -32,6 +32,10 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
+
+import static junit.framework.Assert.*;
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 
 /**
  * @author Adam Gouge
@@ -45,12 +49,13 @@ public class ST_ShortestPathTreeTest {
     private static final String RO = "'reversed - edge_orientation'";
     private static final String U = "'undirected'";
     private static final String W = "'weight'";
+    private static final String CORMEN = "CORMEN_EDGES_ALL";
 
     @BeforeClass
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase("ST_ShortestPathTreeTest", true);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPath(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPathTree(), "");
         GraphCreatorTest.registerCormenGraph(connection);
     }
 
@@ -67,6 +72,26 @@ public class ST_ShortestPathTreeTest {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+
+    @Test
+    public void WDO() throws SQLException {
+        // Edges
+        // | 1        | 2     | 3       | 4                | 5            |
+        // |----------|-------|---------|------------------|--------------|
+        // | *        | (5,4) | (5)     | (5,7,9), (-10,9) | (5,7), (-10) |
+        // | (3,7,10) | *     | (3)     | (3,7,9)          | (3,7)        |
+        // | (7,10)   | (4)   | *       | (7,9)            | (7)          |
+        // | (8,10)   | (2)   | (2,3)   | *                | (8)          |
+        // | (10)     | (9,2) | (9,2,3) | (9)              | *            |
+        check(oneToAll(CORMEN, DO, W, 1),
+                new Tree()
+                        .add(-10, new TreeEdge("LINESTRING (2 0, 0 1)", 1, 5, 7.0))
+                        .add(4, new TreeEdge("LINESTRING (1 0, 1.25 1, 1 2)", 3, 2, 3.0))
+                        .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 1, 3, 5.0))
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 3, 5, 2.0))
+                        .add(9, new TreeEdge("LINESTRING (2 0, 2.25 1, 2 2)", 5, 4, 6.0))
+        );
     }
 
     private ResultSet oneToAll(String table, String orientation, int source) throws SQLException {
@@ -88,6 +113,59 @@ public class ST_ShortestPathTreeTest {
                         + orientation
                         + ((weight != null) ? ", " + weight : "") + ", "
                         + source
-                        + ((radius < Double.POSITIVE_INFINITY) ? ", " + radius  : "") + ")");
+                        + ((radius < Double.POSITIVE_INFINITY) ? ", " + radius : "") + ")"
+        );
+    }
+
+    private void check(ResultSet rs, Tree tree) throws SQLException {
+        int count = 0;
+        while (rs.next()) {
+            count++;
+            // Here we check the edge id, but we never check the tree id, as it could vary.
+            TreeEdge e = tree.get(rs.getInt(ST_ShortestPathTree.EDGE_ID_INDEX));
+            assertGeometryEquals(e.getGeom(), rs.getBytes(ST_ShortestPathTree.GEOM_INDEX));
+            assertEquals(e.getSource(), rs.getInt(ST_ShortestPathTree.SOURCE_INDEX));
+            assertEquals(e.getDestination(), rs.getInt(ST_ShortestPathTree.DESTINATION_INDEX));
+            assertEquals(e.getWeight(), rs.getDouble(ST_ShortestPathTree.WEIGHT_INDEX), TOLERANCE);
+        }
+        assertEquals(count, tree.size());
+        rs.close();
+    }
+
+    private class Tree extends HashMap<Integer, TreeEdge> {
+        public Tree add(Integer i, TreeEdge e) {
+            super.put(i, e);
+            return this;
+        }
+    }
+
+    private class TreeEdge {
+        private String geom;
+        private int source;
+        private int destination;
+        private double weight;
+
+        public TreeEdge(String geom, int source, int destination, double weight) {
+            this.geom = geom;
+            this.source = source;
+            this.destination = destination;
+            this.weight = weight;
+        }
+
+        public String getGeom() {
+            return geom;
+        }
+
+        public int getSource() {
+            return source;
+        }
+
+        public int getDestination() {
+            return destination;
+        }
+
+        public double getWeight() {
+            return weight;
+        }
     }
 }
