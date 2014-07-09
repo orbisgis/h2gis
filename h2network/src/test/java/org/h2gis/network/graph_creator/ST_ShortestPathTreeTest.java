@@ -86,6 +86,9 @@ public class ST_ShortestPathTreeTest {
         // | (7,10)   | (4)           | *      | (6)            | (7)   |
         // | (8,10)   | (2)           | (2,3)  | *              | (8)   |
         // | (10)     | (10,1), (9,2) | (10,5) | (9)            | *     |
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'directed - edge_orientation', 1)
         check(oneToAll(CORMEN, DO, 1),
                 new Tree()
                         .add(-10, new TreeEdge("LINESTRING (2 0, 0 1)", 1, 5, 1.0))
@@ -135,6 +138,9 @@ public class ST_ShortestPathTreeTest {
         // | (7,10)   | (4)           | *      | (6)            | (7)   |
         // | (8,10)   | (2)           | (2,3)  | *              | (8)   |
         // | (10)     | (10,1), (9,2) | (10,5) | (9)            | *     |
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'directed - edge_orientation', 1, 1.1)
         check(oneToAll(CORMEN, DO, 1, 1.1),
                 new Tree()
                         .add(-10, new TreeEdge("LINESTRING (2 0, 0 1)", 1, 5, 1.0))
@@ -173,6 +179,9 @@ public class ST_ShortestPathTreeTest {
         // | (7,10)   | (4)   | *       | (7,9)            | (7)          |
         // | (8,10)   | (2)   | (2,3)   | *                | (8)          |
         // | (10)     | (9,2) | (9,2,3) | (9)              | *            |
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'directed - edge_orientation', 'weight, 1)
         check(oneToAll(CORMEN, DO, W, 1),
                 new Tree()
                         .add(-10, new TreeEdge("LINESTRING (2 0, 0 1)", 1, 5, 7.0))
@@ -227,6 +236,9 @@ public class ST_ShortestPathTreeTest {
         // {9.0, 3.0, 0.0, 8.0, 2.0}
         // {11.0, 1.0, 3.0, 0.0, 4.0}
         // {7.0, 7.0, 9.0, 6.0, 0.0}
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'directed - edge_orientation', 'weight, 1, 6.1)
         check(oneToAll(CORMEN, DO, W, 1, 6.1),
                 new Tree()
                         .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 1, 3, 5.0))
@@ -263,6 +275,9 @@ public class ST_ShortestPathTreeTest {
         // | (5)            | (3)      | *      | (3,2)  | (5,10)        |
         // | (6,5), (9,-10) | (6,3)    | (6)    | *      | (9)           |
         // | (-10)          | (7,3)    | (7)    | (8)    | *             |
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'reversed - edge_orientation', 1)
         check(oneToAll(CORMEN, RO, 1),
                 new Tree()
                         .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 2, 1.0))
@@ -312,6 +327,9 @@ public class ST_ShortestPathTreeTest {
         // | (5)            | (3)      | *      | (3,2)  | (5,10)        |
         // | (6,5), (9,-10) | (6,3)    | (6)    | *      | (9)           |
         // | (-10)          | (7,3)    | (7)    | (8)    | *             |
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'reversed - edge_orientation', 1, 1.1)
         check(oneToAll(CORMEN, RO, 1, 1.1),
                 new Tree()
                         .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 1, 5, 1.0))
@@ -350,6 +368,9 @@ public class ST_ShortestPathTreeTest {
         // | (5)              | (3)      | *      | (3,2)  | (3,2,9) |
         // | (9,-10), (9,7,5) | (9,7,3)  | (9,7)  | *      | (9)     |
         // | (-10), (7,5)     | (7,3)    | (7)    | (8)    | *       |
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'reversed - edge_orientation', 'weight', 1)
         check(oneToAll(CORMEN, RO, W, 1),
                 new Tree()
                         .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 3, 2, 2.0))
@@ -405,6 +426,9 @@ public class ST_ShortestPathTreeTest {
         // {5.0, 2.0, 0.0, 3.0, 9.0}
         // {13.0, 10.0, 8.0, 0.0, 6.0}
         // {7.0, 4.0, 2.0, 4.0, 0.0}
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'reversed - edge_orientation', 'weight', 1, 6.1)
         check(oneToAll(CORMEN, RO, W, 1, 6.1),
                 new Tree()
         );
@@ -454,6 +478,9 @@ public class ST_ShortestPathTreeTest {
         // | *        | (6)                          | (7)                                |
         // | (6)      | *                            | (8), (9)                           |
         // | (7)      | (8), (9)                     | *                                  |
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'undirected', 1)
         check(oneToAll(CORMEN, U, 1),
                 new Tree()
                         .add(1, new TreeEdge("LINESTRING (0 1, 1 2)", 1, 2, 1.0))
@@ -524,6 +551,9 @@ public class ST_ShortestPathTreeTest {
         // | *        | (6)                          | (7)                                |
         // | (6)      | *                            | (8), (9)                           |
         // | (7)      | (8), (9)                     | *                                  |
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'undirected', 1, 1.1)
         check(oneToAll(CORMEN, U, 1, 1.1),
                 new Tree()
                         .add(1, new TreeEdge("LINESTRING (0 1, 1 2)", 1, 2, 1.0))
@@ -571,6 +601,9 @@ public class ST_ShortestPathTreeTest {
         // | (5)         | (3)   | *     | (3,2)   | (7)         |
         // | (2,3,5)     | (2)   | (2,3) | *       | (8)         |
         // | (10), (7,5) | (7,3) | (7)   | (8)     | *           |
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'undirected', 'weight', 1)
         check(oneToAll(CORMEN, U, W, 1),
                 new Tree()
                         .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 2, 4, 1.0))
@@ -626,6 +659,9 @@ public class ST_ShortestPathTreeTest {
         // {5.0, 2.0, 0.0, 3.0, 2.0}
         // {8.0, 1.0, 3.0, 0.0, 4.0}
         // {7.0, 4.0, 2.0, 4.0, 0.0}
+        //
+        // SELECT * FROM ST_ShortestPathTree('CORMEN_EDGES_ALL',
+        //     'undirected', 'weight', 1, 6.1)
         check(oneToAll(CORMEN, U, W, 1, 6.1),
                 new Tree()
                         .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 1, 3, 5.0))
