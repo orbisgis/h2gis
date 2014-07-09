@@ -99,6 +99,27 @@ public class ST_ShortestPathTreeTest {
                         .add(9, new TreeEdge("LINESTRING (2 0, 2.25 1, 2 2)", 5, 4, 6.0))
                         .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 5, 1, 7.0))
         );
+        check(oneToAll(CORMEN, DO, W, 3),
+                new Tree()
+                        .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 5, 1, 7.0))
+                        .add(4, new TreeEdge("LINESTRING (1 0, 1.25 1, 1 2)", 3, 2, 3.0))
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 3, 5, 2.0))
+                        .add(9, new TreeEdge("LINESTRING (2 0, 2.25 1, 2 2)", 5, 4, 6.0))
+        );
+        check(oneToAll(CORMEN, DO, W, 4),
+                new Tree()
+                        .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 5, 1, 7.0))
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 4, 2, 1.0))
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 2, 3, 2.0))
+                        .add(8, new TreeEdge("LINESTRING (2 2, 1.75 1, 2 0)", 4, 5, 4.0))
+        );
+        check(oneToAll(CORMEN, DO, W, 5),
+                new Tree()
+                        .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 5, 1, 7.0))
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 4, 2, 1.0))
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 2, 3, 2.0))
+                        .add(9, new TreeEdge("LINESTRING (2 0, 2.25 1, 2 2)", 5, 4, 6.0))
+        );
     }
 
     private ResultSet oneToAll(String table, String orientation, int source) throws SQLException {
