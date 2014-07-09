@@ -595,7 +595,7 @@ public class ST_ShortestPathTreeTest {
             assertEquals(e.getDestination(), rs.getInt(ST_ShortestPathTree.DESTINATION_INDEX));
             assertEquals(e.getWeight(), rs.getDouble(ST_ShortestPathTree.WEIGHT_INDEX), TOLERANCE);
         }
-        assertEquals(count, tree.size());
+        assertEquals(tree.size(), count);
         rs.close();
     }
 
