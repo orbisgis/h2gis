@@ -656,6 +656,19 @@ public class ST_ShortestPathTreeTest {
         );
     }
 
+    @Test
+    public void WDODisconnectedGraph() throws SQLException {
+        // This test shows that when ST_ShortestPathTree is called on a graph
+        // that is not connected, it will create the largest SPT it can while
+        // staying in the same (strongly) connected component as the source
+        // vertex.
+        check(oneToAll("COPY_EDGES_ALL", DO, W, 6),
+                new Tree()
+                        .add(11, new TreeEdge("LINESTRING (3 1, 4 2)", 6, 7, 1.0))
+                        .add(12, new TreeEdge("LINESTRING (4 2, 5 2)", 7, 8, 2.0))
+        );
+    }
+
     private ResultSet oneToAll(String table, String orientation, int source) throws SQLException {
         return oneToAll(table, orientation, null, source, Double.POSITIVE_INFINITY);
     }
