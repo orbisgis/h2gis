@@ -75,6 +75,55 @@ public class ST_ShortestPathTreeTest {
     }
 
     @Test
+    public void DO() throws Exception {
+        // Edges
+        // | 1        | 2             | 3      | 4              | 5     |
+        // |----------|---------------|--------|----------------|-------|
+        // | *        | (1)           | (5)    | (5,6), (-10,9) | (-10) |
+        // | (3,7,10) | *             | (3)    | (3,6)          | (3,7) |
+        // | (7,10)   | (4)           | *      | (6)            | (7)   |
+        // | (8,10)   | (2)           | (2,3)  | *              | (8)   |
+        // | (10)     | (10,1), (9,2) | (10,5) | (9)            | *     |
+        check(oneToAll(CORMEN, DO, 1),
+                new Tree()
+                        .add(-10, new TreeEdge("LINESTRING (2 0, 0 1)", 1, 5, 1.0))
+                        .add(1, new TreeEdge("LINESTRING (0 1, 1 2)", 1, 2, 1.0))
+                        .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 1, 3, 1.0))
+                        .add(6, new TreeEdge("LINESTRING (1 0, 2 2)", 3, 4, 1.0))
+                        .add(9, new TreeEdge("LINESTRING (2 0, 2.25 1, 2 2)", 5, 4, 1.0))
+        );
+        check(oneToAll(CORMEN, DO, 2),
+                new Tree()
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 2, 3, 1.0))
+                        .add(6, new TreeEdge("LINESTRING (1 0, 2 2)", 3, 4, 1.0))
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 3, 5, 1.0))
+                        .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 5, 1, 1.0))
+        );
+        check(oneToAll(CORMEN, DO, 3),
+                new Tree()
+                        .add(4, new TreeEdge("LINESTRING (1 0, 1.25 1, 1 2)", 3, 2, 1.0))
+                        .add(6, new TreeEdge("LINESTRING (1 0, 2 2)", 3, 4, 1.0))
+                        .add(7, new TreeEdge("LINESTRING (1 0, 2 0)", 3, 5, 1.0))
+                        .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 5, 1, 1.0))
+        );
+        check(oneToAll(CORMEN, DO, 4),
+                new Tree()
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 4, 2, 1.0))
+                        .add(3, new TreeEdge("LINESTRING (1 2, 0.75 1, 1 0)", 2, 3, 1.0))
+                        .add(8, new TreeEdge("LINESTRING (2 2, 1.75 1, 2 0)", 4, 5, 1.0))
+                        .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 5, 1, 1.0))
+        );
+        check(oneToAll(CORMEN, DO, 5),
+                new Tree()
+                        .add(1, new TreeEdge("LINESTRING (0 1, 1 2)", 1, 2, 1.0))
+                        .add(2, new TreeEdge("LINESTRING (1 2, 2 2)", 4, 2, 1.0))
+                        .add(5, new TreeEdge("LINESTRING (0 1, 1 0)", 1, 3, 1.0))
+                        .add(9, new TreeEdge("LINESTRING (2 0, 2.25 1, 2 2)", 5, 4, 1.0))
+                        .add(10, new TreeEdge("LINESTRING (2 0, 0 1)", 5, 1, 1.0))
+        );
+    }
+
+    @Test
     public void WDO() throws SQLException {
         // Edges
         // | 1        | 2     | 3       | 4                | 5            |
