@@ -41,6 +41,16 @@ and a connected component ID.
   connected components.</p>
 </div>
 
+<div class="note warning">
+  <h5>Connected component IDs are not guaranteed to be the same
+  after each execution of <code>ST_ConnectedComponents</code>.</h5>
+  <p>But of course, the vertex and edge set partitions they
+  represent remain consistent. In the examples below, you may have
+  to adjust certain requests according to how
+  <code>ST_ConnectedComponents</code> numbers the connected
+  components.</p>
+</div>
+
 ### Examples
 
 {% highlight mysql %}
