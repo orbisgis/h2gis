@@ -17,16 +17,16 @@
    sodipodi:docname="scc.svg">
   <sodipodi:namedview
      id="base"
-     pagecolor="#444444"
+     pagecolor="#333333"
      bordercolor="#666666"
      borderopacity="1.0"
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
      inkscape:zoom="1.4"
-     inkscape:cx="89.370016"
-     inkscape:cy="311.51297"
+     inkscape:cx="106.28895"
+     inkscape:cy="361.86841"
      inkscape:document-units="px"
-     inkscape:current-layer="layer8"
+     inkscape:current-layer="layer2"
      showgrid="false"
      inkscape:window-width="1916"
      inkscape:window-height="1036"
@@ -37,7 +37,7 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0"
-     inkscape:snap-page="false"
+     inkscape:snap-page="true"
      inkscape:snap-bbox="false"
      inkscape:snap-global="true" />
   <defs
@@ -503,6 +503,18 @@
       </cc:Work>
     </rdf:RDF>
   </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Background">
+    <rect
+       style="fill:#333333;fill-opacity:1;stroke:none"
+       id="rect6391"
+       width="463.63028"
+       height="627.79492"
+       x="0"
+       y="0" />
+  </g>
   <g
      transform="translate(0,164.16464)"
      inkscape:groupmode="layer"
