@@ -103,7 +103,11 @@ SELECT * FROM EDGES;
 -- |      16 |         10 |        9 |                1 |
 -- |      17 |         10 |       11 |                1 |
 -- |      18 |         12 |       12 |                1 |
+{% endhighlight %}
 
+<img class="displayed" src="../scc-input.svg">
+
+{% highlight mysql %}
 -- Do the SCC calculation and diplay the results:
 CALL ST_ConnectedComponents('EDGES', 'directed - EDGE_ORIENTATION');
 
@@ -146,6 +150,11 @@ SELECT * FROM EDGES_EDGE_CC
 -- |       5 |                   5 |
 -- |      11 |                   6 |
 -- |      12 |                   6 |
+{% endhighlight %}
+
+<img class="displayed" src="../scc.svg">
+
+{% highlight mysql %}
 
 -- Count the number of edges in each SCC:
 DROP TABLE IF EXISTS EDGE_CC_TOTALS;
