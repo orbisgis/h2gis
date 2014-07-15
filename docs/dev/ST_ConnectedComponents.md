@@ -85,7 +85,7 @@ INSERT INTO EDGES(START_NODE, END_NODE, EDGE_ORIENTATION)
 SELECT * FROM EDGES;
 -- | EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION |
 -- |---------|------------|----------|------------------|
--- |       1 |          1 |        2 |                2 |
+-- |       1 |          1 |        2 |                1 |
 -- |       2 |          2 |        3 |                1 |
 -- |       3 |          2 |        5 |                1 |
 -- |       4 |          2 |        6 |                1 |
