@@ -135,6 +135,25 @@ SELECT * FROM EDGES_EDGE_CC
 -- |       5 |                   5 |
 -- |      11 |                   6 |
 -- |      12 |                   6 |
+
+-- Count the number of edges in each SCC:
+DROP TABLE IF EXISTS EDGE_CC_TOTALS;
+CREATE TABLE EDGE_CC_TOTALS AS
+    SELECT CONNECTED_COMPONENT CC,
+           COUNT(CONNECTED_COMPONENT) CC_COUNT
+    FROM EDGES_EDGE_CC
+    GROUP BY CC
+    ORDER BY CC_COUNT DESC;
+-- Display the results:
+SELECT * FROM EDGE_CC_TOTALS;
+-- | CC | CC_COUNT |
+-- |----|----------|
+-- | -1 |        6 |
+-- |  5 |        4 |
+-- |  4 |        3 |
+-- |  2 |        2 |
+-- |  6 |        2 |
+-- |  1 |        1 |
 {% endhighlight %}
 
 ##### See also
