@@ -53,6 +53,8 @@ and a connected component ID.
 
 ### Examples
 
+##### SCCs (directed graph)
+
 {% highlight mysql %}
 -- Prepare example data:
 DROP TABLE IF EXISTS EDGES;
@@ -202,6 +204,55 @@ SELECT * FROM EDGES_NO_SCC;
 -- |      10 |          5 |        6 |                1 | -1 |
 -- |      14 |          8 |        7 |                1 | -1 |
 -- |      17 |         10 |       11 |                1 | -1 |
+{% endhighlight %}
+
+##### CCs (undirected graph)
+
+{% highlight mysql %}
+-- Do the CC calculation and diplay the results:
+DROP TABLE IF EXISTS EDGES_NODE_CC;
+DROP TABLE IF EXISTS EDGES_EDGE_CC;
+CALL ST_ConnectedComponents('EDGES', 'undirected');
+
+SELECT * FROM EDGES_NODE_CC
+    ORDER BY CONNECTED_COMPONENT ASC;
+-- | NODE_ID | CONNECTED_COMPONENT |
+-- |---------|---------------------|
+-- |       4 |                   1 |
+-- |       5 |                   1 |
+-- |       8 |                   1 |
+-- |       7 |                   1 |
+-- |       2 |                   1 |
+-- |       1 |                   1 |
+-- |       3 |                   1 |
+-- |       6 |                   1 |
+-- |       9 |                   2 |
+-- |      10 |                   2 |
+-- |      11 |                   2 |
+-- |      12 |                   3 |
+
+SELECT * FROM EDGES_EDGE_CC
+    ORDER BY CONNECTED_COMPONENT ASC;
+-- | EDGE_ID | CONNECTED_COMPONENT |
+-- |---------|---------------------|
+-- |      10 |                   1 |
+-- |       8 |                   1 |
+-- |       4 |                   1 |
+-- |      11 |                   1 |
+-- |      12 |                   1 |
+-- |      13 |                   1 |
+-- |      14 |                   1 |
+-- |       1 |                   1 |
+-- |       2 |                   1 |
+-- |       3 |                   1 |
+-- |       9 |                   1 |
+-- |       5 |                   1 |
+-- |       7 |                   1 |
+-- |       6 |                   1 |
+-- |      16 |                   2 |
+-- |      17 |                   2 |
+-- |      15 |                   2 |
+-- |      18 |                   3 |
 {% endhighlight %}
 
 ##### See also
