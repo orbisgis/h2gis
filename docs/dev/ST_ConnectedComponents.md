@@ -70,7 +70,6 @@ INSERT INTO EDGES(START_NODE, END_NODE, EDGE_ORIENTATION)
            (10, 11, 1),
            (12, 12, 1);
 
--- Display example data:
 SELECT * FROM EDGES;
 -- | EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION |
 -- |---------|------------|----------|------------------|
@@ -144,7 +143,7 @@ CREATE TABLE EDGE_CC_TOTALS AS
     FROM EDGES_EDGE_CC
     GROUP BY CC
     ORDER BY CC_COUNT DESC;
--- Display the results:
+
 SELECT * FROM EDGE_CC_TOTALS;
 -- | CC | CC_COUNT |
 -- |----|----------|
@@ -154,6 +153,45 @@ SELECT * FROM EDGE_CC_TOTALS;
 -- |  2 |        2 |
 -- |  6 |        2 |
 -- |  1 |        1 |
+
+-- Creating these indices will greatly speed up the following
+-- calculations.
+CREATE INDEX ON EDGES(EDGE_ID);
+CREATE INDEX ON EDGES_EDGE_CC(EDGE_ID);
+
+-- Select the largest SCC:
+DROP TABLE IF EXISTS EDGES_LARGEST;
+CREATE TABLE EDGES_LARGEST AS
+    SELECT A.*, B.CONNECTED_COMPONENT CC
+    FROM EDGES A, EDGES_EDGE_CC B
+    WHERE A.EDGE_ID=B.EDGE_ID
+    AND B.CONNECTED_COMPONENT=5;
+
+SELECT * FROM EDGES_LARGEST;
+-- | EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION | CC |
+-- |---------|------------|----------|------------------|----|
+-- |       5 |          3 |        4 |                1 |  5 |
+-- |       7 |          4 |        3 |                1 |  5 |
+-- |       8 |          4 |        8 |                1 |  5 |
+-- |      13 |          8 |        4 |                1 |  5 |
+
+-- We can also select the edges which are in no SCC:
+DROP TABLE IF EXISTS EDGES_NO_SCC;
+CREATE TABLE EDGES_NO_SCC AS
+    SELECT A.*, B.CONNECTED_COMPONENT CC
+    FROM EDGES A, EDGES_EDGE_CC B
+    WHERE A.EDGE_ID=B.EDGE_ID
+    AND B.CONNECTED_COMPONENT=-1;
+
+SELECT * FROM EDGES_NO_SCC;
+-- | EDGE_ID | START_NODE | END_NODE | EDGE_ORIENTATION | CC |
+-- |---------|------------|----------|------------------|----|
+-- |       2 |          2 |        3 |                1 | -1 |
+-- |       4 |          2 |        6 |                1 | -1 |
+-- |       6 |          3 |        7 |                1 | -1 |
+-- |      10 |          5 |        6 |                1 | -1 |
+-- |      14 |          8 |        7 |                1 | -1 |
+-- |      17 |         10 |       11 |                1 | -1 |
 {% endhighlight %}
 
 ##### See also
