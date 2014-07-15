@@ -92,6 +92,49 @@ SELECT * FROM EDGES;
 -- |      16 |         10 |        9 |                1 |
 -- |      17 |         10 |       11 |                1 |
 -- |      18 |         12 |       12 |                1 |
+
+-- Do the SCC calculation and diplay the results:
+CALL ST_ConnectedComponents('EDGES', 'directed - EDGE_ORIENTATION');
+
+SELECT * FROM EDGES_NODE_CC
+    ORDER BY CONNECTED_COMPONENT ASC;
+-- | NODE_ID | CONNECTED_COMPONENT |
+-- |---------|---------------------|
+-- |      12 |                   1 |
+-- |       9 |                   2 |
+-- |      10 |                   2 |
+-- |      11 |                   3 |
+-- |       5 |                   4 |
+-- |       2 |                   4 |
+-- |       1 |                   4 |
+-- |       8 |                   5 |
+-- |       3 |                   5 |
+-- |       4 |                   5 |
+-- |       6 |                   6 |
+-- |       7 |                   6 |
+
+SELECT * FROM EDGES_EDGE_CC
+    ORDER BY CONNECTED_COMPONENT ASC;
+-- | EDGE_ID | CONNECTED_COMPONENT |
+-- |---------|---------------------|
+-- |      14 |                  -1 |
+-- |       6 |                  -1 |
+-- |      17 |                  -1 |
+-- |      10 |                  -1 |
+-- |       4 |                  -1 |
+-- |       2 |                  -1 |
+-- |      18 |                   1 |
+-- |      16 |                   2 |
+-- |      15 |                   2 |
+-- |       1 |                   4 |
+-- |       3 |                   4 |
+-- |       9 |                   4 |
+-- |      13 |                   5 |
+-- |       8 |                   5 |
+-- |       7 |                   5 |
+-- |       5 |                   5 |
+-- |      11 |                   6 |
+-- |      12 |                   6 |
 {% endhighlight %}
 
 ##### See also
