@@ -264,6 +264,8 @@ SELECT * FROM EDGES_EDGE_CC
 -- |      18 |                   3 |
 {% endhighlight %}
 
+<img class="displayed" src="../cc.svg">
+
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ConnectedComponents.java" target="_blank">Source code</a>
