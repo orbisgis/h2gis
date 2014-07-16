@@ -154,9 +154,11 @@ SELECT * FROM EDGES_EDGE_CC
 
 <img class="displayed" src="../scc.svg">
 
-{% highlight mysql %}
+##### Counting the number of edges in each SCC
 
+{% highlight mysql %}
 -- Count the number of edges in each SCC:
+-- (We could similarly count the number of nodes in each SCC.)
 DROP TABLE IF EXISTS EDGE_CC_TOTALS;
 CREATE TABLE EDGE_CC_TOTALS AS
     SELECT CONNECTED_COMPONENT CC,
@@ -174,7 +176,11 @@ SELECT * FROM EDGE_CC_TOTALS;
 -- |  2 |        2 |
 -- |  6 |        2 |
 -- |  1 |        1 |
+{% endhighlight %}
 
+##### Selecting the largest SCC
+
+{% highlight mysql %}
 -- Creating these indices will greatly speed up the following
 -- calculations.
 CREATE INDEX ON EDGES(EDGE_ID);
@@ -218,11 +224,13 @@ SELECT * FROM EDGES_NO_SCC;
 ##### CCs (undirected graph)
 
 {% highlight mysql %}
--- Do the CC calculation and diplay the results:
+-- Now we will do the same calculation, this time considering the
+-- graph to be undirected:
 DROP TABLE IF EXISTS EDGES_NODE_CC;
 DROP TABLE IF EXISTS EDGES_EDGE_CC;
 CALL ST_ConnectedComponents('EDGES', 'undirected');
 
+-- Notice that this time, we only have three CCs, as expected.
 SELECT * FROM EDGES_NODE_CC
     ORDER BY CONNECTED_COMPONENT ASC;
 -- | NODE_ID | CONNECTED_COMPONENT |
