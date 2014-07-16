@@ -266,6 +266,22 @@ SELECT * FROM EDGES_EDGE_CC
 
 <img class="displayed" src="../cc.svg">
 
+##### Exercise
+
+Will
+
+{% highlight mysql %}
+CALL ST_ConnectedComponents('EDGES', 'directed - EDGE_ORIENTATION');
+{% endhighlight %}
+
+and
+
+{% highlight mysql %}
+CALL ST_ConnectedComponents('EDGES', 'reversed - EDGE_ORIENTATION');
+{% endhighlight %}
+
+return the same results? Why or why not?
+
 ##### See also
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ConnectedComponents.java" target="_blank">Source code</a>
