@@ -214,6 +214,28 @@ public class SpatialFunctionTest {
     }
 
     @Test
+    public void test_ST_Covers2() throws Exception {
+        st.execute("DROP TABLE IF EXISTS input_table;" +
+                "CREATE TABLE input_table(smallc POLYGON, bigc POLYGON);" +
+                "INSERT INTO input_table VALUES(" +
+                "'POLYGON((1 1, 5 1, 5 4, 1 4, 1 1))'::Geometry," +
+                "'POLYGON((0 0, 10 0, 10 5, 0 5, 0 0))'::Geometry);");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_Covers(smallc, smallc),"
+                + "ST_Covers(smallc, bigc),"
+                + "ST_Covers(bigc, smallc),"
+                + "ST_Covers(bigc, ST_ExteriorRing(bigc)),"
+                + "ST_Contains(bigc, ST_ExteriorRing(bigc)) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(true, rs.getBoolean(1));
+        assertEquals(false, rs.getBoolean(2));
+        assertEquals(true, rs.getBoolean(3));
+        assertEquals(true, rs.getBoolean(4));
+        assertEquals(false, rs.getBoolean(5));
+        st.execute("DROP TABLE input_table;");
+    }
+
+    @Test
     public void test_ST_Covers() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(smallc Polygon, bigc Polygon);"
