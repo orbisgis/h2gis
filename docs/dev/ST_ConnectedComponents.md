@@ -30,7 +30,7 @@ and a connected component ID.
 
 | Variable      | Meaning                                                                                                                                                                               |
 |---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`                                                                                                               |
+| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`, and optionally an edge orientation column `eo` (required if global orientation is not `undirected`)          |
 | `o`           | Global orientation string: `directed`, `reversed` or `undirected`                                                                                                                     |
 | `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed` |
 
