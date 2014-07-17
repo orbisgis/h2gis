@@ -165,6 +165,57 @@ SELECT * FROM
 -- |      6 |           6 |      0.0 |
 {% endhighlight %}
 
+##### Many-to-Many (distance matrices)
+
+{% highlight mysql %}
+-- Create a source-destination table:
+CREATE TABLE SDT(SOURCE INT,
+                 DESTINATION INT) AS
+    SELECT A.X, B.X
+    FROM SYSTEM_RANGE(1, 8) A,
+         SYSTEM_RANGE(1, 8) B;
+
+-- Only vertices reachable from each source are returned.
+SELECT * FROM
+    ST_ShortestPathLength('EDGES',
+        'directed - EDGE_ORIENTATION',
+        'WEIGHT', 'SDT')
+    ORDER BY SOURCE, DESTINATION ASC;
+-- | SOURCE | DESTINATION | DISTANCE |
+-- |--------|-------------|----------|
+-- |      1 |           1 |      0.0 |
+-- |      1 |           2 |      8.0 |
+-- |      1 |           3 |      5.0 |
+-- |      1 |           4 |     13.0 |
+-- |      1 |           5 |      7.0 |
+-- |      2 |           1 |     11.0 |
+-- |      2 |           2 |      0.0 |
+-- |      2 |           3 |      2.0 |
+-- |      2 |           4 |     10.0 |
+-- |      2 |           5 |      4.0 |
+-- |      3 |           1 |      9.0 |
+-- |      3 |           2 |      3.0 |
+-- |      3 |           3 |      0.0 |
+-- |      3 |           4 |      8.0 |
+-- |      3 |           5 |      2.0 |
+-- |      4 |           1 |     11.0 |
+-- |      4 |           2 |      1.0 |
+-- |      4 |           3 |      3.0 |
+-- |      4 |           4 |      0.0 |
+-- |      4 |           5 |      4.0 |
+-- |      5 |           1 |      7.0 |
+-- |      5 |           2 |      7.0 |
+-- |      5 |           3 |      9.0 |
+-- |      5 |           4 |      6.0 |
+-- |      5 |           5 |      0.0 |
+-- |      6 |           6 |      0.0 |
+-- |      6 |           7 |      1.0 |
+-- |      6 |           8 |      3.0 |
+-- |      7 |           7 |      0.0 |
+-- |      7 |           8 |      2.0 |
+-- |      8 |           8 |      0.0 |
+{% endhighlight %}
+
 ##### See also
 
 * [`ST_ShortestPath`](../ST_ShortestPath),
