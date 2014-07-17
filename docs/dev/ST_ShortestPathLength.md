@@ -14,22 +14,14 @@ permalink: /docs/dev/ST_ShortestPathLength/
 {% highlight mysql %}
 -- Return type:
 --     TABLE[SOURCE, DESTINATION, DISTANCE]
--- One-to-All
-ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]', s);
--- Many-to-Many
-ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]', 'sdt');
--- One-to-One
-ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]', s, d);
--- One-to-Several
-ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]', s, 'ds');
--- One-to-All Weighted
-ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]', 'w', s);
--- Many-to-Many Weighted
-ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]', 'w', 'sdt');
--- One-to-One Weighted
-ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]', 'w', s, d);
--- One-to-Several Weighted
-ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]', 'w', s, 'ds');
+ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]'[, 'w'],
+                      s, d);    -- One-to-One
+ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]'[, 'w'],
+                      s, 'ds'); -- One-to-Several
+ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]'[, 'w'],
+                      s);       -- One-to-All
+ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]'[, 'w'],
+                      'SDT');   -- Many-to-Many
 {% endhighlight %}
 
 ### Description
@@ -47,7 +39,7 @@ graph.
 | `w`           | Edge weights column name                                                                                                                                                              |
 | `s`           | Source vertex id                                                                                                                                                                      |
 | `d`           | Destination vertex id                                                                                                                                                                 |
-| `sdt`         | Source-Destination table name; must contain columns `SOURCE` and `DESTINATION` containing integer vertex ids                                                                          |
+| `SDT`         | Source-Destination table name; must contain columns `SOURCE` and `DESTINATION` containing integer vertex ids                                                                          |
 | `ds`          | Comma-separated destination string: `'dest1, dest2, ...'`                                                                                                                             |
 
 ### Examples
