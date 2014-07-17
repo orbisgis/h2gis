@@ -39,8 +39,8 @@ graph.
 | `w`           | Edge weights column name                                                                                                                                                              |
 | `s`           | Source vertex id                                                                                                                                                                      |
 | `d`           | Destination vertex id                                                                                                                                                                 |
-| `SDT`         | Source-Destination table name; must contain columns `SOURCE` and `DESTINATION` containing integer vertex ids                                                                          |
 | `ds`          | Comma-separated destination string: `'dest1, dest2, ...'`                                                                                                                             |
+| `SDT`         | Source-Destination table name; must contain columns `SOURCE` and `DESTINATION` containing integer vertex ids                                                                          |
 
 ### Examples
 
