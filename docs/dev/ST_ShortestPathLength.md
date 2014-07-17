@@ -107,28 +107,61 @@ SELECT (SELECT DISTANCE FROM
 -- |----------|----------|
 -- |      5.0 |      9.0 |
 
--- Vertex 6 is not reachable from vertex 3.
+-- Vertex 6 is not reachable from vertex 1.
 SELECT * FROM
     ST_ShortestPathLength('EDGES',
         'directed - EDGE_ORIENTATION',
-        'WEIGHT', 3, 6);
+        'WEIGHT', 1, 6);
 -- | SOURCE | DESTINATION | DISTANCE |
 -- |--------|-------------|----------|
--- |      3 |           6 | Infinity |
+-- |      1 |           6 | Infinity |
 {% endhighlight %}
 
 ##### One-to-Several
 
 {% highlight mysql %}
--- Here we calculate d(1, 3) and d(1, 5) in a single request.
+-- Here we calculate d(1, 3), d(1, 5) and d(1, 6) in a single
+-- request. Since vertex 6 is not reachable from vertex 1, it is not
+-- returned in the list.
 SELECT * FROM
     ST_ShortestPathLength('EDGES',
         'directed - EDGE_ORIENTATION',
-        'WEIGHT', 1, '3, 5');
+        'WEIGHT', 1, '3, 5, 6');
 -- | SOURCE | DESTINATION | DISTANCE |
 -- |--------|-------------|----------|
 -- |      1 |           3 |      5.0 |
 -- |      1 |           5 |      7.0 |
+{% endhighlight %}
+
+##### One-to-All
+
+{% highlight mysql %}
+-- Here we calculate d(1, *), i.e., the distance from vertex 1 to
+-- all reachable vertices. Notice that vertices 6, 7 and 8 are not
+-- reachable from vertex 1, so they do not show up in the list.
+SELECT * FROM
+    ST_ShortestPathLength('EDGES',
+        'directed - EDGE_ORIENTATION',
+        'WEIGHT', 1);
+-- | SOURCE | DESTINATION | DISTANCE |
+-- |--------|-------------|----------|
+-- |      1 |           4 |     13.0 |
+-- |      1 |           3 |      5.0 |
+-- |      1 |           2 |      8.0 |
+-- |      1 |           5 |      7.0 |
+-- |      1 |           1 |      0.0 |
+
+-- The only vertices reachable from vertex 6 are vertices 6, 7 and
+-- 8.
+SELECT * FROM
+    ST_ShortestPathLength('EDGES',
+        'directed - EDGE_ORIENTATION',
+        'WEIGHT', 6);
+-- | SOURCE | DESTINATION | DISTANCE |
+-- |--------|-------------|----------|
+-- |      6 |           7 |      1.0 |
+-- |      6 |           8 |      3.0 |
+-- |      6 |           6 |      0.0 |
 {% endhighlight %}
 
 ##### See also
