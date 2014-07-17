@@ -45,7 +45,10 @@ graph.
 ### Examples
 
 {% highlight mysql %}
--- Prepare example data.
+-- Prepare example data. We give an illustration of the graph this
+-- represents below. In order to visualize how these distances are
+-- calculated, please see the documentation of ST_ShortestPath and
+-- ST_ShortestPathTree.
 CREATE TABLE EDGES(EDGE_ID INT AUTO_INCREMENT PRIMARY KEY,
                    START_NODE INT,
                    END_NODE INT,
@@ -65,6 +68,8 @@ INSERT INTO EDGES VALUES
     (DEFAULT, 6, 7,  1.0,  1),
     (DEFAULT, 7, 8,  2.0,  1);
 {% endhighlight %}
+
+<img class="displayed" src="../wdo.svg">
 
 ##### One-to-One
 
@@ -253,6 +258,7 @@ SELECT * FROM
 
 ##### See also
 
-* [`ST_ShortestPath`](../ST_ShortestPath),
-  [`ST_Accessibility`](../ST_Accessibility)
+* [`ST_Accessibility`](../ST_Accessibility),
+  [`ST_ShortestPath`](../ST_ShortestPath),
+  [`ST_ShortestPathTree`](../ST_ShortestPathTree),
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPathLength.java" target="_blank">Source code</a>
