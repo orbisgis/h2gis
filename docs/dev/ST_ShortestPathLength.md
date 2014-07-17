@@ -76,16 +76,18 @@ SELECT * FROM
     ST_ShortestPathLength('EDGES',
         'directed - EDGE_ORIENTATION',
         'WEIGHT', 1, 5);
--- SOURCE  	DESTINATION  	DISTANCE
--- 1	5	7.0
+-- | SOURCE | DESTINATION | DISTANCE |
+-- |--------|-------------|----------|
+-- |      1 |           5 |      7.0 |
 
 -- We can obtain just the distance if we want:
 SELECT DISTANCE FROM
     ST_ShortestPathLength('EDGES',
         'directed - EDGE_ORIENTATION',
         'WEIGHT', 1, 5);
--- DISTANCE
--- 7.0
+-- | DISTANCE |
+-- |----------|
+-- |      7.0 |
 
 -- The distance function is not necessarily symmetric in directed
 -- graphs: d(a, b) != d(b, a)
@@ -97,16 +99,18 @@ SELECT (SELECT DISTANCE FROM
             ST_ShortestPathLength('EDGES',
                 'directed - EDGE_ORIENTATION',
                 'WEIGHT', 3, 1)) DIST_3_1;
--- DIST_1_3  	DIST_3_1
--- 5.0	9.0
+-- | DIST_1_3 | DIST_3_1 |
+-- |----------|----------|
+-- |      5.0 |      9.0 |
 
 -- Vertex 6 is not reachable from vertex 3.
 SELECT * FROM
     ST_ShortestPathLength('EDGES',
         'directed - EDGE_ORIENTATION',
         'WEIGHT', 3, 6);
--- SOURCE  	DESTINATION  	DISTANCE
--- 3	6	Infinity
+-- | SOURCE | DESTINATION | DISTANCE |
+-- |--------|-------------|----------|
+-- |      3 |           6 | Infinity |
 {% endhighlight %}
 
 ##### See also
