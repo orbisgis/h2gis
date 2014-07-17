@@ -105,6 +105,19 @@ SELECT (SELECT DISTANCE FROM
 -- |----------|----------|
 -- |      5.0 |      9.0 |
 
+-- However, it is symmetric in undirected graphs:
+SELECT (SELECT DISTANCE FROM
+            ST_ShortestPathLength('EDGES',
+                'undirected',
+                'WEIGHT', 1, 3)) DIST_1_3,
+       (SELECT DISTANCE FROM
+            ST_ShortestPathLength('EDGES',
+                'undirected',
+                'WEIGHT', 3, 1)) DIST_3_1;
+-- | DIST_1_3 | DIST_3_1 |
+-- |----------|----------|
+-- |      5.0 |      5.0 |
+
 -- Vertex 6 is not reachable from vertex 1.
 SELECT * FROM
     ST_ShortestPathLength('EDGES',
