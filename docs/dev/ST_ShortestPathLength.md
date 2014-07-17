@@ -117,6 +117,20 @@ SELECT * FROM
 -- |      3 |           6 | Infinity |
 {% endhighlight %}
 
+##### One-to-Several
+
+{% highlight mysql %}
+-- Here we calculate d(1, 3) and d(1, 5) in a single request.
+SELECT * FROM
+    ST_ShortestPathLength('EDGES',
+        'directed - EDGE_ORIENTATION',
+        'WEIGHT', 1, '3, 5');
+-- | SOURCE | DESTINATION | DISTANCE |
+-- |--------|-------------|----------|
+-- |      1 |           3 |      5.0 |
+-- |      1 |           5 |      7.0 |
+{% endhighlight %}
+
 ##### See also
 
 * [`ST_ShortestPath`](../ST_ShortestPath),
