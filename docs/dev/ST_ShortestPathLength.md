@@ -53,6 +53,47 @@ graph.
 ### Examples
 
 {% highlight mysql %}
+CREATE TABLE EDGES(EDGE_ID INT AUTO_INCREMENT PRIMARY KEY,
+                   START_NODE INT,
+                   END_NODE INT,
+                   WEIGHT DOUBLE,
+                   EDGE_ORIENTATION INT);
+INSERT INTO EDGES VALUES
+    (DEFAULT, 1, 2, 10.0, 1),
+    (DEFAULT, 2, 4, 1.0, -1),
+    (DEFAULT, 2, 3, 2.0,  1),
+    (DEFAULT, 3, 2, 3.0,  1),
+    (DEFAULT, 1, 3, 5.0,  1),
+    (DEFAULT, 3, 4, 9.0,  1),
+    (DEFAULT, 3, 5, 2.0,  1),
+    (DEFAULT, 4, 5, 4.0,  1),
+    (DEFAULT, 5, 4, 6.0,  1),
+    (DEFAULT, 5, 1, 7.0,  0),
+    (DEFAULT, 6, 7, 1.0, 1),
+    (DEFAULT, 7, 8, 2.0, 1);
+
+SELECT * FROM
+    ST_ShortestPathLength('EDGES',
+        'directed - EDGE_ORIENTATION',
+        'WEIGHT', 1, 5);
+-- SOURCE  	DESTINATION  	DISTANCE
+-- 1	5	7.0
+
+-- We can obtain just the distance if we want:
+SELECT DISTANCE FROM
+    ST_ShortestPathLength('EDGES',
+        'directed - EDGE_ORIENTATION',
+        'WEIGHT', 1, 5);
+-- DISTANCE
+-- 7.0
+
+-- Vertex 6 is not reachable from vertex 3.
+SELECT * FROM
+    ST_ShortestPathLength('EDGES',
+        'directed - EDGE_ORIENTATION',
+        'WEIGHT', 3, 6);
+-- SOURCE  	DESTINATION  	DISTANCE
+-- 3	6	Infinity
 {% endhighlight %}
 
 ##### See also
