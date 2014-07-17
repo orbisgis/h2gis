@@ -146,25 +146,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         if (distance == Double.POSITIVE_INFINITY) {
             output.addRow(null, -1, -1, -1, source, destination, distance);
         } else {
-            // Record the results.
-            final TableLocation tableName = parseInputTable(connection, inputTable);
-            // TODO: Warn the user if there are multiple geometry fields.
-            final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableName);
-            if (geometryFields.isEmpty()) {
-                throw new IllegalArgumentException(NO_GEOM_FIELD_ERROR);
-            }
-            // Create index on table if it doesn't already exist.
-            final Statement st = connection.createStatement();
-            try {
-                st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + tableName
-                        + "(" + EDGE_ID + ")");
-            } finally {
-                st.close();
-            }
-            final PreparedStatement ps = connection.prepareStatement("SELECT " +
-                    geometryFields.get(0) +
-                    " FROM " + tableName +
-                    " WHERE " + EDGE_ID + "=? LIMIT 1");
+            final PreparedStatement ps = prepareEdgeGeomStatement(connection, inputTable);
             try {
                 // Need to create an object for the globalID recursion.
                 new ST_ShortestPath().addPredEdges(graph, vDestination, output, ps, 1);
@@ -173,6 +155,36 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
             }
         }
         return output;
+    }
+
+    /**
+     * Returns a PreparedStatement for selecting edge geometries by edge ids.
+     *
+     * @param connection Connection
+     * @param inputTable Input table
+     * @return PreparedStatement
+     * @throws SQLException
+     */
+    protected static PreparedStatement prepareEdgeGeomStatement(Connection connection, String inputTable) throws SQLException {
+        // Record the results.
+        final TableLocation tableName = parseInputTable(connection, inputTable);
+        // TODO: Warn the user if there are multiple geometry fields.
+        final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableName);
+        if (geometryFields.isEmpty()) {
+            throw new IllegalArgumentException(NO_GEOM_FIELD_ERROR);
+        }
+        // Create index on table if it doesn't already exist.
+        final Statement st = connection.createStatement();
+        try {
+            st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + tableName
+                    + "(" + EDGE_ID + ")");
+        } finally {
+            st.close();
+        }
+        return connection.prepareStatement("SELECT " +
+                geometryFields.get(0) +
+                " FROM " + tableName +
+                " WHERE " + EDGE_ID + "=? LIMIT 1");
     }
 
     private void addPredEdges(KeyedGraph<VDijkstra, Edge> graph, VDijkstra dest, SimpleResultSet output,
@@ -203,7 +215,15 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         }
     }
 
-    private Geometry getEdgeGeometry(PreparedStatement ps, int edgeID) throws SQLException {
+    /**
+     * Gets the edge geometry corresponding to edgeID
+     * @param ps     Prepared statement
+     * @param edgeID Edge ID
+     * @return The edge geometry corresponding to edgeID
+     * @see #prepareEdgeGeomStatement(java.sql.Connection, String)
+     * @throws SQLException
+     */
+    protected static Geometry getEdgeGeometry(PreparedStatement ps, int edgeID) throws SQLException {
         final Geometry geom;
         ps.setInt(1, Math.abs(edgeID));
         ResultSet edgesTable = ps.executeQuery();
