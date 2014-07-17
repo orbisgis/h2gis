@@ -91,6 +91,16 @@ SELECT DISTANCE FROM
 -- |----------|
 -- |      7.0 |
 
+-- In an unweighted graph, d(1, 5) is just the number of steps from
+-- vertex 1 to vertex 5. They are connected by edge -10.
+SELECT * FROM
+    ST_ShortestPathLength('EDGES',
+        'directed - EDGE_ORIENTATION',
+        1, 5);
+-- | SOURCE | DESTINATION | DISTANCE |
+-- |--------|-------------|----------|
+-- |      1 |           5 |      1.0 |
+
 -- The distance function is not necessarily symmetric in directed
 -- graphs: d(a, b) != d(b, a)
 SELECT (SELECT DISTANCE FROM
