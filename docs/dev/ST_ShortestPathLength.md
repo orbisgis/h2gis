@@ -71,7 +71,11 @@ INSERT INTO EDGES VALUES
     (DEFAULT, 5, 1, 7.0,  0),
     (DEFAULT, 6, 7, 1.0, 1),
     (DEFAULT, 7, 8, 2.0, 1);
+{% endhighlight %}
 
+##### One-to-One
+
+{% highlight mysql %}
 SELECT * FROM
     ST_ShortestPathLength('EDGES',
         'directed - EDGE_ORIENTATION',
