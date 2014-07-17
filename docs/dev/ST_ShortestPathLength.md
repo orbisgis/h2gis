@@ -87,6 +87,19 @@ SELECT DISTANCE FROM
 -- DISTANCE
 -- 7.0
 
+-- The distance function is not necessarily symmetric in directed
+-- graphs: d(a, b) != d(b, a)
+SELECT (SELECT DISTANCE FROM
+            ST_ShortestPathLength('EDGES',
+                'directed - EDGE_ORIENTATION',
+                'WEIGHT', 1, 3)) DIST_1_3,
+       (SELECT DISTANCE FROM
+            ST_ShortestPathLength('EDGES',
+                'directed - EDGE_ORIENTATION',
+                'WEIGHT', 3, 1)) DIST_3_1;
+-- DIST_1_3  	DIST_3_1
+-- 5.0	9.0
+
 -- Vertex 6 is not reachable from vertex 3.
 SELECT * FROM
     ST_ShortestPathLength('EDGES',
