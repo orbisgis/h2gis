@@ -36,7 +36,9 @@ import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 
 import java.sql.*;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
@@ -146,49 +148,15 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         if (distance == Double.POSITIVE_INFINITY) {
             output.addRow(null, -1, -1, -1, source, destination, distance);
         } else {
-            final PreparedStatement ps = prepareEdgeGeomStatement(connection, inputTable);
-            try {
-                // Need to create an object for the globalID recursion.
-                new ST_ShortestPath().addPredEdges(graph, vDestination, output, ps, 1);
-            } finally {
-                ps.close();
-            }
+            final Map<Integer, Geometry> edgeGeometryMap = getEdgeGeometryMap(connection, inputTable);
+            // Need to create an object for the globalID recursion.
+            new ST_ShortestPath().addPredEdges(graph, vDestination, output, edgeGeometryMap, 1);
         }
         return output;
     }
 
-    /**
-     * Returns a PreparedStatement for selecting edge geometries by edge ids.
-     *
-     * @param connection Connection
-     * @param inputTable Input table
-     * @return PreparedStatement
-     * @throws SQLException
-     */
-    protected static PreparedStatement prepareEdgeGeomStatement(Connection connection, String inputTable) throws SQLException {
-        // Record the results.
-        final TableLocation tableName = parseInputTable(connection, inputTable);
-        // TODO: Warn the user if there are multiple geometry fields.
-        final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableName);
-        if (geometryFields.isEmpty()) {
-            throw new IllegalArgumentException(NO_GEOM_FIELD_ERROR);
-        }
-        // Create index on table if it doesn't already exist.
-        final Statement st = connection.createStatement();
-        try {
-            st.execute("CREATE INDEX IF NOT EXISTS edgeIDIndex ON " + tableName
-                    + "(" + EDGE_ID + ")");
-        } finally {
-            st.close();
-        }
-        return connection.prepareStatement("SELECT " +
-                geometryFields.get(0) +
-                " FROM " + tableName +
-                " WHERE " + EDGE_ID + "=? LIMIT 1");
-    }
-
     private void addPredEdges(KeyedGraph<VDijkstra, Edge> graph, VDijkstra dest, SimpleResultSet output,
-                              PreparedStatement ps, int localID) throws SQLException {
+                              Map<Integer, Geometry> edgeGeomMap, int localID) throws SQLException {
         // Rebuild the shortest path(s). (Yes, there could be more than
         // one if they have the same distance!)
         final Set<Edge> predEdges = dest.getPredecessorEdges();
@@ -201,39 +169,48 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         for (Edge e : predEdges) {
             final VDijkstra edgeSource = graph.getEdgeSource(e);
             final VDijkstra edgeDestination = graph.getEdgeTarget(e);
+            final Geometry geometry = edgeGeomMap.get(Math.abs(e.getID()));
             // Right order
             if (edgeDestination.equals(dest)) {
-                output.addRow(getEdgeGeometry(ps, e.getID()), e.getID(), globalID, localID,
+                output.addRow(geometry, e.getID(), globalID, localID,
                         edgeSource.getID(), edgeDestination.getID(), graph.getEdgeWeight(e));
-                addPredEdges(graph, edgeSource, output, ps, localID + 1);
+                addPredEdges(graph, edgeSource, output, edgeGeomMap, localID + 1);
             } // Wrong order
             else {
-                output.addRow(getEdgeGeometry(ps, e.getID()), e.getID(), globalID, localID,
+                output.addRow(geometry, e.getID(), globalID, localID,
                         edgeDestination.getID(), edgeSource.getID(), graph.getEdgeWeight(e));
-                addPredEdges(graph, edgeDestination, output, ps, localID + 1);
+                addPredEdges(graph, edgeDestination, output, edgeGeomMap, localID + 1);
             }
         }
     }
 
-    /**
-     * Gets the edge geometry corresponding to edgeID
-     * @param ps     Prepared statement
-     * @param edgeID Edge ID
-     * @return The edge geometry corresponding to edgeID
-     * @see #prepareEdgeGeomStatement(java.sql.Connection, String)
-     * @throws SQLException
-     */
-    protected static Geometry getEdgeGeometry(PreparedStatement ps, int edgeID) throws SQLException {
-        final Geometry geom;
-        ps.setInt(1, Math.abs(edgeID));
-        ResultSet edgesTable = ps.executeQuery();
-        try {
-            edgesTable.next();
-            geom = (Geometry) edgesTable.getObject(1);
-        } finally {
-            edgesTable.close();
+    protected static Map<Integer, Geometry> getEdgeGeometryMap(Connection connection, String inputTable)
+            throws SQLException {
+        final TableLocation tableName = parseInputTable(connection, inputTable);
+        final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableName);
+        if (geometryFields.isEmpty()) {
+            throw new IllegalArgumentException(NO_GEOM_FIELD_ERROR);
         }
-        return geom;
+        final Statement st = connection.createStatement();
+        try {
+            final ResultSet resultSet = st.executeQuery(
+                    "SELECT " + EDGE_ID + ", "
+                              + geometryFields.get(0) +
+                    " FROM " + tableName);
+            try {
+                Map<Integer, Geometry> edgeGeomMap = new HashMap<Integer, Geometry>();
+                while (resultSet.next()) {
+                    final int edgeID = resultSet.getInt(1);
+                    final Geometry geom = (Geometry) resultSet.getObject(2);
+                    edgeGeomMap.put(edgeID, geom);
+                }
+                return edgeGeomMap;
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            st.close();
+        }
     }
 
     /**
