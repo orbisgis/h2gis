@@ -25,6 +25,7 @@
 
 package org.h2gis.network.graph_creator;
 
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2.tools.SimpleResultSet;
 import org.h2.value.*;
 import org.h2gis.h2spatialapi.ScalarFunction;
@@ -35,6 +36,7 @@ import org.javanetworkanalyzer.model.KeyedGraph;
 import org.javanetworkanalyzer.model.TraversalGraph;
 
 import java.sql.*;
+import java.util.Map;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 import static org.h2gis.utilities.GraphConstants.*;
@@ -182,12 +184,12 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
         }
 
         final SimpleResultSet output = prepareResultSet();
-        final PreparedStatement ps = ST_ShortestPath.prepareEdgeGeomStatement(connection, inputTable);
+        final Map<Integer, Geometry> edgeGeometryMap = ST_ShortestPath.getEdgeGeometryMap(connection, inputTable);
         int newID = 1;
         for (Edge e : shortestPathTree.edgeSet()) {
             final Edge baseGraphEdge = e.getBaseGraphEdge();
             final int id = baseGraphEdge.getID();
-            output.addRow(ST_ShortestPath.getEdgeGeometry(ps, id),
+            output.addRow(edgeGeometryMap.get(Math.abs(id)),
                     id,
                     newID++,
                     shortestPathTree.getEdgeSource(e).getID(),
