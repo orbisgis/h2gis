@@ -53,13 +53,6 @@ import static org.h2gis.utilities.GraphConstants.*;
  */
 public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
-    public static final int GEOM_INDEX = 1;
-    public static final int EDGE_ID_INDEX = 2;
-    public static final int PATH_ID_INDEX = 3;
-    public static final int PATH_EDGE_ID_INDEX = 4;
-    public static final int SOURCE_INDEX = 5;
-    public static final int DESTINATION_INDEX = 6;
-    public static final int WEIGHT_INDEX = 7;
     private int globalID = 1;
 
     public static final String NO_GEOM_FIELD_ERROR = "The input table must contain a geometry field.";
@@ -133,8 +126,13 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
                                       String weight,
                                       int source,
                                       int destination) throws SQLException {
+        final TableLocation tableName = parseInputTable(connection, inputTable);
+        final String firstGeometryField =
+                getFirstGeometryField(connection, tableName);
+        final boolean containsGeomField = firstGeometryField != null;
+        final SimpleResultSet output = prepareResultSet(containsGeomField);
         if (isColumnListConnection(connection)) {
-            return prepareResultSet();
+            return output;
         }
         // Do the calculation.
         final KeyedGraph<VDijkstra, Edge> graph =
@@ -144,13 +142,18 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         final VDijkstra vDestination = graph.getVertex(destination);
         final double distance = dijkstra.oneToOne(graph.getVertex(source), vDestination);
 
-        final SimpleResultSet output = prepareResultSet();
         if (distance == Double.POSITIVE_INFINITY) {
             output.addRow(null, -1, -1, -1, source, destination, distance);
         } else {
-            final Map<Integer, Geometry> edgeGeometryMap = getEdgeGeometryMap(connection, inputTable);
             // Need to create an object for the globalID recursion.
-            new ST_ShortestPath().addPredEdges(graph, vDestination, output, edgeGeometryMap, 1);
+            final ST_ShortestPath f = new ST_ShortestPath();
+            if (containsGeomField) {
+                final Map<Integer, Geometry> edgeGeometryMap =
+                        getEdgeGeometryMap(connection, tableName, firstGeometryField);
+                f.addPredEdges(graph, vDestination, output, edgeGeometryMap, 1);
+            } else {
+                f.addPredEdges(graph, vDestination, output, 1);
+            }
         }
         return output;
     }
@@ -184,18 +187,73 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         }
     }
 
-    protected static Map<Integer, Geometry> getEdgeGeometryMap(Connection connection, String inputTable)
+    private void addPredEdges(KeyedGraph<VDijkstra, Edge> graph, VDijkstra dest, SimpleResultSet output,
+                              int localID) throws SQLException {
+        // Rebuild the shortest path(s). (Yes, there could be more than
+        // one if they have the same distance!)
+        final Set<Edge> predEdges = dest.getPredecessorEdges();
+        // The only vertex with no predecessors is the source vertex, so we can
+        // start renumbering here.
+        if (predEdges.isEmpty()) {
+            globalID++;
+        }
+        // Recursively add the predecessor edges.
+        for (Edge e : predEdges) {
+            final VDijkstra edgeSource = graph.getEdgeSource(e);
+            final VDijkstra edgeDestination = graph.getEdgeTarget(e);
+            // Right order
+            if (edgeDestination.equals(dest)) {
+                output.addRow(e.getID(), globalID, localID,
+                        edgeSource.getID(), edgeDestination.getID(), graph.getEdgeWeight(e));
+                addPredEdges(graph, edgeSource, output, localID + 1);
+            } // Wrong order
+            else {
+                output.addRow(e.getID(), globalID, localID,
+                        edgeDestination.getID(), edgeSource.getID(), graph.getEdgeWeight(e));
+                addPredEdges(graph, edgeDestination, output, localID + 1);
+           }
+        }
+    }
+
+    /**
+     * Return the first geometry field of tableName or null if it contains none.
+     *
+     * @param connection Connection
+     * @param tableName  TableLocation
+     * @return The first geometry field of tableName or null if it contains none
+     * @throws SQLException
+     */
+    protected static String getFirstGeometryField(Connection connection, TableLocation tableName)
             throws SQLException {
-        final TableLocation tableName = parseInputTable(connection, inputTable);
         final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableName);
         if (geometryFields.isEmpty()) {
-            throw new IllegalArgumentException(NO_GEOM_FIELD_ERROR);
+            return null;
+        }
+        return geometryFields.get(0);
+    }
+
+    /**
+     * Return a map of edge ids to edge geometries, or null if the input table
+     * contains no geometry fields.
+     *
+     * @param connection Connection
+     * @param tableName  TableLocation
+     * @return A map of edge ids to edge geometries, or null if the input table
+     * contains no geometry fields
+     * @throws SQLException
+     */
+    protected static Map<Integer, Geometry> getEdgeGeometryMap(Connection connection,
+                                                               TableLocation tableName,
+                                                               String firstGeometryField)
+            throws SQLException {
+        if (firstGeometryField == null) {
+            return null;
         }
         final Statement st = connection.createStatement();
         try {
             final ResultSet resultSet = st.executeQuery(
                     "SELECT " + EDGE_ID + ", "
-                              + geometryFields.get(0) +
+                              + firstGeometryField +
                     " FROM " + tableName);
             try {
                 Map<Integer, Geometry> edgeGeomMap = new HashMap<Integer, Geometry>();
@@ -218,10 +276,14 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
      * DESTINATION and DISTANCE columns.
      * @return a new {@link org.h2.tools.SimpleResultSet} with SOURCE,
      * DESTINATION and DISTANCE columns
+     *
+     * @param includeGeomColumn True if we include a Geometry column
      */
-    private static SimpleResultSet prepareResultSet() {
+    private static SimpleResultSet prepareResultSet(boolean includeGeomColumn) {
         SimpleResultSet output = new SimpleResultSet();
-        output.addColumn(THE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
+        if (includeGeomColumn) {
+            output.addColumn(THE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
+        }
         output.addColumn(EDGE_ID, Types.INTEGER, 10, 0);
         output.addColumn(PATH_ID, Types.INTEGER, 10, 0);
         output.addColumn(PATH_EDGE_ID, Types.INTEGER, 10, 0);

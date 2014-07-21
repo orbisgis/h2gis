@@ -27,6 +27,7 @@ package org.h2gis.network.graph_creator;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.GraphConstants;
 import org.junit.*;
 
 import java.sql.Connection;
@@ -777,16 +778,46 @@ public class ST_ShortestPathTreeTest {
         );
     }
 
+    @Test
+    public void testNoGeometryField() throws Throwable {
+        // This test shows that if the input has no geometry column,
+        // neither will the output.
+        st.execute("DROP TABLE IF EXISTS NO_GEOM;" +
+                "CREATE TABLE NO_GEOM AS " +
+                "SELECT EDGE_ID, START_NODE, END_NODE, WEIGHT " +
+                "FROM CORMEN_EDGES_ALL;");
+        final ResultSet resultSet = st.executeQuery("SELECT * FROM ST_ShortestPathTree(" +
+                "'NO_GEOM', 'UNDIRECTED', 3);");
+        checkNoGeom(resultSet,
+                new Tree()
+                        .add(3, new TreeEdge(3, 2, 1.0))
+                        .add(4, new TreeEdge(3, 2, 1.0))
+                        .add(5, new TreeEdge(3, 1, 1.0))
+                        .add(6, new TreeEdge(3, 4, 1.0))
+                        .add(7, new TreeEdge(3, 5, 1.0))
+        );
+    }
+
     private void check(ResultSet rs, Tree tree) throws SQLException {
+        check(rs, tree, true);
+    }
+
+    private void checkNoGeom(ResultSet rs, Tree tree) throws SQLException {
+        check(rs, tree, false);
+    }
+
+    private void check(ResultSet rs, Tree tree, boolean checkGeom) throws SQLException {
         int count = 0;
         while (rs.next()) {
             count++;
             // Here we check the edge id, but we never check the tree id, as it could vary.
-            TreeEdge e = tree.get(rs.getInt(ST_ShortestPathTree.EDGE_ID_INDEX));
-            assertGeometryEquals(e.getGeom(), rs.getBytes(ST_ShortestPathTree.GEOM_INDEX));
-            assertEquals(e.getSource(), rs.getInt(ST_ShortestPathTree.SOURCE_INDEX));
-            assertEquals(e.getDestination(), rs.getInt(ST_ShortestPathTree.DESTINATION_INDEX));
-            assertEquals(e.getWeight(), rs.getDouble(ST_ShortestPathTree.WEIGHT_INDEX), TOLERANCE);
+            TreeEdge e = tree.get(rs.getInt(GraphConstants.EDGE_ID));
+            if (checkGeom) {
+                assertGeometryEquals(e.getGeom(), rs.getBytes(GraphConstants.THE_GEOM));
+            }
+            assertEquals(e.getSource(), rs.getInt(GraphConstants.SOURCE));
+            assertEquals(e.getDestination(), rs.getInt(GraphConstants.DESTINATION));
+            assertEquals(e.getWeight(), rs.getDouble(GraphConstants.WEIGHT), TOLERANCE);
         }
         assertEquals(tree.size(), count);
         rs.close();
@@ -804,6 +835,10 @@ public class ST_ShortestPathTreeTest {
         private int source;
         private int destination;
         private double weight;
+
+        public TreeEdge(int source, int destination, double weight) {
+            this(null, source, destination, weight);
+        }
 
         public TreeEdge(String geom, int source, int destination, double weight) {
             this.geom = geom;

@@ -27,18 +27,26 @@ package org.h2gis.network.graph_creator;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2.tools.SimpleResultSet;
-import org.h2.value.*;
+import org.h2.value.Value;
+import org.h2.value.ValueDecimal;
+import org.h2.value.ValueInt;
+import org.h2.value.ValueString;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.TableLocation;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
 import org.javanetworkanalyzer.model.TraversalGraph;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Map;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
+import static org.h2gis.network.graph_creator.GraphFunctionParser.parseInputTable;
 import static org.h2gis.utilities.GraphConstants.*;
 
 /**
@@ -48,15 +56,6 @@ import static org.h2gis.utilities.GraphConstants.*;
  * @author Adam Gouge
  */
 public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction {
-
-    public static final int GEOM_INDEX = 1;
-    public static final int EDGE_ID_INDEX = 2;
-    public static final int TREE_ID_INDEX = 3;
-    public static final int SOURCE_INDEX = 4;
-    public static final int DESTINATION_INDEX = 5;
-    public static final int WEIGHT_INDEX = 6;
-
-    public static final String NO_GEOM_FIELD_ERROR = "The input table must contain a geometry field.";
 
     public static final String REMARKS =
             "Calculates the shortest path tree from a given vertex of a\n" +
@@ -163,8 +162,13 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
                                       String weight,
                                       int source,
                                       double radius) throws SQLException {
+        final TableLocation tableName = parseInputTable(connection, inputTable);
+        final String firstGeometryField =
+                ST_ShortestPath.getFirstGeometryField(connection, tableName);
+        final boolean containsGeomField = firstGeometryField != null;
+        final SimpleResultSet output = prepareResultSet(containsGeomField);
         if (isColumnListConnection(connection)) {
-            return prepareResultSet();
+            return output;
         }
         // Do the calculation.
         final KeyedGraph<VDijkstra, Edge> graph =
@@ -183,18 +187,30 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
             shortestPathTree = dijkstra.reconstructTraversalGraph();
         }
 
-        final SimpleResultSet output = prepareResultSet();
-        final Map<Integer, Geometry> edgeGeometryMap = ST_ShortestPath.getEdgeGeometryMap(connection, inputTable);
         int newID = 1;
-        for (Edge e : shortestPathTree.edgeSet()) {
-            final Edge baseGraphEdge = e.getBaseGraphEdge();
-            final int id = baseGraphEdge.getID();
-            output.addRow(edgeGeometryMap.get(Math.abs(id)),
-                    id,
-                    newID++,
-                    shortestPathTree.getEdgeSource(e).getID(),
-                    shortestPathTree.getEdgeTarget(e).getID(),
-                    graph.getEdgeWeight(baseGraphEdge));
+        if (containsGeomField) {
+            final Map<Integer, Geometry> edgeGeometryMap =
+                    ST_ShortestPath.getEdgeGeometryMap(connection, tableName, firstGeometryField);
+            for (Edge e : shortestPathTree.edgeSet()) {
+                final Edge baseGraphEdge = e.getBaseGraphEdge();
+                final int id = baseGraphEdge.getID();
+                output.addRow(edgeGeometryMap.get(Math.abs(id)),
+                        id,
+                        newID++,
+                        shortestPathTree.getEdgeSource(e).getID(),
+                        shortestPathTree.getEdgeTarget(e).getID(),
+                        graph.getEdgeWeight(baseGraphEdge));
+            }
+        } else {
+            for (Edge e : shortestPathTree.edgeSet()) {
+                final Edge baseGraphEdge = e.getBaseGraphEdge();
+                final int id = baseGraphEdge.getID();
+                output.addRow(id,
+                        newID++,
+                        shortestPathTree.getEdgeSource(e).getID(),
+                        shortestPathTree.getEdgeTarget(e).getID(),
+                        graph.getEdgeWeight(baseGraphEdge));
+            }
         }
         return output;
     }
@@ -204,10 +220,14 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
      * DESTINATION and DISTANCE columns.
      * @return a new {@link org.h2.tools.SimpleResultSet} with SOURCE,
      * DESTINATION and DISTANCE columns
+     *
+     * @param includeGeomColumn True if we include a Geometry column
      */
-    private static SimpleResultSet prepareResultSet() {
+    private static SimpleResultSet prepareResultSet(boolean includeGeomColumn) {
         SimpleResultSet output = new SimpleResultSet();
-        output.addColumn(THE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
+        if (includeGeomColumn) {
+            output.addColumn(THE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
+        }
         output.addColumn(EDGE_ID, Types.INTEGER, 10, 0);
         output.addColumn(TREE_ID, Types.INTEGER, 10, 0);
         output.addColumn(SOURCE, Types.INTEGER, 10, 0);
