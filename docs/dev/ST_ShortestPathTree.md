@@ -20,7 +20,7 @@ ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s, r)
 
 ### Description
 
-Calculates the shortest path tree from a given vertex of a
+Calculates the [shortest path tree][wiki] from a given vertex of a
 graph using Dijkstra's algorithm.
 
 ##### Input parameters
@@ -241,3 +241,5 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 * [`ST_ShortestPath`](../ST_ShortestPath),
   [`ST_ShortestPathLength`](../ST_ShortestPathLength)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPathTree.java" target="_blank">Source code</a>
+
+[wiki]: http://en.wikipedia.org/wiki/Shortest-path_tree
