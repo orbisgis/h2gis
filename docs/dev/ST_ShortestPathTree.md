@@ -13,8 +13,7 @@ permalink: /docs/dev/ST_ShortestPathTree/
 
 {% highlight mysql %}
 -- Return type:
---     TABLE[THE_GEOM, EDGE_ID, TREE_ID,
---           SOURCE, DESTINATION, WEIGHT]
+--     TABLE[THE_GEOM, EDGE_ID, SOURCE, DESTINATION, WEIGHT]
 ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s)
 ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s, r)
 {% endhighlight %}
@@ -99,15 +98,15 @@ SELECT * FROM INPUT_EDGES;
 -- vertex 1 to vertex 4.
 SELECT * FROM ST_ShortestPathTree('INPUT_EDGES',
         'undirected', 1);
--- | EDGE_ID | TREE_ID | SOURCE | DESTINATION | WEIGHT |
--- |---------|---------|--------|-------------|--------|
--- |       1 |       1 |      1 |           2 |    1.0 |
--- |       9 |       2 |      5 |           4 |    1.0 |
--- |       6 |       3 |      3 |           4 |    1.0 |
--- |       2 |       4 |      2 |           4 |    1.0 |
--- |       8 |       5 |      5 |           4 |    1.0 |
--- |       5 |       6 |      1 |           3 |    1.0 |
--- |      10 |       7 |      1 |           5 |    1.0 |
+-- | EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |---------|--------|-------------|--------|
+-- |       1 |      1 |           2 |    1.0 |
+-- |       9 |      5 |           4 |    1.0 |
+-- |       6 |      3 |           4 |    1.0 |
+-- |       2 |      2 |           4 |    1.0 |
+-- |       8 |      5 |           4 |    1.0 |
+-- |       5 |      1 |           3 |    1.0 |
+-- |      10 |      1 |           5 |    1.0 |
 {% endhighlight %}
 
 <img class="displayed" src="../u-spt-1.svg">
@@ -157,13 +156,13 @@ SELECT * FROM EDGES_EO_W;
 -- two shortest paths from vertex 1 to vertex 5.
 SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
         'directed - EDGE_ORIENTATION', 'WEIGHT', 1);
--- | EDGE_ID | TREE_ID | SOURCE | DESTINATION | WEIGHT |
--- |---------|---------|--------|-------------|--------|
--- |       4 |       1 |      3 |           2 |    3.0 |
--- |       9 |       2 |      5 |           4 |    6.0 |
--- |       5 |       3 |      1 |           3 |    5.0 |
--- |     -10 |       4 |      1 |           5 |    7.0 |
--- |       7 |       5 |      3 |           5 |    2.0 |
+-- | EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |---------|--------|-------------|--------|
+-- |       4 |      3 |           2 |    3.0 |
+-- |       9 |      5 |           4 |    6.0 |
+-- |       5 |      1 |           3 |    5.0 |
+-- |     -10 |      1 |           5 |    7.0 |
+-- |       7 |      3 |           5 |    2.0 |
 {% endhighlight %}
 
 <img class="displayed" src="../wdo-spt-1.svg">
@@ -191,20 +190,19 @@ CREATE TABLE EDGES_EO_W_GEOM(EDGE_ID INT PRIMARY KEY,
     WHERE A.ID=B.EDGE_ID;
 SELECT * FROM ST_ShortestPathTree('EDGES_EO_W_GEOM',
         'directed - EDGE_ORIENTATION', 'weight', 1);
--- | THE_GEOM                      | EDGE_ID | TREE_ID | SOURCE | DESTINATION | WEIGHT |
--- |-------------------------------|---------|---------|--------|-------------|--------|
--- | LINESTRING (1 0, 1.25 1, 1 2) |       4 |       1 |      3 |           2 |    3.0 |
--- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       2 |      5 |           4 |    6.0 |
--- | LINESTRING (0 1, 1 0)         |       5 |       3 |      1 |           3 |    5.0 |
--- | LINESTRING (2 0, 0 1)         |     -10 |       4 |      1 |           5 |    7.0 |
--- | LINESTRING (1 0, 2 0)         |       7 |       5 |      3 |           5 |    2.0 |
+-- | THE_GEOM                      | EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |-------------------------------|---------|--------|-------------|--------|
+-- | LINESTRING (1 0, 1.25 1, 1 2) |       4 |      3 |           2 |    3.0 |
+-- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |      5 |           4 |    6.0 |
+-- | LINESTRING (0 1, 1 0)         |       5 |      1 |           3 |    5.0 |
+-- | LINESTRING (2 0, 0 1)         |     -10 |      1 |           5 |    7.0 |
+-- | LINESTRING (1 0, 2 0)         |       7 |      3 |           5 |    2.0 |
 
 -- METHOD 2: Recover Geometries after calculation.
 -- Notice the call to the ABS function (edge ids could be negative).
 -- We get the same result.
 SELECT A.THE_GEOM,
        B.EDGE_ID,
-       B.TREE_ID,
        B.SOURCE,
        B.DESTINATION,
        B.WEIGHT
@@ -212,13 +210,13 @@ FROM INPUT A,
      (SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
                  'directed - EDGE_ORIENTATION', 'weight', 1)) B
 WHERE A.ID=ABS(B.EDGE_ID);
--- | THE_GEOM                      | EDGE_ID | TREE_ID | SOURCE | DESTINATION | WEIGHT |
--- |-------------------------------|---------|---------|--------|-------------|--------|
--- | LINESTRING (1 0, 1.25 1, 1 2) |       4 |       1 |      3 |           2 |    3.0 |
--- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       2 |      5 |           4 |    6.0 |
--- | LINESTRING (0 1, 1 0)         |       5 |       3 |      1 |           3 |    5.0 |
--- | LINESTRING (2 0, 0 1)         |     -10 |       4 |      1 |           5 |    7.0 |
--- | LINESTRING (1 0, 2 0)         |       7 |       5 |      3 |           5 |    2.0 |
+-- | THE_GEOM                      | EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |-------------------------------|---------|--------|-------------|--------|
+-- | LINESTRING (1 0, 1.25 1, 1 2) |       4 |      3 |           2 |    3.0 |
+-- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |      5 |           4 |    6.0 |
+-- | LINESTRING (0 1, 1 0)         |       5 |      1 |           3 |    5.0 |
+-- | LINESTRING (2 0, 0 1)         |     -10 |      1 |           5 |    7.0 |
+-- | LINESTRING (1 0, 2 0)         |       7 |      3 |           5 |    2.0 |
 {% endhighlight %}
 
 ##### See also
