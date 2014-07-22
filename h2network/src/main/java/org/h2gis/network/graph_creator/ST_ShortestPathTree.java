@@ -187,7 +187,6 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
             shortestPathTree = dijkstra.reconstructTraversalGraph();
         }
 
-        int newID = 1;
         if (containsGeomField) {
             final Map<Integer, Geometry> edgeGeometryMap =
                     ST_ShortestPath.getEdgeGeometryMap(connection, tableName, firstGeometryField);
@@ -196,7 +195,6 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
                 final int id = baseGraphEdge.getID();
                 output.addRow(edgeGeometryMap.get(Math.abs(id)),
                         id,
-                        newID++,
                         shortestPathTree.getEdgeSource(e).getID(),
                         shortestPathTree.getEdgeTarget(e).getID(),
                         graph.getEdgeWeight(baseGraphEdge));
@@ -206,7 +204,6 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
                 final Edge baseGraphEdge = e.getBaseGraphEdge();
                 final int id = baseGraphEdge.getID();
                 output.addRow(id,
-                        newID++,
                         shortestPathTree.getEdgeSource(e).getID(),
                         shortestPathTree.getEdgeTarget(e).getID(),
                         graph.getEdgeWeight(baseGraphEdge));
@@ -229,7 +226,6 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
             output.addColumn(THE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
         }
         output.addColumn(EDGE_ID, Types.INTEGER, 10, 0);
-        output.addColumn(TREE_ID, Types.INTEGER, 10, 0);
         output.addColumn(SOURCE, Types.INTEGER, 10, 0);
         output.addColumn(DESTINATION, Types.INTEGER, 10, 0);
         output.addColumn(WEIGHT, Types.DOUBLE, 10, 0);

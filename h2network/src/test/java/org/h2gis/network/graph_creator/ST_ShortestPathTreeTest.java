@@ -810,7 +810,6 @@ public class ST_ShortestPathTreeTest {
         int count = 0;
         while (rs.next()) {
             count++;
-            // Here we check the edge id, but we never check the tree id, as it could vary.
             TreeEdge e = tree.get(rs.getInt(GraphConstants.EDGE_ID));
             if (checkGeom) {
                 assertGeometryEquals(e.getGeom(), rs.getBytes(GraphConstants.THE_GEOM));
