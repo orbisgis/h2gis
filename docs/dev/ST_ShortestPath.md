@@ -46,6 +46,28 @@ a new ID for this path.
 
 {% include data-prep-u.html %}
 
+##### Undirected unweighted
+
+{% highlight mysql %}
+-- We have just enough information to consider an unweighted
+-- undirected graph. Notice there are four shortest paths from
+-- vertex 1 to vertex 4.
+SELECT * FROM ST_ShortestPath('INPUT_EDGES',
+        'undirected', 1, 4);
+--|EDGE_ID |PATH_ID | PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+--|--------|--------|--------------|--------|-------------|--------|
+--|      6 |      1 |            1 |      3 |           4 |    1.0 |
+--|      5 |      1 |            2 |      1 |           3 |    1.0 |
+--|      9 |      2 |            1 |      5 |           4 |    1.0 |
+--|     10 |      2 |            2 |      1 |           5 |    1.0 |
+--|      8 |      3 |            1 |      5 |           4 |    1.0 |
+--|     10 |      3 |            2 |      1 |           5 |    1.0 |
+--|      2 |      4 |            1 |      2 |           4 |    1.0 |
+--|      1 |      4 |            2 |      1 |           2 |    1.0 |
+{% endhighlight %}
+
+<img class="displayed" src="../u-spt-1.svg">
+
 {% include data-prep-wdo.html %}
 
 {% include data-prep-geom.html %}
