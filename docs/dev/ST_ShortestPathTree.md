@@ -219,6 +219,23 @@ WHERE A.ID=ABS(B.EDGE_ID);
 -- | LINESTRING (1 0, 2 0)         |       7 |      3 |           5 |    2.0 |
 {% endhighlight %}
 
+##### Limiting by search radius
+
+{% highlight mysql %}
+-- Notice that now edge 9 is no longer a part of the SPT since
+-- d(1, 4)=13.0 > 8.5.
+SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
+        'directed - EDGE_ORIENTATION', 'WEIGHT', 1, 8.5);
+-- | EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |---------|--------|-------------|--------|
+-- |       4 |      3 |           2 |    3.0 |
+-- |       5 |      1 |           3 |    5.0 |
+-- |       7 |      3 |           5 |    2.0 |
+-- |     -10 |      1 |           5 |    7.0 |
+{% endhighlight %}
+
+<img class="displayed" src="../wdo-spt-1-limit-8.5.svg">
+
 ##### See also
 
 * [`ST_ShortestPath`](../ST_ShortestPath),
