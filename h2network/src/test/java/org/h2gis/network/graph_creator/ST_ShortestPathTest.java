@@ -27,6 +27,7 @@ package org.h2gis.network.graph_creator;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.utilities.GraphConstants;
 import org.junit.*;
 
 import java.sql.Connection;
@@ -827,34 +828,43 @@ public class ST_ShortestPathTest {
     }
 
     private void check(ResultSet rs, PathEdge[] pathEdges) throws SQLException {
+        check(rs, pathEdges, true);
+    }
+
+    private void checkNoGeom(ResultSet rs, PathEdge[] pathEdges) throws SQLException {
+        check(rs, pathEdges, false);
+    }
+
+    private void check(ResultSet rs, PathEdge[] pathEdges, boolean checkGeom) throws SQLException {
         for (int i = 0; i < pathEdges.length; i++) {
             assertTrue(rs.next());
             PathEdge e = pathEdges[i];
-            assertGeometryEquals(e.getGeom(), rs.getBytes(ST_ShortestPath.GEOM_INDEX));
-            assertEquals(e.getEdgeID(), rs.getInt(ST_ShortestPath.EDGE_ID_INDEX));
-            assertEquals(e.getPathID(), rs.getInt(ST_ShortestPath.PATH_ID_INDEX));
-            assertEquals(e.getPathedgeID(), rs.getInt(ST_ShortestPath.PATH_EDGE_ID_INDEX));
-            assertEquals(e.getSource(), rs.getInt(ST_ShortestPath.SOURCE_INDEX));
-            assertEquals(e.getDestination(), rs.getInt(ST_ShortestPath.DESTINATION_INDEX));
-            assertEquals(e.getWeight(), rs.getDouble(ST_ShortestPath.WEIGHT_INDEX), TOLERANCE);
+            if (checkGeom) {
+                assertGeometryEquals(e.getGeom(), rs.getBytes(GraphConstants.THE_GEOM));
+            }
+            assertEquals(e.getEdgeID(), rs.getInt(GraphConstants.EDGE_ID));
+            assertEquals(e.getPathID(), rs.getInt(GraphConstants.PATH_ID));
+            assertEquals(e.getPathedgeID(), rs.getInt(GraphConstants.PATH_EDGE_ID));
+            assertEquals(e.getSource(), rs.getInt(GraphConstants.SOURCE));
+            assertEquals(e.getDestination(), rs.getInt(GraphConstants.DESTINATION));
+            assertEquals(e.getWeight(), rs.getDouble(GraphConstants.WEIGHT), TOLERANCE);
         }
         assertFalse(rs.next());
         rs.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNoGeometryField() throws Throwable {
-        try {
-            st.execute("DROP TABLE IF EXISTS NO_GEOM;" +
-                    "CREATE TABLE NO_GEOM AS " +
-                    "SELECT EDGE_ID, START_NODE, END_NODE, WEIGHT " +
-                    "FROM CORMEN_EDGES_ALL;");
-            st.executeQuery("SELECT * FROM ST_ShortestPath('NO_GEOM', 'UNDIRECTED', 3, 4);");
-        } catch (JdbcSQLException e) {
-            final Throwable cause = e.getOriginalCause();
-            assertEquals(ST_ShortestPath.NO_GEOM_FIELD_ERROR, cause.getMessage());
-            throw cause;
-        }
+        // This test shows that if the input has no geometry column,
+        // neither will the output.
+        st.execute("DROP TABLE IF EXISTS NO_GEOM;" +
+                "CREATE TABLE NO_GEOM AS " +
+                "SELECT EDGE_ID, START_NODE, END_NODE, WEIGHT " +
+                "FROM CORMEN_EDGES_ALL;");
+        final ResultSet resultSet = st.executeQuery("SELECT * FROM ST_ShortestPath(" +
+                "'NO_GEOM', 'UNDIRECTED', 3, 4);");
+        checkNoGeom(resultSet, new PathEdge[]{
+                new PathEdge(6, 1, 1, 3, 4, 1.0)});
     }
 
     private class PathEdge {
@@ -865,6 +875,11 @@ public class ST_ShortestPathTest {
         private int source;
         private int destination;
         private double weight;
+
+        public PathEdge(int edgeID, int pathID, int pathedgeID,
+                        int source, int destination, double weight) {
+            this(null, edgeID, pathID, pathedgeID, source, destination, weight);
+        }
 
         public PathEdge(String geom, int edgeID, int pathID, int pathedgeID,
                          int source, int destination, double weight) {
