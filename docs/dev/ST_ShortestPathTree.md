@@ -40,8 +40,7 @@ graph using Dijkstra's algorithm.
 
 {% highlight mysql %}
 -- In the following examples, we will use the geometrical data below
--- as input. We give an illustration of the graph this represents
--- below.
+-- as input.
 DROP TABLE IF EXISTS INPUT;
 CREATE TABLE INPUT(THE_GEOM LINESTRING,
                    ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -65,6 +64,10 @@ INSERT INTO INPUT VALUES
 <img class="displayed" src="../linestrings.svg">
 
 {% highlight mysql %}
+-- We call ST_Graph on this input table in order to construct the
+-- node and edge tables. We give an illustration of the resulting
+-- graph. Note that we can call ST_ShortestPathTree on any table
+-- containing integer columns EDGE_ID, START_NODE and END_NODE.
 DROP TABLE IF EXISTS INPUT_NODES;
 DROP TABLE IF EXISTS INPUT_EDGES;
 CALL ST_Graph('INPUT');
@@ -83,67 +86,140 @@ SELECT * FROM INPUT_EDGES;
 -- |      10 |          5 |        1 |
 -- |      11 |          6 |        7 |
 -- |      12 |          7 |        8 |
-
--- ST_Graph gives us the right connections, but we have lost some
--- information along the way, such as edge orientations and weights.
--- We recover this information in the next SQL request.
 {% endhighlight %}
 
-<img class="displayed" src="../wdo.svg">
+<img class="displayed" src="../u.svg">
+
+##### Undirected unweighted
 
 {% highlight mysql %}
--- Recover Geometries, weight and edge orientations
-DROP TABLE IF EXISTS EDGES;
-CREATE TABLE EDGES(THE_GEOM LINESTRING,
-                   EDGE_ID INT PRIMARY KEY,
-                   START_NODE INT,
-                   END_NODE INT,
-                   WEIGHT DOUBLE,
-                   EDGE_ORIENTATION INT) AS
-    SELECT A.THE_GEOM,
-           B.EDGE_ID,
+-- We have just enough information to consider an unweighted
+-- undirected graph. Notice this is not really a "tree" in the
+-- mathematical sense since there are four shortest paths from
+-- vertex 1 to vertex 4.
+SELECT * FROM ST_ShortestPathTree('INPUT_EDGES',
+        'undirected', 1);
+-- | EDGE_ID | TREE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |---------|---------|--------|-------------|--------|
+-- |       1 |       1 |      1 |           2 |    1.0 |
+-- |       9 |       2 |      5 |           4 |    1.0 |
+-- |       6 |       3 |      3 |           4 |    1.0 |
+-- |       2 |       4 |      2 |           4 |    1.0 |
+-- |       8 |       5 |      5 |           4 |    1.0 |
+-- |       5 |       6 |      1 |           3 |    1.0 |
+-- |      10 |       7 |      1 |           5 |    1.0 |
+{% endhighlight %}
+
+<img class="displayed" src="../u-spt-1.svg">
+
+##### Directed Weighted
+
+{% highlight mysql %}
+-- If we want to take edge orientations and weights into account, we
+-- have to recover that information from the original input table.
+-- Notice that edge 2 is reversed and edge 10 is bidirectional
+-- (represented by edges 10 and -10 in opposite directions).
+DROP TABLE IF EXISTS EDGES_EO_W;
+CREATE TABLE EDGES_EO_W(EDGE_ID INT PRIMARY KEY,
+                        START_NODE INT,
+                        END_NODE INT,
+                        WEIGHT DOUBLE,
+                        EDGE_ORIENTATION INT) AS
+    SELECT B.EDGE_ID,
            B.START_NODE,
            B.END_NODE,
            A.WEIGHT,
            A.EDGE_ORIENTATION
     FROM INPUT A, INPUT_EDGES B
     WHERE A.ID=B.EDGE_ID;
-SELECT * FROM EDGES;
--- | THE_GEOM                      | EDGE_ID | START_NODE | END_NODE | WEIGHT | EDGE_ORIENTATION |
--- |-------------------------------|---------|------------|----------|--------|------------------|
--- | LINESTRING (0 1, 1 2)         |       1 |          1 |        2 |   10.0 |                1 |
--- | LINESTRING (1 2, 2 2)         |       2 |          2 |        4 |    1.0 |               -1 |
--- | LINESTRING (1 2, 0.75 1, 1 0) |       3 |          2 |        3 |    2.0 |                1 |
--- | LINESTRING (1 0, 1.25 1, 1 2) |       4 |          3 |        2 |    3.0 |                1 |
--- | LINESTRING (0 1, 1 0)         |       5 |          1 |        3 |    5.0 |                1 |
--- | LINESTRING (1 0, 2 2)         |       6 |          3 |        4 |    9.0 |                1 |
--- | LINESTRING (1 0, 2 0)         |       7 |          3 |        5 |    2.0 |                1 |
--- | LINESTRING (2 2, 1.75 1, 2 0) |       8 |          4 |        5 |    4.0 |                1 |
--- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |          5 |        4 |    6.0 |                1 |
--- | LINESTRING (2 0, 0 1)         |      10 |          5 |        1 |    7.0 |                0 |
--- | LINESTRING (3 1, 4 2)         |      11 |          6 |        7 |    1.0 |                1 |
--- | LINESTRING (4 2, 5 2)         |      12 |          7 |        8 |    2.0 |                1 |
+SELECT * FROM EDGES_EO_W;
+-- | EDGE_ID | START_NODE | END_NODE | WEIGHT | EDGE_ORIENTATION |
+-- |---------|------------|----------|--------|------------------|
+-- |       1 |          1 |        2 |   10.0 |                1 |
+-- |       2 |          2 |        4 |    1.0 |               -1 |
+-- |       3 |          2 |        3 |    2.0 |                1 |
+-- |       4 |          3 |        2 |    3.0 |                1 |
+-- |       5 |          1 |        3 |    5.0 |                1 |
+-- |       6 |          3 |        4 |    9.0 |                1 |
+-- |       7 |          3 |        5 |    2.0 |                1 |
+-- |       8 |          4 |        5 |    4.0 |                1 |
+-- |       9 |          5 |        4 |    6.0 |                1 |
+-- |      10 |          5 |        1 |    7.0 |                0 |
+-- |      11 |          6 |        7 |    1.0 |                1 |
+-- |      12 |          7 |        8 |    2.0 |                1 |
 {% endhighlight %}
 
-##### Unlimited search
+<img class="displayed" src="../wdo.svg">
 
 {% highlight mysql %}
--- Notice this is not really a "tree" in the mathematical sense
--- since there are two shortest paths from vertex 1 to vertex 5.
-SELECT * FROM
-    ST_ShortestPathTree('EDGES',
-        'directed - EDGE_ORIENTATION',
-        'WEIGHT', 1);
--- | THE_GEOM                     | EDGE_ID | TREE_ID | SOURCE | DESTINATION | WEIGHT |
--- |------------------------------|---------|---------|--------|-------------|--------|
--- | LINESTRING(1 0, 1.25 1, 1 2) |       4 |       1 |      3 |           2 |    3.0 |
--- | LINESTRING(2 0, 2.25 1, 2 2) |       9 |       2 |      5 |           4 |    6.0 |
--- | LINESTRING(0 1, 1 0)         |       5 |       3 |      1 |           3 |    5.0 |
--- | LINESTRING(1 0, 2 0)         |       7 |       4 |      3 |           5 |    2.0 |
--- | LINESTRING(2 0, 0 1)         |     -10 |       5 |      1 |           5 |    7.0 |
+-- Now we may consider a directed weighted graph. Again, notice this
+-- is not really a "tree" in the mathematical sense since there are
+-- two shortest paths from vertex 1 to vertex 5.
+SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
+        'directed - EDGE_ORIENTATION', 'WEIGHT', 1);
+-- | EDGE_ID | TREE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |---------|---------|--------|-------------|--------|
+-- |       4 |       1 |      3 |           2 |    3.0 |
+-- |       9 |       2 |      5 |           4 |    6.0 |
+-- |       5 |       3 |      1 |           3 |    5.0 |
+-- |     -10 |       4 |      1 |           5 |    7.0 |
+-- |       7 |       5 |      3 |           5 |    2.0 |
 {% endhighlight %}
 
 <img class="displayed" src="../wdo-spt-1.svg">
+
+##### Including Geometries
+
+{% highlight mysql %}
+-- To include Geometries in the result, there are two methods.
+-- METHOD 1: Include Geometries in the input table. Then they will
+-- be automatically returned in the result.
+DROP TABLE IF EXISTS EDGES_EO_W_GEOM;
+CREATE TABLE EDGES_EO_W_GEOM(EDGE_ID INT PRIMARY KEY,
+                             START_NODE INT,
+                             END_NODE INT,
+                             EDGE_ORIENTATION INT,
+                             WEIGHT DOUBLE,
+                             THE_GEOM GEOMETRY) AS
+    SELECT B.EDGE_ID,
+           B.START_NODE,
+           B.END_NODE,
+           A.EDGE_ORIENTATION,
+           A.WEIGHT,
+           A.THE_GEOM
+    FROM INPUT A, INPUT_EDGES B
+    WHERE A.ID=B.EDGE_ID;
+SELECT * FROM ST_ShortestPathTree('EDGES_EO_W_GEOM',
+        'directed - EDGE_ORIENTATION', 'weight', 1);
+-- | THE_GEOM                      | EDGE_ID | TREE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |-------------------------------|---------|---------|--------|-------------|--------|
+-- | LINESTRING (1 0, 1.25 1, 1 2) |       4 |       1 |      3 |           2 |    3.0 |
+-- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       2 |      5 |           4 |    6.0 |
+-- | LINESTRING (0 1, 1 0)         |       5 |       3 |      1 |           3 |    5.0 |
+-- | LINESTRING (2 0, 0 1)         |     -10 |       4 |      1 |           5 |    7.0 |
+-- | LINESTRING (1 0, 2 0)         |       7 |       5 |      3 |           5 |    2.0 |
+
+-- METHOD 2: Recover Geometries after calculation.
+-- Notice the call to the ABS function (edge ids could be negative).
+-- We get the same result.
+SELECT A.THE_GEOM,
+       B.EDGE_ID,
+       B.TREE_ID,
+       B.SOURCE,
+       B.DESTINATION,
+       B.WEIGHT
+FROM INPUT A,
+     (SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
+                 'directed - EDGE_ORIENTATION', 'weight', 1)) B
+WHERE A.ID=ABS(B.EDGE_ID);
+-- | THE_GEOM                      | EDGE_ID | TREE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |-------------------------------|---------|---------|--------|-------------|--------|
+-- | LINESTRING (1 0, 1.25 1, 1 2) |       4 |       1 |      3 |           2 |    3.0 |
+-- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       2 |      5 |           4 |    6.0 |
+-- | LINESTRING (0 1, 1 0)         |       5 |       3 |      1 |           3 |    5.0 |
+-- | LINESTRING (2 0, 0 1)         |     -10 |       4 |      1 |           5 |    7.0 |
+-- | LINESTRING (1 0, 2 0)         |       7 |       5 |      3 |           5 |    2.0 |
+{% endhighlight %}
 
 ##### See also
 
