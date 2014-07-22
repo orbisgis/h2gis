@@ -44,8 +44,11 @@ a new ID for this path.
 
 ### Examples
 
-{% highlight mysql %}
-{% endhighlight %}
+{% include data-prep-u.html %}
+
+{% include data-prep-wdo.html %}
+
+{% include data-prep-geom.html %}
 
 ##### See also
 
