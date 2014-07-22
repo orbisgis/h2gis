@@ -39,8 +39,9 @@ graph using Dijkstra's algorithm.
 ### Examples
 
 {% highlight mysql %}
--- Prepare example data. We give an illustration of the graph this
--- represents below.
+-- In the following examples, we will use the geometrical data below
+-- as input. We give an illustration of the graph this represents
+-- below.
 DROP TABLE IF EXISTS INPUT;
 CREATE TABLE INPUT(THE_GEOM LINESTRING,
                    ID INT AUTO_INCREMENT PRIMARY KEY,
@@ -57,8 +58,13 @@ INSERT INTO INPUT VALUES
     ('LINESTRING (2 2, 1.75 1, 2 0)', DEFAULT, 4.0,  1),
     ('LINESTRING (2 0, 2.25 1, 2 2)', DEFAULT, 6.0,  1),
     ('LINESTRING (2 0, 0 1)', DEFAULT, 7.0,  0),
-    ('LINESTRING (3 1, 4 2)', DEFAULT, 1.0, 1),
-    ('LINESTRING (4 2, 5 2)', DEFAULT, 2.0, 1);
+    ('LINESTRING (3 0, 3 1)', DEFAULT, 1.0, 1),
+    ('LINESTRING (3 1, 3 2)', DEFAULT, 2.0, 1);
+{% endhighlight %}
+
+<img class="displayed" src="../linestrings.svg">
+
+{% highlight mysql %}
 DROP TABLE IF EXISTS INPUT_NODES;
 DROP TABLE IF EXISTS INPUT_EDGES;
 CALL ST_Graph('INPUT');
