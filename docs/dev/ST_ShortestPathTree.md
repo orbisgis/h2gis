@@ -12,6 +12,8 @@ permalink: /docs/dev/ST_ShortestPathTree/
 ### Signatures
 
 {% highlight mysql %}
+-- Input type:
+--     TABLE[EDGE_ID, START_NODE, END_NODE[, w][, eo][, THE_GEOM]]
 -- Return type:
 --     TABLE[[THE_GEOM, ]EDGE_ID, SOURCE, DESTINATION, WEIGHT]
 ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s)
