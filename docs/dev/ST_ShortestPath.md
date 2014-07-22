@@ -68,7 +68,39 @@ SELECT * FROM ST_ShortestPath('INPUT_EDGES',
 
 <img class="displayed" src="../u-spt-1.svg">
 
+##### Directed Weighted
+
 {% include data-prep-wdo.html %}
+
+{% highlight mysql %}
+-- Now we may consider a directed weighted graph. Again, notice this
+-- is not really a "tree" in the mathematical sense since there are
+-- two shortest paths from vertex 1 to vertex 5. We illustrate the
+-- two possible numberings of these paths.
+SELECT * FROM ST_ShortestPath('EDGES_EO_W',
+        'directed - EDGE_ORIENTATION', 'WEIGHT', 1, 4);
+-- Numbering 1:
+-- |EDGE_ID |PATH_ID |PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |--------|--------|-------------|--------|-------------|--------|
+-- |      9 |      1 |           1 |      5 |           4 |    6.0 |
+-- |      7 |      1 |           2 |      3 |           5 |    2.0 |
+-- |      5 |      1 |           3 |      1 |           3 |    5.0 |
+-- |    -10 |      2 |           2 |      1 |           5 |    7.0 |
+{% endhighlight %}
+
+<img class="displayed" src="../wdo-sp-1-4-numbering1.svg">
+
+{% highlight mysql %}
+-- Numbering 2:
+-- |EDGE_ID |PATH_ID |PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |--------|--------|-------------|--------|-------------|--------|
+-- |      9 |      1 |           1 |      5 |           4 |    6.0 |
+-- |    -10 |      1 |           2 |      1 |           5 |    7.0 |
+-- |      7 |      2 |           2 |      3 |           5 |    2.0 |
+-- |      5 |      2 |           3 |      1 |           3 |    5.0 |
+{% endhighlight %}
+
+<img class="displayed" src="../wdo-sp-1-4-numbering2.svg">
 
 {% include data-prep-geom.html %}
 
