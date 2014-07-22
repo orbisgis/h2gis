@@ -51,7 +51,8 @@ a new ID for this path.
 {% highlight mysql %}
 -- We have just enough information to consider an unweighted
 -- undirected graph. Notice there are four shortest paths from
--- vertex 1 to vertex 4.
+-- vertex 1 to vertex 4. You may have a different numbering when you
+-- execute this request.
 SELECT * FROM ST_ShortestPath('INPUT_EDGES',
         'undirected', 1, 4);
 -- |EDGE_ID |PATH_ID |PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
@@ -66,7 +67,7 @@ SELECT * FROM ST_ShortestPath('INPUT_EDGES',
 -- |      1 |      4 |           2 |      1 |           2 |    1.0 |
 {% endhighlight %}
 
-<img class="displayed" src="../u-spt-1.svg">
+<img class="displayed" src="../u-sp-1-4.svg">
 
 ##### Directed Weighted
 
