@@ -257,6 +257,15 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 
 <img class="displayed" src="../wdo-spt-1-limit-8.5.svg">
 
+##### Exercises
+
+1. Try doing similar calculations for
+    * an unweighted directed graph
+    * a weighted undirected graph
+    * a weighted reversed graph
+2. Find a source vertex and a graph configuration such that the SPT
+   returned by `ST_ShortestPathTree` is in fact a tree.
+
 ##### See also
 
 * [`ST_ShortestPath`](../ST_ShortestPath),
