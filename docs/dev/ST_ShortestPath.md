@@ -13,7 +13,7 @@ permalink: /docs/dev/ST_ShortestPath/
 
 {% highlight mysql %}
 -- Return type:
---     TABLE[THE_GEOM, EDGE_ID, PATH_ID, PATH_EDGE_ID,
+--     TABLE[[THE_GEOM, ]EDGE_ID, PATH_ID, PATH_EDGE_ID,
 --           SOURCE, DESTINATION, WEIGHT]
 -- One-to-One
 ST_ShortestPath('INPUT_EDGES', 'o[ - eo]', s, d);

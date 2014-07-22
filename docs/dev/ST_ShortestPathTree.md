@@ -13,7 +13,7 @@ permalink: /docs/dev/ST_ShortestPathTree/
 
 {% highlight mysql %}
 -- Return type:
---     TABLE[THE_GEOM, EDGE_ID, SOURCE, DESTINATION, WEIGHT]
+--     TABLE[[THE_GEOM, ]EDGE_ID, SOURCE, DESTINATION, WEIGHT]
 ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s)
 ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s, r)
 {% endhighlight %}
