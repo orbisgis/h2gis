@@ -12,8 +12,10 @@ permalink: /docs/dev/ST_ShortestPath/
 ### Signatures
 
 {% highlight mysql %}
+-- Input type:
+--     TABLE[EDGE_ID, START_NODE, END_NODE[, w][, eo][, THE_GEOM]]
 -- Return type:
---     TABLE[THE_GEOM, EDGE_ID, PATH_ID, PATH_EDGE_ID,
+--     TABLE[[THE_GEOM, ]EDGE_ID, PATH_ID, PATH_EDGE_ID,
 --           SOURCE, DESTINATION, WEIGHT]
 -- One-to-One
 ST_ShortestPath('INPUT_EDGES', 'o[ - eo]', s, d);
@@ -31,14 +33,14 @@ a new ID for this path.
 
 ##### Input parameters
 
-| Variable      | Meaning                                                                                                                                                                               |
-|---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `INPUT_EDGES` | Edges table produced by `ST_Graph` from table `input`                                                                                                                                 |
-| `o`           | Global orientation string: `directed`, `reversed` or `undirected`                                                                                                                     |
-| `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed` |
-| `w`           | Edge weights column name                                                                                                                                                              |
-| `s`           | Source vertex id                                                                                                                                                                      |
-| `d`           | Destination vertex id                                                                                                                                                                 |
+| Variable      | Meaning                                                                                                                                                                                                                                                                                                                 |
+|---------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`; and optionally a weight column `w` (if the graph is weighted) and/or an edge orientation column `eo` (required if global orientation is not `undirected`). If it contains a Geometry column, this column will be returned in the output table. |
+| `o`           | Global orientation string: `directed`, `reversed` or `undirected`                                                                                                                                                                                                                                                       |
+| `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed`                                                                                                                                   |
+| `w`           | Edge weights column name                                                                                                                                                                                                                                                                                                |
+| `s`           | Source vertex id                                                                                                                                                                                                                                                                                                        |
+| `d`           | Destination vertex id                                                                                                                                                                                                                                                                                                   |
 
 ### Examples
 

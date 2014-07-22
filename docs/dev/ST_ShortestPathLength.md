@@ -5,13 +5,15 @@ category: applications/h2network
 is_function: true
 description: Calculate length(s) of shortest path(s) between vertices in a graph
 prev_section: ST_ShortestPath
-next_section:
+next_section: ST_ShortestPathTree
 permalink: /docs/dev/ST_ShortestPathLength/
 ---
 
 ### Signatures
 
 {% highlight mysql %}
+-- Input type:
+--     TABLE[EDGE_ID, START_NODE, END_NODE[, w][, eo]]
 -- Return type:
 --     TABLE[SOURCE, DESTINATION, DISTANCE]
 ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]'[, 'w'],
@@ -33,7 +35,7 @@ graph.
 
 | Variable      | Meaning                                                                                                                                                                               |
 |---------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`, and optionally an edge orientation column `eo` (required if global orientation is not `undirected`)          |
+| `INPUT_EDGES` | Table containing integer columns `EDGE_ID`, `START_NODE` and `END_NODE`; and optionally a weight column `w` (if the graph is weighted) and/or an edge orientation column `eo` (required if global orientation is not `undirected`). |
 | `o`           | Global orientation string: `directed`, `reversed` or `undirected`                                                                                                                     |
 | `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed` |
 | `w`           | Edge weights column name                                                                                                                                                              |
