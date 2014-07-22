@@ -20,8 +20,29 @@ ST_ShortestPathTree('INPUT_EDGES', 'o[ - eo]'[, 'w'], s, r)
 
 ### Description
 
-Calculates the [shortest path tree][wiki] from a given vertex of a
-graph using Dijkstra's algorithm.
+Calculates the [shortest path tree][wiki] (SPT) from a given vertex
+of a graph using Dijkstra's algorithm.
+
+<div class="note info">
+  <h5>The result may not technically be a <a
+  href="http://en.wikipedia.org/wiki/Tree_(graph_theory)">tree</a>.</h5>
+  <p>If there are multiple shortest paths, they are all
+  returned.</p>
+</div>
+
+<div class="note">
+  <h5>Edges are not returned in any particular order.</h5>
+  <p>The SPT is composed of many edges, but their order is not
+  important.</p>
+</div>
+
+<div class="note">
+  <h5>The SPT is confined to the same (strongly) connected component
+  as the source vertex.</h5>
+  <p>That is, it includes only vertices reachable from the source
+  vertex. See <a
+  href="../ST_ConnectedComponents"><code>ST_ConnectedComponents</code></a>.</p>
+</div>
 
 ##### Input parameters
 
@@ -239,7 +260,8 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 ##### See also
 
 * [`ST_ShortestPath`](../ST_ShortestPath),
-  [`ST_ShortestPathLength`](../ST_ShortestPathLength)
+  [`ST_ShortestPathLength`](../ST_ShortestPathLength),
+  [`ST_ConnectedComponents`](../ST_ConnectedComponents)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPathTree.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/Shortest-path_tree
