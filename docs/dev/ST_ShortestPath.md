@@ -27,9 +27,27 @@ ST_ShortestPath('INPUT_EDGES', 'o[ - eo]', 'w', s, d);
 
 Calculates the shortest path(s) from source vertex `s` to
 destination vertex `d`.
-Multiple shortest paths are distinguished by `PATH_ID`.
-`EDGE_ID` indicates the ID in `INPUT_EDGES` while `PATH_EDGE_ID` is
-a new ID for this path.
+
+<div class="note info">
+  <h5>A note about path numbering.</h5>
+  <p>
+  <ul>
+  <li> Multiple shortest paths are distinguished by
+  <code>PATH_ID</code>, while <code>EDGE_ID</code> indicates the ID
+  in the input table.  </li>
+  <li> Path numbering is <b>not unique</b>. We use a recursive
+  algorithm to number shortest path edges. We start at the
+  destination vertex and work our way back to the source vertex,
+  each time incrementing <code>PATH_EDGE_ID</code> by 1. If at any
+  point we reach the source vertex, we increment
+  <code>PATH_ID</code> by 1 since we will be numbering a new
+  shortest path. As a consequence, <code>PATH_EDGE_ID</code> always
+  indicates the number of edges in this shortest path before
+  reaching the destination vertex.  </li>
+  </ul>
+  </p>
+</div>
+
 
 ##### Input parameters
 
