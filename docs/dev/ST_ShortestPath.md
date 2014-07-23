@@ -121,6 +121,18 @@ SELECT * FROM ST_ShortestPath('EDGES_EO_W',
 
 <img class="displayed" src="../wdo-sp-1-4-numbering2.svg">
 
+##### Unreachable vertices
+
+{% highlight mysql %}
+-- If the destination vertex is unreachable from the source vertex,
+-- a table with a single line is returned:
+SELECT * FROM ST_ShortestPath('INPUT_EDGES',
+        'undirected', 1, 6);
+-- |EDGE_ID |PATH_ID |PATH_EDGE_ID |SOURCE |DESTINATION | WEIGHT   |
+-- |--------|--------|-------------|-------|------------|----------|
+-- |     -1 |     -1 |          -1 |     1 |          6 | Infinity |
+{% endhighlight %}
+
 {% include data-prep-geom.html %}
 
 ##### See also
