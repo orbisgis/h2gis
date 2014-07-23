@@ -143,7 +143,11 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         final double distance = dijkstra.oneToOne(graph.getVertex(source), vDestination);
 
         if (distance == Double.POSITIVE_INFINITY) {
-            output.addRow(null, -1, -1, -1, source, destination, distance);
+            if (containsGeomField) {
+                output.addRow(null, -1, -1, -1, source, destination, distance);
+            } else {
+                output.addRow(-1, -1, -1, source, destination, distance);
+            }
         } else {
             // Need to create an object for the globalID recursion.
             final ST_ShortestPath f = new ST_ShortestPath();

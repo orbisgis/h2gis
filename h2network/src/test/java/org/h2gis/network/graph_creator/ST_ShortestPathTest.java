@@ -867,6 +867,20 @@ public class ST_ShortestPathTest {
                 new PathEdge(6, 1, 1, 3, 4, 1.0)});
     }
 
+    @Test
+    public void testNoGeometryFieldDifferentCCs() throws Throwable {
+        // This test shows that if the input has no geometry column,
+        // neither will the output.
+        st.execute("DROP TABLE IF EXISTS NO_GEOM;" +
+                "CREATE TABLE NO_GEOM AS " +
+                "SELECT EDGE_ID, START_NODE, END_NODE, WEIGHT " +
+                "FROM COPY_EDGES_ALL;");
+        final ResultSet resultSet = st.executeQuery("SELECT * FROM ST_ShortestPath(" +
+                "'NO_GEOM', 'UNDIRECTED', 1, 8);");
+        checkNoGeom(resultSet, new PathEdge[]{
+                new PathEdge(-1, -1, -1, 1, 8, Double.POSITIVE_INFINITY)});
+    }
+
     private class PathEdge {
         private String geom;
         private int edgeID;
