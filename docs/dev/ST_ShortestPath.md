@@ -133,7 +133,43 @@ SELECT * FROM ST_ShortestPath('INPUT_EDGES',
 -- |     -1 |     -1 |          -1 |     1 |          6 | Infinity |
 {% endhighlight %}
 
+##### Including Geometries
+
 {% include data-prep-geom.html %}
+
+{% highlight mysql %}
+-- The input table's Geometries are automatically returned in the
+-- result.
+SELECT * FROM ST_ShortestPath('EDGES_EO_W_GEOM',
+        'directed - EDGE_ORIENTATION', 'weight', 1, 4);
+-- | THE_GEOM                      | EDGE_ID | PATH_ID | PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |-------------------------------|---------|---------|--------------|--------|-------------|--------|
+-- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       1 |            1 |      5 |           4 |    6.0 |
+-- | LINESTRING (1 0, 2 0)         |       7 |       1 |            2 |      3 |           5 |    2.0 |
+-- | LINESTRING (0 1, 1 0)         |       5 |       1 |            3 |      1 |           3 |    5.0 |
+-- | LINESTRING (2 0, 0 1)         |     -10 |       2 |            2 |      1 |           5 |    7.0 |
+
+-- METHOD 2: Recover Geometries after calculation.
+-- Notice the call to the ABS function (edge ids could be negative).
+-- We get the same result.
+SELECT A.THE_GEOM,
+       B.EDGE_ID,
+       B.PATH_ID,
+       B.PATH_EDGE_ID,
+       B.SOURCE,
+       B.DESTINATION,
+       B.WEIGHT
+FROM INPUT A,
+     (SELECT * FROM ST_ShortestPath('EDGES_EO_W_GEOM',
+        'directed - EDGE_ORIENTATION', 'weight', 1, 4)) B
+WHERE A.ID=ABS(B.EDGE_ID);
+-- | THE_GEOM                      | EDGE_ID | PATH_ID | PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |-------------------------------|---------|---------|--------------|--------|-------------|--------|
+-- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       1 |            1 |      5 |           4 |    6.0 |
+-- | LINESTRING (1 0, 2 0)         |       7 |       1 |            2 |      3 |           5 |    2.0 |
+-- | LINESTRING (0 1, 1 0)         |       5 |       1 |            3 |      1 |           3 |    5.0 |
+-- | LINESTRING (2 0, 0 1)         |     -10 |       2 |            2 |      1 |           5 |    7.0 |
+{% endhighlight %}
 
 ##### See also
 
