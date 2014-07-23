@@ -17,19 +17,34 @@ permalink: /docs/dev/ST_ShortestPath/
 -- Return type:
 --     TABLE[[THE_GEOM, ]EDGE_ID, PATH_ID, PATH_EDGE_ID,
 --           SOURCE, DESTINATION, WEIGHT]
--- One-to-One
-ST_ShortestPath('INPUT_EDGES', 'o[ - eo]', s, d);
--- One-to-One Weighted
-ST_ShortestPath('INPUT_EDGES', 'o[ - eo]', 'w', s, d);
+ST_ShortestPath('INPUT_EDGES', 'o[ - eo]'[, 'w'], s, d);
 {% endhighlight %}
 
 ### Description
 
 Calculates the shortest path(s) from source vertex `s` to
 destination vertex `d`.
-Multiple shortest paths are distinguished by `PATH_ID`.
-`EDGE_ID` indicates the ID in `INPUT_EDGES` while `PATH_EDGE_ID` is
-a new ID for this path.
+
+<div class="note info">
+  <h5>A note about path numbering.</h5>
+  <p>
+  <ul>
+  <li> Multiple shortest paths are distinguished by
+  <code>PATH_ID</code>, while <code>EDGE_ID</code> indicates the ID
+  in the input table.  </li>
+  <li> Path numbering is <b>not unique</b>. We use a recursive
+  algorithm to number shortest path edges. We start at the
+  destination vertex and work our way back to the source vertex,
+  each time incrementing <code>PATH_EDGE_ID</code> by 1. If at any
+  point we reach the source vertex, we increment
+  <code>PATH_ID</code> by 1 since we will be numbering a new
+  shortest path. As a consequence, <code>PATH_EDGE_ID</code> always
+  indicates the number of edges in this shortest path before
+  reaching the destination vertex.  </li>
+  </ul>
+  </p>
+</div>
+
 
 ##### Input parameters
 
@@ -44,10 +59,117 @@ a new ID for this path.
 
 ### Examples
 
+{% include data-prep-u.html %}
+
+##### Undirected unweighted
+
 {% highlight mysql %}
+-- We have just enough information to consider an unweighted
+-- undirected graph. Notice there are four shortest paths from
+-- vertex 1 to vertex 4. You may have a different numbering when you
+-- execute this request.
+SELECT * FROM ST_ShortestPath('INPUT_EDGES',
+        'undirected', 1, 4);
+-- |EDGE_ID |PATH_ID |PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |--------|--------|-------------|--------|-------------|--------|
+-- |      6 |      1 |           1 |      3 |           4 |    1.0 |
+-- |      5 |      1 |           2 |      1 |           3 |    1.0 |
+-- |      9 |      2 |           1 |      5 |           4 |    1.0 |
+-- |     10 |      2 |           2 |      1 |           5 |    1.0 |
+-- |      8 |      3 |           1 |      5 |           4 |    1.0 |
+-- |     10 |      3 |           2 |      1 |           5 |    1.0 |
+-- |      2 |      4 |           1 |      2 |           4 |    1.0 |
+-- |      1 |      4 |           2 |      1 |           2 |    1.0 |
+{% endhighlight %}
+
+<img class="displayed" src="../u-sp-1-4.svg">
+
+##### Directed Weighted
+
+{% include data-prep-wdo.html %}
+
+{% highlight mysql %}
+-- Now we may consider a directed weighted graph. Again, notice this
+-- is not really a "tree" in the mathematical sense since there are
+-- two shortest paths from vertex 1 to vertex 5. We illustrate the
+-- two possible numberings of these paths.
+SELECT * FROM ST_ShortestPath('EDGES_EO_W',
+        'directed - EDGE_ORIENTATION', 'WEIGHT', 1, 4);
+-- Numbering 1:
+-- |EDGE_ID |PATH_ID |PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |--------|--------|-------------|--------|-------------|--------|
+-- |      9 |      1 |           1 |      5 |           4 |    6.0 |
+-- |      7 |      1 |           2 |      3 |           5 |    2.0 |
+-- |      5 |      1 |           3 |      1 |           3 |    5.0 |
+-- |    -10 |      2 |           2 |      1 |           5 |    7.0 |
+{% endhighlight %}
+
+<img class="displayed" src="../wdo-sp-1-4-numbering1.svg">
+
+{% highlight mysql %}
+-- Numbering 2:
+-- |EDGE_ID |PATH_ID |PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |--------|--------|-------------|--------|-------------|--------|
+-- |      9 |      1 |           1 |      5 |           4 |    6.0 |
+-- |    -10 |      1 |           2 |      1 |           5 |    7.0 |
+-- |      7 |      2 |           2 |      3 |           5 |    2.0 |
+-- |      5 |      2 |           3 |      1 |           3 |    5.0 |
+{% endhighlight %}
+
+<img class="displayed" src="../wdo-sp-1-4-numbering2.svg">
+
+##### Unreachable vertices
+
+{% highlight mysql %}
+-- If the destination vertex is unreachable from the source vertex,
+-- a table with a single line is returned:
+SELECT * FROM ST_ShortestPath('INPUT_EDGES',
+        'undirected', 1, 6);
+-- |EDGE_ID |PATH_ID |PATH_EDGE_ID |SOURCE |DESTINATION | WEIGHT   |
+-- |--------|--------|-------------|-------|------------|----------|
+-- |     -1 |     -1 |          -1 |     1 |          6 | Infinity |
+{% endhighlight %}
+
+##### Including Geometries
+
+{% include data-prep-geom.html %}
+
+{% highlight mysql %}
+-- The input table's Geometries are automatically returned in the
+-- result.
+SELECT * FROM ST_ShortestPath('EDGES_EO_W_GEOM',
+        'directed - EDGE_ORIENTATION', 'weight', 1, 4);
+-- | THE_GEOM                      | EDGE_ID | PATH_ID | PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |-------------------------------|---------|---------|--------------|--------|-------------|--------|
+-- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       1 |            1 |      5 |           4 |    6.0 |
+-- | LINESTRING (1 0, 2 0)         |       7 |       1 |            2 |      3 |           5 |    2.0 |
+-- | LINESTRING (0 1, 1 0)         |       5 |       1 |            3 |      1 |           3 |    5.0 |
+-- | LINESTRING (2 0, 0 1)         |     -10 |       2 |            2 |      1 |           5 |    7.0 |
+
+-- METHOD 2: Recover Geometries after calculation.
+-- Notice the call to the ABS function (edge ids could be negative).
+-- We get the same result.
+SELECT A.THE_GEOM,
+       B.EDGE_ID,
+       B.PATH_ID,
+       B.PATH_EDGE_ID,
+       B.SOURCE,
+       B.DESTINATION,
+       B.WEIGHT
+FROM INPUT A,
+     (SELECT * FROM ST_ShortestPath('EDGES_EO_W_GEOM',
+        'directed - EDGE_ORIENTATION', 'weight', 1, 4)) B
+WHERE A.ID=ABS(B.EDGE_ID);
+-- | THE_GEOM                      | EDGE_ID | PATH_ID | PATH_EDGE_ID | SOURCE | DESTINATION | WEIGHT |
+-- |-------------------------------|---------|---------|--------------|--------|-------------|--------|
+-- | LINESTRING (2 0, 2.25 1, 2 2) |       9 |       1 |            1 |      5 |           4 |    6.0 |
+-- | LINESTRING (1 0, 2 0)         |       7 |       1 |            2 |      3 |           5 |    2.0 |
+-- | LINESTRING (0 1, 1 0)         |       5 |       1 |            3 |      1 |           3 |    5.0 |
+-- | LINESTRING (2 0, 0 1)         |     -10 |       2 |            2 |      1 |           5 |    7.0 |
 {% endhighlight %}
 
 ##### See also
 
-* [`ST_ShortestPathLength`](../ST_ShortestPathLength)
+* [`ST_ShortestPathLength`](../ST_ShortestPathLength),
+  [`ST_ShortestPathTree`](../ST_ShortestPathTree),
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPath.java" target="_blank">Source code</a>
