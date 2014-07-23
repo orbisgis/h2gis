@@ -17,10 +17,7 @@ permalink: /docs/dev/ST_ShortestPath/
 -- Return type:
 --     TABLE[[THE_GEOM, ]EDGE_ID, PATH_ID, PATH_EDGE_ID,
 --           SOURCE, DESTINATION, WEIGHT]
--- One-to-One
-ST_ShortestPath('INPUT_EDGES', 'o[ - eo]', s, d);
--- One-to-One Weighted
-ST_ShortestPath('INPUT_EDGES', 'o[ - eo]', 'w', s, d);
+ST_ShortestPath('INPUT_EDGES', 'o[ - eo]'[, 'w'], s, d);
 {% endhighlight %}
 
 ### Description
