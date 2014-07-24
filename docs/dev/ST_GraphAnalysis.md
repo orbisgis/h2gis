@@ -21,7 +21,8 @@ ST_GraphAnalysis('INPUT_EDGES', 'o[ - eo]', 'w'); -- Weighted
 
 ### Description
 
-Calculates closeness and betweenness [centrality][wiki] for vertices
+Uses [Brande's betweenness centrality algorithm][brandes] to
+calculate closeness and betweenness [centrality][wiki] for vertices
 and betweenness centrality for edges.
 
 <div class="note">
@@ -65,3 +66,4 @@ and betweenness centrality for edges.
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_GraphAnalysis.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/Centrality
+[brandes]: http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
