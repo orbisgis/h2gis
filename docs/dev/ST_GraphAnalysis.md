@@ -225,7 +225,10 @@ SELECT EDGE_ID,
 
 ##### See also
 
-* [`ST_ConnectedComponents`](../ST_ConnectedComponents)
+* [`ST_ConnectedComponents`](../ST_ConnectedComponents),
+  [`ST_ShortestPath`](../ST_ShortestPath),
+  [`ST_ShortestPathLength`](../ST_ShortestPathLength),
+  [`ST_ShortestPathTree`](../ST_ShortestPathTree)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_GraphAnalysis.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/Centrality
