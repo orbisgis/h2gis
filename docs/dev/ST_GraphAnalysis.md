@@ -168,20 +168,22 @@ SELECT NODE_ID,
        CAST(255*CLOSE_INTERP AS INT) BLUE
    FROM (SELECT NODE_ID,
                 CLOSENESS,
-                (CLOSENESS -
-                    (SELECT MIN(CLOSENESS) FROM EDGES_EO_W_SCC_NODE_CENT)) /
-                ((SELECT MAX(CLOSENESS) FROM EDGES_EO_W_SCC_NODE_CENT) -
-                    (SELECT MIN(CLOSENESS) FROM EDGES_EO_W_SCC_NODE_CENT))
+                (CLOSENESS - (SELECT MIN(CLOSENESS)
+                                FROM EDGES_EO_W_SCC_NODE_CENT)) /
+                ((SELECT MAX(CLOSENESS)
+                    FROM EDGES_EO_W_SCC_NODE_CENT) -
+                 (SELECT MIN(CLOSENESS)
+                    FROM EDGES_EO_W_SCC_NODE_CENT))
                 AS CLOSE_INTERP
          FROM EDGES_EO_W_SCC_NODE_CENT)
     ORDER BY CLOSENESS DESC;
--- | NODE_ID |           CLOSENESS |        CLOSE_INTERP |  RED | BLUE |
--- |---------|---------------------|---------------------|------|------|
--- |       4 | 0.21052631578947367 |                 1.0 |    0 |  255 |
--- |       3 | 0.18181818181818182 |  0.6785714285714287 |   82 |  173 |
--- |       2 | 0.14814814814814814 |  0.3015873015873015 |  178 |   77 |
--- |       5 | 0.13793103448275862 | 0.18719211822660095 |  207 |   48 |
--- |       1 | 0.12121212121212122 |                 0.0 |  255 |    0 |
+-- |NODE_ID |           CLOSENESS |        CLOSE_INTERP |RED |BLUE |
+-- |--------| --------------------|---------------------|----|-----|
+-- |      4 | 0.21052631578947367 |                 1.0 |  0 | 255 |
+-- |      3 | 0.18181818181818182 |  0.6785714285714287 | 82 | 173 |
+-- |      2 | 0.14814814814814814 |  0.3015873015873015 |178 |  77 |
+-- |      5 | 0.13793103448275862 | 0.18719211822660095 |207 |  48 |
+-- |      1 | 0.12121212121212122 |                 0.0 |255 |   0 |
 {% endhighlight %}
 
 <img class="displayed" src="../wdo-largest-scc-node-close.svg">
