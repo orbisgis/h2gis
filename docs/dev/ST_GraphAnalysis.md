@@ -29,12 +29,20 @@ and betweenness centrality for edges.
 </div>
 
 <div class="note warning">
-  <h5>All closeness centrality scores will be zero if called on a graph
-  with more than one (strongly) connected component.</h5>
-  <p>Use <a
-  href="../ST_ConnectedComponents"><code>ST_ConnectedComponents</code></a>
-  to make sure you're calling <code>ST_GraphAnalysis</code> on a
-  single connected component.</p>
+  <h5>A few caveats.</h5>
+  <p> Results will not be accurate if the graph:
+  <ul>
+  <li> contains "duplicate" edges (having the same source, destination and
+  weight)
+  </li>
+  <li> is disconnected. Use <a
+  href="../ST_ConnectedComponents"><code>ST_ConnectedComponents</code></a> to
+  make sure you're calling <code>ST_GraphAnalysis</code> on a single (strongly)
+  connected component. If all closeness centrality scores are zero, this is
+  why.
+  </li>
+  </ul>
+  </p>
 </div>
 
 ##### Input parameters
