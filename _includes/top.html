@@ -13,6 +13,9 @@
   <link rel="stylesheet" href="{{ site.baseurl }}/css/gh-ribbon.css" />
   <link rel="icon" type="image/png" href="{{ site.baseurl }}/favicon.png" />
   <script src="{{ site.baseurl }}/js/modernizr-2.5.3.min.js"></script>
+  {% if page.is_math %}
+    <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  {% endif %}
   <script type="text/javascript">
 
     var _gaq = _gaq || [];

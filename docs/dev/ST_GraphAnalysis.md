@@ -3,6 +3,7 @@ layout: docs
 title: ST_GraphAnalysis
 category: applications/h2network
 is_function: true
+is_math: true
 description: Calculate closeness/betweenness centrality of vertices and edges
 prev_section: ST_Graph
 next_section: ST_ShortestPath
@@ -25,22 +26,50 @@ Uses [Brande's betweenness centrality algorithm][brandes] to
 calculate closeness and betweenness [centrality][wiki] for vertices
 and betweenness centrality for edges.
 
+Let $$d(s, t)$$ denote the **distance** from $$s \in V$$ to $$t \in
+V$$, i.e., the minimum length of all paths connecting $$s$$ to
+$$t$$. We have $$d(s, s) = 0$$ for all $$s \in V$$.
+
+Let $$\sigma_{st}$$ denote the number of shortest paths from $$s \in
+V$$ to $$t \in V$$ and set $$\sigma_{ss}=1$$ by convention. Let
+$$\sigma_{st}(v)$$ denote the number of shortest paths from $$s$$ to
+$$t$$ containing $$v \in V$$.
+
+We have the following definitions for vertices:
+<div>
+\begin{array}{l r}
+    C_C(v) = \left(\sum_{t \in V} d(v, t)\right)^{-1}
+    & \qquad \textrm{closeness centrality} \\
+    C_B(v) = \sum_{s \neq t \neq v \in V} \frac{\sigma_{st}(v)}{\sigma_{st}}
+    & \qquad \textrm{betweenness centrality} \\
+\end{array}
+</div>
+
+Betweenness centrality for edges is defined similarly.
+
+A high closeness centrality score indicates that a vertex can reach
+other vertices on relatively short paths; a high betweenness
+centrality score indicates that a vertex lies on a relatively high
+number of shortest paths.
+
 <div class="note">
   <h5>All centrality scores are normalized.</h5>
+  <p>But this normalization depends on the graph being connected.
+  Use <a
+  href="../ST_ConnectedComponents"><code>ST_ConnectedComponents</code></a>
+  to make sure you're calling <code>ST_GraphAnalysis</code> on a
+  single (strongly) connected component.</p>
 </div>
 
 <div class="note warning">
   <h5>A few caveats.</h5>
   <p> Results will not be accurate if the graph:
   <ul>
-  <li> contains "duplicate" edges (having the same source, destination and
-  weight)
+  <li> contains "duplicate" edges (having the same source,
+  destination and weight)
   </li>
-  <li> is disconnected. Use <a
-  href="../ST_ConnectedComponents"><code>ST_ConnectedComponents</code></a> to
-  make sure you're calling <code>ST_GraphAnalysis</code> on a single (strongly)
-  connected component. If all closeness centrality scores are zero, this is
-  why.
+  <li> is disconnected. If all closeness centrality scores are zero,
+  this is why.
   </li>
   </ul>
   </p>
