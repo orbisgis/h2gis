@@ -72,6 +72,11 @@ number of shortest paths.
   </li>
   </ul>
   </p>
+  <p> Though Brande's algorithm is much faster than a naïve
+  approach, it still requires an augmented version of Dijkstra's
+  algorithm to be run starting from each vertex. Thus, calculation
+  times can be rather long for larger graphs.
+  </p>
 </div>
 
 ##### Input parameters
