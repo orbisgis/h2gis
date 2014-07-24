@@ -249,6 +249,9 @@ SELECT EDGE_ID,
   [`ST_ShortestPathLength`](../ST_ShortestPathLength),
   [`ST_ShortestPathTree`](../ST_ShortestPathTree)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_GraphAnalysis.java" target="_blank">Source code</a>
+* JNA <a
+href="https://github.com/irstv/Java-Network-Analyzer/blob/master/src/main/java/org/javanetworkanalyzer/analyzers/GraphAnalyzer.java"
+target="_blank">GraphAnalyzer</a>
 
 [wiki]: http://en.wikipedia.org/wiki/Centrality
 [brandes]: http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
