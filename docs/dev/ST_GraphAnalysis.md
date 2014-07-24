@@ -103,7 +103,7 @@ The above screenshots were generated in [OrbisGIS][og].
 -- We will do graph analysis on the largest strongly connected
 -- component of the directed weighted graph examined in
 -- ST_ShortestPath examples, illustrated below.
-SELECT * FROM EDGES_EO_W_CC;
+SELECT * FROM EDGES_EO_W_SCC;
 -- | EDGE_ID | START_NODE | END_NODE | WEIGHT | EDGE_ORIENTATION |
 -- |---------|------------|----------|--------|------------------|
 -- |       1 |          1 |        2 |   10.0 |                1 |
@@ -119,6 +119,85 @@ SELECT * FROM EDGES_EO_W_CC;
 {% endhighlight %}
 
 <img class="displayed" src="../wdo-largest-scc.svg">
+
+{% highlight mysql %}
+-- Do the graph analysis.
+CALL ST_GraphAnalysis('EDGES_EO_W_SCC',
+    'directed - EDGE_ORIENTATION', 'WEIGHT');
+-- The results for nodes:
+SELECT * FROM EDGES_EO_W_SCC_NODE_CENT;
+-- | NODE_ID |        BETWEENNESS |           CLOSENESS |
+-- |---------|--------------------|---------------------|
+-- |       1 |                0.0 | 0.12121212121212122 |
+-- |       2 | 0.3333333333333333 | 0.14814814814814814 |
+-- |       3 | 0.8333333333333334 | 0.18181818181818182 |
+-- |       4 | 0.3333333333333333 | 0.21052631578947367 |
+-- |       5 |                1.0 | 0.13793103448275862 |
+
+-- We use linear interpolation from red (0) to blue (1) to
+-- illustrate node betweenness.
+SELECT NODE_ID,
+       BETWEENNESS,
+       CAST(255*(1-BETWEENNESS) AS INT) RED,
+       CAST(255*BETWEENNESS AS INT) BLUE
+    FROM EDGES_EO_W_SCC_NODE_CENT
+    ORDER BY BETWEENNESS DESC;
+-- | NODE_ID |        BETWEENNESS |                 RED | BLUE |
+-- |---------|--------------------|---------------------|------|
+-- |       5 |                1.0 |                   0 |  255 |
+-- |       3 | 0.8333333333333334 |                  42 |  213 |
+-- |       4 | 0.3333333333333333 |                 170 |   85 |
+-- |       2 | 0.3333333333333333 |                 170 |   85 |
+-- |       1 |                0.0 |                 255 |    0 |
+{% endhighlight %}
+
+<img class="displayed" src="../wdo-largest-scc-node-betw.svg">
+
+{% highlight mysql %}
+-- We use linear interpolation from red (0) to blue (1) to
+-- illustrate closeness.
+SELECT NODE_ID,
+       CLOSENESS,
+       CLOSE_INTERP,
+       CAST(255*(1-CLOSE_INTERP) AS INT) RED,
+       CAST(255*CLOSE_INTERP AS INT) BLUE
+   FROM (SELECT NODE_ID,
+                CLOSENESS,
+                (CLOSENESS -
+                    (SELECT MIN(CLOSENESS) FROM EDGES_EO_W_SCC_NODE_CENT)) /
+                ((SELECT MAX(CLOSENESS) FROM EDGES_EO_W_SCC_NODE_CENT) -
+                    (SELECT MIN(CLOSENESS) FROM EDGES_EO_W_SCC_NODE_CENT))
+                AS CLOSE_INTERP
+         FROM EDGES_EO_W_SCC_NODE_CENT)
+    ORDER BY CLOSENESS DESC;
+-- | NODE_ID |           CLOSENESS |        CLOSE_INTERP |  RED | BLUE |
+-- |---------|---------------------|---------------------|------|------|
+-- |       4 | 0.21052631578947367 |                 1.0 |    0 |  255 |
+-- |       3 | 0.18181818181818182 |  0.6785714285714287 |   82 |  173 |
+-- |       2 | 0.14814814814814814 |  0.3015873015873015 |  178 |   77 |
+-- |       5 | 0.13793103448275862 | 0.18719211822660095 |  207 |   48 |
+-- |       1 | 0.12121212121212122 |                 0.0 |  255 |    0 |
+{% endhighlight %}
+
+<img class="displayed" src="../wdo-largest-scc-node-close.svg">
+
+{% highlight mysql %}
+-- The results for edges:
+SELECT * FROM EDGES_EO_W_SCC_EDGE_CENT ORDER BY BETWEENNESS DESC;
+-- | EDGE_ID |         BETWEENNESS |
+-- |---------|---------------------|
+-- |       7 |                 1.0 |
+-- |       9 |  0.8571428571428571 |
+-- |       3 |  0.8571428571428571 |
+-- |      10 |  0.5714285714285714 |
+-- |       2 |  0.5714285714285714 |
+-- |       5 | 0.42857142857142855 |
+-- |       4 |  0.2857142857142857 |
+-- |       8 |  0.2857142857142857 |
+-- |     -10 | 0.14285714285714285 |
+-- |       1 |                 0.0 |
+-- |       6 |                 0.0 |
+{% endhighlight %}
 
 ##### See also
 
