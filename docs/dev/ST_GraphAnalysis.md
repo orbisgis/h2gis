@@ -223,6 +223,20 @@ SELECT EDGE_ID,
 
 <img class="displayed" src="../wdo-largest-scc-edge-betw.svg">
 
+##### Exercises
+
+1. Use [`ST_ShortestPathTree`](../ST_ShortestPathTree) to calculate
+   the shortest path trees for nodes 1 through 5. Then use the
+   definition of node betweenness to calculate betweenness by hand
+   and verify the results above.
+2. Make use of [`ST_ShortestPath`](../ST_ShortestPath) to write a
+   script that calculates node betweenness automatically without
+   using `ST_GraphAnalysis`. Make sure you get the same results as
+   above.
+3. Repeat exercise 2 using
+   [`ST_ShortestPathLength`](../ST_ShortestPathLength) to verify
+   node closeness.
+
 ##### See also
 
 * [`ST_ConnectedComponents`](../ST_ConnectedComponents),
