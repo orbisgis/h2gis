@@ -197,7 +197,31 @@ SELECT * FROM EDGES_EO_W_SCC_EDGE_CENT ORDER BY BETWEENNESS DESC;
 -- |     -10 | 0.14285714285714285 |
 -- |       1 |                 0.0 |
 -- |       6 |                 0.0 |
+
+-- We use linear interpolation from red (0) to blue (1) to
+-- illustrate node betweenness.
+SELECT EDGE_ID,
+       BETWEENNESS,
+       CAST(255*(1-BETWEENNESS) AS INT) RED,
+       CAST(255*BETWEENNESS AS INT) BLUE
+    FROM EDGES_EO_W_SCC_EDGE_CENT
+    ORDER BY BETWEENNESS DESC;
+-- | EDGE_ID |         BETWEENNESS | RED | BLUE |
+-- |---------|---------------------|-----|------|
+-- |       7 |                 1.0 |   0 |  255 |
+-- |       3 |  0.8571428571428571 |  36 |  219 |
+-- |       9 |  0.8571428571428571 |  36 |  219 |
+-- |       2 |  0.5714285714285714 | 109 |  146 |
+-- |      10 |  0.5714285714285714 | 109 |  146 |
+-- |       5 | 0.42857142857142855 | 146 |  109 |
+-- |       4 |  0.2857142857142857 | 182 |   73 |
+-- |       8 |  0.2857142857142857 | 182 |   73 |
+-- |     -10 | 0.14285714285714285 | 219 |   36 |
+-- |       1 |                 0.0 | 255 |    0 |
+-- |       6 |                 0.0 | 255 |    0 |
 {% endhighlight %}
+
+<img class="displayed" src="../wdo-largest-scc-edge-betw.svg">
 
 ##### See also
 
