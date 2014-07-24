@@ -83,6 +83,20 @@ number of shortest paths.
 | `eo`          | Edge orientation column name indicating individual edge orientations: `1` (directed), `-1` (reversed) or `0` (undirected); required if global orientation is `directed` or `reversed` |
 | `w`           | Edge weights column name                                                                                                                                                              |
 
+##### Screenshots
+
+Closeness centrality of Nantes, France. Notice the limited traffic
+zone in the center.
+
+<img class="displayed" src="../nantes-closeness-cropped.png">
+
+Edge betweenness centrality of Nantes, France. Notice how the
+beltway and bridges really stand out.
+
+<img class="displayed" src="../nantes-betweenness-cropped.png">
+
+The above screenshots were generated in [OrbisGIS][og].
+
 ### Examples
 
 {% highlight mysql %}
@@ -95,3 +109,4 @@ number of shortest paths.
 
 [wiki]: http://en.wikipedia.org/wiki/Centrality
 [brandes]: http://www.inf.uni-konstanz.de/algo/publications/b-fabc-01.pdf
+[og]: http://www.orbisgis.org
