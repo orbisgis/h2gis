@@ -100,7 +100,25 @@ The above screenshots were generated in [OrbisGIS][og].
 ### Examples
 
 {% highlight mysql %}
+-- We will do graph analysis on the largest strongly connected
+-- component of the directed weighted graph examined in
+-- ST_ShortestPath examples, illustrated below.
+SELECT * FROM EDGES_EO_W_CC;
+-- | EDGE_ID | START_NODE | END_NODE | WEIGHT | EDGE_ORIENTATION |
+-- |---------|------------|----------|--------|------------------|
+-- |       1 |          1 |        2 |   10.0 |                1 |
+-- |       2 |          2 |        4 |    1.0 |               -1 |
+-- |       3 |          2 |        3 |    2.0 |                1 |
+-- |       4 |          3 |        2 |    3.0 |                1 |
+-- |       5 |          1 |        3 |    5.0 |                1 |
+-- |       6 |          3 |        4 |    9.0 |                1 |
+-- |       7 |          3 |        5 |    2.0 |                1 |
+-- |       8 |          4 |        5 |    4.0 |                1 |
+-- |       9 |          5 |        4 |    6.0 |                1 |
+-- |      10 |          5 |        1 |    7.0 |                0 |
 {% endhighlight %}
+
+<img class="displayed" src="../wdo-largest-scc.svg">
 
 ##### See also
 
