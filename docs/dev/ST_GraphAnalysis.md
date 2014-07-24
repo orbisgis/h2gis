@@ -16,8 +16,7 @@ permalink: /docs/dev/ST_GraphAnalysis/
 -- Creates two tables:
 --     INPUT_EDGES_NODE_CENT[NODE_ID, BETWEENNESS, CLOSENESS]
 --     INPUT_EDGES_EDGE_CENT[EDGE_ID, BETWEENNESS]
-ST_GraphAnalysis('INPUT_EDGES', 'o[ - eo]');      -- Unweighted
-ST_GraphAnalysis('INPUT_EDGES', 'o[ - eo]', 'w'); -- Weighted
+ST_GraphAnalysis('INPUT_EDGES', 'o[ - eo]'[, 'w']);
 {% endhighlight %}
 
 ### Description
