@@ -14,10 +14,8 @@ permalink: /docs/dev/ST_Accessibility/
 {% highlight mysql %}
 -- Return type:
 --     TABLE[SOURCE, CLOSEST_DEST, DISTANCE]
-ST_Accessibility('INPUT_EDGES', 'o[ - eo]', 'ds');
-ST_Accessibility('INPUT_EDGES', 'o[ - eo]', 'dt');
-ST_Accessibility('INPUT_EDGES', 'o[ - eo]', 'w', 'ds');
-ST_Accessibility('INPUT_EDGES', 'o[ - eo]', 'w', 'dt');
+ST_Accessibility('INPUT_EDGES', 'o[ - eo]'[, 'w'], 'ds');
+ST_Accessibility('INPUT_EDGES', 'o[ - eo]'[, 'w'], 'dt');
 {% endhighlight %}
 
 ### Description
