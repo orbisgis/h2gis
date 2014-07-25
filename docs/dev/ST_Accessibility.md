@@ -51,7 +51,62 @@ destination.
 ### Examples
 
 {% highlight mysql %}
+-- We will do graph analysis on the directed weighted graph examined
+-- in the ST_ShortestPath examples, illustrated below.
+SELECT * FROM EDGES_EO_W;
+-- | EDGE_ID | START_NODE | END_NODE | WEIGHT | EDGE_ORIENTATION |
+-- |---------|------------|----------|--------|------------------|
+-- |       1 |          1 |        2 |   10.0 |                1 |
+-- |       2 |          2 |        4 |    1.0 |               -1 |
+-- |       3 |          2 |        3 |    2.0 |                1 |
+-- |       4 |          3 |        2 |    3.0 |                1 |
+-- |       5 |          1 |        3 |    5.0 |                1 |
+-- |       6 |          3 |        4 |    9.0 |                1 |
+-- |       7 |          3 |        5 |    2.0 |                1 |
+-- |       8 |          4 |        5 |    4.0 |                1 |
+-- |       9 |          5 |        4 |    6.0 |                1 |
+-- |      10 |          5 |        1 |    7.0 |                0 |
+-- |      11 |          6 |        7 |    1.0 |                1 |
+-- |      12 |          7 |        8 |    2.0 |                1 |
 {% endhighlight %}
+
+<img class="displayed" src="../wdo.svg">
+
+##### Destination string
+
+{% highlight mysql %}
+SELECT * FROM ST_Accessibility('EDGES_EO_W',
+    'directed - EDGE_ORIENTATION', 'WEIGHT', '2, 5');
+-- | SOURCE | CLOSEST_DEST | DISTANCE |
+-- |--------|--------------|----------|
+-- |      1 |            5 |      7.0 |
+-- |      2 |            2 |      0.0 |
+-- |      4 |            2 |      1.0 |
+-- |      3 |            5 |      2.0 |
+-- |      5 |            5 |      0.0 |
+-- |      6 |           -1 | Infinity |
+-- |      7 |           -1 | Infinity |
+-- |      8 |           -1 | Infinity |
+{% endhighlight %}
+
+<img class="displayed" src="../wdo-acc-2-5.svg">
+
+{% highlight mysql %}
+SELECT * FROM ST_Accessibility('EDGES_EO_W',
+    'directed - EDGE_ORIENTATION', 'WEIGHT', '2, 5, 7');
+-- | SOURCE | CLOSEST_DEST | DISTANCE |
+-- |--------|--------------|----------|
+-- |      1 |            5 |      7.0 |
+-- |      2 |            2 |      0.0 |
+-- |      4 |            2 |      1.0 |
+-- |      3 |            5 |      2.0 |
+-- |      5 |            5 |      0.0 |
+-- |      6 |            7 |      1.0 |
+-- |      7 |            7 |      0.0 |
+-- |      8 |           -1 | Infinity |
+{% endhighlight %}
+
+<img class="displayed" src="../wdo-acc-2-5-7.svg">
 
 ##### See also
 
