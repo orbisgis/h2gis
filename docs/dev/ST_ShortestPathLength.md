@@ -3,7 +3,7 @@ layout: docs
 title: ST_ShortestPathLength
 category: applications/h2network
 is_function: true
-description: Calculate length(s) of shortest path(s) between vertices in a graph
+description: Calculate length(s) of shortest path(s) and distance matrices
 prev_section: ST_ShortestPath
 next_section: ST_ShortestPathTree
 permalink: /docs/dev/ST_ShortestPathLength/
@@ -29,7 +29,7 @@ ST_ShortestPathLength('INPUT_EDGES', 'o[ - eo]'[, 'w'],
 ### Description
 
 Calculates the length(s) of shortest path(s) among vertices in a
-graph.
+graph. Can be used to calculate distance matrices.
 
 ##### Input parameters
 
