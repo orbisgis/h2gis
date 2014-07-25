@@ -168,8 +168,15 @@ WHERE A.ID=ABS(B.EDGE_ID);
 -- | LINESTRING (2 0, 0 1)         |     -10 |       2 |            2 |      1 |           5 |    7.0 |
 {% endhighlight %}
 
+##### Exercises
+
+1. Check that the sum of the weights of the edges in the path
+   returned by `ST_ShortestPath` is equal to the path length
+   returned by [`ST_ShortestPathLength`](../ST_ShortestPathLength).
+   Watch out for multiple shortest paths!
+
 ##### See also
 
 * [`ST_ShortestPathLength`](../ST_ShortestPathLength),
-  [`ST_ShortestPathTree`](../ST_ShortestPathTree),
+  [`ST_ShortestPathTree`](../ST_ShortestPathTree)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPath.java" target="_blank">Source code</a>
