@@ -629,4 +629,18 @@ public class ST_GraphTest {
             throw originalCause;
         }
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_GraphErrorWhenCalledTwice() throws Throwable {
+        // Prepare the input table.
+        multiTestPrep();
+        try {
+            st.executeQuery("CALL ST_Graph('TEST', 'road', 0.1, false)");
+            st.executeQuery("CALL ST_Graph('TEST', 'road', 0.1, false)");
+        } catch (JdbcSQLException e) {
+            final Throwable originalCause = e.getOriginalCause();
+            assertTrue(originalCause.getMessage().equals(ST_Graph.ALREADY_RUN_ERROR + "TEST"));
+            throw originalCause;
+        }
+    }
 }

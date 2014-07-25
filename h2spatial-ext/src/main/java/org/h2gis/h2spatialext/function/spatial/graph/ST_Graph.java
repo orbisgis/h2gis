@@ -77,6 +77,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ST_Graph.class);
     public static final String TYPE_ERROR = "Only LINESTRINGs and MULTILINESTRINGs " +
             "are accepted. Type code: ";
+    public static final String ALREADY_RUN_ERROR = "ST_Graph has already been called on table ";
 
     /**
      * Constructor
@@ -203,6 +204,13 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             throw new IllegalArgumentException("Only positive tolerances are allowed.");
         }
         final TableLocation tableName = parseInputTable(connection, inputTable);
+        final TableLocation nodesName = suffixTableLocation(tableName, NODES_SUFFIX);
+        final TableLocation edgesName = suffixTableLocation(tableName, EDGES_SUFFIX);
+        // Check if ST_Graph has already been run on this table.
+        if (JDBCUtilities.tableExists(connection, nodesName.getTable()) ||
+                JDBCUtilities.tableExists(connection, edgesName.getTable())) {
+            throw new IllegalArgumentException(ALREADY_RUN_ERROR + tableName.getTable());
+        }
         // Check for a primary key
         final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableName.getTable());
         if (pkIndex == 0) {
@@ -217,8 +225,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final String geomCol = JDBCUtilities.getFieldName(md, tableName.getTable(), spatialFieldIndex);
         final Statement st = connection.createStatement();
         try {
-            final TableLocation nodesName = suffixTableLocation(tableName, NODES_SUFFIX);
-            final TableLocation edgesName = suffixTableLocation(tableName, EDGES_SUFFIX);
             firstFirstLastLast(st, tableName, pkColName, geomCol, tolerance);
             makeEnvelopes(st, tolerance);
             nodesTable(st, nodesName, tolerance);
