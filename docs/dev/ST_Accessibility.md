@@ -57,3 +57,6 @@ destination.
 
 * [`ST_ShortestPathLength`](../ST_ShortestPathLength)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_Accessibility.java" target="_blank">Source code</a>
+* JNA <a
+href="https://github.com/irstv/Java-Network-Analyzer/blob/master/src/main/java/org/javanetworkanalyzer/analyzers/AccessibilityAnalyzer.java"
+target="_blank">AccessibilityAnalyzer</a>
