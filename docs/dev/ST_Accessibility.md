@@ -127,6 +127,15 @@ SELECT * FROM ST_ACCESSIBILITY('EDGES_EO_W',
 -- |      8 |           -1 | Infinity |
 {% endhighlight %}
 
+##### Exercises
+
+1. Use [`ST_ShortestPathLength`](../ST_ShortestPathLength) to verify
+   the results of `ST_Accessibility`.
+2. Find an equivalence between
+   [`ST_ShortestPathLength`](../ST_ShortestPathLength) called on one
+   source and `ST_Accessibility` called on one destination. *Hint*:
+   Think about reversing the graph.
+
 ##### See also
 
 * [`ST_ShortestPathLength`](../ST_ShortestPathLength)
