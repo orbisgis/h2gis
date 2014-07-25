@@ -108,6 +108,27 @@ SELECT * FROM ST_Accessibility('EDGES_EO_W',
 
 <img class="displayed" src="../wdo-acc-2-5-7.svg">
 
+##### Destination table
+
+{% highlight mysql %}
+-- Here we get the same results as before, but we do it using a
+-- destination table.
+CREATE TABLE DESTS(DESTINATION INT);
+INSERT INTO DESTS VALUES (2), (5), (7);
+SELECT * FROM ST_ACCESSIBILITY('EDGES_EO_W',
+    'directed - EDGE_ORIENTATION', 'WEIGHT', 'DESTS');
+-- | SOURCE | CLOSEST_DEST | DISTANCE |
+-- |--------|--------------|----------|
+-- |      1 |            5 |      7.0 |
+-- |      2 |            2 |      0.0 |
+-- |      4 |            2 |      1.0 |
+-- |      3 |            5 |      2.0 |
+-- |      5 |            5 |      0.0 |
+-- |      6 |            7 |      1.0 |
+-- |      7 |            7 |      0.0 |
+-- |      8 |           -1 | Infinity |
+{% endhighlight %}
+
 ##### See also
 
 * [`ST_ShortestPathLength`](../ST_ShortestPathLength)
