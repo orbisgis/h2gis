@@ -142,4 +142,6 @@ SELECT * FROM ST_ACCESSIBILITY('EDGES_EO_W',
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_Accessibility.java" target="_blank">Source code</a>
 * JNA <a
 href="https://github.com/irstv/Java-Network-Analyzer/blob/master/src/main/java/org/javanetworkanalyzer/analyzers/AccessibilityAnalyzer.java"
-target="_blank">AccessibilityAnalyzer</a>
+target="_blank">AccessibilityAnalyzer</a>, <a
+href="https://github.com/irstv/Java-Network-Analyzer/blob/3f68e220c6c060f0182435169c58956e2904eccd/src/main/java/org/javanetworkanalyzer/alg/DijkstraForAccessibility.java"
+target="_blank">DijkstraForAccessibility</a>
