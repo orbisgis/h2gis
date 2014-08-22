@@ -97,8 +97,10 @@ public class TableLocation {
      * @return Quoted Identifier
      */
     public static String quoteIdentifier(String identifier, boolean isH2DataBase) {
-        if(Constants.RESERVED_WORDS.contains(identifier.toUpperCase()) || (isH2DataBase && H2_SPECIAL_NAME_PATTERN.matcher(identifier).find()) ||
-                (!isH2DataBase && POSTGRE_SPECIAL_NAME_PATTERN.matcher(identifier).find())) {
+        if((isH2DataBase && (Constants.H2_RESERVED_WORDS.contains(identifier.toUpperCase())
+                        || H2_SPECIAL_NAME_PATTERN.matcher(identifier).find())) ||
+                (!isH2DataBase && (Constants.POSTGIS_RESERVED_WORDS.contains(identifier.toUpperCase())
+                        || POSTGRE_SPECIAL_NAME_PATTERN.matcher(identifier).find()))) {
             return quoteIdentifier(identifier);
         } else {
             return identifier;
