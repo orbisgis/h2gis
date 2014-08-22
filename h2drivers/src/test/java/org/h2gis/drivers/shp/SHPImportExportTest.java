@@ -281,4 +281,25 @@ public class SHPImportExportTest {
         st.execute("CALL SHPRead(" + path + ", 'WATERNETWORK');");
         checkSHPReadResult(st);
     }
+    @Test
+    public void testReservedKeyWord() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key, \"NATURAL\" boolean)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1, True)");
+        stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2, False)");
+        // Export in target with special chars
+        File shpFile = new File("target/test_export.shp");
+        DriverFunction exp = new SHPDriverFunction();
+        exp.exportTable(connection, "AREA", shpFile,new EmptyProgressVisitor());
+        stat.execute("DROP TABLE IF EXISTS myshp");
+        SHPDriverFunction driverFunction = new SHPDriverFunction();
+        driverFunction.importFile(connection, "MYSHP", shpFile, new EmptyProgressVisitor());
+        ResultSet rs = stat.executeQuery("select * from myshp");
+        try {
+            assertEquals(3,rs.findColumn("NATURAL"));
+        } finally {
+            rs.close();
+        }
+    }
 }
