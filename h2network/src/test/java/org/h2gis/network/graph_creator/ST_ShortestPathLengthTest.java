@@ -643,15 +643,37 @@ public class ST_ShortestPathLengthTest {
         manyToManySTDT(U, W, SOURCE_TABLE, DEST_TABLE, distances);
     }
 
+    @Test
+    public void manyToManyWDOSTSTSquare() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
+        //     'directed - edge_orientation', 'weight', 'source_table', 'source_table')
+        final double[][] distances = {{0.0, 8.0, 5.0},
+                                      {11.0, 0.0, 2.0},
+                                      {9.0, 3.0, 0.0}};
+        manyToManySTDT(DO, W, SOURCE_TABLE, SOURCE_TABLE, distances, 9);
+    }
 
     private void manyToManySTDT(String orientation, String weight,
                                 String sourceTable,
-                                String destinationTable, double[][] distances) throws SQLException {
+                                String destinationTable,
+                                double[][] distances, int distancesSize) throws SQLException {
         ResultSet rs = st.executeQuery(
                 "SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', "
                         + orientation + ((weight != null) ? ", " + weight : "")
                         + ", " + sourceTable + ", " + destinationTable + ")");
-        checkManyToMany(rs, distances, 6);
+        checkManyToMany(rs, distances, distancesSize);
+    }
+
+    private void manyToManySTDT(String orientation, String weight,
+                                String sourceTable,
+                                String destinationTable, double[][] distances) throws SQLException {
+        manyToManySTDT(orientation, weight, sourceTable, destinationTable, distances, 6);
+    }
+
+    private void manyToManySTDT(String orientation,
+                                String sourceTable,
+                                String destinationTable, double[][] distances) throws SQLException {
+        manyToManySTDT(orientation, null, sourceTable, destinationTable, distances);
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -688,12 +710,6 @@ public class ST_ShortestPathLengthTest {
             assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
             throw originalCause;
         }
-    }
-
-    private void manyToManySTDT(String orientation,
-                                String sourceTable,
-                                String destinationTable, double[][] distances) throws SQLException {
-        manyToManySTDT(orientation, null, sourceTable, destinationTable, distances);
     }
 
     // ************************* One-to-Several ***************************************
