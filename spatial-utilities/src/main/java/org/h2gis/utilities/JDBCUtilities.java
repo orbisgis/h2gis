@@ -48,6 +48,33 @@ public class JDBCUtilities {
         geomStatement.setString(tableIndex,table.toUpperCase());
         return geomStatement.executeQuery();
     }
+
+    /**
+     * Return true if table tableName contains field fieldName.
+     *
+     * @param connection Connection
+     * @param tableName  Table name
+     * @param fieldName  Field name
+     * @return True if the table contains the field
+     * @throws SQLException
+     */
+    public static boolean hasField(Connection connection, String tableName, String fieldName) throws SQLException {
+        final Statement statement = connection.createStatement();
+        try {
+            final ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + TableLocation.parse(tableName) + " LIMIT 0;");
+            try {
+                return hasField(resultSet.getMetaData(), fieldName);
+            } finally {
+                resultSet.close();
+            }
+        } catch (SQLException ex) {
+            return false;
+        } finally {
+            statement.close();
+        }
+    }
+
     private static boolean hasField(ResultSetMetaData resultSetMetaData, String fieldName) throws SQLException {
         return getFieldIndex(resultSetMetaData, fieldName) != -1;
     }
