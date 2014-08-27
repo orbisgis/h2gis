@@ -329,27 +329,31 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             KeyedGraph<VDijkstra, Edge> graph) throws SQLException {
         final ResultSet sourceDestinationRS =
                 st.executeQuery("SELECT * FROM " + sourceDestinationTable);
-        // Make sure the source-destination table has columns named
-        // SOURCE and DESTINATION. An SQLException is thrown if not.
-        final int sourceIndex = sourceDestinationRS.findColumn(SOURCE);
-        final int destinationIndex = sourceDestinationRS.findColumn(DESTINATION);
-        Map<VDijkstra, Set<VDijkstra>> map = new HashMap<VDijkstra, Set<VDijkstra>>();
-        while (sourceDestinationRS.next()) {
-            final VDijkstra source = graph.getVertex(sourceDestinationRS.getInt(sourceIndex));
-            final VDijkstra destination = graph.getVertex(sourceDestinationRS.getInt(destinationIndex));
-            Set<VDijkstra> targets = map.get(source);
-            // Lazy initialize if the destinations set is null.
-            if (targets == null) {
-                targets = new HashSet<VDijkstra>();
-                map.put(source, targets);
+        try {
+            // Make sure the source-destination table has columns named
+            // SOURCE and DESTINATION. An SQLException is thrown if not.
+            final int sourceIndex = sourceDestinationRS.findColumn(SOURCE);
+            final int destinationIndex = sourceDestinationRS.findColumn(DESTINATION);
+            Map<VDijkstra, Set<VDijkstra>> map = new HashMap<VDijkstra, Set<VDijkstra>>();
+            while (sourceDestinationRS.next()) {
+                final VDijkstra source = graph.getVertex(sourceDestinationRS.getInt(sourceIndex));
+                final VDijkstra destination = graph.getVertex(sourceDestinationRS.getInt(destinationIndex));
+                Set<VDijkstra> targets = map.get(source);
+                // Lazy initialize if the destinations set is null.
+                if (targets == null) {
+                    targets = new HashSet<VDijkstra>();
+                    map.put(source, targets);
+                }
+                // Add the destination.
+                targets.add(destination);
             }
-            // Add the destination.
-            targets.add(destination);
+            if (map.isEmpty()) {
+                throw new IllegalArgumentException("No sources/destinations requested.");
+            }
+            return map;
+        } finally {
+            sourceDestinationRS.close();
         }
-        if (map.isEmpty()) {
-            throw new IllegalArgumentException("No sources/destinations requested.");
-        }
-        return map;
     }
 
     /**
