@@ -51,6 +51,8 @@ public class ST_ShortestPathLengthTest {
     private static final String U = "'undirected'";
     private static final String W = "'weight'";
     private static final String SOURCE_DEST_TABLE = "'source_dest'";
+    private static final String SOURCE_TABLE = "'source_table'";
+    private static final String DEST_TABLE = "'dest_table'";
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -86,6 +88,12 @@ public class ST_ShortestPathLengthTest {
                     + "(3, 1), (3, 2), (3, 3), (3, 4), (3, 5),"
                     + "(4, 1), (4, 2), (4, 3), (4, 4), (4, 5),"
                     + "(5, 1), (5, 2), (5, 3), (5, 4), (5, 5);");
+            st.execute("CREATE TABLE source_table(source INT);" +
+                    "INSERT INTO source_table VALUES "
+                    + "(1), (2), (3);");
+            st.execute("CREATE TABLE dest_table(destination INT);" +
+                    "INSERT INTO dest_table VALUES "
+                    + "(1), (2);");
         } finally {
             st.close();
         }
@@ -402,14 +410,6 @@ public class ST_ShortestPathLengthTest {
         oneToAll(DO, W, 3, new double[]{9.0, 3.0, 0.0, 8.0, 2.0});
         oneToAll(DO, W, 4, new double[]{11.0, 1.0, 3.0, 0.0, 4.0});
         oneToAll(DO, W, 5, new double[]{7.0, 7.0, 9.0, 6.0, 0.0});
-
-        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
-        //     'weight', 'directed - edge_orientation', i)
-        oneToAll(W, DO, 1, new double[]{0.0, 8.0, 5.0, 13.0, 7.0});
-        oneToAll(W, DO, 2, new double[]{11.0, 0.0, 2.0, 10.0, 4.0});
-        oneToAll(W, DO, 3, new double[]{9.0, 3.0, 0.0, 8.0, 2.0});
-        oneToAll(W, DO, 4, new double[]{11.0, 1.0, 3.0, 0.0, 4.0});
-        oneToAll(W, DO, 5, new double[]{7.0, 7.0, 9.0, 6.0, 0.0});
     }
 
     @Test
@@ -432,14 +432,6 @@ public class ST_ShortestPathLengthTest {
         oneToAll(RO, W, 3, new double[]{5.0, 2.0, 0.0, 3.0, 9.0});
         oneToAll(RO, W, 4, new double[]{13.0, 10.0, 8.0, 0.0, 6.0});
         oneToAll(RO, W, 5, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
-
-        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
-        //     'weight', 'reversed - edge_orientation', i)
-        oneToAll(W, RO, 1, new double[]{0.0, 11.0, 9.0, 11.0, 7.0});
-        oneToAll(W, RO, 2, new double[]{8.0, 0.0, 3.0, 1.0, 7.0});
-        oneToAll(W, RO, 3, new double[]{5.0, 2.0, 0.0, 3.0, 9.0});
-        oneToAll(W, RO, 4, new double[]{13.0, 10.0, 8.0, 0.0, 6.0});
-        oneToAll(W, RO, 5, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
     }
 
     @Test
@@ -462,14 +454,6 @@ public class ST_ShortestPathLengthTest {
         oneToAll(U, W, 3, new double[]{5.0, 2.0, 0.0, 3.0, 2.0});
         oneToAll(U, W, 4, new double[]{8.0, 1.0, 3.0, 0.0, 4.0});
         oneToAll(U, W, 5, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
-
-        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
-        //     'weight', 'undirected', i)
-        oneToAll(W, U, 1, new double[]{0.0, 7.0, 5.0, 8.0, 7.0});
-        oneToAll(W, U, 2, new double[]{7.0, 0.0, 2.0, 1.0, 4.0});
-        oneToAll(W, U, 3, new double[]{5.0, 2.0, 0.0, 3.0, 2.0});
-        oneToAll(W, U, 4, new double[]{8.0, 1.0, 3.0, 0.0, 4.0});
-        oneToAll(W, U, 5, new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
     }
 
     private void oneToAll(String orientation, String weight, int source, double[] distances) throws SQLException {
@@ -518,9 +502,6 @@ public class ST_ShortestPathLengthTest {
                                       {11.0, 1.0, 3.0, 0.0, 4.0},
                                       {7.0, 7.0, 9.0, 6.0, 0.0}};
         manyToMany(DO, W, SOURCE_DEST_TABLE, distances);
-        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
-        //     'weight', 'directed - edge_orientation', 'source_dest')
-        manyToMany(W, DO, SOURCE_DEST_TABLE, distances);
     }
 
     @Test
@@ -545,9 +526,6 @@ public class ST_ShortestPathLengthTest {
                                       {13.0, 10.0, 8.0, 0.0, 6.0},
                                       {7.0, 4.0, 2.0, 4.0, 0.0}};
         manyToMany(RO, W, SOURCE_DEST_TABLE, distances);
-        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
-        //     'weight', 'reversed - edge_orientation', 'source_dest')
-        manyToMany(W, RO, SOURCE_DEST_TABLE, distances);
     }
 
     @Test
@@ -572,9 +550,6 @@ public class ST_ShortestPathLengthTest {
                                       {8.0, 1.0, 3.0, 0.0, 4.0},
                                       {7.0, 4.0, 2.0, 4.0, 0.0}};
         manyToMany(U, W, SOURCE_DEST_TABLE, distances);
-        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
-        //     'weight', 'undirected', 'source_dest')
-        manyToMany(W, U, SOURCE_DEST_TABLE, distances);
     }
 
     private void manyToMany(String orientation, String weight,
@@ -583,10 +558,10 @@ public class ST_ShortestPathLengthTest {
                 "SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', "
                         + orientation + ((weight != null) ? ", " + weight : "")
                         + ", " + sourceDestinationTable + ")");
-        checkManyToMany(rs, distances);
+        checkManyToMany(rs, distances, 25);
     }
 
-    private void checkManyToMany(ResultSet rs, double[][] distances) throws SQLException {
+    private void checkManyToMany(ResultSet rs, double[][] distances, int expectedCount) throws SQLException {
         int count = 0;
         while (rs.next()) {
             final int source = rs.getInt(ST_ShortestPathLength.SOURCE_INDEX);
@@ -595,7 +570,7 @@ public class ST_ShortestPathLengthTest {
             assertEquals(distances[source - 1][destination - 1], distance, TOLERANCE);
             count++;
         }
-        assertEquals(25, count);
+        assertEquals(expectedCount, count);
         rs.close();
     }
 
@@ -604,7 +579,43 @@ public class ST_ShortestPathLengthTest {
         manyToMany(orientation, null, sourceDestinationTable, distances);
     }
 
-    // ************************** Many-to-Many ****************************************
+    // ************* Many-to-Many Source table, Destination table *********************
+
+    @Test
+    public void manyToManyDOSTDT() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
+        //     'directed - edge_orientation', 'source_table', 'dest_table')
+        final double[][] distances = {{0.0, 1.0, 1.0},
+                                      {3.0, 0.0, 1.0},
+                                      {2.0, 1.0, 0.0},
+                                      {2.0, 1.0, 2.0},
+                                      {1.0, 2.0, 2.0}};
+        manyToManySTDT(DO, null, SOURCE_TABLE, DEST_TABLE, distances);
+    }
+
+    @Test
+    public void manyToManyWDOSTDT() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
+        //     'directed - edge_orientation', 'weight', 'source_table', 'dest_table')
+        final double[][] distances = {{0.0, 8.0, 5.0},
+                                      {11.0, 0.0, 2.0},
+                                      {9.0, 3.0, 0.0},
+                                      {11.0, 1.0, 3.0},
+                                      {7.0, 7.0, 9.0}};
+        manyToManySTDT(DO, W, SOURCE_TABLE, DEST_TABLE, distances);
+    }
+
+    private void manyToManySTDT(String orientation, String weight,
+                                String sourceTable,
+                                String destinationTable, double[][] distances) throws SQLException {
+        ResultSet rs = st.executeQuery(
+                "SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', "
+                        + orientation + ((weight != null) ? ", " + weight : "")
+                        + ", " + sourceTable + ", " + destinationTable + ")");
+        checkManyToMany(rs, distances, 6);
+    }
+
+    // ************************* One-to-Several ***************************************
 
     @Test
     public void oneToSeveralDO() throws Exception {
@@ -740,7 +751,7 @@ public class ST_ShortestPathLengthTest {
         checkManyToMany(
                 st.executeQuery("SELECT * FROM ST_ShortestPathLength('INF_EDGES_ALL', " +
                         "'undirected', 'weight', 'source_dest')"),
-                distances);
+                distances, 25);
     }
 
     @Test(expected = IllegalArgumentException.class)
