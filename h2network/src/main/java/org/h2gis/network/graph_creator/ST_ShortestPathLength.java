@@ -298,10 +298,14 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             Map<VDijkstra, Set<VDijkstra>> sourceDestinationMap =
                     prepareSourceDestinationMap(st, sourceDestinationTable, graph);
 
+            // Reusable Dijkstra object.
+            final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
+
             // 6: (o, w, sdt). Do One-to-Many many times and store the results.
             for (Map.Entry<VDijkstra, Set<VDijkstra>> sourceToDestSetMap : sourceDestinationMap.entrySet()) {
-                Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
-                        .oneToMany(sourceToDestSetMap.getKey(), sourceToDestSetMap.getValue());
+                Map<VDijkstra, Double> distances =
+                        dijkstra.oneToMany(sourceToDestSetMap.getKey(),
+                                           sourceToDestSetMap.getValue());
                 for (Map.Entry<VDijkstra, Double> destToDistMap : distances.entrySet()) {
                     output.addRow(sourceToDestSetMap.getKey().getID(),
                             destToDistMap.getKey().getID(), destToDistMap.getValue());
