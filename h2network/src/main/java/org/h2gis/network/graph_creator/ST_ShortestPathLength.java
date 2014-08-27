@@ -328,16 +328,16 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             String sourceDestinationTable,
             KeyedGraph<VDijkstra, Edge> graph) throws SQLException {
         final ResultSet sourceDestinationRS =
-                st.executeQuery("SELECT * FROM " + sourceDestinationTable);
+                st.executeQuery("SELECT " +
+                        SOURCE + ", " + DESTINATION +
+                        " FROM " + sourceDestinationTable);
         try {
             // Make sure the source-destination table has columns named
             // SOURCE and DESTINATION. An SQLException is thrown if not.
-            final int sourceIndex = sourceDestinationRS.findColumn(SOURCE);
-            final int destinationIndex = sourceDestinationRS.findColumn(DESTINATION);
             Map<VDijkstra, Set<VDijkstra>> map = new HashMap<VDijkstra, Set<VDijkstra>>();
             while (sourceDestinationRS.next()) {
-                final VDijkstra source = graph.getVertex(sourceDestinationRS.getInt(sourceIndex));
-                final VDijkstra destination = graph.getVertex(sourceDestinationRS.getInt(destinationIndex));
+                final VDijkstra source = graph.getVertex(sourceDestinationRS.getInt(SOURCE_INDEX));
+                final VDijkstra destination = graph.getVertex(sourceDestinationRS.getInt(DESTINATION_INDEX));
                 Set<VDijkstra> targets = map.get(source);
                 // Lazy initialize if the destinations set is null.
                 if (targets == null) {
