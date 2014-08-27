@@ -585,25 +585,62 @@ public class ST_ShortestPathLengthTest {
     public void manyToManyDOSTDT() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'source_table', 'dest_table')
-        final double[][] distances = {{0.0, 1.0, 1.0},
-                                      {3.0, 0.0, 1.0},
-                                      {2.0, 1.0, 0.0},
-                                      {2.0, 1.0, 2.0},
-                                      {1.0, 2.0, 2.0}};
-        manyToManySTDT(DO, null, SOURCE_TABLE, DEST_TABLE, distances);
+        final double[][] distances = {{0.0, 1.0},
+                                      {3.0, 0.0},
+                                      {2.0, 1.0}};
+        manyToManySTDT(DO, SOURCE_TABLE, DEST_TABLE, distances);
     }
 
     @Test
     public void manyToManyWDOSTDT() throws Exception {
         // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
         //     'directed - edge_orientation', 'weight', 'source_table', 'dest_table')
-        final double[][] distances = {{0.0, 8.0, 5.0},
-                                      {11.0, 0.0, 2.0},
-                                      {9.0, 3.0, 0.0},
-                                      {11.0, 1.0, 3.0},
-                                      {7.0, 7.0, 9.0}};
+        final double[][] distances = {{0.0, 8.0},
+                                      {11.0, 0.0},
+                                      {9.0, 3.0}};
         manyToManySTDT(DO, W, SOURCE_TABLE, DEST_TABLE, distances);
     }
+
+    @Test
+    public void manyToManyROSTDT() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
+        //     'reversed - edge_orientation', 'source_dest')
+        final double[][] distances = {{0.0, 3.0},
+                                      {1.0, 0.0},
+                                      {1.0, 1.0}};
+        manyToManySTDT(RO, SOURCE_TABLE, DEST_TABLE, distances);
+    }
+
+    @Test
+    public void manyToManyWROSTDT() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
+        //     'reversed - edge_orientation', 'weight', 'source_table', 'dest_table')
+        final double[][] distances = {{0.0, 11.0},
+                                      {8.0, 0.0},
+                                      {5.0, 2.0}};
+        manyToManySTDT(RO, W, SOURCE_TABLE, DEST_TABLE, distances);
+    }
+
+    @Test
+    public void manyToManyUSTDT() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
+        //     'undirected', 'source_table', 'dest_table')
+        final double[][] distances = {{0.0,  1.0},
+                                      {1.0,  0.0},
+                                      {1.0,  1.0}};
+        manyToManySTDT(U, SOURCE_TABLE, DEST_TABLE, distances);
+    }
+
+    @Test
+    public void manyToManyWUSTDT() throws Exception {
+        // SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL',
+        //     'undirected', 'weight', 'source_table', 'dest_table')
+        final double[][] distances = {{0.0, 7.0},
+                                      {7.0, 0.0},
+                                      {5.0, 2.0}};
+        manyToManySTDT(U, W, SOURCE_TABLE, DEST_TABLE, distances);
+    }
+
 
     private void manyToManySTDT(String orientation, String weight,
                                 String sourceTable,
@@ -613,6 +650,12 @@ public class ST_ShortestPathLengthTest {
                         + orientation + ((weight != null) ? ", " + weight : "")
                         + ", " + sourceTable + ", " + destinationTable + ")");
         checkManyToMany(rs, distances, 6);
+    }
+
+    private void manyToManySTDT(String orientation,
+                                String sourceTable,
+                                String destinationTable, double[][] distances) throws SQLException {
+        manyToManySTDT(orientation, null, sourceTable, destinationTable, distances);
     }
 
     // ************************* One-to-Several ***************************************
