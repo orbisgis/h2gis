@@ -364,7 +364,12 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         try {
             final Set<VDijkstra> set = new HashSet<VDijkstra>();
             while (intSet.next()) {
-                set.add(graph.getVertex(intSet.getInt(1)));
+                final int vertexID = intSet.getInt(1);
+                final VDijkstra vertex = graph.getVertex(vertexID);
+                if (vertex == null) {
+                    throw new IllegalArgumentException("The graph does not contain vertex " + vertexID);
+                }
+                set.add(vertex);
             }
             if (set.isEmpty()) {
                 throw new IllegalArgumentException("Table " + tableName + " was empty.");

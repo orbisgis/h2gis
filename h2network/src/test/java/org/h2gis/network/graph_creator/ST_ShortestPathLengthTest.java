@@ -53,7 +53,6 @@ public class ST_ShortestPathLengthTest {
     private static final String SOURCE_DEST_TABLE = "'source_dest'";
     private static final String SOURCE_TABLE = "'source_table'";
     private static final String DEST_TABLE = "'dest_table'";
-    private static final String EMPTY_TABLE = "'empty_table'";
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -96,6 +95,9 @@ public class ST_ShortestPathLengthTest {
                     "INSERT INTO dest_table VALUES "
                     + "(1), (2);");
             st.execute("CREATE TABLE empty_table(id INT);");
+            st.execute("CREATE TABLE nonexistent_node_table(id INT);" +
+                    "INSERT INTO nonexistent_node_table VALUES "
+                    + "(1), (2), (9999);");
         } finally {
             st.close();
         }
@@ -708,6 +710,18 @@ public class ST_ShortestPathLengthTest {
         } catch (JdbcSQLException e) {
             final Throwable originalCause = e.getOriginalCause();
             assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
+            throw originalCause;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void nonExistentNodeFail() throws Throwable {
+        try {
+            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
+                    "'undirected', 'NONEXISTENT_NODE_TABLE', 'DEST_TABLE')");
+        } catch (JdbcSQLException e) {
+            final Throwable originalCause = e.getOriginalCause();
+            assertTrue(originalCause.getMessage().equals("The graph does not contain vertex 9999"));
             throw originalCause;
         }
     }
