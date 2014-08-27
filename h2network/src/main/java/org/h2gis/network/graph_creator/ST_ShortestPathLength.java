@@ -326,28 +326,16 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                         VDijkstra.class, Edge.class);
         final Statement st = connection.createStatement();
         try {
-            final ResultSet destRS =
-                    st.executeQuery("SELECT " + DESTINATION + " FROM " + destTable);
-            try {
-                final Set<VDijkstra> destSet = getSet(graph, destRS, destTable);
-                final ResultSet sourceRS =
-                        st.executeQuery("SELECT " + SOURCE + " FROM " + sourceTable);
-                try {
-                    final Set<VDijkstra> sourceSet = getSet(graph, sourceRS, sourceTable);
-                    final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
-                    for (VDijkstra source : sourceSet) {
-                        Map<VDijkstra, Double> distances =
-                                dijkstra.oneToMany(source, destSet);
-                        for (Map.Entry<VDijkstra, Double> destToDistMap : distances.entrySet()) {
-                            output.addRow(source.getID(),
-                                    destToDistMap.getKey().getID(), destToDistMap.getValue());
-                        }
-                    }
-                } finally {
-                    sourceRS.close();
+            final Set<VDijkstra> destSet = getSet(st, graph, destTable);
+            final Set<VDijkstra> sourceSet = getSet(st, graph, sourceTable);
+            final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
+            for (VDijkstra source : sourceSet) {
+                Map<VDijkstra, Double> distances =
+                        dijkstra.oneToMany(source, destSet);
+                for (Map.Entry<VDijkstra, Double> destToDistMap : distances.entrySet()) {
+                    output.addRow(source.getID(),
+                            destToDistMap.getKey().getID(), destToDistMap.getValue());
                 }
-            } finally {
-                destRS.close();
             }
         } finally {
             st.close();
@@ -355,16 +343,32 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         return output;
     }
 
-    private static Set<VDijkstra> getSet(
-            KeyedGraph<VDijkstra, Edge> graph, ResultSet intSet, String tableName) throws SQLException {
-        final Set<VDijkstra> set = new HashSet<VDijkstra>();
-        while (intSet.next()) {
-            set.add(graph.getVertex(intSet.getInt(1)));
+    /**
+     * Puts the integers contained in the first column of the table in a Set of
+     * corresponding VDijkstra.
+     *
+     * @param st        Statement
+     * @param graph     Graph
+     * @param tableName Table
+     * @return Set of VDijkstra
+     * @throws SQLException
+     */
+    private static Set<VDijkstra> getSet(Statement st,
+            KeyedGraph<VDijkstra, Edge> graph, String tableName) throws SQLException {
+        final ResultSet intSet =
+                st.executeQuery("SELECT * FROM " + tableName);
+        try {
+            final Set<VDijkstra> set = new HashSet<VDijkstra>();
+            while (intSet.next()) {
+                set.add(graph.getVertex(intSet.getInt(1)));
+            }
+            if (set.isEmpty()) {
+                throw new IllegalArgumentException("Table " + tableName + " was empty.");
+            }
+            return set;
+        } finally {
+            intSet.close();
         }
-        if (set.isEmpty()) {
-            throw new IllegalArgumentException("Table " + tableName + " was empty.");
-        }
-        return set;
     }
 
     private static ResultSet oneToSeveral(Connection connection,

@@ -53,6 +53,7 @@ public class ST_ShortestPathLengthTest {
     private static final String SOURCE_DEST_TABLE = "'source_dest'";
     private static final String SOURCE_TABLE = "'source_table'";
     private static final String DEST_TABLE = "'dest_table'";
+    private static final String EMPTY_TABLE = "'empty_table'";
 
     @BeforeClass
     public static void setUp() throws Exception {
@@ -94,6 +95,7 @@ public class ST_ShortestPathLengthTest {
             st.execute("CREATE TABLE dest_table(destination INT);" +
                     "INSERT INTO dest_table VALUES "
                     + "(1), (2);");
+            st.execute("CREATE TABLE empty_table(id INT);");
         } finally {
             st.close();
         }
@@ -650,6 +652,42 @@ public class ST_ShortestPathLengthTest {
                         + orientation + ((weight != null) ? ", " + weight : "")
                         + ", " + sourceTable + ", " + destinationTable + ")");
         checkManyToMany(rs, distances, 6);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void emptySourceTableFail() throws Throwable {
+        try {
+            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
+                    "'undirected', 'SOURCE_TABLE', 'EMPTY_TABLE')");
+        } catch (JdbcSQLException e) {
+            final Throwable originalCause = e.getOriginalCause();
+            assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
+            throw originalCause;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void emptyDestTableFail() throws Throwable {
+        try {
+            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
+                    "'undirected', 'EMPTY_TABLE', 'DEST_TABLE')");
+        } catch (JdbcSQLException e) {
+            final Throwable originalCause = e.getOriginalCause();
+            assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
+            throw originalCause;
+        }
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void emptySourceTableDestTableFail() throws Throwable {
+        try {
+            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
+                    "'undirected', 'EMPTY_TABLE', 'EMPTY_TABLE')");
+        } catch (JdbcSQLException e) {
+            final Throwable originalCause = e.getOriginalCause();
+            assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
+            throw originalCause;
+        }
     }
 
     private void manyToManySTDT(String orientation,
