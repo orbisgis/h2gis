@@ -3,7 +3,7 @@ layout: docs
 title: ST_TriangleSlope
 category: geom3D/topography
 is_function: true
-description:
+description: Compute the slope of a triangle as a percentage
 prev_section: ST_TriangleDirection
 next_section: geom3D/triangulation
 permalink: /docs/dev/ST_TriangleSlope/
@@ -11,12 +11,37 @@ permalink: /docs/dev/ST_TriangleSlope/
 
 ### Signature
 
+{% highlight mysql %}
+DOUBLE ST_TriangleSlope(GEOMETRY geom);
+{% endhighlight %}
 
 ### Description
 
+Computes the slope of the triangle `geom` expressed as a percentage.
+Throws an error if `geom` is not a triangle.
+
+<img class="displayed" src="../ST_TriangleSlope_0.png"/>
 
 ### Examples
 
+{% highlight mysql %}
+SELECT ST_TriangleSlope('POLYGON((0 0 0, 2 0 0, 1 1 0, 0 0 0))');
+-- Answer: 0
+
+SELECT ST_TriangleSlope('POLYGON((0 0 10, 10 0 1, 5 5 10, 0 0 10))');
+-- Answer: 127.27922061357853
+
+SELECT ST_TriangleSlope('POLYGON((0 0 0, 4 0 0, 2 3 6, 0 0 0))');
+-- Answer: 200.0
+
+-- We try the function on a square.
+SELECT ST_TriangleSlope('POLYGON((0 0 1, 3 0 0, 3 3 4, 0 3 1, 0 0 1))');
+-- Exception calling user-defined function:
+--     "computeSlope(POLYGON ((0 --> 0, 3 0, 3 3, 0 3, 0 0))):
+--     The geometry must be a triangle"
+{% endhighlight %}
+
+<img class="displayed" src="../ST_TriangleSlope_1.png"/>
 
 ##### See also
 
