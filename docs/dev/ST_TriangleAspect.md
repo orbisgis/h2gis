@@ -40,7 +40,8 @@ SELECT ST_TriangleAspect('POLYGON((0 0 1, 3 0 1, 0 3 0, 0 0 1))');
 SELECT ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 3 3 1, 0 0 1))');
 -- Answer: 135.0
 
-SELECT ST_TriangleAspect('POLYGON((0 0 0, 3 0 0, 3 3 0, 0 3 0, 0 0 0))');
+SELECT ST_TriangleAspect(
+    'POLYGON((0 0 0, 3 0 0, 3 3 0, 0 3 0, 0 0 0))');
 -- Exception calling user-defined function:
 --     "computeAspect(POLYGON ((0 0, 3 0, 3 3, 0 3, 0 0))):
 --     The geometry must be a triangle"

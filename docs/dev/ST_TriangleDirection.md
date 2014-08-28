@@ -36,7 +36,8 @@ SELECT ST_TriangleDirection('POLYGON((0 0 1, 2 0 1, 1 1 1, 0 0 1))');
 -- Answer: LINESTRING EMPTY
 
 -- We try the function on a square.
-SELECT ST_TriangleDirection('POLYGON((0 0 1, 3 0 0, 3 3 4, 0 3 1, 0 0 1))');
+SELECT ST_TriangleDirection(
+    'POLYGON((0 0 1, 3 0 0, 3 3 4, 0 3 1, 0 0 1))');
 -- Exception calling user-defined function:
 --     "computeDirection(POLYGON ((0 0, 3 0, 3 3, 0 3, 0 0))):
 --     The geometry must be a triangle"
