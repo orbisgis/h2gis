@@ -137,4 +137,16 @@ public class JDBCUtilitiesTest {
     public void isH2() throws SQLException {
         assertTrue(JDBCUtilities.isH2DataBase(connection.getMetaData()));
     }
+
+    @Test
+    public void testHasField() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS temptable");
+        st.execute("CREATE TABLE temptable(id integer, name varchar)");
+        assertTrue(JDBCUtilities.hasField(connection, "TEMPTABLE", "ID"));
+        // The field name does not necessarily need to be capitalized.
+        assertTrue(JDBCUtilities.hasField(connection, "TEMPTABLE", "id"));
+        // The table name needs to be capitalized
+        assertFalse(JDBCUtilities.hasField(connection, "temptable", "id"));
+        assertFalse(JDBCUtilities.hasField(connection, "TEMPTABLE", "some_other_field"));
+    }
 }
