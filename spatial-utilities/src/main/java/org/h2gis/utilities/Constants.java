@@ -15,7 +15,7 @@ public class Constants {
     public static final Set<String> H2_RESERVED_WORDS = new HashSet<String>(Arrays.asList("CROSS", "CURRENT_DATE",
             "CURRENT_TIME", "CURRENT_TIMESTAMP", "DISTINCT", "EXCEPT", "EXISTS", "FALSE", "FOR", "FROM", "FULL",
             "GROUP", "HAVING", "INNER", "INTERSECT", "IS", "JOIN", "LIKE", "LIMIT", "MINUS", "NATURAL", "NOT",
-            "NULL", "ON", "ORDER", "PRIMARY", "ROWNUM", "SELECT", "SYSDATE", "SYSTIME", "SYSTIMESTAMP", "TODAY",
+            "NULL", "OFFSET", "ON", "ORDER", "PRIMARY", "ROWNUM", "SELECT", "SYSDATE", "SYSTIME", "SYSTIMESTAMP", "TODAY",
             "TRUE", "UNION", "UNIQUE", "WHERE"));
     /***
      * @see <a href="http://www.postgresql.org/docs/9.3/static/sql-keywords-appendix.html#KEYWORDS-TABLE">Keywords source</a>
