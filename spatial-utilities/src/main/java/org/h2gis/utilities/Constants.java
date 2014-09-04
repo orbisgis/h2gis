@@ -13,7 +13,7 @@ public class Constants {
      * @see <a href="http://www.h2database.com/html/advanced.html#compatibility">Keywords source</a>
      */
     public static final Set<String> H2_RESERVED_WORDS = new HashSet<String>(Arrays.asList("CROSS", "CURRENT_DATE",
-            "CURRENT_TIME", "CURRENT_TIMESTAMP", "DISTINCT", "EXCEPT", "EXISTS", "FALSE", "FOR", "FROM", "FULL",
+            "CURRENT_TIME", "CURRENT_TIMESTAMP", "DISTINCT", "EXCEPT", "EXISTS", "FALSE", "FETCH", "FOR", "FROM", "FULL",
             "GROUP", "HAVING", "INNER", "INTERSECT", "IS", "JOIN", "LIKE", "LIMIT", "MINUS", "NATURAL", "NOT",
             "NULL", "OFFSET", "ON", "ORDER", "PRIMARY", "ROWNUM", "SELECT", "SYSDATE", "SYSTIME", "SYSTIMESTAMP", "TODAY",
             "TRUE", "UNION", "UNIQUE", "WHERE"));
