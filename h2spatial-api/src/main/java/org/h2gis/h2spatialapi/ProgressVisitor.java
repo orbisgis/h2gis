@@ -24,11 +24,15 @@
  */
 package org.h2gis.h2spatialapi;
 
+import java.beans.PropertyChangeListener;
+
 /**
  * Progression information.
  * @author Nicolas Fortin
  */
 public interface ProgressVisitor {
+
+    public static String PROPERTY_CANCELED = "CANCELED";
 
     /***
      * Create a sub process. When this sub process finish it will count as a single step in this process.
@@ -61,4 +65,27 @@ public interface ProgressVisitor {
      * @return This step progression [O-1], take account sub process progression.
      */
     double getProgression();
+
+    /**
+     * @return True if the process has been canceled
+     */
+    boolean isCanceled();
+
+    /**
+     * Call this method to cancel the operation
+     */
+    void cancel();
+
+    /**
+     * Listen for this visitor properties
+     * @param property Property name one of {@link #PROPERTY_CANCELED}
+     * @param listener Listener instance
+     */
+    void addPropertyChangeListener(String property, PropertyChangeListener listener);
+
+    /**
+     *
+     * @param listener Listener instance
+     */
+    void removePropertyChangeListener(PropertyChangeListener listener);
 }

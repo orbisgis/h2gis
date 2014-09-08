@@ -1,7 +1,10 @@
 package org.h2gis.utilities;
 
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.junit.*;
 
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -148,5 +151,43 @@ public class JDBCUtilitiesTest {
         // The table name needs to be capitalized
         assertFalse(JDBCUtilities.hasField(connection, "temptable", "id"));
         assertFalse(JDBCUtilities.hasField(connection, "TEMPTABLE", "some_other_field"));
+    }
+
+    @Test
+    public void testCancel() throws SQLException {
+        boolean aborted = false;
+        ProgressVisitor progressVisitor = new EmptyProgressVisitor();
+        Statement statement = connection.createStatement();
+        PropertyChangeListener listener = JDBCUtilities.attachCancelResultSet(statement, progressVisitor);
+        statement.execute("CREATE ALIAS SLEEP FOR \"java.lang.Thread.sleep\"");
+        CancelThread cancelThread = new CancelThread(progressVisitor);
+        cancelThread.start();
+        try {
+            statement.execute("SELECT SLEEP(10) FROM SYSTEM_RANGE(1, 200)");
+        } catch (SQLException ex) {
+            aborted = true;
+        } finally {
+            progressVisitor.removePropertyChangeListener(listener);
+        }
+        statement.close();
+        assertTrue(aborted);
+    }
+
+    private static class CancelThread extends Thread {
+        private ProgressVisitor pm;
+
+        private CancelThread(ProgressVisitor pm) {
+            this.pm = pm;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ex) {
+                // Ignore
+            }
+            pm.cancel();
+        }
     }
 }
