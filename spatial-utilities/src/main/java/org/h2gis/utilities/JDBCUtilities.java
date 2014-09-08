@@ -1,5 +1,9 @@
 package org.h2gis.utilities;
 
+import org.h2gis.h2spatialapi.ProgressVisitor;
+
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
@@ -8,6 +12,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.EventListener;
 
 /**
  * DBMS should follow standard but it is not always the case, this class do some common operations.
@@ -248,6 +253,40 @@ public class JDBCUtilities {
             return false;
         } finally {
             statement.close();
+        }
+    }
+
+    /**
+     *
+     * @param st Statement to cancel
+     * @param progressVisitor Progress to link with
+     * @return call
+     * {@link org.h2gis.h2spatialapi.ProgressVisitor#removePropertyChangeListener(java.beans.PropertyChangeListener)}
+     * with this object as argument
+     */
+    public static PropertyChangeListener attachCancelResultSet(Statement st, ProgressVisitor progressVisitor) {
+        PropertyChangeListener propertyChangeListener = new CancelResultSet(st);
+        progressVisitor.addPropertyChangeListener(ProgressVisitor.PROPERTY_CANCELED, propertyChangeListener);
+        return propertyChangeListener;
+    }
+
+    /**
+     * Call cancel of statement
+     */
+    private static final class CancelResultSet implements PropertyChangeListener {
+        private final Statement st;
+
+        private CancelResultSet(Statement st) {
+            this.st = st;
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            try {
+                st.cancel();
+            } catch (SQLException ex) {
+                // Ignore
+            }
         }
     }
 }
