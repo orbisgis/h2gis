@@ -24,6 +24,7 @@
  */
 package org.h2gis.drivers.dbf;
 
+import org.h2.util.StringUtils;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.SHPEngineTest;
@@ -39,10 +40,12 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -131,5 +134,39 @@ public class DBFImportExportTest {
         assertEquals(28469.778049948833, rs.getDouble(1), 1e-12);
         rs.close();
         st.execute("drop table WATERNETWORK");
+    }
+
+    /**
+     * Read a DBF where the encoding is missing in header.
+     * @throws SQLException
+     */
+    @Test
+    public void readDBFRussianEncodingTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists sotchi");
+        st.execute("CALL DBFREAD("+ StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("sotchi.dbf").getPath())+", 'SOTCHI', 'cp1251');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM sotchi");
+        // Check if fields name are OK
+        ResultSetMetaData meta = rs.getMetaData();
+        assertEquals("B_ДНА",meta.getColumnName(5));
+        assertEquals("ИМЕНА_УЧАС",meta.getColumnName(8));
+        assertEquals("ДЛИНА_КАНА",meta.getColumnName(9));
+        assertEquals("ДЛИНА_КАН_",meta.getColumnName(10));
+        assertEquals("ИМЯ_МУООС",meta.getColumnName(11));
+        assertTrue(rs.next());
+        assertEquals("ВП-2", rs.getString("NAMESHEME"));
+        assertEquals("Дубовский канал",rs.getString("NAME10000"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-1", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
+        assertFalse(rs.next());
+        rs.close();
+        st.execute("drop table sotchi");
     }
 }
