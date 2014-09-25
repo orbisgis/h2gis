@@ -26,8 +26,10 @@
 package org.h2gis.drivers.shp;
 
 import com.vividsolutions.jts.geom.Geometry;
+import org.h2.table.Column;
 import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
+import org.h2gis.drivers.file_table.FileEngine;
 import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.drivers.shp.internal.ShapeType;
@@ -42,6 +44,7 @@ import org.h2gis.utilities.TableLocation;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -184,14 +187,20 @@ public class SHPDriverFunction implements DriverFunction {
                 types = ", " + types;
             }
             final TableLocation parse = TableLocation.parse(tableReference, isH2);
+            List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
+            otherCols.add(new Column("THE_GEOM", 0));
+            for(int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
+                otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
+            }
+            String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
             if(isH2) {
                 //H2 Syntax
-                st.execute(String.format("CREATE TABLE %s ("+ H2TableIndex.PK_COLUMN_NAME + " SERIAL ,the_geom %s %s)", parse,
+                st.execute(String.format("CREATE TABLE %s ("+ pkColName + " SERIAL ,the_geom %s %s)", parse,
                     getSFSGeometryType(shpHeader), types));
             } else {
                 // PostgreSQL Syntax
                 int srid = 0;
-                lastSql = String.format("CREATE TABLE %s ("+ H2TableIndex.PK_COLUMN_NAME + " SERIAL PRIMARY KEY, the_geom GEOMETRY(%s, %d) %s)", parse,
+                lastSql = String.format("CREATE TABLE %s ("+ pkColName + " SERIAL PRIMARY KEY, the_geom GEOMETRY(%s, %d) %s)", parse,
                         getPostGISSFSGeometryType(shpHeader),srid, types);
                 st.execute(lastSql);
             }

@@ -24,9 +24,11 @@
  */
 package org.h2gis.drivers.dbf;
 
+import org.h2.table.Column;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileException;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
+import org.h2gis.drivers.file_table.FileEngine;
 import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
@@ -43,6 +45,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Nicolas Fortin
@@ -147,7 +151,12 @@ public class DBFDriverFunction implements DriverFunction {
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             // Build CREATE TABLE sql request
             Statement st = connection.createStatement();
-            st.execute(String.format("CREATE TABLE %s (" + H2TableIndex.PK_COLUMN_NAME+ " SERIAL PRIMARY KEY, %s)", parsedTable,
+            List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
+            for(int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
+                otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
+            }
+            String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
+            st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
                     getSQLColumnTypes(dbfHeader, isH2)));
             st.close();
             try {

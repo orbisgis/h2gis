@@ -169,4 +169,21 @@ public class DBFImportExportTest {
         rs.close();
         st.execute("drop table sotchi");
     }
+
+    @Test
+    public void testPkDuplicate() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File dbfFile = new File("target/area_export.dbf");
+        stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
+        stat.execute("create table area("+H2TableIndex.PK_COLUMN_NAME+" serial, value DOUBLE, descr CHAR(50))");
+        stat.execute("insert into area values(null, 4.9406564584124654, 'main area')");
+        stat.execute("insert into area values(null, 2.2250738585072009, 'second area')");
+        // Create a shape file using table area
+        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
+        // Read this shape file to check values
+        stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
+        ResultSet rs = stat.executeQuery("SELECT * FROM AREA2");
+        assertEquals(H2TableIndex.PK_COLUMN_NAME+"2", rs.getMetaData().getColumnName(1));
+        assertEquals(H2TableIndex.PK_COLUMN_NAME, rs.getMetaData().getColumnName(2));
+    }
 }

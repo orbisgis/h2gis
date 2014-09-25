@@ -53,7 +53,13 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
         }
     }
 
-    private static String getUniqueColumnName(String base, List<Column> columns) {
+    /**
+     * Compute unique column name among the other columns
+     * @param base Returned name if there is no duplicate
+     * @param columns Other existing columns
+     * @return Unique column name
+     */
+    public static String getUniqueColumnName(String base, List<Column> columns) {
         String cursor = base;
         int cpt = 2;
         boolean findDuplicate= true;
