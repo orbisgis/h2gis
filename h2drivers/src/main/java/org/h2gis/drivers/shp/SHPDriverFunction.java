@@ -28,6 +28,7 @@ package org.h2gis.drivers.shp;
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
+import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.drivers.shp.internal.ShapeType;
 import org.h2gis.drivers.shp.internal.ShapefileHeader;
@@ -185,19 +186,18 @@ public class SHPDriverFunction implements DriverFunction {
             final TableLocation parse = TableLocation.parse(tableReference, isH2);
             if(isH2) {
                 //H2 Syntax
-                st.execute(String.format("CREATE TABLE %s (the_geom %s %s)", parse,
+                st.execute(String.format("CREATE TABLE %s ("+ H2TableIndex.PK_COLUMN_NAME + " SERIAL ,the_geom %s %s)", parse,
                     getSFSGeometryType(shpHeader), types));
             } else {
                 // PostgreSQL Syntax
                 int srid = 0;
-                lastSql = String.format("CREATE TABLE %s (the_geom GEOMETRY(%s, %d) %s)", parse,
+                lastSql = String.format("CREATE TABLE %s ("+ H2TableIndex.PK_COLUMN_NAME + " SERIAL PRIMARY KEY, the_geom GEOMETRY(%s, %d) %s)", parse,
                         getPostGISSFSGeometryType(shpHeader),srid, types);
                 st.execute(lastSql);
-
             }
             st.close();
             try {
-                        lastSql = String.format("INSERT INTO %s VALUES ( %s )", parse,
+                        lastSql = String.format("INSERT INTO %s VALUES (null, %s )", parse,
                                 DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
                         PreparedStatement preparedStatement = connection.prepareStatement(lastSql);
                 try {

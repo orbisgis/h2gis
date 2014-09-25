@@ -27,6 +27,7 @@ package org.h2gis.drivers.shp;
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
+import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -143,6 +144,9 @@ public class SHPImportExportTest {
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
+        assertEquals(H2TableIndex.PK_COLUMN_NAME, rs.getString("COLUMN_NAME"));
+        assertEquals("INTEGER", rs.getString("TYPE_NAME"));
+        assertTrue(rs.next());
         assertEquals("THE_GEOM", rs.getString("COLUMN_NAME"));
         assertEquals("GEOMETRY", rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
@@ -159,14 +163,15 @@ public class SHPImportExportTest {
         // Check content
         rs = st.executeQuery("SELECT * FROM WATERNETWORK");
         assertTrue(rs.next());
+        assertEquals(1, rs.getInt(H2TableIndex.PK_COLUMN_NAME));
         assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))",rs.getString("the_geom"));
         assertEquals("river",rs.getString("type_axe"));
         assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
-        assertEquals(1, rs.getInt(3)); // gid
+        assertEquals(1, rs.getInt("GID"));
         assertTrue(rs.next());
         assertEquals("ditch", rs.getString("type_axe"));
         assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
-        assertEquals(2, rs.getInt(3)); // gid
+        assertEquals(2, rs.getInt("GID"));
         rs.close();
         // Computation
         rs = st.executeQuery("SELECT SUM(length) sumlen FROM WATERNETWORK");
@@ -297,7 +302,7 @@ public class SHPImportExportTest {
         driverFunction.importFile(connection, "MYSHP", shpFile, new EmptyProgressVisitor());
         ResultSet rs = stat.executeQuery("select * from myshp");
         try {
-            assertEquals(3,rs.findColumn("NATURAL"));
+            assertEquals(4,rs.findColumn("NATURAL"));
         } finally {
             rs.close();
         }
