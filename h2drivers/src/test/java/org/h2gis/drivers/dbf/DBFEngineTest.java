@@ -28,6 +28,7 @@ package org.h2gis.drivers.dbf;
 import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
+import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.SHPEngineTest;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -71,7 +72,7 @@ public class  DBFEngineTest {
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
         assertTrue(rs.next());
-        assertEquals("PK",rs.getString("COLUMN_NAME"));
+        assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
         assertEquals("BIGINT",rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
@@ -279,7 +280,7 @@ public class  DBFEngineTest {
         st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
         assertTrue(rs.next());
-        assertEquals("PK",rs.getString("COLUMN_NAME"));
+        assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
         assertEquals("BIGINT",rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
@@ -339,18 +340,19 @@ public class  DBFEngineTest {
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         // Check usage of Primary Key
-        ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM DBFTABLE WHERE PK = 5");
+        ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM DBFTABLE WHERE "+H2TableIndex.PK_COLUMN_NAME+" = 5");
         try {
             assertTrue(rs.next());
-            assertTrue(rs.getString(1).endsWith("\": PK = 5 */\nWHERE PK = 5"));
+            assertTrue(rs.getString(1).endsWith("\": "+H2TableIndex.PK_COLUMN_NAME+" = 5 */\nWHERE "+
+                    H2TableIndex.PK_COLUMN_NAME+" = 5"));
         } finally {
             rs.close();
         }
         // Check if row equality test is good
-        rs = st.executeQuery("SELECT * FROM DBFTABLE WHERE PK = 5");
+        rs = st.executeQuery("SELECT * FROM DBFTABLE WHERE "+H2TableIndex.PK_COLUMN_NAME+" = 5");
         try {
             assertTrue(rs.next());
-            assertEquals(5, rs.getInt("PK"));
+            assertEquals(5, rs.getInt(H2TableIndex.PK_COLUMN_NAME));
             assertEquals(5, rs.getInt("GID"));
             assertFalse(rs.next());
         } finally {

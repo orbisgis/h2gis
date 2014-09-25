@@ -57,7 +57,9 @@ public class H2Table extends TableBase {
 
     public H2Table(FileDriver driver, CreateTableData data) throws IOException {
         super(data);
-        this.pkIndex = new H2TableIndex(driver,this,this.getId(), data.columns.get(0), data.schema.getUniqueIndexName(data.session, this,data.tableName + "." + H2TableIndex.PK_COLUMN_NAME + "_INDEX_"));
+        this.pkIndex = new H2TableIndex(driver,this,this.getId(), data.columns.get(0),
+                data.schema.getUniqueIndexName(data.session, this,data.tableName + "." +
+                        data.columns.get(0).getName() + "_INDEX_"));
         this.driver = driver;
     }
     /**

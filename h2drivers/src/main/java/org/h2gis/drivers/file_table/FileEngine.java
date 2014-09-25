@@ -39,8 +39,8 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
             if(data.columns.isEmpty()) {
                 feedCreateTableData(driver, data);
                 // Add primary key column
-                String pkColumnName = getUniqueColumnName("PK", data.columns);
-                Column pk = new Column(H2TableIndex.PK_COLUMN_NAME, Value.LONG);
+                String pkColumnName = getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, data.columns);
+                Column pk = new Column(pkColumnName, Value.LONG);
                 pk.setPrimaryKey(true);
                 pk.setNullable(false);
                 data.columns.add(0, pk);
