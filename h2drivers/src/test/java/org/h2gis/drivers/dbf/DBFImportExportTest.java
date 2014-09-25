@@ -25,6 +25,7 @@
 package org.h2gis.drivers.dbf;
 
 import org.h2gis.drivers.dbf.internal.DBFDriver;
+import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.SHPEngineTest;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -100,6 +101,9 @@ public class DBFImportExportTest {
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
         assertTrue(rs.next());
+        assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
+        assertEquals("INTEGER", rs.getString("TYPE_NAME"));
+        assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
         assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
         assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
@@ -115,11 +119,11 @@ public class DBFImportExportTest {
         assertTrue(rs.next());
         assertEquals("river",rs.getString("type_axe"));
         assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
-        assertEquals(1, rs.getInt(2)); // gid
+        assertEquals(1, rs.getInt("GID"));
         assertTrue(rs.next());
         assertEquals("ditch", rs.getString("type_axe"));
         assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
-        assertEquals(2, rs.getInt(2)); // gid
+        assertEquals(2, rs.getInt("GID"));
         rs.close();
         // Computation
         rs = st.executeQuery("SELECT SUM(length) sumlen FROM WATERNETWORK");
