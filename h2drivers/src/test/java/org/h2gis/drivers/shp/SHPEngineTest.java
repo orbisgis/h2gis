@@ -29,6 +29,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
+import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GeometryTypeCodes;
@@ -72,6 +73,9 @@ public class SHPEngineTest {
         st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'");
+        assertTrue(rs.next());
+        assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
+        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
         assertEquals("THE_GEOM",rs.getString("COLUMN_NAME"));
         assertEquals("GEOMETRY",rs.getString("TYPE_NAME"));
