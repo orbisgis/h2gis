@@ -57,6 +57,12 @@ public class H2TableIndex extends BaseIndex {
     private FileDriver driver;
     private final boolean isScanIndex;
 
+    /**
+     * Constructor for scan index. Hidden column _ROWID_.
+     * @param driver Linked file driver
+     * @param table Linked table
+     * @param id Index identifier
+     */
     public H2TableIndex(FileDriver driver, Table table, int id) {
         this.isScanIndex = true;
         this.driver = driver;
@@ -66,6 +72,14 @@ public class H2TableIndex extends BaseIndex {
         initBaseIndex(table, id, table.getName() + "_ROWID_", new IndexColumn[]{indexColumn}, IndexType.createScan(true));
     }
 
+    /**
+     * Constructor for primary key index.
+     * @param driver Linked file driver
+     * @param table Linked table
+     * @param id Index identifier
+     * @param PKColumn Primary key column declaration
+     * @param indexName Unique index name
+     */
     public H2TableIndex(FileDriver driver, Table table, int id, Column PKColumn, String indexName) {
             this.isScanIndex = false;
             this.driver = driver;
