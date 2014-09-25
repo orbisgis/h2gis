@@ -30,6 +30,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 import org.jdelaunay.delaunay.ConstrainedMesh;
 import org.jdelaunay.delaunay.error.DelaunayError;
+import org.jdelaunay.delaunay.evaluator.TriangleQuality;
 
 /**
  * Returns polygons that represent a Delaunay triangulation constructed from a
@@ -43,7 +44,10 @@ public class ST_Delaunay extends DeterministicScalarFunction {
 
     public ST_Delaunay() {
         addProperty(PROP_REMARKS, "Returns polygons that represent a Delaunay Triangulation from a geometry.\n"
-                + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1");
+                + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1\n"
+                + "The last argument can be set to improve the quality of the triangulation. The value must be comprised"
+                + " between 0 and 1 \n"
+         );
     }
 
     @Override
@@ -57,26 +61,43 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @param geometry
      * @return a set of polygons (triangles)
      * @throws SQLException, DelaunayError
+     * @throws org.jdelaunay.delaunay.error.DelaunayError
      */
     public static GeometryCollection createDT(Geometry geometry) throws SQLException, DelaunayError {
         return createDT(geometry, 0);
     }
+    
+    /**
+     * Build a delaunay triangulation based on all coordinates of the geometry
+     *
+     * @param geometry
+     * @param flag
+     * @return a set of polygons (triangles)
+     * @throws SQLException, DelaunayError
+     * @throws org.jdelaunay.delaunay.error.DelaunayError
+     */
+    public static GeometryCollection createDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
+        return createDT(geometry,  flag, -1);
+    }
+   
 
     /**
      * Build a delaunay triangulation based on all coordinates of the geometry
      *
      * @param geometry
      * @param flag
+     * @param qualityRefinement
      * @return Output is a COLLECTION of polygons (for flag=0) or a
      * MULTILINESTRING (for flag=1)
      * @throws SQLException, DelaunayError
+     * @throws org.jdelaunay.delaunay.error.DelaunayError
      */
-    public static GeometryCollection createDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
+    public static GeometryCollection createDT(Geometry geometry,  int flag,double qualityRefinement) throws SQLException, DelaunayError {
         if (geometry != null) {
             if (flag == 0) {
-                return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
+                return DelaunayTools.toMultiPolygon(buildDelaunay(geometry, qualityRefinement).getTriangleList());
             } else if (flag == 1) {
-                return DelaunayTools.toMultiLineString(buildDelaunay(geometry).getEdges());
+                return DelaunayTools.toMultiLineString(buildDelaunay(geometry, qualityRefinement).getEdges());
             } else {
                 throw new SQLException("Only flag 0 or 1 is supported.");
             }
@@ -91,13 +112,21 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @return
      * @throws DelaunayError
      */
-    private static ConstrainedMesh buildDelaunay(Geometry geometry) throws DelaunayError {
+    private static ConstrainedMesh buildDelaunay(Geometry geometry, double qualityRefinement) throws DelaunayError, SQLException {
         ConstrainedMesh mesh = new ConstrainedMesh();
         mesh.setVerbose(true);
         DelaunayData delaunayData = new DelaunayData();
         delaunayData.put(geometry);
         mesh.setPoints(delaunayData.getDelaunayPoints());
         mesh.processDelaunay();
+        if(qualityRefinement!=-1){
+            if(qualityRefinement>=0 && qualityRefinement<1){
+            mesh.refineMesh(qualityRefinement,new TriangleQuality());
+            }
+            else{
+                throw new SQLException("The quality value must be comprised between 0 and 1");
+            }
+        }
         return mesh;
     }
 }
