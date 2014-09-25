@@ -4,8 +4,10 @@ import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.api.ErrorCode;
 import org.h2.message.DbException;
+import org.h2.table.Column;
 import org.h2.table.Table;
 import org.h2.util.StringUtils;
+import org.h2.value.Value;
 import org.h2gis.drivers.FileDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +38,12 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
             Driver driver = createDriver(filePath, data.tableEngineParams);
             if(data.columns.isEmpty()) {
                 feedCreateTableData(driver, data);
+                // Add primary key column
+                String pkColumnName = getUniqueColumnName("PK", data.columns);
+                Column pk = new Column(H2TableIndex.PK_COLUMN_NAME, Value.LONG);
+                pk.setPrimaryKey(true);
+                pk.setNullable(false);
+                data.columns.add(0, pk);
             }
             H2Table shpTable = new H2Table(driver, data);
             shpTable.init(data.session);
@@ -45,6 +53,24 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
         }
     }
 
+    private static String getUniqueColumnName(String base, List<Column> columns) {
+        String cursor = base;
+        int cpt = 2;
+        boolean findDuplicate= true;
+        while(findDuplicate) {
+            findDuplicate = false;
+            for (Column column : columns) {
+                if (column.getName().equalsIgnoreCase(cursor)) {
+                    findDuplicate = true;
+                    break;
+                }
+            }
+            if(findDuplicate) {
+                cursor = base + Integer.toString(cpt);
+            }
+        }
+        return cursor;
+    }
     /**
      * Create the driver instance using the file name and additional arguments provided in SQL create table request.
      * @param filePath First argument, file name

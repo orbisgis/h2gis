@@ -71,6 +71,9 @@ public class  DBFEngineTest {
         // Query declared Table columns
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
         assertTrue(rs.next());
+        assertEquals("PK",rs.getString("COLUMN_NAME"));
+        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+        assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
         assertEquals("CHAR",rs.getString("TYPE_NAME"));
         assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
@@ -243,11 +246,11 @@ public class  DBFEngineTest {
         ResultSet rs = st.executeQuery("SELECT * FROM SOTCHI_GOODHEADER");
         // Check if fields name are OK
         ResultSetMetaData meta = rs.getMetaData();
-        assertEquals("B_ДНА",meta.getColumnName(4));
-        assertEquals("ИМЕНА_УЧАС",meta.getColumnName(7));
-        assertEquals("ДЛИНА_КАНА",meta.getColumnName(8));
-        assertEquals("ДЛИНА_КАН_",meta.getColumnName(9));
-        assertEquals("ИМЯ_МУООС",meta.getColumnName(10));
+        assertEquals("B_ДНА",meta.getColumnName(5));
+        assertEquals("ИМЕНА_УЧАС",meta.getColumnName(8));
+        assertEquals("ДЛИНА_КАНА",meta.getColumnName(9));
+        assertEquals("ДЛИНА_КАН_",meta.getColumnName(10));
+        assertEquals("ИМЯ_МУООС",meta.getColumnName(11));
         assertTrue(rs.next());
         assertEquals("ВП-2", rs.getString("NAMESHEME"));
         assertEquals("Дубовский канал",rs.getString("NAME10000"));
@@ -275,6 +278,9 @@ public class  DBFEngineTest {
         connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
         st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
+        assertTrue(rs.next());
+        assertEquals("PK",rs.getString("COLUMN_NAME"));
+        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
         assertTrue(rs.next());
         assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
         assertEquals("CHAR",rs.getString("TYPE_NAME"));
@@ -325,5 +331,30 @@ public class  DBFEngineTest {
         assertEquals(1.,rs.getDouble("PREC_PLANI"),1e-12);
         rs.close();
         st.execute("drop table dbftable");
+    }
+
+    @Test
+    public void testPkColumn() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists dbftable");
+        st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
+        // Check usage of Primary Key
+        ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM DBFTABLE WHERE PK = 5");
+        try {
+            assertTrue(rs.next());
+            assertTrue(rs.getString(1).endsWith("\": PK = 5 */\nWHERE PK = 5"));
+        } finally {
+            rs.close();
+        }
+        // Check if row equality test is good
+        rs = st.executeQuery("SELECT * FROM DBFTABLE WHERE PK = 5");
+        try {
+            assertTrue(rs.next());
+            assertEquals(5, rs.getInt("PK"));
+            assertEquals(5, rs.getInt("GID"));
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
     }
 }

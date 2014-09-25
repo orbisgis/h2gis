@@ -42,6 +42,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * A table linked with a {@link org.h2gis.drivers.FileDriver}
@@ -51,13 +52,14 @@ public class H2Table extends TableBase {
     private FileDriver driver;
     private static final Logger LOG = LoggerFactory.getLogger(H2Table.class);
     private H2TableIndex baseIndex;
+    private H2TableIndex pkIndex;
     private Column rowIdColumn;
 
     public H2Table(FileDriver driver, CreateTableData data) throws IOException {
         super(data);
+        this.pkIndex = new H2TableIndex(driver,this,this.getId(), data.columns.get(0), data.schema.getUniqueIndexName(data.session, this,data.tableName + "." + H2TableIndex.PK_COLUMN_NAME + "_INDEX_"));
         this.driver = driver;
     }
-
     /**
      * Create row index
      * @param session database session
@@ -123,12 +125,12 @@ public class H2Table extends TableBase {
 
     @Override
     public Index getUniqueIndex() {
-        return null;
+        return baseIndex;
     }
 
     @Override
     public ArrayList<Index> getIndexes() {
-        return new ArrayList<Index>();
+        return new ArrayList<Index>(Arrays.asList(baseIndex, pkIndex));
     }
 
     @Override

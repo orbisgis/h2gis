@@ -29,10 +29,12 @@ import org.h2.api.ErrorCode;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
+import org.h2.index.IndexCondition;
 import org.h2.index.IndexType;
 import org.h2.message.DbException;
 import org.h2.result.Row;
 import org.h2.result.SearchRow;
+import org.h2.result.SimpleRow;
 import org.h2.result.SortOrder;
 import org.h2.table.Column;
 import org.h2.table.IndexColumn;
@@ -40,6 +42,7 @@ import org.h2.table.Table;
 import org.h2.table.TableFilter;
 import org.h2.value.DataType;
 import org.h2.value.Value;
+import org.h2.value.ValueLong;
 import org.h2gis.drivers.FileDriver;
 
 import java.io.IOException;
@@ -49,14 +52,27 @@ import java.io.IOException;
  * @author Nicolas Fortin
  */
 public class H2TableIndex extends BaseIndex {
+    public static final String PK_COLUMN_NAME = "PK";
+
     private FileDriver driver;
+    private final boolean isScanIndex;
 
     public H2TableIndex(FileDriver driver, Table table, int id) {
+        this.isScanIndex = true;
         this.driver = driver;
         IndexColumn indexColumn = new IndexColumn();
         indexColumn.columnName = "key";
-        indexColumn.column = new Column("key",Value.LONG);
-        initBaseIndex(table,id,table.getName()+"_DATA",new IndexColumn[] {indexColumn}, IndexType.createScan(true));
+        indexColumn.column = new Column("key", Value.LONG);
+        initBaseIndex(table, id, table.getName() + "_ROWID_", new IndexColumn[]{indexColumn}, IndexType.createScan(true));
+    }
+
+    public H2TableIndex(FileDriver driver, Table table, int id, Column PKColumn, String indexName) {
+            this.isScanIndex = false;
+            this.driver = driver;
+            IndexColumn indexColumn = new IndexColumn();
+            indexColumn.columnName = PK_COLUMN_NAME;
+            indexColumn.column = PKColumn;
+            initBaseIndex(table, id, indexName, new IndexColumn[]{indexColumn}, IndexType.createPrimaryKey(true, true));
     }
 
     @Override
@@ -72,11 +88,12 @@ public class H2TableIndex extends BaseIndex {
     public Row getRow(Session session, long key) {
         try {
             Object[] driverRow = driver.getRow(key - 1);
-            Value[] values = new Value[driverRow.length];
+            Value[] values = new Value[driverRow.length + 1];
             Column[] columns = table.getColumns();
-            for(int idField=0;idField<driverRow.length;idField++) {
+            values[0] = ValueLong.get(key);
+            for(int idField=1;idField<=driverRow.length;idField++) {
                 // TODO in H2, switch on type parameter instead of if elseif
-                values[idField] = DataType.convertToValue(session, driverRow[idField], columns[idField].getType());
+                values[idField] = DataType.convertToValue(session, driverRow[idField - 1], columns[idField - 1].getType());
             }
             Row row =  new Row(values, Row.MEMORY_CALCULATE);
             row.setKey(key);
@@ -103,12 +120,38 @@ public class H2TableIndex extends BaseIndex {
 
     @Override
     public Cursor find(Session session, SearchRow first, SearchRow last) {
+        if (!isScanIndex) {
+            if (first == null || last == null) {
+                throw DbException.throwInternalError();
+            }
+            Row remakefirst = new Row(null, 0);
+            remakefirst.setKey(first.getValue(0).getLong());
+            Row remakeLast = new Row(null, 0);
+            remakeLast.setKey(last.getValue(0).getLong());
+            first = remakefirst;
+            last = remakeLast;
+        }
         return new SHPCursor(this, first, last, session);
     }
 
     @Override
+    public boolean canScan() {
+        return isScanIndex;
+    }
+
+    @Override
     public double getCost(Session session, int[] masks,TableFilter filter ,SortOrder sortOrder) {
-        return getRowCount(session);
+        if(masks == null) {
+            return Double.MAX_VALUE;
+        }
+        for (Column column : columns) {
+            int index = column.getColumnId();
+            int mask = masks[index];
+            if ((mask & IndexCondition.EQUALITY) != IndexCondition.EQUALITY) {
+                return Double.MAX_VALUE;
+            }
+        }
+        return 2;
     }
 
     @Override
@@ -153,7 +196,7 @@ public class H2TableIndex extends BaseIndex {
 
     @Override
     public boolean isRowIdIndex() {
-        return true;
+        return isScanIndex;
     }
 
     private static class SHPCursor implements Cursor {
