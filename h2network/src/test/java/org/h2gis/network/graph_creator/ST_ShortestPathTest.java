@@ -797,14 +797,12 @@ public class ST_ShortestPathTest {
     @Test
     public void testUnreachableVertices() throws SQLException {
         // Vertices 3 and 6 are in different connected components.
-        check(oneToOne("COPY_EDGES_ALL", DO, W, 3, 6), new PathEdge[]{
-                new PathEdge(null, -1, -1, -1, 3, 6, Double.POSITIVE_INFINITY)});
+        assertTrue(!oneToOne("COPY_EDGES_ALL", DO, W, 3, 6).next());
         // 7 is reachable from 6.
         check(oneToOne("COPY_EDGES_ALL", DO, W, 6, 7), new PathEdge[]{
                 new PathEdge("LINESTRING (3 1, 4 2)", 11, 1, 1, 6, 7, 1.0)});
         // But 6 is not reachable from 7 in a directed graph.
-        check(oneToOne("COPY_EDGES_ALL", DO, W, 7, 6), new PathEdge[]{
-                new PathEdge(null, -1, -1, -1, 7, 6, Double.POSITIVE_INFINITY)});
+        assertTrue(!oneToOne("COPY_EDGES_ALL", DO, W, 7, 6).next());
         // It is, however, in an undirected graph.
         check(oneToOne("COPY_EDGES_ALL", U, W, 7, 6), new PathEdge[]{
                 new PathEdge("LINESTRING (3 1, 4 2)", 11, 1, 1, 7, 6, 1.0)});
@@ -877,8 +875,7 @@ public class ST_ShortestPathTest {
                 "FROM COPY_EDGES_ALL;");
         final ResultSet resultSet = st.executeQuery("SELECT * FROM ST_ShortestPath(" +
                 "'NO_GEOM', 'UNDIRECTED', 1, 8);");
-        checkNoGeom(resultSet, new PathEdge[]{
-                new PathEdge(-1, -1, -1, 1, 8, Double.POSITIVE_INFINITY)});
+        assertTrue(!resultSet.next());
     }
 
     private class PathEdge {
