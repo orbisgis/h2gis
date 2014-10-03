@@ -50,7 +50,8 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
                 + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1.\n"
                 + "If the input geometry does not contain any lines, a delaunay triangulation will be computed."
                 + "The last argument can be set to improve the quality of the triangulation. The value must be comprised"
-                + " between 0 and 1 \n");
+                + " between 0 and 1.\n "
+                + "If value > 0.6 the triangle is of acceptable quality.\n");
     }
 
     @Override

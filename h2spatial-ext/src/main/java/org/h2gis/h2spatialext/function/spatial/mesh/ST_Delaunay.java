@@ -46,7 +46,8 @@ public class ST_Delaunay extends DeterministicScalarFunction {
         addProperty(PROP_REMARKS, "Returns polygons that represent a Delaunay Triangulation from a geometry.\n"
                 + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1\n"
                 + "The last argument can be set to improve the quality of the triangulation. The value must be comprised"
-                + " between 0 and 1 \n"
+                + " between 0 and 1 \n"                
+                + "If value > 0.6 the triangle is of acceptable quality.\n"
          );
     }
 
