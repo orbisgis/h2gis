@@ -2135,6 +2135,43 @@ public class SpatialFunctionTest {
         }
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Split9() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Split('MULTIPOLYGON ((( 0 0 1, 10 0 5, 10 10 8 , 0 10 12, 0 0 12)))'::GEOMETRY, 'LINESTRING (5 0, 5 10)'::GEOMETRY);");
+        rs.next();
+        Geometry pols = (Geometry) rs.getObject(1);
+        for (int i = 0; i < pols.getNumGeometries(); i++) {
+            Geometry pol = pols.getGeometryN(i);
+            assertTrue(ST_CoordDim.getCoordinateDimension(
+                    ValueGeometry.getFromGeometry(pol).getBytesNoCopy()) == 3);
+        }
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_Split10() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Split('MULTIPOLYGON (((50 200, 150 200, 150 100, 50 100, 50 200)),"
+                + "  ((50 50, 150 50, 150 0, 50 0, 50 50)))'::GEOMETRY, 'LINESTRING (100 250, 100 -10)'::GEOMETRY);");
+        rs.next();
+        Geometry pols = (Geometry) rs.getObject(1);
+        assertTrue(pols.getNumGeometries() == 4);
+        Polygon pol1 = (Polygon) WKT_READER.read("POLYGON ((50 50, 100 50, 100 0, 50 0, 50 50))");
+        Polygon pol2 = (Polygon) WKT_READER.read("POLYGON ((100 50, 150 50, 150 0, 100 0, 100 50))");
+        Polygon pol3 = (Polygon) WKT_READER.read("POLYGON ((50 200, 100 200, 100 100, 50 100, 50 200))");
+        Polygon pol4 = (Polygon) WKT_READER.read("POLYGON ((100 200, 150 200, 150 100, 100 100, 100 200))");
+        for (int i = 0; i < pols.getNumGeometries(); i++) {
+            Geometry pol = pols.getGeometryN(i);
+            if (!pol.getEnvelopeInternal().equals(pol1.getEnvelopeInternal())
+                    && !pol.getEnvelopeInternal().equals(pol2.getEnvelopeInternal())
+                    &&!pol.getEnvelopeInternal().equals(pol3.getEnvelopeInternal())
+                    && !pol.getEnvelopeInternal().equals(pol4.getEnvelopeInternal())) {
+                fail();
+            }
+        }
+        rs.close();
+    }
+    
 
     @Test
     public void test_ST_Translate1() throws Exception {
