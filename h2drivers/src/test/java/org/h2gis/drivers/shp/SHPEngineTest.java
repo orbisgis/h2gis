@@ -257,4 +257,12 @@ public class SHPEngineTest {
         assertEquals(GeometryTypeCodes.MULTILINESTRING, SFSUtilities.getGeometryType(connection, TableLocation.parse("SHPTABLE"), ""));
         st.execute("drop table shptable");
     }
+
+    @Test(expected = SQLException.class)
+    public void testAddIndexOnTableLink() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS shptable");
+        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
+        st.execute("CREATE SPATIAL INDEX ON shptable(the_geom)");
+    }
 }
