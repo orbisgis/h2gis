@@ -91,8 +91,7 @@ public class H2Table extends TableBase {
 
     @Override
     public Index addIndex(Session session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
-        // Index not managed
-        return null;
+        throw DbException.getUnsupportedException("VIEW");
     }
 
     @Override
