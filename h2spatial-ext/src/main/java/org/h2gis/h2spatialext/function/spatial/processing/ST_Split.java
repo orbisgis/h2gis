@@ -57,7 +57,11 @@ public class ST_Split extends DeterministicScalarFunction {
 
     public ST_Split() {
         addProperty(PROP_REMARKS, "Returns a collection of geometries resulting by splitting a geometry.\n"
-                + "Supported operations are : split a line by a line a line by a point a polygon by a line");
+                + "Supported operations are : "
+                + "- split a polygon or a multipolygon by a linestring,\n"
+                + "- split a linestring or a multilinestring by a linestring,\n"
+                + "- split a linestring or a multilinestring by a point. At this stage a double tolerance\n"
+                + "can be used to snap the point.");
     }
 
     @Override
@@ -79,7 +83,11 @@ public class ST_Split extends DeterministicScalarFunction {
     public static Geometry split(Geometry geomA, Geometry geomB) throws SQLException {
         if (geomA instanceof Polygon) {
             return splitPolygonWithLine((Polygon) geomA, (LineString) geomB);
-        } else if (geomA instanceof LineString) {
+        } 
+        else if(geomA instanceof MultiPolygon){
+            return splitMultiPolygonWithLine((MultiPolygon)geomA, (LineString) geomB);
+        }
+        else if (geomA instanceof LineString) {
             if (geomB instanceof LineString) {
                 return splitLineStringWithLine((LineString) geomA, (LineString) geomB);
             } else if (geomB instanceof Point) {
@@ -102,9 +110,11 @@ public class ST_Split extends DeterministicScalarFunction {
      *
      * - split a line or a multiline with a point.
      *
-     * @param geomA
-     * @param geomB
+     * @param geomA the geometry to be splited
+     * @param geomB the geometry used to split
+     * @param tolerance a distance tolerance to snap the split geometry
      * @return
+     * @throws java.sql.SQLException
      */
     public static Geometry split(Geometry geomA, Geometry geomB, double tolerance) throws SQLException {
         if (geomA instanceof Polygon) {
@@ -314,17 +324,17 @@ public class ST_Split extends DeterministicScalarFunction {
 
     /**
      * Splits the specified MultiLineString with another lineString.
-     *
+     * 
      * @param MultiLineString
      * @param lineString
      *
      */
-    private static MultiLineString splitMultiLineStringWithLine(MultiLineString input, LineString cut) {
-        ArrayList<Geometry> geometries = new ArrayList<Geometry>();
+    private static Geometry splitMultiLineStringWithLine(MultiLineString input, LineString cut) {
         Geometry lines = input.difference(cut);
-        for (int i = 0; i < lines.getNumGeometries(); i++) {
-            geometries.add(lines.getGeometryN(i));
+        //Only to preserve SQL constrains
+        if (lines instanceof LineString) {
+            return FACTORY.createMultiLineString(new LineString[]{(LineString) lines.getGeometryN(0)});
         }
-        return FACTORY.createMultiLineString(geometries.toArray(new LineString[geometries.size()]));
+        return lines;
     }
 }

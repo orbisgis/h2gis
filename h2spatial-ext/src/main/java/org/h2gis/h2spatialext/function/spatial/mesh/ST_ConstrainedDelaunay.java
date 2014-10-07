@@ -32,6 +32,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 import org.jdelaunay.delaunay.ConstrainedMesh;
 import org.jdelaunay.delaunay.error.DelaunayError;
+import org.jdelaunay.delaunay.evaluator.TriangleQuality;
 import org.jdelaunay.delaunay.geometries.DEdge;
 
 /**
@@ -47,7 +48,10 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
     public ST_ConstrainedDelaunay() {
         addProperty(PROP_REMARKS, "Returns polygons that represent a Constrained Delaunay Triangulation from a geometry.\n"
                 + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1.\n"
-                + "If the input geometry does not contain any lines, a delaunay triangulation will be computed.");
+                + "If the input geometry does not contain any lines, a delaunay triangulation will be computed."
+                + "The last argument can be set to improve the quality of the triangulation. The value must be comprised"
+                + " between 0 and 1.\n "
+                + "If value > 0.6 the triangle is of acceptable quality.\n");
     }
 
     @Override
@@ -56,15 +60,30 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
     }
 
     /**
-     * Build a delaunay constrained delaunay triangulation based on a geometry
+     * Build a constrained delaunay triangulation based on a geometry
      * (point, line, polygon)
      *
      * @param geometry
      * @return a set of polygons (triangles)
      * @throws SQLException,DelaunayError
+     * @throws org.jdelaunay.delaunay.error.DelaunayError
      */
     public static GeometryCollection createCDT(Geometry geometry) throws SQLException, DelaunayError {
-        return createCDT(geometry, 0);
+        return createCDT(geometry, 0, -1);
+    }
+    
+    /**
+     * Build a constrained delaunay triangulation based on a geometry
+     * (point, line, polygon)
+     *
+     * @param geometry
+     * @param flag
+     * @return a set of polygons (triangles)
+     * @throws SQLException, DelaunayError
+     * @throws org.jdelaunay.delaunay.error.DelaunayError
+     */
+    public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
+        return createCDT(geometry,  flag, -1);
     }
 
     /**
@@ -73,15 +92,17 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      *
      * @param geometry
      * @param flag
+     * @param qualityRefinement
      * @return Output is a COLLECTION of polygons (for flag=0) or a MULTILINESTRING (for flag=1)
      * @throws SQLException, DelaunayError
+     * @throws org.jdelaunay.delaunay.error.DelaunayError
      */
-    public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
+    public static GeometryCollection createCDT(Geometry geometry, int flag, double qualityRefinement) throws SQLException, DelaunayError {
         if (geometry != null) {
             if (flag == 0) {
-                return DelaunayTools.toMultiPolygon(buildDelaunay(geometry).getTriangleList());
+                return DelaunayTools.toMultiPolygon(buildDelaunay(geometry, qualityRefinement).getTriangleList());
             } else if (flag == 1) {
-                return DelaunayTools.toMultiLineString(buildDelaunay(geometry).getEdges());
+                return DelaunayTools.toMultiLineString(buildDelaunay(geometry, qualityRefinement).getEdges());
             } else {
                 throw new SQLException("Only flag 0 or 1 is supported.");
             }
@@ -95,7 +116,7 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      * @return
      * @throws DelaunayError 
      */
-    private static ConstrainedMesh buildDelaunay(Geometry geometry) throws DelaunayError {
+    private static ConstrainedMesh buildDelaunay(Geometry geometry, double qualityRefinement) throws DelaunayError, SQLException {
         ConstrainedMesh mesh = new ConstrainedMesh();
         mesh.setVerbose(true);
         DelaunayData delaunayData = new DelaunayData();
@@ -112,6 +133,14 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
         }
         //we process delaunay
         mesh.processDelaunay();
+        if(qualityRefinement!=-1){
+            if(qualityRefinement>=0 && qualityRefinement<1){
+            mesh.refineMesh(qualityRefinement,new TriangleQuality());
+            }
+            else{
+                throw new SQLException("The quality value must be comprised between 0 and 1");
+            }
+        }
         return mesh;
     }
 }
