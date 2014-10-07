@@ -164,7 +164,8 @@ public class CreateSpatialExtension {
                 new ST_GraphAnalysis(),
                 new ST_ShortestPath(),
                 new ST_ShortestPathLength(),
-                new ST_ShortestPathTree()};
+                new ST_ShortestPathTree(),
+                new ST_LineCleaner()};
     }
 
     /**
