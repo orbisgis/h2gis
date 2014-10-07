@@ -62,7 +62,7 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
         mCIndexNoder.computeNodes(getSegments(inputLines, clipper));
         Collection nodedSubstring = mCIndexNoder.getNodedSubstrings();
         GeometryFactory gf = inputLines.getFactory();
-        ArrayList<LineString> linestrings = new ArrayList<LineString>();
+        ArrayList<LineString> linestrings = new ArrayList<LineString>(nodedSubstring.size());
         for (Iterator it = nodedSubstring.iterator(); it.hasNext();) {
             SegmentString segment = (SegmentString) it.next();
             //We keep only the segments of the input geometry
