@@ -41,6 +41,7 @@ public class TableLocation {
     private static final String QUOTE_CHAR = "\"";
     private static final Pattern POSTGRE_SPECIAL_NAME_PATTERN = Pattern.compile("[^a-z0-9_]");
     private static final Pattern H2_SPECIAL_NAME_PATTERN = Pattern.compile("[^A-Z0-9_]");
+    private String defaultSchema = "PUBLIC";
 
     /**
      * @param rs result set obtained through {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
@@ -264,5 +265,33 @@ public class TableLocation {
      */
     public String getTable() {
         return table;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof TableLocation)) return false;
+
+        TableLocation that = (TableLocation) o;
+
+        return  (catalog.equals(that.catalog) || catalog.isEmpty() || that.catalog.isEmpty()) &&
+                (schema.equals(that.schema) || (schema.equals(defaultSchema) && that.schema.isEmpty()) ||
+                (that.schema.equals(defaultSchema) && schema.isEmpty())) &&
+                table.equals(that.table);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = catalog.hashCode();
+        result = 31 * result + schema.hashCode();
+        result = 31 * result + table.hashCode();
+        return result;
+    }
+
+    /**
+     * @param defaultSchema Default connection schema, used for table location equality test.
+     */
+    public void setDefaultSchema(String defaultSchema) {
+        this.defaultSchema = defaultSchema;
     }
 }
