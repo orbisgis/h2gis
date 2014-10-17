@@ -25,16 +25,23 @@
 
 package org.h2gis.drivers.file_table;
 
+import org.h2.api.DatabaseEventListener;
 import org.h2.api.ErrorCode;
 import org.h2.command.ddl.CreateTableData;
+import org.h2.engine.Constants;
 import org.h2.engine.Session;
+import org.h2.engine.SysProperties;
+import org.h2.index.Cursor;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
+import org.h2.index.SpatialTreeIndex;
 import org.h2.message.DbException;
 import org.h2.result.Row;
 import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
+import org.h2.util.MathUtils;
+import org.h2.util.New;
 import org.h2.value.Value;
 import org.h2gis.drivers.FileDriver;
 import org.slf4j.Logger;
@@ -42,7 +49,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * A table linked with a {@link org.h2gis.drivers.FileDriver}
@@ -51,15 +59,14 @@ import java.util.Arrays;
 public class H2Table extends TableBase {
     private FileDriver driver;
     private static final Logger LOG = LoggerFactory.getLogger(H2Table.class);
-    private H2TableIndex baseIndex;
-    private H2TableIndex pkIndex;
+    private final ArrayList<Index> indexes = New.arrayList();
     private Column rowIdColumn;
 
     public H2Table(FileDriver driver, CreateTableData data) throws IOException {
         super(data);
-        this.pkIndex = new H2TableIndex(driver,this,this.getId(), data.columns.get(0),
+        indexes.add(new H2TableIndex(driver,this,this.getId(), data.columns.get(0),
                 data.schema.getUniqueIndexName(data.session, this,data.tableName + "." +
-                        data.columns.get(0).getName() + "_INDEX_"));
+                        data.columns.get(0).getName() + "_INDEX_")));
         this.driver = driver;
     }
     /**
@@ -67,7 +74,7 @@ public class H2Table extends TableBase {
      * @param session database session
      */
     public void init(Session session) {
-        baseIndex = new H2TableIndex(driver,this,this.getId());
+        indexes.add(0, new H2TableIndex(driver,this,this.getId()));
     }
 
     @Override
@@ -91,7 +98,84 @@ public class H2Table extends TableBase {
 
     @Override
     public Index addIndex(Session session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
-        throw DbException.getUnsupportedException("VIEW");
+        Index index;
+        boolean isSessionTemporary = isTemporary() && !isGlobalTemporary();
+        if (!isSessionTemporary) {
+            database.lockMeta(session);
+        }
+        if (indexType.isSpatial()) {
+            index = new SpatialTreeIndex(this, indexId, indexName, cols,
+                    indexType, false, true, session);
+        } else {
+            throw DbException.getUnsupportedException("VIEW");
+        }
+        if (index.needRebuild() && getRowCount(session) > 0) {
+            try {
+                Index scan = getScanIndex(session);
+                long remaining = scan.getRowCount(session);
+                long total = remaining;
+                Cursor cursor = scan.find(session, null, null);
+                long i = 0;
+                int bufferSize = (int) Math.min(getRowCount(session), Constants.DEFAULT_MAX_MEMORY_ROWS);
+                ArrayList<Row> buffer = New.arrayList(bufferSize);
+                String n = getName() + ":" + index.getName();
+                int t = MathUtils.convertLongToInt(total);
+                while (cursor.next()) {
+                    database.setProgress(DatabaseEventListener.STATE_CREATE_INDEX, n,
+                            MathUtils.convertLongToInt(i++), t);
+                    Row row = cursor.get();
+                    buffer.add(row);
+                    if (buffer.size() >= bufferSize) {
+                        addRowsToIndex(session, buffer, index);
+                    }
+                    remaining--;
+                }
+                addRowsToIndex(session, buffer, index);
+                if (SysProperties.CHECK && remaining != 0) {
+                    throw DbException.throwInternalError("rowcount remaining=" +
+                            remaining + " " + getName());
+                }
+            } catch (DbException e) {
+                getSchema().freeUniqueName(indexName);
+                try {
+                    index.remove(session);
+                } catch (DbException e2) {
+                    // this could happen, for example on failure in the storage
+                    // but if that is not the case it means
+                    // there is something wrong with the database
+                    trace.error(e2, "could not remove index");
+                    throw e2;
+                }
+                throw e;
+            }
+        }
+        index.setTemporary(isTemporary());
+        if (index.getCreateSQL() != null) {
+            index.setComment(indexComment);
+            if (isSessionTemporary) {
+                session.addLocalTempTableIndex(index);
+            } else {
+                database.addSchemaObject(session, index);
+            }
+        }
+        indexes.add(index);
+        setModified();
+        return index;
+    }
+
+    private static void addRowsToIndex(Session session, ArrayList<Row> list,
+                                       Index index) {
+        final Index idx = index;
+        Collections.sort(list, new Comparator<Row>() {
+            @Override
+            public int compare(Row r1, Row r2) {
+                return idx.compareRows(r1, r2);
+            }
+        });
+        for (Row row : list) {
+            index.add(session, row);
+        }
+        list.clear();
     }
 
     @Override
@@ -101,7 +185,9 @@ public class H2Table extends TableBase {
 
     @Override
     public void truncate(Session session) {
-        baseIndex.truncate(session);
+        for(Index index : indexes) {
+            index.truncate(session);
+        }
     }
 
     @Override
@@ -121,17 +207,28 @@ public class H2Table extends TableBase {
 
     @Override
     public Index getScanIndex(Session session) {
-        return baseIndex;
+        // Look for scan index
+        for(Index index : indexes) {
+            if(index.getIndexType().isScan()) {
+                return index;
+            }
+        }
+        return null;
     }
 
     @Override
     public Index getUniqueIndex() {
-        return baseIndex;
+        for (Index idx : indexes) {
+            if (idx.getIndexType().isUnique()) {
+                return idx;
+            }
+        }
+        return null;
     }
 
     @Override
     public ArrayList<Index> getIndexes() {
-        return new ArrayList<Index>(Arrays.asList(baseIndex, pkIndex));
+        return indexes;
     }
 
     @Override

@@ -41,11 +41,14 @@ import org.junit.Test;
 
 import java.io.File;
 import java.sql.Connection;
+import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -258,11 +261,42 @@ public class SHPEngineTest {
         st.execute("drop table shptable");
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void testAddIndexOnTableLink() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS shptable");
         st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
+        String explainWithoutIndex;
+        ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 300)");
+        try{
+            assertTrue(rs.next());
+            explainWithoutIndex = rs.getString(1);
+        } finally {
+            rs.close();
+        }
         st.execute("CREATE SPATIAL INDEX ON shptable(the_geom)");
+        rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 300)");
+        try{
+            assertTrue(rs.next());
+            assertNotEquals(explainWithoutIndex, rs.getString(1));
+        } finally {
+            rs.close();
+        }
+        // Check if the index is here
+        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='THE_GEOM'");
+        try {
+            assertTrue(rs.next());
+            assertEquals("org.h2.index.SpatialTreeIndex", rs.getString("INDEX_CLASS"));
+        } finally {
+            rs.close();
+        }
+        st.execute("DROP TABLE IF EXISTS shptable");
+        // Check if the index has been removed
+        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='THE_GEOM'");
+        try {
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
     }
 }
