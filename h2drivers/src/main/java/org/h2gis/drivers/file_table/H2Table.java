@@ -84,6 +84,9 @@ public class H2Table extends TableBase {
 
     @Override
     public void close(Session session) {
+        for (Index index : indexes) {
+            index.close(session);
+        }
         try {
             driver.close();
         } catch (IOException ex) {
@@ -97,17 +100,31 @@ public class H2Table extends TableBase {
     }
 
     @Override
+    public Row getRow(Session session, long key) {
+        return indexes.get(0).getRow(session, key);
+    }
+
+    @Override
     public Index addIndex(Session session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
-        Index index;
         boolean isSessionTemporary = isTemporary() && !isGlobalTemporary();
         if (!isSessionTemporary) {
             database.lockMeta(session);
         }
-        if (indexType.isSpatial()) {
-            index = new SpatialTreeIndex(this, indexId, indexName, cols,
-                    indexType, false, true, session);
+        Index index;
+        if (isPersistIndexes() && indexType.isPersistent()) {
+            if (indexType.isSpatial()) {
+                index = new SpatialTreeIndex(this, indexId, indexName, cols,
+                        indexType, true, create, session);
+            } else {
+                throw DbException.getUnsupportedException("VIEW");
+            }
         } else {
-            throw DbException.getUnsupportedException("VIEW");
+            if (indexType.isSpatial()) {
+                index = new SpatialTreeIndex(this, indexId, indexName, cols,
+                        indexType, false, true, session);
+            } else {
+                throw DbException.getUnsupportedException("VIEW");
+            }
         }
         if (index.needRebuild() && getRowCount(session) > 0) {
             try {

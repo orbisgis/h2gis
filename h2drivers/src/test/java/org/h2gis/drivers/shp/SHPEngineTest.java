@@ -267,18 +267,30 @@ public class SHPEngineTest {
         st.execute("DROP TABLE IF EXISTS shptable");
         st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
         String explainWithoutIndex;
-        ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 300)");
+        ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 15)");
         try{
             assertTrue(rs.next());
             explainWithoutIndex = rs.getString(1);
         } finally {
             rs.close();
         }
+        // Query plan test with index
         st.execute("CREATE SPATIAL INDEX ON shptable(the_geom)");
-        rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 300)");
+        rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 15)");
         try{
             assertTrue(rs.next());
             assertNotEquals(explainWithoutIndex, rs.getString(1));
+        } finally {
+            rs.close();
+        }
+        // Execute query using index
+        rs = st.executeQuery("SELECT PK FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 15)");
+        try{
+            assertTrue(rs.next());
+            assertEquals(128, rs.getLong(1));
+            assertTrue(rs.next());
+            assertEquals(326, rs.getLong(1));
+            assertFalse(rs.next());
         } finally {
             rs.close();
         }
