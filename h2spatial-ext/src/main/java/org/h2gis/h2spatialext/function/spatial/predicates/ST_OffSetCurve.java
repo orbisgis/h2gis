@@ -32,31 +32,71 @@ import com.vividsolutions.jts.operation.buffer.BufferParameters;
 import com.vividsolutions.jts.operation.buffer.OffsetCurveBuilder;
 import com.vividsolutions.jts.operation.buffer.OffsetCurveSetBuilder;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- *
+ * Return an offset line at a given distance and side from an input geometry.
  * @author Erwan Bocher
  */
-public class ST_OffSetCurve extends DeterministicScalarFunction{
+public class ST_OffSetCurve extends DeterministicScalarFunction {
 
     @Override
     public String getJavaStaticMethod() {
         return "offsetCurve";
     }
-    
-    public static Geometry offsetCurve(Geometry geometry, double offset){
+
+    public static Geometry offsetCurve(Geometry geometry, double offset, String parameters) {
+        String[] buffParemeters = parameters.split("\\s+");
+        BufferParameters bufferParameters = new BufferParameters();
+        for (String params : buffParemeters) {
+            String[] keyValue = params.split("=");
+            if (keyValue[0].equalsIgnoreCase("endcap")) {
+                String param = keyValue[1];
+                if (param.equalsIgnoreCase("round")) {
+                    bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
+                } else if (param.equalsIgnoreCase("flat") || param.equalsIgnoreCase("butt")) {
+                    bufferParameters.setEndCapStyle(BufferParameters.CAP_FLAT);
+                } else if (param.equalsIgnoreCase("square")) {
+                    bufferParameters.setEndCapStyle(BufferParameters.CAP_SQUARE);
+                } else {
+                    throw new IllegalArgumentException("Supported join values are round, flat, butt or square.");
+                }
+            } else if (keyValue[0].equalsIgnoreCase("join")) {
+                String param = keyValue[1];
+                if (param.equalsIgnoreCase("bevel")) {
+                    bufferParameters.setJoinStyle(BufferParameters.JOIN_BEVEL);
+                } else if (param.equalsIgnoreCase("mitre") || param.equalsIgnoreCase("miter")) {
+                    bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
+                } else if (param.equalsIgnoreCase("round")) {
+                    bufferParameters.setJoinStyle(BufferParameters.JOIN_ROUND);
+                } else {
+                    throw new IllegalArgumentException("Supported join values are bevel, mitre, miter or round.");
+                }
+            } else if (keyValue[0].equalsIgnoreCase("mitre_limit") || keyValue[0].equalsIgnoreCase("miter_limit")) {
+                bufferParameters.setMitreLimit(Double.valueOf(keyValue[1]));
+            } else if (keyValue[0].equalsIgnoreCase("quad_segs")) {
+                bufferParameters.setQuadrantSegments(Integer.valueOf(keyValue[1]));
+            } else {
+                throw new IllegalArgumentException("Unknown parameters. Please read the documentation.");
+            }
+        }
+        return computeOffsetCurve(geometry, offset, bufferParameters);
+    }
+
+    public static Geometry offsetCurve(Geometry geometry, double offset) {
+        return computeOffsetCurve(geometry, offset, new BufferParameters());
+    }
+
+    public static Geometry computeOffsetCurve(Geometry geometry, double offset, BufferParameters bufferParameters) {
         ArrayList<LineString> lineStrings = new ArrayList<LineString>();
         for (int i = 0; i < geometry.getNumGeometries(); i++) {
             Geometry subGeom = geometry.getGeometryN(i);
-            if(subGeom.getDimension()==1){
-                lineStringOffSetCurve(lineStrings, (LineString) subGeom, offset);
-            }
-            else{
-                geometryOffSetCurve(lineStrings, geometry, offset);
+            if (subGeom.getDimension() == 1) {
+                lineStringOffSetCurve(lineStrings, (LineString) subGeom, offset, bufferParameters);
+            } else {
+                geometryOffSetCurve(lineStrings, subGeom, offset, bufferParameters);
             }
         }
         if (!lineStrings.isEmpty()) {
@@ -68,18 +108,32 @@ public class ST_OffSetCurve extends DeterministicScalarFunction{
         }
         return null;
     }
-    
-    public static void lineStringOffSetCurve(ArrayList<LineString> list, LineString lineString, double offset){
-        list.add(lineString.getFactory().createLineString(new OffsetCurveBuilder(lineString.getPrecisionModel(),new BufferParameters()).getOffsetCurve(lineString.getCoordinates(), offset)));
+
+    /**
+     * Compute the offset curve for a linestring
+     *
+     * @param list
+     * @param lineString
+     * @param offset
+     * @param bufferParameters
+     */
+    public static void lineStringOffSetCurve(ArrayList<LineString> list, LineString lineString, double offset, BufferParameters bufferParameters) {
+        list.add(lineString.getFactory().createLineString(new OffsetCurveBuilder(lineString.getPrecisionModel(), bufferParameters).getOffsetCurve(lineString.getCoordinates(), offset)));
     }
-    
-    public static void geometryOffSetCurve(ArrayList<LineString> list, Geometry geometry, double offset) {
-        final List curves = new OffsetCurveSetBuilder(geometry, offset, new OffsetCurveBuilder(geometry.getFactory().getPrecisionModel(), new BufferParameters())).getCurves();
+
+    /**
+     *
+     * @param list
+     * @param geometry
+     * @param offset
+     * @param bufferParameters
+     */
+    public static void geometryOffSetCurve(ArrayList<LineString> list, Geometry geometry, double offset, BufferParameters bufferParameters) {
+        final List curves = new OffsetCurveSetBuilder(geometry, offset, new OffsetCurveBuilder(geometry.getFactory().getPrecisionModel(), bufferParameters)).getCurves();
         final Iterator<SegmentString> iterator = curves.iterator();
         while (iterator.hasNext()) {
             list.add(geometry.getFactory().createLineString(iterator.next().getCoordinates()));
         }
     }
-    
-    
+
 }

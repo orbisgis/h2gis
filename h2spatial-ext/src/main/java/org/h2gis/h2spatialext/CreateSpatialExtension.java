@@ -75,6 +75,7 @@ public class CreateSpatialExtension {
 
     /**
      * @return instance of all built-ins functions
+     * @throws java.sql.SQLException
      */
     public static Function[] getBuiltInsFunctions() throws SQLException {
         return new Function[] {
