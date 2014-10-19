@@ -63,6 +63,7 @@ import org.h2gis.network.graph_creator.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.h2spatialext.function.spatial.predicates.ST_OffSetCurve;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -157,6 +158,7 @@ public class CreateSpatialExtension {
                 new ST_MakePolygon(),
                 new ST_IsValidReason(),
                 new ST_IsValidDetail(),
+                new ST_OffSetCurve(),
                 // h2network functions
                 new ST_Accessibility(),
                 new ST_ConnectedComponents(),
