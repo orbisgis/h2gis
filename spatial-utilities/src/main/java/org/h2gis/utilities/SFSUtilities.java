@@ -27,6 +27,9 @@ package org.h2gis.utilities;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKBWriter;
+import org.h2gis.utilities.jts_utils.CoordinateUtils;
+import org.h2gis.utilities.jts_utils.GeometryMetaData;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
 import javax.sql.DataSource;
