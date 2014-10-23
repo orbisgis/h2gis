@@ -3033,6 +3033,44 @@ public class SpatialFunctionTest {
         rs.close();
     }   
     
+    
+    @Test
+    public void test_ST_LineCleaner1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LineIntersector('LINESTRING (0 0 0, 10 0 0)'::GEOMETRY, 'LINESTRING (5 5 0, 5 -5 0)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING ((0 0 0, 5 0), (5 0, 10 0 0))", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LineCleaner2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LineIntersector('LINESTRING (0 0 0, 10 0 0)'::GEOMETRY, "
+                + "'MULTILINESTRING ((5 5, 5 -5),(1.3 4.3, 1.3 -2.7, 3.1 -2.5, 3.1 2.5))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING ((0 0 0, 1.3 0), (1.3 0, 3.1 0), (3.1 0, 5 0), (5 0, 10 0 0))", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LineCleaner3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LineIntersector('LINESTRING (0 0 0, 10 0 0)'::GEOMETRY, "
+                + "'MULTIPOLYGON (((0.9 2.3, 4.2 2.3, 4.2 -1.8, 0.9 -1.8, 0.9 2.3)),((6 2, 8.5 2, 8.5 -1.6, 6 -1.6, 6 2)))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING ((0 0 0, 0.9 0), (0.9 0, 4.2 0), (4.2 0, 6 0), (6 0, 8.5 0), (8.5 0, 10 0 0)) ", rs.getBytes(1));
+        rs.close();
+    }  
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_LineCleaner4()  throws Throwable {
+        try {
+            st.execute("SELECT ST_LineIntersector( 'MULTIPOLYGON (((0.9 2.3, 4.2 2.3, 4.2 -1.8, 0.9 -1.8, 0.9 2.3)),((6 2, 8.5 2, 8.5 -1.6, 6 -1.6, 6 2)))'::GEOMETRY,"
+                + "'LINESTRING (0 0 0, 10 0 0)'::GEOMETRY);");       
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+    
+    
     @Test
     public void test_ST_OffSetCurve1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_OffSetCurve('POINT (10 10)'::GEOMETRY, 10);");

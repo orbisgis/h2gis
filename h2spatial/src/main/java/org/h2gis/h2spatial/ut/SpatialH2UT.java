@@ -31,6 +31,7 @@ import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
 import java.io.File;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -43,8 +44,8 @@ import java.util.Properties;
  */
 public class SpatialH2UT {
 
-    private static final String H2_PARAMETERS = ";LOCK_MODE=0;LOG=0;DB_CLOSE_DELAY=5"; //;DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
-    //private static final String H2_PARAMETERS = ";DEFAULT_TABLE_ENGINE=org.h2.mvstore.db.MVTableEngine;LOCK_MODE=0;LOG=0";
+    public static final String H2_PARAMETERS = ";LOCK_MODE=0;LOG=0;DB_CLOSE_DELAY=5";
+
     private SpatialH2UT() {
         // utility
     }
@@ -73,8 +74,24 @@ public class SpatialH2UT {
     public static Connection createSpatialDataBase(String dbName)throws SQLException, ClassNotFoundException {
         return createSpatialDataBase(dbName,true);
     }
+
     private static String getDataBasePath(String dbName) {
-        return "target/test-resources/dbH2"+dbName;
+        if(dbName.startsWith("file://")) {
+            return new File(URI.create(dbName)).getAbsolutePath();
+        } else {
+            return new File("target/test-resources/dbH2" + dbName).getAbsolutePath();
+        }
+    }
+
+    /**
+     * Create a database and return a DataSource
+     * @param dbName DataBase name, or path URI
+     * @param initSpatial True to enable basic spatial capabilities
+     * @return DataSource
+     * @throws SQLException
+     */
+    public static DataSource createDataSource(String dbName ,boolean initSpatial) throws SQLException {
+        return createDataSource(dbName, initSpatial, H2_PARAMETERS);
     }
 
     /**
@@ -84,12 +101,12 @@ public class SpatialH2UT {
      * @return
      * @throws SQLException
      */
-    public static DataSource createDataSource(String dbName ,boolean initSpatial) throws SQLException {
+    public static DataSource createDataSource(String dbName ,boolean initSpatial, String h2Parameters) throws SQLException {
         // Create H2 memory DataSource
         org.h2.Driver driver = org.h2.Driver.load();
         OsgiDataSourceFactory dataSourceFactory = new OsgiDataSourceFactory(driver);
         Properties properties = new Properties();
-        String databasePath = initDBFile(dbName);
+        String databasePath = initDBFile(dbName, h2Parameters);
         properties.setProperty(DataSourceFactory.JDBC_URL, databasePath);
         properties.setProperty(DataSourceFactory.JDBC_USER, "sa");
         properties.setProperty(DataSourceFactory.JDBC_PASSWORD, "sa");
@@ -105,11 +122,10 @@ public class SpatialH2UT {
         }
         return dataSource;
     }
-
-    private static String initDBFile( String dbName ) {
+    private static String initDBFile( String dbName, String h2_PARAMETERS ) {
         String dbFilePath = getDataBasePath(dbName);
         File dbFile = new File(dbFilePath +".h2.db");
-        String databasePath = "jdbc:h2:"+ dbFilePath + H2_PARAMETERS;
+        String databasePath = "jdbc:h2:"+ dbFilePath + h2_PARAMETERS;
         if(dbFile.exists()) {
             dbFile.delete();
         }
@@ -120,11 +136,12 @@ public class SpatialH2UT {
      * Create a spatial database
      * @param dbName filename
      * @param initSpatial If true add spatial features to the database
+     * @param h2Parameters Additional h2 parameters
      * @return Connection
      * @throws Exception
      */
-    public static Connection createSpatialDataBase(String dbName,boolean initSpatial)throws SQLException, ClassNotFoundException {
-        String databasePath = initDBFile(dbName);
+    public static Connection createSpatialDataBase(String dbName,boolean initSpatial, String h2Parameters )throws SQLException, ClassNotFoundException {
+        String databasePath = initDBFile(dbName, h2Parameters);
         org.h2.Driver.load();
         // Keep a connection alive to not close the DataBase on each unit test
         Connection connection = DriverManager.getConnection(databasePath,
@@ -138,5 +155,15 @@ public class SpatialH2UT {
             CreateSpatialExtension.initSpatialExtension(connection);
         }
         return connection;
+    }
+    /**
+     * Create a spatial database
+     * @param dbName filename
+     * @param initSpatial If true add spatial features to the database
+     * @return Connection
+     * @throws Exception
+     */
+    public static Connection createSpatialDataBase(String dbName, boolean initSpatial )throws SQLException, ClassNotFoundException {
+        return createSpatialDataBase(dbName, initSpatial, H2_PARAMETERS);
     }
 }
