@@ -23,7 +23,7 @@
  * info_at_ orbisgis.org
  */
 
-package org.h2gis.h2spatialext.function.spatial.predicates;
+package org.h2gis.h2spatialext.function.spatial.processing;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
@@ -42,11 +42,27 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  */
 public class ST_OffSetCurve extends DeterministicScalarFunction {
 
+    
+    public ST_OffSetCurve() {
+        addProperty(PROP_REMARKS, "Return an offset line or collection of lines at a given distance and side from an input geometry.\n"
+                + "The optional third parameter can either specify number of segments used\n"
+                + " to approximate a quarter circle (integer case, defaults to 8)\n"
+                + " or a list of blank-separated key=value pairs (string case) to manage line style parameters :\n"
+                + "'quad_segs=8' endcap=round|flat|square' 'join=round|mitre|bevel' 'mitre_limit=5'");
+    }
+    
     @Override
     public String getJavaStaticMethod() {
         return "offsetCurve";
     }
 
+    /**
+     * Return an offset line at a given distance and side from an input geometry
+     * @param geometry the geometry
+     * @param offset the distance
+     * @param parameters the buffer parameters
+     * @return 
+     */
     public static Geometry offsetCurve(Geometry geometry, double offset, String parameters) {
         String[] buffParemeters = parameters.split("\\s+");
         BufferParameters bufferParameters = new BufferParameters();
@@ -85,10 +101,24 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
         return computeOffsetCurve(geometry, offset, bufferParameters);
     }
 
+    /**
+     * Return an offset line at a given distance and side from an input geometry
+     * without buffer parameters
+     * @param geometry the geometry
+     * @param offset the distance
+     * @return 
+     */
     public static Geometry offsetCurve(Geometry geometry, double offset) {
         return computeOffsetCurve(geometry, offset, new BufferParameters());
     }
 
+    /**
+     * Method to compute the offset line
+     * @param geometry
+     * @param offset
+     * @param bufferParameters
+     * @return 
+     */
     public static Geometry computeOffsetCurve(Geometry geometry, double offset, BufferParameters bufferParameters) {
         ArrayList<LineString> lineStrings = new ArrayList<LineString>();
         for (int i = 0; i < geometry.getNumGeometries(); i++) {
@@ -122,7 +152,7 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
     }
 
     /**
-     *
+     * Compute the offset curve for a polygon, a point or a collection of geometries
      * @param list
      * @param geometry
      * @param offset
