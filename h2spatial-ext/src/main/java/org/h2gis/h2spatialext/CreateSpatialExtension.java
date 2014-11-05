@@ -63,6 +63,7 @@ import org.h2gis.network.graph_creator.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_OffSetCurve;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.
@@ -74,6 +75,7 @@ public class CreateSpatialExtension {
 
     /**
      * @return instance of all built-ins functions
+     * @throws java.sql.SQLException
      */
     public static Function[] getBuiltInsFunctions() throws SQLException {
         return new Function[] {
@@ -165,7 +167,9 @@ public class CreateSpatialExtension {
                 new ST_ShortestPath(),
                 new ST_ShortestPathLength(),
                 new ST_ShortestPathTree(),
-                new ST_LineIntersector()};
+                //h2network end
+                new ST_LineIntersector(),        
+                new ST_OffSetCurve()};
     }
 
     /**
