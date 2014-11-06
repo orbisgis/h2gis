@@ -25,7 +25,6 @@
 
 package org.h2gis.drivers.shp;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.h2.table.Column;
 import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
@@ -40,6 +39,7 @@ import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.jts_utils.GeometryMetaData;
 
 import java.io.File;
 import java.io.IOException;
@@ -81,7 +81,7 @@ public class SHPDriverFunction implements DriverFunction {
             throw new SQLException(String.format("The table %s does not contain a geometry field", tableReference));
         }
         int geometryType = SFSUtilities.getGeometryType(connection, TableLocation.parse(tableReference, isH2), spatialFieldNames.get(0));
-        ShapeType shapeType = getShapeTypeFromSFSGeometryTypeCode(geometryType);
+        ShapeType shapeType = null;
         // Read table content
         Statement st = connection.createStatement();
         try {
@@ -101,12 +101,10 @@ public class SHPDriverFunction implements DriverFunction {
                     }
                     if(shpDriver == null) {
                         int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
-                        if(shapeType == null) {
-                            // If there is not shape type constraint read the first geometry and use the same type
-                            Geometry geometry = (Geometry)rs.getObject(geoFieldIndex);
-                            if(geometry != null) {
-                                shapeType = getShapeTypeFromSFSGeometryTypeCode(SFSUtilities.getGeometryTypeFromGeometry(geometry));
-                            }
+                        // If there is not shape type constraint read the first geometry and use the same type
+                        byte[] wkb = rs.getBytes(geoFieldIndex);
+                        if(wkb != null) {
+                            shapeType = getShapeTypeFromGeometryMetaData(GeometryMetaData.getMetaDataFromWKB(wkb));
                         }
                         if(shapeType != null) {
                             shpDriver = new SHPDriver();
@@ -244,46 +242,26 @@ public class SHPDriverFunction implements DriverFunction {
         }
     }
 
-    private static ShapeType getShapeTypeFromSFSGeometryTypeCode(int sfsGeometryTypeCode) throws SQLException {
+    private static ShapeType getShapeTypeFromGeometryMetaData(GeometryMetaData meta) throws SQLException {
         ShapeType shapeType;
-        switch (sfsGeometryTypeCode) {
+        switch (meta.geometryType) {
             case GeometryTypeCodes.MULTILINESTRING:
             case GeometryTypeCodes.LINESTRING:
-                shapeType = ShapeType.ARC;
-                break;
             case GeometryTypeCodes.MULTILINESTRINGM:
             case GeometryTypeCodes.LINESTRINGM:
-                shapeType = ShapeType.ARCM;
-                break;
             case GeometryTypeCodes.MULTILINESTRINGZ:
             case GeometryTypeCodes.LINESTRINGZ:
-                shapeType = ShapeType.ARCZ;
+                shapeType = meta.hasZ ? ShapeType.ARCZ : ShapeType.ARC;
                 break;
             case GeometryTypeCodes.POINT:
-                shapeType = ShapeType.POINT;
+                shapeType = meta.hasZ ? ShapeType.POINTZ  : ShapeType.POINT;
                 break;
             case GeometryTypeCodes.MULTIPOINT:
-                shapeType = ShapeType.MULTIPOINT;
-                break;
-            case GeometryTypeCodes.POINTM:
-            case GeometryTypeCodes.MULTIPOINTM:
-                shapeType = ShapeType.MULTIPOINTM;
-                break;
-            case GeometryTypeCodes.POINTZ:
-            case GeometryTypeCodes.MULTIPOINTZ:
-                shapeType = ShapeType.MULTIPOINTZ;
+                shapeType = meta.hasZ ? ShapeType.MULTIPOINTZ : ShapeType.MULTIPOINT;
                 break;
             case GeometryTypeCodes.POLYGON:
             case GeometryTypeCodes.MULTIPOLYGON:
-                shapeType = ShapeType.POLYGON;
-                break;
-            case GeometryTypeCodes.POLYGONM:
-            case GeometryTypeCodes.MULTIPOLYGONM:
-                shapeType = ShapeType.POLYGONM;
-                break;
-            case GeometryTypeCodes.POLYGONZ:
-            case GeometryTypeCodes.MULTIPOLYGONZ:
-                shapeType = ShapeType.POLYGONZ;
+                shapeType = meta.hasZ ? ShapeType.POLYGONZ : ShapeType.POLYGON;
                 break;
             default:
                 return null;

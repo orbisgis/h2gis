@@ -25,6 +25,7 @@
 package org.h2gis.drivers.shp;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTWriter;
 import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.file_table.H2TableIndex;
@@ -306,5 +307,32 @@ public class SHPImportExportTest {
         } finally {
             rs.close();
         }
+    }
+
+    @Test
+    public void exportTableTestZ() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/area_export.shp");
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
+        stat.execute("insert into area values(1, 'POLYGON ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
+        stat.execute("insert into area values(2, 'POLYGON ((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3))')");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export.shp', 'AREA')");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        SHPDriver shpDriver = new SHPDriver();
+        shpDriver.initDriverFromFile(shpFile);
+        shpDriver.setGeometryFieldIndex(1);
+        assertEquals(2, shpDriver.getFieldCount());
+        assertEquals(2, shpDriver.getRowCount());
+        Object[] row = shpDriver.getRow(0);
+        assertEquals(1, row[0]);
+        // The driver can not create POLYGON
+        WKTWriter toText = new WKTWriter(3);
+        assertEquals("MULTIPOLYGON (((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", toText.write((Geometry)row[1]));
+        row = shpDriver.getRow(1);
+        assertEquals(2, row[0]);
+        assertEquals("MULTIPOLYGON (((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", toText.write((Geometry)row[1]));
     }
 }

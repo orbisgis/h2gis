@@ -42,9 +42,7 @@ import java.util.Set;
  * @author Erwan Bocher
  */
 public class ST_LocateAlong extends DeterministicScalarFunction {
-
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
-
+    
     public ST_LocateAlong() {
         addProperty(PROP_REMARKS, "Returns a MULTIPOINT containing points along " +
                 "the line segments of the given geometry matching the specified " +
@@ -92,7 +90,7 @@ public class ST_LocateAlong extends DeterministicScalarFunction {
                         segmentLengthFraction, offsetDistance));
             }
         }
-        return GEOMETRY_FACTORY.createMultiPoint(
+        return geom.getFactory().createMultiPoint(
                 result.toArray(new Coordinate[result.size()]));
     }
 
