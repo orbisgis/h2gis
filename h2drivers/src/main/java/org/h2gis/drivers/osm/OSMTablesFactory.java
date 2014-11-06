@@ -29,8 +29,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.drivers.gpx.model.GPXTags;
-import org.h2gis.drivers.gpx.model.GpxMetadata;
 
 /**
  * Class to create the tables to import osm data
@@ -44,64 +42,208 @@ public class OSMTablesFactory {
     }
     
     /**
-     * Create the nodes table that will be used to import OSM nodes
-     * Example : 
-     * <node id="298884269" lat="54.0901746" lon="12.2482632" user="SvenHRO" uid="46882" visible="true" version="1" changeset="676636" timestamp="2008-09-21T21:37:45Z"/>
+     * Create the nodes table that will be used to import OSM nodes Example :
+     * <node id="298884269" lat="54.0901746" lon="12.2482632" user="SvenHRO"
+     * uid="46882" visible="true" version="1" changeset="676636"
+     * timestamp="2008-09-21T21:37:45Z"/>
+     *
      * @param connection
-     * @param nodesTableName
+     * @param nodeTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createNodesTable(Connection connection, String nodesTableName) throws SQLException {
+    public static PreparedStatement createNodeTable(Connection connection, String nodeTableName) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(nodesTableName);
-        sb.append(" (the_geom POINT,id LONG,");
-        sb.append(OSMTags.USER.toLowerCase()).append(" TEXT,");
-        sb.append(OSMTags.UID.toLowerCase()).append(" LONG,");
-        sb.append(OSMTags.VISIBLE.toLowerCase()).append(" BOOLEAN,");
-        sb.append(OSMTags.VERSION.toLowerCase()).append(" INT,");
-        sb.append(OSMTags.CHANGE_SET.toLowerCase()).append(" LONG,");      
-        sb.append(OSMTags.TIMESTAMP.toLowerCase()).append(" TIMESTAMP);");
+        sb.append(nodeTableName);
+        sb.append("(ID_NODE BIGINT PRIMARY KEY,  THE_GEOM POINT,"
+                + "USER_NAME VARCHAR,"
+                + "UID BIGINT,"
+                + "VISIBLE BOOLEAN,"
+                + "VERSION INTEGER,"
+                + "CHANGESET INTEGER,"
+                + "TIMESTAMP TIMESTAMP);");
         stmt.execute(sb.toString());
         stmt.close();
-        //We return the preparedstatement of the waypoints table
-        StringBuilder insert = new StringBuilder("INSERT INTO ").append(nodesTableName).append(" VALUES ( ?");
-        for (int i = 1; i < OSMTags.NODEFIELDCOUNT; i++) {
-            insert.append(",?");
-        }
-        insert.append(");");
-        return connection.prepareStatement(insert.toString());
+        return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES ( ?, ?, ?,?,?,?,?,?);");
     }
-    
+
     /**
-     * Create the ways table that will be used to import OSM ways
-     * Example : 
-     *  <way id="26659127" user="Masch" uid="55988" visible="true" version="5" changeset="4142606" timestamp="2010-03-16T11:47:08Z">
+     *
      * @param connection
-     * @param waysTableName
+     * @param tagTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWaysTable(Connection connection, String waysTableName) throws SQLException {
+    public static PreparedStatement createTagTable(Connection connection, String tagTableName) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(waysTableName);
-        sb.append(" (the_geom LINESTRING,id LONG,");
-        sb.append(OSMTags.USER.toLowerCase()).append(" TEXT,");
-        sb.append(OSMTags.UID.toLowerCase()).append(" LONG,");
-        sb.append(OSMTags.VISIBLE.toLowerCase()).append(" BOOLEAN,");
-        sb.append(OSMTags.VERSION.toLowerCase()).append(" INT,");
-        sb.append(OSMTags.CHANGE_SET.toLowerCase()).append(" LONG,");      
-        sb.append(OSMTags.TIMESTAMP.toLowerCase()).append(" TIMESTAMP);");
+        sb.append(tagTableName);
+        sb.append("(ID_TAG SERIAL, NAME VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
-        //We return the preparedstatement of the waypoints table
-        StringBuilder insert = new StringBuilder("INSERT INTO ").append(waysTableName).append(" VALUES ( ?");
-        for (int i = 1; i < OSMTags.WAYFIELDCOUNT; i++) {
-            insert.append(",?");
-        }
-        insert.append(");");
-        return connection.prepareStatement(insert.toString());
+        //We return the preparedstatement of the tag table
+        return connection.prepareStatement("INSERT INTO " + tagTableName + " VALUES ( ?, ?);");
+    }
+
+    /**
+     *
+     * @param connection
+     * @param nodeTagTableName
+     * @param nodeTableName
+     * @param tagTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createNodeTagTable(Connection connection, String nodeTagTableName, String nodeTableName, String tagTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(nodeTagTableName);
+        sb.append("(ID_NODE BIGINT, ID_TAG BIGINT, PRIMARY KEY(ID_NODE, ID_TAG), FOREIGN KEY(ID_NODE) REFERENCES ");
+        sb.append(nodeTableName);
+        sb.append(", FOREIGN KEY(ID_TAG) REFERENCES ");
+        sb.append(tagTableName).append(");");
+        stmt.execute(sb.toString());
+        stmt.close();
+        //We return the preparedstatement of the tag table
+        return connection.prepareStatement("INSERT INTO " + nodeTagTableName + " VALUES ( ?, ?);");
+    }
+
+    /**
+     * Create the ways table that will be used to import OSM ways Example :
+     * <way id="26659127" user="Masch" uid="55988" visible="true" version="5"
+     * changeset="4142606" timestamp="2010-03-16T11:47:08Z">
+     *
+     * @param connection
+     * @param wayTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createWayTable(Connection connection, String wayTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(wayTableName);
+        sb.append("(ID_WAY BIGINT PRIMARY KEY,"
+                + "THE_GEOM LINESTRING,"
+                + "USER_NAME VARCHAR,"
+                + "UID BIGINT,"
+                + "VISIBLE BOOLEAN,"
+                + "VERSION INTEGER,"
+                + "CHANGESET INTEGER,"
+                + "LAST_UPDATE TIMESTAMP);");
+        stmt.execute(sb.toString());
+        stmt.close();
+        return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES ( ?, ?,?,?,?,?,?,?);");
+    }
+
+    /**
+     *
+     * @param connection
+     * @param nodeWayTableName
+     * @param nodeTableName
+     * @param wayTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createNodeWayTable(Connection connection, String nodeWayTableName, String nodeTableName, String wayTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(nodeWayTableName);
+        sb.append("(ID_WAY BIGINT, ID_NODE BIGINT, NODE_ORDER INT , PRIMARY KEY(ID_WAY,ID_NODE,NODE_ORDER), FOREIGN KEY(ID_NODE) REFERENCES ");
+        sb.append(nodeTableName);
+        sb.append(", FOREIGN KEY(ID_WAY) REFERENCES ");
+        sb.append(wayTableName).append(");");
+        stmt.execute(sb.toString());
+        stmt.close();
+        return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES ( ?, ?,?);");
+    }
+
+    /**
+     *
+     * @param connection
+     * @param relationTable
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createRelationTable(Connection connection, String relationTable) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(relationTable);
+        sb.append("(ID_RELATION BIGINT PRIMARY KEY,"
+                + "USER_NAME VARCHAR,"
+                + "UID BIGINT,"
+                + "VISIBLE BOOLEAN,"
+                + "VERSION INTEGER,"
+                + "CHANGESET INTEGER,"
+                + "LAST_UPDATE TIMESTAMP);");
+        stmt.execute(sb.toString());
+        stmt.close();
+        return connection.prepareStatement("INSERT INTO " + relationTable + " VALUES ( ?,?,?,?,?,?,?);");
+    }
+
+    /**
+     *
+     * @param connection
+     * @param relationTable
+     * @param relationTagTable
+     * @param tagTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createRelationTagTable(Connection connection, String relationTable, String relationTagTable, String tagTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(relationTagTable);
+        sb.append("(ID_RELATION BIGINT, ID_TAG BIGINT, PRIMARY KEY(ID_RELATION, ID_TAG), FOREIGN KEY(ID_RELATION) REFERENCES ");
+        sb.append(relationTable);
+        sb.append(",FOREIGN KEY(ID_TAG) REFERENCES ");
+        sb.append(tagTableName).append(");");
+        stmt.execute(sb.toString());
+        stmt.close();
+        return connection.prepareStatement("INSERT INTO " + relationTable + " VALUES ( ?,?,?,?,?,?,?);");
+    }
+
+    /**
+     *
+     * @param connection
+     * @param nodeMemberTable
+     * @param relationTable
+     * @param nodeTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createNodeMemberTable(Connection connection, String nodeMemberTable, String relationTable, String nodeTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(nodeMemberTable);
+        sb.append("(ID_RELATION BIGINT,ID_NODE BIGINT, ROLE VARCHAR, NODE_ORDER INT, PRIMARY KEY(ID_RELATION, ID_NODE, NODE_ORDER) ,FOREIGN KEY(ID_RELATION) REFERENCES ");
+        sb.append(relationTable);
+        sb.append(", FOREIGN KEY(ID_NODE) REFERENCES ");
+        sb.append(nodeTableName).append(");");
+        stmt.execute(sb.toString());
+        stmt.close();
+        return connection.prepareStatement("INSERT INTO " + relationTable + " VALUES ( ?,?,?,?);");
+    }
+
+    /**
+     *
+     * @param connection
+     * @param wayMemberTable
+     * @param relationTable
+     * @param wayTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createWayMemberTable(Connection connection, String wayMemberTable, String relationTable, String wayTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(wayMemberTable);
+        sb.append("(ID_RELATION BIGINT, ID_WAY BIGINT, ROLE VARCHAR, WAY_ORDER INT, PRIMARY KEY(ID_RELATION, ID_WAY, WAY_ORDER), FOREIGN KEY(ID_RELATION) REFERENCES ");
+        sb.append(relationTable);
+        sb.append(", FOREIGN KEY(ID_WAY) REFERENCES ");
+        sb.append(wayTableName).append(");");
+        stmt.execute(sb.toString());
+        stmt.close();
+        return connection.prepareStatement("INSERT INTO " + relationTable + " VALUES ( ?,?,?,?);");
     }
 }
