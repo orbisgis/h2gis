@@ -14,32 +14,41 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
 package org.h2gis.drivers.osm;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
-import org.xml.sax.Attributes;
 
 /**
  *
  * @author Erwan Bocher
  */
-public class NodeOSMElement extends OSMElement{
+public class NodeOSMElement extends OSMElement {
 
-    public NodeOSMElement(Attributes attributes) {
-        super(attributes);
+    private Point point;
+
+    public NodeOSMElement() {
+        super();
     }
-    
+
     /**
-     * 
-     * @param gf
-     * @return 
+     *
+     * @return
      */
-    public Point getPoint( GeometryFactory gf){
-        return gf.createPoint(new Coordinate(Double.valueOf(getValue("lon")), 
-                Double.valueOf(getValue("lat"))));
+    public Point getPoint() {
+        return point;
     }
-    
+
+    /**
+     *
+     * @param gf
+     * @param lon
+     * @param lat
+     */
+    public void createPoint(GeometryFactory gf, String lon, String lat) {
+        point = gf.createPoint(new Coordinate(Double.valueOf(lon),
+                Double.valueOf(lat)));
+    }
+
 }

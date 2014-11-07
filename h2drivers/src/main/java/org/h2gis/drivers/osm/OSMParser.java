@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.xml.sax.Attributes;
@@ -65,6 +68,7 @@ public class OSMParser extends DefaultHandler{
     private long relationId=1;
     private TAG_LOCATION tagLocation;
     private GeometryFactory gf = new GeometryFactory();
+    private NodeOSMElement nodeOSMElement;
     
     public OSMParser(){
         
@@ -168,28 +172,39 @@ public class OSMParser extends DefaultHandler{
      * @throws SQLException 
      */
     private void createOSMDatabaseModel(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
-       //Create the NODE table
-       nodePreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + NODE, isH2));
-       nodeTagPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + NODE_TAG, isH2));
-       wayPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + WAY, isH2));
-       wayTagPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + WAY_TAG, isH2));
-       tagPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + TAG, isH2));
-       relationPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + RELATION, isH2));
-       relationTagPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + RELATION_TAG, isH2));
-       nodeMemberPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + NODE_MEMBER, isH2));
-       wayMemberPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + WAY_MEMBER, isH2));
+        //Create the NODE table
+        String nodeTableName = caseIdentifier(requestedTable, osmTableName + NODE, isH2);
+        nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName);
+        String tagTableName = caseIdentifier(requestedTable, osmTableName + TAG, isH2);
+        tagPreparedStmt = OSMTablesFactory.createTagTable(connection, tagTableName);
+        String nodeTagTableName = caseIdentifier(requestedTable, osmTableName + NODE_TAG, isH2);
+        nodeTagPreparedStmt = OSMTablesFactory.createNodeTagTable(connection, nodeTagTableName, nodeTableName, tagTableName);
+        String wayTableName = caseIdentifier(requestedTable, osmTableName + WAY, isH2);
+        wayPreparedStmt = OSMTablesFactory.createWayTable(connection,wayTableName );
+        String wayTagTableName = caseIdentifier(requestedTable, osmTableName + WAY_TAG, isH2);
+        wayTagPreparedStmt = OSMTablesFactory.createWayTagTable(connection, wayTagTableName, wayTableName, tagTableName);
+        String relationTableName = caseIdentifier(requestedTable, osmTableName + RELATION, isH2);
+        relationPreparedStmt = OSMTablesFactory.createRelationTable(connection, relationTableName);
+        String relationTagTableName = caseIdentifier(requestedTable, osmTableName + RELATION_TAG, isH2);
+        relationTagPreparedStmt = OSMTablesFactory.createRelationTagTable(connection, relationTableName, relationTagTableName, tagTableName);
+        String nodeMemberTableName = caseIdentifier(requestedTable, osmTableName + NODE_MEMBER, isH2);
+        nodeMemberPreparedStmt = OSMTablesFactory.createNodeMemberTable(connection, nodeMemberTableName, relationTableName, nodeTableName);
+        String wayMemberTableName = caseIdentifier(requestedTable, osmTableName + WAY_MEMBER, isH2);
+        wayMemberPreparedStmt =  OSMTablesFactory.createWayMemberTable(connection, wayMemberTableName, relationTableName, wayTableName);
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException{
         if(localName.compareToIgnoreCase("osm")==0){
             String version = attributes.getValue("version");
             System.out.println("OSM "+ version);
         }
-        else if(localName.compareToIgnoreCase("node")==0){  
-            NodeOSMElement nodeOSMElement = new NodeOSMElement(attributes);
+        else if(localName.compareToIgnoreCase("node")==0){
+            nodeOSMElement = new NodeOSMElement();            
+            setCommonsAttributes(nodeOSMElement, attributes);
+            nodeOSMElement.createPoint(gf, attributes.getValue("lon"), attributes.getValue("lat"));
             tagLocation = TAG_LOCATION.NODE;
-            System.out.println(nodeId+ " Node "+ nodeOSMElement.getID()+ " : "+ nodeOSMElement.getPoint(gf));
+            System.out.println(nodeId+ " Node "+ nodeOSMElement.getID()+ " : "+ nodeOSMElement.getPoint());
         }
         else if(localName.compareToIgnoreCase("way")==0){
             tagLocation = TAG_LOCATION.WAY;
@@ -198,16 +213,25 @@ public class OSMParser extends DefaultHandler{
         else if(localName.compareToIgnoreCase("tag")==0){
             String key = attributes.getValue("k");
             String value = attributes.getValue("v");
+            try {
+                tagPreparedStmt.setString(1, key);
+                tagPreparedStmt.setString(2, value);
+                tagPreparedStmt.setString(3, key);
+                tagPreparedStmt.setString(4, value);
+                tagPreparedStmt.execute();
+            } catch (SQLException ex) {
+                throw new SAXException("Cannot set the tag value :  " + key + "=" + value, ex);
+            }
+            
             if(tagLocation == TAG_LOCATION.NODE){
-            System.out.println(" Node tag  : "+ key + " ,  "+ value);
+                nodeOSMElement.addTag(key, value);
             }
             else if(tagLocation == TAG_LOCATION.WAY){
             System.out.println(" Way tag  : "+ key + " ,  "+ value);
             }
             else if(tagLocation == TAG_LOCATION.RELATION){
             System.out.println(" Relation tag  : "+ key + " ,  "+ value);
-            }
-        
+            }        
         }
         else if(localName.compareToIgnoreCase("nd")==0){
             String ref = attributes.getValue("ref");
@@ -226,6 +250,19 @@ public class OSMParser extends DefaultHandler{
         if(localName.compareToIgnoreCase("node")==0){
             nodeId++;
             tagLocation = TAG_LOCATION.OTHER;
+            try {            
+            nodePreparedStmt.setObject(1, nodeOSMElement.getID());
+            nodePreparedStmt.setObject(2, nodeOSMElement.getPoint());
+            nodePreparedStmt.setObject(3, nodeOSMElement.getUser());
+            nodePreparedStmt.setObject(4, nodeOSMElement.getUID());
+            nodePreparedStmt.setObject(5, nodeOSMElement.getVisible());            
+            nodePreparedStmt.setObject(6, nodeOSMElement.getVersion());
+            nodePreparedStmt.setObject(7, nodeOSMElement.getChangeSet());
+            nodePreparedStmt.setObject(8, nodeOSMElement.getTimeStamp());
+            nodePreparedStmt.execute();
+            } catch (SQLException ex) {
+                throw new SAXException("Cannot insert the node  :  " + nodeOSMElement.getID(), ex);
+            } 
             
         }
         else if(localName.compareToIgnoreCase("way")==0){
@@ -236,6 +273,22 @@ public class OSMParser extends DefaultHandler{
             relationId++;
             tagLocation = TAG_LOCATION.OTHER;
         }
+    }
+
+    /**
+     * 
+     * @param osmElement
+     * @param attributes
+     * @throws ParseException 
+     */
+    private void setCommonsAttributes(OSMElement osmElement, Attributes attributes) throws SAXException {
+        osmElement.setId(attributes.getValue("id"));
+        osmElement.setUser(attributes.getValue("user"));
+        osmElement.setUid(attributes.getValue("uid"));
+        osmElement.setVisible(attributes.getValue("visible"));
+        osmElement.setVersion(attributes.getValue("version"));
+        osmElement.setChangeset(attributes.getValue("changeset"));
+        osmElement.setTimestamp(attributes.getValue("timestamp"));
     }
     
     
