@@ -106,8 +106,14 @@ public class OSMTablesFactory {
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the tag table
-        return connection.prepareStatement("INSERT INTO " + nodeTagTableName + " VALUES ( ?, ?);");
+        StringBuilder insert = new StringBuilder("INSERT INTO ");
+        insert.append(nodeTagTableName);
+        insert.append("VALUES ( ?, ");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE KEY = ? AND VALUE = ? LIMIT 1)");
+        insert.append(");");        
+        return connection.prepareStatement( insert.toString());
     }
+    
 
     /**
      * Create the ways table that will be used to import OSM ways Example :

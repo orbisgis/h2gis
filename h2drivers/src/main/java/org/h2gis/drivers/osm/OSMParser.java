@@ -17,17 +17,26 @@
 
 package org.h2gis.drivers.osm;
 
+import com.vividsolutions.jts.geom.GeometryFactory;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class OSMParser extends DefaultHandler{
     
@@ -51,20 +60,69 @@ public class OSMParser extends DefaultHandler{
     private PreparedStatement relationTagPreparedStmt;
     private PreparedStatement nodeMemberPreparedStmt;
     private PreparedStatement wayMemberPreparedStmt;
+    private  long nodeId =1;
+    private  long wayId =1;
+    private long relationId=1;
+    private TAG_LOCATION tagLocation;
+    private GeometryFactory gf = new GeometryFactory();
     
     public OSMParser(){
         
     }
     
     
-    public boolean read(File inputFile, String tableName, Connection connection) throws SQLException {
+    public boolean read(File inputFile, String tableName, Connection connection) throws SQLException, FileNotFoundException, SAXException, IOException {
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
         TableLocation requestedTable = TableLocation.parse(tableName, isH2);
         String osmTableName = requestedTable.getTable();        
         checkOSMTables(connection, isH2, requestedTable, osmTableName); 
-        createOSMDatabaseModel( connection,  isH2,  requestedTable,osmTableName);
+        createOSMDatabaseModel(connection,  isH2,  requestedTable,osmTableName);
+        
+        FileInputStream fs = null;
+        try {
+            fs = new FileInputStream(inputFile);
+            XMLReader parser = XMLReaderFactory.createXMLReader();
+            parser.setErrorHandler(this);
+            parser.setContentHandler(this);
+            parser.parse(new InputSource(fs));
+            success = true;
+        } finally {
+            if (fs != null) {
+                fs.close();
+            }
+            // When the reading ends, close() method has to be called
+            if (nodePreparedStmt!= null) {
+                nodePreparedStmt.close();
+            }
+            if (nodeTagPreparedStmt != null) {
+                nodeTagPreparedStmt.close();
+            }
+            if (wayPreparedStmt != null) {
+                wayPreparedStmt.close();
+            }
+            if (wayTagPreparedStmt != null) {
+                wayTagPreparedStmt.close();
+            }
+            if (relationPreparedStmt != null) {
+                relationPreparedStmt.close();
+            }
+            if (relationTagPreparedStmt!= null) {
+                relationTagPreparedStmt.close();
+            }
+            if (nodeMemberPreparedStmt != null) {
+                nodeMemberPreparedStmt.close();
+            }
+            if (wayMemberPreparedStmt != null) {
+                wayMemberPreparedStmt.close();
+            }
+            if (tagPreparedStmt != null) {
+                tagPreparedStmt.close();
+            }
+        }
+        
+        System.out.println("Node : "+ nodeId + " Way : "+ wayId + " Relation : "+ relationId);
         
         return success;
     }
@@ -121,5 +179,65 @@ public class OSMParser extends DefaultHandler{
        nodeMemberPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + NODE_MEMBER, isH2));
        wayMemberPreparedStmt =  OSMTablesFactory.createNodeTable(connection, caseIdentifier(requestedTable, osmTableName + WAY_MEMBER, isH2));
     }
+
+    @Override
+    public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        if(localName.compareToIgnoreCase("osm")==0){
+            String version = attributes.getValue("version");
+            System.out.println("OSM "+ version);
+        }
+        else if(localName.compareToIgnoreCase("node")==0){  
+            NodeOSMElement nodeOSMElement = new NodeOSMElement(attributes);
+            tagLocation = TAG_LOCATION.NODE;
+            System.out.println(nodeId+ " Node "+ nodeOSMElement.getID()+ " : "+ nodeOSMElement.getPoint(gf));
+        }
+        else if(localName.compareToIgnoreCase("way")==0){
+            tagLocation = TAG_LOCATION.WAY;
+            
+        }        
+        else if(localName.compareToIgnoreCase("tag")==0){
+            String key = attributes.getValue("k");
+            String value = attributes.getValue("v");
+            if(tagLocation == TAG_LOCATION.NODE){
+            System.out.println(" Node tag  : "+ key + " ,  "+ value);
+            }
+            else if(tagLocation == TAG_LOCATION.WAY){
+            System.out.println(" Way tag  : "+ key + " ,  "+ value);
+            }
+            else if(tagLocation == TAG_LOCATION.RELATION){
+            System.out.println(" Relation tag  : "+ key + " ,  "+ value);
+            }
+        
+        }
+        else if(localName.compareToIgnoreCase("nd")==0){
+            String ref = attributes.getValue("ref");
+            System.out.println(" Node ref  : "+ ref);
+        }
+        
+        else if(localName.compareToIgnoreCase("relation")==0){
+            tagLocation = TAG_LOCATION.RELATION;
+            String id = attributes.getValue("id");
+            System.out.println(" Relation id  : "+ id);
+        }
+    }
+
+    @Override
+    public void endElement(String uri, String localName, String qName) throws SAXException {
+        if(localName.compareToIgnoreCase("node")==0){
+            nodeId++;
+            tagLocation = TAG_LOCATION.OTHER;
+            
+        }
+        else if(localName.compareToIgnoreCase("way")==0){
+            wayId++;
+            tagLocation = TAG_LOCATION.OTHER;
+        }
+        else if(localName.compareToIgnoreCase("relation")==0){
+            relationId++;
+            tagLocation = TAG_LOCATION.OTHER;
+        }
+    }
+    
+    
     
 }
