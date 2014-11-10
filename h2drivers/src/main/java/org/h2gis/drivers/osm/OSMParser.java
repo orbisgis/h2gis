@@ -26,8 +26,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.HashMap;
+import java.util.Map;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.xml.sax.Attributes;
@@ -49,6 +49,7 @@ public class OSMParser extends DefaultHandler{
     String WAY = "_way";
     String NODE_TAG = "_node_tag";
     String WAY_TAG = "_way_tag";
+    String WAY_NODE = "_way_node";
     String TAG = "_tag";
     String RELATION = "_relation";
     String RELATION_TAG = "_relation_tag";
@@ -66,15 +67,28 @@ public class OSMParser extends DefaultHandler{
     private  long nodeId =1;
     private  long wayId =1;
     private long relationId=1;
+    private long tagId=0;
     private TAG_LOCATION tagLocation;
     private GeometryFactory gf = new GeometryFactory();
     private NodeOSMElement nodeOSMElement;
+    private WayOSMElement wayOSMElement;
+    private PreparedStatement wayNodePreparedStmt;
     
     public OSMParser(){
         
     }
     
-    
+    /**
+     * 
+     * @param inputFile
+     * @param tableName
+     * @param connection
+     * @return
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws SAXException
+     * @throws IOException 
+     */
     public boolean read(File inputFile, String tableName, Connection connection) throws SQLException, FileNotFoundException, SAXException, IOException {
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
@@ -109,6 +123,9 @@ public class OSMParser extends DefaultHandler{
             if (wayTagPreparedStmt != null) {
                 wayTagPreparedStmt.close();
             }
+            if (wayNodePreparedStmt != null) {
+                wayNodePreparedStmt.close();
+            }
             if (relationPreparedStmt != null) {
                 relationPreparedStmt.close();
             }
@@ -124,9 +141,8 @@ public class OSMParser extends DefaultHandler{
             if (tagPreparedStmt != null) {
                 tagPreparedStmt.close();
             }
-        }
-        
-        System.out.println("Node : "+ nodeId + " Way : "+ wayId + " Relation : "+ relationId);
+        }        
+        System.out.println("Node : "+ nodeId + " Way : "+ wayId + " Relation : "+ relationId + " Nombre de tag "+ tagId);
         
         return success;
     }
@@ -141,7 +157,7 @@ public class OSMParser extends DefaultHandler{
      * @throws SQLException 
      */
     private void checkOSMTables(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
-        String[] omsTables = new String[]{NODE, NODE_TAG, WAY, WAY_TAG, TAG, RELATION, RELATION_TAG, NODE_MEMBER, WAY_MEMBER};
+        String[] omsTables = new String[]{NODE, NODE_TAG, WAY,WAY_NODE, WAY_TAG, TAG, RELATION, RELATION_TAG, NODE_MEMBER, WAY_MEMBER};
         for (String omsTableSuffix : omsTables) {
             String osmTable = caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);
             if (JDBCUtilities.tableExists(connection, osmTable)) {
@@ -183,6 +199,8 @@ public class OSMParser extends DefaultHandler{
         wayPreparedStmt = OSMTablesFactory.createWayTable(connection,wayTableName );
         String wayTagTableName = caseIdentifier(requestedTable, osmTableName + WAY_TAG, isH2);
         wayTagPreparedStmt = OSMTablesFactory.createWayTagTable(connection, wayTagTableName, wayTableName, tagTableName);
+        String wayNodeTableName = caseIdentifier(requestedTable, osmTableName + WAY_NODE, isH2);
+        wayNodePreparedStmt = OSMTablesFactory.createWayNodeTable(connection, wayNodeTableName, nodeTableName, wayTableName);       
         String relationTableName = caseIdentifier(requestedTable, osmTableName + RELATION, isH2);
         relationPreparedStmt = OSMTablesFactory.createRelationTable(connection, relationTableName);
         String relationTagTableName = caseIdentifier(requestedTable, osmTableName + RELATION_TAG, isH2);
@@ -204,9 +222,11 @@ public class OSMParser extends DefaultHandler{
             setCommonsAttributes(nodeOSMElement, attributes);
             nodeOSMElement.createPoint(gf, attributes.getValue("lon"), attributes.getValue("lat"));
             tagLocation = TAG_LOCATION.NODE;
-            System.out.println(nodeId+ " Node "+ nodeOSMElement.getID()+ " : "+ nodeOSMElement.getPoint());
+            //System.out.println(nodeId+ " Node "+ nodeOSMElement.getID()+ " : "+ nodeOSMElement.getPoint());
         }
         else if(localName.compareToIgnoreCase("way")==0){
+            wayOSMElement = new WayOSMElement();
+            setCommonsAttributes(wayOSMElement, attributes);
             tagLocation = TAG_LOCATION.WAY;
             
         }        
@@ -218,56 +238,94 @@ public class OSMParser extends DefaultHandler{
                 tagPreparedStmt.setString(2, value);
                 tagPreparedStmt.setString(3, key);
                 tagPreparedStmt.setString(4, value);
-                tagPreparedStmt.execute();
+                tagPreparedStmt.execute();                
             } catch (SQLException ex) {
                 throw new SAXException("Cannot set the tag value :  " + key + "=" + value, ex);
-            }
-            
-            if(tagLocation == TAG_LOCATION.NODE){
+            }            
+            if (tagLocation == TAG_LOCATION.NODE) {
                 nodeOSMElement.addTag(key, value);
-            }
-            else if(tagLocation == TAG_LOCATION.WAY){
-            System.out.println(" Way tag  : "+ key + " ,  "+ value);
-            }
-            else if(tagLocation == TAG_LOCATION.RELATION){
-            System.out.println(" Relation tag  : "+ key + " ,  "+ value);
-            }        
+            } else if (tagLocation == TAG_LOCATION.WAY) {
+                wayOSMElement.addTag(key, value);
+            } else if (tagLocation == TAG_LOCATION.RELATION) {
+                //System.out.println(" Relation tag  : "+ key + " ,  "+ value);
+            }       
         }
         else if(localName.compareToIgnoreCase("nd")==0){
-            String ref = attributes.getValue("ref");
-            System.out.println(" Node ref  : "+ ref);
-        }
-        
+             wayOSMElement.addRef(attributes.getValue("ref"));
+        }        
         else if(localName.compareToIgnoreCase("relation")==0){
             tagLocation = TAG_LOCATION.RELATION;
             String id = attributes.getValue("id");
-            System.out.println(" Relation id  : "+ id);
+            //System.out.println(" Relation id  : "+ id);
         }
     }
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if(localName.compareToIgnoreCase("node")==0){
+        if (localName.compareToIgnoreCase("node") == 0) {
             nodeId++;
             tagLocation = TAG_LOCATION.OTHER;
-            try {            
-            nodePreparedStmt.setObject(1, nodeOSMElement.getID());
-            nodePreparedStmt.setObject(2, nodeOSMElement.getPoint());
-            nodePreparedStmt.setObject(3, nodeOSMElement.getUser());
-            nodePreparedStmt.setObject(4, nodeOSMElement.getUID());
-            nodePreparedStmt.setObject(5, nodeOSMElement.getVisible());            
-            nodePreparedStmt.setObject(6, nodeOSMElement.getVersion());
-            nodePreparedStmt.setObject(7, nodeOSMElement.getChangeSet());
-            nodePreparedStmt.setObject(8, nodeOSMElement.getTimeStamp());
-            nodePreparedStmt.execute();
+            try {
+                nodePreparedStmt.setObject(1, nodeOSMElement.getID());
+                nodePreparedStmt.setObject(2, nodeOSMElement.getPoint());
+                nodePreparedStmt.setObject(3, nodeOSMElement.getUser());
+                nodePreparedStmt.setObject(4, nodeOSMElement.getUID());
+                nodePreparedStmt.setObject(5, nodeOSMElement.getVisible());
+                nodePreparedStmt.setObject(6, nodeOSMElement.getVersion());
+                nodePreparedStmt.setObject(7, nodeOSMElement.getChangeSet());
+                nodePreparedStmt.setObject(8, nodeOSMElement.getTimeStamp());
+                nodePreparedStmt.execute();                
+                HashMap<String, String> tags = nodeOSMElement.getTags();                
+                for (Map.Entry<String, String> entry : tags.entrySet()) {
+                    nodeTagPreparedStmt.setObject(1, nodeOSMElement.getID());
+                    nodeTagPreparedStmt.setObject(2, entry.getKey());
+                    nodeTagPreparedStmt.setObject(3, entry.getValue());
+                    nodeTagPreparedStmt.addBatch();
+                }     
+                nodeTagPreparedStmt.executeBatch();
+                
             } catch (SQLException ex) {
                 throw new SAXException("Cannot insert the node  :  " + nodeOSMElement.getID(), ex);
-            } 
+            }
             
         }
         else if(localName.compareToIgnoreCase("way")==0){
             wayId++;
             tagLocation = TAG_LOCATION.OTHER;
+            try{
+                wayPreparedStmt.setObject(1, wayOSMElement.getID());
+                wayPreparedStmt.setObject(2, null);
+                wayPreparedStmt.setObject(3, wayOSMElement.getUser());
+                wayPreparedStmt.setObject(4, wayOSMElement.getUID());
+                wayPreparedStmt.setObject(5, wayOSMElement.getVisible());
+                wayPreparedStmt.setObject(6, wayOSMElement.getVersion());
+                wayPreparedStmt.setObject(7, wayOSMElement.getChangeSet());
+                wayPreparedStmt.setObject(8, wayOSMElement.getTimeStamp());
+                wayPreparedStmt.execute();
+
+                HashMap<String, String> tags = wayOSMElement.getTags();
+                for (Map.Entry<String, String> entry : tags.entrySet()) {
+                    wayTagPreparedStmt.setObject(1, wayOSMElement.getID());
+                    wayTagPreparedStmt.setObject(2, entry.getKey());
+                    wayTagPreparedStmt.setObject(3, entry.getValue());
+                    wayTagPreparedStmt.addBatch();
+                }
+                wayTagPreparedStmt.executeBatch();
+                
+                HashMap<Integer, Long> nodesRef = wayOSMElement.getNodesRef();
+                for (Map.Entry<Integer, Long> entry : nodesRef.entrySet()) {
+                    Integer order = entry.getKey();
+                    Long ref = entry.getValue();
+                    wayNodePreparedStmt.setObject(1, wayOSMElement.getID());
+                    wayNodePreparedStmt.setObject(2, ref);
+                    wayNodePreparedStmt.setObject(3, order);   
+                    wayNodePreparedStmt.addBatch();
+                }
+                wayNodePreparedStmt.executeBatch();
+                
+             } catch (SQLException ex) {
+                throw new SAXException("Cannot insert the way  :  " + wayOSMElement.getID(), ex);
+            }
         }
         else if(localName.compareToIgnoreCase("relation")==0){
             relationId++;
@@ -290,7 +348,5 @@ public class OSMParser extends DefaultHandler{
         osmElement.setChangeset(attributes.getValue("changeset"));
         osmElement.setTimestamp(attributes.getValue("timestamp"));
     }
-    
-    
     
 }

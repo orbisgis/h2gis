@@ -17,12 +17,28 @@
 
 package org.h2gis.drivers.osm;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Erwan Bocher
  */
-public enum TAG_LOCATION {
+public class WayOSMElement extends OSMElement{
+    private final HashMap<Integer, Long> nodesRef;
+    private int order = 0;
     
-    NODE, WAY, OTHER, RELATION, ND
+    public WayOSMElement(){
+        super();
+        nodesRef = new HashMap<Integer, Long>();
+    }
+    
+    public void addRef(String ref){
+        nodesRef.put(order++, Long.valueOf(ref));
+    }
+
+    public HashMap<Integer, Long> getNodesRef() {
+        return nodesRef;
+    }
+    
     
 }

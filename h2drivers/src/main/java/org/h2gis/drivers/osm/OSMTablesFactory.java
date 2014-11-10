@@ -62,7 +62,7 @@ public class OSMTablesFactory {
                 + "VISIBLE BOOLEAN,"
                 + "VERSION INTEGER,"
                 + "CHANGESET INTEGER,"
-                + "TIMESTAMP TIMESTAMP);");
+                + "LAST_UPDATE TIMESTAMP);");
         stmt.execute(sb.toString());
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES ( ?, ?, ?,?,?,?,?,?);");
@@ -107,7 +107,7 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(nodeTagTableName);
-        sb.append("(ID_NODE BIGINT, ID_TAG BIGINT, PRIMARY KEY(ID_NODE, ID_TAG), FOREIGN KEY(ID_NODE) REFERENCES ");
+        sb.append("(ID_NODE BIGINT, ID_TAG BIGINT, FOREIGN KEY(ID_NODE) REFERENCES ");
         sb.append(nodeTableName);
         sb.append(", FOREIGN KEY(ID_TAG) REFERENCES ");
         sb.append(tagTableName).append(");");
@@ -163,7 +163,7 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayTagTableName);
-        sb.append("(ID_WAY BIGINT, ID_TAG BIGINT, PRIMARY KEY(ID_WAY, ID_TAG), FOREIGN KEY(ID_WAY) REFERENCES ");
+        sb.append("(ID_WAY BIGINT, ID_TAG BIGINT,  FOREIGN KEY(ID_WAY) REFERENCES ");
         sb.append(wayTableName);
         sb.append(", FOREIGN KEY(ID_TAG) REFERENCES ");
         sb.append(tagTableName).append(");");
@@ -181,23 +181,23 @@ public class OSMTablesFactory {
     /**
      *
      * @param connection
-     * @param nodeWayTableName
+     * @param wayNodeTableName
      * @param nodeTableName
      * @param wayTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createNodeWayTable(Connection connection, String nodeWayTableName, String nodeTableName, String wayTableName) throws SQLException {
+    public static PreparedStatement createWayNodeTable(Connection connection, String wayNodeTableName, String nodeTableName, String wayTableName) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(nodeWayTableName);
-        sb.append("(ID_WAY BIGINT, ID_NODE BIGINT, NODE_ORDER INT , PRIMARY KEY(ID_WAY,ID_NODE,NODE_ORDER), FOREIGN KEY(ID_NODE) REFERENCES ");
+        sb.append(wayNodeTableName);
+        sb.append("(ID_WAY BIGINT, ID_NODE BIGINT, NODE_ORDER INT, FOREIGN KEY(ID_NODE) REFERENCES ");
         sb.append(nodeTableName);
         sb.append(", FOREIGN KEY(ID_WAY) REFERENCES ");
         sb.append(wayTableName).append(");");
         stmt.execute(sb.toString());
         stmt.close();
-        return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES ( ?, ?,?);");
+        return connection.prepareStatement("INSERT INTO " + wayNodeTableName + " VALUES ( ?, ?,?);");
     }
 
     /**
