@@ -25,7 +25,7 @@ import java.util.HashMap;
  */
 public class WayOSMElement extends OSMElement{
     private final HashMap<Integer, Long> nodesRef;
-    private int order = 0;
+    private int order = 1;
     
     public WayOSMElement(){
         super();

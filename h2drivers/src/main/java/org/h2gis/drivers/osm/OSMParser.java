@@ -50,7 +50,6 @@ public class OSMParser extends DefaultHandler{
     String NODE_TAG = "_node_tag";
     String WAY_TAG = "_way_tag";
     String WAY_NODE = "_way_node";
-    String TAG = "_tag";
     String RELATION = "_relation";
     String RELATION_TAG = "_relation_tag";
     String NODE_MEMBER = "_node_member";
@@ -59,7 +58,6 @@ public class OSMParser extends DefaultHandler{
     private PreparedStatement nodeTagPreparedStmt;
     private PreparedStatement wayPreparedStmt;
     private PreparedStatement wayTagPreparedStmt;
-    private PreparedStatement tagPreparedStmt;
     private PreparedStatement relationPreparedStmt;
     private PreparedStatement relationTagPreparedStmt;
     private PreparedStatement nodeMemberPreparedStmt;
@@ -67,12 +65,13 @@ public class OSMParser extends DefaultHandler{
     private  long nodeId =1;
     private  long wayId =1;
     private long relationId=1;
-    private long tagId=0;
+    private int idMemberOrder =1;
     private TAG_LOCATION tagLocation;
-    private GeometryFactory gf = new GeometryFactory();
+    private final GeometryFactory gf = new GeometryFactory();
     private NodeOSMElement nodeOSMElement;
     private WayOSMElement wayOSMElement;
     private PreparedStatement wayNodePreparedStmt;
+    private OSMElement relationOSMElement;
     
     public OSMParser(){
         
@@ -138,11 +137,8 @@ public class OSMParser extends DefaultHandler{
             if (wayMemberPreparedStmt != null) {
                 wayMemberPreparedStmt.close();
             }
-            if (tagPreparedStmt != null) {
-                tagPreparedStmt.close();
-            }
         }        
-        System.out.println("Node : "+ nodeId + " Way : "+ wayId + " Relation : "+ relationId + " Nombre de tag "+ tagId);
+        System.out.println("Node : "+ nodeId + " Way : "+ wayId + " Relation : "+ relationId );
         
         return success;
     }
@@ -157,7 +153,7 @@ public class OSMParser extends DefaultHandler{
      * @throws SQLException 
      */
     private void checkOSMTables(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
-        String[] omsTables = new String[]{NODE, NODE_TAG, WAY,WAY_NODE, WAY_TAG, TAG, RELATION, RELATION_TAG, NODE_MEMBER, WAY_MEMBER};
+        String[] omsTables = new String[]{NODE, NODE_TAG, WAY,WAY_NODE, WAY_TAG, RELATION, RELATION_TAG, NODE_MEMBER, WAY_MEMBER};
         for (String omsTableSuffix : omsTables) {
             String osmTable = caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);
             if (JDBCUtilities.tableExists(connection, osmTable)) {
@@ -191,20 +187,18 @@ public class OSMParser extends DefaultHandler{
         //Create the NODE table
         String nodeTableName = caseIdentifier(requestedTable, osmTableName + NODE, isH2);
         nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName);
-        String tagTableName = caseIdentifier(requestedTable, osmTableName + TAG, isH2);
-        tagPreparedStmt = OSMTablesFactory.createTagTable(connection, tagTableName);
         String nodeTagTableName = caseIdentifier(requestedTable, osmTableName + NODE_TAG, isH2);
-        nodeTagPreparedStmt = OSMTablesFactory.createNodeTagTable(connection, nodeTagTableName, nodeTableName, tagTableName);
+        nodeTagPreparedStmt = OSMTablesFactory.createNodeTagTable(connection, nodeTagTableName, nodeTableName);
         String wayTableName = caseIdentifier(requestedTable, osmTableName + WAY, isH2);
         wayPreparedStmt = OSMTablesFactory.createWayTable(connection,wayTableName );
         String wayTagTableName = caseIdentifier(requestedTable, osmTableName + WAY_TAG, isH2);
-        wayTagPreparedStmt = OSMTablesFactory.createWayTagTable(connection, wayTagTableName, wayTableName, tagTableName);
+        wayTagPreparedStmt = OSMTablesFactory.createWayTagTable(connection, wayTagTableName, wayTableName);
         String wayNodeTableName = caseIdentifier(requestedTable, osmTableName + WAY_NODE, isH2);
         wayNodePreparedStmt = OSMTablesFactory.createWayNodeTable(connection, wayNodeTableName, nodeTableName, wayTableName);       
         String relationTableName = caseIdentifier(requestedTable, osmTableName + RELATION, isH2);
         relationPreparedStmt = OSMTablesFactory.createRelationTable(connection, relationTableName);
         String relationTagTableName = caseIdentifier(requestedTable, osmTableName + RELATION_TAG, isH2);
-        relationTagPreparedStmt = OSMTablesFactory.createRelationTagTable(connection, relationTableName, relationTagTableName, tagTableName);
+        relationTagPreparedStmt = OSMTablesFactory.createRelationTagTable(connection, relationTableName, relationTagTableName);
         String nodeMemberTableName = caseIdentifier(requestedTable, osmTableName + NODE_MEMBER, isH2);
         nodeMemberPreparedStmt = OSMTablesFactory.createNodeMemberTable(connection, nodeMemberTableName, relationTableName, nodeTableName);
         String wayMemberTableName = caseIdentifier(requestedTable, osmTableName + WAY_MEMBER, isH2);
@@ -222,41 +216,54 @@ public class OSMParser extends DefaultHandler{
             setCommonsAttributes(nodeOSMElement, attributes);
             nodeOSMElement.createPoint(gf, attributes.getValue("lon"), attributes.getValue("lat"));
             tagLocation = TAG_LOCATION.NODE;
-            //System.out.println(nodeId+ " Node "+ nodeOSMElement.getID()+ " : "+ nodeOSMElement.getPoint());
         }
         else if(localName.compareToIgnoreCase("way")==0){
             wayOSMElement = new WayOSMElement();
             setCommonsAttributes(wayOSMElement, attributes);
-            tagLocation = TAG_LOCATION.WAY;
-            
+            tagLocation = TAG_LOCATION.WAY;            
         }        
         else if(localName.compareToIgnoreCase("tag")==0){
             String key = attributes.getValue("k");
-            String value = attributes.getValue("v");
-            try {
-                tagPreparedStmt.setString(1, key);
-                tagPreparedStmt.setString(2, value);
-                tagPreparedStmt.setString(3, key);
-                tagPreparedStmt.setString(4, value);
-                tagPreparedStmt.execute();                
-            } catch (SQLException ex) {
-                throw new SAXException("Cannot set the tag value :  " + key + "=" + value, ex);
-            }            
+            String value = attributes.getValue("v");          
             if (tagLocation == TAG_LOCATION.NODE) {
                 nodeOSMElement.addTag(key, value);
             } else if (tagLocation == TAG_LOCATION.WAY) {
                 wayOSMElement.addTag(key, value);
             } else if (tagLocation == TAG_LOCATION.RELATION) {
-                //System.out.println(" Relation tag  : "+ key + " ,  "+ value);
+                relationOSMElement.addTag(key, value);
             }       
         }
         else if(localName.compareToIgnoreCase("nd")==0){
              wayOSMElement.addRef(attributes.getValue("ref"));
         }        
-        else if(localName.compareToIgnoreCase("relation")==0){
+        else if (localName.compareToIgnoreCase("relation") == 0) {
+            relationOSMElement = new OSMElement();
+            setCommonsAttributes(relationOSMElement, attributes);
             tagLocation = TAG_LOCATION.RELATION;
-            String id = attributes.getValue("id");
-            //System.out.println(" Relation id  : "+ id);
+        }
+        else if (localName.compareToIgnoreCase("member") == 0) {            
+            if(attributes.getValue("type").equalsIgnoreCase("node")){
+                 try{
+                nodeMemberPreparedStmt.setObject(1, relationOSMElement.getID());
+                nodeMemberPreparedStmt.setObject(2, Long.valueOf(attributes.getValue("ref")));
+                nodeMemberPreparedStmt.setObject(3, attributes.getValue("role"));
+                nodeMemberPreparedStmt.setObject(4, idMemberOrder);                
+                nodeMemberPreparedStmt.addBatch();
+                  } catch (SQLException ex) {
+                throw new SAXException("Cannot insert the node member for the relation :  " + relationOSMElement.getID(), ex);
+            }  
+            }
+            else if(attributes.getValue("type").equalsIgnoreCase("way")){    
+                     try{      
+                wayMemberPreparedStmt.setObject(1, relationOSMElement.getID());
+                wayMemberPreparedStmt.setObject(2, Long.valueOf(attributes.getValue("ref")));                
+                wayMemberPreparedStmt.setObject(3, attributes.getValue("role"));
+                wayMemberPreparedStmt.setObject(4, idMemberOrder);
+                wayMemberPreparedStmt.addBatch();
+                      } catch (SQLException ex) {
+                throw new SAXException("Cannot insert the way member for the relation :  " + relationOSMElement.getID(), ex);
+            }  
+            }
         }
     }
 
@@ -286,8 +293,7 @@ public class OSMParser extends DefaultHandler{
                 
             } catch (SQLException ex) {
                 throw new SAXException("Cannot insert the node  :  " + nodeOSMElement.getID(), ex);
-            }
-            
+            }            
         }
         else if(localName.compareToIgnoreCase("way")==0){
             wayId++;
@@ -330,7 +336,43 @@ public class OSMParser extends DefaultHandler{
         else if(localName.compareToIgnoreCase("relation")==0){
             relationId++;
             tagLocation = TAG_LOCATION.OTHER;
+            try{
+                
+                relationPreparedStmt.setObject(1, relationOSMElement.getID());
+                relationPreparedStmt.setObject(2, relationOSMElement.getUser());
+                relationPreparedStmt.setObject(3, relationOSMElement.getUID());
+                relationPreparedStmt.setObject(4, relationOSMElement.getVisible());
+                relationPreparedStmt.setObject(5, relationOSMElement.getVersion());
+                relationPreparedStmt.setObject(6, relationOSMElement.getChangeSet());
+                relationPreparedStmt.setObject(7, relationOSMElement.getTimeStamp());
+                relationPreparedStmt.execute();
+
+                HashMap<String, String> tags = relationOSMElement.getTags();
+                for (Map.Entry<String, String> entry : tags.entrySet()) {
+                    relationTagPreparedStmt.setObject(1, relationOSMElement.getID());
+                    relationTagPreparedStmt.setObject(2, entry.getKey());
+                    relationTagPreparedStmt.setObject(3, entry.getValue());
+                    relationTagPreparedStmt.addBatch();
+                }
+                relationTagPreparedStmt.executeBatch();                
+               
+                idMemberOrder=0;
+                
+             } catch (SQLException ex) {
+                throw new SAXException("Cannot insert the relation  :  " + relationOSMElement.getID(), ex);
+            }
+            
+            try {
+                nodeMemberPreparedStmt.executeBatch();
+                wayMemberPreparedStmt.executeBatch();
+            } catch (SQLException ex) {
+                //Logger.getLogger(OSMParser.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                
         }
+         else if(localName.compareToIgnoreCase("member")==0){
+             idMemberOrder++;
+         }
     }
 
     /**

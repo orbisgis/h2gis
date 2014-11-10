@@ -121,6 +121,4 @@ public class OSMPreParser extends DefaultHandler{
         return totalRelation;
     }
     
-    
-    
 }
