@@ -1,18 +1,26 @@
 /*
- * Copyright (C) 2014 IRSTV CNRS-FR-2488
+ * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * h2patial is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * h2spatial is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * h2spatial. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.h2gis.drivers.osm;
 
@@ -24,7 +32,7 @@ import org.xml.sax.SAXException;
 
 /**
  * A class to manage all common element properties.
- * 
+ *
  * @author Erwan Bocher
  */
 public class OSMElement {
@@ -44,6 +52,7 @@ public class OSMElement {
 
     /**
      * The id of the element
+     *
      * @return
      */
     public long getID() {
@@ -52,6 +61,7 @@ public class OSMElement {
 
     /**
      * Set an id to the element
+     *
      * @param id
      */
     public void setId(String id) {
@@ -60,7 +70,7 @@ public class OSMElement {
 
     /**
      * The user
-     * 
+     *
      * @return
      */
     public String getUser() {
@@ -90,7 +100,6 @@ public class OSMElement {
     public void setVisible(String visible) {
         this.visible = Boolean.valueOf(visible);
     }
-    
 
     /**
      *
@@ -98,14 +107,11 @@ public class OSMElement {
      */
     public int getVersion() {
         return version;
-    }    
+    }
 
     public void setVersion(String version) {
         this.version = Integer.valueOf(version);
     }
-     
-    
-    
 
     /**
      *
@@ -118,16 +124,14 @@ public class OSMElement {
     public void setChangeset(String changeset) {
         this.changeset = Integer.valueOf(changeset);
     }
-    
-    
 
     /**
      *
      * @return
      */
-    public Date getTimeStamp()  {
-        return  timestamp;
-        
+    public Date getTimeStamp() {
+        return timestamp;
+
     }
 
     public void setTimestamp(String OSMtime) throws SAXException {

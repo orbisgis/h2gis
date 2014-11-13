@@ -22,7 +22,6 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-
 package org.h2gis.drivers.osm;
 
 import java.sql.Connection;
@@ -32,15 +31,15 @@ import java.sql.Statement;
 
 /**
  * Class to create the tables to import osm data
- * 
+ *
  * @author Erwan Bocher
  */
 public class OSMTablesFactory {
- 
-    private OSMTablesFactory(){
-        
+
+    private OSMTablesFactory() {
+
     }
-    
+
     /**
      * Create the nodes table that will be used to import OSM nodes Example :
      * <node id="298884269" lat="54.0901746" lon="12.2482632" user="SvenHRO"
@@ -67,10 +66,10 @@ public class OSMTablesFactory {
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES ( ?, ?, ?,?,?,?,?,?);");
     }
-    
 
     /**
      * Create a table to store the node tags.
+     *
      * @param connection
      * @param nodeTagTableName
      * @param nodeTableName
@@ -83,15 +82,14 @@ public class OSMTablesFactory {
         sb.append(nodeTagTableName);
         sb.append("(ID_NODE BIGINT, TAG_KEY VARCHAR, TAG_VALUE VARCHAR, FOREIGN KEY(ID_NODE) REFERENCES ");
         sb.append(nodeTableName).append(");");
-         stmt.execute(sb.toString());
+        stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(nodeTagTableName);
-        insert.append(" VALUES ( ?, ?,?); "); 
-        return connection.prepareStatement( insert.toString());
+        insert.append(" VALUES ( ?, ?,?); ");
+        return connection.prepareStatement(insert.toString());
     }
-    
 
     /**
      * Create the ways table that will be used to import OSM ways Example :
@@ -119,16 +117,17 @@ public class OSMTablesFactory {
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES ( ?, ?,?,?,?,?,?,?);");
     }
-    
+
     /**
      * Create a table to store the way tags.
+     *
      * @param connection
      * @param wayTagTableName
      * @param wayTableName
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
-     public static PreparedStatement createWayTagTable(Connection connection, String wayTagTableName, String wayTableName) throws SQLException {
+    public static PreparedStatement createWayTagTable(Connection connection, String wayTagTableName, String wayTableName) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayTagTableName);
@@ -140,11 +139,12 @@ public class OSMTablesFactory {
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(wayTagTableName);
         insert.append(" VALUES ( ?, ?,?);");
-        return connection.prepareStatement( insert.toString());
+        return connection.prepareStatement(insert.toString());
     }
 
     /**
      * Create a table to store the list of nodes for each way.
+     *
      * @param connection
      * @param wayNodeTableName
      * @param nodeTableName
@@ -167,6 +167,7 @@ public class OSMTablesFactory {
 
     /**
      * Create the relation table.
+     *
      * @param connection
      * @param relationTable
      * @return
@@ -190,6 +191,7 @@ public class OSMTablesFactory {
 
     /**
      * Create the relation tags table
+     *
      * @param connection
      * @param relationTable
      * @param relationTagTable
@@ -213,6 +215,7 @@ public class OSMTablesFactory {
 
     /**
      * Create the node members table
+     *
      * @param connection
      * @param nodeMemberTable
      * @param relationTable
@@ -235,6 +238,7 @@ public class OSMTablesFactory {
 
     /**
      * Create a table to store all way members.
+     *
      * @param connection
      * @param wayMemberTable
      * @param relationTable
@@ -254,16 +258,15 @@ public class OSMTablesFactory {
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + wayMemberTable + " VALUES ( ?,?,?,?);");
     }
-    
-    
+
     /**
      * Store all relation members
-     * 
+     *
      * @param connection
      * @param relationMemberTable
      * @param relationTable
      * @return
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static PreparedStatement createRelationMemberTable(Connection connection, String relationMemberTable, String relationTable) throws SQLException {
         Statement stmt = connection.createStatement();

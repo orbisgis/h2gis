@@ -22,22 +22,22 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-
 package org.h2gis.drivers.osm;
 
 /**
  * Commons elments used by the OSM format
+ *
  * @author Erwan Bocher
  */
 public class OSMTags {
-    
-     static public String USER = "user", UID="uid", VISIBLE="visible", VERSION="version", CHANGE_SET="changeset",
-             TIMESTAMP="timestamp";
-   
+
+    static public String USER = "user", UID = "uid", VISIBLE = "visible", VERSION = "version", CHANGE_SET = "changeset",
+            TIMESTAMP = "timestamp";
+
     // Fields count of the nodes table
     public static final int NODEFIELDCOUNT = 8;
-   
+
     // Fields count of the ways table
     public static final int WAYFIELDCOUNT = 8;
-     
+
 }

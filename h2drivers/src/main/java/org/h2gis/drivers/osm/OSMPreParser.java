@@ -1,20 +1,27 @@
 /*
- * Copyright (C) 2014 IRSTV CNRS-FR-2488
+ * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * h2patial is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * h2spatial is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * h2spatial. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
-
 package org.h2gis.drivers.osm;
 
 import java.io.File;
@@ -30,21 +37,20 @@ import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * OSMPreParser class just reads the document. It says what type of elements
- * (nodes, ways  and relation) the
- * document contains. It also counts each type of elements.
- * 
+ * (nodes, ways and relation) the document contains. It also counts each type of
+ * elements.
+ *
  * @author Erwan Bocher
  */
-public class OSMPreParser extends DefaultHandler{
-    
+public class OSMPreParser extends DefaultHandler {
+
     private int totalNode;
     private int totalWay;
     private int totalRelation;
     private String version;
-    
-     /**
-     * Initializing of the pre-parser. 
-     * All values are set to zero.
+
+    /**
+     * Initializing of the pre-parser. All values are set to zero.
      */
     public OSMPreParser() {
         version = null;
@@ -52,7 +58,7 @@ public class OSMPreParser extends DefaultHandler{
         totalWay = 0;
         totalRelation = 0;
     }
-    
+
     /**
      * Reads the document and pre-parses it. The other method is called
      * automatically when a start markup is found.
@@ -79,10 +85,10 @@ public class OSMPreParser extends DefaultHandler{
         }
         return success;
     }
-    
+
     /**
      * Fires whenever an XML start markup is encountered. It indicates which
-     * version of osm file is to be parsed. 
+     * version of osm file is to be parsed.
      *
      * @param uri URI of the local element
      * @param localName Name of the local element (without prefix)
@@ -120,5 +126,5 @@ public class OSMPreParser extends DefaultHandler{
     public int getTotalRelation() {
         return totalRelation;
     }
-    
+
 }

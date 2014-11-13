@@ -1,20 +1,27 @@
 /*
- * Copyright (C) 2014 IRSTV CNRS-FR-2488
+ * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * h2patial is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * h2spatial is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * h2spatial. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
-
 package org.h2gis.drivers.osm;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -40,10 +47,10 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
- * Parse an OSM file and store the elements into a database.
- * The database model contains 10 tables. 
- * 
- * 
+ * Parse an OSM file and store the elements into a database. The database model
+ * contains 10 tables.
+ *
+ *
  * @author Erwan Bocher
  */
 public class OSMParser extends DefaultHandler {
@@ -90,7 +97,7 @@ public class OSMParser extends DefaultHandler {
      * @return
      * @throws SQLException
      */
-    public boolean read(File inputFile, String tableName, Connection connection, ProgressVisitor progress) throws SQLException {
+    public boolean read(Connection connection, String tableName, File inputFile, ProgressVisitor progress) throws SQLException {
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
@@ -111,7 +118,6 @@ public class OSMParser extends DefaultHandler {
             throw new SQLException(ex);
         } catch (IOException ex) {
             throw new SQLException("Cannot parse the file " + inputFile.getAbsolutePath(), ex);
-
         } finally {
             try {
                 if (fs != null) {
@@ -148,7 +154,7 @@ public class OSMParser extends DefaultHandler {
             if (wayMemberPreparedStmt != null) {
                 wayMemberPreparedStmt.close();
             }
-            if (relationMemberPreparedStmt!=null){
+            if (relationMemberPreparedStmt != null) {
                 relationMemberPreparedStmt.close();
             }
         }
@@ -272,8 +278,7 @@ public class OSMParser extends DefaultHandler {
                 } catch (SQLException ex) {
                     throw new SAXException("Cannot insert the way member for the relation :  " + relationOSMElement.getID(), ex);
                 }
-            }
-            else if (attributes.getValue("type").equalsIgnoreCase("relation")) {
+            } else if (attributes.getValue("type").equalsIgnoreCase("relation")) {
                 try {
                     relationMemberPreparedStmt.setObject(1, relationOSMElement.getID());
                     relationMemberPreparedStmt.setObject(2, Long.valueOf(attributes.getValue("ref")));
@@ -284,7 +289,7 @@ public class OSMParser extends DefaultHandler {
                     throw new SAXException("Cannot insert the relation member for the relation :  " + relationOSMElement.getID(), ex);
                 }
             }
-            
+
         }
     }
 
@@ -380,7 +385,7 @@ public class OSMParser extends DefaultHandler {
                 nodeMemberPreparedStmt.executeBatch();
                 wayMemberPreparedStmt.executeBatch();
                 relationMemberPreparedStmt.executeBatch();
-            } catch (BatchUpdateException ex) {                
+            } catch (BatchUpdateException ex) {
                 //Do not catch the BatchUpdateException because the OSM file does not guarentee the
                 //integrity of the data
                 //eg : node ref cannot be stored in the current file. 
