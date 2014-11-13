@@ -19,6 +19,7 @@ package org.h2gis.drivers.osm;
 import java.io.File;
 import java.sql.Connection;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,6 +47,6 @@ public class OSMImportTest {
     public void importOSMFile() throws Exception {
         File osmFile = new File("/home/ebocher/Téléchargements/nantes_france.osm");
         OSMParser oSMParser = new OSMParser();
-        oSMParser.read(osmFile, "osmMAP", connection);        
+        oSMParser.read(osmFile, "osmMAP", connection, new EmptyProgressVisitor());        
     }
 }

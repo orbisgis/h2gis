@@ -70,7 +70,7 @@ public class OSMTablesFactory {
     
 
     /**
-     *
+     * Create a table to store the node tags.
      * @param connection
      * @param nodeTagTableName
      * @param nodeTableName
@@ -121,7 +121,7 @@ public class OSMTablesFactory {
     }
     
     /**
-     * 
+     * Create a table to store the way tags.
      * @param connection
      * @param wayTagTableName
      * @param wayTableName
@@ -144,7 +144,7 @@ public class OSMTablesFactory {
     }
 
     /**
-     *
+     * Create a table to store the list of nodes for each way.
      * @param connection
      * @param wayNodeTableName
      * @param nodeTableName
@@ -166,7 +166,7 @@ public class OSMTablesFactory {
     }
 
     /**
-     *
+     * Create the relation table.
      * @param connection
      * @param relationTable
      * @return
@@ -189,7 +189,7 @@ public class OSMTablesFactory {
     }
 
     /**
-     *
+     * Create the relation tags table
      * @param connection
      * @param relationTable
      * @param relationTagTable
@@ -212,7 +212,7 @@ public class OSMTablesFactory {
     }
 
     /**
-     *
+     * Create the node members table
      * @param connection
      * @param nodeMemberTable
      * @param relationTable
@@ -234,7 +234,7 @@ public class OSMTablesFactory {
     }
 
     /**
-     *
+     * Create a table to store all way members.
      * @param connection
      * @param wayMemberTable
      * @param relationTable
@@ -253,5 +253,26 @@ public class OSMTablesFactory {
         stmt.execute(sb.toString());
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + wayMemberTable + " VALUES ( ?,?,?,?);");
+    }
+    
+    
+    /**
+     * Store all relation members
+     * 
+     * @param connection
+     * @param relationMemberTable
+     * @param relationTable
+     * @return
+     * @throws SQLException 
+     */
+    public static PreparedStatement createRelationMemberTable(Connection connection, String relationMemberTable, String relationTable) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(relationMemberTable);
+        sb.append("(ID_RELATION BIGINT, ID_SUB_RELATION BIGINT, ROLE VARCHAR, RELATION_ORDER INT, FOREIGN KEY(ID_RELATION, ID_SUB_RELATION) REFERENCES ");
+        sb.append(relationTable).append(");");
+        stmt.execute(sb.toString());
+        stmt.close();
+        return connection.prepareStatement("INSERT INTO " + relationMemberTable + " VALUES ( ?,?,?,?);");
     }
 }
