@@ -21,7 +21,8 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 
 /**
- *
+ * A class to manage the node element properties.
+ * 
  * @author Erwan Bocher
  */
 public class NodeOSMElement extends OSMElement {
@@ -33,7 +34,7 @@ public class NodeOSMElement extends OSMElement {
     }
 
     /**
-     *
+     * The geometry of the node
      * @return
      */
     public Point getPoint() {
@@ -41,7 +42,7 @@ public class NodeOSMElement extends OSMElement {
     }
 
     /**
-     *
+     * Create a new geometry point based on the latitude and longitude values
      * @param gf
      * @param lon
      * @param lat

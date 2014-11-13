@@ -23,8 +23,9 @@ import java.util.HashMap;
 import org.xml.sax.SAXException;
 
 /**
- *
- * @author ebocher
+ * A class to manage all common element properties.
+ * 
+ * @author Erwan Bocher
  */
 public class OSMElement {
 
@@ -42,7 +43,7 @@ public class OSMElement {
     }
 
     /**
-     *
+     * The id of the element
      * @return
      */
     public long getID() {
@@ -50,7 +51,7 @@ public class OSMElement {
     }
 
     /**
-     *
+     * Set an id to the element
      * @param id
      */
     public void setId(String id) {
@@ -58,7 +59,8 @@ public class OSMElement {
     }
 
     /**
-     *
+     * The user
+     * 
      * @return
      */
     public String getUser() {

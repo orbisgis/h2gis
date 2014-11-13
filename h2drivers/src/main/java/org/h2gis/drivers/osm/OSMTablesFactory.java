@@ -269,7 +269,7 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(relationMemberTable);
-        sb.append("(ID_RELATION BIGINT, ID_SUB_RELATION BIGINT, ROLE VARCHAR, RELATION_ORDER INT, FOREIGN KEY(ID_RELATION, ID_SUB_RELATION) REFERENCES ");
+        sb.append("(ID_RELATION BIGINT, ID_SUB_RELATION BIGINT, ROLE VARCHAR, RELATION_ORDER INT, FOREIGN KEY(ID_RELATION) REFERENCES ");
         sb.append(relationTable).append(");");
         stmt.execute(sb.toString());
         stmt.close();

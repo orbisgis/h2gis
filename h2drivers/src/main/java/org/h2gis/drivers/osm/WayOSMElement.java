@@ -20,7 +20,8 @@ package org.h2gis.drivers.osm;
 import java.util.HashMap;
 
 /**
- *
+ * A class to manage the way element properties.
+ * 
  * @author Erwan Bocher
  */
 public class WayOSMElement extends OSMElement{
@@ -31,11 +32,19 @@ public class WayOSMElement extends OSMElement{
         super();
         nodesRef = new HashMap<Integer, Long>();
     }
-    
+   
+    /**
+     * Add in a list the ref of the node used to describe the way.
+     * @param ref 
+     */
     public void addRef(String ref){
         nodesRef.put(order++, Long.valueOf(ref));
     }
 
+    /**
+     * Return the list of nodes 
+     * @return 
+     */
     public HashMap<Integer, Long> getNodesRef() {
         return nodesRef;
     }

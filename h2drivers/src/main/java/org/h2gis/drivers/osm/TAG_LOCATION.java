@@ -18,7 +18,8 @@
 package org.h2gis.drivers.osm;
 
 /**
- *
+ * A class to specify the category of the element.
+ * 
  * @author Erwan Bocher
  */
 public enum TAG_LOCATION {
