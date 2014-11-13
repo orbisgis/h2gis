@@ -45,7 +45,7 @@ public class OSMImportTest {
     }
      @Test
     public void importOSMFile() throws Exception {
-        File osmFile = new File("/home/ebocher/Téléchargements/nantes_france.osm");
+        File osmFile = new File("/home/ebocher/Téléchargements/map.osm");
         OSMParser oSMParser = new OSMParser();
         oSMParser.read(osmFile, "osmMAP", connection, new EmptyProgressVisitor());        
     }

@@ -89,11 +89,8 @@ public class OSMParser extends DefaultHandler {
      * @param progress
      * @return
      * @throws SQLException
-     * @throws FileNotFoundException
-     * @throws SAXException
-     * @throws IOException
      */
-    public boolean read(File inputFile, String tableName, Connection connection, ProgressVisitor progress) throws SQLException, FileNotFoundException, SAXException, IOException {
+    public boolean read(File inputFile, String tableName, Connection connection, ProgressVisitor progress) throws SQLException {
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
@@ -110,9 +107,18 @@ public class OSMParser extends DefaultHandler {
             parser.setContentHandler(this);
             parser.parse(new InputSource(fs));
             success = true;
+        } catch (SAXException ex) {
+            throw new SQLException(ex);
+        } catch (IOException ex) {
+            throw new SQLException("Cannot parse the file " + inputFile.getAbsolutePath(), ex);
+
         } finally {
-            if (fs != null) {
-                fs.close();
+            try {
+                if (fs != null) {
+                    fs.close();
+                }
+            } catch (IOException ex) {
+                throw new SQLException("Cannot close the file " + inputFile.getAbsolutePath(), ex);
             }
             // When the reading ends, close() method has to be called
             if (nodePreparedStmt != null) {

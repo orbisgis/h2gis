@@ -30,7 +30,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
 
 /**
  * A driver to export spatial table to kml 2.2 file.
