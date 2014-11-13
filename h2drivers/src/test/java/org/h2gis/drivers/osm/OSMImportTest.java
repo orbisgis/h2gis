@@ -26,6 +26,7 @@ package org.h2gis.drivers.osm;
 
 import java.io.File;
 import java.sql.Connection;
+import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.junit.AfterClass;
@@ -34,7 +35,7 @@ import org.junit.Test;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class OSMImportTest {
 
@@ -44,7 +45,8 @@ public class OSMImportTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
+        connection = SpatialH2UT.createSpatialDataBase(DB_NAME);        
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new OSMRead(), "");
     }
 
     @AfterClass
@@ -54,7 +56,7 @@ public class OSMImportTest {
 
     @Test
     public void importOSMFile() throws Exception {
-        File osmFile = new File("/home/ebocher/Téléchargements/map.osm");
+        File osmFile = new File("/home/ebocher/Téléchargements/nantes_france.osm");
         OSMParser oSMParser = new OSMParser();
         oSMParser.read(connection, "osmMAP", osmFile, new EmptyProgressVisitor());
     }

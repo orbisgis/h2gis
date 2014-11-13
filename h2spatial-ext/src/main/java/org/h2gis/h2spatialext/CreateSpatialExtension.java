@@ -63,6 +63,7 @@ import org.h2gis.network.graph_creator.*;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.drivers.osm.OSMRead;
 import org.h2gis.h2spatialext.function.spatial.processing.ST_OffSetCurve;
 
 /**
@@ -169,7 +170,8 @@ public class CreateSpatialExtension {
                 new ST_ShortestPathTree(),
                 //h2network end
                 new ST_LineIntersector(),        
-                new ST_OffSetCurve()};
+                new ST_OffSetCurve(),
+                new OSMRead()};
     }
 
     /**
