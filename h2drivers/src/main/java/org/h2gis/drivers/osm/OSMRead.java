@@ -24,6 +24,7 @@
  */
 package org.h2gis.drivers.osm;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
