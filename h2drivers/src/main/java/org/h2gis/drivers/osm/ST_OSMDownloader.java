@@ -73,21 +73,9 @@ public class ST_OSMDownloader extends DeterministicScalarFunction {
         if (area != null) {
             downloadOSMFile(file, area.getEnvelopeInternal());
         }
-    }
+    }   
     
-    
-    /**
-     *
-     * @param area The geometry used to compute the area set to the OSM server
-     * @throws FileNotFoundException
-     * @throws IOException
-     */
-    public static void downloadData(Geometry area) throws FileNotFoundException, IOException {
-        File fileName = File.createTempFile("osm" + System.currentTimeMillis(), ".osm");
-        if (area != null) {
-            downloadOSMFile(fileName, area.getEnvelopeInternal());
-        }
-    }    
+     
 
     /**
      * Download OSM file from the official server

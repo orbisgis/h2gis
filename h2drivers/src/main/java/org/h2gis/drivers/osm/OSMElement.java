@@ -86,7 +86,9 @@ public class OSMElement {
     }
 
     public void setUid(String uid) {
-        this.uid = Long.valueOf(uid);
+        if (uid != null) {
+            this.uid = Long.valueOf(uid);
+        }
     }
 
     /**
@@ -98,7 +100,9 @@ public class OSMElement {
     }
 
     public void setVisible(String visible) {
+        if(visible!=null){
         this.visible = Boolean.valueOf(visible);
+        }
     }
 
     /**
@@ -122,7 +126,9 @@ public class OSMElement {
     }
 
     public void setChangeset(String changeset) {
+        if(changeset!=null){
         this.changeset = Integer.valueOf(changeset);
+        }
     }
 
     /**
@@ -135,6 +141,7 @@ public class OSMElement {
     }
 
     public void setTimestamp(String OSMtime) throws SAXException {
+        if(OSMtime!=null){
         try {
             timestamp = dataFormat1.parse(OSMtime);
         } catch (ParseException ex) {
@@ -143,7 +150,7 @@ public class OSMElement {
             } catch (ParseException ex1) {
                 throw new SAXException("Cannot parse the timestamp for the node  :  " + getID(), ex);
             }
-        }
+        }}
     }
 
     /**

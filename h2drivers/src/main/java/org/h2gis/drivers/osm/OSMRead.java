@@ -24,7 +24,6 @@
  */
 package org.h2gis.drivers.osm;
 
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
@@ -50,6 +49,14 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
         return "readOSM";
     }
 
+    /**
+     * 
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @throws FileNotFoundException
+     * @throws SQLException 
+     */
     public static void readOSM(Connection connection, String fileName, String tableReference) throws FileNotFoundException, SQLException {
         File file = new File(fileName);
         if (!file.exists()) {
@@ -59,6 +66,13 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
         osmp.read(connection, tableReference, URIUtility.fileFromString(fileName), new EmptyProgressVisitor());
     }
 
+    /**
+     * 
+     * @param connection
+     * @param fileName
+     * @throws FileNotFoundException
+     * @throws SQLException 
+     */
     public static void readOSM(Connection connection, String fileName) throws FileNotFoundException, SQLException {
         final String name = URIUtility.fileFromString(fileName).getName();
         readOSM(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());

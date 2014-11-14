@@ -64,6 +64,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2gis.drivers.osm.OSMRead;
+import org.h2gis.drivers.osm.ST_OSMDownloader;
 import org.h2gis.h2spatialext.function.spatial.processing.ST_OffSetCurve;
 
 /**
@@ -171,7 +172,8 @@ public class CreateSpatialExtension {
                 //h2network end
                 new ST_LineIntersector(),        
                 new ST_OffSetCurve(),
-                new OSMRead()};
+                new OSMRead(),
+                new ST_OSMDownloader()};
     }
 
     /**

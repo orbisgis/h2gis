@@ -25,11 +25,19 @@
 package org.h2gis.drivers.osm;
 
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.h2.util.StringUtils;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.junit.After;
 import org.junit.AfterClass;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -41,23 +49,67 @@ public class OSMImportTest {
 
     private static Connection connection;
     private static final String DB_NAME = "OSMImportTest";
+    private Statement st;
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);        
         CreateSpatialExtension.registerFunction(connection.createStatement(), new OSMRead(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_OSMDownloader(), "");
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
     }
+    @Before
+    public void setUpStatement() throws Exception {
+        st = connection.createStatement();
+    }
 
+    @After
+    public void tearDownStatement() throws Exception {
+        st.close();
+    }
+
+    
     @Test
-    public void importOSMFile() throws Exception {
-        File osmFile = new File("/home/ebocher/Téléchargements/nantes_france.osm");
-        OSMParser oSMParser = new OSMParser();
-        oSMParser.read(connection, "osmMAP", osmFile, new EmptyProgressVisitor());
+    public void importOSMFile() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS OSM_NODE, OSM_NODE_TAG, OSM_WAY,OSM_WAY_TAG, OSM_WAY_NODE, OSM_RELATION, OSM_RELATION_TAG, OSM_NODE_MEMBER, OSM_WAY_MEMBER, OSM_RELATION_MEMBER;");
+        st.execute("CALL OSMRead(" + StringUtils.quoteStringSQL(OSMImportTest.class.getResource("saint_jean.osm").getPath()) + ", 'OSM');");
+        ResultSet rs = st.executeQuery("SELECT count(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'");
+        rs.next();
+        assertTrue(rs.getInt(1) == 10);
+        rs.close();
+        // Check number
+        rs = st.executeQuery("SELECT count(ID_NODE) FROM OSM_NODE");
+        rs.next();
+        assertTrue(rs.getInt(1) == 3243);
+        rs.close();
+        // Check content
+        
+        //NODE
+        rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=462020579");
+        assertTrue(rs.next());
+        assertEquals("POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
+        rs.close();        
+        rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=3003052969");
+        assertTrue(rs.next());
+        assertEquals("POINT (-2.121123 47.635276)", rs.getString("the_geom"));
+        rs.close();
+        //WAY
+       /* rs = st.executeQuery("SELECT * FROM OSM_WAY WHERE ID_WAY=296521584");
+        assertTrue(rs.next());
+        assertEquals("POINT (-2.12121 47.63537)", rs.getString("the_geom"));
+        rs.close();*/
+    }
+    
+    @Test
+    public void downloadOSMFile() throws SQLException, IOException {
+        File file = File.createTempFile("osm_"+ System.currentTimeMillis(), ".osm");    
+        file.delete();
+        st.execute("CALL ST_OSMDownloader('POLYGON ((-2.12679 47.63418, -2.12679 47.63753, -2.11823 47.63753, -2.11823 47.63418, -2.12679 47.63418))'::GEOMETRY, '"+ file.getPath()+"')");
+        assertTrue(new File(file.getPath()).exists());
     }
 }
