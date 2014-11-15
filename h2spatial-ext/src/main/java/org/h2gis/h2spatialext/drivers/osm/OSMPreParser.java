@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.osm;
+package org.h2gis.h2spatialext.drivers.osm;
 
 import java.io.File;
 import java.io.FileInputStream;

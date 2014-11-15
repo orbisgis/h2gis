@@ -22,12 +22,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.osm;
+package org.h2gis.h2spatialext.drivers.osm;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
@@ -82,6 +81,7 @@ public class OSMParser extends DefaultHandler {
     private WayOSMElement wayOSMElement;
     private PreparedStatement wayNodePreparedStmt;
     private OSMElement relationOSMElement;
+    private PreparedStatement updateGeometryWayPreparedStmt;
 
     public OSMParser() {
 
@@ -113,6 +113,8 @@ public class OSMParser extends DefaultHandler {
             parser.setErrorHandler(this);
             parser.setContentHandler(this);
             parser.parse(new InputSource(fs));
+            //Update way geometries
+            updateGeometryWayPreparedStmt.execute();
             success = true;
         } catch (SAXException ex) {
             throw new SQLException(ex);
@@ -156,6 +158,9 @@ public class OSMParser extends DefaultHandler {
             }
             if (relationMemberPreparedStmt != null) {
                 relationMemberPreparedStmt.close();
+            }
+            if (updateGeometryWayPreparedStmt != null) {
+                updateGeometryWayPreparedStmt.close();
             }
         }
 
@@ -225,6 +230,7 @@ public class OSMParser extends DefaultHandler {
         wayMemberPreparedStmt = OSMTablesFactory.createWayMemberTable(connection, wayMemberTableName, relationTableName, wayTableName);
         String relationMemberTableName = caseIdentifier(requestedTable, osmTableName + RELATION_MEMBER, isH2);
         relationMemberPreparedStmt = OSMTablesFactory.createRelationMemberTable(connection, relationMemberTableName, relationTableName);
+        updateGeometryWayPreparedStmt = OSMTablesFactory.updateGeometryWayTable(connection, wayTableName, wayNodeTableName, nodeTableName);
     }
 
     @Override

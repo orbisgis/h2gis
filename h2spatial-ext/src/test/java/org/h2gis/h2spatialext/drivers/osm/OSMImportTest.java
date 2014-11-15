@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.osm;
+package org.h2gis.h2spatialext.drivers.osm;
 
 import java.io.File;
 import java.io.IOException;
@@ -55,8 +55,7 @@ public class OSMImportTest {
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);        
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new OSMRead(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_OSMDownloader(), "");
+        CreateSpatialExtension.initSpatialExtension(connection);
     }
 
     @AfterClass

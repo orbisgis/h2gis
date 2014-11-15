@@ -22,44 +22,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.osm;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+package org.h2gis.h2spatialext.drivers.osm;
 
 /**
- * A class to manage the node element properties.
+ * A class to specify the category of the element.
  *
  * @author Erwan Bocher
  */
-public class NodeOSMElement extends OSMElement {
+public enum TAG_LOCATION {
 
-    private Point point;
-
-    public NodeOSMElement() {
-        super();
-    }
-
-    /**
-     * The geometry of the node
-     *
-     * @return
-     */
-    public Point getPoint() {
-        return point;
-    }
-
-    /**
-     * Create a new geometry point based on the latitude and longitude values
-     *
-     * @param gf
-     * @param lon
-     * @param lat
-     */
-    public void createPoint(GeometryFactory gf, String lon, String lat) {
-        point = gf.createPoint(new Coordinate(Double.valueOf(lon),
-                Double.valueOf(lat)));
-    }
+    NODE, WAY, OTHER, RELATION, ND
 
 }

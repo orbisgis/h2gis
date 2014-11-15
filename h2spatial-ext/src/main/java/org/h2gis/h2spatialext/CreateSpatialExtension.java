@@ -24,6 +24,9 @@
  */
 package org.h2gis.h2spatialext;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.dbf.DBFRead;
 import org.h2gis.drivers.dbf.DBFWrite;
@@ -36,6 +39,8 @@ import org.h2gis.drivers.kml.ST_AsKml;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialapi.Function;
+import org.h2gis.h2spatialext.drivers.osm.OSMRead;
+import org.h2gis.h2spatialext.drivers.osm.ST_OSMDownloader;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
@@ -52,6 +57,7 @@ import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
 import org.h2gis.h2spatialext.function.spatial.processing.*;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_OffSetCurve;
 import org.h2gis.h2spatialext.function.spatial.properties.*;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
@@ -60,12 +66,6 @@ import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.h2spatialext.function.spatial.trigonometry.ST_Azimuth;
 import org.h2gis.network.graph_creator.*;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import org.h2gis.drivers.osm.OSMRead;
-import org.h2gis.drivers.osm.ST_OSMDownloader;
-import org.h2gis.h2spatialext.function.spatial.processing.ST_OffSetCurve;
 
 /**
  * Registers the SQL functions contained in h2spatial-ext.

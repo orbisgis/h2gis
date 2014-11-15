@@ -22,15 +22,41 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.osm;
+package org.h2gis.h2spatialext.drivers.osm;
+
+import java.util.HashMap;
 
 /**
- * A class to specify the category of the element.
+ * A class to manage the way element properties.
  *
  * @author Erwan Bocher
  */
-public enum TAG_LOCATION {
+public class WayOSMElement extends OSMElement {
 
-    NODE, WAY, OTHER, RELATION, ND
+    private final HashMap<Integer, Long> nodesRef;
+    private int order = 1;
+
+    public WayOSMElement() {
+        super();
+        nodesRef = new HashMap<Integer, Long>();
+    }
+
+    /**
+     * Add in a list the ref of the node used to describe the way.
+     *
+     * @param ref
+     */
+    public void addRef(String ref) {
+        nodesRef.put(order++, Long.valueOf(ref));
+    }
+
+    /**
+     * Return the list of nodes
+     *
+     * @return
+     */
+    public HashMap<Integer, Long> getNodesRef() {
+        return nodesRef;
+    }
 
 }

@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.osm;
+package org.h2gis.h2spatialext.drivers.osm;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -277,5 +277,23 @@ public class OSMTablesFactory {
         stmt.execute(sb.toString());
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + relationMemberTable + " VALUES ( ?,?,?,?);");
+    }
+    
+    /**
+     * Create the update statement used to build the way geometry
+     * @param connection
+     * @param wayTableName
+     * @param wayNodeTableName
+     * @param nodeTableName
+     * @return
+     * @throws SQLException 
+     */
+    public static PreparedStatement updateGeometryWayTable(Connection connection,String wayTableName, String wayNodeTableName,String nodeTableName) throws SQLException{
+        StringBuilder sb = new StringBuilder("UPDATE ");
+        sb.append(wayTableName);
+        sb.append("SET THE_GEOM= (SELECT ST_MAKELINE(ST_ACCUM(a.THE_GEOM)) FROM ");
+        sb.append(wayNodeTableName).append(" a,");
+        sb.append(nodeTableName).append(" b WHERE a.ID_NODE = B.ID_NODE GROUP BY ID_WAY");
+        return connection.prepareStatement(sb.toString());        
     }
 }
