@@ -31,7 +31,20 @@ import java.sql.Statement;
 
 /**
  * Class to create the tables to import osm data
- *
+ * 
+ * An OSM file is stored in 10 tables. 
+ * 
+ * (1) table_prefix + _node :  table that contains all nodes,
+ * (2) table_prefix + _node_tag : table that contains a list of tags (key, value) for each node,
+ * (3) table_prefix + _way : table that contains all ways with their geometries,
+ * (4) table_prefix + _way_tag : table that contains a list of tags (key, value) for each way,
+ * (5) table_prefix + _way_node : table that contains the list of nodes used to represent a way,
+ * (6) table_prefix + _relation: table that contains all relations,
+ * (7) table_prefix + _relation_tag : table that contains a list of tags (key, value) for each relation,
+ * (8) table_prefix + _node_member : table that stores all nodes that are referenced into a relation,
+ * (9) table_prefix + _way_member : table that stores all ways that are referenced into a relation,
+ * (10) table_prefix + _relation_member : table that stores all relations that are referenced into a relation.
+ * 
  * @author Erwan Bocher
  */
 public class OSMTablesFactory {
@@ -291,9 +304,9 @@ public class OSMTablesFactory {
     public static PreparedStatement updateGeometryWayTable(Connection connection,String wayTableName, String wayNodeTableName,String nodeTableName) throws SQLException{
         StringBuilder sb = new StringBuilder("UPDATE ");
         sb.append(wayTableName);
-        sb.append("SET THE_GEOM= (SELECT ST_MAKELINE(ST_ACCUM(a.THE_GEOM)) FROM ");
+        sb.append(" SET THE_GEOM= (SELECT ST_MAKELINE(ST_ACCUM(b.THE_GEOM)) FROM ");
         sb.append(wayNodeTableName).append(" a,");
-        sb.append(nodeTableName).append(" b WHERE a.ID_NODE = B.ID_NODE GROUP BY ID_WAY");
+        sb.append(nodeTableName).append(" b WHERE a.ID_WAY= ? and a.ID_NODE = b.ID_NODE group by a.ID_WAY);");
         return connection.prepareStatement(sb.toString());        
     }
 }

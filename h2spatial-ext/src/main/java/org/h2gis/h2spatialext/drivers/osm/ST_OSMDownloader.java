@@ -47,10 +47,8 @@ public class ST_OSMDownloader extends DeterministicScalarFunction {
     private static final String OSM_API_URL = "http://api.openstreetmap.org/api/0.6/";
 
     public ST_OSMDownloader() {
-        addProperty(PROP_REMARKS, "Extract osm data from the official server using a geometry bouding box.\n"
-                + "If the a path to the file is not set by the user, \n "
-                + "the downloaded file is stored in the temporary"
-                + "directory of the OS.");
+        addProperty(PROP_REMARKS, "Extract an OSM XML file from the OSM api server using a the bounding box of a given geometry.\n"
+                + "A path must be set to specified where the OSM file will be stored.");
     }
 
     @Override

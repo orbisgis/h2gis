@@ -31,8 +31,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.util.StringUtils;
-import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
@@ -53,8 +53,7 @@ public class OSMImportTest {
 
     @BeforeClass
     public static void tearUp() throws Exception {
-        // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase(DB_NAME);        
+        connection = SpatialH2UT.createSpatialDataBase(DB_NAME, false);
         CreateSpatialExtension.initSpatialExtension(connection);
     }
 

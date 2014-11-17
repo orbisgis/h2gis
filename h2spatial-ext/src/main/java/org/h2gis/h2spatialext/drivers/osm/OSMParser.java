@@ -82,6 +82,9 @@ public class OSMParser extends DefaultHandler {
     private PreparedStatement wayNodePreparedStmt;
     private OSMElement relationOSMElement;
     private PreparedStatement updateGeometryWayPreparedStmt;
+    private int numberNodes;
+    private int numberWays;
+    private int numberRelations;
 
     public OSMParser() {
 
@@ -98,6 +101,21 @@ public class OSMParser extends DefaultHandler {
      * @throws SQLException
      */
     public boolean read(Connection connection, String tableName, File inputFile, ProgressVisitor progress) throws SQLException {
+        
+        //Read OMS metadata
+        OSMPreParser osmpp = new OSMPreParser();        
+        try {
+            osmpp.read(inputFile);
+            numberNodes = osmpp.getTotalNode();
+            numberWays = osmpp.getTotalWay();
+            numberRelations = osmpp.getTotalRelation();
+        } catch (SAXException ex) {
+            throw new SQLException(ex);
+        } catch (IOException ex) {
+            throw new SQLException(ex);
+        }
+        
+        
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
@@ -113,8 +131,6 @@ public class OSMParser extends DefaultHandler {
             parser.setErrorHandler(this);
             parser.setContentHandler(this);
             parser.parse(new InputSource(fs));
-            //Update way geometries
-            updateGeometryWayPreparedStmt.execute();
             success = true;
         } catch (SAXException ex) {
             throw new SQLException(ex);
@@ -200,7 +216,7 @@ public class OSMParser extends DefaultHandler {
     }
 
     /**
-     * Create the OMS datamodel to store the content of the file
+     * Create the OMS data model to store the content of the file
      *
      * @param connection
      * @param isH2
@@ -236,8 +252,6 @@ public class OSMParser extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         if (localName.compareToIgnoreCase("osm") == 0) {
-            String version = attributes.getValue("version");
-            System.out.println("OSM " + version);
         } else if (localName.compareToIgnoreCase("node") == 0) {
             nodeOSMElement = new NodeOSMElement();
             setCommonsAttributes(nodeOSMElement, attributes);
@@ -357,6 +371,11 @@ public class OSMParser extends DefaultHandler {
                     wayNodePreparedStmt.addBatch();
                 }
                 wayNodePreparedStmt.executeBatch();
+
+                //Update way geometries
+                updateGeometryWayPreparedStmt.setObject(1, wayOSMElement.getID());
+                updateGeometryWayPreparedStmt.execute();
+                
 
             } catch (SQLException ex) {
                 throw new SAXException("Cannot insert the way  :  " + wayOSMElement.getID(), ex);
