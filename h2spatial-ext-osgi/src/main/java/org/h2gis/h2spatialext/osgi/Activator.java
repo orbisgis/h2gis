@@ -8,7 +8,7 @@ import org.h2gis.drivers.shp.SHPDriverFunction;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
-import org.h2gis.h2spatialext.drivers.osm.OSMDriverFunction;
+import org.h2gis.drivers.osm.OSMDriverFunction;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 

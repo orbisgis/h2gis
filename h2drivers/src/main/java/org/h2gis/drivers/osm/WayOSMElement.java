@@ -22,44 +22,41 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.h2spatialext.drivers.osm;
+package org.h2gis.drivers.osm;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Point;
+import java.util.HashMap;
 
 /**
- * A class to manage the node element properties.
+ * A class to manage the way element properties.
  *
  * @author Erwan Bocher
  */
-public class NodeOSMElement extends OSMElement {
+public class WayOSMElement extends OSMElement {
 
-    private Point point;
+    private final HashMap<Integer, Long> nodesRef;
+    private int order = 1;
 
-    public NodeOSMElement() {
+    public WayOSMElement() {
         super();
+        nodesRef = new HashMap<Integer, Long>();
     }
 
     /**
-     * The geometry of the node
+     * Add in a list the ref of the node used to describe the way.
+     *
+     * @param ref
+     */
+    public void addRef(String ref) {
+        nodesRef.put(order++, Long.valueOf(ref));
+    }
+
+    /**
+     * Return the list of nodes
      *
      * @return
      */
-    public Point getPoint() {
-        return point;
-    }
-
-    /**
-     * Create a new geometry point based on the latitude and longitude values
-     *
-     * @param gf
-     * @param lon
-     * @param lat
-     */
-    public void createPoint(GeometryFactory gf, String lon, String lat) {
-        point = gf.createPoint(new Coordinate(Double.valueOf(lon),
-                Double.valueOf(lat)));
+    public HashMap<Integer, Long> getNodesRef() {
+        return nodesRef;
     }
 
 }
