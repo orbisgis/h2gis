@@ -82,9 +82,6 @@ public class OSMParser extends DefaultHandler {
     private PreparedStatement wayNodePreparedStmt;
     private OSMElement relationOSMElement;
     private PreparedStatement updateGeometryWayPreparedStmt;
-    private int numberNodes;
-    private int numberWays;
-    private int numberRelations;
 
     public OSMParser() {
 
@@ -101,21 +98,6 @@ public class OSMParser extends DefaultHandler {
      * @throws SQLException
      */
     public boolean read(Connection connection, String tableName, File inputFile, ProgressVisitor progress) throws SQLException {
-        
-        //Read OMS metadata
-        OSMPreParser osmpp = new OSMPreParser();        
-        try {
-            osmpp.read(inputFile);
-            numberNodes = osmpp.getTotalNode();
-            numberWays = osmpp.getTotalWay();
-            numberRelations = osmpp.getTotalRelation();
-        } catch (SAXException ex) {
-            throw new SQLException(ex);
-        } catch (IOException ex) {
-            throw new SQLException(ex);
-        }
-        
-        
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
@@ -130,7 +112,7 @@ public class OSMParser extends DefaultHandler {
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setErrorHandler(this);
             parser.setContentHandler(this);
-            parser.parse(new InputSource(fs));
+            parser.parse(new InputSource(fs));         
             success = true;
         } catch (SAXException ex) {
             throw new SQLException(ex);
@@ -371,9 +353,10 @@ public class OSMParser extends DefaultHandler {
                     wayNodePreparedStmt.addBatch();
                 }
                 wayNodePreparedStmt.executeBatch();
-
+                
                 //Update way geometries
                 updateGeometryWayPreparedStmt.setObject(1, wayOSMElement.getID());
+                updateGeometryWayPreparedStmt.setObject(2, wayOSMElement.getID());
                 updateGeometryWayPreparedStmt.execute();
                 
 

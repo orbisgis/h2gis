@@ -96,14 +96,20 @@ public class OSMImportTest {
         assertTrue(rs.next());
         assertEquals("POINT (-2.121123 47.635276)", rs.getString("the_geom"));
         rs.close();
+        
         //WAY
-       /* rs = st.executeQuery("SELECT * FROM OSM_WAY WHERE ID_WAY=296521584");
+        rs = st.executeQuery("SELECT * FROM OSM_WAY WHERE ID_WAY=296521584");
         assertTrue(rs.next());
-        assertEquals("POINT (-2.12121 47.63537)", rs.getString("the_geom"));
-        rs.close();*/
+        assertEquals("LINESTRING (-2.1240567 47.6359494, -2.1243442 47.6359518, -2.1246188 47.6359542)", rs.getString("the_geom"));
+        rs.close();
+        
+        rs = st.executeQuery("SELECT count(ID_RELATION) FROM OSM_RELATION");
+        assertTrue(rs.next());
+        assertEquals(3, rs.getInt(1));
+        rs.close();
     }
     
-    @Test
+    //@Test Disable because of internet connection is not always active
     public void downloadOSMFile() throws SQLException, IOException {
         File file = File.createTempFile("osm_"+ System.currentTimeMillis(), ".osm");    
         file.delete();

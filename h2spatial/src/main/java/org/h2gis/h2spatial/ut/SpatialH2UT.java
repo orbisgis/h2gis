@@ -69,7 +69,8 @@ public class SpatialH2UT {
      * Create a spatial database
      * @param dbName filename
      * @return Connection
-     * @throws Exception
+     * @throws java.sql.SQLException
+     * @throws java.lang.ClassNotFoundException
      */
     public static Connection createSpatialDataBase(String dbName)throws SQLException, ClassNotFoundException {
         return createSpatialDataBase(dbName,true);
@@ -98,6 +99,7 @@ public class SpatialH2UT {
      * Create a database and return a DataSource
      * @param dbName
      * @param initSpatial
+     * @param h2Parameters
      * @return
      * @throws SQLException
      */
@@ -138,7 +140,8 @@ public class SpatialH2UT {
      * @param initSpatial If true add spatial features to the database
      * @param h2Parameters Additional h2 parameters
      * @return Connection
-     * @throws Exception
+     * @throws java.sql.SQLException
+     * @throws java.lang.ClassNotFoundException
      */
     public static Connection createSpatialDataBase(String dbName,boolean initSpatial, String h2Parameters )throws SQLException, ClassNotFoundException {
         String databasePath = initDBFile(dbName, h2Parameters);
@@ -161,7 +164,8 @@ public class SpatialH2UT {
      * @param dbName filename
      * @param initSpatial If true add spatial features to the database
      * @return Connection
-     * @throws Exception
+     * @throws java.sql.SQLException
+     * @throws java.lang.ClassNotFoundException
      */
     public static Connection createSpatialDataBase(String dbName, boolean initSpatial )throws SQLException, ClassNotFoundException {
         return createSpatialDataBase(dbName, initSpatial, H2_PARAMETERS);

@@ -54,7 +54,8 @@ public class OSMTablesFactory {
     }
 
     /**
-     * Create the nodes table that will be used to import OSM nodes Example :
+     * Create the nodes table that will be used to import OSM nodes 
+     * Example :
      * <node id="298884269" lat="54.0901746" lon="12.2482632" user="SvenHRO"
      * uid="46882" visible="true" version="1" changeset="676636"
      * timestamp="2008-09-21T21:37:45Z"/>
@@ -105,7 +106,8 @@ public class OSMTablesFactory {
     }
 
     /**
-     * Create the ways table that will be used to import OSM ways Example :
+     * Create the ways table that will be used to import OSM ways 
+     * Example :
      * <way id="26659127" user="Masch" uid="55988" visible="true" version="5"
      * changeset="4142606" timestamp="2010-03-16T11:47:08Z">
      *
@@ -304,9 +306,10 @@ public class OSMTablesFactory {
     public static PreparedStatement updateGeometryWayTable(Connection connection,String wayTableName, String wayNodeTableName,String nodeTableName) throws SQLException{
         StringBuilder sb = new StringBuilder("UPDATE ");
         sb.append(wayTableName);
-        sb.append(" SET THE_GEOM= (SELECT ST_MAKELINE(ST_ACCUM(b.THE_GEOM)) FROM ");
-        sb.append(wayNodeTableName).append(" a,");
-        sb.append(nodeTableName).append(" b WHERE a.ID_WAY= ? and a.ID_NODE = b.ID_NODE group by a.ID_WAY);");
-        return connection.prepareStatement(sb.toString());        
+        sb.append(" SET THE_GEOM= (SELECT CASEWHEN(COUNT(ID_NODE)>2,ST_MAKELINE(ST_ACCUM(THE_GEOM)),'LINESTRING EMPTY'::GEOMETRY) FROM ");
+        sb.append("(SELECT a.ID_NODE, THE_GEOM FROM ").append(wayNodeTableName).append(" a, ").
+                append(nodeTableName).append(" b ").append(" WHERE ID_WAY = ? "
+                + "AND a.ID_NODE=b.ID_NODE ORDER BY a.NODE_ORDER))").append(" WHERE ID_WAY=?;");
+        return connection.prepareStatement(sb.toString()); 
     }
 }

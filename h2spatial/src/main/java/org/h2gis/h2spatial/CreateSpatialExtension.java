@@ -193,6 +193,7 @@ public class CreateSpatialExtension {
     /**
      * Register GEOMETRY type and register spatial functions
      * @param connection Active H2 connection
+     * @throws java.sql.SQLException
      */
     public static void initSpatialExtension(Connection connection) throws SQLException {
         addSpatialFunctions(connection,"");
