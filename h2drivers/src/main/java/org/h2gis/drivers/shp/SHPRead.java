@@ -24,7 +24,6 @@
  */
 package org.h2gis.drivers.shp;
 
-import org.h2gis.drivers.dbf.DBFEngine;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
@@ -34,8 +33,6 @@ import org.h2gis.utilities.URIUtility;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
