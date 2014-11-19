@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -35,6 +36,8 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
+
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -82,6 +85,9 @@ public class OSMParser extends DefaultHandler {
     private PreparedStatement wayNodePreparedStmt;
     private OSMElement relationOSMElement;
     private PreparedStatement updateGeometryWayPreparedStmt;
+    private ProgressVisitor progress = new EmptyProgressVisitor();
+    private FileChannel fc;
+    private long fileSize = 0;
 
     public OSMParser() {
 
@@ -98,6 +104,7 @@ public class OSMParser extends DefaultHandler {
      * @throws SQLException
      */
     public boolean read(Connection connection, String tableName, File inputFile, ProgressVisitor progress) throws SQLException {
+        this.progress = progress.subProcess(100);
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
@@ -109,6 +116,8 @@ public class OSMParser extends DefaultHandler {
         FileInputStream fs = null;
         try {
             fs = new FileInputStream(inputFile);
+            this.fc = fs.getChannel();
+            this.fileSize = fc.size();
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setErrorHandler(this);
             parser.setContentHandler(this);
@@ -233,6 +242,9 @@ public class OSMParser extends DefaultHandler {
 
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
+        if(progress.isCanceled()) {
+            throw new SAXException("Canceled by user");
+        }
         if (localName.compareToIgnoreCase("osm") == 0) {
         } else if (localName.compareToIgnoreCase("node") == 0) {
             nodeOSMElement = new NodeOSMElement();
@@ -403,6 +415,12 @@ public class OSMParser extends DefaultHandler {
 
         } else if (localName.compareToIgnoreCase("member") == 0) {
             idMemberOrder++;
+        }
+        // Update Progress
+        try {
+            progress.setStep ((int)(((double) fc.position() / fileSize) * 100));
+        } catch (IOException ex) {
+            // Ignore
         }
     }
 
