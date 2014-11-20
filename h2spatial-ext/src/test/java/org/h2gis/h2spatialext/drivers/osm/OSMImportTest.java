@@ -75,7 +75,7 @@ public class OSMImportTest {
     @Test
     public void importOSMFile() throws SQLException {
         st.execute("DROP TABLE IF EXISTS OSM_TAG, OSM_NODE, OSM_NODE_TAG, OSM_WAY,OSM_WAY_TAG, OSM_WAY_NODE, OSM_RELATION, OSM_RELATION_TAG, OSM_NODE_MEMBER, OSM_WAY_MEMBER, OSM_RELATION_MEMBER;");
-        st.execute("CALL OSMRead(" + StringUtils.quoteStringSQL("/home/ebocher/Téléchargements/nantes_france.osm") + ", 'OSM');");
+        st.execute("CALL OSMRead(" + StringUtils.quoteStringSQL(OSMImportTest.class.getResource("saint_jean.osm").getPath()) + ", 'OSM');");
         ResultSet rs = st.executeQuery("SELECT count(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'");
         rs.next();
         assertTrue(rs.getInt(1) == 11);
