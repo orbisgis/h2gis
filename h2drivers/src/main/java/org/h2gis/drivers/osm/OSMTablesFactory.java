@@ -44,13 +44,40 @@ import java.sql.Statement;
  * (8) table_prefix + _node_member : table that stores all nodes that are referenced into a relation,
  * (9) table_prefix + _way_member : table that stores all ways that are referenced into a relation,
  * (10) table_prefix + _relation_member : table that stores all relations that are referenced into a relation.
+ * (11) table_prefix + _relation_member : table that stores all relations that are referenced into a relation.
  * 
  * @author Erwan Bocher
  */
 public class OSMTablesFactory {
 
+    
+
     private OSMTablesFactory() {
 
+    }
+    
+    
+    /**
+     * Create the tag table to store all key and value
+     * @param connection
+     * @param tagTableName
+     * @return
+     * @throws SQLException
+     */
+    public static PreparedStatement createTagTable(Connection connection, String tagTableName) throws SQLException {
+        Statement stmt = connection.createStatement();
+        StringBuilder sb = new StringBuilder("CREATE TABLE ");
+        sb.append(tagTableName);
+        sb.append("(ID_TAG SERIAL, TAG_KEY VARCHAR,TAG_VALUE VARCHAR );");
+        stmt.execute(sb.toString());        
+        stmt.execute("CREATE INDEX ON "+ tagTableName+"(TAG_KEY, TAG_VALUE);");
+        stmt.close();
+        //We return the preparedstatement of the tag table
+        StringBuilder insert = new StringBuilder("INSERT INTO ");
+        insert.append(tagTableName);
+        insert.append(" (ID_TAG,TAG_KEY,TAG_VALUE) SELECT null, ?, ? WHERE NOT EXISTS (SELECT ID_TAG FROM ");
+        insert.append(tagTableName).append(" WHERE TAG_KEY=? AND TAG_VALUE=?)");
+        return connection.prepareStatement(insert.toString());
     }
 
     /**
@@ -80,28 +107,30 @@ public class OSMTablesFactory {
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES ( ?, ?, ?,?,?,?,?,?);");
     }
+    
 
     /**
      * Create a table to store the node tags.
      *
      * @param connection
      * @param nodeTagTableName
-     * @param nodeTableName
+     * @param tagTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createNodeTagTable(Connection connection, String nodeTagTableName, String nodeTableName) throws SQLException {
+    public static PreparedStatement createNodeTagTable(Connection connection, String nodeTagTableName, String tagTableName) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(nodeTagTableName);
-        sb.append("(ID_NODE BIGINT, TAG_KEY VARCHAR, TAG_VALUE VARCHAR, FOREIGN KEY(ID_NODE) REFERENCES ");
-        sb.append(nodeTableName).append(");");
+        sb.append("(ID_NODE BIGINT, ID_TAG BIGINT); ");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(nodeTagTableName);
-        insert.append(" VALUES ( ?, ?,?); ");
+        insert.append("VALUES ( ?, ");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? AND TAG_VALUE = ? LIMIT 1)");
+        insert.append(");");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -138,22 +167,23 @@ public class OSMTablesFactory {
      *
      * @param connection
      * @param wayTagTableName
-     * @param wayTableName
+     * @param tagTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWayTagTable(Connection connection, String wayTagTableName, String wayTableName) throws SQLException {
+    public static PreparedStatement createWayTagTable(Connection connection, String wayTagTableName, String tagTableName) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayTagTableName);
-        sb.append("(ID_WAY BIGINT, TAG_KEY VARCHAR, TAG_VALUE VARCHAR,  FOREIGN KEY(ID_WAY) REFERENCES ");
-        sb.append(wayTableName).append(");");
+        sb.append("(ID_WAY BIGINT, ID_TAG BIGINT);");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(wayTagTableName);
-        insert.append(" VALUES ( ?, ?,?);");
+        insert.append("VALUES ( ?, ");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? AND TAG_VALUE = ? LIMIT 1)");
+        insert.append(");");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -162,19 +192,14 @@ public class OSMTablesFactory {
      *
      * @param connection
      * @param wayNodeTableName
-     * @param nodeTableName
-     * @param wayTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWayNodeTable(Connection connection, String wayNodeTableName, String nodeTableName, String wayTableName) throws SQLException {
+    public static PreparedStatement createWayNodeTable(Connection connection, String wayNodeTableName) throws SQLException{
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayNodeTableName);
-        sb.append("(ID_WAY BIGINT, ID_NODE BIGINT, NODE_ORDER INT, FOREIGN KEY(ID_NODE) REFERENCES ");
-        sb.append(nodeTableName);
-        sb.append(", FOREIGN KEY(ID_WAY) REFERENCES ");
-        sb.append(wayTableName).append(");");
+        sb.append("(ID_WAY BIGINT, ID_NODE BIGINT, NODE_ORDER INT);");
         stmt.execute(sb.toString());
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + wayNodeTableName + " VALUES ( ?, ?,?);");
@@ -208,23 +233,24 @@ public class OSMTablesFactory {
      * Create the relation tags table
      *
      * @param connection
-     * @param relationTable
+     * @param tagTableName
      * @param relationTagTable
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createRelationTagTable(Connection connection, String relationTable, String relationTagTable) throws SQLException {
+    public static PreparedStatement createRelationTagTable(Connection connection, String relationTagTable, String tagTableName) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(relationTagTable);
-        sb.append("(ID_RELATION BIGINT, TAG_KEY VARCHAR, TAG_VALUE VARCHAR, FOREIGN KEY(ID_RELATION) REFERENCES ");
-        sb.append(relationTable).append(");");
+        sb.append("(ID_RELATION BIGINT, ID_TAG BIGINT);");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(relationTagTable);
-        insert.append(" VALUES ( ?, ?,?);");
+        insert.append("VALUES ( ?, ");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? AND TAG_VALUE = ? LIMIT 1)");
+        insert.append(");");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -233,19 +259,14 @@ public class OSMTablesFactory {
      *
      * @param connection
      * @param nodeMemberTable
-     * @param relationTable
-     * @param nodeTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createNodeMemberTable(Connection connection, String nodeMemberTable, String relationTable, String nodeTableName) throws SQLException {
+    public static PreparedStatement createNodeMemberTable(Connection connection, String nodeMemberTable) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(nodeMemberTable);
-        sb.append("(ID_RELATION BIGINT,ID_NODE BIGINT, ROLE VARCHAR, NODE_ORDER INT,FOREIGN KEY(ID_RELATION) REFERENCES ");
-        sb.append(relationTable);
-        sb.append(", FOREIGN KEY(ID_NODE) REFERENCES ");
-        sb.append(nodeTableName).append(");");
+        sb.append("(ID_RELATION BIGINT,ID_NODE BIGINT, ROLE VARCHAR, NODE_ORDER INT);");
         stmt.execute(sb.toString());
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + nodeMemberTable + " VALUES ( ?,?,?,?);");
@@ -256,19 +277,14 @@ public class OSMTablesFactory {
      *
      * @param connection
      * @param wayMemberTable
-     * @param relationTable
-     * @param wayTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWayMemberTable(Connection connection, String wayMemberTable, String relationTable, String wayTableName) throws SQLException {
+    public static PreparedStatement createWayMemberTable(Connection connection, String wayMemberTable) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayMemberTable);
-        sb.append("(ID_RELATION BIGINT, ID_WAY BIGINT, ROLE VARCHAR, WAY_ORDER INT, FOREIGN KEY(ID_RELATION) REFERENCES ");
-        sb.append(relationTable);
-        sb.append(", FOREIGN KEY(ID_WAY) REFERENCES ");
-        sb.append(wayTableName).append(");");
+        sb.append("(ID_RELATION BIGINT, ID_WAY BIGINT, ROLE VARCHAR, WAY_ORDER INT);");
         stmt.execute(sb.toString());
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + wayMemberTable + " VALUES ( ?,?,?,?);");
@@ -279,16 +295,14 @@ public class OSMTablesFactory {
      *
      * @param connection
      * @param relationMemberTable
-     * @param relationTable
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createRelationMemberTable(Connection connection, String relationMemberTable, String relationTable) throws SQLException {
+    public static PreparedStatement createRelationMemberTable(Connection connection, String relationMemberTable) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(relationMemberTable);
-        sb.append("(ID_RELATION BIGINT, ID_SUB_RELATION BIGINT, ROLE VARCHAR, RELATION_ORDER INT, FOREIGN KEY(ID_RELATION) REFERENCES ");
-        sb.append(relationTable).append(");");
+        sb.append("(ID_RELATION BIGINT, ID_SUB_RELATION BIGINT, ROLE VARCHAR, RELATION_ORDER INT);");
         stmt.execute(sb.toString());
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + relationMemberTable + " VALUES ( ?,?,?,?);");
