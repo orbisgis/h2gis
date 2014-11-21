@@ -68,14 +68,14 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(tagTableName);
-        sb.append("(ID_TAG SERIAL, TAG_KEY VARCHAR,TAG_VALUE VARCHAR );");
+        sb.append("(ID_TAG SERIAL PRIMARY KEY, TAG_KEY VARCHAR,TAG_VALUE VARCHAR );");
         stmt.execute(sb.toString());        
         stmt.execute("CREATE INDEX ON "+ tagTableName+"(TAG_KEY, TAG_VALUE);");
         stmt.close();
         //We return the preparedstatement of the tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(tagTableName);
-        insert.append(" (ID_TAG,TAG_KEY,TAG_VALUE) SELECT null, ?, ? WHERE NOT EXISTS (SELECT ID_TAG FROM ");
+        insert.append(" (TAG_KEY,TAG_VALUE) SELECT ?, ? WHERE NOT EXISTS (SELECT ID_TAG FROM ");
         insert.append(tagTableName).append(" WHERE TAG_KEY=? AND TAG_VALUE=?)");
         return connection.prepareStatement(insert.toString());
     }
@@ -92,11 +92,17 @@ public class OSMTablesFactory {
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createNodeTable(Connection connection, String nodeTableName) throws SQLException {
+    public static PreparedStatement createNodeTable(Connection connection, String nodeTableName, boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(nodeTableName);
-        sb.append("(ID_NODE BIGINT PRIMARY KEY,  THE_GEOM POINT,"
+        sb.append("(ID_NODE BIGINT PRIMARY KEY,  THE_GEOM ");
+        if(isH2) {
+            sb.append("POINT");
+        } else {
+            sb.append("GEOMETRY(POINT, 0)");
+        }
+        sb.append(","
                 + "USER_NAME VARCHAR,"
                 + "UID BIGINT,"
                 + "VISIBLE BOOLEAN,"
@@ -145,12 +151,18 @@ public class OSMTablesFactory {
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWayTable(Connection connection, String wayTableName) throws SQLException {
+    public static PreparedStatement createWayTable(Connection connection, String wayTableName, boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayTableName);
         sb.append("(ID_WAY BIGINT PRIMARY KEY,"
-                + "THE_GEOM LINESTRING,"
+                + "THE_GEOM ");
+        if(isH2) {
+            sb.append("LINESTRING");
+        } else {
+            sb.append("GEOMETRY(LINESTRING, 0)");
+        }
+        sb.append(","
                 + "USER_NAME VARCHAR,"
                 + "UID BIGINT,"
                 + "VISIBLE BOOLEAN,"

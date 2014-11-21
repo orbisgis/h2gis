@@ -33,6 +33,7 @@ import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.Map;
@@ -89,7 +90,11 @@ public class OSMParser extends DefaultHandler {
     private ProgressVisitor progress = new EmptyProgressVisitor();
     private FileChannel fc;
     private long fileSize = 0;
+    private long readFileSizeEachNode = 1;
+    private long nodeCountProgress = 0;
     private PreparedStatement tagPreparedStmt;
+    // For progression information return
+    private static final int AVERAGE_NODE_SIZE = 500;
 
     public OSMParser() {
 
@@ -120,6 +125,10 @@ public class OSMParser extends DefaultHandler {
             fs = new FileInputStream(inputFile);
             this.fc = fs.getChannel();
             this.fileSize = fc.size();
+            // Given the file size and an average node file size.
+            // Skip how many nodes in order to update progression at a step of 1%
+            readFileSizeEachNode = (this.fileSize / AVERAGE_NODE_SIZE) / 100;
+            nodeCountProgress = 0;
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setErrorHandler(this);
             parser.setContentHandler(this);
@@ -224,11 +233,11 @@ public class OSMParser extends DefaultHandler {
         String tagTableName = caseIdentifier(requestedTable, osmTableName + TAG, isH2);
         tagPreparedStmt =  OSMTablesFactory.createTagTable(connection, tagTableName);
         String nodeTableName = caseIdentifier(requestedTable, osmTableName + NODE, isH2);
-        nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName);
+        nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName, isH2);
         String nodeTagTableName = caseIdentifier(requestedTable, osmTableName + NODE_TAG, isH2);
         nodeTagPreparedStmt = OSMTablesFactory.createNodeTagTable(connection, nodeTagTableName, tagTableName);
         String wayTableName = caseIdentifier(requestedTable, osmTableName + WAY, isH2);
-        wayPreparedStmt = OSMTablesFactory.createWayTable(connection, wayTableName);
+        wayPreparedStmt = OSMTablesFactory.createWayTable(connection, wayTableName, isH2);
         String wayTagTableName = caseIdentifier(requestedTable, osmTableName + WAY_TAG, isH2);
         wayTagPreparedStmt = OSMTablesFactory.createWayTagTable(connection, wayTagTableName, tagTableName);
         String wayNodeTableName = caseIdentifier(requestedTable, osmTableName + WAY_NODE, isH2);
@@ -251,6 +260,7 @@ public class OSMParser extends DefaultHandler {
         if(progress.isCanceled()) {
             throw new SAXException("Canceled by user");
         }
+        nodeCountProgress++;
         if (localName.compareToIgnoreCase("osm") == 0) {
         } else if (localName.compareToIgnoreCase("node") == 0) {
             nodeOSMElement = new NodeOSMElement();
@@ -334,7 +344,7 @@ public class OSMParser extends DefaultHandler {
                 nodePreparedStmt.setObject(5, nodeOSMElement.getVisible());
                 nodePreparedStmt.setObject(6, nodeOSMElement.getVersion());
                 nodePreparedStmt.setObject(7, nodeOSMElement.getChangeSet());
-                nodePreparedStmt.setObject(8, nodeOSMElement.getTimeStamp());
+                nodePreparedStmt.setObject(8, nodeOSMElement.getTimeStamp(), Types.DATE);
                 nodePreparedStmt.execute();
                 HashMap<String, String> tags = nodeOSMElement.getTags();
                 for (Map.Entry<String, String> entry : tags.entrySet()) {
@@ -358,7 +368,7 @@ public class OSMParser extends DefaultHandler {
                 wayPreparedStmt.setObject(5, wayOSMElement.getVisible());
                 wayPreparedStmt.setObject(6, wayOSMElement.getVersion());
                 wayPreparedStmt.setObject(7, wayOSMElement.getChangeSet());
-                wayPreparedStmt.setObject(8, wayOSMElement.getTimeStamp());
+                wayPreparedStmt.setObject(8, wayOSMElement.getTimeStamp(), Types.DATE);
                 wayPreparedStmt.execute();
 
                 HashMap<String, String> tags = wayOSMElement.getTags();
@@ -382,9 +392,9 @@ public class OSMParser extends DefaultHandler {
                 wayNodePreparedStmt.executeBatch();
                 
                 //Update way geometries
-                updateGeometryWayPreparedStmt.setObject(1, wayOSMElement.getID());
-                updateGeometryWayPreparedStmt.setObject(2, wayOSMElement.getID());
-                updateGeometryWayPreparedStmt.execute();
+                //updateGeometryWayPreparedStmt.setObject(1, wayOSMElement.getID());
+                //updateGeometryWayPreparedStmt.setObject(2, wayOSMElement.getID());
+                //updateGeometryWayPreparedStmt.execute();
                 
 
             } catch (SQLException ex) {
@@ -399,7 +409,7 @@ public class OSMParser extends DefaultHandler {
                 relationPreparedStmt.setObject(4, relationOSMElement.getVisible());
                 relationPreparedStmt.setObject(5, relationOSMElement.getVersion());
                 relationPreparedStmt.setObject(6, relationOSMElement.getChangeSet());
-                relationPreparedStmt.setObject(7, relationOSMElement.getTimeStamp());
+                relationPreparedStmt.setObject(7, relationOSMElement.getTimeStamp(), Types.DATE);
                 relationPreparedStmt.execute();
 
                 HashMap<String, String> tags = relationOSMElement.getTags();
@@ -427,11 +437,13 @@ public class OSMParser extends DefaultHandler {
         } else if (localName.compareToIgnoreCase("member") == 0) {
             idMemberOrder++;
         }
-        // Update Progress
-        try {
-            progress.setStep ((int)(((double) fc.position() / fileSize) * 100));
-        } catch (IOException ex) {
-            // Ignore
+        if(nodeCountProgress % readFileSizeEachNode == 0) {
+            // Update Progress
+            try {
+                progress.setStep((int) (((double) fc.position() / fileSize) * 100));
+            } catch (IOException ex) {
+                // Ignore
+            }
         }
     }
 
