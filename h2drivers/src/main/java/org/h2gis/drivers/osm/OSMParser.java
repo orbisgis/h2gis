@@ -24,6 +24,8 @@
  */
 package org.h2gis.drivers.osm;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,12 +34,19 @@ import java.nio.channels.FileChannel;
 import java.sql.BatchUpdateException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
+import com.vividsolutions.jts.geom.Point;
 import org.h2.api.ErrorCode;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
@@ -93,6 +102,8 @@ public class OSMParser extends DefaultHandler {
     private long readFileSizeEachNode = 1;
     private long nodeCountProgress = 0;
     private PreparedStatement tagPreparedStmt;
+    private Connection connection;
+    private String nodeTableName;
     // For progression information return
     private static final int AVERAGE_NODE_SIZE = 500;
 
@@ -112,6 +123,7 @@ public class OSMParser extends DefaultHandler {
      */
     public boolean read(Connection connection, String tableName, File inputFile, ProgressVisitor progress) throws SQLException {
         this.progress = progress.subProcess(100);
+        this.connection = connection;
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
@@ -229,7 +241,7 @@ public class OSMParser extends DefaultHandler {
     private void createOSMDatabaseModel(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
         String tagTableName = caseIdentifier(requestedTable, osmTableName + TAG, isH2);
         tagPreparedStmt =  OSMTablesFactory.createTagTable(connection, tagTableName);
-        String nodeTableName = caseIdentifier(requestedTable, osmTableName + NODE, isH2);
+        nodeTableName = caseIdentifier(requestedTable, osmTableName + NODE, isH2);
         nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName, isH2);
         String nodeTagTableName = caseIdentifier(requestedTable, osmTableName + NODE_TAG, isH2);
         nodeTagPreparedStmt = OSMTablesFactory.createNodeTagTable(connection, nodeTagTableName, tagTableName);
@@ -331,6 +343,55 @@ public class OSMParser extends DefaultHandler {
         }
     }
 
+    /**
+     * Use element nodes in order to build a geometry.
+     * @param wayOSMElement Element that hold node references.
+     * @return Geometry extracted from node table
+     * @throws SQLException
+     */
+    private Geometry fetchGeometry(WayOSMElement wayOSMElement) throws SQLException {
+        List<Long> nodePk = wayOSMElement.getNodesRef();
+        if(nodePk.isEmpty()) {
+            return gf.createLineString(new Coordinate[0]);
+        }
+        StringBuilder req = new StringBuilder("SELECT ID_NODE, THE_GEOM FROM "+nodeTableName+" WHERE ID_NODE IN (");
+        boolean first=true;
+        int coordOrder = 0;
+        Map<Long, Integer> orderMap = new HashMap<Long, Integer>(nodePk.size());
+        for(long pk : nodePk) {
+            orderMap.put(pk, coordOrder++);
+            if(!first) {
+                req.append(",");
+            } else {
+                first = false;
+            }
+            req.append("?");
+        }
+        req.append(")");
+        PreparedStatement pst = connection.prepareStatement(req.toString());
+        SortedMap<Integer, Coordinate> waysCoordinates = new TreeMap<Integer, Coordinate>();
+        try {
+            for(int index = 1; index <= nodePk.size(); index++) {
+                pst.setLong(index, nodePk.get(index - 1));
+            }
+            ResultSet rs = pst.executeQuery();
+            try {
+                while(rs.next()) {
+                    long idNode = rs.getLong(1);
+                    Point pt = (Point)rs.getObject(2);
+                    if(pt != null) {
+                        waysCoordinates.put(orderMap.get(idNode), pt.getCoordinate());
+                    }
+                }
+            } finally {
+                rs.close();
+            }
+        } finally {
+            pst.close();
+        }
+        return gf.createLineString(waysCoordinates.values().toArray(new Coordinate[waysCoordinates.size()]));
+    }
+
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (localName.compareToIgnoreCase("node") == 0) {
@@ -344,6 +405,7 @@ public class OSMParser extends DefaultHandler {
                 nodePreparedStmt.setObject(6, nodeOSMElement.getVersion());
                 nodePreparedStmt.setObject(7, nodeOSMElement.getChangeSet());
                 nodePreparedStmt.setObject(8, nodeOSMElement.getTimeStamp(), Types.DATE);
+                nodePreparedStmt.setString(9, nodeOSMElement.getName());
                 nodePreparedStmt.execute();
                 HashMap<String, String> tags = nodeOSMElement.getTags();
                 for (Map.Entry<String, String> entry : tags.entrySet()) {
@@ -361,13 +423,14 @@ public class OSMParser extends DefaultHandler {
             tagLocation = TAG_LOCATION.OTHER;
             try {
                 wayPreparedStmt.setObject(1, wayOSMElement.getID());
-                wayPreparedStmt.setObject(2, wayOSMElement.getUser());
-                wayPreparedStmt.setObject(3, wayOSMElement.getUID());
-                wayPreparedStmt.setObject(4, wayOSMElement.getVisible());
-                wayPreparedStmt.setObject(5, wayOSMElement.getVersion());
-                wayPreparedStmt.setObject(6, wayOSMElement.getChangeSet());
-                wayPreparedStmt.setTimestamp(7, wayOSMElement.getTimeStamp());
-                wayPreparedStmt.setString(8, wayOSMElement.getName());
+                wayPreparedStmt.setObject(2, fetchGeometry(wayOSMElement));
+                wayPreparedStmt.setObject(3, wayOSMElement.getUser());
+                wayPreparedStmt.setObject(4, wayOSMElement.getUID());
+                wayPreparedStmt.setObject(5, wayOSMElement.getVisible());
+                wayPreparedStmt.setObject(6, wayOSMElement.getVersion());
+                wayPreparedStmt.setObject(7, wayOSMElement.getChangeSet());
+                wayPreparedStmt.setTimestamp(8, wayOSMElement.getTimeStamp());
+                wayPreparedStmt.setString(9, wayOSMElement.getName());
                 wayPreparedStmt.execute();
 
                 HashMap<String, String> tags = wayOSMElement.getTags();
@@ -379,13 +442,11 @@ public class OSMParser extends DefaultHandler {
                 }
                 wayTagPreparedStmt.executeBatch();
 
-                HashMap<Integer, Long> nodesRef = wayOSMElement.getNodesRef();
-                for (Map.Entry<Integer, Long> entry : nodesRef.entrySet()) {
-                    Integer order = entry.getKey();
-                    Long ref = entry.getValue();
+                int order = 1;
+                for (long ref :  wayOSMElement.getNodesRef()) {
                     wayNodePreparedStmt.setObject(1, wayOSMElement.getID());
                     wayNodePreparedStmt.setObject(2, ref);
-                    wayNodePreparedStmt.setObject(3, order);
+                    wayNodePreparedStmt.setObject(3, order++);
                     wayNodePreparedStmt.addBatch();
                 }
                 wayNodePreparedStmt.executeBatch();

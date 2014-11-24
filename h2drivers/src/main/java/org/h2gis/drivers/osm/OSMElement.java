@@ -179,7 +179,7 @@ public class OSMElement {
             name = value;
             return false;
         }
-        tags.put(key.toLowerCase(), value);
+        tags.put(key, value);
         return true;
     }
 

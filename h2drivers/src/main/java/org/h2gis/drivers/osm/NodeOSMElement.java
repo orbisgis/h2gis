@@ -70,8 +70,13 @@ public class NodeOSMElement extends OSMElement {
     @Override
     public boolean addTag(String key, String value) {
         if(key.equalsIgnoreCase("ele")) {
-            setElevation(Double.valueOf(value));
-            return false;
+            try {
+                setElevation(Double.valueOf(value));
+                return false;
+            } catch (NumberFormatException ex) {
+                // Not a number, some user enter "273 m"
+                return super.addTag(key, value);
+            }
         } else {
             return super.addTag(key, value);
         }

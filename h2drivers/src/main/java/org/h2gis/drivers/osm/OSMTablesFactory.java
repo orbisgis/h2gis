@@ -67,7 +67,7 @@ public class OSMTablesFactory {
     public static PreparedStatement createTagTable(Connection connection, String tagTableName) throws SQLException {
         Statement stmt = connection.createStatement();
         // PostgreSQL and H2 will automatically create an index on TAG_KEY,TAG_VALUE when UNIQUE constraint is set
-        stmt.execute("CREATE TABLE " + tagTableName + "(ID_TAG SERIAL PRIMARY KEY, TAG_KEY VARCHAR,TAG_VALUE VARCHAR, UNIQUE(TAG_KEY,TAG_VALUE));");
+        stmt.execute("CREATE TABLE " + tagTableName + "(ID_TAG SERIAL PRIMARY KEY, TAG_KEY VARCHAR UNIQUE);");
         stmt.close();
         //We return the prepared statement of the tag table
         return connection.prepareStatement("INSERT INTO " + tagTableName + " (TAG_KEY) VALUES (?)");
@@ -101,10 +101,11 @@ public class OSMTablesFactory {
                 + "VISIBLE BOOLEAN,"
                 + "VERSION INTEGER,"
                 + "CHANGESET INTEGER,"
-                + "LAST_UPDATE TIMESTAMP);");
+                + "LAST_UPDATE TIMESTAMP,"
+                + "NAME VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
-        return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES ( ?, ?, ?,?,?,?,?,?);");
+        return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES (?,?,?,?,?,?,?,?,?);");
     }
     
 
@@ -234,15 +235,15 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(relationTagTable);
-        sb.append("(ID_RELATION BIGINT, ID_TAG BIGINT);");
+        sb.append("(ID_RELATION BIGINT, ID_TAG BIGINT, TAG_VALUE VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(relationTagTable);
         insert.append("VALUES ( ?, ");
-        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? AND TAG_VALUE = ? LIMIT 1)");
-        insert.append(");");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? LIMIT 1)");
+        insert.append(", ?);");
         return connection.prepareStatement(insert.toString());
     }
 
