@@ -284,7 +284,7 @@ public class SHPEngineTest {
             rs.close();
         }
         // Execute query using index
-        rs = st.executeQuery("SELECT PK FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 15)");
+        rs = st.executeQuery("SELECT PK FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 15) ORDER BY PK");
         try{
             assertTrue(rs.next());
             assertEquals(128, rs.getLong(1));

@@ -35,31 +35,45 @@ import com.vividsolutions.jts.geom.Point;
  */
 public class NodeOSMElement extends OSMElement {
 
-    private Point point;
+    private double latitude;
+    private double longitude;
+    private double elevation = Coordinate.NULL_ORDINATE;
 
-    public NodeOSMElement() {
-        super();
+    /**
+     * Constructor
+     * @param latitude Latitude value
+     * @param longitude Longitude value
+     */
+    public NodeOSMElement(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
+    /**
+     * @param elevation Elevation (also known as altitude or height) above mean sea level in metre,
+     *                  based on geoid model EGM 96 which is used by WGS 84 (GPS).
+     */
+    public void setElevation(double elevation) {
+        this.elevation = elevation;
     }
 
     /**
      * The geometry of the node
      *
-     * @return
+     * @return Point value
      */
-    public Point getPoint() {
-        return point;
+    public Point getPoint(GeometryFactory gf) {
+        return gf.createPoint(new Coordinate(longitude,
+                latitude, elevation));
     }
 
-    /**
-     * Create a new geometry point based on the latitude and longitude values
-     *
-     * @param gf
-     * @param lon
-     * @param lat
-     */
-    public void createPoint(GeometryFactory gf, String lon, String lat) {
-        point = gf.createPoint(new Coordinate(Double.valueOf(lon),
-                Double.valueOf(lat)));
+    @Override
+    public boolean addTag(String key, String value) {
+        if(key.equalsIgnoreCase("ele")) {
+            setElevation(Double.valueOf(value));
+            return false;
+        } else {
+            return super.addTag(key, value);
+        }
     }
-
 }

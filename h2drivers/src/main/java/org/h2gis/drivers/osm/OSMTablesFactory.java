@@ -66,18 +66,11 @@ public class OSMTablesFactory {
      */
     public static PreparedStatement createTagTable(Connection connection, String tagTableName) throws SQLException {
         Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(tagTableName);
-        sb.append("(ID_TAG SERIAL PRIMARY KEY, TAG_KEY VARCHAR,TAG_VALUE VARCHAR );");
-        stmt.execute(sb.toString());        
-        stmt.execute("CREATE INDEX ON "+ tagTableName+"(TAG_KEY, TAG_VALUE);");
+        // PostgreSQL and H2 will automatically create an index on TAG_KEY,TAG_VALUE when UNIQUE constraint is set
+        stmt.execute("CREATE TABLE " + tagTableName + "(ID_TAG SERIAL PRIMARY KEY, TAG_KEY VARCHAR,TAG_VALUE VARCHAR, UNIQUE(TAG_KEY,TAG_VALUE));");
         stmt.close();
-        //We return the preparedstatement of the tag table
-        StringBuilder insert = new StringBuilder("INSERT INTO ");
-        insert.append(tagTableName);
-        insert.append(" (TAG_KEY,TAG_VALUE) SELECT ?, ? WHERE NOT EXISTS (SELECT ID_TAG FROM ");
-        insert.append(tagTableName).append(" WHERE TAG_KEY=? AND TAG_VALUE=?)");
-        return connection.prepareStatement(insert.toString());
+        //We return the prepared statement of the tag table
+        return connection.prepareStatement("INSERT INTO " + tagTableName + " (TAG_KEY) VALUES (?)");
     }
 
     /**
@@ -128,15 +121,15 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(nodeTagTableName);
-        sb.append("(ID_NODE BIGINT, ID_TAG BIGINT); ");
+        sb.append("(ID_NODE BIGINT, ID_TAG BIGINT,TAG_VALUE VARCHAR); ");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(nodeTagTableName);
         insert.append("VALUES ( ?, ");
-        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? AND TAG_VALUE = ? LIMIT 1)");
-        insert.append(");");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? LIMIT 1)");
+        insert.append(", ?);");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -155,23 +148,10 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayTableName);
-        sb.append("(ID_WAY BIGINT PRIMARY KEY,"
-                + "THE_GEOM ");
-        if(isH2) {
-            sb.append("LINESTRING");
-        } else {
-            sb.append("GEOMETRY(LINESTRING, 0)");
-        }
-        sb.append(","
-                + "USER_NAME VARCHAR,"
-                + "UID BIGINT,"
-                + "VISIBLE BOOLEAN,"
-                + "VERSION INTEGER,"
-                + "CHANGESET INTEGER,"
-                + "LAST_UPDATE TIMESTAMP);");
+        sb.append("(ID_WAY BIGINT PRIMARY KEY,THE_GEOM GEOMETRY, USER_NAME VARCHAR, UID BIGINT, VISIBLE BOOLEAN, VERSION INTEGER, CHANGESET INTEGER, LAST_UPDATE TIMESTAMP, NAME VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
-        return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES ( ?, ?,?,?,?,?,?,?);");
+        return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES (?,?,?,?,?,?,?,?,?);");
     }
 
     /**
@@ -187,15 +167,15 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayTagTableName);
-        sb.append("(ID_WAY BIGINT, ID_TAG BIGINT);");
+        sb.append("(ID_WAY BIGINT, ID_TAG BIGINT, VALUE VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(wayTagTableName);
         insert.append("VALUES ( ?, ");
-        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? AND TAG_VALUE = ? LIMIT 1)");
-        insert.append(");");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? LIMIT 1)");
+        insert.append(", ?);");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -336,6 +316,13 @@ public class OSMTablesFactory {
         sb.append("(SELECT a.ID_NODE, THE_GEOM FROM ").append(wayNodeTableName).append(" a, ").
                 append(nodeTableName).append(" b ").append(" WHERE ID_WAY = ? "
                 + "AND a.ID_NODE=b.ID_NODE ORDER BY a.NODE_ORDER))").append(" WHERE ID_WAY=?;");
+        /**
+         create index on "PAYS-DE-LA-LOIRE-LATEST_WAY_NODE"(ID_WAY,ID_NODE);
+
+         create table "PAYS-DE-LA-LOIRE-LATEST_WAY_GEOM" AS SELECT (SELECT CASEWHEN(COUNT(*)>2,ST_MAKELINE(ST_ACCUM(THE_GEOM)),'LINESTRING EMPTY'::GEOMETRY) FROM (SELECT N.ID_NODE, N.THE_GEOM,WN.ID_WAY IDWAY FROM "PAYS-DE-LA-LOIRE-LATEST_NODE" N,"PAYS-DE-LA-LOIRE-LATEST_WAY_NODE" WN WHERE N.ID_NODE = WN.ID_NODE ORDER BY WN.NODE_ORDER) WHERE  IDWAY = W.ID_WAY) THE_GEOM ,W.* FROM "PAYS-DE-LA-LOIRE-LATEST_WAY" W;
+
+         419,058 seconds pour 780s d'import..
+         */
         return connection.prepareStatement(sb.toString()); 
     }
 }
