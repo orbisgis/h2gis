@@ -351,7 +351,7 @@ public class OSMParser extends DefaultHandler {
      */
     private Geometry fetchGeometry(WayOSMElement wayOSMElement) throws SQLException {
         List<Long> nodePk = wayOSMElement.getNodesRef();
-        if(nodePk.isEmpty()) {
+        if(nodePk.size() < 2) {
             return gf.createLineString(new Coordinate[0]);
         }
         StringBuilder req = new StringBuilder("SELECT ID_NODE, THE_GEOM FROM "+nodeTableName+" WHERE ID_NODE IN (");
