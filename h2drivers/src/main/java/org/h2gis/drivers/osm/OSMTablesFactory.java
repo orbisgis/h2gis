@@ -91,9 +91,9 @@ public class OSMTablesFactory {
         sb.append(nodeTableName);
         sb.append("(ID_NODE BIGINT PRIMARY KEY,  THE_GEOM ");
         if(isH2) {
-            sb.append("POINT");
+            sb.append("POINT CHECK ST_SRID(THE_GEOM)=4326");
         } else {
-            sb.append("GEOMETRY(POINT, 0)");
+            sb.append("GEOMETRY(POINT, 4326)");
         }
         sb.append(","
                 + "USER_NAME VARCHAR,"
@@ -149,10 +149,10 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayTableName);
-        sb.append("(ID_WAY BIGINT PRIMARY KEY,THE_GEOM GEOMETRY, USER_NAME VARCHAR, UID BIGINT, VISIBLE BOOLEAN, VERSION INTEGER, CHANGESET INTEGER, LAST_UPDATE TIMESTAMP, NAME VARCHAR);");
+        sb.append("(ID_WAY BIGINT PRIMARY KEY, USER_NAME VARCHAR, UID BIGINT, VISIBLE BOOLEAN, VERSION INTEGER, CHANGESET INTEGER, LAST_UPDATE TIMESTAMP, NAME VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
-        return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES (?,?,?,?,?,?,?,?,?);");
+        return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES (?,?,?,?,?,?,?,?);");
     }
 
     /**

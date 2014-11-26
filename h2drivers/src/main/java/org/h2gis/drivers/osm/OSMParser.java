@@ -344,68 +344,6 @@ public class OSMParser extends DefaultHandler {
         }
     }
 
-    /**
-     * Use element nodes in order to build a geometry.
-     * @param wayOSMElement Element that hold node references.
-     * @return Geometry extracted from node table
-     * @throws SQLException
-     */
-    private Geometry fetchGeometry(WayOSMElement wayOSMElement) throws SQLException {
-        List<Long> nodePk = wayOSMElement.getNodesRef();
-        if(nodePk.size() < 2) {
-            return gf.createLineString(new Coordinate[0]);
-        }
-        StringBuilder req = new StringBuilder("SELECT ID_NODE, THE_GEOM FROM "+nodeTableName+" WHERE ID_NODE IN (");
-        boolean first=true;
-        for(long pk : nodePk) {
-            if(!first) {
-                req.append(",");
-            } else {
-                first = false;
-            }
-            req.append("?");
-        }
-        req.append(")");
-        PreparedStatement pst = connection.prepareStatement(req.toString());
-        Map<Long, Coordinate> waysCoordinates = new HashMap<Long, Coordinate>();
-        try {
-            for(int index = 1; index <= nodePk.size(); index++) {
-                pst.setLong(index, nodePk.get(index - 1));
-            }
-            ResultSet rs = pst.executeQuery();
-            try {
-                while(rs.next()) {
-                    long idNode = rs.getLong(1);
-                    Point pt = (Point)rs.getObject(2);
-                    if(pt != null) {
-                        waysCoordinates.put(idNode, pt.getCoordinate());
-                    }
-                }
-            } finally {
-                rs.close();
-            }
-        } finally {
-            pst.close();
-        }
-        List<Coordinate> coords = new ArrayList<Coordinate>(nodePk.size());
-        for(long nodeKey : nodePk) {
-            Coordinate nodeCoord = waysCoordinates.get(nodeKey);
-            if(nodeCoord != null) {
-                coords.add(nodeCoord);
-            }
-        }
-        if(coords.size() < 2) {
-            return gf.createLineString(new Coordinate[0]);
-        }
-        Map<String,String> tags = wayOSMElement.getTags();
-        String building = tags.get("building");
-        if(building == null || "no".equals(building) || !nodePk.get(0).equals(nodePk.get(nodePk.size() - 1))) {
-            return gf.createLineString(coords.toArray(new Coordinate[coords.size()]));
-        } else {
-            return gf.createPolygon(coords.toArray(new Coordinate[coords.size()]));
-        }
-    }
-
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (localName.compareToIgnoreCase("node") == 0) {
@@ -437,14 +375,13 @@ public class OSMParser extends DefaultHandler {
             tagLocation = TAG_LOCATION.OTHER;
             try {
                 wayPreparedStmt.setObject(1, wayOSMElement.getID());
-                wayPreparedStmt.setObject(2, fetchGeometry(wayOSMElement));
-                wayPreparedStmt.setObject(3, wayOSMElement.getUser());
-                wayPreparedStmt.setObject(4, wayOSMElement.getUID());
-                wayPreparedStmt.setObject(5, wayOSMElement.getVisible());
-                wayPreparedStmt.setObject(6, wayOSMElement.getVersion());
-                wayPreparedStmt.setObject(7, wayOSMElement.getChangeSet());
-                wayPreparedStmt.setTimestamp(8, wayOSMElement.getTimeStamp());
-                wayPreparedStmt.setString(9, wayOSMElement.getName());
+                wayPreparedStmt.setObject(2, wayOSMElement.getUser());
+                wayPreparedStmt.setObject(3, wayOSMElement.getUID());
+                wayPreparedStmt.setObject(4, wayOSMElement.getVisible());
+                wayPreparedStmt.setObject(5, wayOSMElement.getVersion());
+                wayPreparedStmt.setObject(6, wayOSMElement.getChangeSet());
+                wayPreparedStmt.setTimestamp(7, wayOSMElement.getTimeStamp());
+                wayPreparedStmt.setString(8, wayOSMElement.getName());
                 wayPreparedStmt.execute();
 
                 HashMap<String, String> tags = wayOSMElement.getTags();
