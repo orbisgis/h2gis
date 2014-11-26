@@ -38,8 +38,6 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  */
 public class ST_MakePolygon extends DeterministicScalarFunction {
 
-    private static final GeometryFactory GF = new GeometryFactory();
-
     public ST_MakePolygon() {
         addProperty(PROP_REMARKS, "Creates a Polygon formed by the given shell and optionally holes.\n"
                 + "Input geometries must be closed Linestrings");
@@ -57,8 +55,11 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
      * @return
      */
     public static Polygon makePolygon(Geometry shell) throws IllegalArgumentException {
+        if(shell == null) {
+            return null;
+        }
         LinearRing outerLine = checkLineString(shell);
-        return GF.createPolygon(outerLine, null);
+        return shell.getFactory().createPolygon(outerLine, null);
     }
 
     /**
@@ -69,12 +70,15 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
      * @return
      */
     public static Polygon makePolygon(Geometry shell, Geometry... holes) throws IllegalArgumentException {
+        if(shell == null) {
+            return null;
+        }
         LinearRing outerLine = checkLineString(shell);
         LinearRing[] interiorlinestrings = new LinearRing[holes.length];
         for (int i = 0; i < holes.length; i++) {
             interiorlinestrings[i] = checkLineString(holes[i]);
         }
-        return GF.createPolygon(outerLine, interiorlinestrings);
+        return shell.getFactory().createPolygon(outerLine, interiorlinestrings);
     }
 
     /**
@@ -82,20 +86,20 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
      *
      * @param geometry
      * @return
-     * @throws SQLException
+     * @throws IllegalArgumentException
      */
     private static LinearRing checkLineString(Geometry geometry) throws IllegalArgumentException {
-        if (geometry instanceof LineString) {
+        if (geometry instanceof LinearRing) {
+            return (LinearRing) geometry;
+
+        } else if (geometry instanceof LineString) {
             LineString lineString = (LineString) geometry;
             if (lineString.isClosed()) {
-                return GF.createLinearRing(lineString.getCoordinateSequence());
+                return geometry.getFactory().createLinearRing(lineString.getCoordinateSequence());
             } else {
                 throw new IllegalArgumentException("The linestring must be closed.");
             }
-        } else if (geometry instanceof LinearRing) {
-            return (LinearRing) geometry;
-
-        } else {
+        } else  {
             throw new IllegalArgumentException("Only support linestring.");
         }
     }

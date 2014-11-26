@@ -43,14 +43,16 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
     public OSMRead() {
         addProperty(PROP_REMARKS, "Read a OSM file and copy the content in the specified tables.\n" +
                 "Here a sample in order to extract buildings polygons using way nodes:\n" +
-                "create index on \"MAP_WAY_NODE\"(ID_WAY,ID_NODE);\n" +
-                "drop table if exists \"MAP_WAY_GEOM\";\n" +
-                "create table \"MAP_WAY_GEOM\" AS SELECT (SELECT CASEWHEN(COUNT(*)>2," +
-                "ST_MAKEPOLYGON(ST_MAKELINE(ST_ACCUM(THE_GEOM))),'POLYGON EMPTY'::GEOMETRY) FROM (SELECT N.ID_NODE, " +
-                "N.THE_GEOM,WN.ID_WAY IDWAY FROM \"MAP_NODE\" N,\"MAP_WAY_NODE\" WN WHERE N.ID_NODE = WN.ID_NODE " +
-                "ORDER BY WN.NODE_ORDER) WHERE  IDWAY = W.ID_WAY) THE_GEOM ,W.ID_WAY FROM \"MAP_WAY\" W WHERE W" +
-                ".ID_WAY IN (SELECT ID_WAY FROM MAP_WAY_TAG WT, MAP_TAG T WHERE WT.ID_TAG = T.ID_TAG AND T.TAG_KEY IN" +
-                " ('building','area'));");
+                "create index on MAP_WAY_NODE(ID_WAY,ID_NODE);\n" +
+                "drop table if exists MAP_BUILDINGS,MAP_WAY_GEOM;\n" +
+                "create table MAP_BUILDINGS(ID_WAY bigint primary key) as SELECT DISTINCT ID_WAY FROM MAP_WAY_TAG WT," +
+                " MAP_TAG T WHERE WT.ID_TAG = T.ID_TAG AND T.TAG_KEY IN ('building');\n" +
+                "create table MAP_WAY_GEOM(ID_WAY BIGINT PRIMARY KEY, THE_GEOM POLYGON) AS SELECT ID_WAY, " +
+                "ST_MAKEPOLYGON(ST_MAKELINE(THE_GEOM)) THE_GEOM FROM (SELECT (SELECT ST_ACCUM(THE_GEOM) THE_GEOM FROM" +
+                " (SELECT N.ID_NODE, N.THE_GEOM,WN.ID_WAY IDWAY FROM MAP_NODE N,MAP_WAY_NODE WN WHERE N.ID_NODE = WN" +
+                ".ID_NODE ORDER BY WN.NODE_ORDER) WHERE  IDWAY = W.ID_WAY) THE_GEOM ,W.ID_WAY FROM MAP_WAY W," +
+                "MAP_BUILDINGS B WHERE W.ID_WAY = B.ID_WAY) GEOM_TABLE WHERE ST_GEOMETRYN(THE_GEOM," +
+                "1) = ST_GEOMETRYN(THE_GEOM, ST_NUMGEOMETRIES(THE_GEOM)) AND ST_NUMGEOMETRIES(THE_GEOM) > 2;");
     }
 
     @Override
