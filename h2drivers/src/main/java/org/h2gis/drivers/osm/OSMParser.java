@@ -47,6 +47,7 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import org.h2.api.ErrorCode;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
@@ -91,7 +92,7 @@ public class OSMParser extends DefaultHandler {
     private PreparedStatement relationMemberPreparedStmt;
     private int idMemberOrder = 1;
     private TAG_LOCATION tagLocation;
-    private final GeometryFactory gf = new GeometryFactory();
+    private final GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 4326);
     private NodeOSMElement nodeOSMElement;
     private WayOSMElement wayOSMElement;
     private PreparedStatement wayNodePreparedStmt;
@@ -356,10 +357,7 @@ public class OSMParser extends DefaultHandler {
         }
         StringBuilder req = new StringBuilder("SELECT ID_NODE, THE_GEOM FROM "+nodeTableName+" WHERE ID_NODE IN (");
         boolean first=true;
-        int coordOrder = 0;
-        Map<Long, Integer> orderMap = new HashMap<Long, Integer>(nodePk.size());
         for(long pk : nodePk) {
-            orderMap.put(pk, coordOrder++);
             if(!first) {
                 req.append(",");
             } else {
@@ -369,7 +367,7 @@ public class OSMParser extends DefaultHandler {
         }
         req.append(")");
         PreparedStatement pst = connection.prepareStatement(req.toString());
-        SortedMap<Integer, Coordinate> waysCoordinates = new TreeMap<Integer, Coordinate>();
+        Map<Long, Coordinate> waysCoordinates = new HashMap<Long, Coordinate>();
         try {
             for(int index = 1; index <= nodePk.size(); index++) {
                 pst.setLong(index, nodePk.get(index - 1));
@@ -380,7 +378,7 @@ public class OSMParser extends DefaultHandler {
                     long idNode = rs.getLong(1);
                     Point pt = (Point)rs.getObject(2);
                     if(pt != null) {
-                        waysCoordinates.put(orderMap.get(idNode), pt.getCoordinate());
+                        waysCoordinates.put(idNode, pt.getCoordinate());
                     }
                 }
             } finally {
@@ -389,7 +387,23 @@ public class OSMParser extends DefaultHandler {
         } finally {
             pst.close();
         }
-        return gf.createLineString(waysCoordinates.values().toArray(new Coordinate[waysCoordinates.size()]));
+        List<Coordinate> coords = new ArrayList<Coordinate>(nodePk.size());
+        for(long nodeKey : nodePk) {
+            Coordinate nodeCoord = waysCoordinates.get(nodeKey);
+            if(nodeCoord != null) {
+                coords.add(nodeCoord);
+            }
+        }
+        if(coords.size() < 2) {
+            return gf.createLineString(new Coordinate[0]);
+        }
+        Map<String,String> tags = wayOSMElement.getTags();
+        String building = tags.get("building");
+        if(building == null || "no".equals(building) || !nodePk.get(0).equals(nodePk.get(nodePk.size() - 1))) {
+            return gf.createLineString(coords.toArray(new Coordinate[coords.size()]));
+        } else {
+            return gf.createPolygon(coords.toArray(new Coordinate[coords.size()]));
+        }
     }
 
     @Override

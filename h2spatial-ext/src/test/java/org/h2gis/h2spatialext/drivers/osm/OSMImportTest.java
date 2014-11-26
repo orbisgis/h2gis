@@ -107,6 +107,11 @@ public class OSMImportTest {
         assertTrue(rs.next());
         assertEquals(3, rs.getInt(1));
         rs.close();
+
+        rs = st.executeQuery("SELECT ST_AREA(ST_TRANSFORM(THE_GEOM, 27572)) FROM OSM_WAY WHERE ID_WAY=296515890");
+        assertTrue(rs.next());
+        assertEquals(9.46,rs.getDouble(1), 1e-2);
+        rs.close();
     }
     
     //@Test Disable because of internet connection is not always active

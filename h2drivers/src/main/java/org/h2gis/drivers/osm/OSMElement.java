@@ -116,7 +116,7 @@ public class OSMElement {
 
     public void setVisible(String visible) {
         if(visible!=null){
-        this.visible = Boolean.valueOf(visible);
+            this.visible = Boolean.valueOf(visible);
         }
     }
 
@@ -129,7 +129,7 @@ public class OSMElement {
     }
 
     public void setVersion(String version) {
-        this.version = Integer.valueOf(version);
+        this.version = version != null ? Integer.valueOf(version) : 0;
     }
 
     /**
@@ -142,7 +142,7 @@ public class OSMElement {
 
     public void setChangeset(String changeset) {
         if(changeset!=null){
-        this.changeset = Integer.valueOf(changeset);
+            this.changeset = Integer.valueOf(changeset);
         }
     }
 
