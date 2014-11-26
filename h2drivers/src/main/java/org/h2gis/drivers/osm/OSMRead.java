@@ -41,7 +41,16 @@ import org.h2gis.utilities.URIUtility;
 public class OSMRead extends AbstractFunction implements ScalarFunction {
 
     public OSMRead() {
-        addProperty(PROP_REMARKS, "Read a OSM file and copy the content in the specified tables.");
+        addProperty(PROP_REMARKS, "Read a OSM file and copy the content in the specified tables.\n" +
+                "Here a sample in order to create a geometry using way nodes:\n" +
+                "```sql" +
+                "create index on \"MAP_NODE\"(ID_WAY,ID_NODE);\n" +
+                "create table \"MAP_WAY_GEOM\" AS SELECT (SELECT CASEWHEN(COUNT(*)>2," +
+                "ST_MAKELINE(ST_ACCUM(THE_GEOM)),'LINESTRING EMPTY'::GEOMETRY) FROM (SELECT N.ID_NODE, N.THE_GEOM," +
+                "WN.ID_WAY IDWAY FROM \"MAP_NODE\" N,\"MAP_WAY_NODE\" WN " +
+                "WHERE N.ID_NODE = WN.ID_NODE ORDER BY WN.NODE_ORDER) WHERE  IDWAY = W.ID_WAY) THE_GEOM ," +
+                "W.ID_WAY FROM \"MAP_WAY\" W;\n" +
+                "```");
     }
 
     @Override

@@ -300,30 +300,4 @@ public class OSMTablesFactory {
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + relationMemberTable + " VALUES ( ?,?,?,?);");
     }
-    
-    /**
-     * Create the update statement used to build the way geometry
-     * @param connection
-     * @param wayTableName
-     * @param wayNodeTableName
-     * @param nodeTableName
-     * @return
-     * @throws SQLException 
-     */
-    public static PreparedStatement updateGeometryWayTable(Connection connection,String wayTableName, String wayNodeTableName,String nodeTableName) throws SQLException{
-        StringBuilder sb = new StringBuilder("UPDATE ");
-        sb.append(wayTableName);
-        sb.append(" SET THE_GEOM= (SELECT CASEWHEN(COUNT(ID_NODE)>2,ST_MAKELINE(ST_ACCUM(THE_GEOM)),'LINESTRING EMPTY'::GEOMETRY) FROM ");
-        sb.append("(SELECT a.ID_NODE, THE_GEOM FROM ").append(wayNodeTableName).append(" a, ").
-                append(nodeTableName).append(" b ").append(" WHERE ID_WAY = ? "
-                + "AND a.ID_NODE=b.ID_NODE ORDER BY a.NODE_ORDER))").append(" WHERE ID_WAY=?;");
-        /**
-         create index on "PAYS-DE-LA-LOIRE-LATEST_WAY_NODE"(ID_WAY,ID_NODE);
-
-         create table "PAYS-DE-LA-LOIRE-LATEST_WAY_GEOM" AS SELECT (SELECT CASEWHEN(COUNT(*)>2,ST_MAKELINE(ST_ACCUM(THE_GEOM)),'LINESTRING EMPTY'::GEOMETRY) FROM (SELECT N.ID_NODE, N.THE_GEOM,WN.ID_WAY IDWAY FROM "PAYS-DE-LA-LOIRE-LATEST_NODE" N,"PAYS-DE-LA-LOIRE-LATEST_WAY_NODE" WN WHERE N.ID_NODE = WN.ID_NODE ORDER BY WN.NODE_ORDER) WHERE  IDWAY = W.ID_WAY) THE_GEOM ,W.* FROM "PAYS-DE-LA-LOIRE-LATEST_WAY" W;
-
-         419,058 seconds pour 780s d'import..
-         */
-        return connection.prepareStatement(sb.toString()); 
-    }
 }

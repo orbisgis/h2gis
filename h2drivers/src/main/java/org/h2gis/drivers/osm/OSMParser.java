@@ -24,29 +24,7 @@
  */
 package org.h2gis.drivers.osm;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.sql.BatchUpdateException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Types;
-import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.SortedMap;
-import java.util.TreeMap;
-
-import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import org.h2.api.ErrorCode;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
@@ -59,6 +37,18 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.channels.FileChannel;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.text.ParseException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Parse an OSM file and store the elements into a database. The database model
@@ -103,8 +93,6 @@ public class OSMParser extends DefaultHandler {
     private long readFileSizeEachNode = 1;
     private long nodeCountProgress = 0;
     private PreparedStatement tagPreparedStmt;
-    private Connection connection;
-    private String nodeTableName;
     // For progression information return
     private static final int AVERAGE_NODE_SIZE = 500;
 
@@ -124,7 +112,6 @@ public class OSMParser extends DefaultHandler {
      */
     public boolean read(Connection connection, String tableName, File inputFile, ProgressVisitor progress) throws SQLException {
         this.progress = progress.subProcess(100);
-        this.connection = connection;
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
@@ -242,7 +229,7 @@ public class OSMParser extends DefaultHandler {
     private void createOSMDatabaseModel(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
         String tagTableName = caseIdentifier(requestedTable, osmTableName + TAG, isH2);
         tagPreparedStmt =  OSMTablesFactory.createTagTable(connection, tagTableName);
-        nodeTableName = caseIdentifier(requestedTable, osmTableName + NODE, isH2);
+        String nodeTableName = caseIdentifier(requestedTable, osmTableName + NODE, isH2);
         nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName, isH2);
         String nodeTagTableName = caseIdentifier(requestedTable, osmTableName + NODE_TAG, isH2);
         nodeTagPreparedStmt = OSMTablesFactory.createNodeTagTable(connection, nodeTagTableName, tagTableName);
