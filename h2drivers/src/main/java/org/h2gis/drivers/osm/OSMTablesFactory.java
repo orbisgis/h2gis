@@ -66,18 +66,11 @@ public class OSMTablesFactory {
      */
     public static PreparedStatement createTagTable(Connection connection, String tagTableName) throws SQLException {
         Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(tagTableName);
-        sb.append("(ID_TAG SERIAL, TAG_KEY VARCHAR,TAG_VALUE VARCHAR );");
-        stmt.execute(sb.toString());        
-        stmt.execute("CREATE INDEX ON "+ tagTableName+"(TAG_KEY, TAG_VALUE);");
+        // PostgreSQL and H2 will automatically create an index on TAG_KEY,TAG_VALUE when UNIQUE constraint is set
+        stmt.execute("CREATE TABLE " + tagTableName + "(ID_TAG SERIAL PRIMARY KEY, TAG_KEY VARCHAR UNIQUE);");
         stmt.close();
-        //We return the preparedstatement of the tag table
-        StringBuilder insert = new StringBuilder("INSERT INTO ");
-        insert.append(tagTableName);
-        insert.append(" (ID_TAG,TAG_KEY,TAG_VALUE) SELECT null, ?, ? WHERE NOT EXISTS (SELECT ID_TAG FROM ");
-        insert.append(tagTableName).append(" WHERE TAG_KEY=? AND TAG_VALUE=?)");
-        return connection.prepareStatement(insert.toString());
+        //We return the prepared statement of the tag table
+        return connection.prepareStatement("INSERT INTO " + tagTableName + " (TAG_KEY) VALUES (?)");
     }
 
     /**
@@ -92,20 +85,27 @@ public class OSMTablesFactory {
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createNodeTable(Connection connection, String nodeTableName) throws SQLException {
+    public static PreparedStatement createNodeTable(Connection connection, String nodeTableName, boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(nodeTableName);
-        sb.append("(ID_NODE BIGINT PRIMARY KEY,  THE_GEOM POINT,"
+        sb.append("(ID_NODE BIGINT PRIMARY KEY,  THE_GEOM ");
+        if(isH2) {
+            sb.append("POINT CHECK ST_SRID(THE_GEOM)=4326");
+        } else {
+            sb.append("GEOMETRY(POINT, 4326)");
+        }
+        sb.append(","
                 + "USER_NAME VARCHAR,"
                 + "UID BIGINT,"
                 + "VISIBLE BOOLEAN,"
                 + "VERSION INTEGER,"
                 + "CHANGESET INTEGER,"
-                + "LAST_UPDATE TIMESTAMP);");
+                + "LAST_UPDATE TIMESTAMP,"
+                + "NAME VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
-        return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES ( ?, ?, ?,?,?,?,?,?);");
+        return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES (?,?,?,?,?,?,?,?,?);");
     }
     
 
@@ -122,15 +122,15 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(nodeTagTableName);
-        sb.append("(ID_NODE BIGINT, ID_TAG BIGINT); ");
+        sb.append("(ID_NODE BIGINT, ID_TAG BIGINT,TAG_VALUE VARCHAR); ");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(nodeTagTableName);
         insert.append("VALUES ( ?, ");
-        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? AND TAG_VALUE = ? LIMIT 1)");
-        insert.append(");");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? LIMIT 1)");
+        insert.append(", ?);");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -145,21 +145,14 @@ public class OSMTablesFactory {
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWayTable(Connection connection, String wayTableName) throws SQLException {
+    public static PreparedStatement createWayTable(Connection connection, String wayTableName, boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayTableName);
-        sb.append("(ID_WAY BIGINT PRIMARY KEY,"
-                + "THE_GEOM LINESTRING,"
-                + "USER_NAME VARCHAR,"
-                + "UID BIGINT,"
-                + "VISIBLE BOOLEAN,"
-                + "VERSION INTEGER,"
-                + "CHANGESET INTEGER,"
-                + "LAST_UPDATE TIMESTAMP);");
+        sb.append("(ID_WAY BIGINT PRIMARY KEY, USER_NAME VARCHAR, UID BIGINT, VISIBLE BOOLEAN, VERSION INTEGER, CHANGESET INTEGER, LAST_UPDATE TIMESTAMP, NAME VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
-        return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES ( ?, ?,?,?,?,?,?,?);");
+        return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES (?,?,?,?,?,?,?,?);");
     }
 
     /**
@@ -175,15 +168,15 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayTagTableName);
-        sb.append("(ID_WAY BIGINT, ID_TAG BIGINT);");
+        sb.append("(ID_WAY BIGINT, ID_TAG BIGINT, VALUE VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(wayTagTableName);
         insert.append("VALUES ( ?, ");
-        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? AND TAG_VALUE = ? LIMIT 1)");
-        insert.append(");");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? LIMIT 1)");
+        insert.append(", ?);");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -242,15 +235,15 @@ public class OSMTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(relationTagTable);
-        sb.append("(ID_RELATION BIGINT, ID_TAG BIGINT);");
+        sb.append("(ID_RELATION BIGINT, ID_TAG BIGINT, TAG_VALUE VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(relationTagTable);
         insert.append("VALUES ( ?, ");
-        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? AND TAG_VALUE = ? LIMIT 1)");
-        insert.append(");");
+        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? LIMIT 1)");
+        insert.append(", ?);");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -306,24 +299,5 @@ public class OSMTablesFactory {
         stmt.execute(sb.toString());
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + relationMemberTable + " VALUES ( ?,?,?,?);");
-    }
-    
-    /**
-     * Create the update statement used to build the way geometry
-     * @param connection
-     * @param wayTableName
-     * @param wayNodeTableName
-     * @param nodeTableName
-     * @return
-     * @throws SQLException 
-     */
-    public static PreparedStatement updateGeometryWayTable(Connection connection,String wayTableName, String wayNodeTableName,String nodeTableName) throws SQLException{
-        StringBuilder sb = new StringBuilder("UPDATE ");
-        sb.append(wayTableName);
-        sb.append(" SET THE_GEOM= (SELECT CASEWHEN(COUNT(ID_NODE)>2,ST_MAKELINE(ST_ACCUM(THE_GEOM)),'LINESTRING EMPTY'::GEOMETRY) FROM ");
-        sb.append("(SELECT a.ID_NODE, THE_GEOM FROM ").append(wayNodeTableName).append(" a, ").
-                append(nodeTableName).append(" b ").append(" WHERE ID_WAY = ? "
-                + "AND a.ID_NODE=b.ID_NODE ORDER BY a.NODE_ORDER))").append(" WHERE ID_WAY=?;");
-        return connection.prepareStatement(sb.toString()); 
     }
 }

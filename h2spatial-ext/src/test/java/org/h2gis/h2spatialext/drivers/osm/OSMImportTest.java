@@ -30,6 +30,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import com.vividsolutions.jts.geom.Point;
 import org.h2.util.StringUtils;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
@@ -91,16 +93,24 @@ public class OSMImportTest {
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=462020579");
         assertTrue(rs.next());
         assertEquals("POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
-        rs.close();        
+        rs.close();
+
+        rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=670177172");
+        assertTrue(rs.next());
+        // NODE Z extraction
+        assertEquals(91.9,((Point)rs.getObject("THE_GEOM")).getCoordinate().z,0.1);
+        assertEquals(4326,((Point)rs.getObject("THE_GEOM")).getSRID());
+        // Node SRID extraction
+        rs.close();
+
+        // Geometry columns SRID information
+        rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME='OSM_NODE'");
+        assertTrue(rs.next());
+        assertEquals(4326, rs.getInt("SRID"));
+
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=3003052969");
         assertTrue(rs.next());
         assertEquals("POINT (-2.121123 47.635276)", rs.getString("the_geom"));
-        rs.close();
-        
-        //WAY
-        rs = st.executeQuery("SELECT * FROM OSM_WAY WHERE ID_WAY=296521584");
-        assertTrue(rs.next());
-        assertEquals("LINESTRING (-2.1240567 47.6359494, -2.1243442 47.6359518, -2.1246188 47.6359542)", rs.getString("the_geom"));
         rs.close();
         
         rs = st.executeQuery("SELECT count(ID_RELATION) FROM OSM_RELATION");

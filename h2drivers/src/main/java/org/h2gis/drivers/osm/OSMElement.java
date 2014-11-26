@@ -24,9 +24,9 @@
  */
 package org.h2gis.drivers.osm;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import org.xml.sax.SAXException;
 
@@ -44,7 +44,8 @@ public class OSMElement {
     private String user;
     private int version, changeset;
     private boolean visible;
-    private Date timestamp;
+    private Timestamp timestamp;
+    private String name = "";
 
     public OSMElement() {
         tags = new HashMap<String, String>();
@@ -92,6 +93,20 @@ public class OSMElement {
     }
 
     /**
+     * @return The way name (extracted from tag)
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name Way name
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
      *
      * @return
      */
@@ -101,7 +116,7 @@ public class OSMElement {
 
     public void setVisible(String visible) {
         if(visible!=null){
-        this.visible = Boolean.valueOf(visible);
+            this.visible = Boolean.valueOf(visible);
         }
     }
 
@@ -114,7 +129,7 @@ public class OSMElement {
     }
 
     public void setVersion(String version) {
-        this.version = Integer.valueOf(version);
+        this.version = version != null ? Integer.valueOf(version) : 0;
     }
 
     /**
@@ -127,7 +142,7 @@ public class OSMElement {
 
     public void setChangeset(String changeset) {
         if(changeset!=null){
-        this.changeset = Integer.valueOf(changeset);
+            this.changeset = Integer.valueOf(changeset);
         }
     }
 
@@ -135,7 +150,7 @@ public class OSMElement {
      *
      * @return
      */
-    public Date getTimeStamp() {
+    public Timestamp getTimeStamp() {
         return timestamp;
 
     }
@@ -143,10 +158,10 @@ public class OSMElement {
     public void setTimestamp(String OSMtime) throws SAXException {
         if(OSMtime!=null){
         try {
-            timestamp = dataFormat1.parse(OSMtime);
+            timestamp = new Timestamp(dataFormat1.parse(OSMtime).getTime());
         } catch (ParseException ex) {
             try {
-                timestamp = dataFormat2.parse(OSMtime);
+                timestamp = new Timestamp(dataFormat2.parse(OSMtime).getTime());
             } catch (ParseException ex1) {
                 throw new SAXException("Cannot parse the timestamp for the node  :  " + getID(), ex);
             }
@@ -157,9 +172,15 @@ public class OSMElement {
      *
      * @param key
      * @param value
+     * @return True if the tag should be inserted in the tag table.
      */
-    public void addTag(String key, String value) {
+    public boolean addTag(String key, String value) {
+        if(key.equalsIgnoreCase("name")) {
+            name = value;
+            return false;
+        }
         tags.put(key, value);
+        return true;
     }
 
     public HashMap<String, String> getTags() {

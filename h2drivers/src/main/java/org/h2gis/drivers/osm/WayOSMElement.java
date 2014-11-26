@@ -24,7 +24,8 @@
  */
 package org.h2gis.drivers.osm;
 
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A class to manage the way element properties.
@@ -33,12 +34,10 @@ import java.util.HashMap;
  */
 public class WayOSMElement extends OSMElement {
 
-    private final HashMap<Integer, Long> nodesRef;
-    private int order = 1;
+    private final List<Long> nodesRef = new ArrayList<Long>();
 
     public WayOSMElement() {
         super();
-        nodesRef = new HashMap<Integer, Long>();
     }
 
     /**
@@ -47,7 +46,7 @@ public class WayOSMElement extends OSMElement {
      * @param ref
      */
     public void addRef(String ref) {
-        nodesRef.put(order++, Long.valueOf(ref));
+        nodesRef.add(Long.valueOf(ref));
     }
 
     /**
@@ -55,7 +54,7 @@ public class WayOSMElement extends OSMElement {
      *
      * @return
      */
-    public HashMap<Integer, Long> getNodesRef() {
+    public List<Long> getNodesRef() {
         return nodesRef;
     }
 
