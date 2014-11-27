@@ -86,7 +86,7 @@ public class OSMImportTest {
         // Check number
         rs = st.executeQuery("SELECT count(ID_NODE) FROM OSM_NODE");
         rs.next();
-        assertTrue(rs.getInt(1) == 3243);
+        assertEquals(3243, rs.getInt(1));
         rs.close();
         // Check content
         

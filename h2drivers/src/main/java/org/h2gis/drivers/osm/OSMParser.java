@@ -48,7 +48,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.text.ParseException;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Parse an OSM file and store the elements into a database. The database model
@@ -60,17 +62,20 @@ import java.util.Map;
 public class OSMParser extends DefaultHandler {
 
     //Suffix table names
-    private final String TAG = "_tag";
-    private final String NODE = "_node";
-    private final String WAY = "_way";
-    private final String NODE_TAG = "_node_tag";
-    private final String WAY_TAG = "_way_tag";
-    private final String WAY_NODE = "_way_node";
-    private final String RELATION = "_relation";
-    private final String RELATION_TAG = "_relation_tag";
-    private final String NODE_MEMBER = "_node_member";
-    private final String WAY_MEMBER = "_way_member";
-    private final String RELATION_MEMBER = "_relation_member";
+    private static final String TAG = "_tag";
+    private static final String NODE = "_node";
+    private static final String WAY = "_way";
+    private static final String NODE_TAG = "_node_tag";
+    private static final String WAY_TAG = "_way_tag";
+    private static final String WAY_NODE = "_way_node";
+    private static final String RELATION = "_relation";
+    private static final String RELATION_TAG = "_relation_tag";
+    private static final String NODE_MEMBER = "_node_member";
+    private static final String WAY_MEMBER = "_way_member";
+    private static final String RELATION_MEMBER = "_relation_member";
+    // Set the same batch size as OSMOSIS
+    // 1000 lines is 73 kb for node insert
+    private static final int BATCH_SIZE = 1000;
     private PreparedStatement nodePreparedStmt;
     private PreparedStatement nodeTagPreparedStmt;
     private PreparedStatement wayPreparedStmt;
@@ -80,12 +85,23 @@ public class OSMParser extends DefaultHandler {
     private PreparedStatement nodeMemberPreparedStmt;
     private PreparedStatement wayMemberPreparedStmt;
     private PreparedStatement relationMemberPreparedStmt;
+    private PreparedStatement wayNodePreparedStmt;
+    private int nodePreparedStmtBatchSize = 0;
+    private int nodeTagPreparedStmtBatchSize = 0;
+    private int wayPreparedStmtBatchSize = 0;
+    private int wayTagPreparedStmtBatchSize = 0;
+    private int relationPreparedStmtBatchSize = 0;
+    private int relationTagPreparedStmtBatchSize = 0;
+    private int nodeMemberPreparedStmtBatchSize = 0;
+    private int wayMemberPreparedStmtBatchSize = 0;
+    private int relationMemberPreparedStmtBatchSize = 0;
+    private int wayNodePreparedStmtBatchSize = 0;
+    private Set<String> insertedTagsKeys = new HashSet<String>();
     private int idMemberOrder = 1;
     private TAG_LOCATION tagLocation;
     private final GeometryFactory gf = new GeometryFactory(new PrecisionModel(), 4326);
     private NodeOSMElement nodeOSMElement;
     private WayOSMElement wayOSMElement;
-    private PreparedStatement wayNodePreparedStmt;
     private OSMElement relationOSMElement;
     private ProgressVisitor progress = new EmptyProgressVisitor();
     private FileChannel fc;
@@ -282,9 +298,10 @@ public class OSMParser extends DefaultHandler {
                     break;
             }
             try{
-                if(insertTag) {
+                if(insertTag && !insertedTagsKeys.contains(key)) {
                     tagPreparedStmt.setObject(1, key);
                     tagPreparedStmt.execute();
+                    insertedTagsKeys.add(key);
                 }
             } catch (SQLException ex) {
                     if(ex.getErrorCode() != ErrorCode.DUPLICATE_KEY_1 && !TAG_DUPLICATE_EXCEPTION.equals(ex.getSQLState())) {
@@ -305,6 +322,7 @@ public class OSMParser extends DefaultHandler {
                     nodeMemberPreparedStmt.setObject(3, attributes.getValue("role"));
                     nodeMemberPreparedStmt.setObject(4, idMemberOrder);
                     nodeMemberPreparedStmt.addBatch();
+                    nodeMemberPreparedStmtBatchSize++;
                 } catch (SQLException ex) {
                     throw new SAXException("Cannot insert the node member for the relation :  " + relationOSMElement.getID(), ex);
                 }
@@ -315,6 +333,7 @@ public class OSMParser extends DefaultHandler {
                     wayMemberPreparedStmt.setObject(3, attributes.getValue("role"));
                     wayMemberPreparedStmt.setObject(4, idMemberOrder);
                     wayMemberPreparedStmt.addBatch();
+                    wayMemberPreparedStmtBatchSize++;
                 } catch (SQLException ex) {
                     throw new SAXException("Cannot insert the way member for the relation :  " + relationOSMElement.getID(), ex);
                 }
@@ -325,10 +344,30 @@ public class OSMParser extends DefaultHandler {
                     relationMemberPreparedStmt.setObject(3, attributes.getValue("role"));
                     relationMemberPreparedStmt.setObject(4, idMemberOrder);
                     relationMemberPreparedStmt.addBatch();
+                    relationMemberPreparedStmtBatchSize++;
                 } catch (SQLException ex) {
                     throw new SAXException("Cannot insert the relation member for the relation :  " + relationOSMElement.getID(), ex);
                 }
             }
+        }
+    }
+
+    @Override
+    public void endDocument() throws SAXException {
+        // Execute remaining batch
+        try {
+            nodePreparedStmtBatchSize = insertBatch(nodePreparedStmt, nodePreparedStmtBatchSize, 1);
+            nodeTagPreparedStmtBatchSize = insertBatch(nodeTagPreparedStmt, nodeTagPreparedStmtBatchSize, 1);
+            wayPreparedStmtBatchSize = insertBatch(wayPreparedStmt, wayPreparedStmtBatchSize, 1);
+            wayTagPreparedStmtBatchSize = insertBatch(wayTagPreparedStmt, wayTagPreparedStmtBatchSize, 1);
+            relationPreparedStmtBatchSize = insertBatch(relationPreparedStmt, relationPreparedStmtBatchSize, 1);
+            relationTagPreparedStmtBatchSize = insertBatch(relationTagPreparedStmt, relationTagPreparedStmtBatchSize, 1);
+            nodeMemberPreparedStmtBatchSize = insertBatch(nodeMemberPreparedStmt,nodeMemberPreparedStmtBatchSize, 1);
+            wayMemberPreparedStmtBatchSize = insertBatch(wayMemberPreparedStmt, wayMemberPreparedStmtBatchSize, 1);
+            relationMemberPreparedStmtBatchSize = insertBatch(relationMemberPreparedStmt, relationMemberPreparedStmtBatchSize, 1);
+            wayNodePreparedStmtBatchSize = insertBatch(wayNodePreparedStmt, wayNodePreparedStmtBatchSize, 1);
+        } catch (SQLException ex) {
+            throw new SAXException("Could not insert sql batch", ex);
         }
     }
 
@@ -347,16 +386,16 @@ public class OSMParser extends DefaultHandler {
                 nodePreparedStmt.setObject(8, nodeOSMElement.getChangeSet());
                 nodePreparedStmt.setObject(9, nodeOSMElement.getTimeStamp(), Types.DATE);
                 nodePreparedStmt.setString(10, nodeOSMElement.getName());
-                nodePreparedStmt.execute();
+                nodePreparedStmt.addBatch();
+                nodePreparedStmtBatchSize++;
                 HashMap<String, String> tags = nodeOSMElement.getTags();
                 for (Map.Entry<String, String> entry : tags.entrySet()) {
                     nodeTagPreparedStmt.setObject(1, nodeOSMElement.getID());
                     nodeTagPreparedStmt.setObject(2, entry.getKey());
                     nodeTagPreparedStmt.setObject(3, entry.getValue());
                     nodeTagPreparedStmt.addBatch();
+                    nodeTagPreparedStmtBatchSize++;
                 }
-                nodeTagPreparedStmt.executeBatch();
-
             } catch (SQLException ex) {
                 throw new SAXException("Cannot insert the node  :  " + nodeOSMElement.getID(), ex);
             }
@@ -371,32 +410,24 @@ public class OSMParser extends DefaultHandler {
                 wayPreparedStmt.setObject(6, wayOSMElement.getChangeSet());
                 wayPreparedStmt.setTimestamp(7, wayOSMElement.getTimeStamp());
                 wayPreparedStmt.setString(8, wayOSMElement.getName());
-                wayPreparedStmt.execute();
-
+                wayPreparedStmt.addBatch();
+                wayPreparedStmtBatchSize++;
                 HashMap<String, String> tags = wayOSMElement.getTags();
                 for (Map.Entry<String, String> entry : tags.entrySet()) {
                     wayTagPreparedStmt.setObject(1, wayOSMElement.getID());
                     wayTagPreparedStmt.setObject(2, entry.getKey());
                     wayTagPreparedStmt.setObject(3, entry.getValue());
                     wayTagPreparedStmt.addBatch();
+                    wayTagPreparedStmtBatchSize++;
                 }
-                wayTagPreparedStmt.executeBatch();
-
                 int order = 1;
                 for (long ref :  wayOSMElement.getNodesRef()) {
                     wayNodePreparedStmt.setObject(1, wayOSMElement.getID());
                     wayNodePreparedStmt.setObject(2, ref);
                     wayNodePreparedStmt.setObject(3, order++);
                     wayNodePreparedStmt.addBatch();
+                    wayNodePreparedStmtBatchSize++;
                 }
-                wayNodePreparedStmt.executeBatch();
-                
-                //Update way geometries
-                //updateGeometryWayPreparedStmt.setObject(1, wayOSMElement.getID());
-                //updateGeometryWayPreparedStmt.setObject(2, wayOSMElement.getID());
-                //updateGeometryWayPreparedStmt.execute();
-                
-
             } catch (SQLException ex) {
                 throw new SAXException("Cannot insert the way  :  " + wayOSMElement.getID(), ex);
             }
@@ -410,32 +441,27 @@ public class OSMParser extends DefaultHandler {
                 relationPreparedStmt.setObject(5, relationOSMElement.getVersion());
                 relationPreparedStmt.setObject(6, relationOSMElement.getChangeSet());
                 relationPreparedStmt.setTimestamp(7, relationOSMElement.getTimeStamp());
-                relationPreparedStmt.execute();
-
+                relationPreparedStmt.addBatch();
+                relationPreparedStmtBatchSize++;
                 HashMap<String, String> tags = relationOSMElement.getTags();
                 for (Map.Entry<String, String> entry : tags.entrySet()) {
                     relationTagPreparedStmt.setObject(1, relationOSMElement.getID());
                     relationTagPreparedStmt.setObject(2, entry.getKey());
                     relationTagPreparedStmt.setObject(3, entry.getValue());
                     relationTagPreparedStmt.addBatch();
+                    relationTagPreparedStmtBatchSize++;
                 }
-                relationTagPreparedStmt.executeBatch();
-
                 idMemberOrder = 0;
-
             } catch (SQLException ex) {
                 throw new SAXException("Cannot insert the relation  :  " + relationOSMElement.getID(), ex);
             }
-            try {
-                nodeMemberPreparedStmt.executeBatch();
-                wayMemberPreparedStmt.executeBatch();
-                relationMemberPreparedStmt.executeBatch();
-             } catch (SQLException ex) {
-                throw new SAXException("Cannot insert the relation member :  " + relationOSMElement.getID(), ex);
-            }
-
         } else if (localName.compareToIgnoreCase("member") == 0) {
             idMemberOrder++;
+        }
+        try {
+            insertBatch();
+        } catch (SQLException ex) {
+            throw new SAXException("Could not insert sql batch", ex);
         }
         if(nodeCountProgress++ % readFileSizeEachNode == 0) {
             // Update Progress
@@ -445,6 +471,31 @@ public class OSMParser extends DefaultHandler {
                 // Ignore
             }
         }
+    }
+
+    private void insertBatch() throws SQLException {
+        nodePreparedStmtBatchSize = insertBatch(nodePreparedStmt, nodePreparedStmtBatchSize);
+        nodeTagPreparedStmtBatchSize = insertBatch(nodeTagPreparedStmt, nodeTagPreparedStmtBatchSize);
+        wayPreparedStmtBatchSize = insertBatch(wayPreparedStmt, wayPreparedStmtBatchSize);
+        wayTagPreparedStmtBatchSize = insertBatch(wayTagPreparedStmt, wayTagPreparedStmtBatchSize);
+        relationPreparedStmtBatchSize = insertBatch(relationPreparedStmt, relationPreparedStmtBatchSize);
+        relationTagPreparedStmtBatchSize = insertBatch(relationTagPreparedStmt, relationTagPreparedStmtBatchSize);
+        nodeMemberPreparedStmtBatchSize = insertBatch(nodeMemberPreparedStmt,nodeMemberPreparedStmtBatchSize);
+        wayMemberPreparedStmtBatchSize = insertBatch(wayMemberPreparedStmt, wayMemberPreparedStmtBatchSize);
+        relationMemberPreparedStmtBatchSize = insertBatch(relationMemberPreparedStmt, relationMemberPreparedStmtBatchSize);
+        wayNodePreparedStmtBatchSize = insertBatch(wayNodePreparedStmt, wayNodePreparedStmtBatchSize);
+    }
+    private int insertBatch(PreparedStatement st, int batchSize, int maxBatchSize) throws SQLException {
+        if(batchSize >= maxBatchSize) {
+            st.executeBatch();
+            return 0;
+        } else {
+            return batchSize;
+        }
+    }
+
+    private int insertBatch(PreparedStatement st, int batchSize) throws SQLException {
+        return insertBatch(st, batchSize, BATCH_SIZE);
     }
 
     /**
