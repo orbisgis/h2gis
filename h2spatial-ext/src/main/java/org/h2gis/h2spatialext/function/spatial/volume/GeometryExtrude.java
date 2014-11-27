@@ -51,9 +51,29 @@ public class GeometryExtrude {
      * @return 
      */
     public static GeometryCollection extrudePolygonAsGeometry(Polygon polygon, double height){
-        Geometry[] geometries = new Geometry[3];
-        geometries[0]= extractFloor(polygon);
-        geometries[1]= extractWalls(polygon, height);
+        GeometryFactory factory = polygon.getFactory();
+        Geometry[] geometries = new Geometry[3];        
+        //Extract floor
+        //We process the exterior ring 
+        final LineString shell = getClockWise(polygon.getExteriorRing());
+        ArrayList<Polygon> walls = new ArrayList<Polygon>();
+        for (int i = 1; i < shell.getNumPoints(); i++) {
+            walls.add(extrudeEdge(shell.getCoordinateN(i - 1), shell.getCoordinateN(i), height, factory));
+        }
+
+        final int nbOfHoles = polygon.getNumInteriorRing();
+        final LinearRing[] holes = new LinearRing[nbOfHoles];
+        for (int i = 0; i < nbOfHoles; i++) {
+            final LineString hole = getCounterClockWise(polygon.getInteriorRingN(i));
+            for (int j = 1; j < hole.getNumPoints(); j++) {
+                walls.add(extrudeEdge(hole.getCoordinateN(j - 1),
+                        hole.getCoordinateN(j), height, factory));
+            }
+            holes[i] = factory.createLinearRing(hole.getCoordinateSequence());            
+        }
+        
+        geometries[0]= factory.createPolygon(factory.createLinearRing(shell.getCoordinateSequence()), holes);
+        geometries[1]= factory.createMultiPolygon(walls.toArray(new Polygon[walls.size()]));
         geometries[2]= extractRoof(polygon, height);
         return polygon.getFactory().createGeometryCollection(geometries);
     }
@@ -66,11 +86,19 @@ public class GeometryExtrude {
      * @return 
      */
     public static GeometryCollection extrudeLineStringAsGeometry(LineString lineString, double height){
-        Geometry[] geometries = new Geometry[3];
+        Geometry[] geometries = new Geometry[3];        
+        GeometryFactory factory = lineString.getFactory();
+        //Extract the walls        
+        Coordinate[] coords = lineString.getCoordinates();
+        Polygon[] walls = new Polygon[coords.length - 1];
+        for (int i = 0; i < coords.length - 1; i++) {
+            walls[i] = extrudeEdge(coords[i], coords[i + 1], height, factory);
+        }
+        lineString.apply(new TranslateCoordinateSequenceFilter(0));
         geometries[0]= lineString;
-        geometries[1]= extractWalls(lineString, height);
+        geometries[1]=  factory.createMultiPolygon(walls);        
         geometries[2]= extractRoof(lineString, height);
-        return lineString.getFactory().createGeometryCollection(geometries);
+        return factory.createGeometryCollection(geometries);
     }
     
     /**
