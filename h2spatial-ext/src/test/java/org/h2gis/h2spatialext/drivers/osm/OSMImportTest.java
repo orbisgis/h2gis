@@ -38,6 +38,7 @@ import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -85,7 +86,7 @@ public class OSMImportTest {
         // Check number
         rs = st.executeQuery("SELECT count(ID_NODE) FROM OSM_NODE");
         rs.next();
-        assertTrue(rs.getInt(1) == 3243);
+        assertEquals(3243, rs.getInt(1));
         rs.close();
         // Check content
         
@@ -95,10 +96,11 @@ public class OSMImportTest {
         assertEquals("POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
         rs.close();
 
-        rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=670177172");
+        rs = st.executeQuery("SELECT * FROM OSM_NODE WHERE ID_NODE=670177172");
         assertTrue(rs.next());
         // NODE Z extraction
-        assertEquals(91.9,((Point)rs.getObject("THE_GEOM")).getCoordinate().z,0.1);
+        assertEquals(91.9,rs.getDouble("ELE"),0.1);
+        assertFalse(rs.wasNull());
         assertEquals(4326,((Point)rs.getObject("THE_GEOM")).getSRID());
         // Node SRID extraction
         rs.close();
