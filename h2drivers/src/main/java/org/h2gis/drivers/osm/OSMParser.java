@@ -95,6 +95,7 @@ public class OSMParser extends DefaultHandler {
     private PreparedStatement tagPreparedStmt;
     // For progression information return
     private static final int AVERAGE_NODE_SIZE = 500;
+    private static String TAG_DUPLICATE_EXCEPTION = String.valueOf(ErrorCode.DUPLICATE_KEY_1);
 
     public OSMParser() {
 
@@ -286,7 +287,7 @@ public class OSMParser extends DefaultHandler {
                     tagPreparedStmt.execute();
                 }
             } catch (SQLException ex) {
-                    if(ex.getErrorCode() != ErrorCode.DUPLICATE_KEY_1) {
+                    if(ex.getErrorCode() != ErrorCode.DUPLICATE_KEY_1 && !TAG_DUPLICATE_EXCEPTION.equals(ex.getSQLState())) {
                         throw new SAXException("Cannot insert the tag :  {" + key + " , " + value + "}", ex);
                     }
             }
@@ -338,13 +339,14 @@ public class OSMParser extends DefaultHandler {
             try {
                 nodePreparedStmt.setObject(1, nodeOSMElement.getID());
                 nodePreparedStmt.setObject(2, nodeOSMElement.getPoint(gf));
-                nodePreparedStmt.setObject(3, nodeOSMElement.getUser());
-                nodePreparedStmt.setObject(4, nodeOSMElement.getUID());
-                nodePreparedStmt.setObject(5, nodeOSMElement.getVisible());
-                nodePreparedStmt.setObject(6, nodeOSMElement.getVersion());
-                nodePreparedStmt.setObject(7, nodeOSMElement.getChangeSet());
-                nodePreparedStmt.setObject(8, nodeOSMElement.getTimeStamp(), Types.DATE);
-                nodePreparedStmt.setString(9, nodeOSMElement.getName());
+                nodePreparedStmt.setObject(3, nodeOSMElement.getElevation());
+                nodePreparedStmt.setObject(4, nodeOSMElement.getUser());
+                nodePreparedStmt.setObject(5, nodeOSMElement.getUID());
+                nodePreparedStmt.setObject(6, nodeOSMElement.getVisible());
+                nodePreparedStmt.setObject(7, nodeOSMElement.getVersion());
+                nodePreparedStmt.setObject(8, nodeOSMElement.getChangeSet());
+                nodePreparedStmt.setObject(9, nodeOSMElement.getTimeStamp(), Types.DATE);
+                nodePreparedStmt.setString(10, nodeOSMElement.getName());
                 nodePreparedStmt.execute();
                 HashMap<String, String> tags = nodeOSMElement.getTags();
                 for (Map.Entry<String, String> entry : tags.entrySet()) {

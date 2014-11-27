@@ -37,7 +37,7 @@ public class NodeOSMElement extends OSMElement {
 
     private double latitude;
     private double longitude;
-    private double elevation = Coordinate.NULL_ORDINATE;
+    private Double elevation = null;
 
     /**
      * Constructor
@@ -64,7 +64,15 @@ public class NodeOSMElement extends OSMElement {
      */
     public Point getPoint(GeometryFactory gf) {
         return gf.createPoint(new Coordinate(longitude,
-                latitude, elevation));
+                latitude));
+    }
+
+    /**
+     * @return Elevation (also known as altitude or height) above mean sea level in metre,
+     *                  based on geoid model EGM 96 which is used by WGS 84 (GPS).
+     */
+    public Double getElevation() {
+        return elevation;
     }
 
     @Override

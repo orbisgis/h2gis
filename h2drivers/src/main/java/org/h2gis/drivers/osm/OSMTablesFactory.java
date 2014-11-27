@@ -95,7 +95,7 @@ public class OSMTablesFactory {
         } else {
             sb.append("GEOMETRY(POINT, 4326)");
         }
-        sb.append(","
+        sb.append(",ELE DOUBLE PRECISION,"
                 + "USER_NAME VARCHAR,"
                 + "UID BIGINT,"
                 + "VISIBLE BOOLEAN,"
@@ -105,7 +105,7 @@ public class OSMTablesFactory {
                 + "NAME VARCHAR);");
         stmt.execute(sb.toString());
         stmt.close();
-        return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES (?,?,?,?,?,?,?,?,?);");
+        return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES (?,?,?,?,?,?,?,?,?,?);");
     }
     
 
