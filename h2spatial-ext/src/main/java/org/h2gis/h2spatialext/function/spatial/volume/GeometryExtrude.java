@@ -18,6 +18,8 @@ package org.h2gis.h2spatialext.function.spatial.volume;
 
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateSequence;
+import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -33,11 +35,10 @@ import org.h2gis.h2spatialext.function.spatial.edit.ST_UpdateZ.UpdateZCoordinate
  * roof, or floor using a height.
  *
  * @author Erwan Bocher
- * @author Thomas Leduc
  */
 public class GeometryExtrude {
 
-    private static final GeometryFactory GF = new GeometryFactory();
+    
 
     private GeometryExtrude() {
     }
@@ -51,10 +52,10 @@ public class GeometryExtrude {
      */
     public static GeometryCollection extrudePolygonAsGeometry(Polygon polygon, double height){
         Geometry[] geometries = new Geometry[3];
-        geometries[0]= extractFloor(polygon, height);
+        geometries[0]= extractFloor(polygon);
         geometries[1]= extractWalls(polygon, height);
         geometries[2]= extractRoof(polygon, height);
-        return GF.createGeometryCollection(geometries);
+        return polygon.getFactory().createGeometryCollection(geometries);
     }
     
      /**
@@ -69,28 +70,23 @@ public class GeometryExtrude {
         geometries[0]= lineString;
         geometries[1]= extractWalls(lineString, height);
         geometries[2]= extractRoof(lineString, height);
-        return GF.createGeometryCollection(geometries);
+        return lineString.getFactory().createGeometryCollection(geometries);
     }
     
     /**
-     * Extract the linestring "roof". 
+     * Extract the linestring "roof".
+     *
      * @param lineString
      * @param height
-     * @return 
+     * @return
      */
     public static Geometry extractRoof(LineString lineString, double height) {
-       return  GF.createLineString(translate(lineString, height));
+        LineString result = (LineString) lineString.clone();
+        result.apply(new TranslateCoordinateSequenceFilter(height));
+        return result;
     }
     
-    /**
-     * Reverse the polygon to be oriented counter-clockwise
-     * @param polygon
-     * @param height
-     * @return 
-     */
-    public static Polygon extractFloor(Polygon polygon, double height){
-        return getClockWise(polygon);
-    }
+    
     
     /**
      * Extract the walls from a polygon
@@ -99,12 +95,13 @@ public class GeometryExtrude {
      * @return 
      */
     public static MultiPolygon extractWalls(Polygon polygon, double height){
+        GeometryFactory factory = polygon.getFactory();
         //We process the exterior ring 
         final LineString shell = getClockWise(polygon.getExteriorRing());
 
         ArrayList<Polygon> walls = new ArrayList<Polygon>();
         for (int i = 1; i < shell.getNumPoints(); i++) {
-            walls.add(extrudeEdge(shell.getCoordinateN(i - 1), shell.getCoordinateN(i), height));
+            walls.add(extrudeEdge(shell.getCoordinateN(i - 1), shell.getCoordinateN(i), height, factory));
         }
 
         // We create the walls  for all holes 
@@ -113,10 +110,10 @@ public class GeometryExtrude {
             final LineString hole = getCounterClockWise(polygon.getInteriorRingN(i));
             for (int j = 1; j < hole.getNumPoints(); j++) {
                 walls.add(extrudeEdge(hole.getCoordinateN(j - 1),
-                        hole.getCoordinateN(j), height));
+                        hole.getCoordinateN(j), height, factory));
             }
         }
-        return GF.createMultiPolygon(walls.toArray(new Polygon[walls.size()]));
+        return polygon.getFactory().createMultiPolygon(walls.toArray(new Polygon[walls.size()]));
     }
     
     /**
@@ -126,14 +123,17 @@ public class GeometryExtrude {
      * @param height
      * @return 
      */
-    public static Polygon extractRoof(Polygon polygon, double height){               
-        final LinearRing upperShell = GF.createLinearRing(translate(polygon.getExteriorRing(), height));
-        int nbOfHoles = polygon.getNumInteriorRing();
+    public static Polygon extractRoof(Polygon polygon, double height) {
+        GeometryFactory factory = polygon.getFactory();
+        polygon.apply(new TranslateCoordinateSequenceFilter(height));
+        final LinearRing shell = factory.createLinearRing(getCounterClockWise(polygon.getExteriorRing()).getCoordinates());
+        final int nbOfHoles = polygon.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
-            holes[i] = GF.createLinearRing(translate(polygon.getInteriorRingN(i), height));
+            holes[i] = factory.createLinearRing(getClockWise(
+                    polygon.getInteriorRingN(i)).getCoordinates());
         }
-        return getCounterClockWise(GF.createPolygon(upperShell, holes));
+        return factory.createPolygon(shell, holes);
     }
 
     /**
@@ -143,13 +143,14 @@ public class GeometryExtrude {
      * @return
      */
     public static MultiPolygon extractWalls(LineString lineString, double height) {
+        GeometryFactory factory = lineString.getFactory();
         //Extract the walls        
         Coordinate[] coords = lineString.getCoordinates();
         Polygon[] walls = new Polygon[coords.length - 1];
         for (int i = 0; i < coords.length - 1; i++) {
-            walls[i] = extrudeEdge(coords[i], coords[i + 1], height);
+            walls[i] = extrudeEdge(coords[i], coords[i + 1], height, factory);
         }
-        return GF.createMultiPolygon(walls);
+        return lineString.getFactory().createMultiPolygon(walls);
     }
 
     /**
@@ -188,37 +189,22 @@ public class GeometryExtrude {
     }
 
     /**
-     * Return a polygon oriented clockwise
+     * Reverse the polygon to be oriented clockwise
      * @param polygon
      * @return 
      */
-    private static Polygon getClockWise(final Polygon polygon) {
-        final LinearRing shell = GF.createLinearRing(getClockWise(
+    private static Polygon extractFloor(final Polygon polygon) {
+        GeometryFactory factory = polygon.getFactory();
+        final LinearRing shell = factory.createLinearRing(getClockWise(
                 polygon.getExteriorRing()).getCoordinates());
         final int nbOfHoles = polygon.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
-            holes[i] = GF.createLinearRing(getCounterClockWise(
+            holes[i] = factory.createLinearRing(getCounterClockWise(
                     polygon.getInteriorRingN(i)).getCoordinates());
         }
-        return GF.createPolygon(shell, holes);
-    }
-
-     /**
-     * Return a polygon oriented counter-clockwise
-     * @param polygon
-     * @return 
-     */
-    private static Polygon getCounterClockWise(final Polygon polygon) {
-        final LinearRing shell = GF.createLinearRing(getCounterClockWise(polygon.getExteriorRing()).getCoordinates());
-        final int nbOfHoles = polygon.getNumInteriorRing();
-        final LinearRing[] holes = new LinearRing[nbOfHoles];
-        for (int i = 0; i < nbOfHoles; i++) {
-            holes[i] = GF.createLinearRing(getClockWise(
-                    polygon.getInteriorRingN(i)).getCoordinates());
-        }
-        return GF.createPolygon(shell, holes);
-    }
+        return factory.createPolygon(shell, holes);
+    }     
 
     /**
      * Create a polygon corresponding to the wall.
@@ -230,37 +216,55 @@ public class GeometryExtrude {
      * @return
      */
     private static Polygon extrudeEdge(final Coordinate beginPoint,
-            Coordinate endPoint, final double height) {
-        if (Double.isNaN(beginPoint.z)) {
-            beginPoint.z = 0d;
-        }
-        if (Double.isNaN(endPoint.z)) {
-            endPoint.z = 0d;
-        }
-
-        return GF.createPolygon(GF.createLinearRing(new Coordinate[]{
+            Coordinate endPoint, final double height, GeometryFactory factory) {
+        beginPoint.z = Double.isNaN(beginPoint.z) ? 0 : beginPoint.z;
+        endPoint.z = Double.isNaN(endPoint.z) ? 0 : endPoint.z;        
+        return factory.createPolygon(new Coordinate[]{
             beginPoint,
             new Coordinate(beginPoint.x, beginPoint.y, beginPoint.z
             + height),
             new Coordinate(endPoint.x, endPoint.y, endPoint.z
-            + height), endPoint, beginPoint}), null);
+            + height), endPoint, beginPoint});
     }
 
+     
+    
     /**
-     * Translate the LineString according a specified height.
-     * @param ring
-     * @param height
-     * @return a coordinate array translate according the input height
+     * Translate a geometry to a specific z value added to each vertexes.
+     *
      */
-    private static Coordinate[] translate(final LineString ring, final double height) {
-        final Coordinate[] src = ring.getCoordinates();
-        final Coordinate[] dst = new Coordinate[src.length];
-        for (int i = 0; i < src.length; i++) {
-            if (Double.isNaN(src[i].z)) {
-                src[i].z = 0d;
-            }
-            dst[i] = new Coordinate(src[i].x, src[i].y, src[i].z + height);
+    public static class TranslateCoordinateSequenceFilter implements CoordinateSequenceFilter {
+
+        private boolean done = false;
+        private final double z;
+
+        public TranslateCoordinateSequenceFilter(double z) {
+            this.z = z;
         }
-        return dst;
-    }    
+
+        @Override
+        public boolean isGeometryChanged() {
+            return true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return done;
+        }
+
+        @Override
+        public void filter(CoordinateSequence seq, int i) {
+            Coordinate coord = seq.getCoordinate(i);
+            double currentZ = coord.z;
+            if (!Double.isNaN(currentZ)) {
+                seq.setOrdinate(i, 2, currentZ + z);
+            }
+            else{
+                 seq.setOrdinate(i, 2, z);
+            }
+            if (i == seq.size()) {
+                done = true;
+            }
+        }
+    }
 }

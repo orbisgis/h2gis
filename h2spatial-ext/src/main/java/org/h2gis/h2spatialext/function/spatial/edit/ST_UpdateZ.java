@@ -59,6 +59,7 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
      * @param geometry
      * @param z
      * @return
+     * @throws java.sql.SQLException
      */
     public static Geometry updateZ(Geometry geometry, double z) throws SQLException {
         return updateZ(geometry, z, 1);
