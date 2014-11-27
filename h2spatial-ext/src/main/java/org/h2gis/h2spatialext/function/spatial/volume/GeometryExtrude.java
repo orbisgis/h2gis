@@ -125,13 +125,14 @@ public class GeometryExtrude {
      */
     public static Polygon extractRoof(Polygon polygon, double height) {
         GeometryFactory factory = polygon.getFactory();
-        polygon.apply(new TranslateCoordinateSequenceFilter(height));
-        final LinearRing shell = factory.createLinearRing(getCounterClockWise(polygon.getExteriorRing()).getCoordinates());
-        final int nbOfHoles = polygon.getNumInteriorRing();
+        Polygon roofP = (Polygon) polygon.clone();
+        roofP.apply(new TranslateCoordinateSequenceFilter(height));
+        final LinearRing shell = factory.createLinearRing(getCounterClockWise(roofP.getExteriorRing()).getCoordinates());
+        final int nbOfHoles = roofP.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
             holes[i] = factory.createLinearRing(getClockWise(
-                    polygon.getInteriorRingN(i)).getCoordinates());
+                    roofP.getInteriorRingN(i)).getCoordinates());
         }
         return factory.createPolygon(shell, holes);
     }
