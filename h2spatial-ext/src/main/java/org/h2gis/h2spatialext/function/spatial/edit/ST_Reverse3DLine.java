@@ -70,6 +70,7 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
      * 
      *
      * @param geometry
+     * @param order
      * @return
      */
     public static Geometry reverse3DLine(Geometry geometry, String order) {

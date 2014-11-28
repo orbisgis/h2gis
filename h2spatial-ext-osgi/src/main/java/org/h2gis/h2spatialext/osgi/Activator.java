@@ -1,5 +1,6 @@
 package org.h2gis.h2spatialext.osgi;
 
+import org.h2gis.drivers.csv.CSVDriverFunction;
 import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.drivers.geojson.GeoJsonDriverFunction;
 import org.h2gis.drivers.gpx.GPXDriverFunction;
@@ -39,6 +40,8 @@ public class Activator implements BundleActivator {
                 bc.registerService(DriverFunction.class, new GeoJsonDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new OSMDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new KMLDriverFunction(), null);
+                bc.registerService(DriverFunction.class, new CSVDriverFunction(), null);
+                
         }
 
         /**
