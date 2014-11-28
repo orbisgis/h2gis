@@ -38,6 +38,7 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
 public class OSMDriverFunction implements DriverFunction {
 
     public static String DESCRIPTION = "OMS file (0.6)";
+    public static String DESCRIPTION_GZ = "OMS Gzipped file (0.6)";
 
     @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
@@ -52,6 +53,8 @@ public class OSMDriverFunction implements DriverFunction {
     @Override
     public String getFormatDescription(String format) {
         if (format.equalsIgnoreCase("osm")) {
+            return DESCRIPTION;
+        } else if (format.equalsIgnoreCase("osm.gz")) {
             return DESCRIPTION;
         } else {
             return "";

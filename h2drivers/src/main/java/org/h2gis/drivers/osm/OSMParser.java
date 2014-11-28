@@ -51,6 +51,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Parse an OSM file and store the elements into a database. The database model
@@ -149,7 +150,11 @@ public class OSMParser extends DefaultHandler {
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setErrorHandler(this);
             parser.setContentHandler(this);
-            parser.parse(new InputSource(fs));         
+            if(inputFile.getName().endsWith(".osm")) {
+                parser.parse(new InputSource(fs));
+            } else if(inputFile.getName().endsWith(".osm.gz")) {
+                parser.parse(new InputSource(new GZIPInputStream(fs)));
+            }
             success = true;
         } catch (SAXException ex) {
             throw new SQLException(ex);

@@ -74,6 +74,51 @@ public class OSMImportTest {
         st.close();
     }
 
+    @Test
+    public void importGzipOSMFile() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS OSM_TAG, OSM_NODE, OSM_NODE_TAG, OSM_WAY,OSM_WAY_TAG, OSM_WAY_NODE, OSM_RELATION, OSM_RELATION_TAG, OSM_NODE_MEMBER, OSM_WAY_MEMBER, OSM_RELATION_MEMBER;");
+        st.execute("CALL OSMRead(" + StringUtils.quoteStringSQL(OSMImportTest.class.getResource("saint_jean.osm.gz").getPath()) + ", 'OSM');");
+        ResultSet rs = st.executeQuery("SELECT count(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'");
+        rs.next();
+        assertTrue(rs.getInt(1) == 11);
+        rs.close();
+        // Check number
+        rs = st.executeQuery("SELECT count(ID_NODE) FROM OSM_NODE");
+        rs.next();
+        assertEquals(3243, rs.getInt(1));
+        rs.close();
+        // Check content
+
+        //NODE
+        rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=462020579");
+        assertTrue(rs.next());
+        assertEquals("POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
+        rs.close();
+
+        rs = st.executeQuery("SELECT * FROM OSM_NODE WHERE ID_NODE=670177172");
+        assertTrue(rs.next());
+        // NODE Z extraction
+        assertEquals(91.9,rs.getDouble("ELE"),0.1);
+        assertFalse(rs.wasNull());
+        assertEquals(4326,((Point)rs.getObject("THE_GEOM")).getSRID());
+        // Node SRID extraction
+        rs.close();
+
+        // Geometry columns SRID information
+        rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME='OSM_NODE'");
+        assertTrue(rs.next());
+        assertEquals(4326, rs.getInt("SRID"));
+
+        rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=3003052969");
+        assertTrue(rs.next());
+        assertEquals("POINT (-2.121123 47.635276)", rs.getString("the_geom"));
+        rs.close();
+
+        rs = st.executeQuery("SELECT count(ID_RELATION) FROM OSM_RELATION");
+        assertTrue(rs.next());
+        assertEquals(3, rs.getInt(1));
+        rs.close();
+    }
     
     @Test
     public void importOSMFile() throws SQLException {
