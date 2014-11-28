@@ -37,8 +37,10 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
  */
 public class OSMDriverFunction implements DriverFunction {
 
-    public static String DESCRIPTION = "OMS file (0.6)";
-    public static String DESCRIPTION_GZ = "OMS Gzipped file (0.6)";
+    public static String DESCRIPTION = "OSM file (0.6)";
+    public static String DESCRIPTION_GZ = "OSM Gzipped file (0.6)";
+    public static String DESCRIPTION_BZ2 = "OSM Bzipped file (0.6)";
+
 
     @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
@@ -54,8 +56,10 @@ public class OSMDriverFunction implements DriverFunction {
     public String getFormatDescription(String format) {
         if (format.equalsIgnoreCase("osm")) {
             return DESCRIPTION;
-        } else if (format.equalsIgnoreCase("osm.gz")) {
-            return DESCRIPTION;
+        } else if (format.equalsIgnoreCase("gz")) {
+            return DESCRIPTION_GZ;
+        } else  if (format.equalsIgnoreCase("bz2")) {
+            return DESCRIPTION_BZ2;
         } else {
             return "";
         }
@@ -68,13 +72,16 @@ public class OSMDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        if(fileName == null || !(fileName.getName().endsWith(".osm") || fileName.getName().endsWith("osm.gz") || fileName.getName().endsWith("osm.bz2"))) {
+            throw new IOException(new IllegalArgumentException("This driver handle only osm and osm.gz files"));
+        }
         OSMParser osmp = new OSMParser();
         osmp.read(connection, tableReference, fileName, progress);
     }
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"osm"};
+        return new String[]{"osm","gz","bz2"};
     }
 
 }
