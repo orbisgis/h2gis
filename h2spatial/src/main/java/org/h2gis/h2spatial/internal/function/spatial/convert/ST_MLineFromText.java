@@ -26,9 +26,6 @@
 package org.h2gis.h2spatial.internal.function.spatial.convert;
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.utilities.jts_utils.GeometryMetaData;
-
 import java.sql.SQLException;
 
 /**

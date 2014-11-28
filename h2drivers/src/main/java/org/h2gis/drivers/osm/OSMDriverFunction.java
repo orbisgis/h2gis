@@ -4,7 +4,7 @@
  * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -22,7 +22,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.drivers.kml;
+package org.h2gis.drivers.osm;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,46 +32,46 @@ import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 
 /**
- * A driver to export spatial table to kml 2.2 file.
  *
  * @author Erwan Bocher
  */
-public class KMLDriverFunction implements DriverFunction {
+public class OSMDriverFunction implements DriverFunction {
+
+    public static String DESCRIPTION = "OMS file (0.6)";
 
     @Override
-    public String[] getImportFormats() {
-        return new String[0];
+    public IMPORT_DRIVER_TYPE getImportDriverType() {
+        return IMPORT_DRIVER_TYPE.COPY;
     }
 
     @Override
     public String[] getExportFormats() {
-        return new String[]{"kml", "kmz"};
+        return new String[0];
     }
 
     @Override
     public String getFormatDescription(String format) {
-        if (format.equalsIgnoreCase("kml")) {
-            return "KML 2.2";
-        } else if (format.equalsIgnoreCase("kmz")) {
-            return "KMZ 2.2";
+        if (format.equalsIgnoreCase("osm")) {
+            return DESCRIPTION;
         } else {
             return "";
         }
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {        
-        KMLWriterDriver kMLWriter = new KMLWriterDriver(connection, tableReference, fileName);
-        kMLWriter.write(progress);
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-       throw new UnsupportedOperationException("Not supported yet.");
+        OSMParser osmp = new OSMParser();
+        osmp.read(connection, tableReference, fileName, progress);
     }
 
     @Override
-    public IMPORT_DRIVER_TYPE getImportDriverType() {
-        return IMPORT_DRIVER_TYPE.COPY;
+    public String[] getImportFormats() {
+        return new String[]{"osm"};
     }
+
 }
