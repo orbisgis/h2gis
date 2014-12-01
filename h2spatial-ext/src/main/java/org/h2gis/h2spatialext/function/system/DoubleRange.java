@@ -35,7 +35,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 public class DoubleRange extends DeterministicScalarFunction{
 
     public DoubleRange() {
-        addProperty(PROP_REMARKS, "Return an array of doubles from start to end. \n"
+        addProperty(PROP_REMARKS, "Return an array of doubles within the range [start-end). \n"
                 + "The default step increment is 1 but the user can set another one.");
     }
 

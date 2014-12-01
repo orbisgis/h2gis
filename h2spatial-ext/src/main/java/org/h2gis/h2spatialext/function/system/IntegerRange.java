@@ -35,7 +35,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 public class IntegerRange extends DeterministicScalarFunction{
 
     public IntegerRange() {
-        addProperty(PROP_REMARKS, "Return an array of integers from start to end. \n"
+        addProperty(PROP_REMARKS, "Return an array of integers within the range [start-end). \n"
                 + "The default step increment is 1 but the user can set another one.");
     }
 
