@@ -64,6 +64,8 @@ import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.h2spatialext.function.spatial.trigonometry.ST_Azimuth;
+import org.h2gis.h2spatialext.function.system.DoubleRange;
+import org.h2gis.h2spatialext.function.system.IntegerRange;
 import org.h2gis.network.graph_creator.*;
 
 
@@ -127,7 +129,7 @@ public class CreateSpatialExtension {
                 new ST_Polygonize(),
                 new ST_PrecisionReducer(),
                 new ST_RemoveHoles(),
-                new ST_RemovePoint(),
+                new ST_RemovePoints(),
                 new ST_RemoveRepeatedPoints(),
                 new ST_Reverse(),
                 new ST_Reverse3DLine(),
@@ -173,7 +175,9 @@ public class CreateSpatialExtension {
                 new ST_LineIntersector(),        
                 new ST_OffSetCurve(),
                 new OSMRead(),
-                new ST_OSMDownloader()};
+                new ST_OSMDownloader(),
+                new DoubleRange(),
+                new IntegerRange()};
     }
 
     /**

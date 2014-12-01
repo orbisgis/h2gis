@@ -72,6 +72,7 @@ public class ST_Explode extends DeterministicScalarFunction {
      * @param connection
      * @param tableName
      * @return A result set with the same content of specified table but with atomic geometries and duplicate values.
+     * @throws java.sql.SQLException
      */
     public static ResultSet explode(Connection connection, String tableName) throws SQLException {
         return explode(connection, tableName,null);
@@ -83,6 +84,7 @@ public class ST_Explode extends DeterministicScalarFunction {
      * @param tableName
      * @param fieldName
      * @return
+     * @throws java.sql.SQLException
      */
     public static ResultSet explode(Connection connection, String tableName, String fieldName) throws SQLException {
         ExplodeResultSet rowSource = new ExplodeResultSet(connection,

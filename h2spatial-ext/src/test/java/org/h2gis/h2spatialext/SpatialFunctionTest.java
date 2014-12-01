@@ -1970,7 +1970,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POINT(1 1)'::GEOMETRY, ST_Buffer('POINT(1 1)'::GEOMETRY, 10));");
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('POINT(1 1)'::GEOMETRY, ST_Buffer('POINT(1 1)'::GEOMETRY, 10));");
         rs.next();
         assertNull(rs.getObject(1));
         rs.close();
@@ -1978,7 +1978,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('MULTIPOINT ((5 5), (10 10))'::GEOMETRY, ST_Buffer('POINT(10 10)'::GEOMETRY, 0.01));");
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('MULTIPOINT ((5 5), (10 10))'::GEOMETRY, ST_Buffer('POINT(10 10)'::GEOMETRY, 0.01));");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT((5 5)))")));
         rs.close();
@@ -1986,7 +1986,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('MULTIPOINT ((5 5), (10 10), (100 1000))'::GEOMETRY, "
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('MULTIPOINT ((5 5), (10 10), (100 1000))'::GEOMETRY, "
                 + "ST_Buffer('POINT(10 10)'::GEOMETRY, 10));");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT((100 1000)))")));
@@ -1995,7 +1995,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POLYGON ((150 250, 220 250, 220 170, 150 170, 150 250))'::GEOMETRY, "
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('POLYGON ((150 250, 220 250, 220 170, 150 170, 150 250))'::GEOMETRY, "
                 + "ST_Buffer('POINT (230 250)'::GEOMETRY, 12));");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((150 250, 220 170, 150 170, 150 250))")));
@@ -2004,7 +2004,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint5() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('LINESTRING (100 200, 153 255, 169 175, 200 240, 250 190, "
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('LINESTRING (100 200, 153 255, 169 175, 200 240, 250 190, "
                 + "264 236, 304 236, 320 240, 340 250, 345 265, 354 295)'::GEOMETRY, ST_Buffer('POINT (230 250)'::GEOMETRY, 100));");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (100 200, 340 250, 345 265, 354 295)")));
@@ -2013,7 +2013,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint7() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('LINESTRING (0 0, 10 0)'::GEOMETRY, "
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('LINESTRING (0 0, 10 0)'::GEOMETRY, "
                 + "ST_Buffer('POINT (5 0)'::GEOMETRY, 10));");
         rs.next();
         assertNull(rs.getObject(1));
@@ -2022,7 +2022,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint8() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POINT(1 1)'::GEOMETRY, "
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('POINT(1 1)'::GEOMETRY, "
                 + "ST_Buffer('POINT(100 100)'::GEOMETRY, 10));");
         rs.next();
         assertGeometryEquals("POINT(1 1)",rs.getBytes(1));
@@ -2031,7 +2031,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint9() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('LINESTRING(0 3, 1 1, 3 3, 5 2, 5 4, 6 5, 7 6, 7 7, 6 8)'::GEOMETRY, "
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('LINESTRING(0 3, 1 1, 3 3, 5 2, 5 4, 6 5, 7 6, 7 7, 6 8)'::GEOMETRY, "
                 + "ST_Buffer('POINT (3 4)'::GEOMETRY, 3));");
         rs.next();
         assertGeometryEquals("LINESTRING(0 3, 1 1, 6 5, 7 6, 7 7, 6 8)", rs.getBytes(1));
@@ -2040,7 +2040,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_RemovePoint10() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RemovePoint('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), \n" +
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('POLYGON((1 1, 1 6, 5 6, 5 1, 1 1), \n" +
 " (3 4, 3 5, 4 5, 4 4, 3 4)," +
 " (2 3, 3 3, 3 2, 2 2, 2 3))'::GEOMETRY, "
                 + "ST_Buffer('POINT (6 7)'::GEOMETRY, 4.5));");

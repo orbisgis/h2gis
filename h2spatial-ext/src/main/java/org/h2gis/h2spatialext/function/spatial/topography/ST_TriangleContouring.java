@@ -43,6 +43,7 @@ import org.h2gis.utilities.jts_utils.TriMarkers;
 
 import java.sql.*;
 import java.util.*;
+import org.h2.value.ValueArray;
 
 /**
  * Split triangle into area within the specified range values.
@@ -72,6 +73,9 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
     public String getJavaStaticMethod() {
         return "triangleContouring";
     }
+    
+   
+   
 
     /**
      * Iso contouring using Z,M attributes of geometries
@@ -103,8 +107,14 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         if(rowSource == null) {
             // Use Z
             List<Double> isoLvls = new ArrayList<Double>(varArgs.length);
-            for(Value value : varArgs) {
-                isoLvls.add(value.getDouble());
+            for (Value value : varArgs) {
+                if (value instanceof ValueArray) {
+                    for (Value arrVal : ((ValueArray) value).getList()) {
+                        isoLvls.add(arrVal.getDouble());
+                    }
+                } else {
+                    isoLvls.add(value.getDouble());
+                }
             }
             rowSource = new ExplodeResultSet(connection,tableName, isoLvls);
         }
