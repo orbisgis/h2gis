@@ -50,6 +50,7 @@ import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_LocateAlong;
+import org.h2gis.h2spatialext.function.spatial.distance.ST_ProjectPoint;
 import org.h2gis.h2spatialext.function.spatial.edit.*;
 import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
@@ -173,7 +174,8 @@ public class CreateSpatialExtension {
                 new ST_LineIntersector(),        
                 new ST_OffSetCurve(),
                 new OSMRead(),
-                new ST_OSMDownloader()};
+                new ST_OSMDownloader(),
+                new ST_ProjectPoint()};
     }
 
     /**

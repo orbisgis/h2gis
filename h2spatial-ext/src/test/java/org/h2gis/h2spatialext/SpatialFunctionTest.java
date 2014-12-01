@@ -3171,4 +3171,36 @@ public class SpatialFunctionTest {
         rs.close();
     }
     
+    @Test
+    public void test_ST_ProjectPoint1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ProjectPoint('POINT(5 5)', 'LINESTRING (0 0, 10 0)');");
+        rs.next();
+        assertGeometryEquals("POINT(5 0)", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_ProjectPoint2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ProjectPoint('POINT(0 5)', 'LINESTRING (0 0, 10 0)');");
+        rs.next();
+        assertGeometryEquals("POINT(0 0)", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_ProjectPoint3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ProjectPoint('POINT(-20 5)', 'LINESTRING (0 0, 10 0)');");
+        rs.next();
+        assertGeometryEquals("POINT(0 0)", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_ProjectPoint4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_ProjectPoint('LINESTRING(-20 5, 20 20)', 'LINESTRING (0 0, 10 0)');");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+    
 }
