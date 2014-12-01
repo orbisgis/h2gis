@@ -24,6 +24,7 @@
  */
 package org.h2gis.drivers.shp;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
 import org.h2.util.StringUtils;
@@ -45,6 +46,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import org.h2.value.ValueGeometry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -335,4 +337,33 @@ public class SHPImportExportTest {
         assertEquals(2, row[0]);
         assertEquals("MULTIPOLYGON (((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", toText.write((Geometry)row[1]));
     }
+    
+    @Test
+    public void exportImportPolygonZ() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/area_export.shp");
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
+        stat.execute("insert into area values(1, 'POLYGON ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
+        stat.execute("insert into area values(2, 'POLYGON ((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3))')");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export.shp', 'AREA')");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_AREA;");
+        stat.execute("CALL SHPRead('target/area_export.shp', 'IMPORT_AREA')");
+        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_AREA;");
+        res.next();        
+        Geometry geom = (Geometry) res.getObject(1);        
+        Coordinate[] coords = geom.getCoordinates();        
+        int count =0;
+        for (Coordinate coord : coords) {
+            if(coord.z==5){
+                count++;
+            }
+        }
+        assertEquals(count, coords.length);
+        res.close();
+        
+        }
 }
