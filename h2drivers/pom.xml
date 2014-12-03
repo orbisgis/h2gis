@@ -91,5 +91,11 @@
             <artifactId>jackson-core</artifactId>
             <version>2.3.1</version>
         </dependency>
+        <dependency>
+            <!-- Open osm.bz2 files -->
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.9</version>
+        </dependency>
     </dependencies>
 </project>
