@@ -1,8 +1,5 @@
 package org.h2gis.h2spatialext;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import org.h2.value.ValueGeometry;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
