@@ -3203,4 +3203,54 @@ public class SpatialFunctionTest {
         rs.close();
     }
     
+    @Test
+    public void test_ST_CollectExtract1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('LINESTRING(-20 5, 20 20)', 2);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(-20 5, 20 20)", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_CollectExtract2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('LINESTRING(-20 5, 20 20)', 1);");
+        rs.next();
+        assertEquals("GEOMETRYCOLLECTION EMPTY", ((Geometry) rs.getObject(1)).toText());
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_CollectExtract3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('GEOMETRYCOLLECTION (POLYGON ((140 320, 140 308, 140 287, 140 273, 140 252, 146 243, 156 241, 166 241, 176 241, 186 241, 196 241, 204 247, 212 254, 222 263, 228 271, 230 281, 214 295, 140 320)),"
+                + "  LINESTRING (290 340, 270 230),"
+                + "  LINESTRING (120 200, 230 170))', 2);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING ((290 340, 270 230), (120 200, 230 170))", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_CollectExtract4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('GEOMETRYCOLLECTION (POLYGON ((140 320, 140 308, 140 287, 140 273, 140 252, 146 243, 156 241, 166 241, 176 241, 186 241, 196 241, 204 247, 212 254, 222 263, 228 271, 230 281, 214 295, 140 320)),"
+                + "  LINESTRING (290 340, 270 230),"
+                + "  LINESTRING (120 200, 230 170))', 3);");
+        rs.next();
+        assertGeometryEquals("POLYGON ((140 320, 140 308, 140 287, 140 273, 140 252, 146 243, 156 241, 166 241, 176 241, 186 241, 196 241, 204 247, 212 254, 222 263, 228 271, 230 281, 214 295, 140 320))", rs.getObject(1));
+        rs.close();
+    }
+    
+    
+    @Test
+    public void test_ST_CollectExtract5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('GEOMETRYCOLLECTION (LINESTRING (290 340, 270 230),"
+                + "  LINESTRING (120 200, 230 170),"
+                + "  POINT (110 360),"
+                + "  POINT (145 322),"
+                + "  POINT (190 340),"
+                + "  POINT (200 360))', 1);");
+        rs.next();
+        assertGeometryEquals("MULTIPOINT ((110 360), (145 322), (190 340), (200 360))", rs.getObject(1));
+        rs.close();
+    }
+    
 }

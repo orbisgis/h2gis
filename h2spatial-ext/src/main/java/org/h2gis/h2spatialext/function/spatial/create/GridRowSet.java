@@ -227,7 +227,7 @@ public class GridRowSet implements SimpleRowSource {
      */
     public ResultSet getResultSet() throws SQLException {
         SimpleResultSet srs = new SimpleResultSet(this);
-        srs.addColumn("NODE_GEOM", Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
+        srs.addColumn("THE_GEOM", Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
         srs.addColumn("ID", Types.INTEGER, 10, 0);
         srs.addColumn("ID_COL", Types.INTEGER, 10, 0);
         srs.addColumn("ID_ROW", Types.INTEGER, 10, 0);

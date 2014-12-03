@@ -175,7 +175,8 @@ public class CreateSpatialExtension {
                 new ST_OffSetCurve(),
                 new OSMRead(),
                 new ST_OSMDownloader(),
-                new ST_ProjectPoint()};
+                new ST_ProjectPoint(),
+                new ST_CollectExtract()};
     }
 
     /**
