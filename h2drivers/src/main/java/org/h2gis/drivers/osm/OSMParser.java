@@ -26,6 +26,7 @@ package org.h2gis.drivers.osm;
 
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.h2.api.ErrorCode;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
@@ -51,6 +52,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Parse an OSM file and store the elements into a database. The database model
@@ -144,12 +146,18 @@ public class OSMParser extends DefaultHandler {
             this.fileSize = fc.size();
             // Given the file size and an average node file size.
             // Skip how many nodes in order to update progression at a step of 1%
-            readFileSizeEachNode = (this.fileSize / AVERAGE_NODE_SIZE) / 100;
+            readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
             nodeCountProgress = 0;
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setErrorHandler(this);
             parser.setContentHandler(this);
-            parser.parse(new InputSource(fs));         
+            if(inputFile.getName().endsWith(".osm")) {
+                parser.parse(new InputSource(fs));
+            } else if(inputFile.getName().endsWith(".osm.gz")) {
+                parser.parse(new InputSource(new GZIPInputStream(fs)));
+            } else if(inputFile.getName().endsWith(".osm.bz2")) {
+                parser.parse(new InputSource(new BZip2CompressorInputStream(fs)));
+            }
             success = true;
         } catch (SAXException ex) {
             throw new SQLException(ex);
