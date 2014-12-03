@@ -116,7 +116,7 @@ public class ST_CollectExtract extends DeterministicScalarFunction{
                 points.add((Point) subGeom);
             }
             else if (subGeom instanceof GeometryCollection){
-                getPunctualGeometry(points, geometry);
+                getPunctualGeometry(points, subGeom);
             }
         }
     }
@@ -133,7 +133,7 @@ public class ST_CollectExtract extends DeterministicScalarFunction{
                 lines.add((LineString) subGeom);
             }
             else if (subGeom instanceof GeometryCollection){
-                getLinealGeometry(lines, geometry);
+                getLinealGeometry(lines, subGeom);
             }
         }
     }
@@ -150,7 +150,7 @@ public class ST_CollectExtract extends DeterministicScalarFunction{
                 polygones.add((Polygon) subGeom);
             }
             else if (subGeom instanceof GeometryCollection){
-                getArealGeometry(polygones, geometry);
+                getArealGeometry(polygones, subGeom);
             }
         }
     }

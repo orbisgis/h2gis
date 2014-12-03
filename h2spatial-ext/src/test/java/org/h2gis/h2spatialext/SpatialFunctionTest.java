@@ -3253,4 +3253,15 @@ public class SpatialFunctionTest {
         rs.close();
     }
     
+    @Test
+    public void test_ST_CollectExtract6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('GEOMETRYCOLLECTION (MULTILINESTRING ((181729.16666666666 2402624, 181715 2402658, 181648 2402753.714285714), (181648 2402796, 181655 2402803, 181699.625 2402824)))', 2);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING ((181729.16666666666 2402624, 181715 2402658, 181648 2402753.714285714), (181648 2402796, 181655 2402803, 181699.625 2402824))", rs.getObject(1));
+        rs.close();
+    }
+    
+    
+    
+    
 }
