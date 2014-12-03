@@ -40,11 +40,11 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  *
  * @author Erwan Bocher
  */
-public class ST_RemovePoint extends DeterministicScalarFunction {
+public class ST_RemovePoints extends DeterministicScalarFunction {
   
     private static final GeometryFactory GF = new GeometryFactory();
     
-    public ST_RemovePoint() {
+    public ST_RemovePoints() {
         addProperty(PROP_REMARKS, "Remove all points on a geometry that are located within a polygon.");
     }
 
