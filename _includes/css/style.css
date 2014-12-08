@@ -11,7 +11,11 @@ body {
   font-size: 21px;
   font-weight: 300;
   color: #ddd;
-  background: #333;
+  background:#333;
+  background-image: url("{{ site.url }}/img/bandeau_arriere.png");
+background-repeat: repeat-y;
+background-position: center top;
+background-attachment: fixed;
   border-top: 5px solid #4db3ff;
   box-shadow: inset 0 3px 30px rgba(0,0,0,.3);
   text-shadow: 0 1px 3px rgba(0,0,0,.5);
