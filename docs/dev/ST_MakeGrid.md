@@ -12,9 +12,9 @@ permalink: /docs/dev/ST_MakeGrid/
 ### Signature
 
 {% highlight mysql %}
-TABLE[NODE_GEOM, ID, ID_COL, ID_ROW]
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
     ST_MakeGrid(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY);
-TABLE[NODE_GEOM, ID, ID_COL, ID_ROW]
+TABLE[THE_GEOM, ID, ID_COL, ID_ROW]
     ST_MakeGrid(VARCHAR tableName, DOUBLE deltaX, DOUBLE deltaY);
 {% endhighlight %}
 
@@ -32,7 +32,7 @@ CREATE TABLE grid AS SELECT * FROM
     ST_MakeGrid('POLYGON((0 0, 2 0, 2 2, 0 0))'::GEOMETRY, 1, 1);
 SELECT * FROM grid;
 -- Answer:
--- |             NODE_GEOM              |  ID | ID_COL | ID_ROW |
+-- |             THE_GEOM              |  ID | ID_COL | ID_ROW |
 -- | ---------------------------------- | --- | ------ | ------ |
 -- | POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)) |   0 |      1 |      1 |
 -- | POLYGON((1 0, 2 0, 2 1, 1 1, 1 0)) |   1 |      2 |      1 |
@@ -50,7 +50,7 @@ CREATE TABLE grid AS SELECT * FROM
     ST_MakeGrid('TEST', 1, 1);
 SELECT * FROM grid;
 -- Answer:
--- |             NODE_GEOM              |  ID | ID_COL | ID_ROW |
+-- |             THE_GEOM              |  ID | ID_COL | ID_ROW |
 -- | ---------------------------------- | --- | ------ | ------ |
 -- | POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)) |   0 |      1 |      1 |
 -- | POLYGON((1 0, 2 0, 2 1, 1 1, 1 0)) |   1 |      2 |      1 |
@@ -67,7 +67,7 @@ CREATE TABLE grid AS SELECT * FROM
                 1, 1);
 SELECT * FROM grid;
 -- Answer:
--- |             NODE_GEOM              |  ID | ID_COL | ID_ROW |
+-- |             THE_GEOM              |  ID | ID_COL | ID_ROW |
 -- | ---------------------------------- | --- | ------ | ------ |
 -- | POLYGON((0 0, 1 0, 1 1, 0 1, 0 0)) |   0 |      1 |      1 |
 -- | POLYGON((1 0, 2 0, 2 1, 1 1, 1 0)) |   1 |      2 |      1 |
