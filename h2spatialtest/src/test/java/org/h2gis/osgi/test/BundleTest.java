@@ -61,7 +61,7 @@ import static org.ops4j.pax.exam.CoreOptions.*;
 public class BundleTest {
     @Inject
     BundleContext context;
-    private static final String DB_FILE_PATH = "target/test-resources/dbH2";
+    private static final String DB_FILE_PATH = new File("target/test-resources/dbH2").getAbsolutePath();
     private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
     private DataSource dataSource;
     private ServiceReference<DataSourceFactory> ref;
@@ -75,7 +75,7 @@ public class BundleTest {
                 mavenBundle("org.orbisgis", "cts").version("1.3.3"),
                 mavenBundle("org.orbisgis", "jts"),
                 mavenBundle("org.orbisgis", "jdelaunay"),
-                mavenBundle("com.h2database", "h2").version("1.3.176"),
+                mavenBundle("com.h2database", "h2").version("1.4.183"),
                 mavenBundle("com.fasterxml.jackson.core", "jackson-core").version("2.3.1"),
                 mavenBundle("org.orbisgis", "h2spatial").noStart(),
                 mavenBundle("org.orbisgis", "h2spatial-ext").noStart(),
