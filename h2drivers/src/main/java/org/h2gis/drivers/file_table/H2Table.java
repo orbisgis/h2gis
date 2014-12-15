@@ -78,8 +78,8 @@ public class H2Table extends TableBase {
     }
 
     @Override
-    public void lock(Session session, boolean exclusive, boolean force) {
-        //To change body of implemented methods use File | Settings | File Templates.
+    public boolean lock(Session session, boolean exclusive, boolean force) {
+        return false;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class H2Table extends TableBase {
                 long total = remaining;
                 Cursor cursor = scan.find(session, null, null);
                 long i = 0;
-                int bufferSize = (int) Math.min(getRowCount(session), Constants.DEFAULT_MAX_MEMORY_ROWS);
+                int bufferSize = (int) Math.min(getRowCount(session), database.getMaxMemoryRows());
                 ArrayList<Row> buffer = New.arrayList(bufferSize);
                 String n = getName() + ":" + index.getName();
                 int t = MathUtils.convertLongToInt(total);
