@@ -49,7 +49,8 @@ public class DummyTable extends TableBase {
     }
 
     @Override
-    public void lock(Session session, boolean exclusive, boolean force) {
+    public boolean lock(Session session, boolean exclusive, boolean force) {
+        return false;
     }
 
     @Override
