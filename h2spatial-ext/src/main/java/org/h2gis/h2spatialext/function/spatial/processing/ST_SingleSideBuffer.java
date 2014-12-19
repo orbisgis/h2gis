@@ -45,7 +45,7 @@ public class ST_SingleSideBuffer extends DeterministicScalarFunction{
                 + " to approximate a quarter circle (integer case, defaults to 8)\n"
                 + " or a list of blank-separated key=value pairs (string case) to manage line style parameters :\n"
                 + "'quad_segs=8' 'join=round|mitre|bevel' 'mitre_limit=5'\n"
-                + "The End Cap Style for single-sided buffers is always ignored, and forced to the equivalent of flat.");
+                + "The end cap style for single-sided buffers is always ignored, and forced to the equivalent of flat.");
     }
 
     

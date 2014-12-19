@@ -25,7 +25,6 @@ package org.h2gis.h2spatialext.function.spatial.create;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
@@ -40,8 +39,6 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  */
 public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
 
-    private static final String CAP_STYLE_SQUARE = "square";
-    private static final String CAP_STYLE_ROUND = "round";
     private static final GeometryFactory GF = new GeometryFactory();
 
     public ST_RingBuffer() {
@@ -63,9 +60,10 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
      * @param bufferSize
      * @param numBuffer
      * @return 
+     * @throws java.sql.SQLException 
      */
     public static Geometry ringBuffer(Geometry geom, double bufferSize, int numBuffer) throws SQLException {
-        return ringBuffer(geom, bufferSize, numBuffer, CAP_STYLE_ROUND);
+        return ringBuffer(geom, bufferSize, numBuffer, "endcap=round");
     }
 
     /**
@@ -73,13 +71,13 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
      * @param geom
      * @param bufferDistance
      * @param numBuffer
-     * @param endCapStyle
+     * @param parameters
      * @return
      * @throws java.sql.SQLException
      */
     public static Geometry ringBuffer(Geometry geom, double bufferDistance,
-                                      int numBuffer, String endCapStyle) throws SQLException {
-        return ringBuffer(geom, bufferDistance, numBuffer, endCapStyle, true);
+                                      int numBuffer, String parameters) throws SQLException {
+        return ringBuffer(geom, bufferDistance, numBuffer, parameters, true);
     }
 
     /**
@@ -87,23 +85,56 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
      * @param geom
      * @param bufferDistance
      * @param numBuffer
-     * @param endCapStyle
+     * @param parameters
      * @param doDifference
      * @throws SQLException 
      * @return 
      */
     public static Geometry ringBuffer(Geometry geom, double bufferDistance,
-            int numBuffer, String endCapStyle, boolean doDifference) throws SQLException {
+            int numBuffer, String parameters, boolean doDifference) throws SQLException {
         if(!(bufferDistance > 0)) {
             // If buffer distance is not superior than zero return the same geometry.
             return geom;
+        }        
+        String[] buffParemeters = parameters.split("\\s+");
+        BufferParameters bufferParameters = new BufferParameters();
+        for (String params : buffParemeters) {
+            String[] keyValue = params.split("=");
+            if (keyValue[0].equalsIgnoreCase("endcap")) {
+                String param = keyValue[1];
+                if (param.equalsIgnoreCase("round")) {
+                    bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
+                } else if (param.equalsIgnoreCase("square")) {
+                    bufferParameters.setEndCapStyle(BufferParameters.CAP_SQUARE);
+                } else {
+                    throw new IllegalArgumentException("Supported join values are round or square.");
+                }
+            } else if(keyValue[0].equalsIgnoreCase("join")) {
+                String param = keyValue[1];
+                if (param.equalsIgnoreCase("bevel")) {
+                    bufferParameters.setJoinStyle(BufferParameters.JOIN_BEVEL);
+                } else if (param.equalsIgnoreCase("mitre") || param.equalsIgnoreCase("miter")) {
+                    bufferParameters.setJoinStyle(BufferParameters.JOIN_MITRE);
+                } else if (param.equalsIgnoreCase("round")) {
+                    bufferParameters.setJoinStyle(BufferParameters.JOIN_ROUND);
+                } else {
+                    throw new IllegalArgumentException("Supported join values are bevel, mitre, miter or round.");
+                }
+            } else if (keyValue[0].equalsIgnoreCase("mitre_limit") || keyValue[0].equalsIgnoreCase("miter_limit")) {
+                bufferParameters.setMitreLimit(Double.valueOf(keyValue[1]));
+            } else if (keyValue[0].equalsIgnoreCase("quad_segs")) {
+                bufferParameters.setQuadrantSegments(Integer.valueOf(keyValue[1]));
+            } else {
+                throw new IllegalArgumentException("Unknown parameters. Please read the documentation.");
+            }
         }
+        
         Polygon[] buffers = new Polygon[numBuffer];
         Geometry previous = geom;
         double distance = 0;
         for (int i = 0; i < numBuffer; i++) {
             distance += bufferDistance;
-            Geometry newBuffer = runBuffer(geom, distance, endCapStyle);
+            Geometry newBuffer = runBuffer(geom, distance, bufferParameters);
             if(doDifference) {
                 buffers[i] = (Polygon) newBuffer.difference(previous);
             } else {
@@ -119,25 +150,11 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
      * 
      * @param geom
      * @param bufferSize
-     * @param endCapStyle
      * @return
      * @throws SQLException 
      */
     private static Geometry runBuffer(final Geometry geom, final double bufferSize,
-            final String endCapStyle) throws SQLException {
-        BufferOp bufOp;
-        if (endCapStyle.equalsIgnoreCase(CAP_STYLE_SQUARE)) {
-            bufOp = new BufferOp(geom, new BufferParameters(
-                    BufferParameters.DEFAULT_QUADRANT_SEGMENTS,
-                    BufferParameters.CAP_SQUARE));
-            return bufOp.getResultGeometry(bufferSize);
-        } else if (endCapStyle.equalsIgnoreCase(CAP_STYLE_ROUND)){
-            bufOp = new BufferOp(geom, new BufferParameters(
-                    BufferParameters.DEFAULT_QUADRANT_SEGMENTS,
-                    BufferParameters.CAP_ROUND));
-            return bufOp.getResultGeometry(bufferSize);
-        }
-        throw new SQLException("Invalid cap style value. Please use "+ CAP_STYLE_ROUND + " or "
-                + CAP_STYLE_SQUARE);
+            final BufferParameters bufferParameters) throws SQLException {
+        return BufferOp.bufferOp(geom, bufferSize, bufferParameters);
     }
 }
