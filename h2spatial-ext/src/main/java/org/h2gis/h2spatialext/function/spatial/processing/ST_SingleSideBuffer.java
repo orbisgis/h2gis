@@ -28,10 +28,12 @@ package org.h2gis.h2spatialext.function.spatial.processing;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
+import org.h2gis.h2spatial.internal.function.spatial.operators.ST_Buffer;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Compute a single buffer on one side.
+ * 
  * 
  * @author Erwan Bocher
  */
@@ -42,7 +44,8 @@ public class ST_SingleSideBuffer extends DeterministicScalarFunction{
                 + "The optional third parameter can either specify number of segments used\n"
                 + " to approximate a quarter circle (integer case, defaults to 8)\n"
                 + " or a list of blank-separated key=value pairs (string case) to manage line style parameters :\n"
-                + "'quad_segs=8' endcap=round|flat|square' 'join=round|mitre|bevel' 'mitre_limit=5'");
+                + "'quad_segs=8' 'join=round|mitre|bevel' 'mitre_limit=5'\n"
+                + "The End Cap Style for single-sided buffers is always ignored, and forced to the equivalent of flat.");
     }
 
     
@@ -53,7 +56,7 @@ public class ST_SingleSideBuffer extends DeterministicScalarFunction{
     }
     
     /**
-     * 
+     * Compute a single side buffer with default parameters
      * @param geometry
      * @param distance
      * @return 
@@ -63,7 +66,9 @@ public class ST_SingleSideBuffer extends DeterministicScalarFunction{
     }
     
     /**
-     * 
+     * Compute a single side buffer with join and mitre parameters
+     * Note :
+     * The End Cap Style for single-sided buffers is always ignored, and forced to the equivalent of flat.   
      * @param geometry
      * @param distance
      * @param parameters
@@ -74,18 +79,7 @@ public class ST_SingleSideBuffer extends DeterministicScalarFunction{
         BufferParameters bufferParameters = new BufferParameters();
         for (String params : buffParemeters) {
             String[] keyValue = params.split("=");
-            if (keyValue[0].equalsIgnoreCase("endcap")) {
-                String param = keyValue[1];
-                if (param.equalsIgnoreCase("round")) {
-                    bufferParameters.setEndCapStyle(BufferParameters.CAP_ROUND);
-                } else if (param.equalsIgnoreCase("flat") || param.equalsIgnoreCase("butt")) {
-                    bufferParameters.setEndCapStyle(BufferParameters.CAP_FLAT);
-                } else if (param.equalsIgnoreCase("square")) {
-                    bufferParameters.setEndCapStyle(BufferParameters.CAP_SQUARE);
-                } else {
-                    throw new IllegalArgumentException("Supported join values are round, flat, butt or square.");
-                }
-            } else if (keyValue[0].equalsIgnoreCase("join")) {
+            if (keyValue[0].equalsIgnoreCase("join")) {
                 String param = keyValue[1];
                 if (param.equalsIgnoreCase("bevel")) {
                     bufferParameters.setJoinStyle(BufferParameters.JOIN_BEVEL);
@@ -108,7 +102,7 @@ public class ST_SingleSideBuffer extends DeterministicScalarFunction{
     }
     
     /**
-     * 
+     * Compute the buffer
      * @param geometry
      * @param distance
      * @param bufferParameters

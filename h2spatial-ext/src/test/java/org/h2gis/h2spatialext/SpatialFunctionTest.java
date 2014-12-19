@@ -3261,6 +3261,50 @@ public class SpatialFunctionTest {
         rs.close();
     }
     
+    @Test
+    public void test_ST_SingleSideBuffer1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SingleSideBuffer('LINESTRING (120 150, 180 270)', 10);");
+        rs.next();
+        assertEquals("POLYGON ((180 270, 120 150, 111.05572809000084 154.47213595499957, 171.05572809000085 274.4721359549996, 180 270))",
+                rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_SingleSideBuffer2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SingleSideBuffer('LINESTRING (120 150, 180 270)', -10);");
+        rs.next();
+        assertEquals("POLYGON ((120 150, 180 270, 188.94427190999915 265.5278640450004, 128.94427190999915 145.52786404500043, 120 150))",
+                rs.getString(1));
+        rs.close();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_SingleSideBuffer3()  throws Throwable {
+        try {
+            st.execute("SELECT ST_SingleSideBuffer('LINESTRING (120 150, 180 270)', 10, 'endcap=square');");       
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+    
+    @Test
+    public void test_ST_SingleSideBuffer4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SingleSideBuffer('LINESTRING (100 200, 150 250, 200 200)', 10, 'join=round quad_segs=2');");
+        rs.next();
+        assertEquals("POLYGON ((200 200, 150 250, 100 200, 92.92893218813452 207.07106781186548, 142.92893218813452 257.0710678118655, 150 260, 157.07106781186548 257.0710678118655, 207.07106781186548 207.07106781186548, 200 200))",
+                rs.getString(1));
+        rs.close();
+    }
+    
+     @Test
+    public void test_ST_SingleSideBuffer5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SingleSideBuffer('POINT (100 200)', 10, 'join=round quad_segs=2');");
+        rs.next();
+        assertEquals("POLYGON ((110 200, 107.07106781186548 192.92893218813452, 100 190, 92.92893218813452 192.92893218813452, 90 200, 92.92893218813452 207.07106781186548, 100 210, 107.07106781186548 207.07106781186548, 110 200))",
+                rs.getString(1));
+        rs.close();
+    }
     
     
     
