@@ -45,8 +45,10 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
         addProperty(PROP_REMARKS, "Compute a ring buffer around a geometry.\n"
                 + "Avalaible arguments are :\n"
                 + " (1) the geometry, (2) the size of each ring, "
-                + " (3) the number of rings, (4) optional - the end cap style (square, round) Default is round\n"+
-                  " (5) optional - createHole True if you want to keep only difference between buffers Default is true");
+                + " (3) the number of rings, (4) optional - the end cap style (square, round) Default is round\n"
+                + "a list of blank-separated key=value pairs (string case) iso used t manage line style parameters.\n "
+                + "Please read the ST_Buffer documention.\n"
+                + " (5) optional - createHole True if you want to keep only difference between buffers Default is true");
     }
 
     @Override

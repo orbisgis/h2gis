@@ -28,7 +28,6 @@ package org.h2gis.h2spatialext.function.spatial.processing;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import org.h2gis.h2spatial.internal.function.spatial.operators.ST_Buffer;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
