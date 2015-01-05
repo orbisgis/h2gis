@@ -36,9 +36,9 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * 
  * @author Erwan Bocher
  */
-public class ST_SingleSideBuffer extends DeterministicScalarFunction{
+public class ST_SideBuffer extends DeterministicScalarFunction{
 
-    public ST_SingleSideBuffer() {
+    public ST_SideBuffer() {
         addProperty(PROP_REMARKS, "Return a buffer at a given distance on only one side of each input lines of the geometry.\n"
                 + "The optional third parameter can either specify number of segments used\n"
                 + " to approximate a quarter circle (integer case, defaults to 8)\n"

@@ -181,7 +181,7 @@ public class CreateSpatialExtension {
                 new ST_CollectExtract(),
                 new DoubleRange(),
                 new IntegerRange(),
-                new ST_SingleSideBuffer()};
+                new ST_SideBuffer()};
     }
 
     /**
