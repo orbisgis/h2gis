@@ -26,8 +26,6 @@ package org.h2gis.h2spatialext.function.spatial.processing;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.operation.buffer.BufferOp;
 import com.vividsolutions.jts.operation.buffer.BufferParameters;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;

@@ -24,7 +24,6 @@
 package org.h2gis.h2spatialext.function.spatial.create;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.buffer.BufferOp;
@@ -39,9 +38,7 @@ import org.h2gis.h2spatialapi.ScalarFunction;
  * @author Erwan Bocher
  */
 public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
-
-    private static final GeometryFactory GF = new GeometryFactory();
-
+   
     public ST_RingBuffer() {
         addProperty(PROP_REMARKS, "Compute a ring buffer around a geometry.\n"
                 + "Avalaible arguments are :\n"
@@ -137,7 +134,7 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
                 return computePositiveRingBuffer(geom, bufferDistance, numBuffer, bufferParameters, doDifference);
             } else if (bufferDistance < 0) {
                 if (geom instanceof Point) {
-                    throw new SQLException("Cannot compute a negative ring side buffer on a point.");
+                    throw new SQLException("Cannot compute a negative ring buffer on a point.");
                 } else {
                     return computeNegativeRingBuffer(geom, bufferDistance, numBuffer, bufferParameters, doDifference);
                 }
@@ -198,6 +195,7 @@ public class ST_RingBuffer extends AbstractFunction implements ScalarFunction {
         double distance = 0;
         if (geom instanceof Polygon) {
             geom = ((Polygon) geom).getExteriorRing();
+            bufferParameters.setSingleSided(true);
         }
         for (int i = 0; i < numBuffer; i++) {
             distance += bufferDistance;
