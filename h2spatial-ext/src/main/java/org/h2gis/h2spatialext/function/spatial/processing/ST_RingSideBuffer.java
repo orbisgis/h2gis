@@ -47,7 +47,8 @@ public class ST_RingSideBuffer extends DeterministicScalarFunction{
                 + "a list of blank-separated key=value pairs (string case) iso used t manage line style parameters.\n "
                 + " The end cap style for single-sided buffers is always ignored, and forced to the equivalent of flat.\n"
                 + "Please read the ST_Buffer documention.\n"
-                + " (5) optional - createHole True if you want to keep only difference between buffers Default is true");
+                + " (5) optional - createHole True if you want to keep only difference between buffers Default is true.\n"
+                + "Note : Holes are not supported by this function.");
    
     }
 
