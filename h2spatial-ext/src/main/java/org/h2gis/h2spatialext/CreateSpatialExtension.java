@@ -180,7 +180,9 @@ public class CreateSpatialExtension {
                 new ST_ProjectPoint(),
                 new ST_CollectExtract(),
                 new DoubleRange(),
-                new IntegerRange()};
+                new IntegerRange(),
+                new ST_SideBuffer(),
+                new ST_RingSideBuffer()};
     }
 
     /**
