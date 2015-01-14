@@ -51,6 +51,7 @@ import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_LocateAlong;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ProjectPoint;
+import org.h2gis.h2spatialext.function.spatial.earth.ST_SunPosition;
 import org.h2gis.h2spatialext.function.spatial.edit.*;
 import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
@@ -182,7 +183,8 @@ public class CreateSpatialExtension {
                 new DoubleRange(),
                 new IntegerRange(),
                 new ST_SideBuffer(),
-                new ST_RingSideBuffer()};
+                new ST_RingSideBuffer(),
+                new ST_SunPosition()};
     }
 
     /**
