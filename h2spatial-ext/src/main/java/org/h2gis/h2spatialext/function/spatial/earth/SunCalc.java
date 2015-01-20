@@ -143,27 +143,44 @@ public class SunCalc {
      * Returns the sun position with the following properties
      *
      * altitude: sun altitude above the horizon in radians, e.g. 0 at the
-     * horizon and PI/2 at the zenith (straight over your head).
+     * horizon and PI/2 at the zenith (straight over your head). 
      * azimuth: sun azimuth in radians (direction along the horizon, measured from south to
      * west), e.g. 0 is south and Math.PI * 3/4 is northwest.
      *
      * @param date
      * @param lat
      * @param lng
-     * @return 
+     * @return
      */
     public static double[] getPosition(Date date, double lat,
             double lng) {
-        double lw = rad * -lng;
-        double phi = rad * lat;
-        double J = dateToJulianDate(date);
-        double M = getSolarMeanAnomaly(J);
-        double C = getEquationOfCenter(M);
-        double Ls = getEclipticLongitude(M, C);
-        double d = getSunDeclination(Ls);
-        double a = getRightAscension(Ls);
-        double th = getSiderealTime(J, lw);
-        double H = th - a;
-        return new double[]{getAltitude(H, phi, d), getAzimuth(H, phi, d)};
+        if (isGeographic(lat, lng)) {
+            double lw = rad * -lng;
+            double phi = rad * lat;
+            double J = dateToJulianDate(date);
+            double M = getSolarMeanAnomaly(J);
+            double C = getEquationOfCenter(M);
+            double Ls = getEclipticLongitude(M, C);
+            double d = getSunDeclination(Ls);
+            double a = getRightAscension(Ls);
+            double th = getSiderealTime(J, lw);
+            double H = th - a;
+            return new double[]{getAltitude(H, phi, d), getAzimuth(H, phi, d)};
+        } else {
+            throw new IllegalArgumentException("The coordinate of the point must in latitude and longitude.");
+        }
+    }
+    
+    
+    /**
+     * Test if the point has valid latitude and longitude coordinates.
+     * @param latitude
+     * @param longitude
+     * @return 
+     */
+    public static boolean isGeographic(double latitude,
+            double longitude) {
+        return latitude > -90 && latitude < 90
+                && longitude > -180 && longitude < 180;
     }
 }
