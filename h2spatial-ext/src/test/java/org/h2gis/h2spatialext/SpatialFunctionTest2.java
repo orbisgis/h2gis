@@ -32,6 +32,7 @@ import java.sql.Statement;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -75,10 +76,9 @@ public class SpatialFunctionTest2 {
         assertTrue(rs.next());
         Array data = rs.getArray(1);
         Object[] valueArray = (Object[]) data.getArray();
-        System.out.println("Result " + valueArray[0]);
-         //résultats tirés de http://www.sunearthtools.com/dp/tools/pos_sun.php
-        double expAlt = 0.0738274274; //4,23 degrés
-        double expAzim = 0.84002696898487; //228,13 degrés à partir Sud, donc 48,13 degrés à partir du nord
+        //résultats tirés de http://www.sunearthtools.com/dp/tools/pos_sun.php     
+        Assert.assertEquals(((Double)valueArray[0]), 0.07382742, 0.01); //4,23 degrés
+        Assert.assertEquals(((Double)valueArray[1]), 0.84002696898487, 0.01);
         rs.close();
     }
 }

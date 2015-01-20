@@ -29,64 +29,58 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import java.util.Date;
-import org.h2.value.ValueArray;
-import org.h2.value.ValueDouble;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute the sun position
- * 
+ *
  * @author Erwan Bocher
  */
-public class ST_SunPosition extends DeterministicScalarFunction{
+public class ST_SunDirection extends DeterministicScalarFunction{
 
-    
-    public ST_SunPosition(){
-        addProperty(PROP_REMARKS, "Return the sun position as an array of double that contains "
-                + "the altitude[0] and the azimut[0].\n"
-                + "altitude: sun altitude above the horizon in radians, e.g. 0 at the\n"
-                + "horizon and PI/2 at the zenith.\n"
-                + "azimuth: sun azimuth in radians (direction along the horizon, measured from south to\n"
-                + "west), e.g. 0 is south and Math.PI * 3/4 is northwest.");
-    }
-    
+   
+
     @Override
     public String getJavaStaticMethod() {
-        return "sunPosition";
+        return "sunDirection";
     }
-    
+
     /**
-     * Return the current sun position 
+     * 
      * @param point
      * @return 
      */
-    public static ValueArray sunPosition(Geometry point){
-        return sunPosition(point, new Date());
+    public static Point sunDirection(Geometry point) {
+        return sunDirection(point, new Date());
     }
-    
+
     /**
-     * Return the sun position for a given date
      * 
      * @param point
      * @param date
-     * @return
-     * @throws IllegalArgumentException 
+     * @return 
      */
-    public static ValueArray sunPosition(Geometry point, Date date) throws IllegalArgumentException{
+    public static Point sunDirection(Geometry point, Date date) {
         if (point instanceof Point) {
-            Coordinate coord = point.getCoordinate();
-            ValueDouble[] getArray = new ValueDouble[2];
-            double[] sunPosition = SunCalc.getPosition(date, coord.y, coord.x);
-            getArray[0] = ValueDouble.get(sunPosition[0]);
-            getArray[1] = ValueDouble.get(sunPosition[1]);
-            return ValueArray.get(getArray);
+            double[] position = SunCalc.getPosition(date, point.getCoordinate().y, point.getCoordinate().x);
+            return point.getFactory().createPoint(calculateDirection(position[0], position[1]));
         } else {
-            throw new IllegalArgumentException("The sun position is computed according a point location.");
+            throw new IllegalArgumentException("The sun direction is computed according a point location.");
         }
     }
-    
-    
-    
-    
+
+    /**
+     * Calculation of the sun direction
+     *     
+     * @param altitude
+     * @param azimuth
+     * @return sun coordinates
+     */
+    public static Coordinate calculateDirection(double altitude, double azimuth) {
+        Coordinate direction = new Coordinate();
+        double length = 1.0 / (Math.tan(altitude));
+        direction.x = -Math.cos(azimuth) * length;
+        direction.y = -Math.sin(azimuth) * length;
+        return direction;
+    }
     
 }
