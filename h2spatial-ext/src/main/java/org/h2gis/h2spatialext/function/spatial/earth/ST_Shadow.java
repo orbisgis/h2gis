@@ -34,82 +34,114 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  *
  * @author Erwan Bocher
  */
-public class ST_Shadow extends DeterministicScalarFunction{
+public class ST_Shadow extends DeterministicScalarFunction {
 
-    
+    private static double[] shadowOffSet;
+    private static boolean shadowOffSetComputed = false;
 
     @Override
     public String getJavaStaticMethod() {
         return "computeShadow";
     }
-    
-    public static Geometry computeShadow(Geometry geometry, double heigth){
-        return computeShadow(geometry, heigth, new Date());
+
+    public static Geometry computeShadow(Geometry geometry, double height, Geometry sunPosition) {
+        if (geometry == null || sunPosition == null) {
+            return null;
+        }
+        if (height <= 0) {
+            throw new IllegalArgumentException("The height value must be greater than 0.");
+        }
+        if (sunPosition instanceof Point) {
+            if (!shadowOffSetComputed) {
+                shadowOffSet = shadowOffset(sunPosition.getCoordinate(), height);
+                shadowOffSetComputed = true;
+            }
+
+            if (geometry instanceof Polygon) {
+                return shadowPolygon((Polygon) geometry, shadowOffSet, geometry.getFactory());
+            } else if (geometry instanceof LineString) {
+                return shadowLine((LineString) geometry, shadowOffSet, geometry.getFactory());
+            } else if (geometry instanceof Point) {
+                return shadowPoint((Point) geometry, shadowOffSet, geometry.getFactory());
+            } else {
+                return null;
+            }
+        } else {
+            throw new IllegalArgumentException("The sun position must be stored as a Point.");
+        }
     }
 
-    public static Geometry computeShadow(Geometry geometry, double height, Date date) {
-        if(geometry instanceof Polygon){
-            return shadowPolygon(geometry, height, date);
-        }
-        else if(geometry instanceof LineString){
-            return  shadowLine((LineString) geometry, height, date);
-        }
-        else if(geometry instanceof Point){
-            
-        }
-        else{
-           return null;
-        }
-        return null;
-    }
-    
     /**
-     * 
+     *
      * @param lineString
      * @param height
      * @param date
-     * @return 
+     * @return
      */
-    private static Geometry shadowLine(LineString lineString, double height, Date date) { 
-        Coordinate sunDirection = ST_SunDirection.sunDirection(lineString, date).getCoordinate();        
-        GeometryFactory factory = lineString.getFactory();
+    private static Geometry shadowLine(LineString lineString, double[] shadowOffset, GeometryFactory factory) {
         Coordinate[] coords = lineString.getCoordinates();
         Collection<Polygon> shadows = new ArrayList<Polygon>();
-        for (int i = 0; i < coords.length - 1; i++) {
-            Coordinate startCoord = coords[i];
-            Coordinate endCoord = coords[i+1];            
-            shadows.add(factory.createPolygon(new Coordinate[]{startCoord, projection(startCoord, height, sunDirection),
-            projection(endCoord, height, sunDirection), endCoord, startCoord}));
-        }        
+        createShadowPolygons(shadows, coords, shadowOffset, factory);
         CascadedPolygonUnion union = new CascadedPolygonUnion(shadows);
         return union.union();
     }
-    
-     /**
-     * Calculating the coordinates of the shadow of a 2D point with a height
-     * according to the position of the sun
-     *     
-     * @param c : coordinates of the point whose shade is calculated
-     * @param height : height of the point
-     * @param direction : sun direction
-     * @return : shadow coordinate
+
+    /**
+     *
+     * @param inputCoordinate
+     * @param shadowOffset
+     * @return
      */
-    public static Coordinate projection(Coordinate c, double height, Coordinate direction) {
-        Coordinate project = new Coordinate();
-        project.x = c.x + direction.x * height;
-        project.y = c.y + direction.y * height;
-        return project;
+    private static Coordinate moveCoordinate(Coordinate inputCoordinate, double[] shadowOffset) {
+        return new Coordinate(inputCoordinate.x + shadowOffset[0], inputCoordinate.y + shadowOffset[1]);
     }
 
-    private static Geometry shadowPolygon(Geometry geometry, double heigth, Date date) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    /**
+     * Return the shadow offset in X and Y directions
+     *
+     * @param sunPosition
+     * @param height
+     * @return
+     */
+    public static double[] shadowOffset(Coordinate sunPosition, double height) {
+        double spread = 1 / Math.tan(sunPosition.y);
+        return new double[]{-height * spread * Math.sin(sunPosition.x), -height * spread * Math.cos(sunPosition.x)};
     }
-    
+
+    private static Geometry shadowPolygon(Polygon polygon, double[] shadowOffset, GeometryFactory factory) {
+        Coordinate[] shellCoords = polygon.getExteriorRing().getCoordinates();
+        Collection<Polygon> shadows = new ArrayList<Polygon>();
+        createShadowPolygons(shadows, shellCoords, shadowOffset, factory);
+        final int nbOfHoles = polygon.getNumInteriorRing();
+        for (int i = 0; i < nbOfHoles; i++) {
+            createShadowPolygons(shadows, polygon.getInteriorRingN(i).getCoordinates(), shadowOffset, factory);
+        }
+        shadows.add(polygon);
+        CascadedPolygonUnion union = new CascadedPolygonUnion(shadows);
+        return union.union();
+    }
+
+    private static void createShadowPolygons(Collection<Polygon> shadows, Coordinate[] coordinates, double[] shadow, GeometryFactory factory) {
+        for (int i = 1; i < coordinates.length; i++) {
+            Coordinate startCoord = coordinates[i - 1];
+            Coordinate endCoord = coordinates[i];
+            shadows.add(factory.createPolygon(new Coordinate[]{startCoord, endCoord, moveCoordinate(endCoord, shadow),
+                moveCoordinate(startCoord, shadow), startCoord}));
+        }
+    }
+
+    private static Geometry shadowPoint(Point point, double[] shadowOffset, GeometryFactory factory) {
+        Coordinate offset = moveCoordinate(point.getCoordinate(), shadowOffset);
+        if (offset.distance(point.getCoordinate()) < 10E-3) {
+            return point;
+        } else {
+            return factory.createLineString(new Coordinate[]{point.getCoordinate(), offset});
+        }
+    }
 }
