@@ -42,12 +42,11 @@ public class ST_SunPosition extends DeterministicScalarFunction{
 
     
     public ST_SunPosition(){
-        addProperty(PROP_REMARKS, "Return the sun position as an array of double that contains "
-                + "the altitude[0] and the azimut[0].\n"
-                + "altitude: sun altitude above the horizon in radians, e.g. 0 at the\n"
-                + "horizon and PI/2 at the zenith.\n"
-                + "azimuth: sun azimuth in radians (direction along the horizon, measured from south to\n"
-                + "west), e.g. 0 is south and Math.PI * 3/4 is northwest.");
+        addProperty(PROP_REMARKS, "Return the sun position as a Point where : \n"
+                + "x = sun azimuth in radians (direction along the horizon, measured from south to\n"
+                + "west), e.g. 0 is south and Math.PI * 3/4 is northwest.\n"        
+                + "y = sun altitude above the horizon in radians, e.g. 0 at the\n"
+                + "horizon and PI/2 at the zenith.\n");
     }
     
     @Override
@@ -60,7 +59,7 @@ public class ST_SunPosition extends DeterministicScalarFunction{
      * @param point
      * @return 
      */
-    public static ValueArray sunPosition(Geometry point){
+    public static Point sunPosition(Geometry point){
         return sunPosition(point, new Date());
     }
     
@@ -72,21 +71,12 @@ public class ST_SunPosition extends DeterministicScalarFunction{
      * @return
      * @throws IllegalArgumentException 
      */
-    public static ValueArray sunPosition(Geometry point, Date date) throws IllegalArgumentException{
+    public static Point sunPosition(Geometry point, Date date) throws IllegalArgumentException{
         if (point instanceof Point) {
             Coordinate coord = point.getCoordinate();
-            ValueDouble[] getArray = new ValueDouble[2];
-            double[] sunPosition = SunCalc.getPosition(date, coord.y, coord.x);
-            getArray[0] = ValueDouble.get(sunPosition[0]);
-            getArray[1] = ValueDouble.get(sunPosition[1]);
-            return ValueArray.get(getArray);
+            return point.getFactory().createPoint( SunCalc.getPosition(date, coord.y, coord.x));
         } else {
             throw new IllegalArgumentException("The sun position is computed according a point location.");
         }
     }
-    
-    
-    
-    
-    
 }

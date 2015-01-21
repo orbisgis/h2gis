@@ -23,6 +23,7 @@
  */
 package org.h2gis.h2spatialext.function.spatial.earth;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import java.util.Date;
 
 /**
@@ -140,19 +141,20 @@ public class SunCalc {
     }
 
     /**
-     * Returns the sun position with the following properties
+     * Returns the sun position as a coordinate with the following properties
      *
-     * altitude: sun altitude above the horizon in radians, e.g. 0 at the
-     * horizon and PI/2 at the zenith (straight over your head). 
-     * azimuth: sun azimuth in radians (direction along the horizon, measured from south to
+     * x: sun azimuth in radians (direction along the horizon, measured from south to
      * west), e.g. 0 is south and Math.PI * 3/4 is northwest.
+     * y: sun altitude above the horizon in radians, e.g. 0 at the
+     * horizon and PI/2 at the zenith (straight over your head). 
+     * 
      *
      * @param date
      * @param lat
      * @param lng
      * @return
      */
-    public static double[] getPosition(Date date, double lat,
+    public static Coordinate getPosition(Date date, double lat,
             double lng) {
         if (isGeographic(lat, lng)) {
             double lw = rad * -lng;
@@ -165,7 +167,7 @@ public class SunCalc {
             double a = getRightAscension(Ls);
             double th = getSiderealTime(J, lw);
             double H = th - a;
-            return new double[]{getAltitude(H, phi, d), getAzimuth(H, phi, d)};
+            return new Coordinate(getAzimuth(H, phi, d),getAltitude(H, phi, d));
         } else {
             throw new IllegalArgumentException("The coordinate of the point must in latitude and longitude.");
         }

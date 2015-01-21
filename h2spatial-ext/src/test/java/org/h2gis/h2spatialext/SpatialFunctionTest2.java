@@ -81,4 +81,61 @@ public class SpatialFunctionTest2 {
         Assert.assertEquals(((Double)valueArray[1]), 0.84002696898487, 0.01);
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Shadow() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Shadow('LINESTRING (100 350, 200 350, 200 250, 100 250, 100 350)'::GEOMETRY,10 , "
+                + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
+         assertTrue(rs.next());
+         System.out.println(rs.getString(1));
+         rs.close();        
+    }
+    
+    @Test
+    public void test_ST_Shadow1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Shadow('LINESTRING (120 270, 270 220)'::GEOMETRY,10 , "
+                + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
+         assertTrue(rs.next());
+         System.out.println(rs.getString(1));
+         rs.close();        
+    }
+    
+     @Test
+    public void test_ST_Shadow2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Shadow('LINESTRING (87 225, 120 270, 270 220, 225 139, 87 225)'::GEOMETRY,10 , "
+                + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
+         assertTrue(rs.next());
+         System.out.println(rs.getString(1));
+         rs.close();        
+    }
+    
+    @Test
+    public void test_ST_Shadow3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Shadow('POLYGON ((100 300, 250 300, 250 150, 100 150, 100 300))'::GEOMETRY,10 , "
+                + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
+        assertTrue(rs.next());
+        System.out.println(rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_Shadow4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Shadow('POLYGON ((100 300, 250 300, 250 150, 100 150, 100 300),"
+                + "  (150 250, 200 250, 200 200, 150 200, 150 250))'::GEOMETRY,10 , "
+                + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
+        assertTrue(rs.next());
+        System.out.println(rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_Shadow5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Shadow('MULTILINESTRING ((100 300, 250 300, 250 150, 100 150, 100 300),"
+                + "  (150 250, 200 250, 200 200, 150 200, 150 250))'::GEOMETRY,1 , "
+                + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
+        assertTrue(rs.next());
+        System.out.println(rs.getString(1));
+        rs.close();
+    }
+   
 }
