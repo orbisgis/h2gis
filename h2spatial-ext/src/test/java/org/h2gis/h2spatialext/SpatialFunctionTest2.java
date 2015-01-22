@@ -111,7 +111,7 @@ public class SpatialFunctionTest2 {
     
     @Test
     public void test_ST_Shadow3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Shadow('POLYGON ((100 300, 250 300, 250 150, 100 150, 100 300))'::GEOMETRY,10 , "
+        ResultSet rs = st.executeQuery("SELECT ST_Shadow('POLYGON ((-1.5493799591210962 47.248973095582315, -1.5488521492139842 47.24913253815842, -1.5486102363398913 47.24877516686715, -1.5491380462470032 47.24861572429104, -1.5493799591210962 47.248973095582315))'::GEOMETRY,10 , "
                 + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
         assertTrue(rs.next());
         System.out.println(rs.getString(1));

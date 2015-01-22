@@ -51,7 +51,7 @@ import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_LocateAlong;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ProjectPoint;
-import org.h2gis.h2spatialext.function.spatial.earth.ST_Shadow;
+import org.h2gis.h2spatialext.function.spatial.earth.ST_GeometryShadow;
 import org.h2gis.h2spatialext.function.spatial.earth.ST_SunPosition;
 import org.h2gis.h2spatialext.function.spatial.edit.*;
 import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
@@ -186,7 +186,7 @@ public class CreateSpatialExtension {
                 new ST_SideBuffer(),
                 new ST_RingSideBuffer(),
                 new ST_SunPosition(),
-                new ST_Shadow()};
+                new ST_GeometryShadow()};
     }
 
     /**
