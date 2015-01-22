@@ -32,7 +32,7 @@
                             <stripVersion>true</stripVersion>
                             <includeScope>provided</includeScope>
                             <!-- Jar that are not compatible with OSGi -->
-                            <excludeGroupIds>org.osgi, org.slf4j, log4j, com.vividsolutions</excludeGroupIds>
+                            <excludeGroupIds>org.slf4j, log4j, com.vividsolutions</excludeGroupIds>
                         </configuration>
                     </execution>
                 </executions>
@@ -55,7 +55,7 @@
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
             <version>${org.osgi.compendium-version}</version>
-            <scope>test</scope>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
