@@ -80,7 +80,7 @@ public class BundleTest {
     public Option[] config() throws MalformedURLException {
         List<Option> options = new ArrayList<Option>();
         options.addAll(Arrays.asList(systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("WARN"),
-                mavenBundle("org.osgi", "org.osgi.compendium"),
+                getBundle("org.osgi.compendium"),
                 getBundle("h2spatial-api"),
                 getBundle("spatial-utilities"),
                 getBundle("cts"),
