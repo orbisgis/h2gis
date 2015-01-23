@@ -36,6 +36,7 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Configuration;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.PaxExam;
+import org.ops4j.pax.exam.options.UrlProvisionOption;
 import org.ops4j.pax.exam.spi.reactors.ExamReactorStrategy;
 import org.ops4j.pax.exam.spi.reactors.PerClass;
 import org.osgi.framework.Bundle;
@@ -47,7 +48,15 @@ import org.osgi.service.jdbc.DataSourceFactory;
 import javax.inject.Inject;
 import javax.sql.DataSource;
 import java.io.File;
-import java.sql.*;
+import java.net.MalformedURLException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Properties;
 import static org.junit.Assert.*;
 import static org.ops4j.pax.exam.CoreOptions.*;
@@ -65,29 +74,51 @@ public class BundleTest {
     private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
     private DataSource dataSource;
     private ServiceReference<DataSourceFactory> ref;
+    private File bundleFolder = new File("target/bundle");
 
     @Configuration
-    public Option[] config() {
-        return options(systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("WARN"),
-                mavenBundle("org.osgi", "org.osgi.compendium"),
-                mavenBundle("org.orbisgis", "h2spatial-api"),
-                mavenBundle("org.orbisgis", "spatial-utilities"),
-                mavenBundle("org.orbisgis", "cts").version("1.3.3"),
-                mavenBundle("org.orbisgis", "jts"),
-                mavenBundle("org.orbisgis", "jdelaunay"),
-                mavenBundle("com.h2database", "h2").version("1.3.176"),
-                mavenBundle("com.fasterxml.jackson.core", "jackson-core").version("2.3.1"),
-                mavenBundle("org.orbisgis", "h2spatial").noStart(),
-                mavenBundle("org.orbisgis", "h2spatial-ext").noStart(),
-                mavenBundle("org.orbisgis", "h2drivers").noStart(),
-                mavenBundle("org.orbisgis", "h2spatial-osgi"),
-                mavenBundle("org.orbisgis", "h2spatial-ext-osgi"),
-                mavenBundle("org.orbisgis", "java-network-analyzer").version("0.1.6"),
-                mavenBundle("org.jgrapht", "jgrapht-core").version("0.9.0"),
-                mavenBundle("org.apache.commons", "commons-compress").version("1.9"),
-                mavenBundle("org.orbisgis", "h2network").noStart(),
-                junitBundles());
+    public Option[] config() throws MalformedURLException {
+        List<Option> options = new ArrayList<Option>();
+        options.addAll(Arrays.asList(systemProperty("org.ops4j.pax.logging.DefaultServiceLog.level").value("WARN"),
+                getBundle("org.osgi.compendium"),
+                getBundle("h2spatial-api"),
+                getBundle("spatial-utilities"),
+                getBundle("cts"),
+                getBundle("jts"),
+                getBundle("jdelaunay"),
+                getBundle("h2"),
+                getBundle("jackson-core"),
+                getBundle("h2spatial").noStart(),
+                getBundle("h2spatial-ext").noStart(),
+                getBundle("h2drivers").noStart(),
+                getBundle("h2spatial-osgi"),
+                getBundle("h2spatial-ext-osgi"),
+                getBundle("java-network-analyzer"),
+                getBundle("jgrapht-core"),
+                getBundle("commons-compress"),
+                getBundle("h2network").noStart(),
+                junitBundles()));
+        //options.addAll(getBundles());
+        return options(options.toArray(new Option[options.size()]));
     }
+
+    private UrlProvisionOption getBundle(String bundleName) throws MalformedURLException {
+        return bundle(new File(bundleFolder, bundleName+".jar").toURI().toURL().toString());
+    }
+
+    private List<Option> getBundles() {
+        List<Option> bundles = new ArrayList<Option>();
+        File bundleFolder = new File("target/bundle");
+        for(File bundle : bundleFolder.listFiles()) {
+            try {
+                bundles.add(bundle(bundle.toURI().toURL().toString()).noStart());
+            } catch (MalformedURLException ex) {
+                // Ignore
+            }
+        }
+        return bundles;
+    }
+
     /**
      * Create data source
      */
