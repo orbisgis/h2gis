@@ -49,13 +49,13 @@ public class SunCalc {
     private final static double C1 = rad * 1.9148;
     private final static double C2 = rad * 0.0200;
     private final static double C3 = rad * 0.0003;
-    private final static double P = rad * 102.9372;
+    private final static double P = rad * 102.9372;// perihelion of the Earth
     // obliquity of the Earth
     //The mean obliquity of the ecliptic is calculated by a formula of Laskar (1986), 
     //given in Jean Meeus: "Astronomical Algorithms", p. 135. 
-    private final static double e = rad * 23.43929;
+    private final static double e = rad * 23.4397;
     
-    private final static double th0 = rad * 280.1600;
+    private final static double th0 = rad * 280.16;
     private final static double th1 = rad * 360.9856235;   
    
 
@@ -115,8 +115,8 @@ public class SunCalc {
     }
     
     /**
-     * Sun azimuth in radians (direction along the horizon, measured from south to west)
-     * e.g. 0 is south and Math.PI * 3/4 is northwest
+     * Sun azimuth in radians (direction along the horizon, measured from north to east)
+     * e.g. 0 is north
      * @param H
      * @param phi
      * @param d
@@ -124,9 +124,9 @@ public class SunCalc {
      */
     private static double getAzimuth(double H, double phi, double d) {
         return Math.atan2(Math.sin(H),
-                Math.cos(H) * Math.sin(phi) - Math.tan(d) * Math.cos(phi));
+                Math.cos(H) * Math.sin(phi) - Math.tan(d) * Math.cos(phi))+Math.PI;
     }
-
+    
     /**
      * Sun altitude above the horizon in radians.
      * e.g. 0 at the horizon and PI/2 at the zenith 

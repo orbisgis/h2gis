@@ -59,7 +59,7 @@ public class ST_SunPosition extends DeterministicScalarFunction{
      * @param point
      * @return 
      */
-    public static Point sunPosition(Geometry point){
+    public static Geometry sunPosition(Geometry point){
         return sunPosition(point, new Date());
     }
     
@@ -71,7 +71,7 @@ public class ST_SunPosition extends DeterministicScalarFunction{
      * @return
      * @throws IllegalArgumentException 
      */
-    public static Point sunPosition(Geometry point, Date date) throws IllegalArgumentException{
+    public static Geometry sunPosition(Geometry point, Date date) throws IllegalArgumentException{
         if (point instanceof Point) {
             Coordinate coord = point.getCoordinate();
             return point.getFactory().createPoint( SunCalc.getPosition(date, coord.y, coord.x));
