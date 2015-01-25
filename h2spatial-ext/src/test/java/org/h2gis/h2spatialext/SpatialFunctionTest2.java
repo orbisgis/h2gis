@@ -72,73 +72,54 @@ public class SpatialFunctionTest2 {
        st.close();
     }
     
+    
     @Test
-    public void test_ST_SunPosition1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_SunPosition('POINT (-1.5490144 47.2488601)'::GEOMETRY, '2015-1-22 10:00:00');");
+    public void test_ST_SunPosition() throws Exception {
+        //Test based on http://www.esrl.noaa.gov/gmd/grad/solcalc/
+        ResultSet rs = st.executeQuery("SELECT ST_SunPosition('POINT (139.74 35.65)'::GEOMETRY, '2015-1-25 21:49:26');");
         assertTrue(rs.next());
         Geometry point = (Geometry)rs.getObject(1);
-        System.err.println("Sun azimut :"+ Math.toDegrees(point.getCoordinate().x) + " altitude : "+ Math.toDegrees(point.getCoordinate().y));
-        //résultats tirés de http://www.sunearthtools.com/dp/tools/pos_sun.php     
-        //Assert.assertEquals(point.getCoordinate().y, 0.07382742, 0.01); //4,23 degrés
-        //Assert.assertEquals(point.getCoordinate().x, 0.84002696898487, 0.01);
+        Assert.assertEquals(104.99439384398441, Math.toDegrees(point.getCoordinate().x), 10E-1);
+        Assert.assertEquals(-11.642433433992824, Math.toDegrees(point.getCoordinate().y), 10E-1);
         rs.close();
     }
     
     @Test
     public void test_ST_Shadow() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('LINESTRING (10 5, 10 10)'::GEOMETRY,2 , "
-                + "radians(90),radians(45));");
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('LINESTRING (10 5, 10 10)'::GEOMETRY, "
+                + "radians(90),radians(45), 2);");
          assertTrue(rs.next());
-         assertGeometryEquals("POLYGON ((10 5, 10 10, 8 10, 8 5, 10 5))", rs.getBytes(1));
+         assertGeometryEquals("POLYGON ((10 5 0, 10 10 0, 8 10 0, 8 5 0, 10 5 0))", rs.getBytes(1));
          rs.close();        
     }
     
     @Test
     public void test_ST_Shadow1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('LINESTRING (10 5, 10 10)'::GEOMETRY,2 , "
-                + "radians(270),radians(45));");
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('LINESTRING (10 5, 10 10)'::GEOMETRY, "
+                + "radians(270),radians(45), 2 );");
          assertTrue(rs.next());
-         assertGeometryEquals("POLYGON ((10 5, 10 10, 12 10, 12 5, 10 5))", rs.getBytes(1));
+         assertGeometryEquals("POLYGON ((10 5 0, 10 10 0, 12 10 0, 12 5 0, 10 5 0))", rs.getBytes(1));
          rs.close();        
     }
     
     @Test
     public void test_ST_Shadow2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POINT (10 5)'::GEOMETRY,2 , "
-                + "radians(270),radians(45));");
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POINT (10 5)'::GEOMETRY, "
+                + "radians(270),radians(45), 2 );");
          assertTrue(rs.next());
-         assertGeometryEquals("LINESTRING (10 5, 12 5)", rs.getBytes(1));
+         assertGeometryEquals("LINESTRING (10 5 0, 12 5 0)", rs.getBytes(1));
          rs.close();        
     }
     
     
     @Test
     public void test_ST_Shadow3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Shadow('POLYGON ((-1.5493799591210962 47.248973095582315, -1.5488521492139842 47.24913253815842, -1.5486102363398913 47.24877516686715, -1.5491380462470032 47.24861572429104, -1.5493799591210962 47.248973095582315))'::GEOMETRY,10 , "
-                + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
-        assertTrue(rs.next());
-        System.out.println(rs.getString(1));
-        rs.close();
-    }
-    
-    @Test
-    public void test_ST_Shadow4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Shadow('POLYGON ((100 300, 250 300, 250 150, 100 150, 100 300),"
-                + "  (150 250, 200 250, 200 200, 150 200, 150 250))'::GEOMETRY,10 , "
-                + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
-        assertTrue(rs.next());
-        System.out.println(rs.getString(1));
-        rs.close();
-    }
-    
-    @Test
-    public void test_ST_Shadow5() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Shadow('MULTILINESTRING ((100 300, 250 300, 250 150, 100 150, 100 300),"
-                + "  (150 250, 200 250, 200 200, 150 200, 150 250))'::GEOMETRY,1 , "
-                + "ST_SunPosition('POINT (-1.5485036 47.2484747)'::GEOMETRY, '2014-12-20 16:40:00'));");
-        assertTrue(rs.next());
-        System.out.println(rs.getString(1));
-        rs.close();
-    }
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('LINESTRING (10 5 0, 10 5 2,10 10 2, 10 10 0, 10 5 0)'::GEOMETRY, "
+                + "radians(270),radians(45), 0, true);");
+         assertTrue(rs.next());
+         assertGeometryEquals("POLYGON ((10 5 0, 10 10 0, 12 10 0, 12 5 0, 10 5 0))", rs.getBytes(1));
+         rs.close();        
+    }    
+   
    
 }
