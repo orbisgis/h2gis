@@ -48,14 +48,14 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 public class ST_GeometryShadow extends DeterministicScalarFunction {
 
     private static double[] shadowOffSet;
-    private static boolean shadowOffSetComputed = false;
 
     public ST_GeometryShadow() {
         addProperty(PROP_REMARKS, "This function computes the shadow footprint as a polygon(s) for a LINE and a POLYGON \n"
                 + "or LINE for a POINT."
                 + "The z of the input geometry is set to 0. A height value is used to extrude the facades of geometry.\n"
                 + "The position of the sun is specified with two parameters in radians : azimuth and altitude.\n"
-                +" Note : The last boolean argument could be used to unified or not the polygon shadows.");
+                +" Note 1: The last boolean argument could be used to unified or not the polygon shadows."
+                + "Note 2: The ");
     }
     
     //Attention l'altitude est exprimée entre 0 et 90 °. De l'horizon vers le zenith
@@ -73,8 +73,8 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param altitude of the sun in radians
      * @return 
      */
-    public static Geometry computeShadow(Geometry geometry, double height, double azimuth, double altitude) {
-        return computeShadow(geometry, height, azimuth, altitude, false);
+    public static Geometry computeShadow(Geometry geometry,  double azimuth, double altitude,double height) {
+        return computeShadow(geometry, azimuth, altitude,height, false, true);
 
     }
 
@@ -88,8 +88,8 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * 
      * @return 
      */
-   public static Geometry computeShadow(Geometry geometry, double height, double azimuth, double altitude, boolean useZ) {
-        return computeShadow(geometry, height, azimuth, altitude, useZ, true);
+   public static Geometry computeShadow(Geometry geometry,  double azimuth, double altitude, double height,boolean useZ) {
+        return computeShadow(geometry, azimuth, altitude,height,  useZ, true);
     }
    
    
@@ -99,30 +99,26 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param height of the geometry
      * @param azimuth of the sun in radians
      * @param altitude of the sun in radians
+     * @param useZ
      * @param doUnion unioning or not the shadows
      * @return 
      */
-   public static Geometry computeShadow(Geometry geometry, double height, double azimuth, double altitude, boolean useZ, boolean doUnion) {
-       if (geometry == null) {
-           return null;
-       }
-
-
-        if (!shadowOffSetComputed) {
-            shadowOffSet = shadowOffset(azimuth, altitude);
-            shadowOffSetComputed = true;
+    public static Geometry computeShadow(Geometry geometry, double azimuth, double altitude, double height, boolean useZ, boolean doUnion) {
+        if (geometry == null) {
+            return null;
         }
-
+        //Compute the shadow offset
+        shadowOffSet = shadowOffset(azimuth, altitude);
         if (geometry instanceof Polygon) {
             return shadowPolygon((Polygon) geometry, shadowOffSet, geometry.getFactory(), height, useZ, doUnion);
         } else if (geometry instanceof LineString) {
-            return shadowLine((LineString) geometry, shadowOffSet, geometry.getFactory(), height, useZ,doUnion);
+            return shadowLine((LineString) geometry, shadowOffSet, geometry.getFactory(), height, useZ, doUnion);
         } else if (geometry instanceof Point) {
-            return shadowPoint((Point) geometry, shadowOffSet, geometry.getFactory(),height, useZ);
+            return shadowPoint((Point) geometry, shadowOffSet, geometry.getFactory(), height, useZ);
         } else {
             throw new IllegalArgumentException("The shadow function supports only single geometry POINT, LINE or POLYGON.");
         }
-   }
+    }
     
     /**
      * Compute the shadow for a linestring
@@ -174,11 +170,13 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @return
      */
     private static Geometry shadowPoint(Point point, double[] shadowOffset, GeometryFactory factory,double height, boolean useZ) {
-        Coordinate offset = moveCoordinate(point.getCoordinate(), shadowOffset, height, useZ);
+        Coordinate startCoord = point.getCoordinate();
+        Coordinate offset = moveCoordinate(startCoord, shadowOffset, height, useZ);
         if (offset.distance(point.getCoordinate()) < 10E-3) {
             return point;
         } else {
-            return factory.createLineString(new Coordinate[]{point.getCoordinate(), offset});
+            startCoord.z=0;
+            return factory.createLineString(new Coordinate[]{startCoord, offset});
         }
     }
 
@@ -216,7 +214,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
         if(useZ){
             zCoordinate = inputCoordinate.z;
         }
-        return new Coordinate(inputCoordinate.x + (-(zCoordinate+height)* shadowOffset[0]), inputCoordinate.y + (-(zCoordinate+height) * shadowOffset[1]));
+        return new Coordinate(inputCoordinate.x + (-(zCoordinate+height)* shadowOffset[0]), inputCoordinate.y + (-(zCoordinate+height) * shadowOffset[1]), 0);
     }
 
     /**
@@ -226,12 +224,20 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param shadow
      * @param factory
      */
-    private static void createShadowPolygons(Collection<Polygon> shadows, Coordinate[] coordinates, double[] shadow, double height,boolean useZ, GeometryFactory factory) {
+    private static void createShadowPolygons(Collection<Polygon> shadows, Coordinate[] coordinates, double[] shadow, double height, boolean useZ, GeometryFactory factory) {
         for (int i = 1; i < coordinates.length; i++) {
             Coordinate startCoord = coordinates[i - 1];
             Coordinate endCoord = coordinates[i];
-            shadows.add(factory.createPolygon(new Coordinate[]{startCoord, endCoord, moveCoordinate(endCoord, shadow,height, useZ),
-                moveCoordinate(startCoord, shadow,height, useZ), startCoord}));
+            Coordinate start =  new Coordinate(startCoord.x, startCoord.y, 0);
+            Coordinate nextEnd = moveCoordinate(endCoord, shadow, height, useZ);
+            Coordinate nextStart = moveCoordinate(startCoord, shadow, height, useZ);
+            Coordinate end =  new Coordinate(endCoord.x, endCoord.y, 0);
+            Polygon polygon = factory.createPolygon(new Coordinate[]{start, 
+                end, nextEnd,
+                nextStart, start});
+            if (polygon.isValid()) {
+                shadows.add(polygon);
+            }
         }
     }
 

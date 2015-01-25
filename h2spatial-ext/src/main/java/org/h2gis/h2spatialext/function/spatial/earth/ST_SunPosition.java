@@ -29,8 +29,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
 import java.util.Date;
-import org.h2.value.ValueArray;
-import org.h2.value.ValueDouble;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
@@ -42,9 +40,9 @@ public class ST_SunPosition extends DeterministicScalarFunction{
 
     
     public ST_SunPosition(){
-        addProperty(PROP_REMARKS, "Return the sun position as a Point where : \n"
-                + "x = sun azimuth in radians (direction along the horizon, measured from south to\n"
-                + "west), e.g. 0 is south and Math.PI * 3/4 is northwest.\n"        
+        addProperty(PROP_REMARKS, "Return the sun position (horizontal coordinate system) as a Point where : \n"
+                + "x = sun azimuth in radians (direction along the horizon, measured from north to\n"
+                + "east).\n"        
                 + "y = sun altitude above the horizon in radians, e.g. 0 at the\n"
                 + "horizon and PI/2 at the zenith.\n");
     }
