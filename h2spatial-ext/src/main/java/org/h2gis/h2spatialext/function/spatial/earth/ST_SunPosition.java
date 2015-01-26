@@ -32,7 +32,7 @@ import java.util.Date;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Compute the sun position
+ * Compute the sun position and return a new coordinate with x = azimuth and y = altitude
  * 
  * @author Erwan Bocher
  */
