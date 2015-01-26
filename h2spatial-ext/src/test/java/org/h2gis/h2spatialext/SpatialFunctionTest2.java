@@ -130,11 +130,10 @@ public class SpatialFunctionTest2 {
 
     @Test
     public void test_ST_Shadow5() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((10 10, 10 5, 8 5, 8 10, 10 10),"
-                + "  (8.5 8, 9.5 8, 9.5 6, 8.5 6, 8.5 8))'::GEOMETRY, "
-                + "radians(270),radians(45), 1 );");
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((10 10 1, 10 5, 8 5 10, 8 10, 10 10))'::GEOMETRY, "
+                + "radians(225),radians(45), 2 );");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTIPOLYGON (((10 10 0, 11 10 0, 11 5 0, 10 5 0, 10 10 0)), ((8.5 8 0, 9.5 8 0, 9.5 6 0, 8.5 6 0, 8.5 8 0)))", rs.getBytes(1));
+        assertGeometryEquals("POLYGON ((8 10 0, 9.414213562373096 11.414213562373096 0, 11.414213562373096 11.414213562373096 0, 11.414213562373096 6.414213562373096 0, 10 5 0, 10 10 0, 8 10 0))", rs.getBytes(1));
         rs.close();
     }
 
@@ -147,32 +146,28 @@ public class SpatialFunctionTest2 {
         assertGeometryEquals("MULTIPOLYGON (((10 10 0, 10.5 10 0, 10.5 5 0, 10 5 0, 10 10 0)), ((9 8 0, 9 6 0, 8.5 6 0, 8.5 8 0, 9 8 0)))", rs.getBytes(1));
         rs.close();
     }
-
+    
     @Test
     public void test_ST_Shadow7() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((10 10, 10 5, 8 5, 8 10, 10 10))'::GEOMETRY, "
-                + "radians(270),radians(45), 2, false );");
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((6 12, 6 9, 8 9, 8 8.1, 10.9 8.1, 10.9 9, 10 9, 10 11, 9 11, 9 9, 8.5 9, 8.5 12, 6 12), (6.7 11.1, 7.6 11.1, 7.6 10.3, 6.7 10.3, 6.7 11.1))'::GEOMETRY, "
+                + "radians(270),radians(45), 0.5);");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTIPOLYGON (((10 10, 10 5, 12 5, 12 10, 10 10)),"
-                + "  ((8 5, 8 10, 10 10, 10 5, 8 5)),"
-                + "  ((10 10, 10 5, 8 5, 8 10, 10 10)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGON (((8.5 12, 9 12, 9 11, 9 9, 8.5 9, 8.5 12)),"
+                + "  ((10 11, 10.5 11, 10.5 9, 10 9, 10 11)),"
+                + "  ((10.9 9, 11.4 9, 11.4 8.1, 10.9 8.1, 10.9 9)),"
+                + "  ((7.2 11.1, 7.2 10.3, 6.7 10.3, 6.7 11.1, 7.2 11.1)))", rs.getBytes(1));
         rs.close();
     }
-
+    
     @Test
     public void test_ST_Shadow8() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((10 10, 10 5, 8 5, 8 10, 10 10),"
-                + "  (8.5 8, 9.5 8, 9.5 6, 8.5 6, 8.5 8))'::GEOMETRY, "
-                + "radians(270),radians(45), 0.5, false);");
+        ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((6 12, 6 9, 8 9, 8 8.1, 10.9 8.1, 10.9 9, 10 9, 10 11, 9 11, 9 9, 8.5 9, 8.5 12, 6 12), (6.7 11.1, 7.6 11.1, 7.6 10.3, 6.7 10.3, 6.7 11.1))'::GEOMETRY, "
+                + "radians(315),radians(45), 0.5);");
         assertTrue(rs.next());
-        System.out.println(rs.getString(1));
-        assertGeometryEquals("MULTIPOLYGON (((10 10, 10 5, 10.5 5, 10.5 10, 10 10)),"
-                + "  ((8 5, 8 10, 8.5 10, 8.5 5, 8 5)),"
-                + "  ((9.5 8, 9.5 6, 10 6, 10 8, 9.5 8)),"
-                + "  ((8.5 6, 8.5 8, 9 8, 9 6, 8.5 6)),"
-                + "  ((10 10, 10 5, 8 5, 8 10, 10 10),"
-                + "    (8.5 8, 9.5 8, 9.5 6, 8.5 6, 8.5 8)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGON (((8.5 12, 9 12, 9 11, 9 9, 8.5 9, 8.5 12)),"
+                + "  ((10 11, 10.5 11, 10.5 9, 10 9, 10 11)),"
+                + "  ((10.9 9, 11.4 9, 11.4 8.1, 10.9 8.1, 10.9 9)),"
+                + "  ((7.2 11.1, 7.2 10.3, 6.7 10.3, 6.7 11.1, 7.2 11.1)))", rs.getBytes(1));
         rs.close();
     }
-   
 }
