@@ -199,11 +199,9 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
             Coordinate endCoord = coordinates[i];
             Coordinate nextEnd = moveCoordinate(endCoord, shadow);
             Coordinate nextStart = moveCoordinate(startCoord, shadow);
-            Coordinate start = new Coordinate(startCoord.x, startCoord.y, 0);
-            Coordinate end = new Coordinate(endCoord.x, endCoord.y, 0);
-            Polygon polygon = factory.createPolygon(new Coordinate[]{start,
-                end, nextEnd,
-                nextStart, start});
+            Polygon polygon = factory.createPolygon(new Coordinate[]{startCoord,
+                endCoord, nextEnd,
+                nextStart, startCoord});
             if (polygon.isValid()) {
                 shadows.add(polygon);
             }
