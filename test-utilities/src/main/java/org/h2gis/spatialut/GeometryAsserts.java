@@ -124,6 +124,7 @@ public class GeometryAsserts {
      * Equals test with epsilon error acceptance and SRID.
      * @param expectedWKT Expected value, in WKT
      * @param expectedSRID Expected SRID Value
+     * @param resultSetObject
      * @param epsilon epsilon error acceptance
      */
     public static void assertGeometryBarelyEquals(String expectedWKT,int expectedSRID, Object resultSetObject, double epsilon) {
