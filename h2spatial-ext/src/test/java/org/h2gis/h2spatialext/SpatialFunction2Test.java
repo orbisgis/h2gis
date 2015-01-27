@@ -74,7 +74,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SunPosition() throws Exception {
         //Test based on http://www.esrl.noaa.gov/gmd/grad/solcalc/
-        ResultSet rs = st.executeQuery("SELECT ST_SunPosition('POINT (139.74 35.65)'::GEOMETRY, '2015-1-25 21:49:26');");
+        ResultSet rs = st.executeQuery("SELECT ST_SunPosition('POINT (139.74 35.65)'::GEOMETRY, '2015-1-25 21:49:26+01:00');");
         assertTrue(rs.next());
         Geometry point = (Geometry) rs.getObject(1);
         Assert.assertEquals(104.99439384398441, Math.toDegrees(point.getCoordinate().x), 10E-1);
