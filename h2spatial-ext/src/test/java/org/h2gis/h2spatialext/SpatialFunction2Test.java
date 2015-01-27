@@ -43,11 +43,11 @@ import org.junit.Test;
  *
  * @author Erwan Bocher
  */
-public class SpatialFunctionTest2 {
+public class SpatialFunction2Test {
 
     private static Connection connection;
     private Statement st;
-    private static final String DB_NAME = "SpatialFunctionTest2";
+    private static final String DB_NAME = "SpatialFunction2Test";
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -152,10 +152,10 @@ public class SpatialFunctionTest2 {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((6 12, 6 9, 8 9, 8 8.1, 10.9 8.1, 10.9 9, 10 9, 10 11, 9 11, 9 9, 8.5 9, 8.5 12, 6 12), (6.7 11.1, 7.6 11.1, 7.6 10.3, 6.7 10.3, 6.7 11.1))'::GEOMETRY, "
                 + "radians(270),radians(45), 0.5);");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTIPOLYGON (((8.5 12, 9 12, 9 11, 9 9, 8.5 9, 8.5 12)),"
-                + "  ((10 11, 10.5 11, 10.5 9, 10 9, 10 11)),"
-                + "  ((10.9 9, 11.4 9, 11.4 8.1, 10.9 8.1, 10.9 9)),"
-                + "  ((7.2 11.1, 7.2 10.3, 6.7 10.3, 6.7 11.1, 7.2 11.1)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGON (((8.5 12 0, 9 12 0,9 11 0, 9 9 0, 8.5 9 0, 8.5 12 0)),"
+                + "  ((10 11 0, 10.5 11 0, 10.5 9 0, 10 9 0, 10 11 0)),"
+                + "  ((10.9 9 0, 11.4 9 0, 11.4 8.1 0, 10.9 8.1 0, 10.9 9 0)),"
+                + "  ((7.2 11.1 0, 7.2 10.3 0, 6.7 10.3 0, 6.7 11.1 0, 7.2 11.1 0)))", rs.getBytes(1));
         rs.close();
     }
     
@@ -164,10 +164,7 @@ public class SpatialFunctionTest2 {
         ResultSet rs = st.executeQuery("SELECT ST_GeometryShadow('POLYGON ((6 12, 6 9, 8 9, 8 8.1, 10.9 8.1, 10.9 9, 10 9, 10 11, 9 11, 9 9, 8.5 9, 8.5 12, 6 12), (6.7 11.1, 7.6 11.1, 7.6 10.3, 6.7 10.3, 6.7 11.1))'::GEOMETRY, "
                 + "radians(315),radians(45), 0.5);");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTIPOLYGON (((8.5 12, 9 12, 9 11, 9 9, 8.5 9, 8.5 12)),"
-                + "  ((10 11, 10.5 11, 10.5 9, 10 9, 10 11)),"
-                + "  ((10.9 9, 11.4 9, 11.4 8.1, 10.9 8.1, 10.9 9)),"
-                + "  ((7.2 11.1, 7.2 10.3, 6.7 10.3, 6.7 11.1, 7.2 11.1)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGON (((10 11 0, 10.353553390593273 10.646446609406727 0, 10.353553390593273 9 0, 10 9 0, 10 11 0)), ((10.9 9 0, 11.253553390593273 8.646446609406727 0, 11.253553390593273 7.746446609406726 0, 8.353553390593273 7.746446609406726 0, 8 8.1 0, 10.9 8.1 0, 10.9 9 0)), ((8 8.646446609406727 0, 6.353553390593274 8.646446609406727 0, 6 9 0, 8 9 0, 8 8.646446609406727 0)), ((8.5 12 0, 8.853553390593273 11.646446609406727 0, 8.853553390593273 9 0, 8.5 9 0, 8.5 12 0)), ((7.6 10.746446609406727 0, 7.053553390593274 10.746446609406727 0, 7.053553390593274 10.3 0, 6.7 10.3 0, 6.7 11.1 0, 7.6 11.1 0, 7.6 10.746446609406727 0)))", rs.getBytes(1));
         rs.close();
     }
 }
