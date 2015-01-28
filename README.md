@@ -40,7 +40,16 @@ It include also file copy functions:
 
 For now, H2GIS requires Java 6. Run `maven clean install -P standalone` in the H2GIS's root directory.
 
-In the folder `h2-dist/target/` you will find a zip file `h2gis-standalone-bin.zip` that contain a run.sh file for running H2 with H2GIS. It will open a browser based console application.
+In the folder `h2-dist/target/` you will find a zip file `h2gis-standalone-bin.zip`.Unzip the file then open `h2-dist-1.1.1.jar` It will open a browser based console application.
+
+~ $ unzip h2gis-standalone-bin.zip
+
+~ $ cd h2gis-standalone
+
+~/h2gis-standalone $ java -jar h2-dist-1.1.1.jar
+
+Click Connect in the web interface
+
 
 [Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
