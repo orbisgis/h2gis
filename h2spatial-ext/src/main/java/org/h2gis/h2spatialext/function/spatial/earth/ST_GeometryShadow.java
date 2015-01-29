@@ -58,7 +58,9 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
                 + "(5) Optional parameter to unified or not the shadow polygons. True is the default value.\n"
                 + "Note 1: The z of the output geometry is set to 0.\n"
                 + "Note 2: The azimuth is a direction along the horizon, measured from north to east.\n"
-                + "The altitude is expressed above the horizon in radians, e.g. 0 at the horizon and PI/2 at the zenith.");
+                + "The altitude is expressed above the horizon in radians, e.g. 0 at the horizon and PI/2 at the zenith.\n"
+                + "The user can set the azimut and the altitude using a point see ST_SunPosition function,\n"
+                + "the folowing signature must be used ST_GeometryShadow(INPUT_GEOM,ST_SUNPosition(), HEIGHT).");
     }
 
     @Override
@@ -66,6 +68,35 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
         return "computeShadow";
     }
     
+    /**
+     * Compute the shadow footprint based on
+     * 
+     * @param geometry input geometry
+     * @param sunPosition as a point where x = azimuth and y=altitude
+     * @param height of the geometry
+     * @return 
+     */
+    public static Geometry computeShadow(Geometry geometry, Geometry sunPosition, double height) {
+        if (sunPosition != null) {
+            if (sunPosition instanceof Point) {
+                return computeShadow(geometry, sunPosition.getCoordinate().x, sunPosition.getCoordinate().y, height, true);
+            }
+            throw new IllegalArgumentException("The sun position must be stored in a point with \n"
+                    + "x = sun azimuth in radians (direction along the horizon, measured from north to\n"
+                    + "east and y = sun altitude above the horizon in radians.");
+        }
+        return null;
+    }
+    
+    /**
+     * Compute the shadow footprint based on
+     * 
+     * @param geometry input geometry
+     * @param azimuth of the sun in radians
+     * @param altitude of the sun in radians
+     * @param height of the geometry
+     * @return 
+     */
     public static Geometry computeShadow(Geometry geometry, double azimuth, double altitude, double height) {
         return computeShadow(geometry, azimuth, altitude, height, true);
     }
@@ -74,9 +105,9 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * Compute the shadow footprint based on
      *
      * @param geometry input geometry
-     * @param height of the geometry
      * @param azimuth of the sun in radians
      * @param altitude of the sun in radians
+     * @param height of the geometry
      * @param doUnion unified or not the polygon shadows
      * @return
      */
