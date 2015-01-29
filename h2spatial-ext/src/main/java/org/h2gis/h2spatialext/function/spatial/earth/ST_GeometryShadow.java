@@ -55,6 +55,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
                 + "(1) The geometry."
                 + "(2 and 3) The position of the sun is specified with two parameters in radians : azimuth and altitude.\n"
                 + "(4) The height value is used to extrude the facades of geometry.\n"
+                + "(5) Optional parameter to unified or not the shadow polygons. True is the default value.\n"
                 + "Note 1: The z of the output geometry is set to 0.\n"
                 + "Note 2: The azimuth is a direction along the horizon, measured from north to east.\n"
                 + "The altitude is expressed above the horizon in radians, e.g. 0 at the horizon and PI/2 at the zenith.");
@@ -64,6 +65,10 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
     public String getJavaStaticMethod() {
         return "computeShadow";
     }
+    
+    public static Geometry computeShadow(Geometry geometry, double azimuth, double altitude, double height) {
+        return computeShadow(geometry, azimuth, altitude, height, true);
+    }
 
     /**
      * Compute the shadow footprint based on
@@ -72,9 +77,10 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * @param height of the geometry
      * @param azimuth of the sun in radians
      * @param altitude of the sun in radians
+     * @param doUnion unified or not the polygon shadows
      * @return
      */
-    public static Geometry computeShadow(Geometry geometry, double azimuth, double altitude, double height) {
+    public static Geometry computeShadow(Geometry geometry, double azimuth, double altitude, double height, boolean doUnion) {
         if (geometry == null) {
             return null;
         }
@@ -84,9 +90,9 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
         //Compute the shadow offset
         double[] shadowOffSet = shadowOffset(azimuth, altitude, height);
         if (geometry instanceof Polygon) {
-            return shadowPolygon((Polygon) geometry, shadowOffSet, geometry.getFactory());
+            return shadowPolygon((Polygon) geometry, shadowOffSet, geometry.getFactory(), doUnion);
         } else if (geometry instanceof LineString) {
-            return shadowLine((LineString) geometry, shadowOffSet, geometry.getFactory());
+            return shadowLine((LineString) geometry, shadowOffSet, geometry.getFactory(), doUnion);
         } else if (geometry instanceof Point) {
             return shadowPoint((Point) geometry, shadowOffSet, geometry.getFactory());
         } else {
@@ -102,17 +108,21 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * the geometry
      * @return
      */
-    private static Geometry shadowLine(LineString lineString, double[] shadowOffset, GeometryFactory factory) {
+    private static Geometry shadowLine(LineString lineString, double[] shadowOffset, GeometryFactory factory, boolean doUnion) {
         Coordinate[] coords = lineString.getCoordinates();
         Collection<Polygon> shadows = new ArrayList<Polygon>();
         createShadowPolygons(shadows, coords, shadowOffset, factory);
-        if (!shadows.isEmpty()) {
-            CascadedPolygonUnion union = new CascadedPolygonUnion(shadows);
-            Geometry result = union.union();
-            result.apply(new UpdateZCoordinateSequenceFilter(0, 1));
-            return result;
+        if (!doUnion) {
+            return factory.buildGeometry(shadows);
+        } else {
+            if (!shadows.isEmpty()) {
+                CascadedPolygonUnion union = new CascadedPolygonUnion(shadows);
+                Geometry result = union.union();
+                result.apply(new UpdateZCoordinateSequenceFilter(0, 1));
+                return result;
+            }
+            return null;
         }
-        return null;
     }
 
     /**
@@ -123,7 +133,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      * the geometry
      * @return
      */
-    private static Geometry shadowPolygon(Polygon polygon, double[] shadowOffset, GeometryFactory factory) {
+    private static Geometry shadowPolygon(Polygon polygon, double[] shadowOffset, GeometryFactory factory, boolean doUnion) {
         Coordinate[] shellCoords = polygon.getExteriorRing().getCoordinates();
         Collection<Polygon> shadows = new ArrayList<Polygon>();
         createShadowPolygons(shadows, shellCoords, shadowOffset, factory);
@@ -131,15 +141,22 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
         for (int i = 0; i < nbOfHoles; i++) {
             createShadowPolygons(shadows, polygon.getInteriorRingN(i).getCoordinates(), shadowOffset, factory);
         }
-        shadows.add(polygon);
-        if (!shadows.isEmpty()) {
-            CascadedPolygonUnion union = new CascadedPolygonUnion(shadows);
-            Geometry geomUnion = union.union();
-            Geometry diff = geomUnion.difference(polygon);
-            diff.apply(new UpdateZCoordinateSequenceFilter(0, 1));
-            return diff;
+        if (!doUnion) {
+            return factory.buildGeometry(shadows);
+        } else {
+            if (!shadows.isEmpty()) {
+                Collection<Geometry> shadowParts = new ArrayList<Geometry>();
+                for (Polygon shadowPolygon : shadows) {
+                    shadowParts.add(shadowPolygon.difference(polygon));
+                }
+                Geometry allShadowParts = factory.buildGeometry(shadowParts);
+                Geometry union = allShadowParts.buffer(0);
+                union.apply(new UpdateZCoordinateSequenceFilter(0, 1));
+                return union;
+            }
+            return null;
         }
-        return null;
+        
     }
 
     /**
@@ -202,7 +219,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
             Polygon polygon = factory.createPolygon(new Coordinate[]{startCoord,
                 endCoord, nextEnd,
                 nextStart, startCoord});
-            if (polygon.isValid()) {
+            if (polygon.isValid()) {                
                 shadows.add(polygon);
             }
         }
