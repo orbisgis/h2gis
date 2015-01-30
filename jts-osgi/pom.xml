@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>h2gis</artifactId>
-        <version>1.2.0</version>
+        <version>1.2.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>jts</artifactId>
     <name>jts</name>
-    <version>1.13</version>
+    <version>1.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>A jar with additional information in the jar MANIFEST in order to comply with OSGi environment</description>
     <build>
