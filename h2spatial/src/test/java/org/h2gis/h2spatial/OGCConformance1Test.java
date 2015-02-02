@@ -55,8 +55,7 @@ public class OGCConformance1Test {
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, false);
         // Set up test data
 		InputStreamReader reader = new InputStreamReader(
-				CreateSpatialExtension.class
-						.getResourceAsStream("ogc_conformance_test.sql"));
+				OGCConformance1Test.class.getResourceAsStream("ogc_conformance_test.sql"));
 		RunScript.execute(connection, reader);
 
 		try {
