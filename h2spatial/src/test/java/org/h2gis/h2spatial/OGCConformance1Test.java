@@ -25,17 +25,20 @@
 
 package org.h2gis.h2spatial;
 
+import org.h2.tools.RunScript;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
+
 import static org.junit.Assert.*;
 
 /**
@@ -51,9 +54,16 @@ public class OGCConformance1Test {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, false);
         // Set up test data
-        URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test.sql");
-        Statement st = connection.createStatement();
-        st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
+		InputStreamReader reader = new InputStreamReader(
+				CreateSpatialExtension.class
+						.getResourceAsStream("ogc_conformance_test.sql"));
+		RunScript.execute(connection, reader);
+
+		try {
+			reader.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
     }
 
     /**
