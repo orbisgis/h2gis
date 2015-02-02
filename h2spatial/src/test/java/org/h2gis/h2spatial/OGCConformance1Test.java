@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,15 +55,7 @@ public class OGCConformance1Test {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME, false);
         // Set up test data
-		InputStreamReader reader = new InputStreamReader(
-				OGCConformance1Test.class.getResourceAsStream("ogc_conformance_test.sql"));
-		RunScript.execute(connection, reader);
-
-		try {
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        executeScript(connection, "ogc_conformance_test.sql");
     }
 
     /**
@@ -201,5 +194,18 @@ public class OGCConformance1Test {
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+    
+    static void executeScript(Connection connection, String fileName) throws SQLException
+    {
+    	 InputStreamReader reader = new InputStreamReader(
+ 				OGCConformance1Test.class.getResourceAsStream(fileName));
+ 		RunScript.execute(connection, reader);
+
+ 		try {
+ 			reader.close();
+ 		} catch (IOException e) {
+ 			e.printStackTrace();
+ 		}
     }
 }

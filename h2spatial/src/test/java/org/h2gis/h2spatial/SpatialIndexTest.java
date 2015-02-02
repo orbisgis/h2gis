@@ -51,9 +51,8 @@ public class SpatialIndexTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         // Set up test data
-        URL sqlURL = OGCConformance1Test.class.getResource("spatial_index_test_data.sql");
-        Statement st = connection.createStatement();
-        st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
+        OGCConformance1Test.executeScript(connection, "spatial_index_test_data.sql");
+        
         reopen();
     }
     @AfterClass
