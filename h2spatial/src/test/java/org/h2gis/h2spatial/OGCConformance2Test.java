@@ -25,23 +25,19 @@
 
 package org.h2gis.h2spatial;
 
-import org.h2.tools.RunScript;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Second unit test group, use advanced SQL features like foreign key constraint.
@@ -178,11 +174,11 @@ public class OGCConformance2Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT srtext FROM SPATIAL_REF_SYS WHERE SRID = 101;");
         assertTrue(rs.next());
-        assertEquals("PROJCS[\"UTM_ZONE_14N\", GEOGCS[\"World Geodetic System\n\n72\",DATUM[\"WGS_72\", " +
-                "ELLIPSOID[\"NWL_10D\", 6378135,\n\n298.26]],PRIMEM[\"Greenwich\",\n\n0],UNIT[\"Meter\",1.0]]," +
-                "PROJECTION[\"Transverse_Mercator\"],\n\nPARAMETER[\"False_Easting\", 500000.0]," +
-                "PARAMETER[\"False_Northing\",\n\n0.0],PARAMETER[\"Central_Meridian\", -99.0],PARAMETER[\"Scale_Factor\"" +
-                ",\n\n0.9996],PARAMETER[\"Latitude_of_origin\", 0.0],UNIT[\"Meter\", 1.0]]", rs.getString(1));
+        assertEquals("PROJCS[\"UTM_ZONE_14N\", GEOGCS[\"World Geodetic System\r\n\r\n72\",DATUM[\"WGS_72\", " +
+                "ELLIPSOID[\"NWL_10D\", 6378135,\r\n\r\n298.26]],PRIMEM[\"Greenwich\",\r\n\r\n0],UNIT[\"Meter\",1.0]]," +
+                "PROJECTION[\"Transverse_Mercator\"],\r\n\r\nPARAMETER[\"False_Easting\", 500000.0]," +
+                "PARAMETER[\"False_Northing\",\r\n\r\n0.0],PARAMETER[\"Central_Meridian\", -99.0],PARAMETER[\"Scale_Factor\"" +
+                ",\r\n\r\n0.9996],PARAMETER[\"Latitude_of_origin\", 0.0],UNIT[\"Meter\", 1.0]]", rs.getString(1));
     }
 
     @AfterClass
