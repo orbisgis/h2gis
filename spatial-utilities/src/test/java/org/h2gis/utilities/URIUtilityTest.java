@@ -101,6 +101,6 @@ public class URIUtilityTest {
     public void testFileFromURI() throws Exception {
         assertEquals(new File("/mnt/stock/hello.png"), URIUtility.fileFromString("/mnt/stock/hello.png"));
         assertEquals(new File("/mnt/stock/hello.png"),
-                URIUtility.fileFromString(new File("/mnt/stock/hello.png").toURI().toString()));
+                URIUtility.fileFromString(new File("/mnt/stock/hello.png").toString()));
     }
 }
