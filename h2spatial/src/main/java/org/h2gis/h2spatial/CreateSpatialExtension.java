@@ -232,10 +232,9 @@ public class CreateSpatialExtension {
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {
-        	
         	InputStreamReader reader = new InputStreamReader(
 					CreateSpatialExtension.class.getResourceAsStream("spatial_ref_sys.sql"));
-				RunScript.execute(connection, reader);
+			RunScript.execute(connection, reader);
 				
 			try {
 				reader.close();
