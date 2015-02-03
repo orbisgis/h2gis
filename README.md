@@ -80,11 +80,13 @@ CALL SHPWRITE('/home/user/newshapefile.shp', 'tablename');
 #### Contributing
 
 For legal reasons, contributors are asked to provide a contributor license agreement. 
-We invite each contributor to send a mail to the [H2GIS developer] ((http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html)) mailing list  or the [team leader].
+We invite each contributor to send a mail to the [H2GIS developer] (http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html) mailing list.
 
 The mail need to include the following statement:
 
-"I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the GPL 3.0 (http://www.gnu.org/copyleft/gpl.html)." 
+"I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the [GPL 3.0] (http://www.gnu.org/copyleft/gpl.html)." 
+
+For a significant contribution, send a PR on GitHub and refer it in your message. For a single contribution join a patch to your mail.
 
 
 
