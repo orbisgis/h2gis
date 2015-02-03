@@ -30,7 +30,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -55,9 +54,7 @@ public class SerializationTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         // Set up test data
-        URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test3.sql");
-        Statement st = connection.createStatement();
-        st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
+        OGCConformance1Test.executeScript(connection, "ogc_conformance_test3.sql");
         // Close the DataBase then reopen it
         connection.close();
         connection = SpatialH2UT.openSpatialDataBase(DB_NAME);

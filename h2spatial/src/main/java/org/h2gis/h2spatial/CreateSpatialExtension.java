@@ -25,6 +25,7 @@
 package org.h2gis.h2spatial;
 
 import org.h2.api.Aggregate;
+import org.h2.tools.RunScript;
 import org.h2gis.h2spatial.internal.function.HexToVarBinary;
 import org.h2gis.h2spatial.internal.function.spatial.convert.ST_AsWKT;
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_SetSRID;
@@ -61,6 +62,8 @@ import org.h2gis.h2spatial.internal.type.*;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -229,8 +232,15 @@ public class CreateSpatialExtension {
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {
-            URL resource = CreateSpatialExtension.class.getResource("spatial_ref_sys.sql");
-            st.execute(String.format("RUNSCRIPT FROM '%s'",resource));
+        	InputStreamReader reader = new InputStreamReader(
+					CreateSpatialExtension.class.getResourceAsStream("spatial_ref_sys.sql"));
+			RunScript.execute(connection, reader);
+				
+			try {
+				reader.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
         }
     }
 

@@ -167,7 +167,7 @@ public class KMLWriterDriver {
             final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();
             streamWriterFactory.setProperty("escapeCharacters", false);
             XMLStreamWriter xmlOut = streamWriterFactory.createXMLStreamWriter(
-                    new BufferedOutputStream(outputStream));
+                    new BufferedOutputStream(outputStream), "UTF-8");
             xmlOut.writeStartDocument("UTF-8", "1.0");
             xmlOut.writeStartElement("kml");
             xmlOut.writeDefaultNamespace("http://www.opengis.net/kml/2.2");
