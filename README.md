@@ -100,7 +100,7 @@ The H2GIS team utilizes open source software. Specifically, we would like to tha
 
 Many thanks for those who reported bugs or provide patches...  
 
-* Steve Hruda aka shruda #453
+* Steve Hruda aka shruda [PR #453] (https://github.com/irstv/H2GIS/pull/453)
 
 
 #### Team
