@@ -93,14 +93,21 @@ For a significant contribution, send a PR on GitHub and refer it in your message
 
 The H2GIS team utilizes open source software. Specifically, we would like to thank  :
 
-* Thomas Mueller and Noel Grandin from the [H2 database community] (http://www.h2database.com)
-* Martin Davis from the [JTS community] (http://tsusiatsoftware.net/jts/main.html)
+* Thomas Mueller and Noel Grandin from the [H2 database community] (http://www.h2database.com).
+* Martin Davis from the [JTS community] (http://tsusiatsoftware.net/jts/main.html).
+
+#### Supporters
+
+Many thanks for those who reported bugs or provide patches...  
+
+* Steve Hruda aka shruda #453
 
 
 #### Team
 
 H2GIS is composed of three qualified professionals in GIS and informatic sciences.
 Erwan Bocher leads the project.
-Nicolas Fortin is the lead programmer. Gwendall Petit is in charge of the documentation and manages all public relations with the community users.
+Nicolas Fortin is the lead programmer. 
+Gwendall Petit is in charge of the documentation and manages all public relations with the community users.
 
 
