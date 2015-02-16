@@ -70,7 +70,7 @@ public class ST_Explode extends DeterministicScalarFunction {
     /**
      * Explode Geometry Collection into multiple geometries
      * @param connection
-     * @param tableName
+     * @param tableName the name of the input table
      * @return A result set with the same content of specified table but with atomic geometries and duplicate values.
      * @throws java.sql.SQLException
      */
@@ -79,10 +79,10 @@ public class ST_Explode extends DeterministicScalarFunction {
     }
 
     /**
-     *
+     * Explode Geometry Collection into multiple geometries
      * @param connection
-     * @param tableName
-     * @param fieldName
+     * @param tableName the name of the input table
+     * @param fieldName the name of geometry field. If null the first geometry column is used.
      * @return
      * @throws java.sql.SQLException
      */
