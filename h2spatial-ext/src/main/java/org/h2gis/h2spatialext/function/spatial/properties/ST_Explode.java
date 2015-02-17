@@ -360,12 +360,14 @@ public class ST_Explode extends DeterministicScalarFunction {
                             metadata.getColumnTypeName(i), metadata.getPrecision(i), metadata.getScale(i));
                 }
             } finally {
-                if (st != null) {
-                    st.close();
-                }
                 if(rsQuery!=null){
                     rsQuery.close();
                 }
+                
+                if (st != null) {
+                    st.close();
+                }
+                
             }
         }
     }
