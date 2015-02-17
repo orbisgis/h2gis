@@ -75,6 +75,10 @@ public class ST_Explode extends DeterministicScalarFunction {
      * @throws java.sql.SQLException
      */
     public static ResultSet explode(Connection connection, String tableName) throws SQLException {
+        if(tableName.toLowerCase().startsWith("select")){
+            ExplodeResultSetQuery explodeResultSetQuery = new ExplodeResultSetQuery(connection,tableName);
+            return explodeResultSetQuery.getResultSet();
+        }
         return explode(connection, tableName,null);
     }
 
@@ -220,6 +224,149 @@ public class ST_Explode extends DeterministicScalarFunction {
             TableFunctionUtil.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
             rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
             return rs;
+        }
+    }
+    
+    /**
+     * Explode fields only on request
+     * The input data must be a SELECT  expression that contains a geometry column
+     */
+    private static class ExplodeResultSetQuery implements SimpleRowSource {
+        private final Connection connection;
+        // If true, table query is closed the read again
+        private boolean firstRow = true;        
+        private int columnCount;
+        private Queue<Geometry> sourceRowGeometries = new LinkedList<Geometry>();
+        private int explodeId = 1;
+        private final String selectQuery;
+        private ResultSet tableQuery;
+        private int spatialFieldIndex;
+       
+        private ExplodeResultSetQuery(Connection connection, String selectQuery) {
+            this.connection = connection;
+            this.selectQuery=selectQuery;
+        }
+
+        @Override
+        public Object[] readRow() throws SQLException {
+            if (firstRow) {
+                reset();
+            }
+            if (sourceRowGeometries.isEmpty()) {
+                parseRow();
+            }
+            if (sourceRowGeometries.isEmpty()) {
+                // No more rows
+                return null;
+            } else {
+                Object[] objects = new Object[columnCount + 1];
+                for (int i = 1; i <= columnCount + 1; i++) {
+                    if (i == spatialFieldIndex) {
+                        objects[i - 1] = sourceRowGeometries.remove();
+                    } else if (i == columnCount + 1) {
+                        objects[i - 1] = explodeId++;
+                    } else {
+                        objects[i - 1] = tableQuery.getObject(i);
+                    }
+                }
+                return objects;
+            }
+        }
+
+        private void explode(final Geometry geometry) {
+            if (geometry instanceof GeometryCollection) {
+                final int nbOfGeometries = geometry.getNumGeometries();
+                for (int i = 0; i < nbOfGeometries; i++) {
+                    explode(geometry.getGeometryN(i));
+                }
+            } else {
+                sourceRowGeometries.add(geometry);
+            }
+        }
+
+        @Override
+        public void close() {
+            if (tableQuery != null) {
+                try {
+                    tableQuery.close();
+                    tableQuery = null;
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+            }
+        }
+
+        private void parseRow() throws SQLException {
+            sourceRowGeometries.clear();
+            explodeId = 1;
+            if (tableQuery.next()) {
+                Geometry geometry = (Geometry) tableQuery.getObject(spatialFieldIndex);
+                explode(geometry);
+                // If the geometry is empty, set empty field or null if generic geometry collection
+                if (sourceRowGeometries.isEmpty()) {
+                    GeometryFactory factory = geometry.getFactory();
+                    if (factory == null) {
+                        factory = new GeometryFactory();
+                    }
+                    if (geometry instanceof MultiLineString) {
+                        sourceRowGeometries.add(factory.createLineString(new Coordinate[0]));
+                    } else if (geometry instanceof MultiPolygon) {
+                        sourceRowGeometries.add((factory.createPolygon(null, null)));
+                    } else {
+                        sourceRowGeometries.add(null);
+                    }
+                }
+            }
+        }
+
+        @Override
+        public void reset() throws SQLException {
+            if (tableQuery != null && !tableQuery.isClosed()) {
+                close();
+            }
+            Statement st = connection.createStatement();
+            tableQuery = st.executeQuery(selectQuery);
+            firstRow = false;
+            // Find the first geometry index
+            spatialFieldIndex = SFSUtilities.getFirstGeometryFieldIndex(tableQuery);
+            if (spatialFieldIndex==-1) {
+                throw new SQLException("The select query " + selectQuery + " does not contain a geometry field");
+            }
+        }
+        private ResultSet getResultSet() throws SQLException {            
+            SimpleResultSet rs = new SimpleResultSet(this);
+            // Feed with fields
+            copyfields(rs, selectQuery);
+            rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
+            return rs;
+        }
+
+        /**
+         * 
+         * @param rs
+         * @param selectQuery
+         * @throws SQLException 
+         */
+        private void copyfields(SimpleResultSet rs, String selectQuery) throws SQLException { 
+            Statement st = null;
+            ResultSet rsQuery =null;
+            try {
+                st = connection.createStatement();                
+                rsQuery = st.executeQuery(selectQuery);
+                ResultSetMetaData metadata =  rsQuery.getMetaData();
+                columnCount = metadata.getColumnCount();
+                for (int i = 1; i <= columnCount; i++) {
+                    rs.addColumn(metadata.getColumnName(i), metadata.getColumnType(i), 
+                            metadata.getColumnTypeName(i), metadata.getPrecision(i), metadata.getScale(i));
+                }
+            } finally {
+                if (st != null) {
+                    st.close();
+                }
+                if(rsQuery!=null){
+                    rsQuery.close();
+                }
+            }
         }
     }
 }
