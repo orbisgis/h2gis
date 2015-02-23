@@ -170,6 +170,32 @@ public class SpatialFunctionTest {
         }
     }
 
+    public void test_ST_ExplodeFieldName() throws Exception {
+        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+                + " boundary MULTIPOLYGON);"
+                + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
+                + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('forests', 'boundary') WHERE name = 'Green Forest' and explod_id=2");
+        assertTrue(rs.next());
+        assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
+        st.execute("drop table forests");
+    }
+       
+    @Test(expected = SQLException.class)
+    public void test_ST_ExplodeWithoutFieldName() throws Throwable {
+        try {
+            st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+                    + " boundary MULTIPOLYGON);"
+                    + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
+                    + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
+            st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('forests', 'the_geom') WHERE name = 'Green Forest' and explod_id=2");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        } finally {
+            st.execute("drop table forests");
+        }
+    }
+
     @Test
     public void test_ST_Extent() throws Exception {
         st.execute("drop table if exists ptClouds");
