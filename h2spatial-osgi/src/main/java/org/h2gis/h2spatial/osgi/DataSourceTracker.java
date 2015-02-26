@@ -67,11 +67,8 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
                     return null;
                 }
                 // Check if the database has been properly initialised by the DataSource service provider
-                if(JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
-                    // Register built-ins functions
-                    for (Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
-                        CreateSpatialExtension.registerFunction(connection.createStatement(), function, "", false);
-                    }
+                if(!JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
+                    return null;
                 }
             } finally {
                 connection.close();
