@@ -58,7 +58,8 @@ public class ST_Explode extends DeterministicScalarFunction {
     public static final String EXPLODE_FIELD = "EXPLOD_ID";
 
     public ST_Explode() {
-        addProperty(PROP_REMARKS, "Explode Geometry Collection into multiple geometries");
+        addProperty(PROP_REMARKS, "Explode Geometry Collection into multiple geometries.\n"
+                + "Note : This function supports select query as the first arfument.");
         addProperty(PROP_NOBUFFER, true);
     }
 
@@ -75,8 +76,8 @@ public class ST_Explode extends DeterministicScalarFunction {
      * @throws java.sql.SQLException
      */
     public static ResultSet explode(Connection connection, String tableName) throws SQLException {
-        if(tableName.toLowerCase().startsWith("select")){
-            ExplodeResultSetQuery explodeResultSetQuery = new ExplodeResultSetQuery(connection,tableName);
+        if(tableName.toLowerCase().startsWith("select ")){
+            ExplodeResultSetQuery explodeResultSetQuery = new ExplodeResultSetQuery(connection,tableName, null);
             return explodeResultSetQuery.getResultSet();
         }
         return explode(connection, tableName,null);
@@ -99,18 +100,19 @@ public class ST_Explode extends DeterministicScalarFunction {
     /**
      * Explode fields only on request
      */
-    private static class ExplodeResultSet implements SimpleRowSource {
+    public static class ExplodeResultSet implements SimpleRowSource {
         // If true, table query is closed the read again
-        private boolean firstRow = true;
-        private ResultSet tableQuery;
-        private String tableName;
-        private String spatialFieldName;
-        private Integer spatialFieldIndex;
-        private int columnCount;
-        private Queue<Geometry> sourceRowGeometries = new LinkedList<Geometry>();
-        private int explodeId = 1;
-        private Connection connection;
-        private ExplodeResultSet(Connection connection, String tableName, String spatialFieldName) {
+        public boolean firstRow = true;
+        public ResultSet tableQuery;
+        public String tableName;
+        public String spatialFieldName;
+        public int spatialFieldIndex =-1;
+        public int columnCount;
+        public Queue<Geometry> sourceRowGeometries = new LinkedList<Geometry>();
+        public int explodeId = 1;
+        public Connection connection;
+        
+        public ExplodeResultSet(Connection connection, String tableName, String spatialFieldName) {
             this.tableName = tableName;
             this.spatialFieldName = spatialFieldName;
             this.connection = connection;
@@ -141,7 +143,11 @@ public class ST_Explode extends DeterministicScalarFunction {
                 return objects;
             }
         }
-
+        
+        /**
+         * Explode the geometry
+         * @param geometry 
+         */
         private void explode(final Geometry geometry) {
             if (geometry instanceof GeometryCollection) {
                 final int nbOfGeometries = geometry.getNumGeometries();
@@ -165,6 +171,10 @@ public class ST_Explode extends DeterministicScalarFunction {
             }
         }
 
+        /**
+         * Read the geometry value and explode it.
+         * @throws SQLException 
+         */
         private void parseRow() throws SQLException {
             sourceRowGeometries.clear();
             explodeId = 1;
@@ -213,11 +223,16 @@ public class ST_Explode extends DeterministicScalarFunction {
                     break;
                 }
             }
-            if(spatialFieldIndex == null) {
+            if(spatialFieldIndex==-1) {
                 throw new SQLException("Geometry field "+spatialFieldName+" of table "+tableName+" not found");
             }
         }
 
+        /**
+         * Return the exploded geometries as multiple rows
+         * @return
+         * @throws SQLException 
+         */
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
@@ -231,92 +246,10 @@ public class ST_Explode extends DeterministicScalarFunction {
      * Explode fields only on request
      * The input data must be a SELECT  expression that contains a geometry column
      */
-    private static class ExplodeResultSetQuery implements SimpleRowSource {
-        private final Connection connection;
-        // If true, table query is closed the read again
-        private boolean firstRow = true;        
-        private int columnCount;
-        private Queue<Geometry> sourceRowGeometries = new LinkedList<Geometry>();
-        private int explodeId = 1;
-        private final String selectQuery;
-        private ResultSet tableQuery;
-        private int spatialFieldIndex;
-       
-        private ExplodeResultSetQuery(Connection connection, String selectQuery) {
-            this.connection = connection;
-            this.selectQuery=selectQuery;
-        }
+    public static class ExplodeResultSetQuery extends ExplodeResultSet {
 
-        @Override
-        public Object[] readRow() throws SQLException {
-            if (firstRow) {
-                reset();
-            }
-            if (sourceRowGeometries.isEmpty()) {
-                parseRow();
-            }
-            if (sourceRowGeometries.isEmpty()) {
-                // No more rows
-                return null;
-            } else {
-                Object[] objects = new Object[columnCount + 1];
-                for (int i = 1; i <= columnCount + 1; i++) {
-                    if (i == spatialFieldIndex) {
-                        objects[i - 1] = sourceRowGeometries.remove();
-                    } else if (i == columnCount + 1) {
-                        objects[i - 1] = explodeId++;
-                    } else {
-                        objects[i - 1] = tableQuery.getObject(i);
-                    }
-                }
-                return objects;
-            }
-        }
-
-        private void explode(final Geometry geometry) {
-            if (geometry instanceof GeometryCollection) {
-                final int nbOfGeometries = geometry.getNumGeometries();
-                for (int i = 0; i < nbOfGeometries; i++) {
-                    explode(geometry.getGeometryN(i));
-                }
-            } else {
-                sourceRowGeometries.add(geometry);
-            }
-        }
-
-        @Override
-        public void close() {
-            if (tableQuery != null) {
-                try {
-                    tableQuery.close();
-                    tableQuery = null;
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-            }
-        }
-
-        private void parseRow() throws SQLException {
-            sourceRowGeometries.clear();
-            explodeId = 1;
-            if (tableQuery.next()) {
-                Geometry geometry = (Geometry) tableQuery.getObject(spatialFieldIndex);
-                explode(geometry);
-                // If the geometry is empty, set empty field or null if generic geometry collection
-                if (sourceRowGeometries.isEmpty()) {
-                    GeometryFactory factory = geometry.getFactory();
-                    if (factory == null) {
-                        factory = new GeometryFactory();
-                    }
-                    if (geometry instanceof MultiLineString) {
-                        sourceRowGeometries.add(factory.createLineString(new Coordinate[0]));
-                    } else if (geometry instanceof MultiPolygon) {
-                        sourceRowGeometries.add((factory.createPolygon(null, null)));
-                    } else {
-                        sourceRowGeometries.add(null);
-                    }
-                }
-            }
+        public ExplodeResultSetQuery(Connection connection, String tableName, String spatialFieldName) {
+            super(connection, tableName, spatialFieldName);
         }
 
         @Override
@@ -325,50 +258,67 @@ public class ST_Explode extends DeterministicScalarFunction {
                 close();
             }
             Statement st = connection.createStatement();
-            tableQuery = st.executeQuery(selectQuery);
+            tableQuery = st.executeQuery(tableName);
             firstRow = false;
-            // Find the first geometry index
-            spatialFieldIndex = SFSUtilities.getFirstGeometryFieldIndex(tableQuery);
-            if (spatialFieldIndex==-1) {
-                throw new SQLException("The select query " + selectQuery + " does not contain a geometry field");
-            }
         }
-        private ResultSet getResultSet() throws SQLException {            
+        
+        @Override
+        public ResultSet getResultSet() throws SQLException {            
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            copyfields(rs, selectQuery);
+            copyfields(rs, tableName);
             rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
             return rs;
         }
 
         /**
-         * 
+         * Perform a fast copy of columns using a limit clause.
          * @param rs
          * @param selectQuery
          * @throws SQLException 
          */
         private void copyfields(SimpleResultSet rs, String selectQuery) throws SQLException { 
             Statement st = null;
-            ResultSet rsQuery =null;
+            ResultSet rsQuery = null;            
+            st = connection.createStatement();
             try {
-                st = connection.createStatement();                
-                rsQuery = st.executeQuery(selectQuery);
-                ResultSetMetaData metadata =  rsQuery.getMetaData();
+                rsQuery = st.executeQuery(limitQuery(selectQuery.toUpperCase()));
+                ResultSetMetaData metadata = rsQuery.getMetaData();
                 columnCount = metadata.getColumnCount();
                 for (int i = 1; i <= columnCount; i++) {
-                    rs.addColumn(metadata.getColumnName(i), metadata.getColumnType(i), 
+                    if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")&& spatialFieldIndex==-1) {
+                        spatialFieldIndex = i;
+                    }
+                    rs.addColumn(metadata.getColumnName(i), metadata.getColumnType(i),
                             metadata.getColumnTypeName(i), metadata.getPrecision(i), metadata.getScale(i));
                 }
-            } finally {
-                if(rsQuery!=null){
-                    rsQuery.close();
-                }
-                
-                if (st != null) {
-                    st.close();
-                }
-                
+
+            } catch (SQLException ex) {
+                throw new SQLException(ex);
             }
+            if (spatialFieldIndex == -1) {
+                throw new SQLException("The select query " + selectQuery + " does not contain a geometry field");
+            }
+        }
+
+        /**
+         * Method to perform the select query with a limit clause
+         * @param selectQuery
+         * @return 
+         */
+        private String limitQuery(String selectQuery) {
+            int findLIMIT = selectQuery.lastIndexOf("LIMIT ");
+            int comma = selectQuery.lastIndexOf(";");
+            if (findLIMIT == -1) {
+                if (comma == -1) {
+                    selectQuery += " LIMIT 0;";
+                } else {
+                    selectQuery = selectQuery.substring(0, comma) + " LIMIT 0;";
+                }
+            } else {
+                selectQuery = selectQuery.substring(0, findLIMIT) + " LIMIT 0;";
+            }
+            return selectQuery;
         }
     }
 }
