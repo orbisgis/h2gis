@@ -139,4 +139,13 @@ public class TableLocationTest {
         assertNotSame(TableLocation.parse("MYCATALOG.MYSCHEMA.MYTABLE"), TableLocation.parse("CATALOG2.MYSCHEMA.MYTABLE"));
         assertNotSame(TableLocation.parse("MYSCHEMA.MYTABLE"), TableLocation.parse("PUBLIC.MYTABLE"));
     }
+
+    @Test
+    public void testNumber() {
+        assertEquals("\"2015MyTable\"", new TableLocation("2015MyTable").toString());
+        assertEquals("\"2015MYTABLE\"", new TableLocation("2015MYTABLE").toString(true));
+        assertEquals("\"2015mytable\"", new TableLocation("2015mytable").toString(false));
+        assertEquals("MY2015TABLE", new TableLocation("MY2015TABLE").toString(true));
+        assertEquals("my2015table", new TableLocation("my2015table").toString(false));
+    }
 }
