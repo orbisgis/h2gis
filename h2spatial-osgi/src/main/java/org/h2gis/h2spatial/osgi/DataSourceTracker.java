@@ -66,12 +66,13 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
                         || "tcp".equalsIgnoreCase(properties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL))) {
                     return null;
                 }
-                // Register built-ins functions
-                for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
-                    CreateSpatialExtension.registerFunction(connection.createStatement(),function,"",false);
+                // Check if the database has been properly initialised by the DataSource service provider
+                if(JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
+                    // Register built-ins functions
+                    for (Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
+                        CreateSpatialExtension.registerFunction(connection.createStatement(), function, "", false);
+                    }
                 }
-                CreateSpatialExtension.registerGeometryType(connection);
-                CreateSpatialExtension.registerSpatialTables(connection);
             } finally {
                 connection.close();
             }

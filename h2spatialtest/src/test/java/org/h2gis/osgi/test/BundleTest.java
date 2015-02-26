@@ -29,6 +29,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTReader;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -135,9 +136,15 @@ public class BundleTest {
         if(context.getServiceReference(DataSource.class.getName())==null) {
             // First UnitTest
             // Delete database
-            File dbFile = new File(DB_FILE_PATH+".h2.db");
+            File dbFile = new File(DB_FILE_PATH+".mv.db");
             if(dbFile.exists()) {
                 assertTrue(dbFile.delete());
+            }
+            Connection connection = dataSource.getConnection();
+            try {
+                CreateSpatialExtension.initSpatialExtension(connection);
+            } finally {
+                connection.close();
             }
             context.registerService(DataSource.class.getName(), dataSource, null);
         }
