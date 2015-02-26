@@ -39,8 +39,8 @@ public class TableLocation {
     private String catalog,schema,table;
     /** Recognized by H2 and Postgres */
     private static final String QUOTE_CHAR = "\"";
-    private static final Pattern POSTGRE_SPECIAL_NAME_PATTERN = Pattern.compile("[^a-z0-9_]");
-    private static final Pattern H2_SPECIAL_NAME_PATTERN = Pattern.compile("[^A-Z0-9_]");
+    private static final Pattern POSTGRE_SPECIAL_NAME_PATTERN = Pattern.compile("^[a-z]{1,1}[a-z0-9_]*$");
+    private static final Pattern H2_SPECIAL_NAME_PATTERN = Pattern.compile("^[A-Z]{1,1}[A-Z0-9_]*$");
     private String defaultSchema = "PUBLIC";
 
     /**
@@ -99,9 +99,9 @@ public class TableLocation {
      */
     public static String quoteIdentifier(String identifier, boolean isH2DataBase) {
         if((isH2DataBase && (Constants.H2_RESERVED_WORDS.contains(identifier.toUpperCase())
-                        || H2_SPECIAL_NAME_PATTERN.matcher(identifier).find())) ||
+                        || !H2_SPECIAL_NAME_PATTERN.matcher(identifier).find())) ||
                 (!isH2DataBase && (Constants.POSTGIS_RESERVED_WORDS.contains(identifier.toUpperCase())
-                        || POSTGRE_SPECIAL_NAME_PATTERN.matcher(identifier).find()))) {
+                        || !POSTGRE_SPECIAL_NAME_PATTERN.matcher(identifier).find()))) {
             return quoteIdentifier(identifier);
         } else {
             return identifier;
