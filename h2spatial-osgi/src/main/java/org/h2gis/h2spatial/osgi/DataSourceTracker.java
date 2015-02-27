@@ -61,9 +61,8 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
             try {
                 DatabaseMetaData meta = connection.getMetaData();
                 // If not H2 or in client mode, does not register H2 spatial functions.
-                Properties properties = JDBCUrlParser.parse(meta.getURL());
                 if(!JDBCUtilities.H2_DRIVER_NAME.equals(meta.getDriverName())
-                        || "tcp".equalsIgnoreCase(properties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL))) {
+                        || (meta.getURL() != null && meta.getURL().toLowerCase().startsWith("jdbc:h2:tcp://"))) {
                     return null;
                 }
                 // Check if the database has been properly initialised by the DataSource service provider
