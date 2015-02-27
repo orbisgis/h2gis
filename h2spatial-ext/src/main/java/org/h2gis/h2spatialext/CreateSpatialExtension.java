@@ -70,6 +70,8 @@ import org.h2gis.h2spatialext.function.spatial.trigonometry.ST_Azimuth;
 import org.h2gis.h2spatialext.function.system.DoubleRange;
 import org.h2gis.h2spatialext.function.system.IntegerRange;
 import org.h2gis.network.graph_creator.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -79,6 +81,7 @@ import org.h2gis.network.graph_creator.*;
  * @author Adam Gouge
  */
 public class CreateSpatialExtension {
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateSpatialExtension.class);
 
     /**
      * @return instance of all built-ins functions
@@ -214,7 +217,7 @@ public class CreateSpatialExtension {
                 org.h2gis.h2spatial.CreateSpatialExtension.registerFunction(st, function, "");
             } catch (SQLException ex) {
                 // Catch to register other functions
-                ex.printStackTrace(System.err);
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             }
         }
     }
