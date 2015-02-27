@@ -28,10 +28,8 @@ package org.h2gis.h2spatial.internal.function.spatial.properties;
 import org.h2.util.StringUtils;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.omg.DynamicAny._DynEnumStub;
 
 import java.sql.*;
 import java.util.regex.Matcher;
