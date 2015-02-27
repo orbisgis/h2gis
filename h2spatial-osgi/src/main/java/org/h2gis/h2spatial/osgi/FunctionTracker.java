@@ -67,18 +67,23 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
 
     @Override
     public Function addingService(ServiceReference<Function> reference) {
-        Function function = super.addingService(reference);
-        try {
-            Connection connection = dataSource.getConnection();
+        // Do not register system functions (h2spatial functions) because it should already be done through initialisation.
+        if(reference.getBundle().getBundleId() != context.getBundle().getBundleId()) {
+            Function function = super.addingService(reference);
             try {
-                CreateSpatialExtension.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
-            }finally {
-                connection.close();
+                Connection connection = dataSource.getConnection();
+                try {
+                    CreateSpatialExtension.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
+                } finally {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             }
-        } catch (SQLException ex) {
-            LOGGER.error(ex.getLocalizedMessage(), ex);
+            return function;
+        } else {
+            return super.addingService(reference);
         }
-        return function;
     }
 
     @Override
