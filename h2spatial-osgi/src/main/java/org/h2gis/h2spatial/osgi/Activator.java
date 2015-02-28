@@ -25,7 +25,9 @@
 
 package org.h2gis.h2spatial.osgi;
 
-import org.osgi.framework.Bundle;
+import org.h2gis.h2spatial.CreateSpatialExtension;
+import org.h2gis.h2spatialapi.DriverFunction;
+import org.h2gis.h2spatialapi.Function;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -38,40 +40,27 @@ import javax.sql.DataSource;
  */
 public class Activator implements BundleActivator {
     private ServiceTracker<DataSource,FunctionTracker> databaseTracker;
-    private Bundle bundle;
     //private PermanentFunctionClassLoader classLoader;
 
     @Override
-    public void start(BundleContext bundleContext) throws Exception {
-        bundle = bundleContext.getBundle();
-        //classLoader =new PermanentFunctionClassLoader();
-        //Utils.addClassFactory(classLoader);
-        DataSourceTracker dataSourceTracker = new DataSourceTracker(bundleContext);
-        databaseTracker = new ServiceTracker<DataSource, FunctionTracker>(bundleContext,DataSource.class,dataSourceTracker);
+    public void start(BundleContext bc) throws Exception {
+        for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
+            bc.registerService(Function.class,
+                    function,
+                    null);
+            if(function instanceof DriverFunction) {
+                bc.registerService(DriverFunction.class,
+                        (DriverFunction) function,
+                        null);
+            }
+        }
+        DataSourceTracker dataSourceTracker = new DataSourceTracker(bc);
+        databaseTracker = new ServiceTracker<DataSource, FunctionTracker>(bc,DataSource.class,dataSourceTracker);
         databaseTracker.open();
     }
 
     @Override
     public void stop(BundleContext bundleContext) throws Exception {
         databaseTracker.close();
-        //Utils.removeClassFactory(classLoader);
     }
-
-    /**
-     * Use this bundle class loader instead of H2 one.
-     */
-    /*
-    private class PermanentFunctionClassLoader implements Utils.ClassFactory
-    {
-        @Override
-        public boolean match(String name) {
-            return name.startsWith(DataSourceTracker.PREFIX);
-        }
-
-        @Override
-        public Class<?> loadClass(String name) throws ClassNotFoundException {
-            return bundle.loadClass(name.substring(DataSourceTracker.PREFIX.length()));
-        }
-    }
-    */
 }

@@ -61,17 +61,14 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
             try {
                 DatabaseMetaData meta = connection.getMetaData();
                 // If not H2 or in client mode, does not register H2 spatial functions.
-                Properties properties = JDBCUrlParser.parse(meta.getURL());
                 if(!JDBCUtilities.H2_DRIVER_NAME.equals(meta.getDriverName())
-                        || "tcp".equalsIgnoreCase(properties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL))) {
+                        || (meta.getURL() != null && meta.getURL().toLowerCase().startsWith("jdbc:h2:tcp://"))) {
                     return null;
                 }
-                // Register built-ins functions
-                for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
-                    CreateSpatialExtension.registerFunction(connection.createStatement(),function,"",false);
+                // Check if the database has been properly initialised by the DataSource service provider
+                if(!JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
+                    return null;
                 }
-                CreateSpatialExtension.registerGeometryType(connection);
-                CreateSpatialExtension.registerSpatialTables(connection);
             } finally {
                 connection.close();
             }
