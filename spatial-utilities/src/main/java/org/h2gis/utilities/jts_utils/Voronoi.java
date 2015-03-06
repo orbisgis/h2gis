@@ -18,6 +18,7 @@ public class Voronoi {
     private Quadtree ptQuad = new Quadtree();
     private List<EnvelopeWithIndex> triVertex;
     private double maxDist = 1e-12;
+    private Triple[] triangleNeighbors = new Triple[0];
 
     /**
      * Constructor
@@ -55,6 +56,13 @@ public class Voronoi {
         } else {
             throw new TopologyException("Only (Multi)LineString is accepted as voronoi envelope");
         }
+    }
+
+    /**
+     * @return Graph of triangles
+     */
+    public Triple[] getTriangleNeighbors() {
+        return triangleNeighbors;
     }
 
     /**
@@ -134,7 +142,7 @@ public class Voronoi {
     }
 
     /** Triangle vertex and neighbors information.*/
-    private static class Triple {
+    public static class Triple {
         int a = -1;
         int b = -1;
         int c = -1;
