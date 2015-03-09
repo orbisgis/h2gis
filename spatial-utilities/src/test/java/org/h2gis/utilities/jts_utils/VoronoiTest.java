@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Test class voronoi
@@ -48,6 +50,21 @@ public class VoronoiTest {
         Voronoi voronoi = new Voronoi();
         voronoi.computeVoronoy(mesh);
         Voronoi.Triple[] neigh = voronoi.getTriangleNeighbors();
-        assertEquals(15, neigh.length);
+        assertEquals(mesh.getNumGeometries(), neigh.length);
+        // Check if Neighbor tri B of tri A have tri A as neighbor
+        for(int aIndex = 0; aIndex < neigh.length; aIndex++) {
+            Voronoi.Triple triA = neigh[aIndex];
+            if(triA.getA() != -1) {
+                assertTrue(neigh[triA.getA()].contains(aIndex));
+            }
+            if(triA.getB() != -1) {
+                assertTrue(neigh[triA.getB()].contains(aIndex));
+            }
+            if(triA.getC() != -1) {
+                assertTrue(neigh[triA.getC()].contains(aIndex));
+            }
+            // There is at least two neighbors
+            assertTrue(triA.toString() , triA.getNeighCount() >= 2);
+        }
     }
 }

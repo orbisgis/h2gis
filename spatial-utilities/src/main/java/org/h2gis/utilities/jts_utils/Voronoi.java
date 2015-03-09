@@ -118,7 +118,7 @@ public class Voronoi {
         Triple[] neighbors = new Triple[geometry.getNumGeometries()];
         // Second loop make an index of triangle neighbors
         ptQuad = null;
-        Triple[] triangleNeighbors = new Triple[geometry.getNumGeometries()];
+        triangleNeighbors = new Triple[geometry.getNumGeometries()];
         for(int triId = 0; triId< triangleVertex.length; triId++) {
             Triple triangleIndex = triangleVertex[triId];
             triangleNeighbors[triId] = new Triple(commonEdge(triId,triVertex.get(triangleIndex.a), triVertex.get(triangleIndex.b)),
@@ -143,12 +143,16 @@ public class Voronoi {
 
     /** Triangle vertex and neighbors information.*/
     public static class Triple {
-        int a = -1;
-        int b = -1;
-        int c = -1;
+        private final int a;
+        private final int b;
+        private final int c;
 
         public Triple() {
+            a = -1;
+            b = -1;
+            c = -1;
         }
+
 
         public Triple(int a, int b, int c) {
             this.a = a;
@@ -156,16 +160,39 @@ public class Voronoi {
             this.c = c;
         }
 
-        public void setA(int a) {
-            this.a = a;
+        public int getA() {
+            return a;
         }
 
-        public void setB(int b) {
-            this.b = b;
+        public int getB() {
+            return b;
         }
 
-        public void setC(int c) {
-            this.c = c;
+        public int getC() {
+            return c;
+        }
+
+        int getNeighCount() {
+            int neigh = 0;
+            if(a != -1) {
+                neigh++;
+            }
+            if(b != -1) {
+                neigh++;
+            }
+            if(c != -1) {
+                neigh++;
+            }
+            return neigh;
+        }
+
+        @Override
+        public String toString() {
+            return "Triangle("+a+","+b+","+c+")";
+        }
+
+        public boolean contains(int value) {
+            return value == a || value == b || value == c;
         }
     }
 
@@ -205,19 +232,14 @@ public class Voronoi {
         @Override
         public void visitItem(Object item) {
             EnvelopeWithIndex idx = (EnvelopeWithIndex)item;
-            if(nearest == null) {
+            if(goal == idx.position) {
                 nearest = idx;
-                nearestDistance = goal.distance(nearest.position);
+                throw new RuntimeException("Found..");
             } else {
-                if(goal == idx.position) {
+                double itemDistance = idx.position.distance(goal);
+                if(itemDistance < maxDist && (nearest == null || nearestDistance > itemDistance)) {
                     nearest = idx;
-                    throw new RuntimeException("Found..");
-                } else {
-                    double itemDistance = idx.position.distance(goal);
-                    if(itemDistance < maxDist && nearestDistance > itemDistance) {
-                        nearest = idx;
-                        nearestDistance = itemDistance;
-                    }
+                    nearestDistance = itemDistance;
                 }
             }
         }
