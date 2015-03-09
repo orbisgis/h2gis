@@ -48,8 +48,7 @@ public class VoronoiTest {
     public void testNeighborsComputation() {
         Geometry mesh = getTestDelaunayA();
         Voronoi voronoi = new Voronoi();
-        voronoi.computeVoronoy(mesh);
-        Voronoi.Triple[] neigh = voronoi.getTriangleNeighbors();
+        Voronoi.Triple[] neigh = voronoi.generateTriangleNeighbors(mesh);
         assertEquals(mesh.getNumGeometries(), neigh.length);
         // Check if Neighbor tri B of tri A have tri A as neighbor
         for(int aIndex = 0; aIndex < neigh.length; aIndex++) {
@@ -64,7 +63,7 @@ public class VoronoiTest {
                 assertTrue(neigh[triA.getC()].contains(aIndex));
             }
             // There is at least two neighbors
-            assertTrue(triA.toString() , triA.getNeighCount() >= 2);
+            assertTrue(triA.toString(), triA.getNeighCount() >= 2);
         }
     }
 }

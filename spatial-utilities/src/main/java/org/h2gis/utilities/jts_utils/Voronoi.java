@@ -16,6 +16,7 @@ public class Voronoi {
     private Geometry envelope;
     // In order to compute triangle neighbors we have to set a unique id to points.
     private Quadtree ptQuad = new Quadtree();
+    private Geometry inputTriangles;
     private List<EnvelopeWithIndex> triVertex;
     private double maxDist = 1e-12;
     private Triple[] triangleNeighbors = new Triple[0];
@@ -59,13 +60,6 @@ public class Voronoi {
     }
 
     /**
-     * @return Graph of triangles
-     */
-    public Triple[] getTriangleNeighbors() {
-        return triangleNeighbors;
-    }
-
-    /**
      * Compute unique index for the coordinate
      * Index count from 0 to n
      * If the new vertex is closer than distMerge with an another vertex then it will return its index.
@@ -91,8 +85,14 @@ public class Voronoi {
         return ret.index;
     }
 
-    public Geometry computeVoronoy(Geometry geometry) throws TopologyException {
-        GeometryFactory geometryFactory = geometry.getFactory();
+    /**
+     * Given the input TIN, construct a graph of triangle.
+     * @param geometry Collection of Polygon with 3 vertex.
+     * @return Array of triangle neighbors. Order and count is the same of the input array.
+     * @throws TopologyException If incompatible type geometry is given
+     */
+    public Triple[] generateTriangleNeighbors(Geometry geometry) throws TopologyException {
+        inputTriangles = geometry;
         ptQuad = new Quadtree();
         // In order to compute triangle neighbors we have to set a unique id to points.
         Triple[] triangleVertex = new Triple[geometry.getNumGeometries()];
@@ -115,7 +115,6 @@ public class Voronoi {
                 throw new TopologyException("Voronoi method accept only polygons");
             }
         }
-        Triple[] neighbors = new Triple[geometry.getNumGeometries()];
         // Second loop make an index of triangle neighbors
         ptQuad = null;
         triangleNeighbors = new Triple[geometry.getNumGeometries()];
@@ -126,8 +125,19 @@ public class Voronoi {
                     commonEdge(triId,triVertex.get(triangleIndex.c), triVertex.get(triangleIndex.a)));
         }
         triVertex.clear();
-        List<Coordinate> trianglesCircumcentre = new ArrayList<Coordinate>(geometry.getNumGeometries());
-        return geometry;
+        return triangleNeighbors;
+    }
+
+    /**
+     * Generate Voronoi using the graph of triangle computed by {@link #generateTriangleNeighbors(com.vividsolutions.jts.geom.Geometry)}
+     * @return Collection of LineString (edges of Voronoi)
+     */
+    public Geometry generateVoronoi() {
+        GeometryFactory geometryFactory = inputTriangles.getFactory();
+        if(triangleNeighbors == null || triangleNeighbors.length == 0) {
+            return geometryFactory.createMultiLineString(new LineString[0]);
+        }
+        return inputTriangles;
     }
 
     private int commonEdge(int originTriangle, EnvelopeWithIndex vert1, EnvelopeWithIndex vert2) {
