@@ -76,5 +76,7 @@ public class VoronoiTest {
         Geometry voronoiPoly = voronoi.generateVoronoi(true);
         assertEquals(7, voronoiPoly.getNumGeometries());
         // Generate voronoi edges without boundary
+        Geometry voronoiLines = voronoi.generateVoronoi(false);
+        assertEquals(25, voronoiLines.getNumGeometries());
     }
 }

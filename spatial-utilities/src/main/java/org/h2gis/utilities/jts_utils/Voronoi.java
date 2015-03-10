@@ -121,9 +121,9 @@ public class Voronoi {
                 }
                 triangleVertex[idgeom] = new Triple(getOrAppendVertex(coords[0]), getOrAppendVertex(coords[1]),
                         getOrAppendVertex(coords[2]));
-                triVertex.get(triangleVertex[idgeom].a).addSharingTriangle(idgeom);
-                triVertex.get(triangleVertex[idgeom].b).addSharingTriangle(idgeom);
-                triVertex.get(triangleVertex[idgeom].c).addSharingTriangle(idgeom);
+                for(int triVertexIndex : triangleVertex[idgeom].toArray()) {
+                    triVertex.get(triVertexIndex).addSharingTriangle(idgeom);
+                }
             } else {
                 throw new TopologyException("Voronoi method accept only polygons");
             }
@@ -133,9 +133,9 @@ public class Voronoi {
         triangleNeighbors = new Triple[geometry.getNumGeometries()];
         for(int triId = 0; triId< triangleVertex.length; triId++) {
             Triple triangleIndex = triangleVertex[triId];
-            triangleNeighbors[triId] = new Triple(commonEdge(triId,triVertex.get(triangleIndex.b), triVertex.get(triangleIndex.c)),
-                    commonEdge(triId,triVertex.get(triangleIndex.a), triVertex.get(triangleIndex.c)),
-                    commonEdge(triId,triVertex.get(triangleIndex.b), triVertex.get(triangleIndex.a)));
+            triangleNeighbors[triId] = new Triple(commonEdge(triId,triVertex.get(triangleIndex.getB()), triVertex.get(triangleIndex.getC())),
+                    commonEdge(triId,triVertex.get(triangleIndex.getA()), triVertex.get(triangleIndex.getC())),
+                    commonEdge(triId,triVertex.get(triangleIndex.getB()), triVertex.get(triangleIndex.getA())));
         }
         triVertex.clear();
         return triangleNeighbors;
@@ -239,29 +239,16 @@ public class Voronoi {
                 Geometry geomItem = inputTriangles.getGeometryN(idgeom);
                 if (geomItem instanceof Polygon) {
                     Triple neigh = triangleNeighbors[idgeom];
-                    if (neigh.getA() != -1 && !processedVertex.contains(neigh.getA())) {
-                        // Add voronoi edge between circumcentre of A and current triangle circumcenter
-                        Polygon result = generateVoronoiPolygon(idgeom, triangleVertex[idgeom].getA(), triangleCircumcenter);
-                        if(result != null) {
-                            polygons.add(result);
+                    for(int side = 0;side < 3; side ++) {
+                        int neighIndex = neigh.get(side);
+                        if (neighIndex != -1 && !processedVertex.contains(neighIndex)) {
+                            // Add voronoi edge between circumcentre of A and current triangle circumcenter
+                            Polygon result = generateVoronoiPolygon(idgeom, triangleVertex[idgeom].get(side), triangleCircumcenter);
+                            if(result != null) {
+                                polygons.add(result);
+                            }
+                            processedVertex.add(neighIndex);
                         }
-                        processedVertex.add(neigh.getA());
-                    }
-                    if (neigh.getB() != -1 && !processedVertex.contains(neigh.getB())) {
-                        // Add voronoi edge between circumcentre of A and current triangle circumcenter
-                        Polygon result = generateVoronoiPolygon(idgeom, triangleVertex[idgeom].getB(), triangleCircumcenter);
-                        if(result != null) {
-                            polygons.add(result);
-                        }
-                        processedVertex.add(neigh.getB());
-                    }
-                    if (neigh.getC() != -1 && !processedVertex.contains(neigh.getC())) {
-                        // Add voronoi edge between circumcentre of A and current triangle circumcenter
-                        Polygon result = generateVoronoiPolygon(idgeom, triangleVertex[idgeom].getC(), triangleCircumcenter);
-                        if(result != null) {
-                            polygons.add(result);
-                        }
-                        processedVertex.add(neigh.getC());
                     }
                 } else {
                     throw new TopologyException("Voronoi method accept only polygons");
@@ -271,6 +258,22 @@ public class Voronoi {
         } else {
             //.. later
             List<LineString> lineStrings = new ArrayList<LineString>(triangleCircumcenter.length);
+            for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
+                Geometry geomItem = inputTriangles.getGeometryN(idgeom);
+                if (geomItem instanceof Polygon) {
+                    Triple neigh = triangleNeighbors[idgeom];
+                    for(int side = 0;side < 3; side ++) {
+                        int neighIndex = neigh.get(side);
+                        // If segment not already processed
+                        if (neighIndex > idgeom) {
+                            lineStrings.add(geometryFactory.createLineString(new Coordinate[]{getCircumcenter(idgeom,
+                                    triangleCircumcenter), getCircumcenter(neighIndex, triangleCircumcenter)}));
+                        } else if(neighIndex == -1 && envelope != null) {
+                            //TODO create intersection linestring
+                        }
+                    }
+                }
+            }
             return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
         }
     }
@@ -288,68 +291,67 @@ public class Voronoi {
 
     /** Triangle vertex and neighbors information.*/
     public static class Triple {
-        private final int a;
-        private final int b;
-        private final int c;
+        private final int values[] = new int[3];
 
         public Triple() {
-            a = -1;
-            b = -1;
-            c = -1;
+            values[0] = -1;
+            values[1] = -1;
+            values[2] = -1;
         }
 
 
         public Triple(int a, int b, int c) {
-            this.a = a;
-            this.b = b;
-            this.c = c;
+            values[0] = a;
+            values[1] = b;
+            values[2] = c;
         }
 
         public int getA() {
-            return a;
+            return values[0];
         }
 
         public int getB() {
-            return b;
+            return values[1];
         }
 
         public int getC() {
-            return c;
+            return values[2];
         }
 
         int getNeighCount() {
             int neigh = 0;
-            if(a != -1) {
-                neigh++;
-            }
-            if(b != -1) {
-                neigh++;
-            }
-            if(c != -1) {
-                neigh++;
+            for(int value : values) {
+                if(value != -1) {
+                    neigh++;
+                }
             }
             return neigh;
         }
 
         int getArrayIndex(int value) {
-            if(a == value) {
-                return 0;
-            } else if(b == value) {
-                return 1;
-            } else if(c == value) {
-                return 2;
-            } else {
-                return -1;
+            for(int val : values) {
+                if(val == value) {
+                    return value;
+                }
             }
+            return -1;
+        }
+
+        public int[] toArray() {
+            return values;
+        }
+
+        public int get(int i) {
+            return values[i];
         }
 
         @Override
         public String toString() {
-            return "Triangle("+a+","+b+","+c+")";
+            return "Triangle("+values[0]+","+values[1]+","+values[2]+")";
         }
 
         public boolean contains(int value) {
-            return value == a || value == b || value == c;
+            return getArrayIndex(value) != -1;
         }
     }
 
