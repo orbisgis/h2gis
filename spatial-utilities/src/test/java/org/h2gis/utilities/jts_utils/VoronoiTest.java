@@ -66,4 +66,13 @@ public class VoronoiTest {
             assertTrue(triA.toString(), triA.getNeighCount() >= 2);
         }
     }
+
+    @Test
+    public void testVoronoiPolygon() throws TopologyException {
+        Geometry mesh = getTestDelaunayA();
+        Voronoi voronoi = new Voronoi();
+        voronoi.generateTriangleNeighbors(mesh);
+        Geometry voronoiPoly = voronoi.generateVoronoi(true);
+        assertEquals(15, voronoiPoly.getNumGeometries());
+    }
 }
