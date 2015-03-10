@@ -6,10 +6,7 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.Collection;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test class voronoi
@@ -44,9 +41,21 @@ public class VoronoiTest {
         return builder.getTriangles(gf);
     }
 
-    @Test
-    public void testNeighborsComputation() {
-        Geometry mesh = getTestDelaunayA();
+    private Geometry getTestDelaunayB() {
+        Collection<Coordinate> coords = Arrays.asList(
+                new Coordinate(2,2),
+                new Coordinate(6,3),
+                new Coordinate(4, 7),
+                new Coordinate(2, 8),
+                new Coordinate(1, 6),
+                new Coordinate(3,5)
+        );
+        DelaunayTriangulationBuilder builder = new DelaunayTriangulationBuilder();
+        builder.setSites(coords);
+        return builder.getTriangles(gf);
+    }
+
+    private void testNeighbor(Geometry mesh) {
         Voronoi voronoi = new Voronoi();
         Voronoi.Triple[] neigh = voronoi.generateTriangleNeighbors(mesh);
         assertEquals(mesh.getNumGeometries(), neigh.length);
@@ -68,7 +77,17 @@ public class VoronoiTest {
     }
 
     @Test
-    public void testVoronoiPolygon() throws TopologyException {
+    public void testNeighborsComputationA() {
+        testNeighbor(getTestDelaunayA());
+    }
+
+    @Test
+    public void testNeighborsComputationB() {
+        testNeighbor(getTestDelaunayB());
+    }
+
+    @Test
+    public void testVoronoiNoEnvelopeA() throws TopologyException {
         Geometry mesh = getTestDelaunayA();
         Voronoi voronoi = new Voronoi();
         Voronoi.Triple[] neigh = voronoi.generateTriangleNeighbors(mesh);
@@ -78,6 +97,27 @@ public class VoronoiTest {
         // Generate voronoi edges without boundary
         Geometry voronoiLines = voronoi.generateVoronoi(1);
         assertEquals(25, voronoiLines.getNumGeometries());
+        // Generate voronoi vertex
+        Geometry voronoiPoints = voronoi.generateVoronoi(0);
+        assertEquals(neigh.length, voronoiPoints.getNumGeometries());
+    }
+
+    @Test
+    public void testVoronoiNoEnvelopeB() throws TopologyException {
+        Geometry mesh = getTestDelaunayB();
+        Voronoi voronoi = new Voronoi();
+        Voronoi.Triple[] neigh = voronoi.generateTriangleNeighbors(mesh);
+        // Generate voronoi polygons without boundary
+        Geometry voronoiPoly = voronoi.generateVoronoi(2);
+        assertEquals(1, voronoiPoly.getNumGeometries());
+        // Generate voronoi edges without boundary
+        Geometry voronoiLines = voronoi.generateVoronoi(1);
+        // Check zero length
+        for (int i = 0; i < voronoiLines.getNumGeometries(); i++) {
+            Geometry line = voronoiLines.getGeometryN(i);
+            assertNotEquals(line.getLength(), 0., 1e-12);
+        }
+        assertEquals(4, voronoiLines.getNumGeometries());
         // Generate voronoi vertex
         Geometry voronoiPoints = voronoi.generateVoronoi(0);
         assertEquals(neigh.length, voronoiPoints.getNumGeometries());

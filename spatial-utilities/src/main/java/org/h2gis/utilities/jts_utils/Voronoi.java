@@ -3,6 +3,7 @@ package org.h2gis.utilities.jts_utils;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.index.ItemVisitor;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
+import com.vividsolutions.jts.operation.overlay.snap.GeometrySnapper;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class Voronoi {
     private Quadtree ptQuad = new Quadtree();
     private Geometry inputTriangles;
     private List<EnvelopeWithIndex> triVertex;
-    private double maxDist = 1e-12;
+    private double epsilon = 1e-12;
 
     // Triangle graph
     // Neighbor (Side)
@@ -42,10 +43,10 @@ public class Voronoi {
 
     /**
      * Constructor
-     * @param maxDist When merging triangles vertex, snap tolerance of points
+     * @param epsilon When merging triangles vertex, snap tolerance of points. Snap also when creating output voronoi.
      */
-    public Voronoi(double maxDist) {
-        this.maxDist = maxDist;
+    public Voronoi(double epsilon) {
+        this.epsilon = epsilon;
     }
 
     /**
@@ -80,8 +81,8 @@ public class Voronoi {
      */
     private int getOrAppendVertex(Coordinate newCoord) {
         Envelope queryEnv = new Envelope(newCoord);
-        queryEnv.expandBy(maxDist);
-        QuadTreeVisitor visitor = new QuadTreeVisitor(maxDist, newCoord);
+        queryEnv.expandBy(epsilon);
+        QuadTreeVisitor visitor = new QuadTreeVisitor(epsilon, newCoord);
         try {
             ptQuad.query(queryEnv, visitor);
         } catch (RuntimeException ex) {
@@ -203,11 +204,16 @@ public class Voronoi {
             // Can build voronoi directly
             // Duplicate begin and end to close the loop
             triangleIndexPath.add(triangleIndexPath.get(0));
-            Coordinate[] polygonVertex = new Coordinate[triangleIndexPath.size()];
-            for(int pathIndex = 0; pathIndex < triangleIndexPath.size(); pathIndex ++) {
-                polygonVertex[pathIndex] = getCircumcenter(triangleIndexPath.get(pathIndex), triangleCircumcenter);
+            List<Coordinate> polygonVertex = new ArrayList<Coordinate>(triangleIndexPath.size());
+            Coordinate lastCoord = null;
+            for (Integer aTriangleIndexPath : triangleIndexPath) {
+                Coordinate circumCenter = getCircumcenter(aTriangleIndexPath, triangleCircumcenter);
+                if(lastCoord == null || lastCoord.distance(circumCenter) > epsilon) {
+                    polygonVertex.add(circumCenter);
+                    lastCoord = circumCenter;
+                }
             }
-            return gf.createPolygon(polygonVertex);
+            return gf.createPolygon(polygonVertex.toArray(new Coordinate[polygonVertex.size()]));
         } else {
             // Must complete with boundary
             if(envelope == null) {
@@ -239,15 +245,21 @@ public class Voronoi {
                 Geometry geomItem = inputTriangles.getGeometryN(idgeom);
                 if (geomItem instanceof Polygon) {
                     Triple neigh = triangleNeighbors[idgeom];
-                    for(int side = 0;side < 3; side ++) {
-                        int neighIndex = neigh.get(side);
-                        if (neighIndex != -1 && !processedVertex.contains(neighIndex)) {
-                            // Add voronoi edge between circumcentre of A and current triangle circumcenter
-                            Polygon result = generateVoronoiPolygon(idgeom, triangleVertex[idgeom].get(side), triangleCircumcenter);
-                            if(result != null) {
-                                polygons.add(result);
+                    for(int sideNeigh = 0;sideNeigh < 3; sideNeigh ++) {
+                        int neighIndex = neigh.get(sideNeigh);
+                        for(int vertexSide = 0; vertexSide < 3; vertexSide ++) {
+                            // If vertex is shared by this neighbor (see ascii art of triangle)
+                            if(vertexSide != sideNeigh) {
+                                int vertexIndex = triangleVertex[idgeom].get(vertexSide);
+                                if (neighIndex != -1 && !processedVertex.contains(vertexIndex)) {
+                                    // Add voronoi edge between circumcentre of A and current triangle circumcenter
+                                    Polygon result = generateVoronoiPolygon(idgeom, vertexIndex, triangleCircumcenter);
+                                    if (result != null) {
+                                        polygons.add(result);
+                                    }
+                                    processedVertex.add(vertexIndex);
+                                }
                             }
-                            processedVertex.add(neighIndex);
                         }
                     }
                 } else {
@@ -266,8 +278,11 @@ public class Voronoi {
                         int neighIndex = neigh.get(side);
                         // If segment not already processed
                         if (neighIndex > idgeom) {
-                            lineStrings.add(geometryFactory.createLineString(new Coordinate[]{getCircumcenter(idgeom,
-                                    triangleCircumcenter), getCircumcenter(neighIndex, triangleCircumcenter)}));
+                            LineString lineString = geometryFactory.createLineString(new Coordinate[]{getCircumcenter(idgeom,
+                                    triangleCircumcenter), getCircumcenter(neighIndex, triangleCircumcenter)});
+                            if(lineString.getLength() > epsilon) {
+                                lineStrings.add(lineString);
+                            }
                         } else if(neighIndex == -1 && envelope != null) {
                             //TODO create intersection linestring
                         }
