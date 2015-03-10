@@ -72,7 +72,9 @@ public class VoronoiTest {
         Geometry mesh = getTestDelaunayA();
         Voronoi voronoi = new Voronoi();
         voronoi.generateTriangleNeighbors(mesh);
+        // Generate voronoi polygons without boundary
         Geometry voronoiPoly = voronoi.generateVoronoi(true);
-        assertEquals(15, voronoiPoly.getNumGeometries());
+        assertEquals(7, voronoiPoly.getNumGeometries());
+        // Generate voronoi edges without boundary
     }
 }

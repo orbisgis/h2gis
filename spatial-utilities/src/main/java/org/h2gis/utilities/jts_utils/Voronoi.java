@@ -176,7 +176,8 @@ public class Voronoi {
         return neigh;
     }
 
-    private LineString generateVoronoiEdge(int idTri, int idVertex, Coordinate[] triangleCircumcenter) {
+    private Polygon generateVoronoiPolygon(int idTri, int idVertex, Coordinate[] triangleCircumcenter) {
+        GeometryFactory gf = inputTriangles.getFactory();
         // Generate Voronoi path around a vertex using the same path as given by the graph of triangle neighbors
         List<Integer> triangleIndexPath = navigateTriangleNeigh(idTri, idVertex, -1);
         boolean loop = true;
@@ -198,7 +199,23 @@ public class Voronoi {
                 }
             }
         }
-        return new GeometryFactory().createLineString(new Coordinate[0]);
+        if(loop) {
+            // Can build voronoi directly
+            // Duplicate begin and end to close the loop
+            triangleIndexPath.add(triangleIndexPath.get(0));
+            Coordinate[] polygonVertex = new Coordinate[triangleIndexPath.size()];
+            for(int pathIndex = 0; pathIndex < triangleIndexPath.size(); pathIndex ++) {
+                polygonVertex[pathIndex] = getCircumcenter(triangleIndexPath.get(pathIndex), triangleCircumcenter);
+            }
+            return gf.createPolygon(polygonVertex);
+        } else {
+            // Must complete with boundary
+            if(envelope == null) {
+                return null;
+            } else {
+                return null;
+            }
+        }
     }
 
     private Coordinate getVertexCoordinate(int idTri, int idVertex) {
@@ -215,8 +232,8 @@ public class Voronoi {
             return geometryFactory.createMultiLineString(new LineString[0]);
         }
         Coordinate[] triangleCircumcenter = new Coordinate[inputTriangles.getNumGeometries()];
-        List<LineString> lineStrings = new ArrayList<LineString>(triangleCircumcenter.length);
         if(generatePolygon) {
+            List<Polygon> polygons = new ArrayList<Polygon>(triangleCircumcenter.length);
             Set<Integer> processedVertex = new HashSet<Integer>();
             for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
                 Geometry geomItem = inputTriangles.getGeometryN(idgeom);
@@ -224,27 +241,38 @@ public class Voronoi {
                     Triple neigh = triangleNeighbors[idgeom];
                     if (neigh.getA() != -1 && !processedVertex.contains(neigh.getA())) {
                         // Add voronoi edge between circumcentre of A and current triangle circumcenter
-                        lineStrings.add(generateVoronoiEdge(idgeom, triangleVertex[idgeom].getA(), triangleCircumcenter));
+                        Polygon result = generateVoronoiPolygon(idgeom, triangleVertex[idgeom].getA(), triangleCircumcenter);
+                        if(result != null) {
+                            polygons.add(result);
+                        }
                         processedVertex.add(neigh.getA());
                     }
                     if (neigh.getB() != -1 && !processedVertex.contains(neigh.getB())) {
                         // Add voronoi edge between circumcentre of A and current triangle circumcenter
-                        lineStrings.add(generateVoronoiEdge(idgeom, triangleVertex[idgeom].getB(), triangleCircumcenter));
+                        Polygon result = generateVoronoiPolygon(idgeom, triangleVertex[idgeom].getB(), triangleCircumcenter);
+                        if(result != null) {
+                            polygons.add(result);
+                        }
                         processedVertex.add(neigh.getB());
                     }
                     if (neigh.getC() != -1 && !processedVertex.contains(neigh.getC())) {
                         // Add voronoi edge between circumcentre of A and current triangle circumcenter
-                        lineStrings.add(generateVoronoiEdge(idgeom, triangleVertex[idgeom].getC(), triangleCircumcenter));
+                        Polygon result = generateVoronoiPolygon(idgeom, triangleVertex[idgeom].getC(), triangleCircumcenter);
+                        if(result != null) {
+                            polygons.add(result);
+                        }
                         processedVertex.add(neigh.getC());
                     }
                 } else {
                     throw new TopologyException("Voronoi method accept only polygons");
                 }
             }
+            return geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
         } else {
             //.. later
+            List<LineString> lineStrings = new ArrayList<LineString>(triangleCircumcenter.length);
+            return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
         }
-        return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
     }
 
     private int commonEdge(int originTriangle, EnvelopeWithIndex vert1, EnvelopeWithIndex vert2) {
