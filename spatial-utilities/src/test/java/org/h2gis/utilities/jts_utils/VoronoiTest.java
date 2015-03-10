@@ -71,12 +71,16 @@ public class VoronoiTest {
     public void testVoronoiPolygon() throws TopologyException {
         Geometry mesh = getTestDelaunayA();
         Voronoi voronoi = new Voronoi();
-        voronoi.generateTriangleNeighbors(mesh);
+        Voronoi.Triple[] neigh = voronoi.generateTriangleNeighbors(mesh);
         // Generate voronoi polygons without boundary
-        Geometry voronoiPoly = voronoi.generateVoronoi(true);
+        Geometry voronoiPoly = voronoi.generateVoronoi(2);
         assertEquals(7, voronoiPoly.getNumGeometries());
         // Generate voronoi edges without boundary
-        Geometry voronoiLines = voronoi.generateVoronoi(false);
+        Geometry voronoiLines = voronoi.generateVoronoi(1);
         assertEquals(25, voronoiLines.getNumGeometries());
+        // Generate voronoi vertex
+        Geometry voronoiPoints = voronoi.generateVoronoi(0);
+        assertEquals(neigh.length, voronoiPoints.getNumGeometries());
     }
+
 }

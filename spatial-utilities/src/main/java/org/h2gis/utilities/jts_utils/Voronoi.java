@@ -226,13 +226,13 @@ public class Voronoi {
      * Generate Voronoi using the graph of triangle computed by {@link #generateTriangleNeighbors(com.vividsolutions.jts.geom.Geometry)}
      * @return Collection of LineString (edges of Voronoi)
      */
-    public Geometry generateVoronoi(boolean generatePolygon) throws TopologyException {
+    public GeometryCollection generateVoronoi(int outputDimension) throws TopologyException {
         GeometryFactory geometryFactory = inputTriangles.getFactory();
         if(triangleNeighbors == null || triangleNeighbors.length == 0) {
             return geometryFactory.createMultiLineString(new LineString[0]);
         }
         Coordinate[] triangleCircumcenter = new Coordinate[inputTriangles.getNumGeometries()];
-        if(generatePolygon) {
+        if(outputDimension == 2) {
             List<Polygon> polygons = new ArrayList<Polygon>(triangleCircumcenter.length);
             Set<Integer> processedVertex = new HashSet<Integer>();
             for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
@@ -255,7 +255,7 @@ public class Voronoi {
                 }
             }
             return geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
-        } else {
+        } else if(outputDimension == 1) {
             //.. later
             List<LineString> lineStrings = new ArrayList<LineString>(triangleCircumcenter.length);
             for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
@@ -275,6 +275,15 @@ public class Voronoi {
                 }
             }
             return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+        } else {
+            Coordinate[] circumcenters = new Coordinate[inputTriangles.getNumGeometries()];
+            for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
+                Geometry geomItem = inputTriangles.getGeometryN(idgeom);
+                if (geomItem instanceof Polygon) {
+                    circumcenters[idgeom] = getCircumcenter(idgeom, triangleCircumcenter);
+                }
+            }
+            return geometryFactory.createMultiPoint(circumcenters);
         }
     }
 
