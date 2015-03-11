@@ -16,11 +16,8 @@
  */
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import org.jdelaunay.delaunay.error.DelaunayError;
@@ -126,21 +123,25 @@ public class DelaunayData {
             //Special case when a geometrycollection contains point or multipoint
             if(geom instanceof Point){
                 addPoint((Point) geom);                
-            }
-            else if ( geom instanceof MultiPoint){
+            } else if ( geom instanceof MultiPoint) {
                 addMultiPoint((MultiPoint) geom);
-            }
-            else{
-            Coordinate[] coords = geom.getCoordinates();
-            Coordinate c1 = coords[0];
-            c1.z = Double.isNaN(c1.z) ? 0 : c1.z;
-            Coordinate c2;
-            for (int k = 1; k < coords.length; k++) {
-                c2 = coords[k];
-                c2.z = Double.isNaN(c2.z) ? 0 : c2.z;
-                delaunayEdges.add(new DEdge(new DPoint(c1), new DPoint(c2)));
-                c1 = c2;
-            }
+            } else if(geom instanceof LineString) {
+                Coordinate[] coordinates = geom.getCoordinates();
+                Coordinate c1 = coordinates[0];
+                c1.z = Double.isNaN(c1.z) ? 0 : c1.z;
+                Coordinate c2;
+                for (int k = 1; k < coordinates.length; k++) {
+                    c2 = coordinates[k];
+                    c2.z = Double.isNaN(c2.z) ? 0 : c2.z;
+                    delaunayEdges.add(new DEdge(new DPoint(c1), new DPoint(c2)));
+                    c1 = c2;
+                }
+            } if (geom instanceof Polygon) {
+                Polygon polygon = (Polygon)geom;
+                addGeometry(polygon.getExteriorRing());
+                for(int holeIndex = 0; holeIndex < polygon.getNumInteriorRing(); holeIndex ++) {
+                    addGeometry(polygon.getInteriorRingN(holeIndex));
+                }
             }
         }
     }

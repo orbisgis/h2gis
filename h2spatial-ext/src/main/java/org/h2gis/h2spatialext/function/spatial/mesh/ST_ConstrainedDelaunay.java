@@ -122,14 +122,14 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
         DelaunayData delaunayData = new DelaunayData();
         delaunayData.put(geometry, true);
         //We actually fill the mesh
-        mesh.setPoints(delaunayData.getDelaunayPoints());
         ArrayList<DEdge> edges = delaunayData.getDelaunayEdges();
         if (!edges.isEmpty()) {
             //We have filled the input of our mesh. We can close our source.
-            Collections.sort(edges);
             mesh.setConstraintEdges(edges);
             //If needed, we use the intersection algorithm
             mesh.forceConstraintIntegrity();
+        } else {
+            mesh.setPoints(delaunayData.getDelaunayPoints());
         }
         //we process delaunay
         mesh.processDelaunay();
