@@ -24,13 +24,16 @@ public class Voronoi {
     // Triangle graph
     // Neighbor (Side)
     // Vertex (Uppercase)
-    //
-    //        A
-    //        ^
-    //       / \
-    //      c   b
-    //     /     \
-    //   B(___a___)C
+    //                    A
+    //                   /\
+    //                  /  \
+    //                 /    \
+    //                /c     \b
+    //               /        \
+    //              /          \
+    //             /            \
+    //            /______a_______\
+    //           B                C
     //
     private Triple[] triangleNeighbors = new Triple[0];
     private Triple[] triangleVertex;
@@ -285,6 +288,10 @@ public class Voronoi {
                             }
                         } else if(neighIndex == -1 && envelope != null) {
                             //TODO create intersection linestring
+                            Coordinate from = getCircumcenter(idgeom,
+                                    triangleCircumcenter);
+                            LineSegment sideSeg = new LineSegment();
+                            LineSegment circumToSeg = new LineSegment(from, sideSeg.closestPoint(from));
                         }
                     }
                 }
