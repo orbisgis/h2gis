@@ -57,23 +57,7 @@ public class Voronoi {
      * @param envelope LineString or MultiLineString
      */
     public void setEnvelope(Geometry envelope) throws TopologyException {
-        if(envelope instanceof LineString || envelope instanceof MultiLineString) {
-            this.envelope = envelope;
-        } else if(envelope instanceof Polygon) {
-            this.envelope = ((Polygon) envelope).getExteriorRing();
-        } else if(envelope instanceof MultiPolygon || envelope instanceof GeometryCollection) {
-            GeometryFactory geometryFactory = envelope.getFactory();
-            LineString[] mls = new LineString[envelope.getNumGeometries()];
-            for(int n = 0; n < mls.length; n++) {
-                Geometry subGeometry = envelope.getGeometryN(n);
-                if(subGeometry instanceof Polygon) {
-                    mls[n] = ((Polygon) subGeometry).getExteriorRing();
-                }
-            }
-            this.envelope = geometryFactory.createMultiLineString(mls);
-        } else {
-            throw new TopologyException("Only (Multi)LineString is accepted as voronoi envelope");
-        }
+        this.envelope = envelope.getEnvelope();
     }
 
     /**
@@ -269,7 +253,12 @@ public class Voronoi {
                     throw new TopologyException("Voronoi method accept only polygons");
                 }
             }
-            return geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+            MultiPolygon result = geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+            if(envelope == null) {
+                return result;
+            } else {
+                return (GeometryCollection)envelope.intersection(result);
+            }
         } else if(outputDimension == 1) {
             //.. later
             List<LineString> lineStrings = new ArrayList<LineString>(triangleCircumcenter.length);
@@ -286,17 +275,16 @@ public class Voronoi {
                             if(lineString.getLength() > epsilon) {
                                 lineStrings.add(lineString);
                             }
-                        } else if(neighIndex == -1 && envelope != null) {
-                            //TODO create intersection linestring
-                            Coordinate from = getCircumcenter(idgeom,
-                                    triangleCircumcenter);
-                            LineSegment sideSeg = new LineSegment();
-                            LineSegment circumToSeg = new LineSegment(from, sideSeg.closestPoint(from));
                         }
                     }
                 }
             }
-            return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+            MultiLineString result = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+            if(envelope == null) {
+                return result;
+            } else {
+                return (GeometryCollection)envelope.intersection(result);
+            }
         } else {
             Coordinate[] circumcenters = new Coordinate[inputTriangles.getNumGeometries()];
             for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
@@ -305,7 +293,12 @@ public class Voronoi {
                     circumcenters[idgeom] = getCircumcenter(idgeom, triangleCircumcenter);
                 }
             }
-            return geometryFactory.createMultiPoint(circumcenters);
+            MultiPoint result = geometryFactory.createMultiPoint(circumcenters);
+            if(envelope == null) {
+                return result;
+            } else {
+                return (GeometryCollection)envelope.intersection(result);
+            }
         }
     }
 
