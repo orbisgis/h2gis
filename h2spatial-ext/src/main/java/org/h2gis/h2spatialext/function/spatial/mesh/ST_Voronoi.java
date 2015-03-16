@@ -5,6 +5,7 @@ import com.vividsolutions.jts.triangulate.VoronoiDiagramBuilder;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import com.vividsolutions.jts.triangulate.quadedge.TriangleVisitor;
+import org.h2gis.h2spatial.internal.function.spatial.operators.ST_Union;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiSegments;
 import org.h2gis.utilities.jts_utils.Voronoi;
@@ -62,8 +63,8 @@ public class ST_Voronoi extends DeterministicScalarFunction {
                 // Output directly the polygons
                 return (GeometryCollection) diagramBuilder.getDiagram(geomCollection.getFactory());
             } else if (outputDimension == 1) {
-                // Convert into lineStrings. TODO remove duplicates
-                return ST_ToMultiSegments.createSegments(diagramBuilder.getDiagram(geomCollection.getFactory()));
+                // Convert into lineStrings.
+                return (GeometryCollection)ST_Union.union(ST_ToMultiSegments.createSegments(diagramBuilder.getDiagram(geomCollection.getFactory())));
             } else {
                 // Extract triangles Circumcenter
                 QuadEdgeSubdivision subdivision = diagramBuilder.getSubdivision();
