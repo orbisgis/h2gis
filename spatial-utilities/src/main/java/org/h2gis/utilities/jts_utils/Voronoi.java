@@ -1,9 +1,12 @@
 package org.h2gis.utilities.jts_utils;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.index.ItemVisitor;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
+import com.vividsolutions.jts.math.Vector2D;
 import com.vividsolutions.jts.operation.overlay.snap.GeometrySnapper;
+import com.vividsolutions.jts.triangulate.Segment;
 
 import java.util.*;
 
@@ -14,7 +17,7 @@ import java.util.*;
  */
 public class Voronoi {
     // Bound of Voronoi, may be null
-    private Geometry envelope;
+    private Envelope envelope;
     // In order to compute triangle neighbors we have to set a unique id to points.
     private Quadtree ptQuad = new Quadtree();
     private Geometry inputTriangles;
@@ -56,8 +59,8 @@ public class Voronoi {
      * Optional Voronoi envelope.
      * @param envelope LineString or MultiLineString
      */
-    public void setEnvelope(Geometry envelope) throws TopologyException {
-        this.envelope = envelope.getEnvelope();
+    public void setEnvelope(Envelope envelope) throws TopologyException {
+        this.envelope = envelope;
     }
 
     /**
@@ -132,8 +135,7 @@ public class Voronoi {
     private Coordinate getCircumcenter(int idgeom, Coordinate[] triangleCircumcenter) {
         Coordinate circumcenter = triangleCircumcenter[idgeom];
         if(circumcenter == null) {
-            Coordinate[] coordinates = inputTriangles.getGeometryN(idgeom).getCoordinates();
-            circumcenter = new Triangle(coordinates[0], coordinates[1], coordinates[2]).circumcentre();
+            circumcenter = getTriangle(idgeom).circumcentre();
             triangleCircumcenter[idgeom] = circumcenter;
         }
         return circumcenter;
@@ -215,6 +217,33 @@ public class Voronoi {
         return inputTriangles.getGeometryN(idTri).getCoordinates()[triangleVertex[idTri].getArrayIndex(idVertex)];
     }
 
+    private boolean isCCW(int idTri) {
+        return CGAlgorithms.isCCW(inputTriangles.getGeometryN(idTri).getCoordinates());
+    }
+
+    private Triangle getTriangle(int idTri) {
+        Coordinate[] coordinates = inputTriangles.getGeometryN(idTri).getCoordinates();
+        return new Triangle(coordinates[0], coordinates[1], coordinates[2]);
+    }
+    private LineSegment getTriangleSegment(int idTri, int idSegment) {
+        Coordinate[] coordinates = inputTriangles.getGeometryN(idTri).getCoordinates();
+        int a,b;
+        switch (idSegment) {
+            case 0:
+                a = 1;
+                b = 2;
+                break;
+            case 1:
+                a = 2;
+                b = 0;
+                break;
+            default:
+                a = 0;
+                b = 1;
+        }
+        return new LineSegment(coordinates[a], coordinates[b]);
+    }
+
     /**
      * Generate Voronoi using the graph of triangle computed by {@link #generateTriangleNeighbors(com.vividsolutions.jts.geom.Geometry)}
      * @return Collection of LineString (edges of Voronoi)
@@ -225,6 +254,11 @@ public class Voronoi {
             return geometryFactory.createMultiLineString(new LineString[0]);
         }
         Coordinate[] triangleCircumcenter = new Coordinate[inputTriangles.getNumGeometries()];
+        if(envelope != null) {
+            for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
+                envelope.expandToInclude(getCircumcenter(idgeom, triangleCircumcenter));
+            }
+        }
         if(outputDimension == 2) {
             List<Polygon> polygons = new ArrayList<Polygon>(triangleCircumcenter.length);
             Set<Integer> processedVertex = new HashSet<Integer>();
@@ -257,7 +291,7 @@ public class Voronoi {
             if(envelope == null) {
                 return result;
             } else {
-                return (GeometryCollection)envelope.intersection(result);
+                return (GeometryCollection)geometryFactory.toGeometry(envelope).intersection(result);
             }
         } else if(outputDimension == 1) {
             //.. later
@@ -275,7 +309,26 @@ public class Voronoi {
                             if(lineString.getLength() > epsilon) {
                                 lineStrings.add(lineString);
                             }
+                        } else if(neighIndex == -1 && envelope != null) {
+                            boolean triangleCCW = isCCW(idgeom);
+                            // Create linestring to envelope
+                            LineSegment sideGeom = getTriangleSegment(idgeom, side);
+                            //TODO CCW sides for good rotation
+                            Coordinate circumcenter = getCircumcenter(idgeom,
+                                    triangleCircumcenter);
+                            Vector2D direction = new Vector2D(sideGeom.p0, sideGeom.p1);
+                            direction = direction.normalize().rotate(triangleCCW ? - Math.PI / 2 : Math.PI / 2).multiply(envelope.maxExtent());
+                            LineSegment voronoiLine = new LineSegment(circumcenter, new Coordinate(direction.getX() +
+                                    circumcenter.x, direction.getY() + circumcenter.y));
+                            Geometry lineString = voronoiLine.toGeometry(geometryFactory).intersection(geometryFactory.toGeometry(envelope));
+                            if(lineString instanceof LineString && lineString.getLength() > epsilon) {
+                                lineStrings.add((LineString)lineString);
+                            }
                         }
+                    }
+                    if(envelope != null) {
+                        //TODO split linestring using intersection points
+                        lineStrings.add(((Polygon)geometryFactory.toGeometry(envelope)).getExteriorRing());
                     }
                 }
             }
@@ -283,7 +336,7 @@ public class Voronoi {
             if(envelope == null) {
                 return result;
             } else {
-                return (GeometryCollection)envelope.intersection(result);
+                return (GeometryCollection)geometryFactory.toGeometry(envelope).intersection(result);
             }
         } else {
             Coordinate[] circumcenters = new Coordinate[inputTriangles.getNumGeometries()];
@@ -297,7 +350,7 @@ public class Voronoi {
             if(envelope == null) {
                 return result;
             } else {
-                return (GeometryCollection)envelope.intersection(result);
+                return (GeometryCollection)geometryFactory.toGeometry(envelope).intersection(result);
             }
         }
     }
