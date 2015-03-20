@@ -125,10 +125,10 @@ public class VoronoiTest {
 
     @Test
     public void testVoronoiEnvelope() throws TopologyException {
-        Geometry mesh = getTestDelaunayA();
+        Geometry mesh = getTestDelaunayB();
         Voronoi voronoi = new Voronoi();
-        voronoi.setEnvelope(new Envelope(0, 13, 0, 13));
-        Voronoi.Triple[] neigh = voronoi.generateTriangleNeighbors(mesh);
+        voronoi.setEnvelope(mesh.getEnvelopeInternal());
+        voronoi.generateTriangleNeighbors(mesh);
         // Generate voronoi polygons without boundary
         Geometry voronoiPoly = voronoi.generateVoronoi(1);
         assertEquals(24, voronoiPoly.getNumGeometries());

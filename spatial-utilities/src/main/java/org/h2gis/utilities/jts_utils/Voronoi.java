@@ -313,7 +313,7 @@ public class Voronoi {
         } else if(outputDimension == 1) {
             //.. later
             List<LineString> lineStrings = new ArrayList<LineString>(triangleCircumcenter.length);
-            List<Point> envelopeIntersectionPoints = new ArrayList<Point>();
+            List<LineString> voronoiBorderLines = new ArrayList<LineString>();
             for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
                 Geometry geomItem = inputTriangles.getGeometryN(idgeom);
                 if (geomItem instanceof Polygon) {
@@ -335,10 +335,7 @@ public class Voronoi {
                                 LineString lineString = voronoiSide(idgeom, side, geometryFactory,
                                         getCircumcenter(idgeom, triangleCircumcenter));
                                 if(lineString != null) {
-                                    lineStrings.add(lineString);
-                                    // Add intersection point on border
-                                    envelopeIntersectionPoints.add((Point)((Polygon)geometryFactory.toGeometry(envelope))
-                                            .getExteriorRing().intersection(lineString));
+                                    voronoiBorderLines.add(lineString);
                                 }
                             }
                         }
@@ -349,17 +346,14 @@ public class Voronoi {
             }
             // Generate envelope segments
             if(envelope != null) {
-                for(Coordinate coordinate : geometryFactory.toGeometry(envelope).getCoordinates()) {
-                    envelopeIntersectionPoints.add(geometryFactory.createPoint(coordinate));
+                voronoiBorderLines.add(((Polygon)geometryFactory.toGeometry(envelope)).getExteriorRing());
+                MultiLineString env = (MultiLineString)geometryFactory.createMultiLineString(voronoiBorderLines.
+                        toArray(new LineString[voronoiBorderLines.size()])).union();
+                for (int i = 0; i < env.getNumGeometries(); i++) {
+                    lineStrings.add((LineString) env.getGeometryN(i));
                 }
-                lineStrings.add(((Polygon)geometryFactory.toGeometry(envelope).convexHull()).getExteriorRing());
             }
-            MultiLineString result = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
-            if(envelope == null) {
-                return result;
-            } else {
-                return (GeometryCollection)geometryFactory.toGeometry(envelope).intersection(result);
-            }
+            return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
         } else {
             Coordinate[] circumcenters = new Coordinate[inputTriangles.getNumGeometries()];
             for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
