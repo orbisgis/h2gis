@@ -347,9 +347,12 @@ public class Voronoi {
                     throw new TopologyException("Voronoi method accept only polygons");
                 }
             }
+            // Generate envelope segments
             if(envelope != null) {
-                //TODO split linestring using intersection points
-                //lineStrings.add(((Polygon)geometryFactory.toGeometry(envelope)).getExteriorRing().);
+                for(Coordinate coordinate : geometryFactory.toGeometry(envelope).getCoordinates()) {
+                    envelopeIntersectionPoints.add(geometryFactory.createPoint(coordinate));
+                }
+                lineStrings.add(((Polygon)geometryFactory.toGeometry(envelope).convexHull()).getExteriorRing());
             }
             MultiLineString result = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
             if(envelope == null) {
