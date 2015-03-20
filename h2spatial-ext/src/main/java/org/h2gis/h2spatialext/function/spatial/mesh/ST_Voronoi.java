@@ -76,7 +76,7 @@ public class ST_Voronoi extends DeterministicScalarFunction {
             // Triangle input use internal method
             Voronoi voronoi = new Voronoi();
             if (envelope != null) {
-                voronoi.setEnvelope(envelope);
+                voronoi.setEnvelope(envelope.getEnvelopeInternal());
             }
             voronoi.generateTriangleNeighbors(geomCollection);
             return voronoi.generateVoronoi(outputDimension);
