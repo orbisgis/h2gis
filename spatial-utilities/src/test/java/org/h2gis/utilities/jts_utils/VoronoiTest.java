@@ -130,8 +130,8 @@ public class VoronoiTest {
         voronoi.setEnvelope(mesh.getEnvelopeInternal());
         voronoi.generateTriangleNeighbors(mesh);
         // Generate voronoi polygons without boundary
-        Geometry voronoiPoly = voronoi.generateVoronoi(1);
-        assertEquals(24, voronoiPoly.getNumGeometries());
+        Geometry voronoiPoly = voronoi.generateVoronoi(2);
+        assertEquals(15, voronoiPoly.getNumGeometries());
     }
 
 }

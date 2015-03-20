@@ -6,6 +6,7 @@ import com.vividsolutions.jts.index.ItemVisitor;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import com.vividsolutions.jts.math.Vector2D;
 import com.vividsolutions.jts.operation.overlay.snap.GeometrySnapper;
+import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.triangulate.Segment;
 
 import java.util.*;
@@ -274,7 +275,7 @@ public class Voronoi {
             return geometryFactory.createMultiLineString(new LineString[0]);
         }
         Coordinate[] triangleCircumcenter = new Coordinate[inputTriangles.getNumGeometries()];
-        if(outputDimension == 2) {
+        if(outputDimension == 2 && envelope == null) {
             List<Polygon> polygons = new ArrayList<Polygon>(triangleCircumcenter.length);
             Set<Integer> processedVertex = new HashSet<Integer>();
             for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
@@ -310,7 +311,7 @@ public class Voronoi {
             } else {
                 return (GeometryCollection)geometryFactory.toGeometry(envelope).intersection(result);
             }
-        } else if(outputDimension == 1) {
+        } else if(outputDimension == 1 || (envelope != null && outputDimension == 2)) {
             //.. later
             List<LineString> lineStrings = new ArrayList<LineString>(triangleCircumcenter.length);
             List<LineString> voronoiBorderLines = new ArrayList<LineString>();
@@ -353,7 +354,14 @@ public class Voronoi {
                     lineStrings.add((LineString) env.getGeometryN(i));
                 }
             }
-            return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+            if(outputDimension == 1) {
+                return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+            } else {
+                Polygonizer polygonizer = new Polygonizer();
+                MultiLineString voronoiSegs = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+                polygonizer.add(voronoiSegs);
+                return geometryFactory.createMultiPolygon(GeometryFactory.toPolygonArray(polygonizer.getPolygons()));
+            }
         } else {
             Coordinate[] circumcenters = new Coordinate[inputTriangles.getNumGeometries()];
             for (int idgeom = 0; idgeom < triangleCircumcenter.length; idgeom++) {
