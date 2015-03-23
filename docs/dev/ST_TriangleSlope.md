@@ -5,7 +5,7 @@ category: geom3D/topography
 is_function: true
 description: Compute the slope of a triangle as a percentage
 prev_section: ST_TriangleDirection
-next_section: geom3D/triangulation
+next_section: ST_VORONOI
 permalink: /docs/dev/ST_TriangleSlope/
 ---
 
