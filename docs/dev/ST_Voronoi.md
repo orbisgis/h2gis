@@ -62,6 +62,9 @@ create table voro as select ST_VORONOI(ST_DELAUNAY(ST_ACCUM(the_geom)), 2 , ST_A
 drop table if exists voroexpl;
 create table voroexpl as select * from st_explode('voro');
 {% endhighlight %}
+
+<img class="displayed" src="../voronoi_vitr.png"/>
+
 ##### See also
 
 * [`ST_Delaunay`](../ST_Delaunay)
