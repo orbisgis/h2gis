@@ -4,8 +4,12 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
 import org.junit.Test;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryBarelyEquals;
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.*;
 
 /**
@@ -124,14 +128,18 @@ public class VoronoiTest {
     }
 
     @Test
-    public void testVoronoiEnvelope() throws TopologyException {
+    public void testVoronoiEnvelope() throws TopologyException,SQLException {
         Geometry mesh = getTestDelaunayB();
         Voronoi voronoi = new Voronoi();
         voronoi.setEnvelope(mesh.getEnvelopeInternal());
         voronoi.generateTriangleNeighbors(mesh);
-        // Generate voronoi polygons without boundary
+        // Generate voronoi polygons with boundaries
         Geometry voronoiPoly = voronoi.generateVoronoi(2);
-        assertEquals(15, voronoiPoly.getNumGeometries());
+        assertEquals(6, voronoiPoly.getNumGeometries());
+        assertGeometryEquals(mesh.getEnvelope().toString(), voronoiPoly.getEnvelope());
+        // Generate voronoi lines with boundaries
+        Geometry voronoiLines = voronoi.generateVoronoi(1);
+        assertEquals(15, voronoiLines.getNumGeometries());
     }
 
 }

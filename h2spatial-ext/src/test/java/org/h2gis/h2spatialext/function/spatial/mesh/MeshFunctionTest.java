@@ -1,14 +1,17 @@
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
+import com.vividsolutions.jts.geom.TopologyException;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -189,4 +192,57 @@ public class MeshFunctionTest {
         rs.close();
     }
 
+    @Test
+    public void test_ST_VORONOI() throws Exception {
+        st.execute("drop table if exists pts;\n" +
+                "create table pts as select ST_MakePoint(A.X + (COS(B.X)), B.X - (SIN(A.X)), ROUND(LOG10(1 + A.X *" +
+                " (5 * B.X)),2)) THE_GEOM from SYSTEM_RANGE(0,50) A,SYSTEM_RANGE(30,50) B;\n" +
+                "drop table if exists voro;\n" +
+                "create table voro as select ST_VORONOI(st_delaunay(st_accum(st_updatez(the_geom,0))), 1, " +
+                "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
+        ResultSet rs = st.executeQuery("select ST_NUMGEOMETRIES(the_geom) cpt,st_length(the_geom) lngth," +
+                "st_numpoints(the_geom) numpts  from voro;");
+        assertTrue(rs.next());
+        assertEquals(3211, rs.getInt(1));
+        assertEquals(2249.430, rs.getDouble(2), 1e-3);
+        assertEquals(6425, rs.getInt(3));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_VORONOIPTS() throws Exception {
+        st.execute("drop table if exists pts;\n" +
+                "create table pts as select ST_MakePoint(A.X + (COS(B.X)), B.X - (SIN(A.X)), ROUND(LOG10(1 + A.X *" +
+                " (5 * B.X)),2)) THE_GEOM from SYSTEM_RANGE(0,50) A,SYSTEM_RANGE(30,50) B;\n" +
+                "drop table if exists voro;\n" +
+                "create table voro as select ST_VORONOI(st_accum(the_geom), 2, " +
+                "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
+        ResultSet rs = st.executeQuery("select ST_NUMGEOMETRIES(the_geom) cpt,st_length(the_geom) lngth," +
+                "st_numpoints(the_geom) numpts  from voro;");
+        assertTrue(rs.next());
+        assertEquals(1071, rs.getInt(1));
+        assertEquals(8941.49, rs.getDouble(2), 1e-2);
+        assertEquals(7465, rs.getInt(3));
+        rs.close();
+    }
+
+
+    @Test(expected = SQLException.class)
+    public void test_ST_VORONOIJTSInvalid() throws Exception {
+        st.execute("drop table if exists pts;\n" +
+                "create table pts as select ST_GeomFromText('MULTIPOINT(0 0, 1 0, 2 0)') the_geom;\n" +
+                "drop table if exists voro;\n" +
+                "create table voro as select ST_VORONOI(st_accum(the_geom), 2, " +
+                "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
+    }
+
+
+    @Test(expected = SQLException.class)
+    public void test_ST_VORONOIInvalid() throws Exception {
+        st.execute("drop table if exists pts;\n" +
+                "create table pts as select ST_GeomFromText('MULTIPOINT(0 0, 1 0, 2 0)') the_geom;\n" +
+                "drop table if exists voro;\n" +
+                "create table voro as select ST_VORONOI(ST_DELAUNAY(st_accum(the_geom)), 2, " +
+                "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
+    }
 }
