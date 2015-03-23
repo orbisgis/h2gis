@@ -198,7 +198,7 @@ public class MeshFunctionTest {
                 "create table pts as select ST_MakePoint(A.X + (COS(B.X)), B.X - (SIN(A.X)), ROUND(LOG10(1 + A.X *" +
                 " (5 * B.X)),2)) THE_GEOM from SYSTEM_RANGE(0,50) A,SYSTEM_RANGE(30,50) B;\n" +
                 "drop table if exists voro;\n" +
-                "create table voro as select ST_VORONOI(st_delaunay(st_accum(st_updatez(the_geom,0))), 1, " +
+                "create table voro as select ST_VORONOI(st_delaunay(st_accum(the_geom)), 1, " +
                 "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
         ResultSet rs = st.executeQuery("select ST_NUMGEOMETRIES(the_geom) cpt,st_length(the_geom) lngth," +
                 "st_numpoints(the_geom) numpts  from voro;");

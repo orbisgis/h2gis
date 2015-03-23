@@ -8,6 +8,7 @@ import com.vividsolutions.jts.math.Vector2D;
 import com.vividsolutions.jts.operation.overlay.snap.GeometrySnapper;
 import com.vividsolutions.jts.operation.polygonize.Polygonizer;
 import com.vividsolutions.jts.triangulate.Segment;
+import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeTriangle;
 
 import java.util.*;
 
@@ -19,11 +20,10 @@ import java.util.*;
 public class Voronoi {
     // Bound of Voronoi, may be null
     private Envelope envelope;
-    // In order to compute triangle neighbors we have to set a unique id to points.
-    private Quadtree ptQuad = new Quadtree();
     private Geometry inputTriangles;
     private List<EnvelopeWithIndex> triVertex;
     private double epsilon = 1e-12;
+    private boolean hasZ = false;
 
     // Triangle graph
     // Neighbor (Side)
@@ -70,7 +70,7 @@ public class Voronoi {
      * If the new vertex is closer than distMerge with an another vertex then it will return its index.
      * @return The index of the vertex
      */
-    private int getOrAppendVertex(Coordinate newCoord) {
+    private int getOrAppendVertex(Coordinate newCoord, Quadtree ptQuad) {
         Envelope queryEnv = new Envelope(newCoord);
         queryEnv.expandBy(epsilon);
         QuadTreeVisitor visitor = new QuadTreeVisitor(epsilon, newCoord);
@@ -98,7 +98,10 @@ public class Voronoi {
      */
     public Triple[] generateTriangleNeighbors(Geometry geometry) throws TopologyException {
         inputTriangles = geometry;
-        ptQuad = new Quadtree();
+        CoordinateSequenceDimensionFilter sequenceDimensionFilter = new CoordinateSequenceDimensionFilter();
+        geometry.apply(sequenceDimensionFilter);
+        hasZ = sequenceDimensionFilter.getDimension() == CoordinateSequenceDimensionFilter.XYZ;
+        Quadtree ptQuad = new Quadtree();
         // In order to compute triangle neighbors we have to set a unique id to points.
         triangleVertex = new Triple[geometry.getNumGeometries()];
         // Final size of tri vertex is not known at the moment. Give just an hint
@@ -111,8 +114,8 @@ public class Voronoi {
                 if(coords.length != 4) {
                     throw new TopologyException("Voronoi method accept only triangles");
                 }
-                triangleVertex[idgeom] = new Triple(getOrAppendVertex(coords[0]), getOrAppendVertex(coords[1]),
-                        getOrAppendVertex(coords[2]));
+                triangleVertex[idgeom] = new Triple(getOrAppendVertex(coords[0], ptQuad),
+                        getOrAppendVertex(coords[1], ptQuad), getOrAppendVertex(coords[2], ptQuad));
                 for(int triVertexIndex : triangleVertex[idgeom].toArray()) {
                     triVertex.get(triVertexIndex).addSharingTriangle(idgeom);
                 }
@@ -133,10 +136,47 @@ public class Voronoi {
         return triangleNeighbors;
     }
 
+    private boolean triangleContainsPoint(Triangle tri, Coordinate pt) {
+        return CGAlgorithms.isPointInRing(pt, new Coordinate[]{tri.p0, tri.p1, tri.p2, tri.p0});
+    }
+
+    private double fetchZ(Coordinate pt, int idGeom) {
+        Triangle curTri = getTriangle(idGeom);
+        while(!triangleContainsPoint(curTri, pt)) {
+            // Fetch neighbor where pt lies at the other side of triangle segment
+            int bestNeigh = -1;
+            for(int idSeg = 0; idSeg < 3; idSeg++) {
+                LineSegment seg = getTriangleSegment(idGeom, idSeg);
+                int ptPos = CGAlgorithms.orientationIndex(seg.p0, seg.p1, pt);
+                if(CGAlgorithms.isCCW(inputTriangles.getGeometryN(idGeom).getCoordinates())) {
+                    ptPos = -ptPos;
+                }
+                if(ptPos == 1) {
+                    bestNeigh = idSeg;
+                    break;
+                } else if(ptPos == 0 && bestNeigh == -1) {
+                    bestNeigh = idSeg;
+                }
+            }
+            if(bestNeigh != -1) {
+                idGeom = triangleNeighbors[idGeom].get(bestNeigh);
+                if(idGeom >= 0) {
+                    curTri = getTriangle(idGeom);
+                } else {
+                    return Double.NaN;
+                }
+            }
+        }
+        return curTri.interpolateZ(pt);
+    }
+
     private Coordinate getCircumcenter(int idgeom, Coordinate[] triangleCircumcenter) {
         Coordinate circumcenter = triangleCircumcenter[idgeom];
         if(circumcenter == null) {
             circumcenter = getTriangle(idgeom).circumcentre();
+            if(hasZ) {
+                circumcenter = new Coordinate(circumcenter.x, circumcenter.y, fetchZ(circumcenter, idgeom));
+            }
             triangleCircumcenter[idgeom] = circumcenter;
         }
         return circumcenter;
@@ -212,10 +252,6 @@ public class Voronoi {
                 return null;
             }
         }
-    }
-
-    private Coordinate getVertexCoordinate(int idTri, int idVertex) {
-        return inputTriangles.getGeometryN(idTri).getCoordinates()[triangleVertex[idTri].getArrayIndex(idVertex)];
     }
 
     private boolean isCCW(int idTri) {
