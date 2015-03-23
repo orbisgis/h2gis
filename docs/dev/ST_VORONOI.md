@@ -5,7 +5,7 @@ category: geom3D/topography
 is_function: true
 description: Create a Voronoi diagram.
 prev_section: ST_TriangleSlope
-next_section: 
+next_section: geom3D/triangulation
 permalink: /docs/dev/ST_Voronoi/
 ---
 
