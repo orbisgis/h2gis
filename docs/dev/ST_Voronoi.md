@@ -28,6 +28,7 @@ ST_VORONOI(THE_GEOM MULTIPOINTS)
 Create Voronoi diagram from a set of points or a delaunay mesh.
 
 `OUT_DIMENSION` Geometry dimension of voronoi returned:
+
  - 0 for voronoi vertex (circumcenter of delaunay triangles)
  - 1 for voronoi edges
  - 2 (default) for voronoi polygons
@@ -36,7 +37,7 @@ Create Voronoi diagram from a set of points or a delaunay mesh.
 
 If the input is a `MULTIPOINT` then a [QuadEdge delaunay graph](http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/triangulate/VoronoiDiagramBuilder.html) is produced internally with a minimal envelope. At the final step the voronoi polygons/lines/vertex are produced. Z values are ignored.
 
-## MULTIPOLYGON input
+#### MULTIPOLYGON input
 
 If the input is  a `MULTIPOLYGON` made of triangles mesh. Using geometry coordinates this function compute the triangle neighbors of the provided mesh.
 
