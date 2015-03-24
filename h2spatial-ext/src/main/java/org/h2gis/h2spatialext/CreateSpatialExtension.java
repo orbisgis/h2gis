@@ -57,6 +57,7 @@ import org.h2gis.h2spatialext.function.spatial.edit.*;
 import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
+import org.h2gis.h2spatialext.function.spatial.mesh.ST_Voronoi;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
 import org.h2gis.h2spatialext.function.spatial.processing.*;
@@ -189,7 +190,8 @@ public class CreateSpatialExtension {
                 new ST_SideBuffer(),
                 new ST_RingSideBuffer(),
                 new ST_SunPosition(),
-                new ST_GeometryShadow()};
+                new ST_GeometryShadow(),
+                new ST_Voronoi()};
     }
 
     /**
