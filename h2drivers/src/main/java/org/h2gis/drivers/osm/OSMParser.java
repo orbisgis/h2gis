@@ -158,6 +158,9 @@ public class OSMParser extends DefaultHandler {
             } else if(inputFile.getName().endsWith(".osm.bz2")) {
                 parser.parse(new InputSource(new BZip2CompressorInputStream(fs)));
             }
+            else{
+                throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
+            }
             success = true;
         } catch (SAXException ex) {
             throw new SQLException(ex);

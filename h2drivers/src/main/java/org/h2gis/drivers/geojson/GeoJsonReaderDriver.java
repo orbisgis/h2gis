@@ -47,6 +47,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 
 /**
@@ -89,19 +90,13 @@ public class GeoJsonReaderDriver {
      * Read the GeoJSON file.
      *
      * @param progress
+     * @throws java.sql.SQLException
+     * @throws java.io.IOException
      */
     public void read(ProgressVisitor progress) throws SQLException, IOException {
-        String path = fileName.getAbsolutePath();
-        String extension = "";
-        int i = path.lastIndexOf('.');
-        if (i >= 0) {
-            extension = path.substring(i + 1);
-        }
-        if (extension.equalsIgnoreCase("geojson")) {
+        if (FileUtil.isFileImportable(fileName, "geojson")) {
             parseGeoJson(progress);
-        } else {
-            throw new SQLException("Please geojson extension.");
-        }
+        } 
     }
 
     /**

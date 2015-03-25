@@ -34,6 +34,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.h2gis.drivers.utility.FileUtil;
 
 /**
  * SQL Function to copy GPX File data into a Table.
@@ -61,12 +62,11 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      * @throws java.sql.SQLException
      */
     public static void readGPX(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        File file = new File(fileName);
-        if (!file.exists()) {
-            throw new FileNotFoundException("The following file does not exists:\n" + fileName);
+        File file = URIUtility.fileFromString(fileName);
+        if (FileUtil.isFileImportable(file, "gpx")) {
+            GPXDriverFunction gpxdf = new GPXDriverFunction();
+            gpxdf.importFile(connection, tableReference, URIUtility.fileFromString(fileName), new EmptyProgressVisitor());
         }
-        GPXDriverFunction gpxdf = new GPXDriverFunction();
-        gpxdf.importFile(connection, tableReference, URIUtility.fileFromString(fileName), new EmptyProgressVisitor());
     }
 
     /**

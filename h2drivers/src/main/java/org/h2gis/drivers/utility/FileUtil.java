@@ -26,7 +26,9 @@
 package org.h2gis.drivers.utility;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import org.h2gis.utilities.URIUtility;
 
 /**
  * Some utilities
@@ -71,8 +73,9 @@ public class FileUtil {
      * @param prefix
      * @return
      * @throws SQLException 
+     * @throws java.io.FileNotFoundException 
      */
-    public static boolean isFileImportable(File file, String prefix) throws SQLException{
+    public static boolean isFileImportable(File file, String prefix) throws SQLException, FileNotFoundException{
         String path = file.getAbsolutePath();
         String extension = "";
         int i = path.lastIndexOf('.');
@@ -83,7 +86,7 @@ public class FileUtil {
             if (file.exists()) {
                 return true;
             } else {
-                throw new SQLException("The file " + file.getPath() + " doesn't exist.");
+                throw new FileNotFoundException("The following file does not exists:\n"+file.getPath());               
             }
         }
         else{

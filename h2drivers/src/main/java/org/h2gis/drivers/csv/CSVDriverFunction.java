@@ -94,51 +94,53 @@ public class CSVDriverFunction implements DriverFunction{
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-        String table = requestedTable.getTable();
-        ResultSet reader = new Csv().read(fileName.getPath(), null, null);
-        ResultSetMetaData metadata = reader.getMetaData();
-        int columnCount = metadata.getColumnCount();
+        if (FileUtil.isFileImportable(fileName, "csv")) {
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            String table = requestedTable.getTable();
+            ResultSet reader = new Csv().read(fileName.getPath(), null, null);
+            ResultSetMetaData metadata = reader.getMetaData();
+            int columnCount = metadata.getColumnCount();
 
-        StringBuilder createTable = new StringBuilder("CREATE TABLE ");
-        createTable.append(table).append("(");
+            StringBuilder createTable = new StringBuilder("CREATE TABLE ");
+            createTable.append(table).append("(");
 
-        StringBuilder insertTable = new StringBuilder("INSERT INTO ");
-        insertTable.append(table).append(" VALUES(");
+            StringBuilder insertTable = new StringBuilder("INSERT INTO ");
+            insertTable.append(table).append(" VALUES(");
 
-        for (int i = 0; i < columnCount; i++) {
-            createTable.append(metadata.getColumnName(i+1)).append(" VARCHAR,");
-            insertTable.append("?,");
-        }
-        createTable.append(")");
-        insertTable.append(")");
+            for (int i = 0; i < columnCount; i++) {
+                createTable.append(metadata.getColumnName(i + 1)).append(" VARCHAR,");
+                insertTable.append("?,");
+            }
+            createTable.append(")");
+            insertTable.append(")");
 
-        Statement stmt = connection.createStatement();
-        stmt.execute(createTable.toString());
-        stmt.close();
+            Statement stmt = connection.createStatement();
+            stmt.execute(createTable.toString());
+            stmt.close();
 
-        PreparedStatement pst = connection.prepareStatement(insertTable.toString());
-        long batchSize = 0;
-        try {
-            while (reader.next()) {
-                for (int i = 0; i < columnCount; i++) {
-                    pst.setString(i + 1, reader.getString(i + 1));
+            PreparedStatement pst = connection.prepareStatement(insertTable.toString());
+            long batchSize = 0;
+            try {
+                while (reader.next()) {
+                    for (int i = 0; i < columnCount; i++) {
+                        pst.setString(i + 1, reader.getString(i + 1));
+                    }
+                    pst.addBatch();
+                    batchSize++;
+                    if (batchSize >= BATCH_MAX_SIZE) {
+                        pst.executeBatch();
+                        pst.clearBatch();
+                        batchSize = 0;
+                    }
                 }
-                pst.addBatch();
-                batchSize++;
-                if (batchSize >= BATCH_MAX_SIZE) {
+                if (batchSize > 0) {
                     pst.executeBatch();
-                    pst.clearBatch();
-                    batchSize = 0;
                 }
-            }
-            if (batchSize > 0) {
-                pst.executeBatch();
-            }
 
-        } finally {
-            pst.close();
+            } finally {
+                pst.close();
+            }
         }
-    }
+    }    
 }

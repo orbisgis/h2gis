@@ -430,4 +430,20 @@ public class SHPImportExportTest {
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export.', 'AREA')");
     }
+    
+    @Test(expected = SQLException.class)
+    public void importFileNoExist() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("CALL SHPRead('target/blabla.shp', 'BLABLA')");
+    }
+    
+    @Test(expected = SQLException.class)
+    public void importFileWithBadExtension() throws SQLException, IOException {
+        Statement stat = connection.createStatement();        
+        File file = new File("target/area_export.blabla");
+        file.delete();
+        file.createNewFile();        
+        stat.execute("CALL SHPRead('target/area_export.blabla', 'BLABLA')");
+        file.delete();
+    }
 }

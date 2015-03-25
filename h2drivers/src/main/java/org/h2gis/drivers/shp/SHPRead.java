@@ -35,6 +35,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.h2gis.drivers.utility.FileUtil;
 
 /**
  * SQL Function to copy Shape File data into a Table.
@@ -59,12 +60,11 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      */
     public static void readShape(Connection connection, String fileName, String tableReference,String forceEncoding) throws IOException, SQLException {
         File file = URIUtility.fileFromString(fileName);
-        if(!file.exists()) {
-            throw new FileNotFoundException("The following file does not exists:\n"+fileName);
+        if (FileUtil.isFileImportable(file, "shp")) {
+            SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
+            shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(true),
+                    file, new EmptyProgressVisitor(), forceEncoding);
         }
-        SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(true),
-                file, new EmptyProgressVisitor(), forceEncoding);
     }
 
     /**
