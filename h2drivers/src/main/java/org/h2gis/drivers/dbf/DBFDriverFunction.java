@@ -47,6 +47,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import org.h2gis.drivers.utility.FileUtil;
 
 /**
  * @author Nicolas Fortin
@@ -60,6 +61,7 @@ public class DBFDriverFunction implements DriverFunction {
     }
 
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
+        if(FileUtil.isFileExportable(fileName, "dbf")){
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         // Read table content
@@ -102,6 +104,7 @@ public class DBFDriverFunction implements DriverFunction {
             }
         } finally {
             st.close();
+        }
         }
     }
 

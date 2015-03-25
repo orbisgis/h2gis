@@ -34,6 +34,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.tools.Csv;
+import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
@@ -75,9 +76,7 @@ public class CSVDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        if (fileName.exists()) {
-            throw new SQLException("The file " + fileName.getPath() + " already exists.");
-        }
+        if(FileUtil.isFileExportable(fileName, "csv")){
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         TableLocation location = TableLocation.parse(tableReference, isH2);
         Statement st = null;
@@ -88,6 +87,7 @@ public class CSVDriverFunction implements DriverFunction{
             if (st != null) {
                 st.close();
             }
+        }
         }
         
     }

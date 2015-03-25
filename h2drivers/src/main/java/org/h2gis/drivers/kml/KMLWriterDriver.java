@@ -45,6 +45,7 @@ import java.util.zip.ZipOutputStream;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -75,15 +76,9 @@ public class KMLWriterDriver {
      * @throws SQLException
      */
     public void write(ProgressVisitor progress) throws SQLException {
-        String path = fileName.getAbsolutePath();
-        String extension = "";
-        int i = path.lastIndexOf('.');
-        if (i >= 0) {
-            extension = path.substring(i + 1);
-        }
-        if (extension.equalsIgnoreCase("kml")) {
+        if (FileUtil.isFileExportable(fileName, "kml")) {
             writeKML(progress);
-        } else if (extension.equalsIgnoreCase("kmz")) {
+        } else if (FileUtil.isFileExportable(fileName, "kmz")) {
             String name = fileName.getName();
             int pos = name.lastIndexOf(".");
             writeKMZ(progress, name.substring(0, pos) + ".kml");

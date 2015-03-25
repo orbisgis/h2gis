@@ -46,7 +46,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import org.h2.value.ValueGeometry;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -408,5 +407,27 @@ public class SHPImportExportTest {
         //Since the 'NaN' DOUBLE values for Z coordinates is invalid in a shapefile, it is converted to '0.0'. 
         assertEquals(coords[1].z, 0, 10E-1);
         res.close();
+    }
+    
+    @Test(expected = SQLException.class)
+    public void exportTableWithBadExtensionName() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export.blabla', 'AREA')");
+    }
+    
+    @Test(expected = SQLException.class)
+    public void exportTableWithBadNullExtension() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export.', 'AREA')");
     }
 }

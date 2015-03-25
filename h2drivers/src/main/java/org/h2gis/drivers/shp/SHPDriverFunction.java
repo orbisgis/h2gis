@@ -46,6 +46,7 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.h2gis.drivers.utility.FileUtil;
 
 /**
  * Read/Write Shape files
@@ -65,68 +66,70 @@ public class SHPDriverFunction implements DriverFunction {
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to write, if exists it may be replaced
+     * @param progress to display the IO progress
      * @param encoding File encoding, null will use default encoding
      * @throws SQLException
      * @throws IOException
      */
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        TableLocation location = TableLocation.parse(tableReference, isH2);
-        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-        ProgressVisitor copyProgress = progress.subProcess(recordCount);
-        //
-        // Read Geometry Index and type
-        List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableReference, isH2));
-        if(spatialFieldNames.isEmpty()) {
-            throw new SQLException(String.format("The table %s does not contain a geometry field", tableReference));
-        }
-        int geometryType = SFSUtilities.getGeometryType(connection, TableLocation.parse(tableReference, isH2), spatialFieldNames.get(0));
-        ShapeType shapeType = null;
-        // Read table content
-        Statement st = connection.createStatement();
-        try {
-            ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());        
+        
+        if (FileUtil.isFileExportable(fileName, "shp")) {
+            TableLocation location = TableLocation.parse(tableReference, isH2);
+            int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+            ProgressVisitor copyProgress = progress.subProcess(recordCount);
+            // Read Geometry Index and type
+            List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableReference, isH2));
+            if (spatialFieldNames.isEmpty()) {
+                throw new SQLException(String.format("The table %s does not contain a geometry field", tableReference));
+            }
+            ShapeType shapeType = null;
+            // Read table content
+            Statement st = connection.createStatement();
             try {
-                ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData);
-                if(encoding != null) {
-                    header.setEncoding(encoding);
-                }
-                header.setNumRecords(recordCount);
-                SHPDriver shpDriver = null;
-                Object[] row = new Object[header.getNumFields() + 1];
-                while (rs.next()) {
-                    for(int columnId = 0; columnId < row.length; columnId++) {
-                        row[columnId] = rs.getObject(columnId + 1);
+                ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
+                try {
+                    ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                    DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData);
+                    if (encoding != null) {
+                        header.setEncoding(encoding);
                     }
-                    if(shpDriver == null) {
-                        int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
-                        // If there is not shape type constraint read the first geometry and use the same type
-                        byte[] wkb = rs.getBytes(geoFieldIndex);
-                        if(wkb != null) {
-                            shapeType = getShapeTypeFromGeometryMetaData(GeometryMetaData.getMetaDataFromWKB(wkb));
+                    header.setNumRecords(recordCount);
+                    SHPDriver shpDriver = null;
+                    Object[] row = new Object[header.getNumFields() + 1];
+                    while (rs.next()) {
+                        for (int columnId = 0; columnId < row.length; columnId++) {
+                            row[columnId] = rs.getObject(columnId + 1);
                         }
-                        if(shapeType != null) {
-                            shpDriver = new SHPDriver();
-                            shpDriver.setGeometryFieldIndex(geoFieldIndex - 1);
-                            shpDriver.initDriver(fileName,shapeType , header);
+                        if (shpDriver == null) {
+                            int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
+                            // If there is not shape type constraint read the first geometry and use the same type
+                            byte[] wkb = rs.getBytes(geoFieldIndex);
+                            if (wkb != null) {
+                                shapeType = getShapeTypeFromGeometryMetaData(GeometryMetaData.getMetaDataFromWKB(wkb));
+                            }
+                            if (shapeType != null) {
+                                shpDriver = new SHPDriver();
+                                shpDriver.setGeometryFieldIndex(geoFieldIndex - 1);
+                                shpDriver.initDriver(fileName, shapeType, header);
+                            }
                         }
+                        if (shpDriver != null) {
+                            shpDriver.insertRow(row);
+                        }
+                        copyProgress.endStep();
                     }
-                    if(shpDriver != null) {
-                        shpDriver.insertRow(row);
+                    if (shpDriver != null) {
+                        shpDriver.close();
                     }
-                    copyProgress.endStep();
-                }
-                if(shpDriver != null) {
-                    shpDriver.close();
+                } finally {
+                    rs.close();
                 }
             } finally {
-                rs.close();
+                st.close();
             }
-        } finally {
-            st.close();
+            copyProgress.endOfProgress();
         }
-        copyProgress.endOfProgress();
     }
 
 
@@ -164,6 +167,7 @@ public class SHPDriverFunction implements DriverFunction {
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
+     * @param progress
      * @param forceEncoding If defined use this encoding instead of the one defined in dbf header.
      * @throws SQLException Table write error
      * @throws IOException File read error

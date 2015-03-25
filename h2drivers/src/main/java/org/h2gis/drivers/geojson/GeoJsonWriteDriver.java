@@ -38,6 +38,7 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.h2gis.drivers.utility.FileUtil;
 
 /**
  * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -81,18 +82,11 @@ public class GeoJsonWriteDriver {
      *
      * @param progress
      * @throws SQLException
+     * @throws java.io.IOException
      */
-    public void write(ProgressVisitor progress) throws SQLException, IOException {
-        String path = fileName.getAbsolutePath();
-        String extension = "";
-        int i = path.lastIndexOf('.');
-        if (i >= 0) {
-            extension = path.substring(i + 1);
-        }
-        if (extension.equalsIgnoreCase("geojson")) {
+    public void write(ProgressVisitor progress) throws SQLException, IOException {        
+        if (FileUtil.isFileExportable(fileName, "geojson")) {
             writeGeoJson(progress);
-        } else {
-            throw new SQLException("Please geojson extension.");
         }
     }
 
