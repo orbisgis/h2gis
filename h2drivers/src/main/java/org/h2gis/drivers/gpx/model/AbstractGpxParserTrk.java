@@ -4,6 +4,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.Point;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -84,7 +85,9 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
             point = true;
             GPXPoint trackPoint = new GPXPoint(GpxMetadata.TRKPTFIELDCOUNT);
             Coordinate coordinate = GPXCoordinate.createCoordinate(attributes);
-            trackPoint.setValue(GpxMetadata.THE_GEOM, getGeometryFactory().createPoint(coordinate));
+            Point geom = getGeometryFactory().createPoint(coordinate);
+            geom.setSRID(4326);
+            trackPoint.setValue(GpxMetadata.THE_GEOM, geom);
             trackPoint.setValue(GpxMetadata.PTLAT, coordinate.y);
             trackPoint.setValue(GpxMetadata.PTLON, coordinate.x);
             trackPoint.setValue(GpxMetadata.PTELE, coordinate.z);
@@ -118,9 +121,8 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
             //parent.setTrksegID(getTrksegID());
             //parent.setTrkptID(getTrkptID());
             // Set the track geometry.
-            LineString[] trkArray = new LineString[trkList.size()];
-            trkArray = trkList.toArray(trkArray);
-            MultiLineString geometry = getGeometryFactory().createMultiLineString(trkArray);
+            MultiLineString geometry = getGeometryFactory().createMultiLineString(trkList.toArray(new LineString[trkList.size()]));
+            geometry.setSRID(4326);
             getCurrentLine().setGeometry(geometry);
             // if </trk> markup is found, the currentLine is added in the table rtedbd and the default contentHandler is setted.
             try {
@@ -138,12 +140,11 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
             getReader().setContentHandler(parent);
 
         } else if (getCurrentElement().compareToIgnoreCase("trkseg") == 0) {
-            Coordinate[] trksegArray = new Coordinate[trksegList.size()];
-            trksegArray = trksegList.toArray(trksegArray);
+            Coordinate[] trksegArray = trksegList.toArray(new Coordinate[trksegList.size()]);
             // If there are more than one trackpoint, we can set a geometry to the track segment
             if (trksegList.size() > 1) {
-                GeometryFactory gf = new GeometryFactory();
-                LineString geometry = gf.createLineString(trksegArray);
+                LineString geometry = getGeometryFactory().createLineString(trksegArray);
+                geometry.setSRID(4326);
                 getCurrentSegment().setGeometry(geometry);
                 trkList.add(geometry);
             }

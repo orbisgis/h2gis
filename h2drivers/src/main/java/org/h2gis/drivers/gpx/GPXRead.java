@@ -30,7 +30,6 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.URIUtility;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;

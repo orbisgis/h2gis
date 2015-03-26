@@ -24,6 +24,7 @@
  */
 package org.h2gis.drivers.gpx;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -88,6 +89,7 @@ public class GPXImportTest {
         rs = st.executeQuery("SELECT * FROM GPXDATA_WAYPOINT");
         assertTrue(rs.next());
         assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
+        assertEquals(4326, ((Geometry)rs.getObject("the_geom")).getSRID());
         rs.close();
     }
     

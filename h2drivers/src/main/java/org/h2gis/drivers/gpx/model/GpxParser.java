@@ -25,6 +25,7 @@
 package org.h2gis.drivers.gpx.model;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
@@ -91,7 +92,9 @@ public class GpxParser extends AbstractGpxParserDefault {
             try {
                 GPXPoint currentPoint = new GPXPoint(GpxMetadata.WPTFIELDCOUNT);
                 Coordinate coordinate = GPXCoordinate.createCoordinate(attributes);
-                currentPoint.setValue(GpxMetadata.THE_GEOM, getGeometryFactory().createPoint(coordinate));
+                Point geom = getGeometryFactory().createPoint(coordinate);
+                geom.setSRID(4326);
+                currentPoint.setValue(GpxMetadata.THE_GEOM, geom);
                 currentPoint.setValue(GpxMetadata.PTLAT, coordinate.y);
                 currentPoint.setValue(GpxMetadata.PTLON, coordinate.x);
                 currentPoint.setValue(GpxMetadata.PTELE, coordinate.z);

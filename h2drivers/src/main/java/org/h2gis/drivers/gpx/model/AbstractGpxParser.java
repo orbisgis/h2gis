@@ -132,6 +132,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
 
     /**
      * Gives the XMLReader used to parse the document.
+     * @return 
      */
     public XMLReader getReader() {
         return reader;
@@ -221,7 +222,7 @@ public abstract class AbstractGpxParser extends DefaultHandler {
     /**
      * Set the PreparedStatement of the route points table.
      *
-     * @param rtePreparedStmt
+     * @param rteptPreparedStmt
      */
     public void setRteptPreparedStmt(PreparedStatement rteptPreparedStmt) {
         this.rteptPreparedStmt = rteptPreparedStmt;
