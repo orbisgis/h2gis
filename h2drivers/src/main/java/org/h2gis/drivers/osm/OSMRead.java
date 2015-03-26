@@ -74,13 +74,13 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
         if (!file.exists()) {
             throw new FileNotFoundException("The following file does not exists:\n" + fileName);
         }
-        if (FileUtil.isExtensionWellFormated(file, "osm")) {
+        if (file.getName().toLowerCase().endsWith(".osm")) {
             OSMParser osmp = new OSMParser();
             osmp.read(connection, tableReference, file, new EmptyProgressVisitor());
-        } else if (FileUtil.isExtensionWellFormated(file, ".osm.gz")) {
+        } else if (file.getName().toLowerCase().endsWith(".osm.gz")) {
             OSMParser osmp = new OSMParser();
             osmp.read(connection, tableReference, file, new EmptyProgressVisitor());
-        } else if (FileUtil.isExtensionWellFormated(file, ".osm.bz2")) {
+        } else if (file.getName().toLowerCase().endsWith(".osm.bz2")) {
             OSMParser osmp = new OSMParser();
             osmp.read(connection, tableReference, file, new EmptyProgressVisitor());
         } else {
