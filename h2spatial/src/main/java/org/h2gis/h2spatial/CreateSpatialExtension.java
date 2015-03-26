@@ -64,7 +64,6 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -220,6 +219,7 @@ public class CreateSpatialExtension {
     /**
      * Register view in order to create GEOMETRY_COLUMNS standard table.
      * @param connection Open connection
+     * @throws java.sql.SQLException
      */
     public static void registerSpatialTables(Connection connection) throws SQLException {
         Statement st = connection.createStatement();

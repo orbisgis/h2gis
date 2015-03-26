@@ -355,4 +355,43 @@ public class SFSUtilities {
         }
         return aggregatedEnvelope;
     }
+    
+    /**
+     * Return the srid of the first geometry column of the input table
+     * @param connection
+     * @param table
+     * @return
+     * @throws SQLException 
+     */
+    public static int getSRID(Connection connection, TableLocation table) throws SQLException {
+        ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(), table.getTable());
+        int srid = 0;
+        while (geomResultSet.next()) {
+            srid = geomResultSet.getInt("srid");
+            break;
+        }
+        geomResultSet.close();
+        return srid;
+    }
+    
+    /**
+     * Return the srid of a table for a given field name.
+     * @param connection
+     * @param table
+     * @param fieldName
+     * @return
+     * @throws SQLException 
+     */
+    public static int getSRID(Connection connection, TableLocation table, String fieldName) throws SQLException {
+        ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(), table.getTable());
+        int srid = 0;
+        while (geomResultSet.next()) {
+            if (geomResultSet.getString("f_geometry_column").equals(fieldName)) {
+                srid = geomResultSet.getInt("srid");
+                break;
+            }
+        }
+        geomResultSet.close();
+        return srid;
+    }
 }

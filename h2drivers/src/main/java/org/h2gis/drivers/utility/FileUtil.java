@@ -36,8 +36,6 @@ import java.sql.SQLException;
  */
 public class FileUtil {
     
-  
-    
     /**
      * Check if the file is well formatted regarding an extension prefix.
      * Check also if the file doesn't exist.

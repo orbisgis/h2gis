@@ -25,6 +25,13 @@
 
 package org.h2gis.drivers.shp;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import org.h2.table.Column;
 import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
@@ -33,6 +40,7 @@ import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.drivers.shp.internal.ShapeType;
 import org.h2gis.drivers.shp.internal.ShapefileHeader;
+import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
@@ -40,13 +48,6 @@ import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;
-
-import java.io.File;
-import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import org.h2gis.drivers.utility.FileUtil;
 
 /**
  * Read/Write Shape files
@@ -72,8 +73,7 @@ public class SHPDriverFunction implements DriverFunction {
      * @throws IOException
      */
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());        
-        
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         if (FileUtil.isExtensionWellFormated(fileName, "shp")) {
             TableLocation location = TableLocation.parse(tableReference, isH2);
             int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
@@ -128,6 +128,9 @@ public class SHPDriverFunction implements DriverFunction {
             } finally {
                 st.close();
             }
+            String path = fileName.getAbsolutePath();
+            String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
+            writePrj(connection, location, spatialFieldNames.get(0), new File(nameWithoutExt + ".prj"));
             copyProgress.endOfProgress();
         }
         else{
@@ -323,6 +326,36 @@ public class SHPDriverFunction implements DriverFunction {
                 return "MULTIPOINTZ";
             default:
                 return "GEOMETRY";
+        }
+    }
+
+    /**
+     * Write a prj file according a given SRID code.
+     */
+    private void writePrj(Connection connection, TableLocation location, String geomField, File fileName) throws SQLException, FileNotFoundException {
+        int srid = SFSUtilities.getSRID(connection, location, geomField);
+        if (srid != 0) {
+            StringBuilder sb = new StringBuilder("SELECT \"SRTEXT\" FROM ");
+            sb.append(location.toString()).append(" WHERE \"SRID\" = ?");
+            PreparedStatement ps = connection.prepareStatement(geomField);
+            ps.setInt(1, srid);
+            PrintWriter printWriter = null;
+            ResultSet rs = null;
+            try {
+                rs = ps.executeQuery();
+                rs.next();
+                printWriter = new PrintWriter(fileName);
+                printWriter.println(rs.getString(1));
+            } finally {
+                if (printWriter != null) {
+                    printWriter.close();
+                }
+                if (rs != null) {
+                    rs.close();
+                }
+                ps.close();
+
+            }
         }
     }
 }
