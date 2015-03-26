@@ -25,13 +25,20 @@
 
 package org.h2gis.drivers.shp;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import org.cts.parser.prj.PrjKeyParameters;
+import org.cts.parser.prj.PrjParser;
 import org.h2.table.Column;
 import org.h2gis.drivers.dbf.DBFDriverFunction;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
@@ -41,6 +48,7 @@ import org.h2gis.drivers.shp.internal.SHPDriver;
 import org.h2gis.drivers.shp.internal.ShapeType;
 import org.h2gis.drivers.shp.internal.ShapefileHeader;
 import org.h2gis.drivers.utility.FileUtil;
+import org.h2gis.drivers.utility.PRJUtil;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
@@ -56,6 +64,7 @@ import org.h2gis.utilities.jts_utils.GeometryMetaData;
 public class SHPDriverFunction implements DriverFunction {
     public static String DESCRIPTION = "ESRI shapefile";
     private static final int BATCH_MAX_SIZE = 100;
+    
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
@@ -130,7 +139,7 @@ public class SHPDriverFunction implements DriverFunction {
             }
             String path = fileName.getAbsolutePath();
             String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
-            writePrj(connection, location, spatialFieldNames.get(0), new File(nameWithoutExt + ".prj"), isH2);
+            PRJUtil.writePRJ(connection, location, spatialFieldNames.get(0), new File(nameWithoutExt + ".prj"));
             copyProgress.endOfProgress();
         }
         else{
@@ -201,13 +210,13 @@ public class SHPDriverFunction implements DriverFunction {
                 otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
             }
             String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
-            if(isH2) {
+            int srid = PRJUtil.getSRID(connection, shpDriver.prjFile);
+            if(isH2) {                
                 //H2 Syntax
                 st.execute(String.format("CREATE TABLE %s ("+ pkColName + " SERIAL ,the_geom %s %s)", parse,
                     getSFSGeometryType(shpHeader), types));
             } else {
                 // PostgreSQL Syntax
-                int srid = 0;
                 lastSql = String.format("CREATE TABLE %s ("+ pkColName + " SERIAL PRIMARY KEY, the_geom GEOMETRY(%s, %d) %s)", parse,
                         getPostGISSFSGeometryType(shpHeader),srid, types);
                 st.execute(lastSql);
@@ -327,41 +336,5 @@ public class SHPDriverFunction implements DriverFunction {
             default:
                 return "GEOMETRY";
         }
-    }
-
-    /**
-     * Write a prj file according a given SRID code.
-     * @param connection
-     * @param location
-     * @param geomField
-     * @param fileName
-     * @throws SQLException
-     * @throws FileNotFoundException 
-     */   
-    private void writePrj(Connection connection, TableLocation location, String geomField, File fileName, boolean isH2) throws SQLException, FileNotFoundException {
-        int srid = SFSUtilities.getSRID(connection, location, geomField);
-        if (srid != 0) {
-            StringBuilder sb = new StringBuilder("SELECT SRTEXT FROM ");
-            sb.append("PUBLIC.SPATIAL_REF_SYS ").append(" WHERE SRID = ?");
-            PreparedStatement ps = connection.prepareStatement(sb.toString());
-            ps.setInt(1, srid);
-            PrintWriter printWriter = null;
-            ResultSet rs = null;
-            try {
-                rs = ps.executeQuery();
-                rs.next();
-                printWriter = new PrintWriter(fileName);
-                printWriter.println(rs.getString(1));
-            } finally {
-                if (printWriter != null) {
-                    printWriter.close();
-                }
-                if (rs != null) {
-                    rs.close();
-                }
-                ps.close();
-
-            }
-        }
-    }
+    }    
 }

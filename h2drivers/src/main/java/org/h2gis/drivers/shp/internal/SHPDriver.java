@@ -57,6 +57,7 @@ public class SHPDriver implements FileDriver {
     private IndexFile shxFileReader;
     private int geometryFieldIndex = 0;
     private ShapeType shapeType;
+    public File prjFile;
 
     /**
      * @param geometryFieldIndex The geometry field index in getRow() array.
@@ -147,6 +148,9 @@ public class SHPDriver implements FileDriver {
                         shxFile = otherFile;
                     } else if(fileExt.equalsIgnoreCase("dbf")) {
                         dbfFile = otherFile;
+                    }
+                    else if(fileExt.equalsIgnoreCase("prj")) {
+                        prjFile = otherFile;
                     }
                 }
             }
