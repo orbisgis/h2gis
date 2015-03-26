@@ -446,4 +446,29 @@ public class SHPImportExportTest {
         stat.execute("CALL SHPRead('target/area_export.blabla', 'BLABLA')");
         file.delete();
     }
+    
+    @Test
+    public void exportTableWithNoPRJ() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export.shp', 'AREA')");
+        
+        assertTrue(!new File("target/area_export.prj").exists());
+    }
+    
+    @Test
+    public void exportTableWithPRJ() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY CHECK ST_SRID(THE_GEOM) = 4326, idarea int primary key)");
+        stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 4326), 1)"); 
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export.shp', 'AREA')");
+        
+        assertTrue(new File("target/area_export.prj").exists());
+    }
 }

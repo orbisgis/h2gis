@@ -130,7 +130,7 @@ public class SHPDriverFunction implements DriverFunction {
             }
             String path = fileName.getAbsolutePath();
             String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
-            writePrj(connection, location, spatialFieldNames.get(0), new File(nameWithoutExt + ".prj"));
+            writePrj(connection, location, spatialFieldNames.get(0), new File(nameWithoutExt + ".prj"), isH2);
             copyProgress.endOfProgress();
         }
         else{
@@ -331,13 +331,19 @@ public class SHPDriverFunction implements DriverFunction {
 
     /**
      * Write a prj file according a given SRID code.
-     */
-    private void writePrj(Connection connection, TableLocation location, String geomField, File fileName) throws SQLException, FileNotFoundException {
+     * @param connection
+     * @param location
+     * @param geomField
+     * @param fileName
+     * @throws SQLException
+     * @throws FileNotFoundException 
+     */   
+    private void writePrj(Connection connection, TableLocation location, String geomField, File fileName, boolean isH2) throws SQLException, FileNotFoundException {
         int srid = SFSUtilities.getSRID(connection, location, geomField);
         if (srid != 0) {
-            StringBuilder sb = new StringBuilder("SELECT \"SRTEXT\" FROM ");
-            sb.append(location.toString()).append(" WHERE \"SRID\" = ?");
-            PreparedStatement ps = connection.prepareStatement(geomField);
+            StringBuilder sb = new StringBuilder("SELECT SRTEXT FROM ");
+            sb.append("PUBLIC.SPATIAL_REF_SYS ").append(" WHERE SRID = ?");
+            PreparedStatement ps = connection.prepareStatement(sb.toString());
             ps.setInt(1, srid);
             PrintWriter printWriter = null;
             ResultSet rs = null;
