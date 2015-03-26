@@ -40,6 +40,8 @@ import java.sql.Types;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 import javax.xml.stream.XMLOutputFactory;
@@ -75,15 +77,23 @@ public class KMLWriterDriver {
      * @param progress
      * @throws SQLException
      */
-    public void write(ProgressVisitor progress) throws SQLException {
-        if (FileUtil.isFileExportable(fileName, "kml")) {
-            writeKML(progress);
-        } else if (FileUtil.isFileExportable(fileName, "kmz")) {
-            String name = fileName.getName();
-            int pos = name.lastIndexOf(".");
-            writeKMZ(progress, name.substring(0, pos) + ".kml");
+    public void write(ProgressVisitor progress) throws SQLException {        
+        if (FileUtil.isExtensionWellFormated(fileName, "kml")) {
+            if (!fileName.exists()) {
+                writeKML(progress);
+            } else {
+                throw new SQLException("The file " + fileName.getPath() + " already exists.");
+            }
+        } else if (FileUtil.isExtensionWellFormated(fileName, "kmz")) {
+            if (!fileName.exists()) {
+                String name = fileName.getName();
+                int pos = name.lastIndexOf(".");
+                writeKMZ(progress, name.substring(0, pos) + ".kml");
+            } else {
+                throw new SQLException("The file " + fileName.getPath() + " already exists.");
+            }
         } else {
-            throw new SQLException("Please kml or kmz extension.");
+            throw new SQLException("Please use the extensions .kml or kmz.");
         }
     }
 

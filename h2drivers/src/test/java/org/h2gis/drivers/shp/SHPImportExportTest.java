@@ -74,6 +74,7 @@ public class SHPImportExportTest {
     public void exportTableTestGeomEnd() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/area_export.shp");
+        shpFile.delete();
         stat.execute("DROP TABLE IF EXISTS AREA");
         stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
@@ -100,6 +101,7 @@ public class SHPImportExportTest {
     public void exportTableTestGeomDeb() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/area_export.shp");
+        shpFile.delete();
         stat.execute("DROP TABLE IF EXISTS AREA");
         stat.execute("create table area(the_geom POLYGON, idarea int primary key)");
         stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
@@ -187,6 +189,7 @@ public class SHPImportExportTest {
     public void exportTableWithoutConstraint() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/area_export.shp");
+        shpFile.delete();
         stat.execute("DROP TABLE IF EXISTS AREA");
         stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
         stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
@@ -229,6 +232,7 @@ public class SHPImportExportTest {
         stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
         // Export in target with special chars
         File shpFile = new File("target/area éxport.shp");
+        shpFile.delete();
         DriverFunction exp = new SHPDriverFunction();
         exp.exportTable(connection, "AREA", shpFile,new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS myshp");
@@ -258,6 +262,7 @@ public class SHPImportExportTest {
     public void exportTableLineString() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/line_export.shp");
+        shpFile.delete();
         stat.execute("DROP TABLE IF EXISTS LINE");
         stat.execute("create table LINE(idarea int primary key, the_geom LINESTRING)");
         stat.execute("insert into LINE values(1, 'LINESTRING (-10 109, 90 109, 90 9, -10 9)')");
@@ -297,6 +302,7 @@ public class SHPImportExportTest {
         stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2, False)");
         // Export in target with special chars
         File shpFile = new File("target/test_export.shp");
+        shpFile.delete();
         DriverFunction exp = new SHPDriverFunction();
         exp.exportTable(connection, "AREA", shpFile,new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS myshp");
@@ -314,6 +320,7 @@ public class SHPImportExportTest {
     public void exportTableTestZ() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/area_export.shp");
+        shpFile.delete();
         stat.execute("DROP TABLE IF EXISTS AREA");
         stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
@@ -341,6 +348,7 @@ public class SHPImportExportTest {
     public void exportImportPolygonZ() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/area_export.shp");
+        shpFile.delete();
         stat.execute("DROP TABLE IF EXISTS AREA");
         stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
@@ -369,6 +377,7 @@ public class SHPImportExportTest {
     public void exportImportPointZ() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/punctual_export.shp");
+        shpFile.delete();
         stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
         stat.execute("create table punctual(idarea int primary key, the_geom POINT)");
         stat.execute("insert into punctual values(1, 'POINT(-10 109 5)')");
@@ -390,6 +399,7 @@ public class SHPImportExportTest {
     public void exportImportLineStringZ() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/lineal_export.shp");
+        shpFile.delete();
         stat.execute("DROP TABLE IF EXISTS LINEAL");
         stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
         stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");

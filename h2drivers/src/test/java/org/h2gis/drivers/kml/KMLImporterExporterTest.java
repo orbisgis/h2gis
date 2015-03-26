@@ -27,6 +27,7 @@ package org.h2gis.drivers.kml;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,7 +48,7 @@ public class KMLImporterExporterTest {
 
     private static Connection connection;
     private static final String DB_NAME = "KMLExportTest";
-    private static WKTReader WKT_READER = new WKTReader();
+    private static final WKTReader WKT_READER = new WKTReader();
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -66,6 +67,7 @@ public class KMLImporterExporterTest {
     public void exportKMLPoints() throws SQLException {
         Statement stat = connection.createStatement();
         File kmlFile = new File("target/kml_points.kml");
+        kmlFile.delete();
         stat.execute("DROP TABLE IF EXISTS KML_POINTS");
         stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
         stat.execute("insert into KML_POINTS values(1, ST_Geomfromtext('POINT (2.19 47.58)', 4326), true)");
@@ -80,6 +82,7 @@ public class KMLImporterExporterTest {
     public void exportKMLLineString() throws SQLException {
         Statement stat = connection.createStatement();
         File kmlFile = new File("target/kml_lineString.kml");
+        kmlFile.delete();
         stat.execute("DROP TABLE IF EXISTS KML_LINESTRING");
         stat.execute("create table KML_LINESTRING(id int primary key, the_geom LINESTRING)");
         stat.execute("insert into KML_LINESTRING values(1, ST_Geomfromtext('LINESTRING (2.19 47.58,1.19 46.58)', 4326))");
@@ -94,6 +97,7 @@ public class KMLImporterExporterTest {
     public void exportKMZPoints() throws SQLException {
         Statement stat = connection.createStatement();
         File kmzFile = new File("target/kml_points.kmz");
+        kmzFile.delete();
         stat.execute("DROP TABLE IF EXISTS KML_POINTS");
         stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
         stat.execute("insert into KML_POINTS values(1, ST_Geomfromtext('POINT (2.19 47.58)',4326), true)");
@@ -288,5 +292,37 @@ public class KMLImporterExporterTest {
         } finally {
             stat.close();
         }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void importFileNoExist() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("CALL KMLRead('target/blabla.kml', 'BLABLA')");
+    }
+
+    @Test(expected = SQLException.class)
+    public void importFileWithBadExtension() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File file = new File("target/area_export.blabla");
+        file.delete();
+        file.createNewFile();
+        stat.execute("CALL KMLRead('target/area_export.blabla', 'BLABLA')");
+        file.delete();
+    }
+    
+    @Test(expected = SQLException.class)
+    public void exportKMLExists() throws SQLException {
+        Statement stat = connection.createStatement();
+        File kmlFile = new File("target/kml_lineString.kml");
+        kmlFile.delete();
+        stat.execute("DROP TABLE IF EXISTS KML_LINESTRING");
+        stat.execute("create table KML_LINESTRING(id int primary key, the_geom LINESTRING)");
+        stat.execute("insert into KML_LINESTRING values(1, ST_Geomfromtext('LINESTRING (2.19 47.58,1.19 46.58)', 4326))");
+        stat.execute("insert into KML_LINESTRING values(2, ST_Geomfromtext('LINESTRING (1.06 47.59,1.19 46.58)', 4326))");
+        // Create a KML file
+        stat.execute("CALL KMLWrite('target/kml_lineString.kml', 'KML_LINESTRING')");
+        assertTrue(kmlFile.exists());
+        stat.execute("CALL KMLWrite('target/kml_lineString.kml', 'KML_LINESTRING')");
+        stat.close();
     }
 }

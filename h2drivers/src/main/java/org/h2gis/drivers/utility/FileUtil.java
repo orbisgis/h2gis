@@ -28,7 +28,6 @@ package org.h2gis.drivers.utility;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
-import org.h2gis.utilities.URIUtility;
 
 /**
  * Some utilities
@@ -46,22 +45,15 @@ public class FileUtil {
      * @return
      * @throws SQLException 
      */
-    public static boolean isFileExportable(File file, String prefix) throws SQLException{
-        String path = file.getAbsolutePath();
-        String extension = "";
-        int i = path.lastIndexOf('.');
-        if (i >= 0) {
-            extension = path.substring(i + 1);
-        }
-        if (extension.equalsIgnoreCase(prefix)) {
+    public static boolean isFileExportable(File file, String prefix) throws SQLException {
+        if (isExtensionWellFormated(file, prefix)) {
             if (file.exists()) {
                 throw new SQLException("The file " + file.getPath() + " already exists.");
             } else {
                 return true;
             }
-        }
-        else{
-            throw new SQLException("Please use "+ prefix +" extension.");
+        } else {
+            throw new SQLException("Please use " + prefix + " extension.");
         }
     }
     
@@ -76,21 +68,30 @@ public class FileUtil {
      * @throws java.io.FileNotFoundException 
      */
     public static boolean isFileImportable(File file, String prefix) throws SQLException, FileNotFoundException{
+        if (isExtensionWellFormated(file, prefix)) {
+            if (file.exists()) {
+                return true;
+            } else {
+                throw new FileNotFoundException("The following file does not exists:\n" + file.getPath());
+            }
+        } else {
+            throw new SQLException("Please use " + prefix + " extension.");
+        }
+    }
+    
+    /**
+     * Check if the file has the good extension
+     * @param file
+     * @param prefix
+     * @return 
+     */
+    public static boolean isExtensionWellFormated(File file, String prefix) {
         String path = file.getAbsolutePath();
         String extension = "";
         int i = path.lastIndexOf('.');
         if (i >= 0) {
             extension = path.substring(i + 1);
         }
-        if (extension.equalsIgnoreCase(prefix)) {
-            if (file.exists()) {
-                return true;
-            } else {
-                throw new FileNotFoundException("The following file does not exists:\n"+file.getPath());               
-            }
-        }
-        else{
-            throw new SQLException("Please use "+ prefix +" extension.");
-        }
+        return extension.equalsIgnoreCase(prefix);
     }
 }
