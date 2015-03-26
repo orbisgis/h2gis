@@ -76,7 +76,7 @@ public class CSVDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        if(FileUtil.isFileExportable(fileName, "csv")){
+        if(FileUtil.isExtensionWellFormated(fileName, "csv")){
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         TableLocation location = TableLocation.parse(tableReference, isH2);
         Statement st = null;
@@ -88,6 +88,9 @@ public class CSVDriverFunction implements DriverFunction{
                 st.close();
             }
         }
+        }
+        else{
+            throw new SQLException("Only .csv extension is supported");
         }
         
     }

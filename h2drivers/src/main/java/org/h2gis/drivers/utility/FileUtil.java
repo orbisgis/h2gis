@@ -36,26 +36,7 @@ import java.sql.SQLException;
  */
 public class FileUtil {
     
-    /**
-     * Check if the file is well formatted regarding an extension prefix.
-     * Check also if the file already exists.
-     * 
-     * @param file
-     * @param prefix
-     * @return
-     * @throws SQLException 
-     */
-    public static boolean isFileExportable(File file, String prefix) throws SQLException {
-        if (isExtensionWellFormated(file, prefix)) {
-            if (file.exists()) {
-                throw new SQLException("The file " + file.getPath() + " already exists.");
-            } else {
-                return true;
-            }
-        } else {
-            throw new SQLException("Please use " + prefix + " extension.");
-        }
-    }
+  
     
     /**
      * Check if the file is well formatted regarding an extension prefix.

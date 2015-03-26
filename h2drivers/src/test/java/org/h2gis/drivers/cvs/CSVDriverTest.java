@@ -31,7 +31,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.csv.CSVDriverFunction;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialapi.DriverFunction;
@@ -39,7 +38,6 @@ import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -86,7 +84,6 @@ public class CSVDriverTest {
         stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
         // Export in target with special chars
         File csvFile = new File("target/area éxport.csv");
-        csvFile.delete();
         DriverFunction exp = new CSVDriverFunction();
         exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS mycsv");

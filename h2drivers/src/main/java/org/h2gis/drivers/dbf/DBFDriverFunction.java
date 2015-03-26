@@ -61,50 +61,52 @@ public class DBFDriverFunction implements DriverFunction {
     }
 
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
-        if(FileUtil.isFileExportable(fileName, "dbf")){
-        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        // Read table content
-        Statement st = connection.createStatement();
-        ProgressVisitor lineProgress = null;
-        if(!(progress instanceof EmptyProgressVisitor)) {
-            ResultSet rs = st.executeQuery(String.format("select count(*) from %s", TableLocation.parse(tableReference,isH2).toString(isH2)));
+        if (FileUtil.isExtensionWellFormated(fileName, "dbf")) {
+            int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            // Read table content
+            Statement st = connection.createStatement();
+            ProgressVisitor lineProgress = null;
+            if (!(progress instanceof EmptyProgressVisitor)) {
+                ResultSet rs = st.executeQuery(String.format("select count(*) from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
+                try {
+                    if (rs.next()) {
+                        lineProgress = progress.subProcess(rs.getInt(1));
+                    }
+                } finally {
+                    rs.close();
+                }
+            }
             try {
-                if(rs.next()) {
-                    lineProgress = progress.subProcess(rs.getInt(1));
+                ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
+                try {
+                    ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                    DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
+                    if (encoding != null) {
+                        header.setEncoding(encoding);
+                    }
+                    header.setNumRecords(recordCount);
+                    DBFDriver dbfDriver = new DBFDriver();
+                    dbfDriver.initDriver(fileName, header);
+                    Object[] row = new Object[header.getNumFields()];
+                    while (rs.next()) {
+                        for (int columnId = 0; columnId < row.length; columnId++) {
+                            row[columnId] = rs.getObject(columnId + 1);
+                        }
+                        dbfDriver.insertRow(row);
+                        if (lineProgress != null) {
+                            lineProgress.endStep();
+                        }
+                    }
+                    dbfDriver.close();
+                } finally {
+                    rs.close();
                 }
             } finally {
-                rs.close();
+                st.close();
             }
-        }
-        try {
-            ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
-            try {
-                ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
-                if(encoding != null) {
-                    header.setEncoding(encoding);
-                }
-                header.setNumRecords(recordCount);
-                DBFDriver dbfDriver = new DBFDriver();
-                dbfDriver.initDriver(fileName, header);
-                Object[] row = new Object[header.getNumFields()];
-                while (rs.next()) {
-                    for(int columnId = 0; columnId < row.length; columnId++) {
-                        row[columnId] = rs.getObject(columnId + 1);
-                    }
-                    dbfDriver.insertRow(row);
-                    if(lineProgress != null) {
-                        lineProgress.endStep();
-                    }
-                }
-                dbfDriver.close();
-            } finally {
-                rs.close();
-            }
-        } finally {
-            st.close();
-        }
+        } else {
+            throw new SQLException("Only .dbf extension is supported");
         }
     }
 

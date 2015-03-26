@@ -85,8 +85,10 @@ public class GeoJsonWriteDriver {
      * @throws java.io.IOException
      */
     public void write(ProgressVisitor progress) throws SQLException, IOException {        
-        if (FileUtil.isFileExportable(fileName, "geojson")) {
+        if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
             writeGeoJson(progress);
+        } else {
+            throw new SQLException("Only .geojson extension is supported");
         }
     }
 

@@ -72,7 +72,6 @@ public class DBFImportExportTest {
     public void exportTableTestGeomEnd() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File dbfFile = new File("target/area_export.dbf");
-        dbfFile.delete();        
         stat.execute("DROP TABLE IF EXISTS AREA");
         stat.execute("create table area(idarea int primary key, value DOUBLE, descr CHAR(50))");
         stat.execute("insert into area values(1, 4.9406564584124654, 'main area')");
@@ -175,7 +174,6 @@ public class DBFImportExportTest {
     public void testPkDuplicate() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File dbfFile = new File("target/area_export.dbf");
-        dbfFile.delete();
         stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
         stat.execute("create table area("+H2TableIndex.PK_COLUMN_NAME+" serial, value DOUBLE, descr CHAR(50))");
         stat.execute("insert into area values(null, 4.9406564584124654, 'main area')");

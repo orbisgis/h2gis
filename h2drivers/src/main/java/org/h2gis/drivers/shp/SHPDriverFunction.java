@@ -74,7 +74,7 @@ public class SHPDriverFunction implements DriverFunction {
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());        
         
-        if (FileUtil.isFileExportable(fileName, "shp")) {
+        if (FileUtil.isExtensionWellFormated(fileName, "shp")) {
             TableLocation location = TableLocation.parse(tableReference, isH2);
             int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
             ProgressVisitor copyProgress = progress.subProcess(recordCount);
@@ -129,6 +129,9 @@ public class SHPDriverFunction implements DriverFunction {
                 st.close();
             }
             copyProgress.endOfProgress();
+        }
+        else{
+            throw new SQLException("Only .shp extension is supported");
         }
     }
 
