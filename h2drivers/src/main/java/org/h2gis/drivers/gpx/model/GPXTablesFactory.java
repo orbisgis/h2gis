@@ -51,7 +51,7 @@ public class GPXTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayPointsTableName);
-        sb.append(" (the_geom POINT,id INT,");
+        sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,id INT,");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
@@ -97,7 +97,7 @@ public class GPXTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(routeTableName);
-        sb.append(" (the_geom LineString,id INT,");
+        sb.append(" (the_geom LineString CHECK ST_SRID(THE_GEOM) = 4326,id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
@@ -131,7 +131,7 @@ public class GPXTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(routePointsTable);
-        sb.append(" (the_geom POINT,id INT, ");
+        sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,id INT, ");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
@@ -179,7 +179,7 @@ public class GPXTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(trackTableName);
-        sb.append(" (the_geom MultiLineString,id INT,");
+        sb.append(" (the_geom MultiLineString CHECK ST_SRID(THE_GEOM) = 4326,id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
@@ -213,7 +213,7 @@ public class GPXTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(trackSegementsTableName);
-        sb.append(" (the_geom LINESTRING,id INT,");
+        sb.append(" (the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,id INT,");
         sb.append(GPXTags.EXTENSIONS).append(" TEXT,");
         sb.append("id_track INT);");
         stmt.execute(sb.toString());
@@ -240,7 +240,7 @@ public class GPXTablesFactory {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(trackPointsTableName);
-        sb.append(" (the_geom POINT,id INT, ");
+        sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,id INT, ");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
