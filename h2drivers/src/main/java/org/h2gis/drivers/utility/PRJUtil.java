@@ -67,7 +67,9 @@ public class PRJUtil {
             log.warn("This shapefile has no prj. \n A default srid equals to 0 will be added.");
         } else {
             PrjParser parser = new PrjParser();
-            Map<String, String> p = parser.getParameters(readPRJFile(prjFile));
+            String prjString = readPRJFile(prjFile);
+            if(!prjString.isEmpty()){
+            Map<String, String> p = parser.getParameters(prjString);
             String authorityWithCode = p.get(PrjKeyParameters.REFNAME);
             if (authorityWithCode != null) {
                 String[] authorityNameWithKey = authorityWithCode.split(":");
@@ -92,6 +94,10 @@ public class PRJUtil {
                         ps.close();
                     }
                 }
+            }
+            }
+            else{
+                 log.warn("The prj is empty. \n A default srid equals to 0 will be added.");
             }
 
         }
@@ -144,9 +150,12 @@ public class PRJUtil {
             ResultSet rs = null;
             try {
                 rs = ps.executeQuery();
-                rs.next();
-                printWriter = new PrintWriter(fileName);
-                printWriter.println(rs.getString(1));
+                if (rs.next()) {
+                    printWriter = new PrintWriter(fileName);
+                    printWriter.println(rs.getString(1));
+                } else {
+                    log.warn("This SRID { "+ srid +" } is not supported. \n The PRJ file won't be created.");
+                }
             } finally {
                 if (printWriter != null) {
                     printWriter.close();

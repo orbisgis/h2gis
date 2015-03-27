@@ -211,6 +211,7 @@ public class SHPDriverFunction implements DriverFunction {
             }
             String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
             int srid = PRJUtil.getSRID(connection, shpDriver.prjFile);
+            shpDriver.setSRID(srid);
             if(isH2) {                
                 //H2 Syntax
                 st.execute(String.format("CREATE TABLE %s ("+ pkColName + " SERIAL ,the_geom %s %s)", parse,
