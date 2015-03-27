@@ -80,4 +80,12 @@ public class ProcessingFunctionTest {
         assertGeometryEquals("MULTILINESTRING EMPTY", rs.getBytes(1));
         rs.close();
     }
+
+    @Test
+    public void testLineMerger6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LineMerge('POLYGON((20 20, 40 20, 40 40, 20 40, 20 20))');");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTILINESTRING EMPTY", rs.getBytes(1));
+        rs.close();
+    }
 }
