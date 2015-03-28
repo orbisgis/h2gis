@@ -46,6 +46,7 @@ import static org.h2gis.utilities.GraphConstants.*;
  * constructor.
  *
  * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class GraphCreator<V extends VId, E extends Edge> {
 
@@ -57,10 +58,12 @@ public class GraphCreator<V extends VId, E extends Edge> {
     private int endNodeIndex = -1;
     private int edgeIDIndex = -1;
     private int weightColumnIndex = -1;
+    private int deadWeightColumnIndex = -1;
     private int edgeOrientationIndex = -1;
 
     private final String inputTable;
     private final String weightColumn;
+    private final String deadWeightColumn;
     private final GraphFunctionParser.Orientation globalOrientation;
     private final String edgeOrientationColumnName;
 
@@ -78,6 +81,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * @param globalOrientation         Global orientation
      * @param edgeOrientationColumnName Edge orientation
      * @param weightColumn              Weight column name
+     * @param deadWeightColumn          Dead Weight column name
      * @param vertexClass               Vertex class
      * @param edgeClass                 Edge class
      */
@@ -86,11 +90,13 @@ public class GraphCreator<V extends VId, E extends Edge> {
                         GraphFunctionParser.Orientation globalOrientation,
                         String edgeOrientationColumnName,
                         String weightColumn,
+                        String deadWeightColumn,
                         Class<? extends V> vertexClass,
                         Class<? extends E> edgeClass) {
         this.connection = connection;
         this.inputTable = inputTable;
         this.weightColumn = weightColumn;
+        this.deadWeightColumn = deadWeightColumn;
         this.globalOrientation = globalOrientation;
         this.edgeOrientationColumnName = edgeOrientationColumnName;
         this.vertexClass = vertexClass;
@@ -157,6 +163,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
                 if (columnName.equalsIgnoreCase(EDGE_ID)) edgeIDIndex = i;
                 if (columnName.equalsIgnoreCase(edgeOrientationColumnName)) edgeOrientationIndex = i;
                 if (columnName.equalsIgnoreCase(weightColumn)) weightColumnIndex = i;
+                if (columnName.equalsIgnoreCase(deadWeightColumn)) deadWeightColumnIndex = i;
             }
         } catch (SQLException e) {
             LOGGER.error("Problem accessing edge table metadata.", e);
@@ -169,6 +176,9 @@ public class GraphCreator<V extends VId, E extends Edge> {
         }
         if (weightColumn != null) {
             verifyIndex(weightColumnIndex, weightColumn);
+        }
+        if (deadWeightColumn != null) {
+            verifyIndex(deadWeightColumnIndex, deadWeightColumn);
         }
     }
 
@@ -197,8 +207,12 @@ public class GraphCreator<V extends VId, E extends Edge> {
         final int endNode = edges.getInt(endNodeIndex);
         final int edgeID = edges.getInt(edgeIDIndex);
         double weight = WeightedGraph.DEFAULT_EDGE_WEIGHT;
+        double deadWeight = WeightedGraph.DEFAULT_EDGE_WEIGHT;
         if (weightColumnIndex != -1) {
             weight = edges.getDouble(weightColumnIndex);
+        }
+        if (deadWeightColumnIndex != -1) {
+            deadWeight = edges.getDouble(deadWeightColumnIndex);
         }
         E edge;
         // Undirected graphs are either pseudographs or weighted pseudographs,
@@ -219,10 +233,10 @@ public class GraphCreator<V extends VId, E extends Edge> {
             }
             if (edgeOrientation == UNDIRECTED_EDGE) {
                 if (globalOrientation.equals(GraphFunctionParser.Orientation.DIRECTED)) {
-                    edge = loadDoubleEdge(graph, startNode, endNode, edgeID, weight);
+                    edge = loadDoubleEdge(graph, startNode, endNode, edgeID, weight, deadWeight);
                 } // globalOrientation == Orientation.REVERSED
                 else {
-                    edge = loadDoubleEdge(graph, endNode, startNode, edgeID, weight);
+                    edge = loadDoubleEdge(graph, endNode, startNode, edgeID, weight, deadWeight);
                 }
             } else if (edgeOrientation == DIRECTED_EDGE) {
                 // Reverse a directed edge (global).
@@ -245,6 +259,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
             }
         }
         setEdgeWeight(edge, weight);
+        setEdgeDeadWeight(edge, deadWeight);
         return edge;
     }
 
@@ -264,13 +279,16 @@ public class GraphCreator<V extends VId, E extends Edge> {
                              final int startNode,
                              final int endNode,
                              final int edgeID,
-                             final double weight) throws SQLException {
+                             final double weight,
+                             final double deadWeight) throws SQLException {
 
         // Note: row is ignored since we only need it for weighted graphs.
         final E edgeTo = graph.addEdge(startNode, endNode, edgeID);
         setEdgeWeight(edgeTo, weight);
+        setEdgeDeadWeight(edgeTo, deadWeight);
         final E edgeFrom = graph.addEdge(endNode, startNode, -edgeID);
         setEdgeWeight(edgeFrom, weight);
+        setEdgeDeadWeight(edgeFrom, deadWeight);
         return edgeFrom;
     }
 
@@ -283,6 +301,12 @@ public class GraphCreator<V extends VId, E extends Edge> {
     private void setEdgeWeight(E edge, final double weight) throws SQLException {
         if (edge != null && weightColumnIndex != -1) {
             edge.setWeight(weight);
+        }
+    }
+    
+    private void setEdgeDeadWeight(E edge, final double weight) throws SQLException {
+        if (edge != null && deadWeightColumnIndex != -1) {
+            edge.setDeadWeight(weight);
         }
     }
 }

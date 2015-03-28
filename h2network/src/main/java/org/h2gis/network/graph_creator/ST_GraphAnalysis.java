@@ -31,6 +31,7 @@ import static org.h2gis.utilities.GraphConstants.*;
  * betweenness centrality for edges.
  *
  * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
 
@@ -141,7 +142,7 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                                                        String weight)
             throws SQLException, NoSuchMethodException, InstantiationException,
             IllegalAccessException, InvocationTargetException {
-        final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, weight,
+        final KeyedGraph graph = prepareGraph(connection, inputTable, orientation, weight, null,
                 (weight == null) ? VUCent.class : VWCent.class, EdgeCent.class);
         final DefaultProgressMonitor pm = new DefaultProgressMonitor();
         GraphAnalyzer analyzer = (weight == null) ?

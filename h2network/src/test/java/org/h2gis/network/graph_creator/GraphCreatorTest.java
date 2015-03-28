@@ -32,6 +32,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
@@ -43,6 +44,7 @@ import static org.junit.Assert.assertEquals;
  * Tests the graph creators under all possible configurations.
  *
  * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class GraphCreatorTest {
 
@@ -70,18 +72,18 @@ public class GraphCreatorTest {
 //         \ v| /  7:2     >v|
 //          > 3 -----------> 5
 //               CORMEN
-        st.execute("CREATE TABLE cormen(road LINESTRING, id INT AUTO_INCREMENT PRIMARY KEY, weight DOUBLE, edge_orientation INT);" +
+        st.execute("CREATE TABLE cormen(road LINESTRING, id INT AUTO_INCREMENT PRIMARY KEY, weight DOUBLE, weight_m DOUBLE, edge_orientation INT);" +
                 "INSERT INTO cormen VALUES "
-                + "('LINESTRING (0 1, 1 2)', DEFAULT, 10.0, 1),"
-                + "('LINESTRING (1 2, 2 2)', DEFAULT, 1.0, -1),"
-                + "('LINESTRING (1 2, 0.75 1, 1 0)', DEFAULT, 2.0,  1),"
-                + "('LINESTRING (1 0, 1.25 1, 1 2)', DEFAULT, 3.0,  1),"
-                + "('LINESTRING (0 1, 1 0)', DEFAULT, 5.0,  1),"
-                + "('LINESTRING (1 0, 2 2)', DEFAULT, 9.0,  1),"
-                + "('LINESTRING (1 0, 2 0)', DEFAULT, 2.0,  1),"
-                + "('LINESTRING (2 2, 1.75 1, 2 0)', DEFAULT, 4.0,  1),"
-                + "('LINESTRING (2 0, 2.25 1, 2 2)', DEFAULT, 6.0,  1),"
-                + "('LINESTRING (2 0, 0 1)', DEFAULT, 7.0,  0);");
+                + "('LINESTRING (0 1, 1 2)', DEFAULT, 10.0, 10.0, 1),"
+                + "('LINESTRING (1 2, 2 2)', DEFAULT, 1.0, 1.0, -1),"
+                + "('LINESTRING (1 2, 0.75 1, 1 0)', DEFAULT, 2.0, 2.0, 1),"
+                + "('LINESTRING (1 0, 1.25 1, 1 2)', DEFAULT, 3.0, 3.0, 1),"
+                + "('LINESTRING (0 1, 1 0)', DEFAULT, 5.0, 5.0, 1),"
+                + "('LINESTRING (1 0, 2 2)', DEFAULT, 9.0, 9.0, 1),"
+                + "('LINESTRING (1 0, 2 0)', DEFAULT, 2.0, 2.0, 1),"
+                + "('LINESTRING (2 2, 1.75 1, 2 0)', DEFAULT, 4.0, 4.0, 1),"
+                + "('LINESTRING (2 0, 2.25 1, 2 2)', DEFAULT, 6.0, 6.0, 1),"
+                + "('LINESTRING (2 0, 0 1)', DEFAULT, 7.0, 7.0, 0);");
 
         // In order to not depend on ST_Graph, we simply simulate the output of ST_Graph
         // on the Cormen graph.
@@ -149,8 +151,8 @@ public class GraphCreatorTest {
                 "(8, 'POINT (5 2)');");
         st.execute("DROP TABLE IF EXISTS COPY_EDGES_ALL");
         st.execute("CREATE TABLE COPY_EDGES_ALL AS SELECT * FROM CORMEN_EDGES_ALL");
-        st.execute("INSERT INTO COPY_EDGES_ALL VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1, 11, 6, 7)," +
-                "('LINESTRING (4 2, 5 2)', 12, 2.0, 1, 12, 7, 8)");
+        st.execute("INSERT INTO COPY_EDGES_ALL VALUES ('LINESTRING (3 1, 4 2)', 11, 1.0, 1.0, 1, 11, 6, 7)," +
+                "('LINESTRING (4 2, 5 2)', 12, 2.0, 2.0, 1, 12, 7, 8)");
         st.execute("ALTER TABLE COPY_EDGES_ALL ALTER COLUMN ID SET NOT NULL");
         st.execute("CREATE PRIMARY KEY ON COPY_EDGES_ALL(ID)");
         // Here we create a copy with edges 3, 4, 6, 8, 10 having a weight of
@@ -172,6 +174,8 @@ public class GraphCreatorTest {
         st.execute("CREATE TABLE INF_EDGES_ALL AS SELECT * FROM CORMEN_EDGES_ALL");
         st.execute("UPDATE INF_EDGES_ALL SET WEIGHT=POWER(0, -1) WHERE " +
                 "EDGE_ID=3 OR EDGE_ID=4 OR EDGE_ID=6 OR EDGE_ID=8 OR EDGE_ID=10;");
+        st.execute("UPDATE INF_EDGES_ALL SET WEIGHT_M=POWER(0, -1) WHERE " +
+                "EDGE_ID=3 OR EDGE_ID=4 OR EDGE_ID=6 OR EDGE_ID=8 OR EDGE_ID=10;");
         st.execute("ALTER TABLE INF_EDGES_ALL ALTER COLUMN ID SET NOT NULL");
         st.execute("CREATE PRIMARY KEY ON INF_EDGES_ALL(ID)");
     }
@@ -181,7 +185,7 @@ public class GraphCreatorTest {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "CORMEN_EDGES_ALL",
-                        GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", null,
+                        GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", null, null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedPseudoG);
@@ -207,23 +211,24 @@ public class GraphCreatorTest {
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", "weight",
+                        "weight_m",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedWeightedPseudoG);
         assertEquals(5, graph.vertexSet().size());
         Assert.assertEquals(11, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
-        checkEdge(graph, 1, 1, 2, 10.0);
-        checkEdge(graph, 2, 4, 2, 1.0);
-        checkEdge(graph, 3, 2, 3, 2.0);
-        checkEdge(graph, 4, 3, 2, 3.0);
-        checkEdge(graph, 5, 1, 3, 5.0);
-        checkEdge(graph, 6, 3, 4, 9.0);
-        checkEdge(graph, 7, 3, 5, 2.0);
-        checkEdge(graph, 8, 4, 5, 4.0);
-        checkEdge(graph, 9, 5, 4, 6.0);
-        checkEdge(graph, 10, 5, 1, 7.0);
-        checkEdge(graph, -10, 1, 5, 7.0);
+        checkEdge(graph, 1, 1, 2, 10.0, 10.0);
+        checkEdge(graph, 2, 4, 2, 1.0, 1.0);
+        checkEdge(graph, 3, 2, 3, 2.0, 2.0);
+        checkEdge(graph, 4, 3, 2, 3.0, 3.0);
+        checkEdge(graph, 5, 1, 3, 5.0, 5.0);
+        checkEdge(graph, 6, 3, 4, 9.0, 9.0);
+        checkEdge(graph, 7, 3, 5, 2.0, 2.0);
+        checkEdge(graph, 8, 4, 5, 4.0, 4.0);
+        checkEdge(graph, 9, 5, 4, 6.0, 6.0);
+        checkEdge(graph, 10, 5, 1, 7.0, 7.0);
+        checkEdge(graph, -10, 1, 5, 7.0, 7.0);
     }
 
     @Test
@@ -231,7 +236,7 @@ public class GraphCreatorTest {
         GraphCreator<VDijkstra, Edge> graphCreator =
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "CORMEN_EDGES_ALL",
-                        GraphFunctionParser.Orientation.REVERSED, "edge_orientation", null,
+                        GraphFunctionParser.Orientation.REVERSED, "edge_orientation", null, null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedPseudoG);
@@ -257,23 +262,24 @@ public class GraphCreatorTest {
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.REVERSED, "edge_orientation", "weight",
+                        "weight_m",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedWeightedPseudoG);
         assertEquals(5, graph.vertexSet().size());
         Assert.assertEquals(11, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
-        checkEdge(graph, 1, 2, 1, 10.0);
-        checkEdge(graph, 2, 2, 4, 1.0);
-        checkEdge(graph, 3, 3, 2, 2.0);
-        checkEdge(graph, 4, 2, 3, 3.0);
-        checkEdge(graph, 5, 3, 1, 5.0);
-        checkEdge(graph, 6, 4, 3, 9.0);
-        checkEdge(graph, 7, 5, 3, 2.0);
-        checkEdge(graph, 8, 5, 4, 4.0);
-        checkEdge(graph, 9, 4, 5, 6.0);
-        checkEdge(graph, 10, 1, 5, 7.0);
-        checkEdge(graph, -10, 5, 1, 7.0);
+        checkEdge(graph, 1, 2, 1, 10.0, 10.0);
+        checkEdge(graph, 2, 2, 4, 1.0, 1.0);
+        checkEdge(graph, 3, 3, 2, 2.0, 2.0);
+        checkEdge(graph, 4, 2, 3, 3.0, 3.0);
+        checkEdge(graph, 5, 3, 1, 5.0, 5.0);
+        checkEdge(graph, 6, 4, 3, 9.0, 9.0);
+        checkEdge(graph, 7, 5, 3, 2.0, 2.0);
+        checkEdge(graph, 8, 5, 4, 4.0, 4.0);
+        checkEdge(graph, 9, 4, 5, 6.0, 6.0);
+        checkEdge(graph, 10, 1, 5, 7.0, 7.0);
+        checkEdge(graph, -10, 5, 1, 7.0, 7.0);
     }
 
     @Test
@@ -282,6 +288,7 @@ public class GraphCreatorTest {
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.UNDIRECTED, null, null,
+                        null,
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof PseudoG);
@@ -316,49 +323,55 @@ public class GraphCreatorTest {
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "CORMEN_EDGES_ALL",
                         GraphFunctionParser.Orientation.UNDIRECTED, null, "weight",
+                        "weight_m",
                         VDijkstra.class, Edge.class);
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof WeightedPseudoG);
         assertEquals(5, graph.vertexSet().size());
         Assert.assertEquals(10, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
-        checkEdge(graph, 1, 1, 2, 10.0);
-        checkEdge(graph, 2, 2, 4, 1.0);
+        checkEdge(graph, 1, 1, 2, 10.0, 10.0);
+        checkEdge(graph, 2, 2, 4, 1.0, 1.0);
         final Set<Edge> edges23 = graph.getAllEdges(graph.getVertex(2), graph.getVertex(3));
         Assert.assertEquals(2, edges23.size());
         for (Edge e : edges23) {
             if (e.getID() == 4) {
                 assertEquals(3.0, graph.getEdgeWeight(e), TOLERANCE);
+                assertEquals(3.0, e.getDeadWeight(), TOLERANCE);
             } else {
                 assertEquals(3, e.getID());
                 assertEquals(2.0, graph.getEdgeWeight(e), TOLERANCE);
+                assertEquals(2.0, e.getDeadWeight(), TOLERANCE);
             }
         }
-        checkEdge(graph, 5, 1, 3, 5.0);
-        checkEdge(graph, 6, 3, 4, 9.0);
-        checkEdge(graph, 7, 3, 5, 2.0);
+        checkEdge(graph, 5, 1, 3, 5.0, 5.0);
+        checkEdge(graph, 6, 3, 4, 9.0, 9.0);
+        checkEdge(graph, 7, 3, 5, 2.0, 2.0);
         final Set<Edge> edges45 = graph.getAllEdges(graph.getVertex(4), graph.getVertex(5));
         Assert.assertEquals(2, edges45.size());
         for (Edge e : edges45) {
             if (e.getID() == 8) {
                 assertEquals(4.0, graph.getEdgeWeight(e), TOLERANCE);
+                assertEquals(4.0, e.getDeadWeight(), TOLERANCE);
             } else {
                 assertEquals(9, e.getID());
                 assertEquals(6.0, graph.getEdgeWeight(e), TOLERANCE);
+                assertEquals(6.0, e.getDeadWeight(), TOLERANCE);
             }
         }
-        checkEdge(graph, 10, 5, 1, 7.0);
+        checkEdge(graph, 10, 5, 1, 7.0, 7.0);
     }
 
     private void checkEdge(KeyedGraph<VDijkstra, Edge> graph, int id, int source, int dest) {
-        checkEdge(graph, id, source, dest, 1.0);
+        checkEdge(graph, id, source, dest, 1.0, 1.0);
     }
 
-    private void checkEdge(KeyedGraph<VDijkstra, Edge> graph, int id, int source, int dest, double weight) {
+    private void checkEdge(KeyedGraph<VDijkstra, Edge> graph, int id, int source, int dest, double weight, double deadWeight) {
         final Edge edge = graph.getEdge(graph.getVertex(source), graph.getVertex(dest));
         assertEquals(id, edge.getID());
         assertTrue(graph.containsEdge(edge));
         assertEquals(weight, graph.getEdgeWeight(edge), TOLERANCE);
+        assertEquals(deadWeight, edge.getDeadWeight(), TOLERANCE);
     }
 
     private void checkVertices(KeyedGraph<VDijkstra, Edge> graph, int... vertices) {
@@ -385,6 +398,7 @@ public class GraphCreatorTest {
                 new GraphCreator<VDijkstra, Edge>(connection,
                         "COPY",
                         GraphFunctionParser.Orientation.DIRECTED, "edge_orientation", "weight",
+                        "weight_m",
                         VDijkstra.class, Edge.class);
         try {
             graphCreator.prepareGraph();

@@ -34,10 +34,12 @@ import java.sql.SQLException;
  * A helper class for parsing String arguments to h2network graph functions.
  *
  * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class GraphFunctionParser {
 
     private String weightColumn;
+    private String deadWeightColumn;
     private Orientation globalOrientation;
     private String edgeOrientation;
 
@@ -188,8 +190,39 @@ public class GraphFunctionParser {
         }
     }
 
+        public void parseWeightAndDeadWeightAndOrientation(String arg1, String arg2, String arg3) {
+        if ((arg1 == null && arg2 == null)
+                || (isWeightString(arg1) && arg2 == null)
+                || (arg1 == null && isWeightString(arg2))) {
+            // Disable default orientations (D and WD).
+            throw new IllegalArgumentException("You must specify the orientation.");
+        }
+        if (isWeightString(arg1) && isWeightString(arg2)) {
+            throw new IllegalArgumentException("Cannot specify the weight column twice.");
+        }
+        if (isOrientationString(arg1) && isOrientationString(arg2)) {
+            throw new IllegalArgumentException("Cannot specify the orientation twice.");
+        }
+        if (isOrientationString(arg1)) {
+            setWeightAndDeadWeightAndOrientation(arg2, arg3, arg1);
+        }
+        if (isOrientationString(arg3)) {
+            setWeightAndDeadWeightAndOrientation(arg1, arg2, arg3);
+        }
+    }
+
     private void setWeightAndOrientation(String weight, String orient) {
         weightColumn = parseWeight(weight);
+        globalOrientation = parseGlobalOrientation(orient);
+        if (globalOrientation != null) {
+            if (!globalOrientation.equals(Orientation.UNDIRECTED)) {
+                edgeOrientation = parseEdgeOrientation(orient);
+            }
+        }
+    }
+    private void setWeightAndDeadWeightAndOrientation(String weight, String deadWeight, String orient) {
+        weightColumn = parseWeight(weight);
+        deadWeightColumn = parseWeight(deadWeight);
         globalOrientation = parseGlobalOrientation(orient);
         if (globalOrientation != null) {
             if (!globalOrientation.equals(Orientation.UNDIRECTED)) {
@@ -205,6 +238,10 @@ public class GraphFunctionParser {
      */
     public String getWeightColumn() {
         return weightColumn;
+    }
+
+    public String getDeadWeightColumn() {
+        return deadWeightColumn;
     }
 
     /**

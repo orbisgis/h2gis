@@ -40,6 +40,8 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Created by adam on 4/22/14.
+ * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class ST_AccessibilityTest {
 
@@ -281,7 +283,7 @@ public class ST_AccessibilityTest {
         }
         final ResultSet aCC = st.executeQuery(
                 "SELECT * FROM ST_Accessibility('CORMEN_EDGES_ALL', " +
-                "'directed - edge_orientation', 'weight', '5')");
+                "'directed - edge_orientation', 'weight', 5)");
         try {
             while (aCC.next()) {
                 assertEquals(5, aCC.getInt(CLOSEST_DEST));

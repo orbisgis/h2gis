@@ -98,14 +98,14 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>java-network-analyzer</artifactId>
-            <version>0.1.6</version>
-        </dependency>
-        <dependency>
             <groupId>${h2-package}</groupId>
             <artifactId>h2</artifactId>
             <version>${h2-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>java-network-analyzer</artifactId>
+            <version>0.1.7-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

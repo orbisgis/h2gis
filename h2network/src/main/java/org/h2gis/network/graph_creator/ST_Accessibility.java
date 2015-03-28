@@ -45,6 +45,7 @@ import static org.h2gis.utilities.GraphConstants.*;
  * destinations, as well as the distance to this destination.
  *
  * @author Adam Gogue
+ * @author Olivier Bonin
  */
 public class ST_Accessibility extends GraphFunction implements ScalarFunction {
 
@@ -114,7 +115,7 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
             return prepareResultSet();
         }
         final KeyedGraph<VAccess, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight, VAccess.class, Edge.class);
+                prepareGraph(connection, inputTable, orientation, weight, null, VAccess.class, Edge.class);
         // Decide whether this is a destination string or a table string.
         if (GraphFunctionParser.isDestinationsString(arg4)) {
             return compute(graph, prepareDestSet(graph, GraphFunctionParser.parseDestinationsString(arg4)));

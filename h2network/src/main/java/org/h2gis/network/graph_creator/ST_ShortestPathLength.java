@@ -44,18 +44,21 @@ import java.util.Set;
 
 import static org.h2gis.h2spatial.TableFunctionUtil.isColumnListConnection;
 import static org.h2gis.utilities.GraphConstants.*;
+import org.javanetworkanalyzer.alg.DistanceLength;
 
 /**
  * Calculates the length(s) of shortest path(s) between vertices in a JGraphT
  * graph produced from the input_edges table produced by ST_Graph.
  *
  * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class ST_ShortestPathLength extends GraphFunction implements ScalarFunction {
 
     public static final int SOURCE_INDEX = 1;
     public static final int DESTINATION_INDEX = 2;
     public static final int DISTANCE_INDEX = 3;
+    public static final int LENGTH_INDEX = 4;
 
     public static final String REMARKS =
             "`ST_ShortestPathLength` calculates the length(s) of shortest path(s) among\n" +
@@ -120,15 +123,35 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         }
         if (arg3 instanceof ValueInt) {
             int source = arg3.getInt();
-            return oneToAll(connection, inputTable, orientation, null, source);
+            return oneToAll(connection, inputTable, orientation, null, null, source);
         } else if (arg3 instanceof ValueString) {
             String table = arg3.getString();
-            return manyToMany(connection, inputTable, orientation, null, table);
+            return manyToMany(connection, inputTable, orientation, null, null, table);
         } else {
             throw new IllegalArgumentException(ARG_ERROR + arg3);
         }
     }
-
+    
+    public static ResultSet getShortestPathLength(Connection connection,
+                                                  String inputTable,
+                                                  String orientation,
+                                                  String weight,
+                                                  String deadWeight,
+                                                  Value arg3) throws SQLException {
+        if (isColumnListConnection(connection)) {
+            return prepareResultSet();
+        }
+        if (arg3 instanceof ValueInt) {
+            int source = arg3.getInt();
+            return oneToAll(connection, inputTable, orientation, weight, deadWeight, source);
+        } else if (arg3 instanceof ValueString) {
+            String table = arg3.getString();
+            return manyToMany(connection, inputTable, orientation, weight, deadWeight, table);
+        } else {
+            throw new IllegalArgumentException(ARG_ERROR + arg3);
+        }
+    }
+    
     /**
      * Calculate distances for
      * <ol>
@@ -164,10 +187,10 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             int source = arg3.getInt();
             if (arg4 instanceof ValueInt) {
                 int destination = arg4.getInt();
-                return oneToOne(connection, inputTable, orientation, null, source, destination);
+                return oneToOne(connection, inputTable, orientation, null, null, source, destination);
             } else if (arg4 instanceof ValueString) {
                 String destinationString = arg4.getString();
-                return oneToSeveral(connection, inputTable, orientation, null, source, destinationString);
+                return oneToSeveral(connection, inputTable, orientation, null, null, source, destinationString);
             } else {
                 throw new IllegalArgumentException(ARG_ERROR + arg4);
             }
@@ -177,10 +200,10 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                 final String weight = arg3String;
                 if (arg4 instanceof ValueInt) {
                     int source = arg4.getInt();
-                    return oneToAll(connection, inputTable, orientation, weight, source);
+                    return oneToAll(connection, inputTable, orientation, weight, null, source);
                 } else if (arg4 instanceof ValueString) {
                     String table = arg4.getString();
-                    return manyToMany(connection, inputTable, orientation, weight, table);
+                    return manyToMany(connection, inputTable, orientation, weight, null, table);
                 } else {
                     throw new IllegalArgumentException(ARG_ERROR + arg4);
                 }
@@ -188,7 +211,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                 final String sourceTable = arg3String;
                 if (arg4 instanceof ValueString) {
                     final String destTable = arg4.getString();
-                    return manyToManySeparateTables(connection, inputTable, orientation, null, sourceTable, destTable);
+                    return manyToManySeparateTables(connection, inputTable, orientation, null, null, sourceTable, destTable);
                 } else {
                     throw new IllegalArgumentException(ARG_ERROR + arg4);
                 }
@@ -197,7 +220,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             throw new IllegalArgumentException(ARG_ERROR + arg3);
         }
     }
-
+    
     /**
      * Calculate distances for
      * <ol>
@@ -215,7 +238,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * @return Distances table
      * @throws SQLException
      */
-    public static ResultSet getShortestPathLength(Connection connection,
+   /* public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
                                                   String orientation,
                                                   String weight,
@@ -228,10 +251,10 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             final int source = arg4.getInt();
             if (arg5 instanceof ValueInt) {
                 int destination = arg5.getInt();
-                return oneToOne(connection, inputTable, orientation, weight, source, destination);
+                return oneToOne(connection, inputTable, orientation, weight, null, source, destination);
             } else if (arg5 instanceof ValueString) {
                 String destinationString = arg5.getString();
-                return oneToSeveral(connection, inputTable, orientation, weight, source, destinationString);
+                return oneToSeveral(connection, inputTable, orientation, weight, null, source, destinationString);
             } else {
                 throw new IllegalArgumentException(ARG_ERROR + arg5);
             }
@@ -239,7 +262,61 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             final String sourceTable = arg4.getString();
             if (arg5 instanceof ValueString) {
                 final String destTable = arg5.getString();
-                return manyToManySeparateTables(connection, inputTable, orientation, weight, sourceTable, destTable);
+                return manyToManySeparateTables(connection, inputTable, orientation, weight, 
+                        null, sourceTable, destTable);
+            } else {
+                throw new IllegalArgumentException(ARG_ERROR + arg4);
+            }
+        } else {
+            throw new IllegalArgumentException(ARG_ERROR + arg4);
+        }
+    }*/
+
+    /**
+     * Calculate distances for
+     * <ol>
+     * <li> One-to-One weighted: <code>(arg4, arg5) = (w, d) </code>,</li>
+     * <li> One-to-Several weighted: <code>(arg4, arg5) = (w, ds)</code>.</li>
+     * <li> Many-to-Many weighted: <code>(arg4, arg5) = (st, dt)</code>.</li>
+     * </ol>
+     *
+     * @param connection  Connection
+     * @param inputTable  Edges table produced by ST_Graph
+     * @param orientation Orientation string
+     * @param weight      Weight column name, null for unweighted graphs
+     * @param deadWeight  Dead Weight column name
+     * @param arg4        Source vertex id -OR- Source table
+     * @param arg5        Destination vertex id -OR- Destination string -OR- Destination table
+     * @return Distances table
+     * @throws SQLException
+     */
+    public static ResultSet getShortestPathLength(Connection connection,
+                                                  String inputTable,
+                                                  String orientation,
+                                                  String weight,
+                                                  String deadWeight,
+                                                  Value arg4,
+                                                  Value arg5) throws SQLException {
+        if (isColumnListConnection(connection)) {
+            return prepareResultSet();
+        }
+        if (arg4 instanceof ValueInt) {
+            final int source = arg4.getInt();
+            if (arg5 instanceof ValueInt) {
+                int destination = arg5.getInt();
+                return oneToOne(connection, inputTable, orientation, weight, deadWeight, source, destination);
+            } else if (arg5 instanceof ValueString) {
+                String destinationString = arg5.getString();
+                return oneToSeveral(connection, inputTable, orientation, weight,deadWeight, source, destinationString);
+            } else {
+                throw new IllegalArgumentException(ARG_ERROR + arg5);
+            }
+        } else if (arg4 instanceof ValueString) {
+            final String sourceTable = arg4.getString();
+            if (arg5 instanceof ValueString) {
+                final String destTable = arg5.getString();
+                return manyToManySeparateTables(connection, inputTable, orientation, weight, 
+                        deadWeight, sourceTable, destTable);
             } else {
                 throw new IllegalArgumentException(ARG_ERROR + arg4);
             }
@@ -252,16 +329,17 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                      String inputTable,
                                      String orientation,
                                      String weight,
+                                     String deadWeight,
                                      int source,
                                      int destination) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
         final KeyedGraph<VDijkstra, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight,
+                prepareGraph(connection, inputTable, orientation, weight, deadWeight,
                         VDijkstra.class, Edge.class);
         // 7: (o, w, s, d)
-        final double distance = new Dijkstra<VDijkstra, Edge>(graph)
+        final DistanceLength dl = new Dijkstra<VDijkstra, Edge>(graph)
                 .oneToOne(graph.getVertex(source), graph.getVertex(destination));
-        output.addRow(source, destination, distance);
+        output.addRow(source, destination, dl.getDistance(), dl.getLength());
         return output;
     }
 
@@ -269,16 +347,17 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                       String inputTable,
                                       String orientation,
                                       String weight,
+                                      String deadWeight,
                                       int source) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
         final KeyedGraph<VDijkstra, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight,
+                prepareGraph(connection, inputTable, orientation, weight, deadWeight,
                         VDijkstra.class, Edge.class);
         // 5: (o, w, s)
-        final Map<VDijkstra,Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
+        final Map<VDijkstra,DistanceLength> distances = new Dijkstra<VDijkstra, Edge>(graph)
                         .oneToMany(graph.getVertex(source), graph.vertexSet());
-        for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
-            output.addRow(source, e.getKey().getID(), e.getValue());
+        for (Map.Entry<VDijkstra, DistanceLength> e : distances.entrySet()) {
+            output.addRow(source, e.getKey().getID(), e.getValue().getDistance(), e.getValue().getLength());
         }
         return output;
     }
@@ -287,10 +366,11 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                         String inputTable,
                                         String orientation,
                                         String weight,
+                                        String deadWeight,
                                         String sourceDestinationTable) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
         final KeyedGraph<VDijkstra, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight,
+                prepareGraph(connection, inputTable, orientation, weight, deadWeight,
                         VDijkstra.class, Edge.class);
         final Statement st = connection.createStatement();
         try {
@@ -303,12 +383,13 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
 
             // 6: (o, w, sdt). Do One-to-Many many times and store the results.
             for (Map.Entry<VDijkstra, Set<VDijkstra>> sourceToDestSetMap : sourceDestinationMap.entrySet()) {
-                Map<VDijkstra, Double> distances =
+                Map<VDijkstra, DistanceLength> distances =
                         dijkstra.oneToMany(sourceToDestSetMap.getKey(),
                                            sourceToDestSetMap.getValue());
-                for (Map.Entry<VDijkstra, Double> destToDistMap : distances.entrySet()) {
+                for (Map.Entry<VDijkstra, DistanceLength> destToDistMap : distances.entrySet()) {
                     output.addRow(sourceToDestSetMap.getKey().getID(),
-                            destToDistMap.getKey().getID(), destToDistMap.getValue());
+                            destToDistMap.getKey().getID(), destToDistMap.getValue().getDistance(),
+                            destToDistMap.getValue().getLength());
                 }
             }
         } finally {
@@ -322,11 +403,12 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             String inputTable,
             String orientation,
             String weight,
+            String deadWeight,
             String sourceTable,
             String destTable) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
         final KeyedGraph<VDijkstra, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight,
+                prepareGraph(connection, inputTable, orientation, weight, deadWeight,
                         VDijkstra.class, Edge.class);
         final Statement st = connection.createStatement();
         try {
@@ -334,11 +416,12 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             final Set<VDijkstra> sourceSet = getSet(st, graph, sourceTable);
             final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
             for (VDijkstra source : sourceSet) {
-                Map<VDijkstra, Double> distances =
+                Map<VDijkstra, DistanceLength> distances =
                         dijkstra.oneToMany(source, destSet);
-                for (Map.Entry<VDijkstra, Double> destToDistMap : distances.entrySet()) {
+                for (Map.Entry<VDijkstra, DistanceLength> destToDistMap : distances.entrySet()) {
                     output.addRow(source.getID(),
-                            destToDistMap.getKey().getID(), destToDistMap.getValue());
+                            destToDistMap.getKey().getID(), destToDistMap.getValue().getDistance(),
+                            destToDistMap.getValue().getLength());
                 }
             }
         } finally {
@@ -384,11 +467,12 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                           String inputTable,
                                           String orientation,
                                           String weight,
+                                          String deadWeight,
                                           int source,
                                           String destString) throws SQLException {
         final SimpleResultSet output = prepareResultSet();
         final KeyedGraph<VDijkstra, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight,
+                prepareGraph(connection, inputTable, orientation, weight, deadWeight,
                         VDijkstra.class, Edge.class);
 
         final int[] destIDs = GraphFunctionParser.parseDestinationsString(destString);
@@ -401,10 +485,11 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             destSet.add(dest);
         }
         // 8: (o, w, s, ds)
-        final Map<VDijkstra, Double> distances = new Dijkstra<VDijkstra, Edge>(graph)
+        final Map<VDijkstra, DistanceLength> distances = new Dijkstra<VDijkstra, Edge>(graph)
                 .oneToMany(graph.getVertex(source), destSet);
-        for (Map.Entry<VDijkstra, Double> e : distances.entrySet()) {
-            output.addRow(source, e.getKey().getID(), e.getValue());
+        for (Map.Entry<VDijkstra, DistanceLength> e : distances.entrySet()) {
+            output.addRow(source, e.getKey().getID(), e.getValue().getDistance(),
+                    e.getValue().getLength());
         }
         return output;
     }
@@ -462,6 +547,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         output.addColumn(SOURCE, Types.INTEGER, 10, 0);
         output.addColumn(DESTINATION, Types.INTEGER, 10, 0);
         output.addColumn(DISTANCE, Types.DOUBLE, 10, 0);
+        output.addColumn("LENGTH", Types.DOUBLE, 10, 0);
         return output;
     }
 }

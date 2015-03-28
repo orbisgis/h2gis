@@ -11,6 +11,7 @@ import java.sql.SQLException;
  * Helper class for Graph Functions.
  *
  * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class GraphFunction extends AbstractFunction {
 
@@ -23,20 +24,28 @@ public class GraphFunction extends AbstractFunction {
      * @param inputTable  Input table name
      * @param orientation Orientation string
      * @param weight      Weight column name, null for unweighted graphs
+     * @param deadWeight
      * @return Graph
      */
     protected static KeyedGraph prepareGraph(Connection connection,
                                              String inputTable,
                                              String orientation,
                                              String weight,
+                                             String deadWeight,
                                              Class vertexClass,
                                              Class edgeClass) throws SQLException {
         GraphFunctionParser parser = new GraphFunctionParser();
-        parser.parseWeightAndOrientation(orientation, weight);
+        //if(deadWeight != null){
+            parser.parseWeightAndDeadWeightAndOrientation(orientation, weight, deadWeight);
+        //}else {
+        //    parser.parseWeightAndOrientation(orientation, weight);
+        //}
+        
 
         return new GraphCreator(connection,
                 inputTable,
                 parser.getGlobalOrientation(), parser.getEdgeOrientation(), parser.getWeightColumn(),
+                parser.getDeadWeightColumn(),
                 vertexClass,
                 edgeClass).prepareGraph();
     }

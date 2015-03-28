@@ -50,6 +50,7 @@ import static org.h2gis.utilities.GraphConstants.*;
  * from the input_edges table produced by ST_Graph.
  *
  * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
 
@@ -136,11 +137,11 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
         }
         // Do the calculation.
         final KeyedGraph<VDijkstra, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight,
+                prepareGraph(connection, inputTable, orientation, weight, null,
                         VDijkstra.class, Edge.class);
         final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
         final VDijkstra vDestination = graph.getVertex(destination);
-        final double distance = dijkstra.oneToOne(graph.getVertex(source), vDestination);
+        final double distance = dijkstra.oneToOne(graph.getVertex(source), vDestination).getDistance();
 
         if (distance != Double.POSITIVE_INFINITY) {           
             // Need to create an object for the globalID recursion.

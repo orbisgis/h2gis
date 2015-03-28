@@ -53,6 +53,7 @@ import static org.h2gis.utilities.GraphConstants.*;
  * connected components (for directed graphs) of a graph.
  *
  * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunction {
 
@@ -95,7 +96,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
     public static boolean getConnectedComponents(Connection connection,
                                                  String inputTable,
                                                  String orientation) throws SQLException {
-        KeyedGraph graph = prepareGraph(connection, inputTable, orientation, null,
+        KeyedGraph graph = prepareGraph(connection, inputTable, orientation, null, null,
                 VUCent.class, Edge.class);
         if (graph == null) {
             return false;

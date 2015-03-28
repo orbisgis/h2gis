@@ -54,6 +54,7 @@ import static org.h2gis.utilities.GraphConstants.*;
  * from the input_edges table produced by ST_Graph.
  *
  * @author Adam Gouge
+ * @author Olivier Bonin
  */
 public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction {
 
@@ -172,7 +173,7 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
         }
         // Do the calculation.
         final KeyedGraph<VDijkstra, Edge> graph =
-                prepareGraph(connection, inputTable, orientation, weight,
+                prepareGraph(connection, inputTable, orientation, weight, null,
                         VDijkstra.class, Edge.class);
 
         final Dijkstra<VDijkstra, Edge> dijkstra = new Dijkstra<VDijkstra, Edge>(graph);
