@@ -250,7 +250,7 @@ public class OSMImportTest {
         // Check number
         rs = st.executeQuery("SELECT count(ID_NODE) FROM OSM_NODE");
         rs.next();
-        assertEquals(3243, rs.getInt(1));
+        assertEquals(3245, rs.getInt(1));
         rs.close();
         }
     }
