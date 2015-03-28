@@ -124,7 +124,37 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Accum(footprint) FROM buildings GROUP BY SUBSTRING(address,4)");
         assertTrue(rs.next());
-        assertEquals("GEOMETRYCOLLECTION (POLYGON ((50 31, 54 31, 54 29, 50 29, 50 31)), POLYGON ((66 34, 62 34, 62 32, 66 32, 66 34)))", rs.getString(1));
+        assertEquals("MULTIPOLYGON (((50 31, 54 31, 54 29, 50 29, 50 31)), ((66 34, 62 34, 62 32, 66 32, 66 34)))", rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AccumPoint() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Accum('MULTIPOINT((0 0), (1 1))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals("MULTIPOINT ((0 0), (1 1))", rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AccumLine() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Accum('GEOMETRYCOLLECTION(LINESTRING(0 0, 1 1),LINESTRING(5 5, 8 8))'::geometry)");
+        assertTrue(rs.next());
+        assertEquals("MULTILINESTRING ((0 0, 1 1), (5 5, 8 8))", rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_AccumCollection() throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS TESTACCUMCOLLECT;" +
+                "CREATE TABLE TESTACCUMCOLLECT AS SELECT 'MULTIPOLYGON (((50 31, 54 31, 54 29, 50 29, 50 31))," +
+                " ((66 34, 62 34, 62 32, 66 32, 66 34)))'::geometry the_geom");
+        ResultSet rs = st.executeQuery("SELECT ST_Accum(the_geom) FROM TESTACCUMCOLLECT");
+        assertTrue(rs.next());
+        assertEquals("MULTIPOLYGON (((50 31, 54 31, 54 29, 50 29, 50 31)), ((66 34, 62 34, 62 32, 66 32, 66 34)))", rs.getString(1));
         rs.close();
     }
 

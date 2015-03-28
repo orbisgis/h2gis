@@ -25,14 +25,13 @@
 
 package org.h2gis.h2spatial.internal.function.spatial.aggregate;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.*;
 import org.h2.api.Aggregate;
 import org.h2.value.Value;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -43,6 +42,8 @@ import java.util.List;
  */
 public class ST_Accum extends AbstractFunction implements Aggregate {
     private List<Geometry> toUnite = new LinkedList<Geometry>();
+    private int minDim = Integer.MAX_VALUE;
+    private int maxDim = Integer.MIN_VALUE;
 
     public ST_Accum() {
         addProperty(PROP_REMARKS, "This aggregate function returns a GeometryCollection.");
@@ -63,13 +64,23 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
         return Value.GEOMETRY;
     }
 
+    private void feedDim(Geometry geometry) {
+        final int geomDim = geometry.getDimension();
+        maxDim = Math.max(maxDim, geomDim);
+        minDim = Math.min(minDim, geomDim);
+    }
+
     private void addGeometry(Geometry geom) {
-        if (geom.getGeometryType().equals("GeometryCollection")) {
+        if (geom instanceof GeometryCollection) {
+            List<Geometry> toUnitTmp = new ArrayList<Geometry>(geom.getNumGeometries());
             for (int i = 0; i < geom.getNumGeometries(); i++) {
-                addGeometry(geom.getGeometryN(i));
+                toUnitTmp.add(geom.getGeometryN(i));
+                feedDim(geom.getGeometryN(i));
             }
+            toUnite.addAll(toUnitTmp);
         } else {
             toUnite.add(geom);
+            feedDim(geom);
         }
     }
 
@@ -87,6 +98,17 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
     @Override
     public GeometryCollection getResult() throws SQLException {
         GeometryFactory factory = new GeometryFactory();
-        return factory.createGeometryCollection(toUnite.toArray(new Geometry[toUnite.size()]));
+        if(maxDim != minDim) {
+            return factory.createGeometryCollection(toUnite.toArray(new Geometry[toUnite.size()]));
+        } else {
+            switch (maxDim) {
+                case 0:
+                    return factory.createMultiPoint(toUnite.toArray(new Point[toUnite.size()]));
+                case 1:
+                    return factory.createMultiLineString(toUnite.toArray(new LineString[toUnite.size()]));
+                default:
+                    return factory.createMultiPolygon(toUnite.toArray(new Polygon[toUnite.size()]));
+            }
+        }
     }
 }
