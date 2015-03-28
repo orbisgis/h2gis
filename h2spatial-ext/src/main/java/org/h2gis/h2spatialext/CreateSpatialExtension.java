@@ -191,7 +191,8 @@ public class CreateSpatialExtension {
                 new ST_RingSideBuffer(),
                 new ST_SunPosition(),
                 new ST_GeometryShadow(),
-                new ST_Voronoi()};
+                new ST_Voronoi(),
+                new ST_LineMerge()};
     }
 
     /**
