@@ -28,4 +28,5 @@ public interface GraphConstants {
     public static final String PATH_EDGE_ID = "PATH_EDGE_ID";
     public static final String TREE_ID = "TREE_ID";
     public static final String WEIGHT = "WEIGHT";
+    public static final String LENGTH = "LENGTH";
 }
