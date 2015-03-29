@@ -44,14 +44,20 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param wayPointsTableName
+     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWayPointsTable(Connection connection, String wayPointsTableName) throws SQLException {
+    public static PreparedStatement createWayPointsTable(Connection connection, String wayPointsTableName, boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(wayPointsTableName);
-        sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,id INT,");
+        if (isH2) {
+            sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
+        } else {
+             sb.append("GEOMETRY(POINT, 4326)");
+        }
+        sb.append(" id INT,");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
@@ -90,14 +96,20 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param routeTableName
+     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createRouteTable(Connection connection, String routeTableName) throws SQLException {
+    public static PreparedStatement createRouteTable(Connection connection, String routeTableName, boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(routeTableName);
-        sb.append(" (the_geom LineString CHECK ST_SRID(THE_GEOM) = 4326,id INT,");
+        if (isH2) {
+            sb.append(" (the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
+        } else {
+            sb.append("GEOMETRY(LINESTRING, 4326)");
+        }
+        sb.append(" id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
@@ -124,14 +136,20 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param routePointsTable
+     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createRoutePointsTable(Connection connection, String routePointsTable) throws SQLException {
+    public static PreparedStatement createRoutePointsTable(Connection connection, String routePointsTable,boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(routePointsTable);
-        sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,id INT, ");
+        if (isH2) {
+            sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
+        } else {
+            sb.append("GEOMETRY(POINT, 4326)");
+        }
+        sb.append(" id INT,");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
@@ -172,14 +190,20 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param trackTableName
+     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createTrackTable(Connection connection, String trackTableName) throws SQLException {
+    public static PreparedStatement createTrackTable(Connection connection, String trackTableName,boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(trackTableName);
-        sb.append(" (the_geom MultiLineString CHECK ST_SRID(THE_GEOM) = 4326,id INT,");
+        if (isH2) {
+            sb.append(" (the_geom MULTILINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
+        } else {
+            sb.append("GEOMETRY(MULTILINESTRING, 4326)");
+        }
+        sb.append(" id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
@@ -206,14 +230,20 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param trackSegementsTableName
+     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createTrackSegmentsTable(Connection connection, String trackSegementsTableName) throws SQLException {
+    public static PreparedStatement createTrackSegmentsTable(Connection connection, String trackSegementsTableName,boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(trackSegementsTableName);
-        sb.append(" (the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,id INT,");
+        if (isH2) {
+            sb.append(" (the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
+        } else {
+            sb.append("GEOMETRY(LINESTRING, 4326)");
+        }
+        sb.append(" id INT,");
         sb.append(GPXTags.EXTENSIONS).append(" TEXT,");
         sb.append("id_track INT);");
         stmt.execute(sb.toString());
@@ -233,14 +263,21 @@ public class GPXTablesFactory {
      *
      * @param connection
      * @param trackPointsTableName
+     * @param isH2 set true if it's an H2 database
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createTrackPointsTable(Connection connection, String trackPointsTableName) throws SQLException {
+    public static PreparedStatement createTrackPointsTable(Connection connection, String trackPointsTableName,boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
         sb.append(trackPointsTableName);
-        sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,id INT, ");
+        if(isH2){
+        sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
+        }
+        else{
+            sb.append("GEOMETRY(POINT, 4326)");
+        }
+        sb.append(" id INT,");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
