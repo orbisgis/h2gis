@@ -42,12 +42,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import org.h2gis.drivers.utility.FileUtil;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 
 /**
@@ -72,6 +74,13 @@ public class GeoJsonReaderDriver {
     private JsonFactory jsFactory;
     private boolean hasProperties = false;
     private int featureCounter = 1;
+    private ProgressVisitor progress = new EmptyProgressVisitor();
+    private FileChannel fc;
+    private long fileSize = 0;    
+    private long readFileSizeEachNode = 1;
+    private long nodeCountProgress = 0;
+    // For progression information return
+    private static final int AVERAGE_NODE_SIZE = 500;
 
     /**
      * Driver to import a GeoJSON file into a spatial table.
@@ -125,6 +134,7 @@ public class GeoJsonReaderDriver {
      * @param progress
      */
     private void parseGeoJson(ProgressVisitor progress) throws SQLException, IOException {
+        this.progress = progress.subProcess(100);
         init();
         if (parseMetadata()) {
             parseData();
@@ -146,6 +156,13 @@ public class GeoJsonReaderDriver {
         StringBuilder metadataBuilder = new StringBuilder();
         try {
             fis = new FileInputStream(fileName);
+            this.fc = fis.getChannel();
+            this.fileSize = fc.size();
+            // Given the file size and an average node file size.
+            // Skip how many nodes in order to update progression at a step of 1%
+            readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
+            nodeCountProgress = 0;
+            
             JsonParser jp = jsFactory.createParser(fis);
             metadataBuilder.append("CREATE TABLE ");
             metadataBuilder.append(tableName);
@@ -163,7 +180,9 @@ public class GeoJsonReaderDriver {
             if (geomType.equalsIgnoreCase("featurecollection")) {
                 jp.nextToken(); // FIELD_NAME features
                 String firstParam = jp.getText();
-                if (firstParam.equalsIgnoreCase("features")) {
+                if (firstParam.equalsIgnoreCase("crs")) {
+
+                } else if (firstParam.equalsIgnoreCase("features")) {
                     jp.nextToken(); // START_ARRAY [
                     JsonToken token = jp.nextToken(); // START_OBJECT {
                     if (token != JsonToken.END_ARRAY) {
@@ -470,10 +489,21 @@ public class GeoJsonReaderDriver {
                 jp.nextToken(); // FIELD_NAME type
                 jp.nextToken(); // VALUE_STRING Feature
                 String geomType = jp.getText();
-                if (geomType.equalsIgnoreCase("feature")) {
+                if (geomType.equalsIgnoreCase("feature")) {         
+                    if (progress.isCanceled()) {
+                        throw new SQLException("Canceled by user");
+                    }
                     parseFeature(jp);
                     token = jp.nextToken(); //START_OBJECT new feature                    
                     featureCounter++;
+                    if (nodeCountProgress++ % readFileSizeEachNode == 0) {
+                        // Update Progress
+                        try {
+                            progress.setStep((int) (((double) fc.position() / fileSize) * 100));
+                        } catch (IOException ex) {
+                            // Ignore
+                        }
+                    }
                 } else {
                     throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + geomType + "'");
                 }
