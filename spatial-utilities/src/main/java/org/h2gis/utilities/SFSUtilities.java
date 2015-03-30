@@ -394,4 +394,48 @@ public class SFSUtilities {
         geomResultSet.close();
         return srid;
     }
+    
+    /**
+     * Return an array of two string that correspond to the authority name
+     * and its SRID code.
+     * If the SRID does not exist return the array {null, null}
+     * @param connection
+     * @param table
+     * @param fieldName
+     * @return
+     * @throws SQLException 
+     */
+    public static String[] getAuthorityAndSRID(Connection connection, TableLocation table, String fieldName) throws SQLException{
+        ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(), table.getTable());
+        int srid = 0;
+        while (geomResultSet.next()) {
+            if (geomResultSet.getString("f_geometry_column").equals(fieldName)) {
+                srid = geomResultSet.getInt("srid");
+                break;
+            }
+        }
+        geomResultSet.close();
+        String authority = null;
+        String sridCode = null;
+        if (srid != 0) {
+            StringBuilder sb = new StringBuilder("SELECT AUTH_NAME FROM ");
+            sb.append("PUBLIC.SPATIAL_REF_SYS ").append(" WHERE SRID = ?");
+            PreparedStatement ps = connection.prepareStatement(sb.toString());
+            ps.setInt(1, srid);
+            ResultSet rs = null;
+            try {
+                rs = ps.executeQuery();
+                if (rs.next()) {
+                    authority = rs.getString(1);
+                }
+                sridCode=String.valueOf(srid);
+            } finally {
+                if (rs != null) {
+                    rs.close();
+                }
+                ps.close();
+            }
+        }
+        return new String[]{authority, sridCode};
+    }
 }

@@ -75,7 +75,8 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, tableReference, fileName);
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());        
+        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, tableReference, fileName, isH2);
         geoJsonReaderDriver.read(progress);
     }
 }

@@ -51,7 +51,7 @@ import org.slf4j.LoggerFactory;
  * @author Erwan Bocher
  */
 public class PRJUtil {
-    private static Logger log = LoggerFactory.getLogger(PRJUtil.class);
+    private static final Logger log = LoggerFactory.getLogger(PRJUtil.class);
     
     /**
      * 
