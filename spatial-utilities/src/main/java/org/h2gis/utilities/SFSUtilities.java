@@ -172,7 +172,7 @@ public class SFSUtilities {
             }
             geometryField = geometryFields.get(0);
         }
-        ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("+geometryField+") ext FROM "+location);
+        ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("+TableLocation.quoteIdentifier(geometryField)+") ext FROM "+location);
         if(rs.next()) {
             // Todo under postgis it is a BOX type
             return ((Geometry)rs.getObject(1)).getEnvelopeInternal();

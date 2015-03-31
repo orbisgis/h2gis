@@ -215,7 +215,7 @@ public class SHPDriverFunction implements DriverFunction {
             }
             st.close();
             try {
-                        lastSql = String.format("INSERT INTO %s VALUES (null, %s )", parse,
+                        lastSql = String.format("INSERT INTO %s VALUES (DEFAULT, %s )", parse,
                                 DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
                         PreparedStatement preparedStatement = connection.prepareStatement(lastSql);
                 try {
