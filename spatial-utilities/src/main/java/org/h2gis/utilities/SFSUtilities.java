@@ -427,8 +427,9 @@ public class SFSUtilities {
                 rs = ps.executeQuery();
                 if (rs.next()) {
                     authority = rs.getString(1);
+                    sridCode=String.valueOf(srid);
                 }
-                sridCode=String.valueOf(srid);
+                
             } finally {
                 if (rs != null) {
                     rs.close();
@@ -437,5 +438,22 @@ public class SFSUtilities {
             }
         }
         return new String[]{authority, sridCode};
+    }
+    
+    
+    /**
+     * Alter a table to add a SRID constraint.
+     * The srid must be greater than zero.
+     * 
+     * @param connection
+     * @param tableLocation
+     * @param srid
+     * @throws SQLException 
+     */
+    public static void addTableSRIDConstraint(Connection connection, TableLocation tableLocation, int srid) throws SQLException {
+        //Alter table to set the SRID constraint
+        if (srid > 0) {
+            connection.createStatement().execute(String.format("ALTER TABLE %s ADD CONSTRAINT enforce_srid_geom CHECK ST_SRID(the_geom)= %d", tableLocation.toString(), srid));
+        }
     }
 }
