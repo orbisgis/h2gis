@@ -241,12 +241,9 @@ public class SHPDriverFunction implements DriverFunction {
                     preparedStatement.close();
                 }
                 //Alter table to set the SRID constraint
-                if(isH2 && srid>0){
-                    st = connection.createStatement();
-                    st.execute(String.format("ALTER TABLE %s ADD CONSTRAINT enforce_srid_geom CHECK ST_SRID(the_geom)= %d", parse, srid));
-                    st.close();
-                }
-                
+                if(isH2){
+                    SFSUtilities.addTableSRIDConstraint(connection, parse, srid);
+                }                
                 //TODO create spatial index on the_geom ?
             } catch (Exception ex) {
                 connection.createStatement().execute("DROP TABLE IF EXISTS " + tableReference);

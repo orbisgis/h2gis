@@ -418,7 +418,7 @@ public class GeojsonImportExportTest {
         stat.close();
     }
     
-     @Test
+    @Test
     public void testWriteReadGeojsonCRS() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
@@ -429,13 +429,28 @@ public class GeojsonImportExportTest {
         stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'TABLE_POINTS_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
         res.next();
-        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(1 2)")));
-        assertTrue((res.getInt(2) == 1));
-        assertTrue((res.getString(3).equals("bad")));
+        Geometry geom = (Geometry) res.getObject(1);
+        assertTrue(geom.equals(WKTREADER.read("POINT(1 2)")));
+        assertTrue((geom.getSRID() == 4326));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.close();
+    }
+    
+    @Test
+    public void testWriteReadBadSRID() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+        stat.execute("create table TABLE_POINTS(the_geom POINT CHECK ST_SRID(THE_GEOM)=9999, id INT, climat VARCHAR)");
+        stat.execute("insert into TABLE_POINTS values( ST_GEOMFROMTEXT('POINT(1 2)', 9999), 1, 'bad')");
+        stat.execute("insert into TABLE_POINTS values( ST_GEOMFROMTEXT('POINT(10 200)',9999), 2, 'good')");
+        stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'TABLE_POINTS');");        
+        stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'TABLE_POINTS_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
         res.next();
-        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
-        assertTrue((res.getInt(2) == 2));
-        assertTrue((res.getString(3).equals("good")));
+        Geometry geom = (Geometry) res.getObject(1);
+        assertTrue(geom.equals(WKTREADER.read("POINT(1 2)")));
+        assertTrue((geom.getSRID() == 0));
         res.close();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();

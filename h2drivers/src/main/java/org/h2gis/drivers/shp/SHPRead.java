@@ -71,6 +71,8 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path of the SHP file or URI
+     * @throws java.io.IOException
+     * @throws java.sql.SQLException
      */
     public static void readShape(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         readShape(connection, fileName, tableReference, null);
@@ -84,6 +86,8 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      *
      * @param connection Active connection
      * @param fileName   File path of the SHP file or URI
+     * @throws java.io.IOException
+     * @throws java.sql.SQLException
      */
     public static void readShape(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtility.fileFromString(fileName).getName();
