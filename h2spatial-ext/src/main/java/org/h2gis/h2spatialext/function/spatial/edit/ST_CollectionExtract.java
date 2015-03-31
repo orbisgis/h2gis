@@ -37,18 +37,18 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  *
  * @author Erwan Bocher
  */
-public class ST_CollectExtract extends DeterministicScalarFunction{
+public class ST_CollectionExtract extends DeterministicScalarFunction{
     
     
     
-    public ST_CollectExtract() {
+    public ST_CollectionExtract() {
         addProperty(PROP_REMARKS, "Given a (multi)geometry, returns a (multi)geometry consisting only of elements of the specified dimension.\n"
                 + "Dimension numbers are 1 == POINT, 2 == LINESTRING, 3 == POLYGON");
     }   
 
     @Override
     public String getJavaStaticMethod() {
-        return "collectExtract";
+        return "collectionExtract";
     }
     
     /**
@@ -56,13 +56,13 @@ public class ST_CollectExtract extends DeterministicScalarFunction{
      * elements of the specified type. Sub-geometries that are not the specified
      * type are ignored. If there are no sub-geometries of the right type, an
      * EMPTY geometry will be returned. Only points, lines and polygons are
-     * supported.
+     * extracted.
      * 
      * @param geometry
      * @param dimension
      * @return 
      */
-    public static Geometry collectExtract(Geometry geometry, int dimension) throws ParseException {
+    public static Geometry collectionExtract(Geometry geometry, int dimension) throws ParseException {
         if ((dimension < 1) || (dimension > 3)) {
             throw new IllegalArgumentException(
                     "Dimension out of range (1..3)");

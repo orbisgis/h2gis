@@ -180,7 +180,7 @@ public class CreateSpatialExtension {
                 new OSMRead(),
                 new ST_OSMDownloader(),
                 new ST_ProjectPoint(),
-                new ST_CollectExtract(),
+                new ST_CollectionExtract(),
                 new DoubleRange(),
                 new IntegerRange(),
                 new ST_SideBuffer(),
