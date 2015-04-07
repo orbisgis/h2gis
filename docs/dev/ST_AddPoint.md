@@ -5,7 +5,7 @@ category: geom2D/edit-geometries
 is_function: true
 description: Add a point to a Geometry
 prev_section: geom2D/edit-geometries
-next_section: ST_Densify
+next_section: ST_CollectionExtract
 permalink: /docs/dev/ST_AddPoint/
 ---
 
