@@ -130,8 +130,6 @@ public class SpatialH2UT {
         String dbFilePath = getDataBasePath(dbName);
         File dbFile = new File(dbFilePath +".mv.db");
         String databasePath = "jdbc:h2:"+ dbFilePath + h2_PARAMETERS;
-        
-        File dbFile = new File(dbFilePath +".h2.db");
         if(dbFile.exists()) {
             dbFile.delete();
         }

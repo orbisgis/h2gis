@@ -58,7 +58,7 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
                 + "A collection of LineString is returned.");
     }
     
-     @Override
+    @Override
     public String getJavaStaticMethod() {
         return "lineIntersector";
     }

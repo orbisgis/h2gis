@@ -1,12 +1,8 @@
 package org.h2gis.h2spatial.internal.type;
 
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Parse the constraint and return the Geometry type name.
