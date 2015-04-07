@@ -227,22 +227,34 @@ public class MeshFunctionTest {
     }
 
 
-    @Test(expected = SQLException.class)
+    @Test
+    /**
+     * Construction of voronoi with three coplanar points make three polygons.
+     */
     public void test_ST_VORONOIJTSInvalid() throws Exception {
         st.execute("drop table if exists pts;\n" +
                 "create table pts as select ST_GeomFromText('MULTIPOINT(0 0, 1 0, 2 0)') the_geom;\n" +
-                "drop table if exists voro;\n" +
-                "create table voro as select ST_VORONOI(st_accum(the_geom), 2, " +
-                "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
+                "drop table if exists voro;");
+        ResultSet rs = st.executeQuery("select ST_NUMGEOMETRIES(ST_VORONOI(st_accum(the_geom), 2, " +
+                "ST_ENVELOPE(ST_ACCUM(the_geom)))) num from PTS;");
+        assertTrue(rs.next());
+        assertEquals(3, rs.getInt("num"));
+        rs.close();
     }
 
 
-    @Test(expected = SQLException.class)
+    @Test
+    /**
+     * Construction of Voronoi without input triangles is not possible.
+     */
     public void test_ST_VORONOIInvalid() throws Exception {
         st.execute("drop table if exists pts;\n" +
-                "create table pts as select ST_GeomFromText('MULTIPOINT(0 0, 1 0, 2 0)') the_geom;\n" +
-                "drop table if exists voro;\n" +
-                "create table voro as select ST_VORONOI(ST_DELAUNAY(st_accum(the_geom)), 2, " +
+                "create table pts as select ST_GeomFromText('MULTIPOINT(0 0 0, 1 0 0, 2 0 0)') the_geom;\n" +
+                "drop table if exists voro;");
+        ResultSet rs = st.executeQuery("select ST_VORONOI(ST_DELAUNAY(st_accum(the_geom)), 2, " +
                 "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
+        assertTrue(rs.next());
+        assertEquals("MULTIPOLYGON EMPTY", rs.getString("the_geom"));
+        rs.close();
     }
 }
