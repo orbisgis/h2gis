@@ -46,9 +46,20 @@ public class ST_Voronoi extends DeterministicScalarFunction {
         return voronoi(geomCollection, outputDimension, null);
     }
 
+    private static GeometryCollection returnEmptyCollection(int outputDimension) {
+        switch (outputDimension) {
+            case 2:
+                return new GeometryFactory().createMultiPolygon(new Polygon[0]);
+            case 1:
+                return new GeometryFactory().createMultiLineString(new LineString[0]);
+            default:
+                return new GeometryFactory().createMultiPoint(new Point[0]);
+        }
+    }
+
     public static GeometryCollection voronoi(Geometry geomCollection, int outputDimension, Geometry envelope) throws SQLException {
         if(geomCollection == null) {
-            return new GeometryFactory().createGeometryCollection(new Geometry[0]);
+            return returnEmptyCollection(outputDimension);
         }
         if(geomCollection instanceof MultiPoint || (geomCollection instanceof GeometryCollection &&
                 geomCollection.getNumGeometries() > 0 && geomCollection.getGeometryN(0) instanceof Point) ) {
@@ -73,6 +84,9 @@ public class ST_Voronoi extends DeterministicScalarFunction {
                 return geomCollection.getFactory().createMultiPoint(circumcenter.toArray(new Coordinate[circumcenter.size()]));
             }
         } else {
+            if(Double.compare(geomCollection.getEnvelopeInternal().getArea(), 0d) == 0) {
+                return returnEmptyCollection(outputDimension);
+            }
             // Triangle input use internal method
             Voronoi voronoi = new Voronoi();
             if (envelope != null) {
