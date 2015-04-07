@@ -24,14 +24,16 @@
  */
 package org.h2gis.h2spatialext.drivers.osm;
 
+import com.vividsolutions.jts.geom.Point;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import com.vividsolutions.jts.geom.Point;
 import org.h2.util.StringUtils;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
@@ -212,11 +214,62 @@ public class OSMImportTest {
         rs.close();
     }
     
-    //@Test Disable because of internet connection is not always active
+    @Test
     public void downloadOSMFile() throws SQLException, IOException {
+        if(IsNetworkAvailable()){
         File file = File.createTempFile("osm_"+ System.currentTimeMillis(), ".osm");    
         file.delete();
         st.execute("CALL ST_OSMDownloader('POLYGON ((-2.12679 47.63418, -2.12679 47.63753, -2.11823 47.63753, -2.11823 47.63418, -2.12679 47.63418))'::GEOMETRY, '"+ file.getPath()+"')");
         assertTrue(new File(file.getPath()).exists());
+        }
+    }
+    
+    @Test
+    public void downloadOSMFile2() throws SQLException, IOException {
+        if(IsNetworkAvailable()){
+        File file = File.createTempFile("osm2_"+ System.currentTimeMillis(), ".osm");    
+        file.delete();
+        st.execute("CALL ST_OSMDownloader('POLYGON ((-2.130192869203905 47.633867888575935, -2.1318522937536533 47.640236490902, -2.1233757737562904 47.64032618952631, -2.1196532808473956 47.63960860053182, -2.1203708698418815 47.63377818995163, -2.130192869203905 47.633867888575935))'::GEOMETRY, '"+ file.getPath()+"')");
+        assertTrue(new File(file.getPath()).exists());
+        }
+    }
+    
+    @Test
+    public void downloadOSMFileAndImport() throws SQLException, IOException {
+        if(IsNetworkAvailable()){
+        File file = File.createTempFile("osm3_"+ System.currentTimeMillis(), ".osm");    
+        file.delete();
+        st.execute("CALL ST_OSMDownloader('POLYGON ((-2.12679 47.63418, -2.12679 47.63753, -2.11823 47.63753, -2.11823 47.63418, -2.12679 47.63418))'::GEOMETRY, '"+ file.getPath()+"')");
+        assertTrue(new File(file.getPath()).exists());
+        st.execute("DROP TABLE IF EXISTS OSM_TAG, OSM_NODE, OSM_NODE_TAG, OSM_WAY,OSM_WAY_TAG, OSM_WAY_NODE, OSM_RELATION, OSM_RELATION_TAG, OSM_NODE_MEMBER, OSM_WAY_MEMBER, OSM_RELATION_MEMBER;");
+        st.execute("CALL OSMRead(" + StringUtils.quoteStringSQL(file.getPath()) + ", 'OSM');");
+        ResultSet rs = st.executeQuery("SELECT count(TABLE_NAME) FROM INFORMATION_SCHEMA.TABLES where TABLE_NAME LIKE 'OSM%'");
+        rs.next();
+        assertTrue(rs.getInt(1) == 11);
+        rs.close();
+        // Check number
+        rs = st.executeQuery("SELECT count(ID_NODE) FROM OSM_NODE");
+        rs.next();
+        assertEquals(3245, rs.getInt(1));
+        rs.close();
+        }
+    }
+    
+    /**
+     * A method to test if the internet network is active.
+     *
+     * @return
+     */
+    public static boolean IsNetworkAvailable() {
+        try {
+            final URL url = new URL("http://www.google.com");
+            final URLConnection conn = url.openConnection();
+            conn.connect();
+            return true;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            return false;
+        }
     }
 }

@@ -29,6 +29,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTReader;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -70,7 +71,7 @@ import static org.ops4j.pax.exam.CoreOptions.*;
 public class BundleTest {
     @Inject
     BundleContext context;
-    private static final String DB_FILE_PATH = "target/test-resources/dbH2";
+    private static final String DB_FILE_PATH = new File("target/test-resources/dbH2").getAbsolutePath();
     private static final String DATABASE_PATH = "jdbc:h2:"+DB_FILE_PATH;
     private DataSource dataSource;
     private ServiceReference<DataSourceFactory> ref;
@@ -135,9 +136,15 @@ public class BundleTest {
         if(context.getServiceReference(DataSource.class.getName())==null) {
             // First UnitTest
             // Delete database
-            File dbFile = new File(DB_FILE_PATH+".h2.db");
+            File dbFile = new File(DB_FILE_PATH+".mv.db");
             if(dbFile.exists()) {
                 assertTrue(dbFile.delete());
+            }
+            Connection connection = dataSource.getConnection();
+            try {
+                CreateSpatialExtension.initSpatialExtension(connection);
+            } finally {
+                connection.close();
             }
             context.registerService(DataSource.class.getName(), dataSource, null);
         }

@@ -34,6 +34,8 @@ import org.h2gis.h2spatialapi.Function;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -45,6 +47,7 @@ import java.sql.SQLException;
  */
 public class FunctionTracker extends ServiceTracker<Function, Function> {
     private DataSource dataSource;
+    private static final Logger LOGGER = LoggerFactory.getLogger(FunctionTracker.class);
 
     /**
      * Constructor
@@ -64,32 +67,40 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
 
     @Override
     public Function addingService(ServiceReference<Function> reference) {
-        Function function = super.addingService(reference);
-        try {
-            Connection connection = dataSource.getConnection();
+        // Do not register system functions (h2spatial functions) because it should already be done through initialisation.
+        if(reference.getBundle().getBundleId() != context.getBundle().getBundleId()) {
+            Function function = super.addingService(reference);
             try {
-                CreateSpatialExtension.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
-            }finally {
-                connection.close();
+                Connection connection = dataSource.getConnection();
+                try {
+                    CreateSpatialExtension.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
+                } finally {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
+            return function;
+        } else {
+            return super.addingService(reference);
         }
-        return function;
     }
 
     @Override
     public void removedService(ServiceReference<Function> reference, Function service) {
-        try {
-            Connection connection = dataSource.getConnection();
+        // Do not unregister system functions (h2spatial functions)
+        if(reference.getBundle().getBundleId() != context.getBundle().getBundleId()) {
             try {
-                CreateSpatialExtension.unRegisterFunction(connection.createStatement(), service);
-            }finally {
-                connection.close();
+                Connection connection = dataSource.getConnection();
+                try {
+                    CreateSpatialExtension.unRegisterFunction(connection.createStatement(), service);
+                } finally {
+                    connection.close();
+                }
+            } catch (SQLException ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
             }
-        } catch (SQLException ex) {
-            ex.printStackTrace(System.err);
+            super.removedService(reference, service);
         }
-        super.removedService(reference, service);
     }
 }

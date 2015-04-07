@@ -73,6 +73,8 @@ import java.sql.Statement;
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_Transform;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_OrderingEquals;
 import org.h2gis.utilities.GeometryTypeCodes;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Add spatial features to an H2 database
@@ -89,6 +91,7 @@ import org.h2gis.utilities.GeometryTypeCodes;
 public class CreateSpatialExtension {
     /** H2 base type for geometry column {@link java.sql.ResultSetMetaData#getColumnTypeName(int)} */
     public static final String GEOMETRY_BASE_TYPE = "GEOMETRY";
+    private static final Logger LOGGER = LoggerFactory.getLogger(CreateSpatialExtension.class);
 
     /**
      * @return instance of all built-ins functions
@@ -293,7 +296,12 @@ public class CreateSpatialExtension {
             ScalarFunction scalarFunction = (ScalarFunction)function;
             String functionName = scalarFunction.getJavaStaticMethod();
             if(dropAlias) {
-                st.execute("DROP ALIAS IF EXISTS " + functionAlias);
+                try {
+                    st.execute("DROP ALIAS IF EXISTS " + functionAlias);
+                } catch (SQLException ex) {
+                    // Ignore, some tables constraints may depend on this function
+                    LOGGER.debug(ex.getLocalizedMessage(), ex);
+                }
             }
             String deterministic = "";
             if(getBooleanProperty(function,ScalarFunction.PROP_DETERMINISTIC,false)) {

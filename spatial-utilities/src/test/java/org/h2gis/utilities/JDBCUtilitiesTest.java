@@ -23,9 +23,9 @@ public class JDBCUtilitiesTest {
 
     @BeforeClass
     public static void init() throws Exception {
-        String dataBaseLocation = "target/JDBCUtilitiesTest";
+        String dataBaseLocation = new File("target/JDBCUtilitiesTest").getAbsolutePath();
         String databasePath = "jdbc:h2:"+dataBaseLocation;
-        File dbFile = new File(dataBaseLocation+".h2.db");
+        File dbFile = new File(dataBaseLocation+".mv.db");
         Class.forName("org.h2.Driver");
         if(dbFile.exists()) {
             dbFile.delete();
