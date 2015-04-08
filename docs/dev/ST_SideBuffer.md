@@ -4,7 +4,7 @@ title: ST_SideBuffer
 category: geom2D/process-geometries
 is_function: true
 description: Compute a single buffer on one side
-prev_section: ST_PrecisionReducer
+prev_section: ST_RingSideBuffer
 next_section: ST_Simplify
 permalink: /docs/dev/ST_SideBuffer/
 ---
