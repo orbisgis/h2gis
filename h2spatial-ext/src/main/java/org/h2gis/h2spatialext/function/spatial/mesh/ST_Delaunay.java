@@ -23,9 +23,11 @@
  */
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.*;
+
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.List;
 
 import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
@@ -115,10 +117,23 @@ public class ST_Delaunay extends DeterministicScalarFunction {
                 case 1:
                     return (GeometryCollection)delaunayTriangulationBuilder.getEdges(geometry.getFactory());
                 default:
-                    return (GeometryCollection)delaunayTriangulationBuilder.getTriangles(geometry.getFactory());
+                    return getTriangles(geometry.getFactory(), delaunayTriangulationBuilder);
             }
         }
         return null;
+    }
+
+    private static GeometryCollection getTriangles(GeometryFactory geomFact,
+                                        DelaunayTriangulationBuilder delaunayTriangulationBuilder) {
+        QuadEdgeSubdivision subdiv = delaunayTriangulationBuilder.getSubdivision();
+        List triPtsList = subdiv.getTriangleCoordinates(false);
+        Polygon[] tris = new Polygon[triPtsList.size()];
+        int i = 0;
+        for (Object aTriPtsList : triPtsList) {
+            Coordinate[] triPt = (Coordinate[]) aTriPtsList;
+            tris[i++] = geomFact.createPolygon(geomFact.createLinearRing(triPt), null);
+        }
+        return geomFact.createMultiPolygon(tris);
     }
 
     /**
