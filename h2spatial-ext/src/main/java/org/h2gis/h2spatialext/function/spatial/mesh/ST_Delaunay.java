@@ -26,6 +26,10 @@ package org.h2gis.h2spatialext.function.spatial.mesh;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import java.sql.SQLException;
+
+import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
+import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
+import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 import org.jdelaunay.delaunay.ConstrainedMesh;
@@ -94,13 +98,24 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @throws org.jdelaunay.delaunay.error.DelaunayError
      */
     public static GeometryCollection createDT(Geometry geometry,  int flag,double qualityRefinement) throws SQLException, DelaunayError {
-        if (geometry != null) {
-            if (flag == 0) {
-                return DelaunayTools.toMultiPolygon(buildDelaunay(geometry, qualityRefinement).getTriangleList());
-            } else if (flag == 1) {
-                return DelaunayTools.toMultiLineString(buildDelaunay(geometry, qualityRefinement).getEdges());
-            } else {
-                throw new SQLException("Only flag 0 or 1 is supported.");
+        if(qualityRefinement >= 0) {
+            if (geometry != null) {
+                if (flag == 0) {
+                    return DelaunayTools.toMultiPolygon(buildDelaunay(geometry, qualityRefinement).getTriangleList());
+                } else if (flag == 1) {
+                    return DelaunayTools.toMultiLineString(buildDelaunay(geometry, qualityRefinement).getEdges());
+                } else {
+                    throw new SQLException("Only flag 0 or 1 is supported.");
+                }
+            }
+        } else {
+            DelaunayTriangulationBuilder delaunayTriangulationBuilder = new DelaunayTriangulationBuilder();
+            delaunayTriangulationBuilder.setSites(geometry);
+            switch (flag) {
+                case 1:
+                    return (GeometryCollection)delaunayTriangulationBuilder.getEdges(geometry.getFactory());
+                default:
+                    return (GeometryCollection)delaunayTriangulationBuilder.getTriangles(geometry.getFactory());
             }
         }
         return null;
