@@ -5,7 +5,7 @@ category: geom2D/process-geometries
 is_function: true
 description: Reduce a Geometry's precision
 prev_section: ST_Polygonize
-next_section: ST_Simplify
+next_section: ST_RingSideBuffer
 permalink: /docs/dev/ST_PrecisionReducer/
 ---
 

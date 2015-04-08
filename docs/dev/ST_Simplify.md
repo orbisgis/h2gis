@@ -4,7 +4,7 @@ title: ST_Simplify
 category: geom2D/process-geometries
 is_function: true
 description: Simplify a Geometry
-prev_section: ST_PrecisionReducer
+prev_section: ST_SideBuffer
 next_section: ST_SimplifyPreserveTopology
 permalink: /docs/dev/ST_Simplify/
 ---
