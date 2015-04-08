@@ -100,8 +100,8 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @throws org.jdelaunay.delaunay.error.DelaunayError
      */
     public static GeometryCollection createDT(Geometry geometry,  int flag,double qualityRefinement) throws SQLException, DelaunayError {
-        if(qualityRefinement >= 0) {
-            if (geometry != null) {
+        if (geometry != null) {
+            if(qualityRefinement >= 0) {
                 if (flag == 0) {
                     return DelaunayTools.toMultiPolygon(buildDelaunay(geometry, qualityRefinement).getTriangleList());
                 } else if (flag == 1) {
@@ -109,15 +109,15 @@ public class ST_Delaunay extends DeterministicScalarFunction {
                 } else {
                     throw new SQLException("Only flag 0 or 1 is supported.");
                 }
-            }
-        } else {
-            DelaunayTriangulationBuilder delaunayTriangulationBuilder = new DelaunayTriangulationBuilder();
-            delaunayTriangulationBuilder.setSites(geometry);
-            switch (flag) {
-                case 1:
-                    return (GeometryCollection)delaunayTriangulationBuilder.getEdges(geometry.getFactory());
-                default:
-                    return getTriangles(geometry.getFactory(), delaunayTriangulationBuilder);
+            } else {
+                DelaunayTriangulationBuilder delaunayTriangulationBuilder = new DelaunayTriangulationBuilder();
+                delaunayTriangulationBuilder.setSites(geometry);
+                switch (flag) {
+                    case 1:
+                        return (GeometryCollection)delaunayTriangulationBuilder.getEdges(geometry.getFactory());
+                    default:
+                        return getTriangles(geometry.getFactory(), delaunayTriangulationBuilder);
+                }
             }
         }
         return null;
