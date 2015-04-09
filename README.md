@@ -9,7 +9,7 @@ additional spatial functions that we (the [Atelier SIG](http://www.irstv.fr/))
 develop. There is currently about 70 spatial functions in H2GIS. 
 
 H2GIS is the root project for the new [OrbisGIS](http://www.orbisgis.org/) data
-management library and is divided into two subprojects: H2Spatial and
+management library. It contains two main subprojects: H2Spatial and
 H2Drivers, both of which are licensed under the GPL 3 license terms.
 
 #### H2Spatial
