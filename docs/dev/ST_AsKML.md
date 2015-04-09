@@ -5,7 +5,7 @@ category: h2drivers
 is_function: true
 description: Geometry &rarr; KML
 prev_section: ST_AsGeoJson
-next_section: spatial-indices
+next_section: ST_OSMDownloader
 permalink: /docs/dev/ST_AsKML/
 ---
 
