@@ -13,24 +13,36 @@ permalink: /docs/dev/ST_Explode/
 
 {% highlight mysql %}
 tableName[*, explod_id] ST_Explode('tableName');
+tableName[*, explod_id] ST_Explode('query');
 tableName[*, explod_id] ST_Explode('tableName', 'fieldName');
+tableName[*, explod_id] ST_Explode('query', 'fieldName');
 {% endhighlight %}
 
 ### Description
-Explodes the `GEOMETRYCOLLECTION`s in the `fieldName` column of table `tableName` into multiple Geometries.
+Explodes the `GEOMETRYCOLLECTION`s in the `fieldName` column of table `tableName`, or in a `query`, into multiple Geometries.
+
 If no field name is specified, the first Geometry column is used.
 
 ### Examples
 
 {% highlight mysql %}
 CREATE TABLE test_point AS SELECT
-    'MULTIPOINT((1 1), (2 2))'::Geometry the_geom;
+    'MULTIPOINT((1 1), (2 2))'::Geometry as THE_GEOM;
+
+-- ST_Explode using the 'tableName'
 SELECT * FROM ST_Explode('test_point');
+
+-- or
+-- ST_Explode using a 'query'
+SELECT * FROM ST_Explode('SELECT * FROM test_point 
+                          WHERE ST_Dimension(THE_GEOM)=0');
+
 -- Answer:
 --    |   THE_GEOM  | EXPLOD_ID |
 --    | ------------|-----------|
 --    | POINT(1 1)  |     1     |
 --    | POINT(2 2)  |     2     |
+
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Explode.png"/>
