@@ -35,7 +35,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.utilities.URIUtility;
 
 /**
  * This function is used to download data from the osm api using a bounding box.
@@ -63,13 +65,18 @@ public class ST_OSMDownloader extends DeterministicScalarFunction {
      * @throws FileNotFoundException
      * @throws IOException
      */
-    public static void downloadData(Geometry area, String fileName) throws FileNotFoundException, IOException {
-        File file = new File(fileName);
+    public static void downloadData(Geometry area, String fileName) throws FileNotFoundException, IOException, SQLException {
+        File file = URIUtility.fileFromString(fileName);
+
         if (file.exists()) {
             throw new FileNotFoundException("The following file already exists:\n" + fileName);
         }
-        if (area != null) {
-            downloadOSMFile(file, area.getEnvelopeInternal());
+        if (file.getName().toLowerCase().endsWith(".osm")) {
+            if (area != null) {
+                downloadOSMFile(file, area.getEnvelopeInternal());
+            }
+        } else {
+            throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
         }
     }   
     
