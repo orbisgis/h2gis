@@ -34,6 +34,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.tools.Csv;
+import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
@@ -75,9 +76,7 @@ public class CSVDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        if (fileName.exists()) {
-            throw new SQLException("The file " + fileName.getPath() + " already exists.");
-        }
+        if(FileUtil.isExtensionWellFormated(fileName, "csv")){
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         TableLocation location = TableLocation.parse(tableReference, isH2);
         Statement st = null;
@@ -89,56 +88,62 @@ public class CSVDriverFunction implements DriverFunction{
                 st.close();
             }
         }
+        }
+        else{
+            throw new SQLException("Only .csv extension is supported");
+        }
         
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-        String table = requestedTable.getTable();
-        ResultSet reader = new Csv().read(fileName.getPath(), null, null);
-        ResultSetMetaData metadata = reader.getMetaData();
-        int columnCount = metadata.getColumnCount();
+        if (FileUtil.isFileImportable(fileName, "csv")) {
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            String table = requestedTable.getTable();
+            ResultSet reader = new Csv().read(fileName.getPath(), null, null);
+            ResultSetMetaData metadata = reader.getMetaData();
+            int columnCount = metadata.getColumnCount();
 
-        StringBuilder createTable = new StringBuilder("CREATE TABLE ");
-        createTable.append(table).append("(");
+            StringBuilder createTable = new StringBuilder("CREATE TABLE ");
+            createTable.append(table).append("(");
 
-        StringBuilder insertTable = new StringBuilder("INSERT INTO ");
-        insertTable.append(table).append(" VALUES(");
+            StringBuilder insertTable = new StringBuilder("INSERT INTO ");
+            insertTable.append(table).append(" VALUES(");
 
-        for (int i = 0; i < columnCount; i++) {
-            createTable.append(metadata.getColumnName(i+1)).append(" VARCHAR,");
-            insertTable.append("?,");
-        }
-        createTable.append(")");
-        insertTable.append(")");
+            for (int i = 0; i < columnCount; i++) {
+                createTable.append(metadata.getColumnName(i + 1)).append(" VARCHAR,");
+                insertTable.append("?,");
+            }
+            createTable.append(")");
+            insertTable.append(")");
 
-        Statement stmt = connection.createStatement();
-        stmt.execute(createTable.toString());
-        stmt.close();
+            Statement stmt = connection.createStatement();
+            stmt.execute(createTable.toString());
+            stmt.close();
 
-        PreparedStatement pst = connection.prepareStatement(insertTable.toString());
-        long batchSize = 0;
-        try {
-            while (reader.next()) {
-                for (int i = 0; i < columnCount; i++) {
-                    pst.setString(i + 1, reader.getString(i + 1));
+            PreparedStatement pst = connection.prepareStatement(insertTable.toString());
+            long batchSize = 0;
+            try {
+                while (reader.next()) {
+                    for (int i = 0; i < columnCount; i++) {
+                        pst.setString(i + 1, reader.getString(i + 1));
+                    }
+                    pst.addBatch();
+                    batchSize++;
+                    if (batchSize >= BATCH_MAX_SIZE) {
+                        pst.executeBatch();
+                        pst.clearBatch();
+                        batchSize = 0;
+                    }
                 }
-                pst.addBatch();
-                batchSize++;
-                if (batchSize >= BATCH_MAX_SIZE) {
+                if (batchSize > 0) {
                     pst.executeBatch();
-                    pst.clearBatch();
-                    batchSize = 0;
                 }
-            }
-            if (batchSize > 0) {
-                pst.executeBatch();
-            }
 
-        } finally {
-            pst.close();
+            } finally {
+                pst.close();
+            }
         }
-    }
+    }    
 }

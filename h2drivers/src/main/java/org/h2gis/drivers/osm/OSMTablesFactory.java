@@ -82,6 +82,7 @@ public class OSMTablesFactory {
      *
      * @param connection
      * @param nodeTableName
+     * @param isH2
      * @return
      * @throws SQLException
      */

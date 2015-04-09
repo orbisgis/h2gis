@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
@@ -69,12 +70,22 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException 
      */
     public static void readOSM(Connection connection, String fileName, String tableReference) throws FileNotFoundException, SQLException {
-        File file = new File(fileName);
+        File file = URIUtility.fileFromString(fileName);
         if (!file.exists()) {
             throw new FileNotFoundException("The following file does not exists:\n" + fileName);
         }
-        OSMParser osmp = new OSMParser();
-        osmp.read(connection, tableReference, URIUtility.fileFromString(fileName), new EmptyProgressVisitor());
+        if (file.getName().toLowerCase().endsWith(".osm")) {
+            OSMParser osmp = new OSMParser();
+            osmp.read(connection, tableReference, file, new EmptyProgressVisitor());
+        } else if (file.getName().toLowerCase().endsWith(".osm.gz")) {
+            OSMParser osmp = new OSMParser();
+            osmp.read(connection, tableReference, file, new EmptyProgressVisitor());
+        } else if (file.getName().toLowerCase().endsWith(".osm.bz2")) {
+            OSMParser osmp = new OSMParser();
+            osmp.read(connection, tableReference, file, new EmptyProgressVisitor());
+        } else {
+            throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
+        }
     }
 
     /**

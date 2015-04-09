@@ -57,6 +57,8 @@ public class SHPDriver implements FileDriver {
     private IndexFile shxFileReader;
     private int geometryFieldIndex = 0;
     private ShapeType shapeType;
+    public File prjFile;
+    private int srid =0;
 
     /**
      * @param geometryFieldIndex The geometry field index in getRow() array.
@@ -148,6 +150,9 @@ public class SHPDriver implements FileDriver {
                     } else if(fileExt.equalsIgnoreCase("dbf")) {
                         dbfFile = otherFile;
                     }
+                    else if(fileExt.equalsIgnoreCase("prj")) {
+                        prjFile = otherFile;
+                    }
                 }
             }
         }
@@ -208,11 +213,31 @@ public class SHPDriver implements FileDriver {
         if(geometryFieldIndex > 0) {
             System.arraycopy(dbfValues, 0, values, 0, geometryFieldIndex);
         }
-        values[geometryFieldIndex] = shapefileReader.geomAt(shxFileReader.getOffset((int)rowId));
+        Geometry geom = shapefileReader.geomAt(shxFileReader.getOffset((int)rowId));
+        geom.setSRID(getSrid());
+        values[geometryFieldIndex] = geom;
         // Copy dbf values after geometryFieldIndex
         if(geometryFieldIndex < dbfValues.length) {
             System.arraycopy(dbfValues, geometryFieldIndex, values, geometryFieldIndex + 1, dbfValues.length);
         }
         return values;
     }
+
+    /**
+     * Set a SRID code that will be used for geometries.
+     * @param srid 
+     */
+    public void setSRID(int srid) {
+        this.srid=srid;
+    }
+
+    /**
+     * Get the SRID code
+     * @return 
+     */
+    public int getSrid() {
+        return srid;
+    }
+    
+    
 }

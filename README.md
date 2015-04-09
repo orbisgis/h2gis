@@ -40,7 +40,16 @@ It include also file copy functions:
 
 For now, H2GIS requires Java 6. Run `maven clean install -P standalone` in the H2GIS's root directory.
 
-In the folder `h2-dist/target/` you will find a zip file `h2gis-standalone-bin.zip` that contain a run.sh file for running H2 with H2GIS. It will open a browser based console application.
+In the folder `h2-dist/target/` you will find a zip file `h2gis-standalone-bin.zip`.Unzip the file then open `h2-dist-1.1.1.jar` It will open a browser based console application.
+
+~ $ unzip h2gis-standalone-bin.zip
+
+~ $ cd h2gis-standalone
+
+~/h2gis-standalone $ java -jar h2-dist-1.1.1.jar
+
+Click Connect in the web interface
+
 
 [Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
@@ -68,12 +77,37 @@ Or copy the content of a spatial table in a new shape file:
 CALL SHPWRITE('/home/user/newshapefile.shp', 'tablename');
 ```
 
+#### Contributing
+
+For legal reasons, contributors are asked to provide a contributor license agreement. 
+We invite each contributor to send a mail to the [H2GIS developer] (http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html) mailing list.
+
+The mail need to include the following statement:
+
+"I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the [GPL 3.0] (http://www.gnu.org/copyleft/gpl.html)." 
+
+For a significant contribution, send a PR on GitHub and refer it in your message. For a single contribution join a patch to your mail.
+
+
 #### Acknowledgements
 
 The H2GIS team utilizes open source software. Specifically, we would like to thank  :
 
-* Thomas Mueller and Noel Grandin from the [H2 database community] (http://www.h2database.com)
-* Martin Davis from the [JTS community] (http://tsusiatsoftware.net/jts/main.html)
+* Thomas Mueller and Noel Grandin from the [H2 database community] (http://www.h2database.com).
+* Martin Davis from the [JTS community] (http://tsusiatsoftware.net/jts/main.html).
 
+#### Supporters
+
+Many thanks for those who reported bugs or provide patches...  
+
+* Steve Hruda aka shruda [PR #453] (https://github.com/irstv/H2GIS/pull/453)
+
+
+#### Team
+
+H2GIS is composed of three qualified professionals in GIS and informatic sciences.
+Erwan Bocher leads the project.
+Nicolas Fortin is the lead programmer. 
+Gwendall Petit is in charge of the documentation and manages all public relations with the community users.
 
 

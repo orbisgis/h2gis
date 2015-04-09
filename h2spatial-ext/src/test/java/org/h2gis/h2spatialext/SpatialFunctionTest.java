@@ -2836,24 +2836,24 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_CollectExtract1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('LINESTRING(-20 5, 20 20)', 2);");
+    public void test_ST_CollectionExtract1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectionExtract('LINESTRING(-20 5, 20 20)', 2);");
         rs.next();
         assertGeometryEquals("LINESTRING(-20 5, 20 20)", rs.getObject(1));
         rs.close();
     }
     
     @Test
-    public void test_ST_CollectExtract2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('LINESTRING(-20 5, 20 20)', 1);");
+    public void test_ST_CollectionExtract2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectionExtract('LINESTRING(-20 5, 20 20)', 1);");
         rs.next();
         assertEquals("GEOMETRYCOLLECTION EMPTY", ((Geometry) rs.getObject(1)).toText());
         rs.close();
     }
     
     @Test
-    public void test_ST_CollectExtract3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('GEOMETRYCOLLECTION (POLYGON ((140 320, 140 308, 140 287, 140 273, 140 252, 146 243, 156 241, 166 241, 176 241, 186 241, 196 241, 204 247, 212 254, 222 263, 228 271, 230 281, 214 295, 140 320)),"
+    public void test_ST_CollectionExtract3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectionExtract('GEOMETRYCOLLECTION (POLYGON ((140 320, 140 308, 140 287, 140 273, 140 252, 146 243, 156 241, 166 241, 176 241, 186 241, 196 241, 204 247, 212 254, 222 263, 228 271, 230 281, 214 295, 140 320)),"
                 + "  LINESTRING (290 340, 270 230),"
                 + "  LINESTRING (120 200, 230 170))', 2);");
         rs.next();
@@ -2862,8 +2862,8 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_CollectExtract4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('GEOMETRYCOLLECTION (POLYGON ((140 320, 140 308, 140 287, 140 273, 140 252, 146 243, 156 241, 166 241, 176 241, 186 241, 196 241, 204 247, 212 254, 222 263, 228 271, 230 281, 214 295, 140 320)),"
+    public void test_ST_CollectionExtract4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectionExtract('GEOMETRYCOLLECTION (POLYGON ((140 320, 140 308, 140 287, 140 273, 140 252, 146 243, 156 241, 166 241, 176 241, 186 241, 196 241, 204 247, 212 254, 222 263, 228 271, 230 281, 214 295, 140 320)),"
                 + "  LINESTRING (290 340, 270 230),"
                 + "  LINESTRING (120 200, 230 170))', 3);");
         rs.next();
@@ -2873,8 +2873,8 @@ public class SpatialFunctionTest {
     
     
     @Test
-    public void test_ST_CollectExtract5() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('GEOMETRYCOLLECTION (LINESTRING (290 340, 270 230),"
+    public void test_ST_CollectionExtract5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectionExtract('GEOMETRYCOLLECTION (LINESTRING (290 340, 270 230),"
                 + "  LINESTRING (120 200, 230 170),"
                 + "  POINT (110 360),"
                 + "  POINT (145 322),"
@@ -2886,8 +2886,8 @@ public class SpatialFunctionTest {
     }
     
     @Test
-    public void test_ST_CollectExtract6() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_CollectExtract('GEOMETRYCOLLECTION (MULTILINESTRING ((181729.16666666666 2402624, 181715 2402658, 181648 2402753.714285714), (181648 2402796, 181655 2402803, 181699.625 2402824)))', 2);");
+    public void test_ST_CollectionExtract6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_CollectionExtract('GEOMETRYCOLLECTION (MULTILINESTRING ((181729.16666666666 2402624, 181715 2402658, 181648 2402753.714285714), (181648 2402796, 181655 2402803, 181699.625 2402824)))', 2);");
         rs.next();
         assertGeometryEquals("MULTILINESTRING ((181729.16666666666 2402624, 181715 2402658, 181648 2402753.714285714), (181648 2402796, 181655 2402803, 181699.625 2402824))", rs.getObject(1));
         rs.close();

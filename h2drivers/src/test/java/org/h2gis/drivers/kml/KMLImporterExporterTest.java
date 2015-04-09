@@ -27,6 +27,7 @@ package org.h2gis.drivers.kml;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -47,7 +48,7 @@ public class KMLImporterExporterTest {
 
     private static Connection connection;
     private static final String DB_NAME = "KMLExportTest";
-    private static WKTReader WKT_READER = new WKTReader();
+    private static final WKTReader WKT_READER = new WKTReader();
 
     @BeforeClass
     public static void tearUp() throws Exception {
@@ -289,4 +290,20 @@ public class KMLImporterExporterTest {
             stat.close();
         }
     }
+    
+    @Test(expected = SQLException.class)
+    public void importFileNoExist() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("CALL KMLRead('target/blabla.kml', 'BLABLA')");
+    }
+
+    @Test(expected = SQLException.class)
+    public void importFileWithBadExtension() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File file = new File("target/area_export.blabla");
+        file.delete();
+        file.createNewFile();
+        stat.execute("CALL KMLRead('target/area_export.blabla', 'BLABLA')");
+        file.delete();
+    } 
 }

@@ -167,7 +167,7 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
             if (JDBCUtilities.tableExists(connection, wptTableName)) {
                 throw new SQLException("The table " + wptTableName + " already exists.");
             }
-            setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName));
+            setWptPreparedStmt(GPXTablesFactory.createWayPointsTable(connection, wptTableName, isH2));
             tableNames.append(wptTableName).append(",");
         }
         if (gpxPreparser.getTotalRte() > 0 && gpxPreparser.getTotalRtept() > 0) {
@@ -179,8 +179,8 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
             if (JDBCUtilities.tableExists(connection, routePointsTableName)) {
                 throw new SQLException("The table " + routePointsTableName + " already exists.");
             }
-            setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName));           
-            setRteptPreparedStmt(GPXTablesFactory.createRoutePointsTable(connection, routePointsTableName));
+            setRtePreparedStmt(GPXTablesFactory.createRouteTable(connection, routeTableName, isH2));           
+            setRteptPreparedStmt(GPXTablesFactory.createRoutePointsTable(connection, routePointsTableName, isH2));
             tableNames.append(routeTableName).append(",").append(routePointsTableName).append(",");
         }
         
@@ -200,9 +200,9 @@ public abstract class AbstractGpxParserDefault extends AbstractGpxParser {
             if (JDBCUtilities.tableExists(connection, trackPointsTableName)) {
                 throw new SQLException("The table " + trackPointsTableName + " already exists.");
             }
-            setTrkPreparedStmt(GPXTablesFactory.createTrackTable(connection, trackTableName));
-            setTrkSegmentsPreparedStmt(GPXTablesFactory.createTrackSegmentsTable(connection, trackSegmentsTableName));
-            setTrkPointsPreparedStmt(GPXTablesFactory.createTrackPointsTable(connection, trackPointsTableName));
+            setTrkPreparedStmt(GPXTablesFactory.createTrackTable(connection, trackTableName, isH2));
+            setTrkSegmentsPreparedStmt(GPXTablesFactory.createTrackSegmentsTable(connection, trackSegmentsTableName, isH2));
+            setTrkPointsPreparedStmt(GPXTablesFactory.createTrackPointsTable(connection, trackPointsTableName, isH2));
             tableNames.append(trackTableName).append(",").append(trackSegmentsTableName).append(",").append(trackPointsTableName).append(",");
         }
         

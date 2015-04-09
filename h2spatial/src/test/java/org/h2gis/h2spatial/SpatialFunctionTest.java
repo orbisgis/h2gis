@@ -33,7 +33,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,11 +56,8 @@ public class SpatialFunctionTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         // Set up test data
-        URL sqlURL = SpatialFunctionTest.class.getResource("ogc_conformance_test3.sql");
-        URL sqlURL2 = SpatialFunctionTest.class.getResource("spatial_index_test_data.sql");
-        Statement st = connection.createStatement();
-        st.execute("RUNSCRIPT FROM '" + sqlURL + "'");
-        st.execute("RUNSCRIPT FROM '" + sqlURL2 + "'");
+        OGCConformance1Test.executeScript(connection, "ogc_conformance_test3.sql");
+        OGCConformance1Test.executeScript(connection, "spatial_index_test_data.sql");
     }
 
     @AfterClass

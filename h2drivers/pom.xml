@@ -97,5 +97,11 @@
             <artifactId>commons-compress</artifactId>
             <version>1.9</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>cts</artifactId>
+            <version>${cts-version}</version>
+            <!-- https://github.com/irstv/CTS -->
+        </dependency>
     </dependencies>
 </project>

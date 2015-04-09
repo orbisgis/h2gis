@@ -25,20 +25,19 @@
 
 package org.h2gis.h2spatial;
 
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Second unit test group, use advanced SQL features like foreign key constraint.
@@ -54,12 +53,11 @@ public class OGCConformance2Test {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         // Set up test data
-        URL sqlURL = OGCConformance1Test.class.getResource("ogc_conformance_test2.sql");
         Statement st = connection.createStatement();
         //Remove view to not be in conflict with this script that does not remove any existing table
         st.execute("drop view if exists geometry_columns;");
         st.execute("drop table if exists spatial_ref_sys;");
-        st.execute("RUNSCRIPT FROM '"+sqlURL+"'");
+        OGCConformance1Test.executeScript(connection, "ogc_conformance_test2.sql");
     }
 
 
@@ -176,7 +174,7 @@ public class OGCConformance2Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT srtext FROM SPATIAL_REF_SYS WHERE SRID = 101;");
         assertTrue(rs.next());
-        assertEquals("PROJCS[\"UTM_ZONE_14N\", GEOGCS[\"World Geodetic System\n\n72\",DATUM[\"WGS_72\", " +
+        OGCConformance1Test.osIndepentendAssertEquals("PROJCS[\"UTM_ZONE_14N\", GEOGCS[\"World Geodetic System\n\n72\",DATUM[\"WGS_72\", " +
                 "ELLIPSOID[\"NWL_10D\", 6378135,\n\n298.26]],PRIMEM[\"Greenwich\",\n\n0],UNIT[\"Meter\",1.0]]," +
                 "PROJECTION[\"Transverse_Mercator\"],\n\nPARAMETER[\"False_Easting\", 500000.0]," +
                 "PARAMETER[\"False_Northing\",\n\n0.0],PARAMETER[\"Central_Meridian\", -99.0],PARAMETER[\"Scale_Factor\"" +

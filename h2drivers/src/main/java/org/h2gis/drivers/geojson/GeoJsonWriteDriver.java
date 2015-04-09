@@ -38,6 +38,7 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.h2gis.drivers.utility.FileUtil;
 
 /**
  * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -81,18 +82,13 @@ public class GeoJsonWriteDriver {
      *
      * @param progress
      * @throws SQLException
+     * @throws java.io.IOException
      */
-    public void write(ProgressVisitor progress) throws SQLException, IOException {
-        String path = fileName.getAbsolutePath();
-        String extension = "";
-        int i = path.lastIndexOf('.');
-        if (i >= 0) {
-            extension = path.substring(i + 1);
-        }
-        if (extension.equalsIgnoreCase("geojson")) {
+    public void write(ProgressVisitor progress) throws SQLException, IOException {        
+        if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
             writeGeoJson(progress);
         } else {
-            throw new SQLException("Please geojson extension.");
+            throw new SQLException("Only .geojson extension is supported");
         }
     }
 
@@ -107,23 +103,25 @@ public class GeoJsonWriteDriver {
         try {
             fos = new FileOutputStream(fileName);
             // Read Geometry Index and type
-            List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+            final TableLocation parse =  TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+            List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection,parse);
             if (spatialFieldNames.isEmpty()) {
                 throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
             }
 
             // Read table content
             Statement st = connection.createStatement();
-            try {
-                ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
-
+            try {                
                 JsonFactory jsonFactory = new JsonFactory();
                 JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
 
                 // header of the GeoJSON file
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
+                writeCRS(jsonGenerator,SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
                 jsonGenerator.writeArrayFieldStart("features");
+                
+                ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
 
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
@@ -490,4 +488,25 @@ public class GeoJsonWriteDriver {
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);
         }
     }
+
+    /**
+     * Write the CRS in the geojson
+     *
+     * @param jsonGenerator
+     * @param authorityAndSRID
+     * @throws IOException
+     */
+    private void writeCRS(JsonGenerator jsonGenerator, String[] authorityAndSRID) throws IOException {
+        if (authorityAndSRID[1] != null) {
+            jsonGenerator.writeObjectFieldStart("crs");
+            jsonGenerator.writeStringField("type", "name");
+            jsonGenerator.writeObjectFieldStart("properties");
+            StringBuilder sb = new StringBuilder("urn:ogc:def:crs:");
+            sb.append(authorityAndSRID[0]).append("::").append(authorityAndSRID[1]);
+            jsonGenerator.writeStringField("name", sb.toString());
+            jsonGenerator.writeEndObject();
+            jsonGenerator.writeEndObject();
+        }
+    }
+    
 }

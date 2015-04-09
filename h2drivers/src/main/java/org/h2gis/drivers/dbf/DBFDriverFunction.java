@@ -47,6 +47,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
+import org.h2gis.drivers.utility.FileUtil;
 
 /**
  * @author Nicolas Fortin
@@ -60,48 +61,52 @@ public class DBFDriverFunction implements DriverFunction {
     }
 
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
-        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        // Read table content
-        Statement st = connection.createStatement();
-        ProgressVisitor lineProgress = null;
-        if(!(progress instanceof EmptyProgressVisitor)) {
-            ResultSet rs = st.executeQuery(String.format("select count(*) from %s", TableLocation.parse(tableReference,isH2).toString(isH2)));
+        if (FileUtil.isExtensionWellFormated(fileName, "dbf")) {
+            int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            // Read table content
+            Statement st = connection.createStatement();
+            ProgressVisitor lineProgress = null;
+            if (!(progress instanceof EmptyProgressVisitor)) {
+                ResultSet rs = st.executeQuery(String.format("select count(*) from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
+                try {
+                    if (rs.next()) {
+                        lineProgress = progress.subProcess(rs.getInt(1));
+                    }
+                } finally {
+                    rs.close();
+                }
+            }
             try {
-                if(rs.next()) {
-                    lineProgress = progress.subProcess(rs.getInt(1));
+                ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
+                try {
+                    ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                    DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
+                    if (encoding != null) {
+                        header.setEncoding(encoding);
+                    }
+                    header.setNumRecords(recordCount);
+                    DBFDriver dbfDriver = new DBFDriver();
+                    dbfDriver.initDriver(fileName, header);
+                    Object[] row = new Object[header.getNumFields()];
+                    while (rs.next()) {
+                        for (int columnId = 0; columnId < row.length; columnId++) {
+                            row[columnId] = rs.getObject(columnId + 1);
+                        }
+                        dbfDriver.insertRow(row);
+                        if (lineProgress != null) {
+                            lineProgress.endStep();
+                        }
+                    }
+                    dbfDriver.close();
+                } finally {
+                    rs.close();
                 }
             } finally {
-                rs.close();
+                st.close();
             }
-        }
-        try {
-            ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
-            try {
-                ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
-                if(encoding != null) {
-                    header.setEncoding(encoding);
-                }
-                header.setNumRecords(recordCount);
-                DBFDriver dbfDriver = new DBFDriver();
-                dbfDriver.initDriver(fileName, header);
-                Object[] row = new Object[header.getNumFields()];
-                while (rs.next()) {
-                    for(int columnId = 0; columnId < row.length; columnId++) {
-                        row[columnId] = rs.getObject(columnId + 1);
-                    }
-                    dbfDriver.insertRow(row);
-                    if(lineProgress != null) {
-                        lineProgress.endStep();
-                    }
-                }
-                dbfDriver.close();
-            } finally {
-                rs.close();
-            }
-        } finally {
-            st.close();
+        } else {
+            throw new SQLException("Only .dbf extension is supported");
         }
     }
 
@@ -143,54 +148,56 @@ public class DBFDriverFunction implements DriverFunction {
      * @throws IOException File read error
      */
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceFileEncoding) throws SQLException, IOException {
-        DBFDriver dbfDriver = new DBFDriver();
-        dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
-        try {
-            DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
-            // Build CREATE TABLE sql request
-            Statement st = connection.createStatement();
-            List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
-            for(int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
-                otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
-            }
-            String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
-            st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
-                    getSQLColumnTypes(dbfHeader, isH2)));
-            st.close();
+        if (FileUtil.isFileImportable(fileName, "dbf")) {
+            DBFDriver dbfDriver = new DBFDriver();
+            dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
             try {
-                PreparedStatement preparedStatement = connection.prepareStatement(
-                        String.format("INSERT INTO %s VALUES (null, %s )", parsedTable,
-                                getQuestionMark(dbfHeader.getNumFields())));
-                try {
-                    long batchSize = 0;
-                    for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
-                        Object[] values = dbfDriver.getRow(rowId);
-                        for (int columnId = 0; columnId < values.length; columnId++) {
-                            preparedStatement.setObject(columnId + 1, values[columnId]);
-                        }
-                        preparedStatement.addBatch();
-                        batchSize++;
-                        if (batchSize >= BATCH_MAX_SIZE) {
-                            preparedStatement.executeBatch();
-                            preparedStatement.clearBatch();
-                            batchSize = 0;
-                        }
-                    }
-                    if(batchSize > 0) {
-                        preparedStatement.executeBatch();
-                    }
-                } finally {
-                    preparedStatement.close();
+                DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
+                // Build CREATE TABLE sql request
+                Statement st = connection.createStatement();
+                List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
+                for (int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
+                    otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
                 }
-                //TODO create spatial index on the_geom ?
-            } catch (Exception ex) {
-                connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);
-                throw new SQLException(ex.getLocalizedMessage(), ex);
+                String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
+                st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
+                        getSQLColumnTypes(dbfHeader, isH2)));
+                st.close();
+                try {
+                    PreparedStatement preparedStatement = connection.prepareStatement(
+                            String.format("INSERT INTO %s VALUES (null, %s )", parsedTable,
+                                    getQuestionMark(dbfHeader.getNumFields())));
+                    try {
+                        long batchSize = 0;
+                        for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
+                            Object[] values = dbfDriver.getRow(rowId);
+                            for (int columnId = 0; columnId < values.length; columnId++) {
+                                preparedStatement.setObject(columnId + 1, values[columnId]);
+                            }
+                            preparedStatement.addBatch();
+                            batchSize++;
+                            if (batchSize >= BATCH_MAX_SIZE) {
+                                preparedStatement.executeBatch();
+                                preparedStatement.clearBatch();
+                                batchSize = 0;
+                            }
+                        }
+                        if (batchSize > 0) {
+                            preparedStatement.executeBatch();
+                        }
+                    } finally {
+                        preparedStatement.close();
+                    }
+                    //TODO create spatial index on the_geom ?
+                } catch (Exception ex) {
+                    connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);
+                    throw new SQLException(ex.getLocalizedMessage(), ex);
+                }
+            } finally {
+                dbfDriver.close();
             }
-        } finally {
-            dbfDriver.close();
         }
     }
 

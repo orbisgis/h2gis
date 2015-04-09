@@ -30,6 +30,8 @@ import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
+
+import java.awt.dnd.DnDConstants;
 import java.io.File;
 import java.net.URI;
 import java.sql.Connection;
@@ -128,6 +130,11 @@ public class SpatialH2UT {
         String dbFilePath = getDataBasePath(dbName);
         File dbFile = new File(dbFilePath +".mv.db");
         String databasePath = "jdbc:h2:"+ dbFilePath + h2_PARAMETERS;
+        if(dbFile.exists()) {
+            dbFile.delete();
+        }
+        
+        dbFile = new File(dbFilePath +".mv.db");
         if(dbFile.exists()) {
             dbFile.delete();
         }

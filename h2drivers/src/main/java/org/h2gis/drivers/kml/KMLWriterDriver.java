@@ -45,6 +45,7 @@ import java.util.zip.ZipOutputStream;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -74,21 +75,23 @@ public class KMLWriterDriver {
      * @param progress
      * @throws SQLException
      */
-    public void write(ProgressVisitor progress) throws SQLException {
-        String path = fileName.getAbsolutePath();
-        String extension = "";
-        int i = path.lastIndexOf('.');
-        if (i >= 0) {
-            extension = path.substring(i + 1);
-        }
-        if (extension.equalsIgnoreCase("kml")) {
-            writeKML(progress);
-        } else if (extension.equalsIgnoreCase("kmz")) {
-            String name = fileName.getName();
-            int pos = name.lastIndexOf(".");
-            writeKMZ(progress, name.substring(0, pos) + ".kml");
+    public void write(ProgressVisitor progress) throws SQLException {        
+        if (FileUtil.isExtensionWellFormated(fileName, "kml")) {
+            if (!fileName.exists()) {
+                writeKML(progress);
+            } else {
+                throw new SQLException("The file " + fileName.getPath() + " already exists.");
+            }
+        } else if (FileUtil.isExtensionWellFormated(fileName, "kmz")) {
+            if (!fileName.exists()) {
+                String name = fileName.getName();
+                int pos = name.lastIndexOf(".");
+                writeKMZ(progress, name.substring(0, pos) + ".kml");
+            } else {
+                throw new SQLException("The file " + fileName.getPath() + " already exists.");
+            }
         } else {
-            throw new SQLException("Please kml or kmz extension.");
+            throw new SQLException("Please use the extensions .kml or kmz.");
         }
     }
 
@@ -167,7 +170,7 @@ public class KMLWriterDriver {
             final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();
             streamWriterFactory.setProperty("escapeCharacters", false);
             XMLStreamWriter xmlOut = streamWriterFactory.createXMLStreamWriter(
-                    new BufferedOutputStream(outputStream));
+                    new BufferedOutputStream(outputStream), "UTF-8");
             xmlOut.writeStartDocument("UTF-8", "1.0");
             xmlOut.writeStartElement("kml");
             xmlOut.writeDefaultNamespace("http://www.opengis.net/kml/2.2");

@@ -2,6 +2,7 @@ package org.h2gis.drivers.gpx.model;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.Point;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
@@ -64,7 +65,9 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
             GPXPoint routePoint = new GPXPoint(GpxMetadata.RTEPTFIELDCOUNT);
             try {
                 Coordinate coordinate = GPXCoordinate.createCoordinate(attributes);
-                routePoint.setValue(GpxMetadata.THE_GEOM, getGeometryFactory().createPoint(coordinate));
+                Point geom = getGeometryFactory().createPoint(coordinate);
+                geom.setSRID(4326);
+                routePoint.setValue(GpxMetadata.THE_GEOM, geom);
                 routePoint.setValue(GpxMetadata.PTLAT, coordinate.y);
                 routePoint.setValue(GpxMetadata.PTLON, coordinate.x);
                 routePoint.setValue(GpxMetadata.PTELE, coordinate.z);
@@ -104,6 +107,7 @@ public abstract class AbstractGpxParserRte extends AbstractGpxParser {
             // If there are more than one routepoint, we can set a geometry to the route
             if (rteList.size() > 1) {
                 LineString geometry = getGeometryFactory().createLineString(rteArray);
+                geometry.setSRID(4326);
                 getCurrentLine().setGeometry(geometry);
             }
             // if </rte> markup is found, the currentLine is added in the table rtedbd and the default contentHandler is setted.

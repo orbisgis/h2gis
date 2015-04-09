@@ -68,14 +68,14 @@ public class GeoJsonDriverFunction implements DriverFunction {
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-        ProgressVisitor copyProgress = progress.subProcess(recordCount);
+        ProgressVisitor copyProgress = progress.subProcess(recordCount);       
         GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection, tableReference, fileName);
         geoJsonDriver.write(copyProgress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, tableReference, fileName);
-        geoJsonReaderDriver.read(progress);
+        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, fileName);
+        geoJsonReaderDriver.read(progress, tableReference);
     }
 }

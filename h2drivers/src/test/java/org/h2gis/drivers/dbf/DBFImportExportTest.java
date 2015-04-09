@@ -76,9 +76,9 @@ public class DBFImportExportTest {
         stat.execute("create table area(idarea int primary key, value DOUBLE, descr CHAR(50))");
         stat.execute("insert into area values(1, 4.9406564584124654, 'main area')");
         stat.execute("insert into area values(2, 2.2250738585072009, 'second area')");
-        // Create a shape file using table area
+        // Create a dbf file using table area
         stat.execute("CALL DBFWrite('target/area_export.dbf', 'AREA')");
-        // Read this shape file to check values
+        // Read this dbf file to check values
         assertTrue(dbfFile.exists());
         DBFDriver dbfDriver = new DBFDriver();
         dbfDriver.initDriverFromFile(dbfFile);
