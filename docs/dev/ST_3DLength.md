@@ -3,9 +3,9 @@ layout: docs
 title: ST_3DLength
 category: geom3D/distance-functions
 is_function: true
-description: Return the 3D length or the 3D perimeter a Geometry
+description: Return the 3D length or the 3D perimeter of a Geometry
 prev_section: geom3D/distance-functions
-next_section: geom3D/properties
+next_section: ST_GeometryShadow
 permalink: /docs/dev/ST_3DLength/
 ---
 
@@ -52,4 +52,5 @@ SELECT ST_3DLength('GEOMETRYCOLLECTION(
 
 ##### See also
 
+* [`ST_Length`](../ST_Length)
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_3DLength.java" target="_blank">Source code</a>
