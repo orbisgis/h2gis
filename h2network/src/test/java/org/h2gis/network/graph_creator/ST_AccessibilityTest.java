@@ -270,7 +270,7 @@ public class ST_AccessibilityTest {
     public void testST_AccST_SPLSingleDestEquivalence() throws Exception {
         final ResultSet sPL = st.executeQuery(
                 "SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
-                "'reversed - edge_orientation', 'weight', 5)");
+                "'reversed - edge_orientation', 'weight', 'null',  5)");
         final Map<Integer, Double> distancesMap = new HashMap<Integer, Double>();
         try {
             while (sPL.next()) {

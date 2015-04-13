@@ -54,7 +54,6 @@ import static org.h2gis.utilities.GraphConstants.*;
  * from the input_edges table produced by ST_Graph.
  *
  * @author Adam Gouge
- * @author Olivier Bonin
  */
 public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction {
 

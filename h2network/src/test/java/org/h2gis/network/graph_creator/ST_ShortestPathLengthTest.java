@@ -872,7 +872,7 @@ public class ST_ShortestPathLengthTest {
                                       {7.0, 7.0, 2.0, 6.0, 0.0}};
         checkManyToMany(
                 st.executeQuery("SELECT * FROM ST_ShortestPathLength('INF_EDGES_ALL', " +
-                        "'undirected', 'weight', 'source_dest')"),
+                        "'undirected', 'weight', 'null', 'source_dest')"),
                 distances, 25);
     }
 
@@ -897,7 +897,7 @@ public class ST_ShortestPathLengthTest {
     @Test(expected = IllegalArgumentException.class)
     public void arg5Fail() throws Throwable {
         try {
-            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 'weight', 1, 2.0)");
+            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 'weight', 'null', 1, 2.0)");
         } catch (JdbcSQLException e) {
             throw e.getOriginalCause();
         }

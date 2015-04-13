@@ -49,6 +49,10 @@ import org.javanetworkanalyzer.alg.DistanceLength;
 /**
  * Calculates the length(s) of shortest path(s) between vertices in a JGraphT
  * graph produced from the input_edges table produced by ST_Graph.
+ * 
+ * In case of a weighted graph, another weight, called "dead" weight, is used 
+ * in order to have both travel time (accumulation of weights) and distance 
+ * (accumulation of dead weights).
  *
  * @author Adam Gouge
  * @author Olivier Bonin
@@ -67,10 +71,10 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'sdt')` - Many-to-Many\n" +
             "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', s, d)` - One-to-One\n" +
             "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', s, 'ds')` - One-to-Several\n" +
-            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s)` - One-to-All weighted\n" +
-            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'sdt')` - Many-to-Many weighted\n" +
-            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, d)` - One-to-One weighted\n" +
-            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', s, 'ds')` - One-to-Several weighted\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'dw', s)` - One-to-All weighted\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'dw', sdt')` - Many-to-Many weighted\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'dw', s, d)` - One-to-One weighted\n" +
+            "* `ST_ShortestPathLength('input_edges', 'o[ - eo]', 'w', 'dw', s, 'ds')` - One-to-Several weighted\n" +
             "\n" +
             "where\n" +
             "* `input_edges` = Edges table produced by `ST_Graph` from table `input`\n" +
@@ -78,12 +82,29 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
             "* `eo` = Edge orientation (1 = directed, -1 = reversed, 0 = undirected).\n" +
             "  Required if global orientation is directed or reversed.\n" +
             "* `w` = Name of column containing edge weights as doubles\n" +
-            "* `s` = Source vertex id\n" +
-            "* `d` = Destination vertex id\n" +
+            "  (generally, weights are travel times of edges)\n" +
+            "* `dw` = Name of column containing edge dead weights as doubles\n" +
+            "  (generally, dead weights are lenghts of edges).\n" +
+            "  Required if edge weight is used, enter `null` if no dead weight\n" +
+            "  column is present.\n" +
+            "* `s` = Source vertex id or Source table\n" +
+            "* `d` = Destination vertex id or destination table\n" +
             "* `sdt` = Source-Destination table name (must contain columns\n" +
             "  " + SOURCE + " and " + DESTINATION + " containing integer vertex ids)\n" +
             "* `ds` = Comma-separated Destination string ('dest1, dest2, ...')\n";
-
+    
+    /*
+    1 parameter (arg3):                     (s)             One-to-All
+                                            (sdt)           Many-to-Many
+    2 parameters (arg3, arg4):              (s, d)          One-to-One
+                                            (s, ds)         One-to-Several
+                                            (S, D)          Many-to-Many
+    3 parameters (arg3, arg4, arg5):        (w, dw, s)      One-to-All weighted
+                                            (w, dw, sdt)    Many-to-Many weighted
+    4 parameters(arg3, arg4, arg5, arg6):   (w, dw, s, d)   One-to-One weighted
+                                            (w, dw, s, ds)  One-to-Several weighted
+                                            (w, dw, S, D)   Many-to-Many weighted
+     */
 
     /**
      * Constructor
@@ -132,23 +153,43 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         }
     }
     
+    /**
+     * Calculate distances for
+     * <ol>
+     * <li> One-to-All weighted: <code>arg5 = s</code>,</li>
+     * <li> Many-to-Many weighted: <code>arg5 = sdt</code>.</li>
+     * </ol>
+     *
+     * <p>The Source-Destination table must contain a column named SOURCE and a
+     * column named DESTINATION, both consisting of integer IDs.
+     *
+     * @param connection  Connection
+     * @param inputTable  Edges table produced by ST_Graph
+     * @param orientation Orientation string
+     * @param weight      Weight
+     * @param deadWeight  Dead weight ("null" if not used)
+     * @param arg5        Source vertex id -OR- Source-Destination table
+     * @return Distances (and lengths) table
+     * @throws SQLException
+     */
     public static ResultSet getShortestPathLength(Connection connection,
                                                   String inputTable,
                                                   String orientation,
                                                   String weight,
                                                   String deadWeight,
-                                                  Value arg3) throws SQLException {
+                                                  Value arg5) throws SQLException {
+        if (deadWeight.equals("null")) deadWeight = null;
         if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
-        if (arg3 instanceof ValueInt) {
-            int source = arg3.getInt();
+        if (arg5 instanceof ValueInt) {
+            int source = arg5.getInt();
             return oneToAll(connection, inputTable, orientation, weight, deadWeight, source);
-        } else if (arg3 instanceof ValueString) {
-            String table = arg3.getString();
+        } else if (arg5 instanceof ValueString) {
+            String table = arg5.getString();
             return manyToMany(connection, inputTable, orientation, weight, deadWeight, table);
         } else {
-            throw new IllegalArgumentException(ARG_ERROR + arg3);
+            throw new IllegalArgumentException(ARG_ERROR + arg5);
         }
     }
     
@@ -157,9 +198,7 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * <ol>
      * <li> One-to-One: <code>(arg3, arg4) = (s, d)</code>,</li>
      * <li> One-to-Several: <code>(arg3, arg4) = (s, ds)</code>,</li>
-     * <li> One-to-All weighted: <code>(arg3, arg4) = (w, s)</code>,</li>
-     * <li> Many-to-Many unweighted: <code>(arg3, arg4) = (st, dt)</code>.</li>
-     * <li> Many-to-Many weighted: <code>(arg3, arg4) = (w, sdt)</code>.</li>
+     * <li> Many-toMany: <code>(arg3, arg4) = (S, D)</code>,</li>
      * </ol>
      *
      * <p>The Source-Destination table must contain a column named SOURCE and a
@@ -168,10 +207,8 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * @param connection  connection
      * @param inputTable  Edges table produced by ST_Graph
      * @param orientation Orientation string
-     * @param arg3        Source vertex id -OR- Weight column name -OR- Source table
-     * @param arg4        Destination vertex id -OR- Destination string -OR-
-     *                    Source vertex id -OR- Source-Destination table -OR-
-     *                    Destination table
+     * @param arg3        Source vertex id (s) -OR- Source string (S)
+     * @param arg4        Destination vertex id (d) -OR- Destination string (D)
      * @return Distances table
      * @throws SQLException
      */
@@ -195,89 +232,25 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                 throw new IllegalArgumentException(ARG_ERROR + arg4);
             }
         } else if (arg3 instanceof ValueString) {
-            final String arg3String = arg3.getString();
-            if (JDBCUtilities.hasField(connection, inputTable, arg3String)) {
-                final String weight = arg3String;
-                if (arg4 instanceof ValueInt) {
-                    int source = arg4.getInt();
-                    return oneToAll(connection, inputTable, orientation, weight, null, source);
-                } else if (arg4 instanceof ValueString) {
-                    String table = arg4.getString();
-                    return manyToMany(connection, inputTable, orientation, weight, null, table);
-                } else {
-                    throw new IllegalArgumentException(ARG_ERROR + arg4);
-                }
+            final String sourceTable = arg3.getString();
+            if (arg4 instanceof ValueString) {
+                final String destTable = arg4.getString();
+                return manyToManySeparateTables(connection, inputTable, orientation, null, null, sourceTable, destTable);
             } else {
-                final String sourceTable = arg3String;
-                if (arg4 instanceof ValueString) {
-                    final String destTable = arg4.getString();
-                    return manyToManySeparateTables(connection, inputTable, orientation, null, null, sourceTable, destTable);
-                } else {
-                    throw new IllegalArgumentException(ARG_ERROR + arg4);
-                }
+                throw new IllegalArgumentException(ARG_ERROR + arg4);
             }
         } else {
             throw new IllegalArgumentException(ARG_ERROR + arg3);
         }
     }
     
-    /**
-     * Calculate distances for
-     * <ol>
-     * <li> One-to-One weighted: <code>(arg4, arg5) = (w, d) </code>,</li>
-     * <li> One-to-Several weighted: <code>(arg4, arg5) = (w, ds)</code>.</li>
-     * <li> Many-to-Many weighted: <code>(arg4, arg5) = (st, dt)</code>.</li>
-     * </ol>
-     *
-     * @param connection  Connection
-     * @param inputTable  Edges table produced by ST_Graph
-     * @param orientation Orientation string
-     * @param weight      Weight column name, null for unweighted graphs
-     * @param arg4        Source vertex id -OR- Source table
-     * @param arg5        Destination vertex id -OR- Destination string -OR- Destination table
-     * @return Distances table
-     * @throws SQLException
-     */
-   /* public static ResultSet getShortestPathLength(Connection connection,
-                                                  String inputTable,
-                                                  String orientation,
-                                                  String weight,
-                                                  Value arg4,
-                                                  Value arg5) throws SQLException {
-        if (isColumnListConnection(connection)) {
-            return prepareResultSet();
-        }
-        if (arg4 instanceof ValueInt) {
-            final int source = arg4.getInt();
-            if (arg5 instanceof ValueInt) {
-                int destination = arg5.getInt();
-                return oneToOne(connection, inputTable, orientation, weight, null, source, destination);
-            } else if (arg5 instanceof ValueString) {
-                String destinationString = arg5.getString();
-                return oneToSeveral(connection, inputTable, orientation, weight, null, source, destinationString);
-            } else {
-                throw new IllegalArgumentException(ARG_ERROR + arg5);
-            }
-        } else if (arg4 instanceof ValueString) {
-            final String sourceTable = arg4.getString();
-            if (arg5 instanceof ValueString) {
-                final String destTable = arg5.getString();
-                return manyToManySeparateTables(connection, inputTable, orientation, weight, 
-                        null, sourceTable, destTable);
-            } else {
-                throw new IllegalArgumentException(ARG_ERROR + arg4);
-            }
-        } else {
-            throw new IllegalArgumentException(ARG_ERROR + arg4);
-        }
-    }*/
 
     /**
      * Calculate distances for
      * <ol>
-     * <li> One-to-One weighted: <code>(arg4, arg5) = (w, d) </code>,</li>
-     * <li> One-to-Several weighted: <code>(arg4, arg5) = (w, ds)</code>.</li>
-     * <li> Many-to-Many weighted: <code>(arg4, arg5) = (st, dt)</code>.</li>
+     * <li> One-to-One weighted: <code>(arg5, arg6) = (s, d)</code>,</li>
+     * <li> One-to-Several weighted: <code>(arg5, arg6) = (s, ds)</code>,</li>
+     * <li> Many-toMany weighted: <code>(arg5, arg6) = (S, D)</code>,</li>
      * </ol>
      *
      * @param connection  Connection
@@ -285,9 +258,9 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
      * @param orientation Orientation string
      * @param weight      Weight column name, null for unweighted graphs
      * @param deadWeight  Dead Weight column name
-     * @param arg4        Source vertex id -OR- Source table
-     * @param arg5        Destination vertex id -OR- Destination string -OR- Destination table
-     * @return Distances table
+     * @param arg5        Source vertex (s) id -OR Source string (S)
+     * @param arg6        Destination vertex (d) id -OR- Destination string (D)
+     * @return Distances (and lengths) table
      * @throws SQLException
      */
     public static ResultSet getShortestPathLength(Connection connection,
@@ -295,33 +268,32 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
                                                   String orientation,
                                                   String weight,
                                                   String deadWeight,
-                                                  Value arg4,
-                                                  Value arg5) throws SQLException {
+                                                  Value arg5,
+                                                  Value arg6) throws SQLException {
         if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
-        if (arg4 instanceof ValueInt) {
-            final int source = arg4.getInt();
-            if (arg5 instanceof ValueInt) {
-                int destination = arg5.getInt();
+        if (arg5 instanceof ValueInt) {
+            int source = arg5.getInt();
+            if (arg6 instanceof ValueInt) {
+                int destination = arg6.getInt();
                 return oneToOne(connection, inputTable, orientation, weight, deadWeight, source, destination);
-            } else if (arg5 instanceof ValueString) {
-                String destinationString = arg5.getString();
-                return oneToSeveral(connection, inputTable, orientation, weight,deadWeight, source, destinationString);
+            } else if (arg6 instanceof ValueString) {
+                String destinationString = arg6.getString();
+                return oneToSeveral(connection, inputTable, orientation, weight, deadWeight, source, destinationString);
             } else {
-                throw new IllegalArgumentException(ARG_ERROR + arg5);
+                throw new IllegalArgumentException(ARG_ERROR + arg6);
             }
-        } else if (arg4 instanceof ValueString) {
-            final String sourceTable = arg4.getString();
-            if (arg5 instanceof ValueString) {
-                final String destTable = arg5.getString();
-                return manyToManySeparateTables(connection, inputTable, orientation, weight, 
-                        deadWeight, sourceTable, destTable);
+        } else if (arg5 instanceof ValueString) {
+            final String sourceTable = arg5.getString();
+            if (arg6 instanceof ValueString) {
+                final String destTable = arg6.getString();
+                return manyToManySeparateTables(connection, inputTable, orientation, weight, deadWeight, sourceTable, destTable);
             } else {
-                throw new IllegalArgumentException(ARG_ERROR + arg4);
+                throw new IllegalArgumentException(ARG_ERROR + arg6);
             }
         } else {
-            throw new IllegalArgumentException(ARG_ERROR + arg4);
+            throw new IllegalArgumentException(ARG_ERROR + arg5);
         }
     }
 

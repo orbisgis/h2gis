@@ -772,7 +772,7 @@ public class ST_ShortestPathTreeTest {
         return st.executeQuery(
                 "SELECT * FROM ST_ShortestPathTree('" + table + "', "
                         + orientation
-                        + ((weight != null) ? ", " + weight : "") + ", "
+                        + ((weight != null) ? ", " + weight : "") + ","
                         + source
                         + ((radius < Double.POSITIVE_INFINITY) ? ", " + radius : "") + ")"
         );

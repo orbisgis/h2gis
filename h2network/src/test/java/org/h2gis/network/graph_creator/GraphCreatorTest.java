@@ -42,6 +42,8 @@ import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the graph creators under all possible configurations.
+ * The dead weight of the Cormen graph is identical to the weight.
+ * The dead weight column is "weight_m".
  *
  * @author Adam Gouge
  * @author Olivier Bonin

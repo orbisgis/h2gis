@@ -24,7 +24,7 @@ public class GraphFunction extends AbstractFunction {
      * @param inputTable  Input table name
      * @param orientation Orientation string
      * @param weight      Weight column name, null for unweighted graphs
-     * @param deadWeight
+     * @param deadWeight  DeadWeight column name
      * @return Graph
      */
     protected static KeyedGraph prepareGraph(Connection connection,
