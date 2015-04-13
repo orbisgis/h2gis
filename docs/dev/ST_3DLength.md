@@ -5,7 +5,7 @@ category: geom3D/distance-functions
 is_function: true
 description: Return the 3D length or the 3D perimeter of a Geometry
 prev_section: geom3D/distance-functions
-next_section: ST_GeometryShadow
+next_section: ST_SunPosition
 permalink: /docs/dev/ST_3DLength/
 ---
 

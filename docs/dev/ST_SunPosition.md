@@ -4,7 +4,7 @@ title: ST_SunPosition
 category: geom3D/distance-functions
 is_function: true
 description: Compute the sun position
-prev_section: ST_GeometryShadow
+prev_section: ST_3DLength
 next_section: geom3D/properties
 permalink: /docs/dev/ST_SunPosition/
 ---
