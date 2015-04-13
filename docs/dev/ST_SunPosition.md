@@ -18,7 +18,7 @@ GEOMETRY ST_SunPosition(POINT point, TIMESTAMP time);
 
 ### Description
 
-Compute the sun position, according a `point`location, and return a new 2D point which coordinate is defined as:
+Compute the sun position, according a `point` location, and return a new 2D point which coordinate is defined as:
 
 * `x = sun azimuth` direction along the horizon, in radians, measured from north to east,
 
@@ -26,6 +26,9 @@ Compute the sun position, according a `point`location, and return a new 2D point
 
 By default, the current time sun position is returned. Optionally, the user can specify another date using the `time` parameter. 
 
+<div class="note warning">
+    <h5>The <code>point</code> coordinates have to be exprimed in the WGS84 projection system (<code>lat / long</code>)</h5>
+</div>
 
 ### Examples
 
