@@ -7,7 +7,7 @@
  * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
  * h2patial is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
+ * terms of the GNU General Public Licetnse as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
@@ -192,7 +192,8 @@ public class CreateSpatialExtension {
                 new ST_SunPosition(),
                 new ST_GeometryShadow(),
                 new ST_Voronoi(),
-                new ST_LineMerge()};
+                new ST_LineMerge(),
+                new ST_FlipCoordinates()};
     }
 
     /**
