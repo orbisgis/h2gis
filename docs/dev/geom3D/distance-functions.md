@@ -1,6 +1,6 @@
 ---
 layout: docs
-title: Measurements
+title: Measures
 category: geom3D/distance-functions
 prev_section: geom3D/edit-geometries
 next_section: geom3D/properties
