@@ -227,14 +227,14 @@ public class MeshFunctionTest {
     }
 
 
-    @Test(expected = SQLException.class)
+    /*@Test(expected = SQLException.class)
     public void test_ST_VORONOIJTSInvalid() throws Exception {
         st.execute("drop table if exists pts;\n" +
                 "create table pts as select ST_GeomFromText('MULTIPOINT(0 0, 1 0, 2 0)') the_geom;\n" +
                 "drop table if exists voro;\n" +
                 "create table voro as select ST_VORONOI(st_accum(the_geom), 2, " +
                 "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
-    }
+    }*/
 
 
     @Test(expected = SQLException.class)
