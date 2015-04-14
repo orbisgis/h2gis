@@ -47,6 +47,10 @@ SELECT ST_SunPosition('POINT(1 2)', '2010-05-26 15:35:26')
 {% endhighlight %}
 
 
+### Use case
+A specific use case, using `ST_SunPosition` and `ST_GeometryShadow` is avalaible [HERE](https://github.com/irstv/H2GIS/wiki/3.3-Compute-building's-shadow).
+
+
 ##### See also
 
 * [`ST_GeometryShadow`](../ST_GeometryShadow)
