@@ -198,4 +198,53 @@ public class SpatialFunction2Test {
         assertGeometryEquals("LINESTRING (5 10 0, 5 12 0)", rs.getBytes(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_MaxDistance1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'LINESTRING ( 2 0, 0 2 )'::geometry)");
+        rs.next();
+        Assert.assertEquals(2, rs.getDouble(1), 0);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MaxDistance2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'LINESTRING ( 2 2, 2 2 )'::geometry)");
+        rs.next();
+        Assert.assertEquals(2.8284, rs.getDouble(1), 0.001);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MaxDistance3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('LINESTRING ( 0 0, 2 2, 10 0 )'::geometry, 'LINESTRING ( 0 0, 2 2, 10 0 )'::geometry)");
+        rs.next();
+        Assert.assertEquals(10, rs.getDouble(1), 0);
+        rs.close();
+    }
+    
+    
+    @Test
+    public void test_ST_MaxDistance4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'POINT(0 10)'::geometry)");
+        rs.next();
+        Assert.assertEquals(10, rs.getDouble(1), 0);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MaxDistance5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'POINT(0 10)'::geometry)");
+        rs.next();
+        Assert.assertEquals(10, rs.getDouble(1), 0);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MaxDistance6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance(ST_BUFFER('POINT(0 0)'::geometry, 10), ST_BUFFER('POINT(0 0)'::geometry, 10))");
+        rs.next();
+        Assert.assertEquals(20, rs.getDouble(1), 0);
+        rs.close();
+    }
 }
