@@ -40,12 +40,21 @@ public class ST_MPointFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_MPointFromText() {
-        addProperty(PROP_REMARKS, "Convert a WKT String into a MULTIPOINT");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a MULTIPOINT.\n If an SRID is not specified, it defaults to 0.");
     }
 
     @Override
     public String getJavaStaticMethod() {
         return "toGeometry";
+    }
+    
+    /**
+     * @param wKT WellKnown text value
+     * @return Geometry
+     * @throws SQLException Invalid argument or the geometry type is wrong.
+     */
+    public static Geometry toGeometry(String wKT) throws SQLException {
+        return toGeometry(wKT, 0);
     }
 
     /**

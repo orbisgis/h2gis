@@ -44,12 +44,23 @@ public class ST_PointFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_PointFromText() {
-        addProperty(PROP_REMARKS, "Convert a WKT String into a Point");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a POINT.\n If an SRID is not specified, it defaults to 0.");
     }
 
     @Override
     public String getJavaStaticMethod() {
         return "toGeometry";
+    }
+    
+     /**
+     * Convert the WKT String to a Geometry with the given SRID.
+     *
+     * @param wKT  Well Known Text value
+     * @return Geometry
+     * @throws SQLException Invalid argument or the geometry type is wrong.
+     */
+    public static Geometry toGeometry(String wKT) throws SQLException {
+        return toGeometry(wKT, 0);
     }
 
     /**

@@ -28,61 +28,59 @@ package org.h2gis.h2spatial.internal.function.spatial.convert;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKBReader;
+import java.io.IOException;
+import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;
 
-import java.io.IOException;
-import java.sql.SQLException;
-
 /**
- * Convert Well Known Binary into Geometry then check that it is a Polygon
- * @author Nicolas Fortin
+ * Convert Well Known Binary into a POINT.
+ * @author Erwan Bocher
  */
-public class ST_PolyFromWKB extends DeterministicScalarFunction {
+public class ST_PointFromWKB extends DeterministicScalarFunction{
 
-    /**
-     * Default constructor
-     */
-    public ST_PolyFromWKB() {
-        addProperty(PROP_REMARKS, "Convert Well Known Binary into Geometry then check that it is a POLYGON."
-                + "\n If an SRID is not specified, it defaults to 0.");
+    
+    public ST_PointFromWKB(){
+        addProperty(PROP_REMARKS, "Convert Well Known Binary into a POINT.\n If an SRID is not specified, it defaults to 0.");
     }
-
     @Override
     public String getJavaStaticMethod() {
-        return "toPolygon";
+        return "toPoint";        
     }
     
-    /**
-     * @param bytes WKB
-     * @return Geometry instance of null if bytes are null
-     * @throws SQLException Wkb parse exception
+     /**
+     * Convert WKT into a Point
+     * @param bytes Byte array
+     * @return Point instance of null if bytes null
+     * @throws SQLException WKB Parse error
      */
-    public static Geometry toPolygon(byte[] bytes) throws SQLException, IOException {
-        return toPolygon(bytes, 0);
+    public static Geometry toPoint(byte[] bytes) throws SQLException, IOException {
+        return toPoint(bytes, 0);
     }
 
     /**
-     * @param bytes WKB
+     * Convert WKT into a Point
+     * @param bytes Byte array
      * @param srid SRID
-     * @return Geometry instance of null if bytes are null
-     * @throws SQLException Wkb parse exception
+     * @return Point instance of null if bytes null
+     * @throws SQLException WKB Parse error
      */
-    public static Geometry toPolygon(byte[] bytes, int srid) throws SQLException, IOException {
+    public static Geometry toPoint(byte[] bytes, int srid) throws SQLException, IOException {
         if(bytes==null) {
             return null;
         }
         WKBReader wkbReader = new WKBReader();
         try {
-            if(GeometryMetaData.getMetaDataFromWKB(bytes).geometryType != GeometryTypeCodes.POLYGON) {
-                throw new SQLException("Provided WKB is not a Polygon.");
+            if(GeometryMetaData.getMetaDataFromWKB(bytes).geometryType != GeometryTypeCodes.POINT) {
+                throw new SQLException("Provided WKB is not a POINT.");
             }
             Geometry geometry = wkbReader.read(bytes);
             geometry.setSRID(srid);
             return geometry;
         } catch (ParseException ex) {
-            throw new SQLException("ParseException while evaluating ST_PolyFromWKB",ex);
+            throw new SQLException("ParseException while evaluating ST_PointFromWKB",ex);
         }
     }
+    
 }
