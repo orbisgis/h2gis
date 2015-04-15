@@ -12,6 +12,7 @@ permalink: /docs/dev/ST_MPointFromText/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_MPointFromText(VARCHAR wkt);
 GEOMETRY ST_MPointFromText(VARCHAR wkt, INT srid);
 {% endhighlight %}
 
@@ -21,9 +22,12 @@ GEOMETRY ST_MPointFromText(VARCHAR wkt, INT srid);
 {% include z-coord-warning.html %}
 {% include sfs-1-2-1.html %}
 
-### Example
+### Examples
 
 {% highlight mysql %}
+SELECT ST_MPointFromText('MULTIPOINT(4 2, 3 7, 6 8)');
+-- Answer: MULTIPOINT((4 2), (3 7), (6 8))
+
 SELECT ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 20 3)', 2154);
 -- Answer: MULTIPOINT((5 5), (1 2), (3 4), (20 3))
 
@@ -32,5 +36,7 @@ SELECT ST_MPointFromText('POINT(2 3)', 2154);
 {% endhighlight %}
 
 ##### See also
+
+* [`ST_PointFromText`](../ST_PointFromText), [`ST_MLineFromText`](../ST_MLineFromText), [`ST_MPolyFromText`](../ST_MPolyFromText)
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_MPointFromText.java" target="_blank">Source code</a>

@@ -12,6 +12,7 @@ permalink: /docs/dev/ST_MPolyFromText/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_MPolyFromText(VARCHAR wkt);
 GEOMETRY ST_MPolyFromText(VARCHAR wkt, INT srid);
 {% endhighlight %}
 
@@ -21,9 +22,15 @@ GEOMETRY ST_MPolyFromText(VARCHAR wkt, INT srid);
 {% include z-coord-warning.html %}
 {% include sfs-1-2-1.html %}
 
-### Example
+### Examples
 
 {% highlight mysql %}
+SELECT ST_MPolyFromText(
+    'MULTIPOLYGON (((10 40, 5 20, 20 30, 10 40)), 
+                   ((30 40, 15 11, 30 10, 35 25, 30 40)))');
+-- Answer: MULTIPOLYGON (((10 40, 5 20, 20 30, 10 40)),
+--                       ((30 40, 15 11, 30 10, 35 25, 30 40)))
+
 SELECT ST_MPolyFromText(
     'MULTIPOLYGON(((28 26, 28 0, 84 0, 84 42, 28 26),
                    (52 18, 66 23, 73 9, 48 6, 52 18)),
@@ -37,5 +44,7 @@ SELECT ST_MPolyFromText('POINT(2 3)', 2154);
 {% endhighlight %}
 
 ##### See also
+
+* [`ST_PolyFromText`](../ST_PolyFromText), [`ST_MPointFromText`](../ST_MPointFromText), [`ST_MLineFromText`](../ST_MLineFromText)
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_MPolyFromText.java" target="_blank">Source code</a>
