@@ -182,4 +182,123 @@ public class SpatialFunction2Test {
         assertGeometryEquals("MULTIPOLYGON (((354610.6 6689345.5, 354626.2 6689342.7, 354628.2 6689342.7 0, 354612.6 6689345.5 0, 354610.6 6689345.5)), ((354626.2 6689342.7, 354627.2 6689342.2, 354629.2 6689342.2 0, 354628.2 6689342.7 0, 354626.2 6689342.7)), ((354627.2 6689342.2, 354639.5 6689334.4, 354641.5 6689334.4 0, 354629.2 6689342.2 0, 354627.2 6689342.2)), ((354639.5 6689334.4, 354640.3 6689333, 354642.3 6689333 0, 354641.5 6689334.4 0, 354639.5 6689334.4)), ((354640.3 6689333, 354640.6 6689331.4, 354642.6 6689331.4 0, 354642.3 6689333 0, 354640.3 6689333)), ((354640.6 6689331.4, 354640.2 6689330, 354642.2 6689330 0, 354642.6 6689331.4 0, 354640.6 6689331.4)), ((354640.2 6689330, 354639.6 6689328.6, 354641.6 6689328.6 0, 354642.2 6689330 0, 354640.2 6689330)), ((354639.6 6689328.6, 354634 6689322.2, 354636 6689322.2 0, 354641.6 6689328.6 0, 354639.6 6689328.6)), ((354634 6689322.2, 354633.1 6689321.1, 354635.1 6689321.1 0, 354636 6689322.2 0, 354634 6689322.2)), ((354633.1 6689321.1, 354628 6689314.4, 354630 6689314.4 0, 354635.1 6689321.1 0, 354633.1 6689321.1)), ((354628 6689314.4, 354626.7 6689313.5, 354628.7 6689313.5 0, 354630 6689314.4 0, 354628 6689314.4)), ((354626.7 6689313.5, 354625.4 6689313.4, 354627.4 6689313.4 0, 354628.7 6689313.5 0, 354626.7 6689313.5)), ((354625.4 6689313.4, 354622.4 6689313.7, 354624.4 6689313.7 0, 354627.4 6689313.4 0, 354625.4 6689313.4)), ((354622.4 6689313.7, 354621 6689314.4, 354623 6689314.4 0, 354624.4 6689313.7 0, 354622.4 6689313.7)), ((354621 6689314.4, 354608.7 6689341.9, 354610.7 6689341.9 0, 354623 6689314.4 0, 354621 6689314.4)), ((354608.7 6689341.9, 354610.6 6689345.5, 354612.6 6689345.5 0, 354610.7 6689341.9 0, 354608.7 6689341.9)), ((354624.2 6689335.3, 354623.8 6689333.7, 354625.8 6689333.7 0, 354626.2 6689335.3 0, 354624.2 6689335.3)), ((354623.8 6689333.7, 354622.1 6689329, 354624.1 6689329 0, 354625.8 6689333.7 0, 354623.8 6689333.7)), ((354622.1 6689329, 354625.1 6689322.1, 354627.1 6689322.1 0, 354624.1 6689329 0, 354622.1 6689329)), ((354625.1 6689322.1, 354628.7 6689326.5, 354630.7 6689326.5 0, 354627.1 6689322.1 0, 354625.1 6689322.1)), ((354628.7 6689326.5, 354632.4 6689331, 354634.4 6689331 0, 354630.7 6689326.5 0, 354628.7 6689326.5)), ((354632.4 6689331, 354624.2 6689335.3, 354626.2 6689335.3 0, 354634.4 6689331 0, 354632.4 6689331)))", rs.getBytes(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_FlipCoordinates1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_FlipCoordinates('POINT(1 2)');");
+        assertTrue(rs.next());
+        assertGeometryEquals("POINT(2 1)", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_FlipCoordinates2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_FlipCoordinates('LINESTRING (10 5 0, 12 5 0)');");
+        assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING (5 10 0, 5 12 0)", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MaxDistance1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'LINESTRING ( 2 0, 0 2 )'::geometry)");
+        rs.next();
+        Assert.assertEquals(2, rs.getDouble(1), 0);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MaxDistance2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'LINESTRING ( 2 2, 2 2 )'::geometry)");
+        rs.next();
+        Assert.assertEquals(2.8284, rs.getDouble(1), 0.001);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MaxDistance3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('LINESTRING ( 0 0, 2 2, 10 0 )'::geometry, 'LINESTRING ( 0 0, 2 2, 10 0 )'::geometry)");
+        rs.next();
+        Assert.assertEquals(10, rs.getDouble(1), 0);
+        rs.close();
+    }
+    
+    
+    @Test
+    public void test_ST_MaxDistance4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'POINT(0 10)'::geometry)");
+        rs.next();
+        Assert.assertEquals(10, rs.getDouble(1), 0);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MaxDistance5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'POINT(0 10)'::geometry)");
+        rs.next();
+        Assert.assertEquals(10, rs.getDouble(1), 0);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MaxDistance6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MaxDistance(ST_BUFFER('POINT(0 0)'::geometry, 10), ST_BUFFER('POINT(0 0)'::geometry, 10))");
+        rs.next();
+        Assert.assertEquals(20, rs.getDouble(1), 0);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LongestLine1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LongestLine('POINT(0 0)'::geometry, 'POINT(0 0)'::geometry)");
+        rs.next();
+        Assert.assertNull(rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LongestLine2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LongestLine('MULTIPOINT((0 0),(0 0))'::geometry, 'MULTIPOINT((0 0),(0 0))'::geometry)");
+        rs.next();
+        Assert.assertNull(rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LongestLine3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LongestLine('POINT(0 0)'::geometry, 'LINESTRING(0 0,5 20, 10 0)'::geometry)");
+        rs.next();
+        assertGeometryEquals("LINESTRING (0 0, 5 20)", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LongestLine4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LongestLine('POLYGON ((50 400, 50 350, 50 300, 70 290, 80 280, 90 260, 99 254, 109 253, 120 252, 130 252, 140 255, 150 259, 159 264, 168 270, 172 280, 174 290, 175 300, 173 310, 167 320, 158 325, 148 325, 138 323, 129 316, 124 306, 114 312, 108 321, 105 332, 106 342, 112 351, 121 357, 132 359, 143 359, 153 359, 163 360, 173 359, 183 357, 193 355, 203 355, 216 355, 227 355, 238 357, 247 362, 256 369, 264 378, 269 387, 275 396, 273 406, 267 414, 259 421, 250 426, 240 426, 230 426, 220 425, 210 420, 199 418, 189 419, 179 419, 169 419, 158 419, 148 419, 138 419, 126 419, 116 419, 101 419, 83 419, 70 421, 60 427, 52 433, 44 441, 40 440, 50 400))'::geometry, "
+                + "'POLYGON ((310 230, 250 160, 280 130, 310 160, 330 130, 327 119, 327 109, 327 99, 329 89, 332 79, 332 69, 342 67, 349 75, 356 83, 420 70, 390 170, 310 230))'::geometry)");
+        rs.next();
+        System.out.println(rs.getString(1));
+        assertGeometryEquals("LINESTRING (40 440, 420 70)", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LongestLine5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LongestLine('MULTIPOLYGON (((50 400, 50 350, 50 300, 70 290, 80 280, 90 260, 99 254, 109 253, 120 252, 130 252, 140 255, 150 259, 159 264, 168 270, 172 280, 174 290, 175 300, 173 310, 167 320, 158 325, 148 325, 138 323, 129 316, 124 306, 114 312, 108 321, 105 332, 106 342, 112 351, 121 357, 132 359, 143 359, 153 359, 163 360, 173 359, 183 357, 193 355, 203 355, 216 355, 227 355, 238 357, 247 362, 256 369, 264 378, 269 387, 275 396, 273 406, 267 414, 259 421, 250 426, 240 426, 230 426, 220 425, 210 420, 199 418, 189 419, 179 419, 169 419, 158 419, 148 419, 138 419, 126 419, 116 419, 101 419, 83 419, 70 421, 60 427, 52 433, 44 441, 40 440, 50 400),(80 400, 100 400, 100 390, 80 390, 80 400),(177 395, 200 395, 200 380, 177 380, 177 395), (74 344, 80 344, 80 310, 74 310, 74 344)))'::geometry, "
+                + "'POLYGON ((310 230, 250 160, 280 130, 310 160, 330 130, 327 119, 327 109, 327 99, 329 89, 332 79, 332 69, 342 67, 349 75, 356 83, 420 70, 390 170, 310 230),(310 190, 330 190, 330 180, 310 180, 310 190), (350 140, 364 140, 364 116, 350 116, 350 140))'::geometry)");
+        rs.next();
+        System.out.println(rs.getString(1));
+        assertGeometryEquals("LINESTRING (40 440, 420 70)", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LongestLine6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LongestLine('POLYGON ((320 430, 250 370, 220 260, 266 214, 296 164, 380 160, 390 200, 510 110, 510 160, 506 170, 470 200, 450 210, 453 220, 460 240, 469 248, 500 270, 460 320, 480 340, 500 380, 480 430, 460 450, 430 460, 420 460, 325 472, 320 430))'::geometry, "
+                + "'POLYGON ((320 430, 250 370, 220 260, 266 214, 296 164, 380 160, 390 200, 510 110, 510 160, 506 170, 470 200, 450 210, 453 220, 460 240, 469 248, 500 270, 460 320, 480 340, 500 380, 480 430, 460 450, 430 460, 420 460, 325 472, 320 430))'::geometry)");
+        rs.next();
+        System.out.println(rs.getString(1));
+        assertGeometryEquals("LINESTRING (325 472, 510 110)", rs.getBytes(1));
+        rs.close();
+    }
 }
