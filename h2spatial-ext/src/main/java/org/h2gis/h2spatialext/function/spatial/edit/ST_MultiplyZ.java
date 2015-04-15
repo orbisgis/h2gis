@@ -53,8 +53,12 @@ public class ST_MultiplyZ extends DeterministicScalarFunction {
      * @param geometry
      * @param z
      * @return
+     * @throws java.sql.SQLException
      */
     public static Geometry multiplyZ(Geometry geometry, double z) throws SQLException {
+        if(geometry == null){
+            return null;
+        }
         geometry.apply(new MultiplyZCoordinateSequenceFilter(z));
         return geometry;
     }

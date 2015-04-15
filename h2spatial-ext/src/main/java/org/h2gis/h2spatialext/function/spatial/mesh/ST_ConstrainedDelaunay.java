@@ -27,7 +27,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 import org.jdelaunay.delaunay.ConstrainedMesh;

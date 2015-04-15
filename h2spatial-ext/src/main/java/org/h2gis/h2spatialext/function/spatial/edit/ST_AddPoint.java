@@ -84,6 +84,9 @@ public class ST_AddPoint extends DeterministicScalarFunction {
      * geometry to be in an invalid shape
      */
     public static Geometry addPoint(Geometry geometry, Point point, double tolerance) throws SQLException {
+        if(geometry == null || point == null){
+            return null;
+        }
         if (geometry instanceof MultiPoint) {
             return insertVertexInMultipoint(geometry, point);
         } else if (geometry instanceof LineString) {

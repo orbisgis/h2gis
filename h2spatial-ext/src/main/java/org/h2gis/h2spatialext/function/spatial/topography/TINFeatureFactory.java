@@ -55,7 +55,6 @@ public final class TINFeatureFactory {
          * If there are not exactly 3 coordinates in geom.
          */
         public static DTriangle createDTriangle(Geometry geom) throws DelaunayError {
-
                 Coordinate[] coords = geom.getCoordinates();
                 if (coords.length != 4) {
                         throw new IllegalArgumentException("The geometry must be a triangle");

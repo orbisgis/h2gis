@@ -74,6 +74,9 @@ public class ST_SideBuffer extends DeterministicScalarFunction{
      * @return 
      */
     public static Geometry singleSideBuffer(Geometry geometry, double distance, String parameters){
+        if(geometry == null){
+            return null;
+        }
         String[] buffParemeters = parameters.split("\\s+");
         BufferParameters bufferParameters = new BufferParameters();
         for (String params : buffParemeters) {

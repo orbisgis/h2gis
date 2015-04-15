@@ -57,8 +57,12 @@ public class ST_AddZ extends DeterministicScalarFunction {
      * @param geometry
      * @param z
      * @return
+     * @throws java.sql.SQLException
      */
     public static Geometry addZ(Geometry geometry, double z) throws SQLException {
+        if(geometry == null){
+            return null;
+        }
         geometry.apply(new AddZCoordinateSequenceFilter(z));
         return geometry;
     }

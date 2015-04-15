@@ -62,6 +62,9 @@ public class ST_RemovePoints extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static Geometry removePoint(Geometry geometry, Polygon polygon) throws SQLException {
+        if(geometry == null){
+            return null;
+        }
         GeometryEditor localGeometryEditor = new GeometryEditor();
         PolygonDeleteVertexOperation localBoxDeleteVertexOperation = new PolygonDeleteVertexOperation(GF, new PreparedPolygon(polygon));
         Geometry localGeometry = localGeometryEditor.edit(geometry, localBoxDeleteVertexOperation);

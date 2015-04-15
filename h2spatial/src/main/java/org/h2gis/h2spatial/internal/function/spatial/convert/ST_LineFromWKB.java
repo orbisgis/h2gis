@@ -45,13 +45,24 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_LineFromWKB() {
-        addProperty(PROP_REMARKS, "Convert Well Known Binary into a LINESTRING");
+        addProperty(PROP_REMARKS, "Convert Well Known Binary into a LINESTRING.\n If an SRID is not specified, it defaults to 0.");
     }
 
     @Override
     public String getJavaStaticMethod() {
         return "toLineString";
     }
+    
+    /**
+     * Convert WKT into a LinearRing
+     * @param bytes Byte array
+     * @return LineString instance of null if bytes null
+     * @throws SQLException WKB Parse error
+     */
+    public static Geometry toLineString(byte[] bytes) throws SQLException, IOException {
+        return toLineString(bytes, 0);
+    }
+    
 
     /**
      * Convert WKT into a LinearRing

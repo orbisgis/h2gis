@@ -53,6 +53,9 @@ public class ST_SimplifyPreserveTopology extends DeterministicScalarFunction {
      * @return
      */
     public static Geometry simplyPreserve(Geometry geometry, double distance) {
+        if(geometry == null){
+            return null;
+        }
         return TopologyPreservingSimplifier.simplify(geometry, distance);
     }
 }

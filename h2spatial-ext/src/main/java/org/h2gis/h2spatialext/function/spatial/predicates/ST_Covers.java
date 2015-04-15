@@ -32,6 +32,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * ST_Covers returns true if no point in geometry B is outside geometry A.
  *
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public class ST_Covers extends DeterministicScalarFunction {
 
@@ -48,10 +49,13 @@ public class ST_Covers extends DeterministicScalarFunction {
      * Returns true if no point in geometry B is outside geometry A.
      *
      * @param geomA Geometry A
-     * @param geomA Geometry B
+     * @param geomB Geometry B
      * @return True if no point in geometry B is outside geometry A
      */
     public static Boolean covers(Geometry geomA, Geometry geomB) {
+        if(geomA == null||geomB == null){
+            return null;
+        }
         return geomA.covers(geomB);
     }
 }

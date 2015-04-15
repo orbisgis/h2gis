@@ -48,10 +48,13 @@ public class ST_Snap extends DeterministicScalarFunction {
      *
      * @param geometryA a geometry to snap
      * @param geometryB a geometry to snap
-     * @param snapTolerance the tolerance to use
+     * @param distance the tolerance to use
      * @return the snapped geometries
      */
     public static Geometry snap(Geometry geometryA, Geometry geometryB, double distance) {
+        if(geometryA == null||geometryB == null){
+            return null;
+        }
         Geometry[] snapped = GeometrySnapper.snap(geometryA, geometryB, distance);
         return snapped[0];
     }

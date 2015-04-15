@@ -49,6 +49,9 @@ public class ST_Normalize extends DeterministicScalarFunction {
      * @return 
      */
     public static Geometry normalize(Geometry geometry) {
+        if(geometry == null){
+            return null;
+        }
         geometry.normalize();
         return geometry;
     }

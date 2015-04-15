@@ -70,6 +70,9 @@ public class ST_SunPosition extends DeterministicScalarFunction{
      * @throws IllegalArgumentException 
      */
     public static Geometry sunPosition(Geometry point, Date date) throws IllegalArgumentException{
+        if(point == null){
+            return null;
+        }
         if (point instanceof Point) {
             Coordinate coord = point.getCoordinate();
             return point.getFactory().createPoint( SunCalc.getPosition(date, coord.y, coord.x));

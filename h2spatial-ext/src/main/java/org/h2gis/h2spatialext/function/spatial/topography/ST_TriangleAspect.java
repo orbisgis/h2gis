@@ -55,15 +55,18 @@ public class ST_TriangleAspect extends DeterministicScalarFunction {
      * @return
      * @throws DelaunayError 
      */
-    public static double computeAspect(Geometry geometry) throws DelaunayError{
-            DTriangle dTriangle = TINFeatureFactory.createDTriangle(geometry);
-            DPoint steepestVector = dTriangle.getSteepestVector();
-            if (steepestVector.equals(new DPoint(0, 0, 0))) {
-                return 0d;
-            } else {
-                Vector2D v = new Vector2D(steepestVector.getX(), steepestVector.getY());
-                return measureFromNorth(Math.toDegrees(v.angle()));
-            }
+    public static Double computeAspect(Geometry geometry) throws DelaunayError{
+        if (geometry == null) {
+            return null;
+        }
+        DTriangle dTriangle = TINFeatureFactory.createDTriangle(geometry);
+        DPoint steepestVector = dTriangle.getSteepestVector();
+        if (steepestVector.equals(new DPoint(0, 0, 0))) {
+            return 0d;
+        } else {
+            Vector2D v = new Vector2D(steepestVector.getX(), steepestVector.getY());
+            return measureFromNorth(Math.toDegrees(v.angle()));
+        }
     }
 
     /**
