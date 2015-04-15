@@ -74,7 +74,10 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
      * @return
      */
     public static Geometry reverse3DLine(Geometry geometry, String order) {
-         if (geometry instanceof LineString) {
+        if(geometry == null){
+            return null;
+        }
+        if (geometry instanceof LineString) {
             return reverse3D((LineString) geometry, order);
         } else if (geometry instanceof MultiLineString) {
             return reverse3D((MultiLineString) geometry, order);

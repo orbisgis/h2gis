@@ -55,6 +55,9 @@ public class ST_Azimuth extends DeterministicScalarFunction{
      * @return
      */
     public static Double azimuth(Geometry pointA, Geometry pointB){
+        if(pointA == null||pointB == null){
+            return null;
+        }
         if ((pointA instanceof Point) && (pointB instanceof Point)) {
             Double angle ;
             double x0 = ((Point) pointA).getX();

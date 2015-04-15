@@ -61,45 +61,46 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
      * @param geometry
      * @param dimension
      * @return 
+     * @throws com.vividsolutions.jts.io.ParseException 
      */
     public static Geometry collectionExtract(Geometry geometry, int dimension) throws ParseException {
+        if(geometry == null){
+            return null;
+        }
         if ((dimension < 1) || (dimension > 3)) {
             throw new IllegalArgumentException(
                     "Dimension out of range (1..3)");
         }
-        if (geometry != null) {
-            if (dimension == 1) {
-                ArrayList<Point> points = new ArrayList<Point>();
-                getPunctualGeometry(points, geometry);
-                if (points.isEmpty()) {
-                    return geometry.getFactory().buildGeometry(points);
-                } else if (points.size() == 1) {
-                    return points.get(0);
-                } else {
-                    return geometry.getFactory().createMultiPoint(points.toArray(new Point[points.size()]));
-                }
-            } else if (dimension == 2) {
-                ArrayList<LineString> lines = new ArrayList<LineString>();
-                getLinealGeometry(lines, geometry);
-                if (lines.isEmpty()) {
-                     return geometry.getFactory().buildGeometry(lines);
-                } else if (lines.size() == 1) {
-                    return lines.get(0);
-                } else {
-                    return geometry.getFactory().createMultiLineString(lines.toArray(new LineString[lines.size()]));
-                }
-            } else if (dimension == 3) {
-                ArrayList<Polygon> polygones = new ArrayList<Polygon>();
-                getArealGeometry(polygones, geometry);
-                if (polygones.isEmpty()) {
-                     return geometry.getFactory().buildGeometry(polygones);
-                } else if (polygones.size() == 1) {
-                    return polygones.get(0);
-                } else {
-                    return geometry.getFactory().createMultiPolygon(polygones.toArray(new Polygon[polygones.size()]));
-                }
+         if (dimension == 1) {
+            ArrayList<Point> points = new ArrayList<Point>();
+            getPunctualGeometry(points, geometry);
+            if (points.isEmpty()) {
+                return geometry.getFactory().buildGeometry(points);
+            } else if (points.size() == 1) {
+                return points.get(0);
+            } else {
+                return geometry.getFactory().createMultiPoint(points.toArray(new Point[points.size()]));
             }
-
+        } else if (dimension == 2) {
+            ArrayList<LineString> lines = new ArrayList<LineString>();
+            getLinealGeometry(lines, geometry);
+            if (lines.isEmpty()) {
+                return geometry.getFactory().buildGeometry(lines);
+            } else if (lines.size() == 1) {
+                return lines.get(0);
+            } else {
+                return geometry.getFactory().createMultiLineString(lines.toArray(new LineString[lines.size()]));
+            }
+        } else if (dimension == 3) {
+            ArrayList<Polygon> polygones = new ArrayList<Polygon>();
+            getArealGeometry(polygones, geometry);
+            if (polygones.isEmpty()) {
+                return geometry.getFactory().buildGeometry(polygones);
+            } else if (polygones.size() == 1) {
+                return polygones.get(0);
+            } else {
+                return geometry.getFactory().createMultiPolygon(polygones.toArray(new Polygon[polygones.size()]));
+            }
         }
         return null;
     }

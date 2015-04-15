@@ -26,11 +26,9 @@ package org.h2gis.h2spatialext.function.spatial.mesh;
 import com.vividsolutions.jts.geom.*;
 
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
 import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
-import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
 import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;

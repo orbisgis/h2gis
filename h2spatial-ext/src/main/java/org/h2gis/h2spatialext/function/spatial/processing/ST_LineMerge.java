@@ -2,9 +2,7 @@ package org.h2gis.h2spatialext.function.spatial.processing;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.operation.linemerge.LineMerger;
-import org.h2gis.drivers.utility.CoordinatesUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
 
 import java.sql.SQLException;
 import java.util.Collection;

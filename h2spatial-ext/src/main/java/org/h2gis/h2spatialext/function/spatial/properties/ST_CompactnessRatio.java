@@ -63,6 +63,9 @@ public class ST_CompactnessRatio extends DeterministicScalarFunction {
      * @return The compactness ratio of the given polygon
      */
     public static Double computeCompacity(Geometry geom) {
+        if(geom == null){
+            return null;
+        }
         if (geom instanceof Polygon) {
             final double circleRadius = Math.sqrt(geom.getArea() / Math.PI);
             final double circleCurcumference = 2 * Math.PI * circleRadius;

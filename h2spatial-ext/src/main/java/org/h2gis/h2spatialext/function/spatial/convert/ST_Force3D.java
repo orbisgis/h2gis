@@ -55,6 +55,9 @@ public class ST_Force3D extends DeterministicScalarFunction {
      * @return
      */
     public static Geometry force3D(Geometry geom) {
+        if (geom == null) {
+            return null;
+        }
         Geometry outPut = (Geometry) geom.clone();
         outPut.apply(new CoordinateSequenceFilter() {
             private boolean done = false;

@@ -55,6 +55,9 @@ public class ST_PrecisionReducer extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static Geometry precisionReducer(Geometry geometry, int nbDec) throws SQLException {
+        if(geometry == null){
+            return null;
+        }
         if (nbDec < 0) {
             throw new SQLException("Decimal_places has to be >= 0.");
         }

@@ -41,6 +41,9 @@ public class ST_OctogonalEnvelope extends DeterministicScalarFunction{
     }
     
     public static Geometry computeOctogonalEnvelope(Geometry geometry){
+        if(geometry == null){
+            return null;
+        }
         return new OctagonalEnvelope(geometry).toGeometry(GF);
     }
 }

@@ -60,6 +60,9 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
      * @throws DelaunayError 
      */
     public static LineString computeDirection(Geometry geometry) throws DelaunayError {
+        if(geometry == null){
+            return null;
+        }
         DTriangle dTriangle = TINFeatureFactory.createDTriangle(geometry);
         DPoint pointIntersection = dTriangle.getSteepestIntersectionPoint(dTriangle.getBarycenter());
         if (pointIntersection != null) {

@@ -72,8 +72,12 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
      * @param z
      * @param updateCondition set if the NaN value must be updated or not
      * @return
+     * @throws java.sql.SQLException
      */
     public static Geometry updateZ(Geometry geometry, double z, int updateCondition) throws SQLException {
+        if(geometry == null){
+            return null;
+        }
         if (updateCondition == 1 || updateCondition == 2 || updateCondition == 3) {
             geometry.apply(new UpdateZCoordinateSequenceFilter(z, updateCondition));
             return geometry;
