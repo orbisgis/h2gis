@@ -30,7 +30,9 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -38,17 +40,15 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
- * One problem with ear-clipping is that it produces sub-optimal triangulations in the the sense that it creates lots
- * of very skinny triangles. Which are visually and computationally unappealing.
- * Add a refinement step based on "flipping triangles" to improve the quality of the output triangle mesh.
- * @author Michael Bedward
+ * Use Ear-Clipping algorithm in order to tessellate the surface of a polygon using adaptive triangles.
+ * @author Nicolas Fortin, FR CNRS 2488
  */
 public class EarClipper {
-    private static final double EPS = 1.0E-4;
+    private final double epsilon;
 
     private final GeometryFactory gf;
     private final Polygon inputPolygon;
-    private Geometry ears;
+    private MultiPolygon ears;
 
     private List<Coordinate> shellCoords;
     private boolean[] shellCoordAvailable;
@@ -61,7 +61,8 @@ public class EarClipper {
      * @param inputPolygon the input polygon
      */
     public EarClipper(Polygon inputPolygon){
-        gf = new GeometryFactory();
+        gf = inputPolygon.getFactory();
+        epsilon = gf.getPrecisionModel().getScale();
         this.inputPolygon = inputPolygon;
     }
 
@@ -70,10 +71,10 @@ public class EarClipper {
      *
      * @return triangles as a GeometryCollection
      */
-    public Geometry getResult() {
+    public MultiPolygon getResult() {
     	return getResult(true);
     }
-    public Geometry getResult(boolean improve) {
+    public MultiPolygon getResult(boolean improve) {
 		
 	
         if (ears == null) {
@@ -91,19 +92,19 @@ public class EarClipper {
      *
      * @return GeometryCollection of triangular polygons
      */
-    private Geometry triangulate(boolean improve) {
+    private MultiPolygon triangulate(boolean improve) {
         earList = new ArrayList<Triangle>();
         createShell();
 
         int N = shellCoords.size() - 1;
         if(N<2) {
-        	return new GeometryFactory().createPolygon(null, null);
+        	return new GeometryFactory().createMultiPolygon(new Polygon[0]);
         }
         shellCoordAvailable = new boolean[N];
         Arrays.fill(shellCoordAvailable, true);
 
         boolean finished = false;
-        boolean found = false;
+        boolean found;
         int k0 = 0;
         int k1 = 1;
         int k2 = 2;
@@ -168,11 +169,11 @@ public class EarClipper {
             doImprove();
         }
 
-        Geometry[] geoms = new Geometry[earList.size()];
+        Polygon[] geoms = new Polygon[earList.size()];
         for (int i = 0; i < earList.size(); i++) {
             geoms[i] = createPolygon(earList.get(i));
         }
-        return gf.createGeometryCollection(geoms);
+        return gf.createMultiPolygon(geoms);
     }
 
     /**
@@ -192,8 +193,8 @@ public class EarClipper {
         Coordinate[] coords = poly.getExteriorRing().getCoordinates();
         shellCoords.addAll(Arrays.asList(coords));
 
-        for (int i = 0; i < orderedHoles.size(); i++) {
-            joinHoleToShell(orderedHoles.get(i));
+        for (Geometry orderedHole : orderedHoles) {
+            joinHoleToShell(orderedHole);
         }
     }
 
@@ -296,10 +297,10 @@ public class EarClipper {
                 bounds.add( new IndexedEnvelope(i, poly.getInteriorRingN(i).getEnvelopeInternal()) );
             }
 
-            Collections.sort(bounds, new IndexedEnvelopeComparator());
+            Collections.sort(bounds, new IndexedEnvelopeComparator(epsilon));
 
-            for (int i = 0; i < bounds.size(); i++) {
-                holes.add(poly.getInteriorRingN(bounds.get(i).index));
+            for (IndexedEnvelope bound : bounds) {
+                holes.add(poly.getInteriorRingN(bound.index));
             }
         }
 
@@ -318,8 +319,8 @@ public class EarClipper {
 
         final int Ns = shellCoords.size() - 1;
 
-        final int holeVertexIndex = getLowestVertex(hole);
         final Coordinate[] holeCoords = hole.getCoordinates();
+        final int holeVertexIndex = getLowestVertex(holeCoords);
 
         final Coordinate ch = holeCoords[holeVertexIndex];
         List<IndexedDouble> distanceList = new ArrayList<IndexedDouble>();
@@ -355,7 +356,7 @@ public class EarClipper {
          * Quick join didn't work. Sort the shell coords on distance to the
          * hole vertex nnd choose the closest reachable one.
          */
-        Collections.sort(distanceList, new IndexedDoubleComparator());
+        Collections.sort(distanceList, new IndexedDoubleComparator(epsilon));
         for (int i = 1; i < distanceList.size(); i++) {
             join = gf.createLineString(new Coordinate[] {ch, shellCoords.get(distanceList.get(i).index)});
             if (inputPolygon.covers(join)) {
@@ -372,7 +373,6 @@ public class EarClipper {
      * Helper method for joinHoleToShell. Insert the hole coordinates into
      * the shell coordinate list.
      *
-     * @param shellCoords list of current shell coordinates
      * @param shellVertexIndex insertion point in the shell coordinate list
      * @param holeCoords array of hole coordinates
      * @param holeVertexIndex attachment point of hole
@@ -402,16 +402,20 @@ public class EarClipper {
      * @return index of the first vertex found at lowest point
      *         of the geometry
      */
-    private int getLowestVertex(Geometry geom) {
-        Coordinate[] coords = geom.getCoordinates();
-        double minY = geom.getEnvelopeInternal().getMinY();
+    private int getLowestVertex(Coordinate[] coords) {
+        double minY = Double.MAX_VALUE;
+        int index = -1;
         for (int i = 0; i < coords.length; i++) {
-            if (Math.abs(coords[i].y - minY) < EPS) {
-                return i;
+            if (Double.compare(coords[i].y,minY) < 0) {
+                index = i;
+                minY = coords[i].y;
             }
         }
-
-        throw new IllegalStateException("Failed to find lowest vertex");
+        if(index >= 0) {
+            return index;
+        } else {
+            throw new IllegalStateException("Failed to find lowest vertex");
+        }
     }
 
     private static class IndexedEnvelope {
@@ -422,11 +426,17 @@ public class EarClipper {
     }
 
     private static class IndexedEnvelopeComparator implements Comparator<IndexedEnvelope> {
+        private final double epsilon;
+
+        public IndexedEnvelopeComparator(double epsilon) {
+            this.epsilon = epsilon;
+        }
+
         public int compare(IndexedEnvelope o1, IndexedEnvelope o2) {
             double delta = o1.envelope.getMinY() - o2.envelope.getMinY();
-            if (Math.abs(delta) < EPS) {
+            if (Math.abs(delta) < epsilon) {
                 delta = o1.envelope.getMinX() - o2.envelope.getMinX();
-                if (Math.abs(delta) < EPS) {
+                if (Math.abs(delta) < epsilon) {
                     return 0;
                 }
             }
@@ -442,9 +452,15 @@ public class EarClipper {
     }
 
     private static class IndexedDoubleComparator implements Comparator<IndexedDouble> {
+        private final double epsilon;
+
+        public IndexedDoubleComparator(double epsilon) {
+            this.epsilon = epsilon;
+        }
+
         public int compare(IndexedDouble o1, IndexedDouble o2) {
             double delta = o1.value - o2.value;
-            if (Math.abs(delta) < EPS) {
+            if (Math.abs(delta) < epsilon) {
                     return 0;
             }
             return (delta > 0 ? 1 : -1);

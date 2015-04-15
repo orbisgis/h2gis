@@ -8,9 +8,12 @@ import java.util.Collections;
 import java.util.List;
 
 /**
+ * One problem with ear-clipping is that it produces sub-optimal triangulations in the the sense that it creates lots
+ * of very skinny triangles. Which are visually and computationally unappealing.
+ * Add a refinement step based on "flipping triangles" to improve the quality of the output triangle mesh.
  * @link {http://lin-ear-th-inking.blogspot.fr/2011/04/polygon-triangulation-via-ear-clipping.html}
  * @author Michael Bedward
- * @author Nicolas Fortin
+ * @author Nicolas Fortin, FR CNRS 2488
  */
 public class EdgeFlipper {
     private static final double SQRT3 = Math.sqrt(3.);

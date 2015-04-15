@@ -1,5 +1,7 @@
 package org.h2gis.utilities.jts_utils.tesselate;
 
+import java.util.Arrays;
+
 /**
  * @author Michael Bedward
  */
@@ -39,11 +41,7 @@ public class Triangle{
      * @return a new array with the vertex indices
      */
     public int[] getVertices() {
-        int[] copy = new int[3];
-        for (int i = 0; i < 3; i++) {
-            copy[i] = vertices[i];
-        }
-        return copy;
+        return Arrays.copyOf(vertices, 3);
     }
 
     /**
