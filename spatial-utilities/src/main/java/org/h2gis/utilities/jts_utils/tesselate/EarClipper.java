@@ -41,6 +41,7 @@ import java.util.List;
 
 /**
  * Use Ear-Clipping algorithm in order to tessellate the surface of a polygon using adaptive triangles.
+ * @author Michael Bedward
  * @author Nicolas Fortin, FR CNRS 2488
  */
 public class EarClipper {
