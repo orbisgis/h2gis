@@ -27,7 +27,6 @@ package org.h2gis.h2spatialext.function.spatial.affine_transformations;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.util.AffineTransformation;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**

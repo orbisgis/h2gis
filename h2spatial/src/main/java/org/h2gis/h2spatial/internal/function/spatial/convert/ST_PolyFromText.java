@@ -39,12 +39,21 @@ public class ST_PolyFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_PolyFromText() {
-        addProperty(PROP_REMARKS, "Convert a WKT String into a POLYGON");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a POLYGON.\n If an SRID is not specified, it defaults to 0.");
     }
 
     @Override
     public String getJavaStaticMethod() {
         return "toGeometry";
+    }
+    
+    /**
+     * @param wKT WellKnown text value
+     * @return Geometry
+     * @throws SQLException Invalid argument or the geometry type is wrong.
+     */
+    public static Geometry toGeometry(String wKT) throws SQLException {
+        return toGeometry(wKT, 0);
     }
 
     /**

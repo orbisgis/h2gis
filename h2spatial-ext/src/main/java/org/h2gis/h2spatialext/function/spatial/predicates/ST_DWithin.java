@@ -32,6 +32,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
  * ST_DWithin returns true if the geometries are within the specified distance of one another.
  * 
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public class ST_DWithin extends DeterministicScalarFunction {
 
@@ -49,11 +50,14 @@ public class ST_DWithin extends DeterministicScalarFunction {
      * Returns true if the geometries are within the specified distance of one another.
      *
      * @param geomA Geometry A
-     * @param geomA Geometry B
+     * @param geomB Geometry B
      * @param distance Distance
      * @return True if if the geometries are within the specified distance of one another
      */
     public static Boolean isWithinDistance(Geometry geomA, Geometry geomB, Double distance) {
+        if(geomA == null||geomB == null){
+            return null;
+        }
         return geomA.isWithinDistance(geomB, distance);
     }
 }

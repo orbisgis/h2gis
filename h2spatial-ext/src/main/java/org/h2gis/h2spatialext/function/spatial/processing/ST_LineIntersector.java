@@ -70,6 +70,9 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
      * @return 
      */
     public static Geometry lineIntersector(Geometry inputLines, Geometry clipper) throws IllegalArgumentException {
+        if(inputLines == null||clipper == null){
+            return null;
+        }
         if(inputLines.getDimension()==1){
         MCIndexNoder mCIndexNoder = new MCIndexNoder();
         mCIndexNoder.setSegmentIntersector(new IntersectionAdder(ROBUST_INTERSECTOR));        

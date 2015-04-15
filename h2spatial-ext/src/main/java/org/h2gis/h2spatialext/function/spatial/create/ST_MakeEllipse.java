@@ -67,6 +67,9 @@ public class ST_MakeEllipse extends DeterministicScalarFunction {
      * @throws SQLException if the width or height is non-positive
      */
     public static Polygon makeEllipse(Point p, double width, double height) throws SQLException {
+        if(p == null){
+            return null;
+        }
         if (height < 0 || width < 0) {
             throw new SQLException("Both width and height must be positive.");
         } else {

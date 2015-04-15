@@ -52,6 +52,9 @@ public class ST_Densify extends DeterministicScalarFunction {
      * @return Densified geometry
      */
     public static Geometry densify(Geometry geometry, double tolerance) {
+        if(geometry == null){
+            return null;
+        }
         return Densifier.densify(geometry, tolerance);
     }
 }

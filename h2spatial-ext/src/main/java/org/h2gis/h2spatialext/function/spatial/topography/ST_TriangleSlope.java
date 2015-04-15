@@ -51,7 +51,10 @@ public class ST_TriangleSlope extends DeterministicScalarFunction{
      * @return
      * @throws DelaunayError 
      */
-    public static double computeSlope(Geometry geometry) throws DelaunayError {
+    public static Double computeSlope(Geometry geometry) throws DelaunayError {
+        if(geometry == null){
+            return null;
+        }
         DTriangle triangle = TINFeatureFactory.createDTriangle(geometry);
         return triangle.getSlopeInPercent();
     }

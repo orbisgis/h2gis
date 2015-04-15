@@ -63,6 +63,9 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static ResultSet createGrid(Connection connection, Value value, double deltaX, double deltaY) throws SQLException {
+        if(value == null){
+            return null;
+        }
         if (value instanceof ValueString) {
             GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString());
             return gridRowSet.getResultSet();

@@ -51,10 +51,15 @@ public class ST_Expand extends DeterministicScalarFunction {
      * Expands a geometry's envelope by the given delta X and delta Y. Both
      * positive and negative distances are supported.
      *
+     * @param geometry the input geometry
      * @param deltaX the distance to expand the envelope along the the X axis
      * @param deltaY the distance to expand the envelope along the the Y axis
+     * @return the expanded geometry
      */
     public static Geometry expand(Geometry geometry, double deltaX, double deltaY) {
+        if(geometry == null){
+            return null;
+        }
         Envelope env = geometry.getEnvelopeInternal();
         // As the time of writing Envelope.expand is buggy with negative parameters
         double minX = env.getMinX() - deltaX;

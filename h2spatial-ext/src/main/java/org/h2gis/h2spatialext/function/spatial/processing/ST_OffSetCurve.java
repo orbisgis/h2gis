@@ -64,6 +64,9 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
      * @return 
      */
     public static Geometry offsetCurve(Geometry geometry, double offset, String parameters) {
+        if(geometry == null){
+            return null;
+        }
         String[] buffParemeters = parameters.split("\\s+");
         BufferParameters bufferParameters = new BufferParameters();
         for (String params : buffParemeters) {

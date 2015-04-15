@@ -548,4 +548,20 @@ public class SpatialFunctionTest {
             throw originalCause;
         }
     }
+    
+    @Test
+    public void test_ST_PointFromWKB1() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_PointFromWKB(ST_AsBinary('POINT(0 10)'::GEOMETRY))");
+        rs.next();
+        assertEquals("POINT (0 10)", rs.getString(1));
+        assertFalse(rs.next());
+        rs.close();
+    }
+    
+    @Test(expected = SQLException.class)
+    public void test_ST_PointFromWKB2() throws Throwable {
+        Statement st = connection.createStatement();
+        st.executeQuery("SELECT ST_PointFromWKB(ST_AsBinary('LINESTRING(0 10, 10 10)'::GEOMETRY));");
+    }
 }

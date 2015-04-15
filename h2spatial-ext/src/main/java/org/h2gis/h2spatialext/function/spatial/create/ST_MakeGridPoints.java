@@ -60,6 +60,9 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
      * @throws SQLException
      */
     public static ResultSet createGridPoints(Connection connection, Value value, double deltaX, double deltaY) throws SQLException {
+        if(value == null){
+            return null;
+        }
         if (value instanceof ValueString) {
             GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString());
             gridRowSet.setCenterCell(true);

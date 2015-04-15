@@ -81,6 +81,9 @@ public class ST_Split extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static Geometry split(Geometry geomA, Geometry geomB) throws SQLException {
+        if(geomA == null||geomB == null){
+            return null;
+        }
         if (geomA instanceof Polygon) {
             return splitPolygonWithLine((Polygon) geomA, (LineString) geomB);
         } 

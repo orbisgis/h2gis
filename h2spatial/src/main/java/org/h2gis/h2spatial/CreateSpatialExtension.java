@@ -69,6 +69,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.h2spatial.internal.function.spatial.convert.ST_PointFromWKB;
 
 import org.h2gis.h2spatial.internal.function.spatial.crs.ST_Transform;
 import org.h2gis.h2spatial.internal.function.spatial.predicates.ST_OrderingEquals;
@@ -164,7 +165,8 @@ public class CreateSpatialExtension {
                 new ST_CoordDim(),
                 new ST_GeometryTypeCode(),
                 new ST_OrderingEquals(),
-                new ST_Is3D()};
+                new ST_Is3D(),
+                new ST_PointFromWKB()};
     }
 
     /**

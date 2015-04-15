@@ -44,6 +44,9 @@ public class ST_BoundingCircle extends DeterministicScalarFunction {
      * @return
      */
     public static Geometry computeBoundingCircle(Geometry geometry) {
+        if (geometry == null) {
+            return null;
+        }
         return new MinimumBoundingCircle(geometry).getCircle();
     }
 }
