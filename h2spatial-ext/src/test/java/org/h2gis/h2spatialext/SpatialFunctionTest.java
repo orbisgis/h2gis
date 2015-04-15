@@ -27,7 +27,6 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;

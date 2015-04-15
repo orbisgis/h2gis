@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- *
+ * Returns the 2-dimensional longest line between the points of two geometries.
  * @author Erwan Bocher
  */
 public class ST_LongestLine extends DeterministicScalarFunction{

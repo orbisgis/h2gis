@@ -247,4 +247,28 @@ public class SpatialFunction2Test {
         Assert.assertEquals(20, rs.getDouble(1), 0);
         rs.close();
     }
+    
+    @Test
+    public void test_ST_LongestLine1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LongestLine('POINT(0 0)'::geometry, 'POINT(0 0)'::geometry)");
+        rs.next();
+        Assert.assertNull(rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LongestLine2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LongestLine('MULTIPOINT((0 0),(0 0))'::geometry, 'MULTIPOINT((0 0),(0 0))'::geometry)");
+        rs.next();
+        Assert.assertNull(rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_LongestLine3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_LongestLine('POINT(0 0)'::geometry, 'LINESTRING(0 0,5 20, 10 0)'::geometry)");
+        rs.next();
+        assertGeometryEquals("LINESTRING (0 0, 5 20)", rs.getBytes(1));
+        rs.close();
+    }
 }

@@ -28,6 +28,7 @@ package org.h2gis.h2spatialext.function.spatial.distance;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateFilter;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -96,7 +97,7 @@ public class MaxDistanceOp {
             return null;
         }
         if (geomA.equals(geomB)) {
-            sameGeom = true;
+            sameGeom = true;           
         }
 
         if (maxDistanceFilter == null) {
@@ -144,8 +145,8 @@ public class MaxDistanceOp {
                 double currentDistance = coord.distance(coordinate);
                 if (currentDistance > distance) {
                     distance = currentDistance;
-                    startCoord = coord;
-                    endCoord = coordinate;
+                    startCoord = coordinate;
+                    endCoord = coord;
                 }
             }
         }
@@ -166,6 +167,9 @@ public class MaxDistanceOp {
          * @return
          */
         public Coordinate[] getCoordinatesDistance() {
+            if (startCoord == null || endCoord == null) {
+                return null;
+            }
             return new Coordinate[]{startCoord, endCoord};
         }
     }
