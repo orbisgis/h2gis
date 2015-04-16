@@ -257,4 +257,49 @@ public class MeshFunctionTest {
         assertEquals("MULTIPOLYGON EMPTY", rs.getString("the_geom"));
         rs.close();
     }
+
+    @Test
+    public void testSimpleST_TESSELLATE() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE('POLYGON ((-6 -2, -8 2, 0 8, -8 -7, -10 -1, -6 -2))') the_geom");
+        try {
+            assertTrue(rs.next());
+            assertGeometryEquals("MULTIPOLYGON (((-6 -2, -8 2, 0 8, -6 -2)), ((-6 -2, 0 8, -8 -7, -6 -2))," +
+                    " ((-10 -1, -6 -2, -8 -7, -10 -1)))", rs.getObject(1));
+        } finally {
+            rs.close();
+        }
+    }
+
+    @Test
+    public void testMultiST_TESSELLATE() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE(ST_UNION(ST_EXPAND('POINT(0 0)',5, 5),ST_EXPAND('POINT(15 0)',5, 5))) the_geom");
+        try {
+            assertTrue(rs.next());
+            assertGeometryEquals("MULTIPOLYGON (((-5 -5, -5 5, 5 5, -5 -5)), ((-5 -5, 5 5, 5 -5, -5 -5)), ((10 -5, 10 5, 20 5, 10 -5)), ((10 -5, 20 5, 20 -5, 10 -5)))", rs.getObject(1));
+        } finally {
+            rs.close();
+        }
+    }
+
+    @Test
+    public void testEmptyST_TESSELLATE() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE('MULTIPOLYGON EMPTY') the_geom");
+        try {
+            assertTrue(rs.next());
+            assertGeometryEquals("MULTIPOLYGON EMPTY", rs.getObject(1));
+        } finally {
+            rs.close();
+        }
+    }
+
+    @Test(expected = SQLException.class)
+    public void testInvalid2ST_TESSELLATE() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE('POINT(1 1)') the_geom");
+        try {
+            assertTrue(rs.next());
+            assertGeometryEquals("MULTIPOLYGON (((-5 -5, -5 5, 5 5, -5 -5)), ((-5 -5, 5 5, 5 -5, -5 -5)), ((10 -5, 10 5, 20 5, 10 -5)), ((10 -5, 20 5, 20 -5, 10 -5)))", rs.getObject(1));
+        } finally {
+            rs.close();
+        }
+    }
 }

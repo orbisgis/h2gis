@@ -24,6 +24,7 @@
  */
 package org.h2gis.utilities.jts_utils.tesselate;
 
+import com.vividsolutions.jts.algorithm.BoundaryNodeRule;
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
@@ -32,6 +33,9 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geomgraph.GeometryGraph;
+import com.vividsolutions.jts.operation.relate.RelateComputer;
+import com.vividsolutions.jts.operation.relate.RelateOp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +89,12 @@ public class EarClipper {
         return ears;
     }
 
+    private boolean covers(GeometryGraph mainPolyGraph, Geometry g) {
+        RelateComputer relate = new RelateComputer(new GeometryGraph[]{mainPolyGraph,
+                new GeometryGraph(1, g,BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE)});
+        return relate.computeIM().isCovers();
+    }
+
     /**
      * Perform the triangulation
      *
@@ -110,6 +120,8 @@ public class EarClipper {
         int k1 = 1;
         int k2 = 2;
         int firstK = 0;
+        GeometryGraph mainPolyGraph = new GeometryGraph(0, inputPolygon,BoundaryNodeRule.OGC_SFS_BOUNDARY_RULE);
+
         do {
             found = false;
             while (CGAlgorithms.computeOrientation(
@@ -126,7 +138,7 @@ public class EarClipper {
             if (!finished && isValidEdge(k0, k2)) {
                 LineString ls = gf.createLineString(new Coordinate[] {shellCoords.get(k0), shellCoords.get(k2)});
 
-                if (inputPolygon.covers(ls)) {
+                if (covers(mainPolyGraph, ls)) {
                     Polygon earPoly = gf.createPolygon(gf.createLinearRing(
                             new Coordinate[]{
                                 shellCoords.get(k0),
@@ -135,7 +147,7 @@ public class EarClipper {
                                 shellCoords.get(k0)}),
                             null);
 
-                    if (inputPolygon.covers(earPoly)) {
+                    if (covers(mainPolyGraph, earPoly)) {
                         found = true;
                         // System.out.println(earPoly);
                         Triangle ear = new Triangle(k0, k1, k2);
@@ -399,7 +411,7 @@ public class EarClipper {
     /**
      * Return the index of the lowest vertex
      *
-     * @param geom input geometry
+     * @param coords input geometry
      * @return index of the first vertex found at lowest point
      *         of the geometry
      */

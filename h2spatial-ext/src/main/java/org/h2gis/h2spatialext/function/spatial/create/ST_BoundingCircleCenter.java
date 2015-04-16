@@ -15,7 +15,8 @@ public class ST_BoundingCircleCenter extends DeterministicScalarFunction {
      * Constructor
      */
     public ST_BoundingCircleCenter() {
-        addProperty(PROP_REMARKS, "Compute the minimum bounding circle center of a geometry");
+        addProperty(PROP_REMARKS, "Compute the minimum bounding circle center of a geometry." +
+                "This function is more precise than the conjunction of ST_CENTROID and ST_BoundingCircle");
     }
 
     @Override
@@ -29,7 +30,7 @@ public class ST_BoundingCircleCenter extends DeterministicScalarFunction {
      * @return Minimum bounding circle center point
      */
     public static Point getCircumCenter(Geometry geometry) {
-        if(geometry == null) {
+        if(geometry == null || geometry.getNumPoints() == 0) {
             return null;
         }
         return geometry.getFactory().createPoint(new MinimumBoundingCircle(geometry).getCentre());
