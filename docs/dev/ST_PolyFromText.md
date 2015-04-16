@@ -4,7 +4,7 @@ title: ST_PolyFromText
 category: geom2D/geometry-conversion
 is_function: true
 description: Well Known Text &rarr; <code>POLYGON</code>
-prev_section: ST_PointFromText
+prev_section: ST_PointFromWKB
 next_section: ST_PolyFromWKB
 permalink: /docs/dev/ST_PolyFromText/
 ---
@@ -12,6 +12,7 @@ permalink: /docs/dev/ST_PolyFromText/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_PolyFromText(VARCHAR wkt);
 GEOMETRY ST_PolyFromText(VARCHAR wkt, INT srid);
 {% endhighlight %}
 
@@ -21,9 +22,12 @@ GEOMETRY ST_PolyFromText(VARCHAR wkt, INT srid);
 {% include z-coord-warning.html %}
 {% include sfs-1-2-1.html %}
 
-### Example
+### Examples
 
 {% highlight mysql %}
+SELECT ST_PolyFromText('POLYGON ((49 30, 50 28, 53 28, 53 32, 50 32, 49 30)));
+-- Answer: POLYGON ((49 30, 50 28, 53 28, 53 32, 50 32, 49 30))
+
 SELECT ST_PolyFromText('POLYGON((50 31, 54 31, 54 29, 50 29, 50 31))', 2154);
 -- Answer: POLYGON((50 31, 54 31, 54 29, 50 29, 50 31))
 
@@ -32,5 +36,7 @@ SELECT ST_PolyFromText('POINT(2 3)', 2154);
 {% endhighlight %}
 
 ##### See also
+
+* [`ST_MPolyFromText`](../ST_MPolyFromText), [`ST_PointFromText`](../ST_PointFromText), [`ST_LineFromText`](../ST_LineFromText)
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_PolyFromText.java" target="_blank">Source code</a>

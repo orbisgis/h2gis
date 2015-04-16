@@ -12,6 +12,7 @@ permalink: /docs/dev/ST_MLineFromText/
 ### Signatures
 
 {% highlight mysql %}
+GEOMETRY ST_MLineFromText(VARCHAR wkt);
 GEOMETRY ST_MLineFromText(VARCHAR wkt, INT srid);
 {% endhighlight %}
 
@@ -21,9 +22,14 @@ GEOMETRY ST_MLineFromText(VARCHAR wkt, INT srid);
 {% include z-coord-warning.html %}
 {% include sfs-1-2-1.html %}
 
-### Example
+### Examples
 
 {% highlight mysql %}
+SELECT ST_MLineFromText('MULTILINESTRING((1 5, 4 6, 7 5),
+                                         (2 4, 4 5, 6 3))');
+-- Answer: MULTILINESTRING((1 5, 4 6, 7 5), 
+--                         (2 4, 4 5, 6 3))
+
 SELECT ST_MLineFromText('MULTILINESTRING((10 48, 10 21, 10 0),
                                          (16 0, 16 23, 16 48))', 101);
 -- Answer: MULTILINESTRING((10 48, 10 21, 10 0),
@@ -34,5 +40,7 @@ SELECT ST_MLineFromText('POINT(2 3)', 2154);
 {% endhighlight %}
 
 ##### See also
+
+* [`ST_LineFromText`](../ST_LineFromText), [`ST_MPointFromText`](../ST_MPointFromText), [`ST_MPolyFromText`](../ST_MPolyFromText)
 
 * <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_MLineFromText.java" target="_blank">Source code</a>
