@@ -26,6 +26,7 @@ package org.h2gis.utilities.jts_utils;
 
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
+import com.vividsolutions.jts.geom.Geometry;
 
 /**
  * Filter on the dimension of each coordinate of the CoordinateSequence to determine
@@ -71,6 +72,16 @@ public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilt
         }
     }
 
+    /**
+     * Init CoordinateSequenceDimensionFilter object.
+     * @param geometry Geometry instance
+     * @return CoordinateSequenceDimensionFilter instance
+     */
+    public static CoordinateSequenceDimensionFilter apply(Geometry geometry) {
+        CoordinateSequenceDimensionFilter cd = new CoordinateSequenceDimensionFilter();
+        geometry.apply(cd);
+        return cd;
+    }
     /**
      * Gets the dimension of the coordinate sequence.
      *
