@@ -25,7 +25,7 @@ GEOMETRY ST_PolyFromText(VARCHAR wkt, INT srid);
 ### Examples
 
 {% highlight mysql %}
-SELECT ST_PolyFromText('POLYGON ((49 30, 50 28, 53 28, 53 32, 50 32, 49 30)));
+SELECT ST_PolyFromText('POLYGON ((49 30, 50 28, 53 28, 53 32, 50 32, 49 30))');
 -- Answer: POLYGON ((49 30, 50 28, 53 28, 53 32, 50 32, 49 30))
 
 SELECT ST_PolyFromText('POLYGON((50 31, 54 31, 54 29, 50 29, 50 31))', 2154);
