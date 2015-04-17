@@ -12,7 +12,7 @@ permalink: /docs/dev/ST_LineMerge/
 ### Signatures
 
 {% highlight mysql %}
-LINESTRING ST_LineMerge(GEOMETRY geom);
+MULTILINESTRING ST_LineMerge(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
@@ -23,7 +23,14 @@ If the user provide something else than `(MULTI)LINESTRING` it returns an `EMPTY
 
 ### Examples
 
-#### Case with (MULTI)LINESTRINGs
+##### Case with a `LINESTRING`
+
+{% highlight mysql %}
+SELECT ST_LineMerge('LINESTRING (1 1, 1 4)') as THE_GEOM;
+-- Answer: MULTILINESTRING ((1 1, 1 4)) 
+{% endhighlight %}
+
+##### Case with a `MULTILINESTRING`
 
 {% highlight mysql %}
 SELECT ST_LineMerge('MULTILINESTRING ((1 1, 1 4), 
@@ -35,7 +42,7 @@ SELECT ST_LineMerge('MULTILINESTRING ((1 1, 1 4),
 {% endhighlight %}
 <img class="displayed" src="../ST_LineMerge_1.png"/>
 
-#### Case with mixed dimension geometries
+##### Case with mixed dimension geometries
 
 {% highlight mysql %}
 SELECT ST_LineMerge('GEOMETRYCOLLECTION (
