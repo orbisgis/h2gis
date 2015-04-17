@@ -5,7 +5,7 @@ category: geom2D/edit-geometries
 is_function: true
 description: Insert extra vertices along the line segments of a Geometry
 prev_section: ST_CollectionExtract
-next_section: ST_Normalize
+next_section: ST_FlipCoordinates
 permalink: /docs/dev/ST_Densify/
 ---
 
