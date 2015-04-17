@@ -3,7 +3,7 @@ layout: docs
 title: ST_Accum
 category: geom2D/geometry-creation
 is_function: true
-description: Construct a <code>GEOMETRYCOLLECTION</code> from a column of Geometries
+description: Construct an array of Geometries
 prev_section: geom2D/geometry-creation
 next_section: ST_BoundingCircle
 permalink: /docs/dev/ST_Accum/
@@ -12,15 +12,32 @@ permalink: /docs/dev/ST_Accum/
 ### Signatures
 
 {% highlight mysql %}
+MULTIPOINT         ST_Accum(POINT geom);
+MULTILINESTRING    ST_Accum(LINESTRING geom);
+MULTIPOLYGON       ST_Accum(POLYGON geom);
 GEOMETRYCOLLECTION ST_Accum(GEOMETRY geom);
 {% endhighlight %}
 
 ### Description
 
-This aggregate function constructs a `GEOMETRYCOLLECTION` from a column of Geometries.
+This aggregate function constructs a `GEOMETRYCOLLECTION` from a column of mixed dimension Geometries.
+
+If there is only `POINT`s in the column of Geometries, a `MULTIPOINT` is returned. Same process with `LINESTRING`s and `POLYGON`s.
 
 ### Examples
 
+#### Case with same dimension geometries
+{% highlight mysql %}
+CREATE TABLE input_table(geom GEOMETRY);
+INSERT INTO input_table VALUES
+    ('POINT(0 0)'),
+    ('POINT(1 1)'),
+    ('POINT(2 2)');
+SELECT ST_Accum(geom) FROM input_table;
+-- Answer: MULTIPOINT ((0 0), (1 1), (2 2))
+{% endhighlight %}
+
+#### Case with mixed dimension geometries
 {% highlight mysql %}
 CREATE TABLE input_table(geom GEOMETRY);
 INSERT INTO input_table VALUES
