@@ -29,6 +29,7 @@ As a consequence, the following are equivalent:
 
 {% include type-warning.html type='GEOMETRYCOLLECTION' %}
 {% include sfs-1-2-1.html %}
+{% include spatial_indice_warning.html %}
 
 ### Examples
 

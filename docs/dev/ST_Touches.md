@@ -28,11 +28,12 @@ Touches means that:
 
 * `ST_Touches` can only be used to determine the relation between
   pairs listed here: `(POLYGON, POLYGON)`, `(POLYGON, LINESTRING)`,
-  `(POLYGON, POINT)`, `(LINESTRING, LINESTRING)` and `(LINESTRING,
-  POINT)`. The relation `(POINT, POINT)` is excluded.
+  `(POLYGON, POINT)`, `(LINESTRING, LINESTRING)` and `(LINESTRING, POINT)`. 
+The relation `(POINT, POINT)` is excluded.
 * `GEOMETRYCOLLECTION`s are not taken into account.
 
 {% include sfs-1-2-1.html %}
+{% include spatial_indice_warning.html %}
 
 ### Examples
 

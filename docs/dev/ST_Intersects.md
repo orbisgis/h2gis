@@ -23,6 +23,7 @@ Intersects means that `geomA` and `geomB` have at least one point in common.
 
 {% include type-warning.html type='GEOMETRYCOLLECTION' %}
 {% include sfs-1-2-1.html %}
+{% include spatial_indice_warning.html %}
 
 ### Examples
 

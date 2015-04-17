@@ -29,6 +29,7 @@ Crosses means that:
 * The intersection set is interior to both `geomA` and `geomB`.
 
 {% include sfs-1-2-1.html %}
+{% include spatial_indice_warning.html %}
 
 ##### Note
 In the OpenGIS Simple Features Specification this predicate is only defined for `(POINT, LINESTRING)`, `(POINT, POLYGON)`, `(LINESTRING, LINESTRING)`, and `(LINESTRING, POLYGON)` situations.
