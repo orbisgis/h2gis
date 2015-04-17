@@ -21,6 +21,7 @@ BOOLEAN ST_Contains(GEOMETRY geomA, GEOMETRY geomB);
 Returns true if `geomA` contains `geomB`.
 
 {% include sfs-1-2-1.html %}
+{% include spatial_indice_warning.html %}
 
 ### Examples
 

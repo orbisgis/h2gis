@@ -23,6 +23,7 @@ Disjoint means that the two geometries have no point in common.
 
 {% include type-warning.html type='GEOMETRYCOLLECTION' %}
 {% include sfs-1-2-1.html %}
+{% include spatial_indice_warning.html %}
 
 ### Examples
 

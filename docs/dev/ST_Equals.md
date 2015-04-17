@@ -26,6 +26,7 @@ Equal means:
 * The directionality and the order of points is ignored.
 
 {% include sfs-1-2-1.html %}
+{% include spatial_indice_warning.html %}
 
 ### Examples
 
