@@ -21,10 +21,6 @@ Returns a version of the given geometry with `X` and `Y` axis flipped.
 
 Useful to flip `latitude/longitude` coordinates.
 
-### Remark
-
-This is a 2D function. So the `Z` value is returned with no modification.
-
 ### Examples
 
 ##### Cases with a simple `GEOMETRY`
