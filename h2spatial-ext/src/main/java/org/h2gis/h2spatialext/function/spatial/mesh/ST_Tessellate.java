@@ -45,6 +45,8 @@ import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
 import org.poly2tri.triangulation.delaunay.sweep.DTSweep;
 import org.poly2tri.triangulation.delaunay.sweep.DTSweepContext;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,11 +69,15 @@ public class ST_Tessellate extends DeterministicScalarFunction {
         return "tessellate";
     }
 
-    private static org.poly2tri.geometry.polygon.Polygon makePolygon(LineString lineString) {
+    private static double r(MathContext mathContext,double v) {
+        return new BigDecimal(v).round(mathContext).doubleValue();
+    }
+
+    private static org.poly2tri.geometry.polygon.Polygon makePolygon(MathContext m, LineString lineString) {
         PolygonPoint[] points = new PolygonPoint[lineString.getNumPoints() - 1];
         for(int idPoint=0; idPoint < points.length; idPoint++) {
             Coordinate point = lineString.getCoordinateN(idPoint);
-            points[idPoint] = new PolygonPoint(point.x, point.y, Double.isNaN(point.z) ? 0 : point.z);
+            points[idPoint] = new PolygonPoint(r(m, point.x), r(m, point.y), Double.isNaN(point.z) ? 0 : r(m ,point.z));
         }
         return new org.poly2tri.geometry.polygon.Polygon(points);
     }
@@ -85,12 +91,13 @@ public class ST_Tessellate extends DeterministicScalarFunction {
     }
 
     private static MultiPolygon tessellatePolygon(Polygon polygon) {
+        MathContext mathContext = MathContext.DECIMAL64; //double precision
         boolean is2D = CoordinateSequenceDimensionFilter.apply(polygon).is2D();
         GeometryFactory gf = polygon.getFactory();
-        org.poly2tri.geometry.polygon.Polygon poly = makePolygon(polygon.getExteriorRing());
+        org.poly2tri.geometry.polygon.Polygon poly = makePolygon(mathContext, polygon.getExteriorRing());
         // Add holes
         for(int idHole = 0; idHole < polygon.getNumInteriorRing(); idHole++) {
-            poly.addHole(makePolygon(polygon.getInteriorRingN(idHole)));
+            poly.addHole(makePolygon(mathContext, polygon.getInteriorRingN(idHole)));
         }
         // Do triangulation
         Poly2Tri.triangulate(poly);
