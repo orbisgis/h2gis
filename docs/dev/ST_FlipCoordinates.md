@@ -69,4 +69,4 @@ SELECT ST_FlipCoordinates('GEOMETRYCOLLECTION (
 ##### See also
 
 * [`ST_Reverse`](../ST_Reverse)
-* <a href="https://github.com/irstv/H2GIS/blob/d6e7e2e6782322777208c5f62c2fe91d3d4d8186/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_FlipCoordinates.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_FlipCoordinates.java" target="_blank">Source code</a>

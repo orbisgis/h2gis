@@ -48,7 +48,7 @@ On the left a screenshot from the [OpenStreetMap](http://www.openstreetmap.org) 
 ##### See also
 
 * [`OSMRead`](../OSMRead)
-* <a href="https://github.com/irstv/H2GIS/blob/e2bc440c042d38d422a95d0a5a969f1939bbe13f/h2drivers/src/main/java/org/h2gis/drivers/osm/ST_OSMDownloader.java" target="_blank">Source code</a>
+* <a href="https://github.com/irstv/H2GIS/blob/master/h2drivers/src/main/java/org/h2gis/drivers/osm/ST_OSMDownloader.java" target="_blank">Source code</a>
 
 [wiki]: http://wiki.openstreetmap.org/wiki/OSM_XML
 
