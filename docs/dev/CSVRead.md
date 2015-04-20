@@ -37,8 +37,8 @@ file is interpreted as the column names.
 
 ### Examples
 
+##### Separated file
 {% highlight mysql %}
--- A ,-separated file:
 CREATE TABLE AREA AS
     SELECT * FROM CSVRead('/home/user/area.csv') LIMIT 2;
 -- Answer:
@@ -48,9 +48,10 @@ CREATE TABLE AREA AS
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
 {% endhighlight %}
 
+##### Separated file containing the column names on the first line
 {% highlight mysql %}
--- A ;-separated file containing the column names on the first line:
-CREATE TABLE AREA2 AS
+
+CREATE TABLE AREA AS
     SELECT * FROM CSVRead('/home/user/area.csv',
                           NULL,
                           'fieldSeparator=;') LIMIT 2;
@@ -61,9 +62,10 @@ CREATE TABLE AREA2 AS
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |      2 |
 {% endhighlight %}
 
+##### Separated file with no column names on the first line
+
 {% highlight mysql %}
--- A ;-separated file with no column names on the first line:
-CREATE TABLE AREA2 AS
+CREATE TABLE AREA AS
     SELECT * FROM CSVRead('/home/user/area.csv',
                           'COLUMN1; COLUMN2',
                           'fieldSeparator=;') LIMIT 2;
@@ -73,6 +75,33 @@ CREATE TABLE AREA2 AS
 -- | POLYGON((-10 109, 90 9, -10 9, -10 109)) |       1 |
 -- | POLYGON((90 109, 190 9, 90 9,  90 109))  |       2 |
 {% endhighlight %}
+
+
+##### Import a csv file (here `centroid.csv`) and create a geometric table using coordinates columns (here `coord_x` and `coord_y`)
+
+{% highlight mysql %}
+-- centroid.csv
+| id | coord_x | coord_y |
+|----|---------|---------|
+| 1  |    2    |    3    |
+| 2  |    4    |    5    |
+| 3  |    6    |    7    |
+
+CREATE TABLE POINTS(ID INT PRIMARY KEY,
+                    THE_GEOM GEOMETRY) AS
+        SELECT ST_MakePoint(coord_x, coord_y) THE_GEOM, id
+        FROM CSVREAD('/home/user/centroid.csv');
+
+SELECT * FROM POINTS;
+-- Answer:
+| ID |  THE_GEOM  |
+|----|------------|
+| 1  | POINT(2 3) |
+| 2  | POINT(4 5) |
+| 3  | POINT(6 7) |
+{% endhighlight %}
+
+
 
 ##### See also
 
