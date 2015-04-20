@@ -39,7 +39,7 @@ file is interpreted as the column names.
 
 ##### Separated file
 {% highlight mysql %}
-CREATE TABLE ARE AS
+CREATE TABLE AREA AS
     SELECT * FROM CSVRead('/home/user/area.csv') LIMIT 2;
 -- Answer:
 -- |                 THE_GEOM                 |   ID   |
