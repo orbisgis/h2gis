@@ -5,7 +5,7 @@ category: geom2D/distance-functions
 is_function: true
 description: Returns the 2-dimensional longest <code>LINESTRING</code> between the points of two geometries
 prev_section: ST_LocateAlong
-next_section: ST_ProjectPoint
+next_section: ST_MaxDistance
 permalink: /docs/dev/ST_LongestLine/
 ---
 
