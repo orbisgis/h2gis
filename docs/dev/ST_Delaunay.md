@@ -12,9 +12,9 @@ permalink: /docs/dev/ST_Delaunay/
 ### Signature
 
 {% highlight mysql %}
-GEOMETRY ST_DELAUNAY(GEOMETRY geom)
-GEOMETRY ST_DELAUNAY(GEOMETRY geom, INTEGER flag)
-GEOMETRY ST_DELAUNAY(GEOMETRY geom, INTEGER flag, DOUBLE quality)
+GEOMETRY ST_Delaunay(GEOMETRY geom)
+GEOMETRY ST_Delaunay(GEOMETRY geom, INTEGER flag)
+GEOMETRY ST_Delaunay(GEOMETRY geom, INTEGER flag, DOUBLE quality)
 {% endhighlight %}
 
 ### Description
@@ -35,9 +35,9 @@ The last argument can be set to improve the `quality` of the triangulation. The 
 
 ##### 1rst signature
 {% highlight mysql %}
-SELECT ST_DELAUNAY('MULTIPOINT ((1 1), (0 4), (3 2), (3 7), (4 5), 
-                                (5 2), (7 1), (7 6), (8 4), (5 8), 
-                                (1 8), (4 0))');
+SELECT ST_Delaunay('MULTIPOINT((1 1), (0 4), (3 2), (3 7), (4 5),
+                               (5 2), (7 1), (7 6), (8 4), (5 8),
+                               (1 8), (4 0))');
 -- Answer: 
 MULTIPOLYGON (((1 8, 0 4, 3 7, 1 8)), ((1 8, 3 7, 5 8, 1 8)),
 	      ((5 8, 3 7, 4 5, 5 8)), ((5 8, 4 5, 7 6, 5 8)),
@@ -52,9 +52,9 @@ MULTIPOLYGON (((1 8, 0 4, 3 7, 1 8)), ((1 8, 3 7, 5 8, 1 8)),
 
 ##### 2nd signature with `flag` parameter
 {% highlight mysql %}
-SELECT ST_DELAUNAY('MULTIPOINT ((1 1), (0 4), (3 2), (3 7), (4 5), 
-                                (5 2), (7 1), (7 6), (8 4), (5 8), 
-                                (1 8), (4 0))'
+SELECT ST_Delaunay('MULTIPOINT((1 1), (0 4), (3 2), (3 7), (4 5),
+                               (5 2), (7 1), (7 6), (8 4), (5 8),
+                               (1 8), (4 0))'
 		    ,1);
 -- Answer: 
 MULTILINESTRING ((7 6, 8 4), (5 8, 7 6), (1 8, 5 8), (0 4, 1 8), 
@@ -70,19 +70,18 @@ MULTILINESTRING ((7 6, 8 4), (5 8, 7 6), (1 8, 5 8), (0 4, 1 8),
 
 ##### 3rd signature with `flag` and `quality` parameters
 {% highlight mysql %}
-SELECT ST_DELAUNAY('MULTIPOINT ((1 1), (0 4), (3 2), (3 7), (4 5), 
-                                (5 2), (7 1), (7 6), (8 4), (5 8), 
-                                (1 8), (4 0))'
+SELECT ST_Delaunay('MULTIPOINT((1 1), (0 4), (3 2), (3 7), (4 5),
+                               (5 2), (7 1), (7 6), (8 4), (5 8),
+                               (1 8), (4 0))'
 		    , 1, 0.5);
 -- Answer: 
-MULTIPOLYGON (((0 4, 3 2, 1 1, 0 4)), ((0 4, 4 5, 3 2, 0 4)), 
-	      ((0 4, 3 7, 1 8, 0 4)), ((1 1, 3 2, 4 0, 1 1)),
-	      ((3 2, 5 2, 4 0, 3 2)), ((0 4, 4 5, 3 7, 0 4)),
-	      ((3 2, 5 2, 4 5, 3 2)), ((5 2, 8 4, 7 1, 5 2)),
-	      ((4 5, 3 7, 5 8, 4 5)), ((3 8, 3 7, 5 8, 3 8)),
-	      ((4 0, 5 2, 7 1, 4 0)), ((8 4, 4 5, 5 2, 8 4)),
-	      ((4 5, 7 6, 5 8, 4 5)), ((8 4, 4 5, 7 6, 8 4)),
-	      ((3 8, 3 7, 1 8, 3 8)))
+MULTILINESTRING ((0 4, 1 1), (0 4, 1 8), (0 4, 3 2), (1 1, 3 2), 
+		 (0 4, 3 7), (0 4, 4 5), (1 8, 3 7), (1 1, 4 0),
+		 (3 2, 4 0), (3 2, 4 5), (3 2, 5 2), (3 7, 4 5),
+		 (4 0, 5 2), (4 5, 5 2), (4 5, 8 4), (4 5, 5 8),
+		 (3 7, 5 8), (3 8, 5 8), (4 0, 7 1), (5 2, 7 1),
+		 (4 5, 7 6), (5 2, 8 4), (5 8, 7 6), (7 1, 8 4),
+		 (7 6, 8 4), (3 7, 3 8), (1 8, 3 8))
 {% endhighlight %}
 
 <img class="displayed" src="../ST_Delaunay_3.png"/>
