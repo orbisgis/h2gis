@@ -25,30 +25,12 @@
 
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
-import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
-import org.h2gis.utilities.jts_utils.CoordinateUtils;
 import org.h2gis.utilities.jts_utils.tesselate.EarClipper;
-import org.poly2tri.Poly2Tri;
-import org.poly2tri.geometry.polygon.PolygonPoint;
-import org.poly2tri.geometry.primitives.Point;
-import org.poly2tri.triangulation.TriangulationPoint;
-import org.poly2tri.triangulation.TriangulationProcess;
-import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
-import org.poly2tri.triangulation.delaunay.sweep.DTSweep;
-import org.poly2tri.triangulation.delaunay.sweep.DTSweepContext;
-
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Tessellate a set of Polygon with adaptive triangles.
@@ -69,47 +51,12 @@ public class ST_Tessellate extends DeterministicScalarFunction {
         return "tessellate";
     }
 
-    private static double r(MathContext mathContext,double v) {
-        return new BigDecimal(v).round(mathContext).doubleValue();
-    }
-
-    private static org.poly2tri.geometry.polygon.Polygon makePolygon(MathContext m, LineString lineString) {
-        PolygonPoint[] points = new PolygonPoint[lineString.getNumPoints() - 1];
-        for(int idPoint=0; idPoint < points.length; idPoint++) {
-            Coordinate point = lineString.getCoordinateN(idPoint);
-            points[idPoint] = new PolygonPoint(r(m, point.x), r(m, point.y), Double.isNaN(point.z) ? 0 : r(m ,point.z));
-        }
-        return new org.poly2tri.geometry.polygon.Polygon(points);
-    }
-
-    private static Coordinate toJts(boolean is2d, Point pt) {
-        if(is2d) {
-            return new Coordinate(pt.getX(), pt.getY());
-        } else {
-            return new Coordinate(pt.getX(), pt.getY(), pt.getZ());
-        }
-    }
-
     private static MultiPolygon tessellatePolygon(Polygon polygon) {
-        MathContext mathContext = MathContext.DECIMAL64; //double precision
-        boolean is2D = CoordinateSequenceDimensionFilter.apply(polygon).is2D();
-        GeometryFactory gf = polygon.getFactory();
-        org.poly2tri.geometry.polygon.Polygon poly = makePolygon(mathContext, polygon.getExteriorRing());
-        // Add holes
-        for(int idHole = 0; idHole < polygon.getNumInteriorRing(); idHole++) {
-            poly.addHole(makePolygon(mathContext, polygon.getInteriorRingN(idHole)));
-        }
+        DelaunayData delaunayData = new DelaunayData();
+        delaunayData.put(polygon, DelaunayData.MODE.TESSELLATION);
         // Do triangulation
-        Poly2Tri.triangulate(poly);
-        List<DelaunayTriangle> delaunayTriangle = poly.getTriangles();
-        // Convert into multi polygon
-        Polygon[] polygons = new Polygon[delaunayTriangle.size()];
-        for(int idTriangle=0; idTriangle < polygons.length; idTriangle++) {
-            TriangulationPoint[] pts = delaunayTriangle.get(idTriangle).points;
-            polygons[idTriangle] = gf.createPolygon(new Coordinate[]{toJts(is2D, pts[0]),toJts(is2D, pts[1]),
-                    toJts(is2D, pts[2]), toJts(is2D, pts[0])});
-        }
-        return gf.createMultiPolygon(polygons);
+        delaunayData.triangulate();
+        return delaunayData.getTriangles();
     }
 
     private static MultiPolygon tessellatePolygonEar(Polygon polygon) {

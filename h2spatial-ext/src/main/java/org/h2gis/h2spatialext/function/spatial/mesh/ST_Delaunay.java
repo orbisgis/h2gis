@@ -23,17 +23,11 @@
  */
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
-import com.vividsolutions.jts.geom.*;
-
 import java.sql.SQLException;
-import java.util.Iterator;
-import java.util.List;
 
-import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
-import com.vividsolutions.jts.triangulate.quadedge.QuadEdge;
-import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 import org.jdelaunay.delaunay.ConstrainedMesh;
 import org.jdelaunay.delaunay.error.DelaunayError;
 import org.jdelaunay.delaunay.evaluator.TriangleQuality;
@@ -101,40 +95,11 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      */
     public static GeometryCollection createDT(Geometry geometry,  int flag,double qualityRefinement) throws SQLException, DelaunayError {
         if (geometry != null) {
-            if(qualityRefinement >= 0) {
-                if (flag == 0) {
-                    return DelaunayTools.toMultiPolygon(buildDelaunay(geometry, qualityRefinement).getTriangleList());
-                } else if (flag == 1) {
-                    return DelaunayTools.toMultiLineString(buildDelaunay(geometry, qualityRefinement).getEdges());
-                } else {
-                    throw new SQLException("Only flag 0 or 1 is supported.");
-                }
-            } else {
-                DelaunayTriangulationBuilder delaunayTriangulationBuilder = new DelaunayTriangulationBuilder();
-                delaunayTriangulationBuilder.setSites(geometry);
-                switch (flag) {
-                    case 1:
-                        return (GeometryCollection)delaunayTriangulationBuilder.getEdges(geometry.getFactory());
-                    default:
-                        return getTriangles(geometry.getFactory(), delaunayTriangulationBuilder);
-                }
-            }
+
         }
         return null;
     }
 
-    private static GeometryCollection getTriangles(GeometryFactory geomFact,
-                                        DelaunayTriangulationBuilder delaunayTriangulationBuilder) {
-        QuadEdgeSubdivision subdiv = delaunayTriangulationBuilder.getSubdivision();
-        List triPtsList = subdiv.getTriangleCoordinates(false);
-        Polygon[] tris = new Polygon[triPtsList.size()];
-        int i = 0;
-        for (Object aTriPtsList : triPtsList) {
-            Coordinate[] triPt = (Coordinate[]) aTriPtsList;
-            tris[i++] = geomFact.createPolygon(geomFact.createLinearRing(triPt), null);
-        }
-        return geomFact.createMultiPolygon(tris);
-    }
 
     /**
      * Compute a delaunay triangulation

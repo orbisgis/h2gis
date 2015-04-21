@@ -16,33 +16,81 @@
  */
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
-import com.vividsolutions.jts.geom.*;
-
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.vividsolutions.jts.geom.*;
+import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
 import org.jdelaunay.delaunay.error.DelaunayError;
-import org.jdelaunay.delaunay.geometries.DEdge;
-import org.jdelaunay.delaunay.geometries.DPoint;
+import org.poly2tri.Poly2Tri;
+import org.poly2tri.geometry.polygon.PolygonPoint;
+import org.poly2tri.triangulation.Triangulatable;
+import org.poly2tri.triangulation.TriangulationAlgorithm;
+import org.poly2tri.triangulation.TriangulationPoint;
+import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
+import org.poly2tri.triangulation.delaunay.sweep.DTSweepContext;
+import org.poly2tri.triangulation.point.TPoint;
+import org.poly2tri.triangulation.sets.ConstrainedPointSet;
+import org.poly2tri.triangulation.sets.PointSet;
 
 /**
  * This class is used to collect all data used to compute a mesh based on a
  * Delaunay triangulation
  *
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class DelaunayData {
+    public enum MODE {DELAUNAY, CONSTRAINED, TESSELLATION}
+    private boolean isInput2D;
+    private GeometryFactory gf;
+    private boolean isMixedDimension;
+    private int dimension;
+    private Triangulatable convertedInput = null;
+    // Precision
+    private MathContext mathContext = MathContext.DECIMAL64;
 
-    private List<DPoint> delaunayPoints = null;
-    private ArrayList<DEdge> delaunayEdges = null;
 
     /**
      * Create a mesh data structure to collect points and edges that will be
      * used by the Delaunay Triangulation
      */
     public DelaunayData() {
-        this.delaunayPoints = new ArrayList<DPoint>();
-        this.delaunayEdges = new ArrayList<DEdge>();
     }
+
+
+    private double r(double v) {
+        return new BigDecimal(v).round(mathContext).doubleValue();
+    }
+
+    private org.poly2tri.geometry.polygon.Polygon makePolygon(LineString lineString) {
+        PolygonPoint[] points = new PolygonPoint[lineString.getNumPoints() - 1];
+        for(int idPoint=0; idPoint < points.length; idPoint++) {
+            Coordinate point = lineString.getCoordinateN(idPoint);
+            points[idPoint] = new PolygonPoint(r(point.x), r(point.y), Double.isNaN(point.z) ? 0 : r(point.z));
+        }
+        return new org.poly2tri.geometry.polygon.Polygon(points);
+    }
+
+    private org.poly2tri.geometry.polygon.Polygon makePolygon(Polygon polygon) {
+        org.poly2tri.geometry.polygon.Polygon poly = makePolygon(polygon.getExteriorRing());
+        // Add holes
+        for(int idHole = 0; idHole < polygon.getNumInteriorRing(); idHole++) {
+            poly.addHole(makePolygon(polygon.getInteriorRingN(idHole)));
+        }
+        return poly;
+    }
+
+    private static Coordinate toJts(boolean is2d, org.poly2tri.geometry.primitives.Point pt) {
+        if(is2d) {
+            return new Coordinate(pt.getX(), pt.getY());
+        } else {
+            return new Coordinate(pt.getX(), pt.getY(), pt.getZ());
+        }
+    }
+
 
     /**
      * Put a geometry into the data array. Set true to populate the list of
@@ -50,143 +98,160 @@ public class DelaunayData {
      * false to populate only the list of points. Note the z-value is forced to
      * O when it's equal to NaN.
      *
-     * @param geom
-     * @param isConstrained
+     * @param geom Geometry
+     * @param mode Delaunay mode
      * @throws DelaunayError
      */
-    public void put(Geometry geom, boolean isConstrained) throws DelaunayError {
-        if (isConstrained) {
-            if (geom instanceof Point) {
-                addPoint((Point) geom);
-            } else if (geom instanceof MultiPoint) {
-                addMultiPoint((MultiPoint) geom);
-            } else if (geom instanceof GeometryCollection) {
-                addGeometryCollection((GeometryCollection) geom);
+    public void put(Geometry geom, MODE mode) throws IllegalArgumentException {
+        CoordinateSequenceDimensionFilter info = CoordinateSequenceDimensionFilter.apply(geom);
+        gf = geom.getFactory();
+        isInput2D = info.is2D();
+        isMixedDimension = info.isMixed();
+        dimension = info.getDimension();
+        convertedInput = null;
+        if (mode == MODE.DELAUNAY || geom instanceof Point || geom instanceof MultiPoint) {
+            setCoordinates(geom);
+        } else {
+            if(mode == MODE.TESSELLATION) {
+                if(geom instanceof Polygon) {
+                    convertedInput = makePolygon((Polygon) geom);
+                } else {
+                    throw new IllegalArgumentException("Only Polygon are accepted for tessellation");
+                }
             } else {
+                // Constraint delaunay of segments
                 addGeometry(geom);
             }
-        } else {
-            addCoordinates(geom);
         }
     }
 
-    /**
-     * Put a geometry into the data array of points. If you want to build a
-     * constrained Delaunay triangulation, use the method {@code put(Geometry
-     * geom, boolean isConstrained)}. Note the z-value is forced to O when it's
-     * equal to NaN.
-     *
-     * @param geom
-     * @throws DelaunayError
-     */
-    public void put(Geometry geom) throws DelaunayError {
-        put(geom, false);
+    public void triangulate() {
+        Poly2Tri.triangulate(TriangulationAlgorithm.DTSweep, convertedInput);
     }
 
-    /**
-     * We add a point to the list of points used by the triangulation
-     *
-     * @param geom
-     * @throws DelaunayError
-     */
-    private void addPoint(Point geom) throws DelaunayError {
-        Coordinate pt = geom.getCoordinate();
-        double z = Double.isNaN(pt.z) ? 0 : pt.z;
-        delaunayPoints.add(new DPoint(pt.x, pt.y, z));
-    }
-
-    /**
-     * Add all points of a multiPoint to the list of points used by the
-     * triangulation.
-     *
-     * @param pts
-     * @throws DelaunayError
-     */
-    private void addMultiPoint(MultiPoint multiPoint) throws DelaunayError {
-        for (Coordinate coordinate : multiPoint.getCoordinates()) {
-            delaunayPoints.add(new DPoint(
-                    coordinate.x,
-                    coordinate.y,
-                    Double.isNaN(coordinate.z) ? 0 : coordinate.z));
+    public MultiPolygon getTriangles() {
+        List<DelaunayTriangle> delaunayTriangle = convertedInput.getTriangles();
+        // Convert into multi polygon
+        Polygon[] polygons = new Polygon[delaunayTriangle.size()];
+        for(int idTriangle=0; idTriangle < polygons.length; idTriangle++) {
+            TriangulationPoint[] pts = delaunayTriangle.get(idTriangle).points;
+            polygons[idTriangle] = gf.createPolygon(new Coordinate[]{toJts(isInput2D , pts[0]),toJts(isInput2D, pts[1]),
+                    toJts(isInput2D, pts[2]), toJts(isInput2D, pts[0])});
         }
+        return gf.createMultiPolygon(polygons);
     }
 
     /**
      * Add a geometry to the list of points and edges used by the triangulation.
-     * This method is used for Polygon and Lines
-     *
      * @param geom
      * @throws DelaunayError
      */
-    private void addGeometry(Geometry geom) throws DelaunayError {
-        if (geom.isValid()) {
-            //Special case when a geometrycollection contains point or multipoint
-            if(geom instanceof Point){
-                addPoint((Point) geom);                
-            } else if ( geom instanceof MultiPoint) {
-                addMultiPoint((MultiPoint) geom);
-            } else if(geom instanceof LineString) {
-                Coordinate[] coordinates = geom.getCoordinates();
-                Coordinate c1 = coordinates[0];
-                c1.z = Double.isNaN(c1.z) ? 0 : c1.z;
-                Coordinate c2;
-                for (int k = 1; k < coordinates.length; k++) {
-                    c2 = coordinates[k];
-                    c2.z = Double.isNaN(c2.z) ? 0 : c2.z;
-                    delaunayEdges.add(new DEdge(new DPoint(c1), new DPoint(c2)));
-                    c1 = c2;
+    private void addGeometry(Geometry geom) throws IllegalArgumentException {
+        if(!geom.isValid()) {
+            throw new IllegalArgumentException("Provided geometry is not valid !");
+        }
+        if(geom instanceof GeometryCollection) {
+            List<TriangulationPoint> pts = new ArrayList<TriangulationPoint>(geom.getNumPoints());
+            List<Integer> segments = null;
+            if(!isMixedDimension && dimension != 0) {
+                segments = new ArrayList<Integer>(pts.size());
+            }
+            PointHandler pointHandler = new PointHandler(this, pts);
+            LineStringHandler lineStringHandler = new LineStringHandler(this, pts, segments);
+            for(int geomId = 0; geomId < geom.getNumGeometries(); geomId++) {
+                addSimpleGeometry(geom.getGeometryN(geomId), pointHandler, lineStringHandler);
+            }
+            if(segments != null) {
+                int[] index = new int[segments.size()];
+                for(int i = 0; i < index.length; i++) {
+                    index[i] = segments.get(i);
                 }
-            } if (geom instanceof Polygon) {
-                Polygon polygon = (Polygon)geom;
-                addGeometry(polygon.getExteriorRing());
-                for(int holeIndex = 0; holeIndex < polygon.getNumInteriorRing(); holeIndex ++) {
-                    addGeometry(polygon.getInteriorRingN(holeIndex));
-                }
+                convertedInput = new ConstrainedPointSet(pts, index);
+            } else {
+                convertedInput = new PointSet(pts);
+            }
+        } else {
+            addGeometry(geom.getFactory().createGeometryCollection(new Geometry[]{geom}));
+        }
+    }
+
+    private void addSimpleGeometry(Geometry geom, PointHandler pointHandler, LineStringHandler lineStringHandler) throws IllegalArgumentException {
+        if(geom instanceof Point) {
+            geom.apply(pointHandler);
+        } else if(geom instanceof LineString) {
+            lineStringHandler.reset();
+            geom.apply(lineStringHandler);
+        } else if(geom instanceof Polygon) {
+            Polygon polygon = (Polygon) geom;
+            lineStringHandler.reset();
+            polygon.getExteriorRing().apply(lineStringHandler);
+            for(int idHole = 0; idHole < polygon.getNumInteriorRing(); idHole++) {
+                lineStringHandler.reset();
+                polygon.getInteriorRingN(idHole).apply(lineStringHandler);
             }
         }
     }
-
-    /**
-     * Add a GeometryCollection to the list of points and edges used by the
-     * triangulation.
-     *
-     * @param geomcol
-     * @throws DelaunayError
-     */
-    private void addGeometryCollection(GeometryCollection geomcol) throws DelaunayError {
-        int num = geomcol.getNumGeometries();
-        for (int i = 0; i < num; i++) {
-            addGeometry(geomcol.getGeometryN(i));
-        }
-    }
-
     /**
      * Add all coordinates of the geometry to the list of points
      *
      * @param geom
      * @throws DelaunayError
      */
-    private void addCoordinates(Geometry geom) throws DelaunayError {
-        for (Coordinate coordinate : geom.getCoordinates()) {
-            delaunayPoints.add(new DPoint(coordinate));
+    private void setCoordinates(Geometry geom) throws IllegalArgumentException {
+        List<TriangulationPoint> pts = new ArrayList<TriangulationPoint>(geom.getNumPoints());
+        PointHandler pointHandler = new PointHandler(this, pts);
+        geom.apply(pointHandler);
+        convertedInput = new PointSet(pts);
+    }
+
+    private static class PointHandler implements CoordinateFilter {
+        private DelaunayData delaunayData;
+        private List<TriangulationPoint> pts;
+
+        public PointHandler(DelaunayData delaunayData, List<TriangulationPoint> pts) {
+            this.delaunayData = delaunayData;
+            this.pts = pts;
+        }
+
+        @Override
+        public void filter(Coordinate pt) {
+            pts.add(new TPoint(delaunayData.r(pt.x), delaunayData.r(pt.y),
+                    Double.isNaN(pt.z) ? 0 : delaunayData.r(pt.z)));
         }
     }
+    private static class LineStringHandler implements CoordinateFilter {
+        private DelaunayData delaunayData;
+        private List<TriangulationPoint> pts;
+        List<Integer> segments;
+        private int index = 0;
+        private Coordinate firstPt = null;
 
-    /**
-     * Gives the collection of edges
-     *
-     * @return
-     */
-    public ArrayList<DEdge> getDelaunayEdges() {
-        return delaunayEdges;
-    }
 
-    /**
-     * Gives the collection of points
-     *
-     * @return
-     */
-    public List<DPoint> getDelaunayPoints() {
-        return delaunayPoints;
+        public LineStringHandler(DelaunayData delaunayData, List<TriangulationPoint> pts, List<Integer> segments) {
+            this.delaunayData = delaunayData;
+            this.pts = pts;
+            this.segments = segments;
+        }
+
+        public void reset() {
+            index = 0;
+            firstPt = null;
+        }
+
+        @Override
+        public void filter(Coordinate pt) {
+            if(index > 0 && index % 2 == 0) {
+                // If new couple then start with same index
+                segments.add(index - 1);
+            }
+            segments.add(index);
+            if(!pt.equals(firstPt)) {
+                pts.add(new TPoint(delaunayData.r(pt.x), delaunayData.r(pt.y), Double.isNaN(pt.z) ? 0 : delaunayData.r(pt.z)));
+                if(index == 0) {
+                    firstPt = pt;
+                }
+                index++;
+            }
+        }
     }
 }
