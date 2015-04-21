@@ -26,14 +26,8 @@ package org.h2gis.h2spatialext.function.spatial.mesh;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collections;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
-import org.jdelaunay.delaunay.ConstrainedMesh;
 import org.jdelaunay.delaunay.error.DelaunayError;
-import org.jdelaunay.delaunay.evaluator.TriangleQuality;
-import org.jdelaunay.delaunay.geometries.DEdge;
 
 /**
  * Returns polygons or lines that represent a Delaunay triangulation constructed
@@ -99,10 +93,13 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      */
     public static GeometryCollection createCDT(Geometry geometry, int flag, double qualityRefinement) throws SQLException, DelaunayError {
         if (geometry != null) {
+            DelaunayData delaunayData = new DelaunayData();
+            delaunayData.put(geometry, DelaunayData.MODE.CONSTRAINED);
+            delaunayData.triangulate();
             if (flag == 0) {
-                return DelaunayTools.toMultiPolygon(buildDelaunay(geometry, qualityRefinement).getTriangleList());
+                return delaunayData.getTriangles();
             } else if (flag == 1) {
-                return DelaunayTools.toMultiLineString(buildDelaunay(geometry, qualityRefinement).getEdges());
+                return delaunayData.getTrianglesSides();
             } else {
                 throw new SQLException("Only flag 0 or 1 is supported.");
             }
@@ -110,37 +107,4 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
         return null;
     }
 
-    /**
-     * Compute a constrained delaunay triangulation
-     * @param geometry
-     * @return
-     * @throws DelaunayError 
-     */
-    private static ConstrainedMesh buildDelaunay(Geometry geometry, double qualityRefinement) throws DelaunayError, SQLException {
-        ConstrainedMesh mesh = new ConstrainedMesh();
-        mesh.setVerbose(true);
-        DelaunayData delaunayData = new DelaunayData();
-        delaunayData.put(geometry, true);
-        //We actually fill the mesh
-        ArrayList<DEdge> edges = delaunayData.getDelaunayEdges();
-        if (!edges.isEmpty()) {
-            //We have filled the input of our mesh. We can close our source.
-            mesh.setConstraintEdges(edges);
-            //If needed, we use the intersection algorithm
-            mesh.forceConstraintIntegrity();
-        } else {
-            mesh.setPoints(delaunayData.getDelaunayPoints());
-        }
-        //we process delaunay
-        mesh.processDelaunay();
-        if(qualityRefinement!=-1){
-            if(qualityRefinement>=0 && qualityRefinement<1){
-            mesh.refineMesh(qualityRefinement,new TriangleQuality());
-            }
-            else{
-                throw new SQLException("The quality value must be comprised between 0 and 1");
-            }
-        }
-        return mesh;
-    }
 }

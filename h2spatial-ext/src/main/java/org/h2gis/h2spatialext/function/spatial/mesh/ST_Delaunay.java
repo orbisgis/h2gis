@@ -95,34 +95,15 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      */
     public static GeometryCollection createDT(Geometry geometry,  int flag,double qualityRefinement) throws SQLException, DelaunayError {
         if (geometry != null) {
-
+            DelaunayData delaunayData = new DelaunayData();
+            delaunayData.put(geometry, DelaunayData.MODE.DELAUNAY);
+            delaunayData.triangulate();
+            if(flag == 0) {
+                return delaunayData.getTriangles();
+            } else {
+                return delaunayData.getTrianglesSides();
+            }
         }
         return null;
-    }
-
-
-    /**
-     * Compute a delaunay triangulation
-     *
-     * @param geometry
-     * @return
-     * @throws DelaunayError
-     */
-    private static ConstrainedMesh buildDelaunay(Geometry geometry, double qualityRefinement) throws DelaunayError, SQLException {
-        ConstrainedMesh mesh = new ConstrainedMesh();
-        mesh.setVerbose(true);
-        DelaunayData delaunayData = new DelaunayData();
-        delaunayData.put(geometry);
-        mesh.setPoints(delaunayData.getDelaunayPoints());
-        mesh.processDelaunay();
-        if(qualityRefinement!=-1){
-            if(qualityRefinement>=0 && qualityRefinement<1){
-            mesh.refineMesh(qualityRefinement,new TriangleQuality());
-            }
-            else{
-                throw new SQLException("The quality value must be comprised between 0 and 1");
-            }
-        }
-        return mesh;
     }
 }

@@ -18,8 +18,7 @@ package org.h2gis.h2spatialext.function.spatial.mesh;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 import com.vividsolutions.jts.geom.*;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
@@ -30,7 +29,6 @@ import org.poly2tri.triangulation.Triangulatable;
 import org.poly2tri.triangulation.TriangulationAlgorithm;
 import org.poly2tri.triangulation.TriangulationPoint;
 import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
-import org.poly2tri.triangulation.delaunay.sweep.DTSweepContext;
 import org.poly2tri.triangulation.point.TPoint;
 import org.poly2tri.triangulation.sets.ConstrainedPointSet;
 import org.poly2tri.triangulation.sets.PointSet;
@@ -139,6 +137,33 @@ public class DelaunayData {
                     toJts(isInput2D, pts[2]), toJts(isInput2D, pts[0])});
         }
         return gf.createMultiPolygon(polygons);
+    }
+
+    private void addSegment(Set<LineSegment> segmentHashMap, TriangulationPoint a, TriangulationPoint b) {
+        LineSegment lineSegment = new LineSegment(toJts(isInput2D, a), toJts(isInput2D, b));
+        lineSegment.normalize();
+        segmentHashMap.add(lineSegment);
+    }
+
+    /**
+     * @return Unique triangles edges
+     */
+    public MultiLineString getTrianglesSides() {
+        List<DelaunayTriangle> delaunayTriangle = convertedInput.getTriangles();
+        // Remove duplicates edges thanks to this hash map of normalized line segments
+        Set<LineSegment> segmentHashMap = new HashSet<LineSegment>(delaunayTriangle.size());
+        for(DelaunayTriangle triangle : delaunayTriangle) {
+            TriangulationPoint[] pts = triangle.points;
+            addSegment(segmentHashMap, pts[0], pts[1]);
+            addSegment(segmentHashMap, pts[1], pts[2]);
+            addSegment(segmentHashMap, pts[2], pts[0]);
+        }
+        LineString[] lineStrings = new LineString[segmentHashMap.size()];
+        int i = 0;
+        for(LineSegment lineSegment : segmentHashMap) {
+            lineStrings[i++] = lineSegment.toGeometry(gf);
+        }
+        return gf.createMultiLineString(lineStrings);
     }
 
     /**
