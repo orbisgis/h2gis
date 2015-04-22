@@ -109,7 +109,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>poly2tri-core</artifactId>
-            <version>0.1.1</version>
+            <version>0.2-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

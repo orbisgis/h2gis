@@ -191,8 +191,31 @@ public class DelaunayData {
                 for(int i = 0; i < index.length; i++) {
                     index[i] = segments.get(i);
                 }
-                convertedInput = new ConstrainedPointSet(pts, index);
+                ///////////////////////////////////////////////////
+                // Unify instance of points
+                Map<TriangulationPoint, Integer> hashPts = new HashMap<TriangulationPoint, Integer>(pts.size());
+                // Merge points together
+                int uniquePtIndex = 0;
+                List<TriangulationPoint> newPts = new ArrayList<TriangulationPoint>(pts.size());
+                for (TriangulationPoint pt : pts) {
+                    Integer firstIndexedPt = hashPts.get(pt);
+                    if (firstIndexedPt == null) {
+                        hashPts.put(pt, uniquePtIndex++);
+                        newPts.add(pt);
+                    }
+                }
+                // Update index with new index range
+                for(int segIndex = 0; segIndex < index.length; segIndex++) {
+                    index[segIndex] = hashPts.get(pts.get(index[segIndex]));
+                }
+                pts.clear();
+                convertedInput = new ConstrainedPointSet(newPts, index);
             } else {
+                // Unify instance of points
+                Set<TriangulationPoint> hashPts = new HashSet<TriangulationPoint>(pts);
+                pts.clear();
+                pts = new ArrayList<TriangulationPoint>(hashPts);
+                hashPts.clear();
                 convertedInput = new PointSet(pts);
             }
         } else {
@@ -247,7 +270,7 @@ public class DelaunayData {
     private static class LineStringHandler implements CoordinateFilter {
         private DelaunayData delaunayData;
         private List<TriangulationPoint> pts;
-        List<Integer> segments;
+        private List<Integer> segments;
         private int index = 0;
         private Coordinate firstPt = null;
 
@@ -259,13 +282,13 @@ public class DelaunayData {
         }
 
         public void reset() {
-            index = 0;
+            index = pts.size();
             firstPt = null;
         }
 
         @Override
         public void filter(Coordinate pt) {
-            if(index > 0 && index % 2 == 0) {
+            if(firstPt != null && index % 2 == 0) {
                 // If new couple then start with same index
                 segments.add(index - 1);
             }

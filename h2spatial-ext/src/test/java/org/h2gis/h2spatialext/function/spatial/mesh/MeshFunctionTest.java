@@ -160,7 +160,7 @@ public class MeshFunctionTest {
 
     @Test
     public void test_ST_ConstrainedDelaunayWithLines2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7), (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 0);");
+        ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay(ST_UNION('MULTILINESTRING ((2 7, 6 7), (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY), 0);");
         rs.next();
         assertGeometryEquals("MULTIPOLYGON (((3.2 4.6 0, 4.1 5 0, 4.1818181818181825 7 0, 3.2 4.6 0)), "
                 + "((2 7 0, 3.2 4.6 0, 4.1818181818181825 7 0, 2 7 0)), ((4.1818181818181825 7 0, 2 7 0, 5 9 0, 4.1818181818181825 7 0)), "
