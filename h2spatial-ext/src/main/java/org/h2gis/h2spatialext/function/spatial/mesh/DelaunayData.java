@@ -111,6 +111,14 @@ public class DelaunayData {
     public void put(Geometry geom, MODE mode) throws IllegalArgumentException {
         gf = geom.getFactory();
         convertedInput = null;
+        // Does not use instanceof here as we must not match for overload of GeometryCollection
+        if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
+            dimension = getMinDimension((GeometryCollection)geom);
+            isMixedDimension = geom.getDimension() != dimension;
+        } else {
+            dimension = geom.getDimension();
+            isMixedDimension = false;
+        }
         // Workaround for issue 105 "Poly2Tri does not make a valid convexHull for points and linestrings delaunay
         // https://code.google.com/p/poly2tri/issues/detail?id=105
         if(mode != MODE.TESSELLATION) {
@@ -118,7 +126,7 @@ public class DelaunayData {
             if(convexHull instanceof Polygon && convexHull.isValid()) {
                 // Does not use instanceof here as we must not match for overload of GeometryCollection
                 if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
-                    if(getMinDimension((GeometryCollection)geom) > 0) {
+                    if(dimension > 0) {
                         // Mixed geometry, try to unify sub-types
                         try {
                             geom = ST_ToMultiLine.createMultiLineString(geom).union();
@@ -140,8 +148,6 @@ public class DelaunayData {
         // end workaround
         CoordinateSequenceDimensionFilter info = CoordinateSequenceDimensionFilter.apply(geom);
         isInput2D = info.is2D();
-        isMixedDimension = info.isMixed();
-        dimension = info.getDimension();
         convertedInput = null;
         if (mode == MODE.DELAUNAY || geom instanceof Point || geom instanceof MultiPoint) {
             setCoordinates(geom);
