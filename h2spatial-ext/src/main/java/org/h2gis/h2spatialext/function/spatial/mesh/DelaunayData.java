@@ -19,10 +19,12 @@ package org.h2gis.h2spatialext.function.spatial.mesh;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.vividsolutions.jts.geom.*;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
 import org.jdelaunay.delaunay.error.DelaunayError;
 import org.poly2tri.Poly2Tri;
@@ -51,7 +53,6 @@ public class DelaunayData {
     private Triangulatable convertedInput = null;
     // Precision
     private MathContext mathContext = MathContext.DECIMAL64;
-
 
     /**
      * Create a mesh data structure to collect points and edges that will be
@@ -90,7 +91,13 @@ public class DelaunayData {
             return new Coordinate(pt.getX(), pt.getY(), pt.getZ());
         }
     }
-
+    private int getMinDimension(GeometryCollection geometries) {
+        int dimension = Dimension.FALSE;
+        for (int i = 0; i < geometries.getNumGeometries(); i++) {
+            dimension = Math.max(dimension, geometries.getGeometryN(i).getDimension());
+        }
+        return dimension;
+    }
     /**
      * Put a geometry into the data array. Set true to populate the list of
      * points and edges, needed for the ContrainedDelaunayTriangulation. Set
@@ -102,8 +109,36 @@ public class DelaunayData {
      * @throws DelaunayError
      */
     public void put(Geometry geom, MODE mode) throws IllegalArgumentException {
-        CoordinateSequenceDimensionFilter info = CoordinateSequenceDimensionFilter.apply(geom);
         gf = geom.getFactory();
+        convertedInput = null;
+        // Workaround for issue 105 "Poly2Tri does not make a valid convexHull for points and linestrings delaunay
+        // https://code.google.com/p/poly2tri/issues/detail?id=105
+        if(mode != MODE.TESSELLATION) {
+            Geometry convexHull = new FullConvexHull(geom).getConvexHull();
+            if(convexHull instanceof Polygon && convexHull.isValid()) {
+                // Does not use instanceof here as we must not match for overload of GeometryCollection
+                if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
+                    if(getMinDimension((GeometryCollection)geom) > 0) {
+                        // Mixed geometry, try to unify sub-types
+                        try {
+                            geom = ST_ToMultiLine.createMultiLineString(geom).union();
+                        } catch (SQLException ex) {
+                            throw new IllegalArgumentException(ex);
+                        }
+                    } else {
+                        geom = geom.union();
+                    }
+                    if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
+                        throw new IllegalArgumentException("Delaunay does not support mixed geometry type");
+                    }
+                }
+                geom = ((Polygon) convexHull).getExteriorRing().union(geom);
+            } else {
+                return;
+            }
+        }
+        // end workaround
+        CoordinateSequenceDimensionFilter info = CoordinateSequenceDimensionFilter.apply(geom);
         isInput2D = info.is2D();
         isMixedDimension = info.isMixed();
         dimension = info.getDimension();
@@ -125,19 +160,24 @@ public class DelaunayData {
     }
 
     public void triangulate() {
-        Poly2Tri.triangulate(TriangulationAlgorithm.DTSweep, convertedInput);
+        if(convertedInput != null) {
+            Poly2Tri.triangulate(TriangulationAlgorithm.DTSweep, convertedInput);
+        }
     }
 
     public MultiPolygon getTriangles() {
-        List<DelaunayTriangle> delaunayTriangle = convertedInput.getTriangles();
-        // Convert into multi polygon
-        Polygon[] polygons = new Polygon[delaunayTriangle.size()];
-        for(int idTriangle=0; idTriangle < polygons.length; idTriangle++) {
-            TriangulationPoint[] pts = delaunayTriangle.get(idTriangle).points;
-            polygons[idTriangle] = gf.createPolygon(new Coordinate[]{toJts(isInput2D , pts[0]),toJts(isInput2D, pts[1]),
-                    toJts(isInput2D, pts[2]), toJts(isInput2D, pts[0])});
+        if(convertedInput != null) {
+            List<DelaunayTriangle> delaunayTriangle = convertedInput.getTriangles();
+            // Convert into multi polygon
+            Polygon[] polygons = new Polygon[delaunayTriangle.size()];
+            for (int idTriangle = 0; idTriangle < polygons.length; idTriangle++) {
+                TriangulationPoint[] pts = delaunayTriangle.get(idTriangle).points;
+                polygons[idTriangle] = gf.createPolygon(new Coordinate[]{toJts(isInput2D, pts[0]), toJts(isInput2D, pts[1]), toJts(isInput2D, pts[2]), toJts(isInput2D, pts[0])});
+            }
+            return gf.createMultiPolygon(polygons);
+        } else {
+            return gf.createMultiPolygon(new Polygon[0]);
         }
-        return gf.createMultiPolygon(polygons);
     }
 
     private void addSegment(Set<LineSegment> segmentHashMap, TriangulationPoint a, TriangulationPoint b) {
