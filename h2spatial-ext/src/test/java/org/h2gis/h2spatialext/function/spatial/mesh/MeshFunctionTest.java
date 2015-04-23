@@ -73,7 +73,7 @@ public class MeshFunctionTest {
     public void test_ST_DelaunayWithPoints2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('MULTIPOINT ((0 0 1), (10 0 1), (10 10 1), (5 5 1))'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("MULTIPOLYGON (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))",  rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGON (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((10 10 1, 5 5 1, 10 0 1, 10 10 1)))",  rs.getBytes(1));
         rs.close();
     }
 
@@ -82,11 +82,7 @@ public class MeshFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('GEOMETRYCOLLECTION (POLYGON ((150 380 1, 110 230 1, 180 190 1, 230 300 1, 320 280 1, 320 380 1, 150 380 1)),"
                 + "  LINESTRING (70 330 1, 280 220 1))'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("MULTIPOLYGON (((230 300 1, 180 190 1, 280 220 1, 230 300 1)), ((230 300 1, 280 220 1," +
-                " 320 280 1, 230 300 1)), ((110 230 1, 180 190 1, 230 300 1, 110 230 1)), ((150 380 1, 70 330 1," +
-                " 110 230 1, 150 380 1)), ((230 300 1, 150 380 1, 110 230 1, 230 300 1)), ((150 380 1, 150 380 1," +
-                " 230 300 1, 150 380 1)), ((70 330 1, 150 380 1, 150 380 1, 70 330 1)), ((230 300 1, 320 280 1," +
-                " 320 380 1, 230 300 1)), ((150 380 1, 230 300 1, 320 380 1, 150 380 1)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGON (((230 300 1, 180 190 1, 280 220 1, 230 300 1)), ((230 300 1, 280 220 1, 320 280 1, 230 300 1)), ((110 230 1, 180 190 1, 230 300 1, 110 230 1)), ((150 380 1, 70 330 1, 110 230 1, 150 380 1)), ((230 300 1, 150 380 1, 110 230 1, 230 300 1)), ((230 300 1, 320 280 1, 320 380 1, 230 300 1)), ((150 380 1, 230 300 1, 320 380 1, 150 380 1)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -113,7 +109,7 @@ public class MeshFunctionTest {
     public void test_ST_DelaunayAsMultiLineString() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 1);");
         rs.next();
-        assertGeometryEquals("MULTILINESTRING ((1.1 9 1, 1.1 9 1), (5.1 1.1 1, 9.5 6.4 1), (1.1 3 1, 1.1 9 1), (1.1 9 1, 8.8 9.9 1), (1.1 9 1, 5 8 1), (1.1 3 1, 5 8 1), (5 8 1, 8.8 9.9 1), (8.8 9.9 1, 9.5 6.4 1), (1.1 3 1, 5.1 1.1 1), (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1))",rs.getBytes(1));
+        assertGeometryEquals("MULTILINESTRING ((5.1 1.1 1, 9.5 6.4 1), (1.1 3 1, 1.1 9 1), (1.1 9 1, 8.8 9.9 1), (1.1 9 1, 5 8 1), (1.1 3 1, 5 8 1), (5 8 1, 8.8 9.9 1), (8.8 9.9 1, 9.5 6.4 1), (1.1 3 1, 5.1 1.1 1), (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1))",rs.getBytes(1));
         rs.close();
     }
 
@@ -198,7 +194,7 @@ public class MeshFunctionTest {
     public void test_ST_ConstrainedDelaunayWithCollection1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('GEOMETRYCOLLECTION(POINT (0 0 1), POINT (10 0 1), POINT (10 10 1), POINT (5 5 1))'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("MULTIPOLYGON (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((5 5 1, 10 0 1, 10 10 1, 5 5 1)))", rs.getBytes(1));
+        assertGeometryEquals("MULTIPOLYGON (((5 5 1, 0 0 1, 10 0 1, 5 5 1)), ((10 10 1, 5 5 1, 10 0 1, 10 10 1)))", rs.getBytes(1));
         rs.close();
     }
 
@@ -285,8 +281,7 @@ public class MeshFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE(ST_UNION(ST_EXPAND('POINT(0 0)',5, 5),ST_EXPAND('POINT(15 0)',5, 5))) the_geom");
         try {
             assertTrue(rs.next());
-            assertGeometryEquals("MULTIPOLYGON (((-5 5, 5 -5, 5 5, -5 5)), ((-5 5, -5 -5, 5 -5, -5 5)), " +
-                    "((10 5, 20 -5, 20 5, 10 5)), ((10 5, 10 -5, 20 -5, 10 5)))", rs.getObject(1));
+            assertGeometryEquals("MULTIPOLYGON (((5 5, -5 5, 5 -5, 5 5)), ((-5 5, -5 -5, 5 -5, -5 5)), ((20 5, 10 5, 20 -5, 20 5)), ((10 5, 10 -5, 20 -5, 10 5)))", rs.getObject(1));
         } finally {
             rs.close();
         }

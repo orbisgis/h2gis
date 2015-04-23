@@ -16,9 +16,11 @@
  */
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import com.vividsolutions.jts.geom.*;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
@@ -88,7 +90,6 @@ public class DelaunayData {
             return new Coordinate(pt.getX(), pt.getY(), pt.getZ());
         }
     }
-
 
     /**
      * Put a geometry into the data array. Set true to populate the list of
@@ -176,13 +177,14 @@ public class DelaunayData {
             throw new IllegalArgumentException("Provided geometry is not valid !");
         }
         if(geom instanceof GeometryCollection) {
-            List<TriangulationPoint> pts = new ArrayList<TriangulationPoint>(geom.getNumPoints());
+            Map<TriangulationPoint, Integer> pts = new HashMap<TriangulationPoint, Integer>(geom.getNumPoints());
             List<Integer> segments = null;
+            AtomicInteger pointsCount = new AtomicInteger(0);
             if(!isMixedDimension && dimension != 0) {
                 segments = new ArrayList<Integer>(pts.size());
             }
-            PointHandler pointHandler = new PointHandler(this, pts);
-            LineStringHandler lineStringHandler = new LineStringHandler(this, pts, segments);
+            PointHandler pointHandler = new PointHandler(this, pts, pointsCount);
+            LineStringHandler lineStringHandler = new LineStringHandler(this, pts, pointsCount, segments);
             for(int geomId = 0; geomId < geom.getNumGeometries(); geomId++) {
                 addSimpleGeometry(geom.getGeometryN(geomId), pointHandler, lineStringHandler);
             }
@@ -191,32 +193,15 @@ public class DelaunayData {
                 for(int i = 0; i < index.length; i++) {
                     index[i] = segments.get(i);
                 }
-                ///////////////////////////////////////////////////
-                // Unify instance of points
-                Map<TriangulationPoint, Integer> hashPts = new HashMap<TriangulationPoint, Integer>(pts.size());
-                // Merge points together
-                int uniquePtIndex = 0;
-                List<TriangulationPoint> newPts = new ArrayList<TriangulationPoint>(pts.size());
-                for (TriangulationPoint pt : pts) {
-                    Integer firstIndexedPt = hashPts.get(pt);
-                    if (firstIndexedPt == null) {
-                        hashPts.put(pt, uniquePtIndex++);
-                        newPts.add(pt);
-                    }
-                }
-                // Update index with new index range
-                for(int segIndex = 0; segIndex < index.length; segIndex++) {
-                    index[segIndex] = hashPts.get(pts.get(index[segIndex]));
+                // Construct final points array by reversing key,value of hash map
+                TriangulationPoint[] ptsArray = new TriangulationPoint[pointsCount.get()];
+                for(Map.Entry<TriangulationPoint, Integer> entry : pts.entrySet()) {
+                    ptsArray[entry.getValue()] = entry.getKey();
                 }
                 pts.clear();
-                convertedInput = new ConstrainedPointSet(newPts, index);
+                convertedInput = new ConstrainedPointSet(Arrays.asList(ptsArray), index);
             } else {
-                // Unify instance of points
-                Set<TriangulationPoint> hashPts = new HashSet<TriangulationPoint>(pts);
-                pts.clear();
-                pts = new ArrayList<TriangulationPoint>(hashPts);
-                hashPts.clear();
-                convertedInput = new PointSet(pts);
+                convertedInput = new PointSet(pts.keySet());
             }
         } else {
             addGeometry(geom.getFactory().createGeometryCollection(new Geometry[]{geom}));
@@ -246,59 +231,66 @@ public class DelaunayData {
      * @throws DelaunayError
      */
     private void setCoordinates(Geometry geom) throws IllegalArgumentException {
-        List<TriangulationPoint> pts = new ArrayList<TriangulationPoint>(geom.getNumPoints());
-        PointHandler pointHandler = new PointHandler(this, pts);
+        Map<TriangulationPoint, Integer> pts = new HashMap<TriangulationPoint, Integer>(geom.getNumPoints() + 4);
+        AtomicInteger index = new AtomicInteger(0);
+        PointHandler pointHandler = new PointHandler(this, pts, index);
         geom.apply(pointHandler);
-        convertedInput = new PointSet(pts);
+        convertedInput = new PointSet(pts.keySet());
     }
 
     private static class PointHandler implements CoordinateFilter {
         private DelaunayData delaunayData;
-        private List<TriangulationPoint> pts;
+        private Map<TriangulationPoint, Integer> pts;
+        private AtomicInteger maxIndex;
 
-        public PointHandler(DelaunayData delaunayData, List<TriangulationPoint> pts) {
+        public PointHandler(DelaunayData delaunayData, Map<TriangulationPoint, Integer> pts, AtomicInteger maxIndex) {
             this.delaunayData = delaunayData;
             this.pts = pts;
+            this.maxIndex = maxIndex;
+        }
+
+        protected int addPt(Coordinate coordinate) {
+            TPoint pt = new TPoint(delaunayData.r(coordinate.x), delaunayData.r(coordinate.y),
+                    Double.isNaN(coordinate.z) ? 0 : delaunayData.r(coordinate.z));
+            Integer index = pts.get(pt);
+            if(index == null) {
+                index = maxIndex.getAndAdd(1);
+                pts.put(pt, index);
+            }
+            return index;
         }
 
         @Override
         public void filter(Coordinate pt) {
-            pts.add(new TPoint(delaunayData.r(pt.x), delaunayData.r(pt.y),
-                    Double.isNaN(pt.z) ? 0 : delaunayData.r(pt.z)));
+            addPt(pt);
         }
     }
-    private static class LineStringHandler implements CoordinateFilter {
-        private DelaunayData delaunayData;
-        private List<TriangulationPoint> pts;
+
+    private static class LineStringHandler extends PointHandler {
         private List<Integer> segments;
-        private int index = 0;
-        private Coordinate firstPt = null;
+        private int firstPtIndex = -1;
 
-
-        public LineStringHandler(DelaunayData delaunayData, List<TriangulationPoint> pts, List<Integer> segments) {
-            this.delaunayData = delaunayData;
-            this.pts = pts;
+        public LineStringHandler(DelaunayData delaunayData, Map<TriangulationPoint, Integer> pts,
+                                 AtomicInteger maxIndex, List<Integer> segments) {
+            super(delaunayData, pts, maxIndex);
             this.segments = segments;
         }
 
+        /**
+         * New line string
+         */
         public void reset() {
-            index = pts.size();
-            firstPt = null;
+            firstPtIndex = -1;
         }
 
         @Override
         public void filter(Coordinate pt) {
-            if(firstPt != null && index % 2 == 0) {
-                // If new couple then start with same index
-                segments.add(index - 1);
-            }
-            segments.add(index);
-            if(!pt.equals(firstPt)) {
-                pts.add(new TPoint(delaunayData.r(pt.x), delaunayData.r(pt.y), Double.isNaN(pt.z) ? 0 : delaunayData.r(pt.z)));
-                if(index == 0) {
-                    firstPt = pt;
-                }
-                index++;
+            if(firstPtIndex == -1) {
+                firstPtIndex = addPt(pt);
+            } else {
+                segments.add(firstPtIndex);
+                firstPtIndex = addPt(pt);
+                segments.add(firstPtIndex);
             }
         }
     }
