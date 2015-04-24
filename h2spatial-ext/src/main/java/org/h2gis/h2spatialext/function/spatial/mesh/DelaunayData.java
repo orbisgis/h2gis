@@ -16,7 +16,6 @@
  */
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.SQLException;
@@ -24,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.vividsolutions.jts.geom.*;
+import org.h2gis.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
 import org.jdelaunay.delaunay.error.DelaunayError;
@@ -134,13 +134,20 @@ public class DelaunayData {
                             throw new IllegalArgumentException(ex);
                         }
                     } else {
-                        geom = geom.union();
+                        ST_Accum accum = new ST_Accum();
+                        try {
+                            accum.add(geom);
+                            geom = accum.getResult();
+                        } catch (SQLException ex) {
+                            // Ignore
+                        }
                     }
                     if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
                         throw new IllegalArgumentException("Delaunay does not support mixed geometry type");
                     }
                 }
                 geom = ((Polygon) convexHull).getExteriorRing().union(geom);
+                dimension = 1; //Now its linestring dim
             } else {
                 return;
             }
