@@ -36,6 +36,8 @@ import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
 import org.poly2tri.triangulation.point.TPoint;
 import org.poly2tri.triangulation.sets.ConstrainedPointSet;
 import org.poly2tri.triangulation.sets.PointSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * This class is used to collect all data used to compute a mesh based on a
@@ -45,6 +47,7 @@ import org.poly2tri.triangulation.sets.PointSet;
  * @author Nicolas Fortin
  */
 public class DelaunayData {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DelaunayData.class);
     public enum MODE {DELAUNAY, CONSTRAINED, TESSELLATION}
     private boolean isInput2D;
     private GeometryFactory gf;
@@ -92,9 +95,12 @@ public class DelaunayData {
         }
     }
     private int getMinDimension(GeometryCollection geometries) {
-        int dimension = Dimension.FALSE;
+        int dimension = Integer.MAX_VALUE;
         for (int i = 0; i < geometries.getNumGeometries(); i++) {
-            dimension = Math.max(dimension, geometries.getGeometryN(i).getDimension());
+            dimension = Math.min(dimension, geometries.getGeometryN(i).getDimension());
+        }
+        if(dimension == Integer.MAX_VALUE) {
+            dimension = -1;
         }
         return dimension;
     }
@@ -133,20 +139,23 @@ public class DelaunayData {
                         } catch (SQLException ex) {
                             throw new IllegalArgumentException(ex);
                         }
-                    } else {
-                        ST_Accum accum = new ST_Accum();
-                        try {
-                            accum.add(geom);
-                            geom = accum.getResult();
-                        } catch (SQLException ex) {
-                            // Ignore
+                        if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
+                            throw new IllegalArgumentException("Delaunay does not support mixed geometry type");
                         }
                     }
-                    if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
-                        throw new IllegalArgumentException("Delaunay does not support mixed geometry type");
+                }
+                if(dimension > 0) {
+                    geom = ((Polygon) convexHull).getExteriorRing().union(geom);
+                } else {
+                    ST_Accum accum = new ST_Accum();
+                    try {
+                        accum.add(geom);
+                        accum.add(convexHull);
+                        geom = accum.getResult();
+                    } catch (SQLException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                     }
                 }
-                geom = ((Polygon) convexHull).getExteriorRing().union(geom);
                 dimension = 1; //Now its linestring dim
             } else {
                 return;
@@ -233,7 +242,7 @@ public class DelaunayData {
             Map<TriangulationPoint, Integer> pts = new HashMap<TriangulationPoint, Integer>(geom.getNumPoints());
             List<Integer> segments = null;
             AtomicInteger pointsCount = new AtomicInteger(0);
-            if(!isMixedDimension && dimension != 0) {
+            if(dimension > 0) {
                 segments = new ArrayList<Integer>(pts.size());
             }
             PointHandler pointHandler = new PointHandler(this, pts, pointsCount);
