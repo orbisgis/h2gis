@@ -27,7 +27,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.jdelaunay.delaunay.error.DelaunayError;
 
 /**
  * Returns polygons or lines that represent a Delaunay triangulation constructed
@@ -59,10 +58,9 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      *
      * @param geometry
      * @return a set of polygons (triangles)
-     * @throws SQLException,DelaunayError
-     * @throws org.jdelaunay.delaunay.error.DelaunayError
+     * @throws SQLException
      */
-    public static GeometryCollection createCDT(Geometry geometry) throws SQLException, DelaunayError {
+    public static GeometryCollection createCDT(Geometry geometry) throws SQLException {
         return createCDT(geometry, 0, -1);
     }
     
@@ -73,10 +71,9 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      * @param geometry
      * @param flag
      * @return a set of polygons (triangles)
-     * @throws SQLException, DelaunayError
-     * @throws org.jdelaunay.delaunay.error.DelaunayError
+     * @throws SQLException
      */
-    public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
+    public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException {
         return createCDT(geometry,  flag, -1);
     }
 
@@ -88,10 +85,9 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      * @param flag
      * @param qualityRefinement
      * @return Output is a COLLECTION of polygons (for flag=0) or a MULTILINESTRING (for flag=1)
-     * @throws SQLException, DelaunayError
-     * @throws org.jdelaunay.delaunay.error.DelaunayError
+     * @throws SQLException
      */
-    public static GeometryCollection createCDT(Geometry geometry, int flag, double qualityRefinement) throws SQLException, DelaunayError {
+    public static GeometryCollection createCDT(Geometry geometry, int flag, double qualityRefinement) throws SQLException {
         if (geometry != null) {
             DelaunayData delaunayData = new DelaunayData();
             delaunayData.put(geometry, DelaunayData.MODE.CONSTRAINED);

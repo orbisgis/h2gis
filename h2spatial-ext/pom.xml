@@ -67,11 +67,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.orbisgis</groupId>
-            <artifactId>jdelaunay</artifactId>
-            <version>${jdelaunay-version}</version>
-        </dependency>
-        <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts</artifactId>
             <version>${jts-version}</version>
@@ -109,7 +104,7 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>poly2tri-core</artifactId>
-            <version>0.2-SNAPSHOT</version>
+            <version>0.1.2</version>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

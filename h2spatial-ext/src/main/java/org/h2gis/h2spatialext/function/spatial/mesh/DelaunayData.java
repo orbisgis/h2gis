@@ -1,34 +1,55 @@
-/*
- * Copyright (C) 2013 IRSTV CNRS-FR-2488
+/**
+ * h2spatial is a library that brings spatial support to the H2 Java database.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * h2spatial is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * Copyright (C) 2007-2014 IRSTV (FR CNRS 2488)
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * h2patial is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * h2spatial is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * h2spatial. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geomgraph.Edge;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateFilter;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
-import org.jdelaunay.delaunay.error.DelaunayError;
 import org.poly2tri.Poly2Tri;
 import org.poly2tri.geometry.polygon.PolygonPoint;
 import org.poly2tri.triangulation.Triangulatable;
@@ -37,7 +58,6 @@ import org.poly2tri.triangulation.TriangulationPoint;
 import org.poly2tri.triangulation.delaunay.DelaunayTriangle;
 import org.poly2tri.triangulation.point.TPoint;
 import org.poly2tri.triangulation.sets.ConstrainedPointSet;
-import org.poly2tri.triangulation.sets.PointSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,8 +73,6 @@ public class DelaunayData {
     public enum MODE {DELAUNAY, CONSTRAINED, TESSELLATION}
     private boolean isInput2D;
     private GeometryFactory gf;
-    private boolean isMixedDimension;
-    private int dimension;
     private Triangulatable convertedInput = null;
     // Precision
     private MathContext mathContext = MathContext.DECIMAL64;
@@ -114,18 +132,17 @@ public class DelaunayData {
      *
      * @param geom Geometry
      * @param mode Delaunay mode
-     * @throws DelaunayError
+     * @throws IllegalArgumentException
      */
     public void put(Geometry geom, MODE mode) throws IllegalArgumentException {
         gf = geom.getFactory();
         convertedInput = null;
         // Does not use instanceof here as we must not match for overload of GeometryCollection
+        int dimension;
         if(geom.getClass().getName().equals(GeometryCollection.class.getName())) {
             dimension = getMinDimension((GeometryCollection)geom);
-            isMixedDimension = geom.getDimension() != dimension;
         } else {
             dimension = geom.getDimension();
-            isMixedDimension = false;
         }
         // Workaround for issue 105 "Poly2Tri does not make a valid convexHull for points and linestrings delaunay
         // https://code.google.com/p/poly2tri/issues/detail?id=105
@@ -158,7 +175,6 @@ public class DelaunayData {
                         LOGGER.error(ex.getLocalizedMessage(), ex);
                     }
                 }
-                dimension = 1; //Now its linestring dim
             } else {
                 return;
             }
@@ -229,8 +245,8 @@ public class DelaunayData {
 
     /**
      * Add a geometry to the list of points and edges used by the triangulation.
-     * @param geom
-     * @throws DelaunayError
+     * @param geom Any geometry
+     * @throws IllegalArgumentException
      */
     private void addGeometry(Geometry geom) throws IllegalArgumentException {
         if(!geom.isValid()) {

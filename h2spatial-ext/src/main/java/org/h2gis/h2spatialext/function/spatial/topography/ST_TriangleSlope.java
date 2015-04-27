@@ -26,9 +26,8 @@ package org.h2gis.h2spatialext.function.spatial.topography;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
-import org.jdelaunay.delaunay.error.DelaunayError;
-import org.jdelaunay.delaunay.geometries.DTriangle;
+
+import org.h2gis.utilities.jts_utils.TriMarkers;
 
 /**
 * This function is used to compute the slope direction of a triangle.
@@ -46,14 +45,12 @@ public class ST_TriangleSlope extends DeterministicScalarFunction{
     }
     
     /**
-     * Compute the slope of a triangle expressed in percents
-     * @param geometry
-     * @return
-     * @throws DelaunayError 
+     * @param geometry Triangle
+     * @return slope of a triangle expressed in percents
+     * @throws IllegalArgumentException Accept only triangles
      */
-    public static double computeSlope(Geometry geometry) throws DelaunayError {
-        DTriangle triangle = TINFeatureFactory.createDTriangle(geometry);
-        return triangle.getSlopeInPercent();
+    public static double computeSlope(Geometry geometry) throws IllegalArgumentException {
+        return TriMarkers.getSlopeInPercent(TriMarkers.getNormalVector(TINFeatureFactory.createTriangle(geometry)), TINFeatureFactory.EPSILON);
     }
 
 }
