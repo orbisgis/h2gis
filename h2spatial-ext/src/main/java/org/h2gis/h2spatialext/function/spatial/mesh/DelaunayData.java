@@ -22,7 +22,9 @@ import java.sql.SQLException;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geomgraph.Edge;
 import org.h2gis.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
@@ -165,19 +167,15 @@ public class DelaunayData {
         CoordinateSequenceDimensionFilter info = CoordinateSequenceDimensionFilter.apply(geom);
         isInput2D = info.is2D();
         convertedInput = null;
-        if (mode == MODE.DELAUNAY || geom instanceof Point || geom instanceof MultiPoint) {
-            setCoordinates(geom);
-        } else {
-            if(mode == MODE.TESSELLATION) {
-                if(geom instanceof Polygon) {
-                    convertedInput = makePolygon((Polygon) geom);
-                } else {
-                    throw new IllegalArgumentException("Only Polygon are accepted for tessellation");
-                }
+        if(mode == MODE.TESSELLATION) {
+            if(geom instanceof Polygon) {
+                convertedInput = makePolygon((Polygon) geom);
             } else {
-                // Constraint delaunay of segments
-                addGeometry(geom);
+                throw new IllegalArgumentException("Only Polygon are accepted for tessellation");
             }
+        } else {
+            // Constraint delaunay of segments
+            addGeometry(geom);
         }
     }
 
@@ -240,31 +238,24 @@ public class DelaunayData {
         }
         if(geom instanceof GeometryCollection) {
             Map<TriangulationPoint, Integer> pts = new HashMap<TriangulationPoint, Integer>(geom.getNumPoints());
-            List<Integer> segments = null;
+            List<Integer> segments = new ArrayList<Integer>(pts.size());
             AtomicInteger pointsCount = new AtomicInteger(0);
-            if(dimension > 0) {
-                segments = new ArrayList<Integer>(pts.size());
-            }
             PointHandler pointHandler = new PointHandler(this, pts, pointsCount);
             LineStringHandler lineStringHandler = new LineStringHandler(this, pts, pointsCount, segments);
             for(int geomId = 0; geomId < geom.getNumGeometries(); geomId++) {
                 addSimpleGeometry(geom.getGeometryN(geomId), pointHandler, lineStringHandler);
             }
-            if(segments != null) {
-                int[] index = new int[segments.size()];
-                for(int i = 0; i < index.length; i++) {
-                    index[i] = segments.get(i);
-                }
-                // Construct final points array by reversing key,value of hash map
-                TriangulationPoint[] ptsArray = new TriangulationPoint[pointsCount.get()];
-                for(Map.Entry<TriangulationPoint, Integer> entry : pts.entrySet()) {
-                    ptsArray[entry.getValue()] = entry.getKey();
-                }
-                pts.clear();
-                convertedInput = new ConstrainedPointSet(Arrays.asList(ptsArray), index);
-            } else {
-                convertedInput = new PointSet(pts.keySet());
+            int[] index = new int[segments.size()];
+            for(int i = 0; i < index.length; i++) {
+                index[i] = segments.get(i);
             }
+            // Construct final points array by reversing key,value of hash map
+            TriangulationPoint[] ptsArray = new TriangulationPoint[pointsCount.get()];
+            for(Map.Entry<TriangulationPoint, Integer> entry : pts.entrySet()) {
+                ptsArray[entry.getValue()] = entry.getKey();
+            }
+            pts.clear();
+            convertedInput = new ConstrainedPointSet(Arrays.asList(ptsArray), index);
         } else {
             addGeometry(geom.getFactory().createGeometryCollection(new Geometry[]{geom}));
         }
@@ -285,19 +276,6 @@ public class DelaunayData {
                 polygon.getInteriorRingN(idHole).apply(lineStringHandler);
             }
         }
-    }
-    /**
-     * Add all coordinates of the geometry to the list of points
-     *
-     * @param geom
-     * @throws DelaunayError
-     */
-    private void setCoordinates(Geometry geom) throws IllegalArgumentException {
-        Map<TriangulationPoint, Integer> pts = new HashMap<TriangulationPoint, Integer>(geom.getNumPoints() + 4);
-        AtomicInteger index = new AtomicInteger(0);
-        PointHandler pointHandler = new PointHandler(this, pts, index);
-        geom.apply(pointHandler);
-        convertedInput = new PointSet(pts.keySet());
     }
 
     private static class PointHandler implements CoordinateFilter {
