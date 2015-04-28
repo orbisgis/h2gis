@@ -215,6 +215,10 @@ public class TriMarkers extends Triangle {
      */
     public static double getSlopeInPercent(final Vector3D normal, final double epsilon) {
         Vector3D vector = getSteepestVector(normal, epsilon);
-        return vector.getZ() * 100;
+        if(Math.abs(vector.getZ()) < epsilon) {
+            return 0;
+        } else {
+            return (Math.abs(vector.getZ()) / new Vector2D(vector.getX(), vector.getY()).length()) * 100;
+        }
     }
 }

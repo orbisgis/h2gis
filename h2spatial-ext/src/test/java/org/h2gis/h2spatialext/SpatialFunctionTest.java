@@ -1194,7 +1194,19 @@ public class SpatialFunctionTest {
     public void test_ST_TriangleSlope2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'::GEOMETRY);");
         rs.next();
-        assertTrue((rs.getDouble(1) - 127.27) < 10E-2);
+        assertEquals(127.27, rs.getDouble(1), 10E-2);
+        rs.close();
+    }
+
+    /**
+     * 10% slope. 10m down after 100m distance.
+     * @throws Exception
+     */
+    @Test
+    public void test_ST_TriangleSlope3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);");
+        rs.next();
+        assertEquals(10, rs.getDouble(1), 10E-2);
         rs.close();
     }
 
@@ -1211,6 +1223,14 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 4 0 0, 2 3 9, 0 0 0))'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("LINESTRING(2 1 3, 2 0 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_TriangleDirection3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);");
+        rs.next();
+        assertGeometryBarelyEquals("LINESTRING(5 33.33 96.66, 5 100 90)", rs.getObject(1), 0.01);
         rs.close();
     }
 

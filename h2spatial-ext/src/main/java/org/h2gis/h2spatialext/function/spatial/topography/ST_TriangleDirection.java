@@ -66,7 +66,8 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
         // Convert geometry into triangle
         Triangle triangle = TINFeatureFactory.createTriangle(geometry);
         // Compute slope vector
-        Vector3D vector = TriMarkers.getSteepestVector(TriMarkers.getNormalVector(triangle), TINFeatureFactory.EPSILON);
+        Vector3D normal = TriMarkers.getNormalVector(triangle);
+        Vector3D vector = new Vector3D(normal.getX(), normal.getY(), 0).normalize();
         // Compute equidistant point of triangle's sides
         Coordinate inCenter = triangle.centroid();
         // Interpolate Z value
@@ -79,7 +80,8 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
             Coordinate intersection  = CoordinateUtils.vectorIntersection(inCenter, vector, side.p0,
                     new Vector3D(side.p0,side.p1).normalize());
             if(intersection != null && side.distance(intersection) < TINFeatureFactory.EPSILON) {
-                pointIntersection = intersection;
+                pointIntersection = new Coordinate(intersection.x, intersection.y,
+                        Triangle.interpolateZ(intersection, triangle.p0, triangle.p1, triangle.p2));
                 break;
             }
         }
