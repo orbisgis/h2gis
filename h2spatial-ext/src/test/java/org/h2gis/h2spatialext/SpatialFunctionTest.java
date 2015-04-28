@@ -1174,10 +1174,10 @@ public class SpatialFunctionTest {
                         "ST_TriangleAspect('POLYGON((0 0 1, 3 0 1, 0 3 0, 0 0 1))')," +
                         "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 3 3 1, 0 0 1))');");
         assertTrue(rs.next());
-        assertTrue(rs.getDouble(1) == 0);
-        assertTrue(rs.getDouble(2) == 90);
-        assertTrue(rs.getDouble(3) == 0);
-        assertTrue(rs.getDouble(4) == 135);
+        assertEquals(0, rs.getDouble(1), 1e-12);
+        assertEquals(90, rs.getDouble(2), 1e-12);
+        assertEquals(0, rs.getDouble(3), 1e-12);
+        assertEquals(135, rs.getDouble(4), 1e-12);
         assertFalse(rs.next());
         rs.close();
     }

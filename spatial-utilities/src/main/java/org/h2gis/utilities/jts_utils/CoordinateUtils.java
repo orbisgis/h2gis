@@ -25,8 +25,13 @@
 package org.h2gis.utilities.jts_utils;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.math.Vector2D;
 import com.vividsolutions.jts.math.Vector3D;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 /**
  * Useful methods for JTS {@link Coordinate}s.
@@ -128,9 +133,15 @@ public final class CoordinateUtils {
         Coordinate i = null;
         // Cramer's rule for compute intersection of two planes
         delta = v1.getX() * (-v2.getY()) - (-v1.getY()) * v2.getX();
-        if (delta > 0) {
+        if (delta != 0) {
             k = ((p2.x - p1.x) * (-v2.getY()) - (p2.y - p1.y) * (-v2.getX())) / delta;
-            i = new Coordinate(p1.x + k * v1.getX(), p1.y + k * v1.getY(), p1.z + k * v1.getZ());
+            // Fix precision problem with big decimal
+            i = new Coordinate(p1.x + k * v1.getX(), p1.y + k * v1.getY(),
+                    p1.z + BigDecimal.valueOf(k).multiply(BigDecimal.valueOf(v1.getZ()), MathContext.DECIMAL64).doubleValue());
+            if(new LineSegment(p1, new Coordinate(p1.x + v1.getX(), p1.y + v1.getY())).projectionFactor(i) < 0 ||
+                    new LineSegment(p2, new Coordinate(p2.x + v2.getX(), p2.y + v2.getY())).projectionFactor(i) < 0) {
+                return null;
+            }
         }
         return i;
     }

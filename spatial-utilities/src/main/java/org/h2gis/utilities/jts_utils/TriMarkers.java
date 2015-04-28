@@ -169,18 +169,17 @@ public class TriMarkers extends Triangle {
      * Get the normal vector to this triangle, of length 1.
      * @return vector normal to the triangle.
      */
-    public static Vector3D getNormalVector(Triangle t) {
-        Coordinate sum = new Coordinate(0, 0, 0);
-        sum.x += (t.p0.y - t.p1.y) * (t.p0.z + t.p1.z);
-        sum.y += (t.p0.z - t.p1.z) * (t.p0.x + t.p1.x);
-        sum.z += (t.p0.x - t.p1.x) * (t.p0.y + t.p1.y);
-        sum.x += (t.p1.y - t.p2.y) * (t.p1.z + t.p2.z);
-        sum.y += (t.p1.z - t.p2.z) * (t.p1.x + t.p2.x);
-        sum.z += (t.p1.x - t.p2.x) * (t.p1.y + t.p2.y);
-        sum.x /= 3;
-        sum.y /= 3;
-        sum.z /= 3;
-        return Vector3D.create(sum).normalize();
+    public static Vector3D getNormalVector(Triangle t) throws IllegalArgumentException {
+        if(Double.isNaN(t.p0.z) || Double.isNaN(t.p1.z) ||  Double.isNaN(t.p2.z)) {
+            throw new IllegalArgumentException("Z is required, cannot compute triangle normal of "+t);
+        }
+        double dx1 = t.p0.x - t.p1.x;
+        double dy1 = t.p0.y - t.p1.y;
+        double dz1 = t.p0.z - t.p1.z;
+        double dx2 = t.p1.x - t.p2.x;
+        double dy2 = t.p1.y - t.p2.y;
+        double dz2 = t.p1.z - t.p2.z;
+        return Vector3D.create(dy1*dz2 - dz1*dy2, dz1 * dx2 - dx1 * dz2, dx1 * dy2 - dy1 * dx2).normalize();
     }
 
     /**

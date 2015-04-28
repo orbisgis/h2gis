@@ -33,6 +33,8 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.CoordinateUtils;
 import org.h2gis.utilities.jts_utils.TriMarkers;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Vector;
 
 /**
@@ -66,7 +68,7 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
         // Compute slope vector
         Vector3D vector = TriMarkers.getSteepestVector(TriMarkers.getNormalVector(triangle), TINFeatureFactory.EPSILON);
         // Compute equidistant point of triangle's sides
-        Coordinate inCenter = triangle.inCentre();
+        Coordinate inCenter = triangle.centroid();
         // Interpolate Z value
         inCenter.setOrdinate(2, Triangle.interpolateZ(inCenter, triangle.p0, triangle.p1, triangle.p2));
         // Project slope from triangle center to triangle borders
@@ -76,7 +78,7 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
         for(LineSegment side : sides) {
             Coordinate intersection  = CoordinateUtils.vectorIntersection(inCenter, vector, side.p0,
                     new Vector3D(side.p0,side.p1).normalize());
-            if(CGAlgorithms.isOnLine(intersection, new Coordinate[]{side.p0, side.p1})) {
+            if(intersection != null && CGAlgorithms.isOnLine(intersection, new Coordinate[]{side.p0, side.p1})) {
                 pointIntersection = intersection;
                 break;
             }
