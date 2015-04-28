@@ -119,6 +119,14 @@ public final class CoordinateUtils {
         return false;
     }
 
+    private static BigDecimal lp(double value) {
+        return new BigDecimal(value, MathContext.DECIMAL128);
+    }
+
+    private static double rd(BigDecimal longLongDoubleValue) {
+        return longLongDoubleValue.round(MathContext.DECIMAL64).doubleValue();
+    }
+
     /**
      * Compute intersection point of two vectors
      * @param p1 Origin point
@@ -129,15 +137,16 @@ public final class CoordinateUtils {
      */
     public static Coordinate vectorIntersection(Coordinate p1, Vector3D v1, Coordinate p2, Vector3D v2) {
         double delta;
-        double k;
         Coordinate i = null;
         // Cramer's rule for compute intersection of two planes
         delta = v1.getX() * (-v2.getY()) - (-v1.getY()) * v2.getX();
         if (delta != 0) {
-            k = ((p2.x - p1.x) * (-v2.getY()) - (p2.y - p1.y) * (-v2.getX())) / delta;
+            BigDecimal k = lp((p2.x - p1.x) * (-v2.getY()) - (p2.y - p1.y) * (-v2.getX())).divide(lp(delta), MathContext.DECIMAL128);
             // Fix precision problem with big decimal
-            i = new Coordinate(p1.x + k * v1.getX(), p1.y + k * v1.getY(),
-                    p1.z + BigDecimal.valueOf(k).multiply(BigDecimal.valueOf(v1.getZ()), MathContext.DECIMAL64).doubleValue());
+            i = new Coordinate(rd(lp(p1.x).add(k.multiply(lp(v1.getX())))),
+                    rd(lp(p1.y).add(k.multiply(lp(v1.getY())))), rd(lp(p1.z).add(k.multiply(lp(v1.getZ())))));
+            Coordinate i2 = new Coordinate(p1.x + rd(k) * v1.getX(), p1.y + rd(k) * v1.getY(),
+                    p1.z + rd(k) * v1.getZ());
             if(new LineSegment(p1, new Coordinate(p1.x + v1.getX(), p1.y + v1.getY())).projectionFactor(i) < 0 ||
                     new LineSegment(p2, new Coordinate(p2.x + v2.getX(), p2.y + v2.getY())).projectionFactor(i) < 0) {
                 return null;

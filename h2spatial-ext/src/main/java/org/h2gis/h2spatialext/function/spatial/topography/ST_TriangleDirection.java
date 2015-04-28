@@ -78,7 +78,7 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
         for(LineSegment side : sides) {
             Coordinate intersection  = CoordinateUtils.vectorIntersection(inCenter, vector, side.p0,
                     new Vector3D(side.p0,side.p1).normalize());
-            if(intersection != null && CGAlgorithms.isOnLine(intersection, new Coordinate[]{side.p0, side.p1})) {
+            if(intersection != null && side.distance(intersection) < TINFeatureFactory.EPSILON) {
                 pointIntersection = intersection;
                 break;
             }
