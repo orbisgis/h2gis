@@ -85,7 +85,8 @@ public class GeometryAsserts {
             assertNull(valueObject);
         } else {
             ValueGeometry expected = ValueGeometry.get(expectedWKT, expectedSRID);
-            ValueGeometry actual = ValueGeometry.getFromGeometry(valueObject);
+            ValueGeometry actual = ValueGeometry.getFromGeometry(((Geometry)valueObject).norm());
+            expected = ValueGeometry.getFromGeometry(expected.getGeometry().norm());
             String moreInfo = "";
             if(!actual.equals(expected)) {
                 if(expected.getGeometry().equals(actual.getGeometry())) {
