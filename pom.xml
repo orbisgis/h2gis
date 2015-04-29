@@ -40,7 +40,6 @@
         <jts-version>1.13</jts-version>
         <sl4j-version>1.6.0</sl4j-version>
         <cts-version>1.3.3</cts-version>
-        <jdelaunay-version>0.5.3</jdelaunay-version>
         <junit-version>4.12</junit-version>
     </properties>
     <scm>
