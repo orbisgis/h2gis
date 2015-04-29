@@ -42,9 +42,6 @@ public class ST_Delaunay extends DeterministicScalarFunction {
     public ST_Delaunay() {
         addProperty(PROP_REMARKS, "Returns polygons that represent a Delaunay Triangulation from a geometry.\n"
                 + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1\n"
-                + "The last argument can be set to improve the quality of the triangulation. The value must be comprised"
-                + " between 0 and 1 \n"                
-                + "If value > 0.6 the triangle is of acceptable quality.\n"
          );
     }
 
@@ -73,21 +70,6 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static GeometryCollection createDT(Geometry geometry, int flag) throws SQLException {
-        return createDT(geometry,  flag, -1);
-    }
-   
-
-    /**
-     * Build a delaunay triangulation based on all coordinates of the geometry
-     *
-     * @param geometry
-     * @param flag
-     * @param qualityRefinement
-     * @return Output is a COLLECTION of polygons (for flag=0) or a
-     * MULTILINESTRING (for flag=1)
-     * @throws SQLException
-     */
-    public static GeometryCollection createDT(Geometry geometry,  int flag,double qualityRefinement) throws SQLException {
         if (geometry != null) {
             DelaunayData delaunayData = new DelaunayData();
             delaunayData.put(geometry, DelaunayData.MODE.DELAUNAY);

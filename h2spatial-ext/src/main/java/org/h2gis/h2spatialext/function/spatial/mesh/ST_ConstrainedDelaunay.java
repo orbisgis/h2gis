@@ -41,10 +41,7 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
     public ST_ConstrainedDelaunay() {
         addProperty(PROP_REMARKS, "Returns polygons that represent a Constrained Delaunay Triangulation from a geometry.\n"
                 + "Output is a COLLECTION of polygons, for flag=0 (default flag) or a MULTILINESTRING for flag=1.\n"
-                + "If the input geometry does not contain any lines, a delaunay triangulation will be computed."
-                + "The last argument can be set to improve the quality of the triangulation. The value must be comprised"
-                + " between 0 and 1.\n "
-                + "If value > 0.6 the triangle is of acceptable quality.\n");
+                + "If the input geometry does not contain any lines, a delaunay triangulation will be computed.\n");
     }
 
     @Override
@@ -61,7 +58,7 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static GeometryCollection createCDT(Geometry geometry) throws SQLException {
-        return createCDT(geometry, 0, -1);
+        return createCDT(geometry, 0);
     }
     
     /**
@@ -74,20 +71,6 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static GeometryCollection createCDT(Geometry geometry, int flag) throws SQLException {
-        return createCDT(geometry,  flag, -1);
-    }
-
-    /**
-     * Build a delaunay constrained delaunay triangulation based on a
-     * geometry (point, line, polygon)
-     *
-     * @param geometry
-     * @param flag
-     * @param qualityRefinement
-     * @return Output is a COLLECTION of polygons (for flag=0) or a MULTILINESTRING (for flag=1)
-     * @throws SQLException
-     */
-    public static GeometryCollection createCDT(Geometry geometry, int flag, double qualityRefinement) throws SQLException {
         if (geometry != null) {
             DelaunayData delaunayData = new DelaunayData();
             delaunayData.put(geometry, DelaunayData.MODE.CONSTRAINED);
@@ -102,5 +85,4 @@ public class ST_ConstrainedDelaunay extends DeterministicScalarFunction {
         }
         return null;
     }
-
 }
