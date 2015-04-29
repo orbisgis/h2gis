@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -115,7 +116,7 @@ public class MeshFunctionTest {
     public void test_ST_DelaunayAsMultiLineString() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Delaunay('POLYGON ((1.1 9 1, 1.1 3 1, 5.1 1.1 1, 9.5 6.4 1, 8.8 9.9 1, 5 8 1, 1.1 9 1))'::GEOMETRY, 1);");
         rs.next();
-        assertGeometryEquals("MULTILINESTRING ((5.1 1.1 1, 9.5 6.4 1), (1.1 3 1, 1.1 9 1), (1.1 9 1, 8.8 9.9 1), (1.1 9 1, 5 8 1), (1.1 3 1, 5 8 1), (5 8 1, 8.8 9.9 1), (8.8 9.9 1, 9.5 6.4 1), (1.1 3 1, 5.1 1.1 1), (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1))",rs.getBytes(1));
+        assertGeometryEquals("MULTILINESTRING ((5.1 1.1 1, 9.5 6.4 1), (1.1 3 1, 1.1 9 1), (1.1 9 1, 8.8 9.9 1), (1.1 3 1, 5 8 1), (1.1 9 1, 5 8 1), (5 8 1, 8.8 9.9 1), (8.8 9.9 1, 9.5 6.4 1), (1.1 3 1, 5.1 1.1 1), (5 8 1, 5.1 1.1 1), (5 8 1, 9.5 6.4 1))", rs.getBytes(1));
         rs.close();
     }
 
@@ -148,7 +149,7 @@ public class MeshFunctionTest {
     public void test_ST_ConstrainedDelaunayWithLines() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('MULTILINESTRING ((2 7, 6 7), (3.2 4.6, 5 9),(4.1 5, 6 5))'::GEOMETRY, 1);");
         rs.next();
-        assertGeometryEquals("MULTILINESTRING ((4.181818181818182 7, 6 7), (3.2 4.6, 4.1 5), (3.2 4.6, 6 5), (5 9, 6 7), (2 7, 3.2 4.6), (4.181818181818182 7, 5 9), (4.1 5, 6 5), (2 7, 5 9), (3.2 4.6, 4.181818181818182 7), (4.1 5, 4.181818181818182 7), (2 7, 4.181818181818182 7), (6 5, 6 7), (4.181818181818182 7, 6 5))", rs.getBytes(1));
+        assertGeometryEquals("MULTILINESTRING ((4.181818181818182 7, 6 7), (3.2 4.6, 4.1 5), (3.2 4.6, 6 5), (5 9, 6 7), (2 7, 3.2 4.6), (4.181818181818182 7, 5 9), (4.1 5, 6 5), (3.2 4.6, 4.181818181818182 7), (2 7, 5 9), (4.1 5, 4.181818181818182 7), (2 7, 4.181818181818182 7), (6 5, 6 7), (4.181818181818182 7, 6 5))", rs.getBytes(1));
         rs.close();
     }
 
@@ -164,7 +165,7 @@ public class MeshFunctionTest {
     public void test_ST_ConstrainedDelaunayWithLines3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRING (0 0 0, 10 0 0, 10 10 0, 0 10 0, 0 0 0)'::GEOMETRY, 1);");
         rs.next();
-        assertGeometryEquals("MULTILINESTRING ((0 10 0, 10 10 0), (0 0 0, 10 0 0), (0 10 0, 10 0 0), (10 0 0, 10 10 0), (0 0 0, 0 10 0))", rs.getBytes(1));
+        assertGeometryEquals("MULTILINESTRING ((0 10 0, 10 10 0), (0 0 0, 10 0 0), (0 10 0, 10 0 0), (0 0 0, 0 10 0), (10 0 0, 10 10 0))", rs.getBytes(1));
         rs.close();
     }
 
@@ -172,7 +173,7 @@ public class MeshFunctionTest {
     public void test_ST_ConstrainedDelaunayWithLines4() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_ConstrainedDelaunay('LINESTRING (0 0 1, 10 0 1, 10 10 1, 0 10 1, 0 0 1)'::GEOMETRY, 1);");
         rs.next();
-        assertGeometryEquals("MULTILINESTRING ((0 10 1, 10 10 1), (0 0 1, 10 0 1), (0 10 1, 10 0 1), (10 0 1, 10 10 1), (0 0 1, 0 10 1))", rs.getBytes(1));
+        assertGeometryEquals("MULTILINESTRING ((0 10 1, 10 10 1), (0 0 1, 10 0 1), (0 10 1, 10 0 1), (0 0 1, 0 10 1), (10 0 1, 10 10 1))", rs.getBytes(1));
         rs.close();
     }
 
