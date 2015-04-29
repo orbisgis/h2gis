@@ -25,6 +25,13 @@
 package org.h2gis.utilities.jts_utils;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.LineSegment;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.math.Vector2D;
+import com.vividsolutions.jts.math.Vector3D;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
 
 /**
  * Useful methods for JTS {@link Coordinate}s.
@@ -110,6 +117,31 @@ public final class CoordinateUtils {
             }
         }
         return false;
+    }
+
+    /**
+     * Compute intersection point of two vectors
+     * @param p1 Origin point
+     * @param v1 Direction from p1
+     * @param p2 Origin point 2
+     * @param v2 Direction of p2
+     * @return Null if vectors are collinear or if intersection is done behind one of origin point
+     */
+    public static Coordinate vectorIntersection(Coordinate p1, Vector3D v1, Coordinate p2, Vector3D v2) {
+        double delta;
+        Coordinate i = null;
+        // Cramer's rule for compute intersection of two planes
+        delta = v1.getX() * (-v2.getY()) - (-v1.getY()) * v2.getX();
+        if (delta != 0) {
+            double k = ((p2.x - p1.x) * (-v2.getY()) - (p2.y - p1.y) * (-v2.getX())) / delta;
+            // Fix precision problem with big decimal
+            i = new Coordinate(p1.x + k * v1.getX(), p1.y + k * v1.getY(), p1.z + k * v1.getZ());
+            if(new LineSegment(p1, new Coordinate(p1.x + v1.getX(), p1.y + v1.getY())).projectionFactor(i) < 0 ||
+                    new LineSegment(p2, new Coordinate(p2.x + v2.getX(), p2.y + v2.getY())).projectionFactor(i) < 0) {
+                return null;
+            }
+        }
+        return i;
     }
 
     /**

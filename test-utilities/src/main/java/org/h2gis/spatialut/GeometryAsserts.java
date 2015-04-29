@@ -85,8 +85,15 @@ public class GeometryAsserts {
             assertNull(valueObject);
         } else {
             ValueGeometry expected = ValueGeometry.get(expectedWKT, expectedSRID);
-            ValueGeometry actual = ValueGeometry.getFromGeometry(valueObject);
-            assertEquals("Expected:\n" + expected.getWKT() + "\nActual:\n" + actual.getWKT(), expected, actual);
+            ValueGeometry actual = ValueGeometry.getFromGeometry(((Geometry)valueObject).norm());
+            expected = ValueGeometry.getFromGeometry(expected.getGeometry().norm());
+            String moreInfo = "";
+            if(!actual.equals(expected)) {
+                if(expected.getGeometry().equals(actual.getGeometry())) {
+                    moreInfo = "\n But are topologically equals";
+                }
+            }
+            assertEquals("Expected:\n" + expected.getWKT() + "\nActual:\n" + actual.getWKT()+moreInfo, expected, actual);
         }
     }
     /**

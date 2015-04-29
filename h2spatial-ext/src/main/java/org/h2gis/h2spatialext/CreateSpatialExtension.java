@@ -59,6 +59,7 @@ import org.h2gis.h2spatialext.function.spatial.edit.*;
 import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
+import org.h2gis.h2spatialext.function.spatial.mesh.ST_Tessellate;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Voronoi;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
@@ -107,6 +108,8 @@ public class CreateSpatialExtension {
                 new ST_AsGeoJSON(),
                 new ST_AsKml(),
                 new ST_BoundingCircle(),
+                new ST_BoundingCircleCenter(),
+                new ST_MinimumBoundingCircle(),
                 new ST_ClosestCoordinate(),
                 new ST_ClosestPoint(),
                 new ST_CompactnessRatio(),
@@ -194,6 +197,7 @@ public class CreateSpatialExtension {
                 new ST_SunPosition(),
                 new ST_GeometryShadow(),
                 new ST_Voronoi(),
+                new ST_Tessellate(),
                 new ST_LineMerge(),
                 new ST_FlipCoordinates(),
                 new ST_MaxDistance(),

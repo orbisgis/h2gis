@@ -27,6 +27,8 @@ package org.h2gis.utilities.jts_utils;
 import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Triangle;
+import com.vividsolutions.jts.math.Vector2D;
+import com.vividsolutions.jts.math.Vector3D;
 
 /**
  * Used by TriangleContouring.
@@ -160,6 +162,63 @@ public class TriMarkers extends Triangle {
             return m2;
         } else {
             return m3;
+        }
+    }
+
+    /**
+     * Get the normal vector to this triangle, of length 1.
+     * @return vector normal to the triangle.
+     */
+    public static Vector3D getNormalVector(Triangle t) throws IllegalArgumentException {
+        if(Double.isNaN(t.p0.z) || Double.isNaN(t.p1.z) ||  Double.isNaN(t.p2.z)) {
+            throw new IllegalArgumentException("Z is required, cannot compute triangle normal of "+t);
+        }
+        double dx1 = t.p0.x - t.p1.x;
+        double dy1 = t.p0.y - t.p1.y;
+        double dz1 = t.p0.z - t.p1.z;
+        double dx2 = t.p1.x - t.p2.x;
+        double dy2 = t.p1.y - t.p2.y;
+        double dz2 = t.p1.z - t.p2.z;
+        return Vector3D.create(dy1*dz2 - dz1*dy2, dz1 * dx2 - dx1 * dz2, dx1 * dy2 - dy1 * dx2).normalize();
+    }
+
+    /**
+     * Get the vector with the highest down slope in the plan.
+     * @return the steepest vector.
+     */
+    public static Vector3D getSteepestVector(final Vector3D normal, final double epsilon) {
+        if (Math.abs(normal.getX()) < epsilon && Math.abs(normal.getY()) < epsilon) {
+            return new Vector3D(0, 0, 0);
+        }
+        Vector3D slope;
+        if (Math.abs(normal.getX()) < epsilon) {
+            slope = new Vector3D(0, 1, -normal.getY() / normal.getZ());
+        } else if (Math.abs(normal.getY()) < epsilon) {
+            slope = new Vector3D(1, 0, -normal.getX() / normal.getZ());
+        } else {
+            slope = new Vector3D(normal.getX() / normal.getY(), 1,
+                    -1 / normal.getZ() * (normal.getX() * normal.getX() / normal.getY() + normal.getY()));
+        }
+        //We want the vector to be low-oriented.
+        if (slope.getZ() > epsilon) {
+            slope = new Vector3D(-slope.getX(), -slope.getY(), -slope.getZ());
+        }
+        //We normalize it
+        return slope.normalize();
+    }
+
+    /**
+     *
+     * @param normal Plane normal
+     * @param epsilon Epsilon value ex:1e-12
+     * @return The steepest slope of this plane in degree.
+     */
+    public static double getSlopeInPercent(final Vector3D normal, final double epsilon) {
+        Vector3D vector = getSteepestVector(normal, epsilon);
+        if(Math.abs(vector.getZ()) < epsilon) {
+            return 0;
+        } else {
+            return (Math.abs(vector.getZ()) / new Vector2D(vector.getX(), vector.getY()).length()) * 100;
         }
     }
 }

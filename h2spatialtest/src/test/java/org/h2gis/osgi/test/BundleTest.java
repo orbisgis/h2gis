@@ -86,7 +86,7 @@ public class BundleTest {
                 getBundle("spatial-utilities"),
                 getBundle("cts"),
                 getBundle("jts"),
-                getBundle("jdelaunay"),
+                getBundle("poly2tri-core"),
                 getBundle("h2"),
                 getBundle("jackson-core"),
                 getBundle("h2spatial").noStart(),

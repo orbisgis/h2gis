@@ -24,15 +24,18 @@
  */
 package org.h2gis.h2spatialext.function.spatial.topography;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.math.Vector2D;
+import com.vividsolutions.jts.math.Vector3D;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
-import org.jdelaunay.delaunay.error.DelaunayError;
-import org.jdelaunay.delaunay.geometries.DPoint;
-import org.jdelaunay.delaunay.geometries.DTriangle;
+
+import org.h2gis.utilities.jts_utils.CoordinateUtils;
+import org.h2gis.utilities.jts_utils.TriMarkers;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.util.Vector;
 
 /**
  * This function is used to compute the main slope direction on a triangle.
@@ -57,17 +60,37 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
      * Compute the main slope direction
      * @param geometry
      * @return
-     * @throws DelaunayError 
+     * @throws IllegalArgumentException
      */
-    public static LineString computeDirection(Geometry geometry) throws DelaunayError {
+    public static LineString computeDirection(Geometry geometry) throws IllegalArgumentException {
         if(geometry == null){
             return null;
         }
-        DTriangle dTriangle = TINFeatureFactory.createDTriangle(geometry);
-        DPoint pointIntersection = dTriangle.getSteepestIntersectionPoint(dTriangle.getBarycenter());
+        // Convert geometry into triangle
+        Triangle triangle = TINFeatureFactory.createTriangle(geometry);
+        // Compute slope vector
+        Vector3D normal = TriMarkers.getNormalVector(triangle);
+        Vector3D vector = new Vector3D(normal.getX(), normal.getY(), 0).normalize();
+        // Compute equidistant point of triangle's sides
+        Coordinate inCenter = triangle.centroid();
+        // Interpolate Z value
+        inCenter.setOrdinate(2, Triangle.interpolateZ(inCenter, triangle.p0, triangle.p1, triangle.p2));
+        // Project slope from triangle center to triangle borders
+        final LineSegment[] sides = new LineSegment[] {new LineSegment(triangle.p0, triangle.p1),
+                new LineSegment(triangle.p1, triangle.p2), new LineSegment(triangle.p2, triangle.p0)};
+        Coordinate pointIntersection = null;
+        for(LineSegment side : sides) {
+            Coordinate intersection  = CoordinateUtils.vectorIntersection(inCenter, vector, side.p0,
+                    new Vector3D(side.p0,side.p1).normalize());
+            if(intersection != null && side.distance(intersection) < TINFeatureFactory.EPSILON) {
+                pointIntersection = new Coordinate(intersection.x, intersection.y,
+                        Triangle.interpolateZ(intersection, triangle.p0, triangle.p1, triangle.p2));
+                break;
+            }
+        }
         if (pointIntersection != null) {
-            return gf.createLineString(new Coordinate[]{dTriangle.getBarycenter().getCoordinate(), dTriangle.getSteepestIntersectionPoint(dTriangle.getBarycenter()).getCoordinate()});
-        }        
+            return gf.createLineString(new Coordinate[]{inCenter, pointIntersection});
+        }
         return gf.createLineString(new Coordinate[] {});
     }
     

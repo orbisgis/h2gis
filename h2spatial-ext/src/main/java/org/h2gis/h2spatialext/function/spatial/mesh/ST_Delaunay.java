@@ -23,18 +23,11 @@
  */
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
-import com.vividsolutions.jts.geom.*;
-
 import java.sql.SQLException;
-import java.util.List;
 
-import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
-import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
-import org.jdelaunay.delaunay.ConstrainedMesh;
-import org.jdelaunay.delaunay.error.DelaunayError;
-import org.jdelaunay.delaunay.evaluator.TriangleQuality;
 
 /**
  * Returns polygons that represent a Delaunay triangulation constructed from a
@@ -65,10 +58,9 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      *
      * @param geometry
      * @return a set of polygons (triangles)
-     * @throws SQLException, DelaunayError
-     * @throws org.jdelaunay.delaunay.error.DelaunayError
+     * @throws SQLException
      */
-    public static GeometryCollection createDT(Geometry geometry) throws SQLException, DelaunayError {
+    public static GeometryCollection createDT(Geometry geometry) throws SQLException {
         return createDT(geometry, 0);
     }
     
@@ -78,10 +70,9 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @param geometry
      * @param flag
      * @return a set of polygons (triangles)
-     * @throws SQLException, DelaunayError
-     * @throws org.jdelaunay.delaunay.error.DelaunayError
+     * @throws SQLException
      */
-    public static GeometryCollection createDT(Geometry geometry, int flag) throws SQLException, DelaunayError {
+    public static GeometryCollection createDT(Geometry geometry, int flag) throws SQLException {
         return createDT(geometry,  flag, -1);
     }
    
@@ -94,68 +85,19 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * @param qualityRefinement
      * @return Output is a COLLECTION of polygons (for flag=0) or a
      * MULTILINESTRING (for flag=1)
-     * @throws SQLException, DelaunayError
-     * @throws org.jdelaunay.delaunay.error.DelaunayError
+     * @throws SQLException
      */
-    public static GeometryCollection createDT(Geometry geometry,  int flag,double qualityRefinement) throws SQLException, DelaunayError {
+    public static GeometryCollection createDT(Geometry geometry,  int flag,double qualityRefinement) throws SQLException {
         if (geometry != null) {
-            if(qualityRefinement >= 0) {
-                if (flag == 0) {
-                    return DelaunayTools.toMultiPolygon(buildDelaunay(geometry, qualityRefinement).getTriangleList());
-                } else if (flag == 1) {
-                    return DelaunayTools.toMultiLineString(buildDelaunay(geometry, qualityRefinement).getEdges());
-                } else {
-                    throw new SQLException("Only flag 0 or 1 is supported.");
-                }
+            DelaunayData delaunayData = new DelaunayData();
+            delaunayData.put(geometry, DelaunayData.MODE.DELAUNAY);
+            delaunayData.triangulate();
+            if(flag == 0) {
+                return delaunayData.getTriangles();
             } else {
-                DelaunayTriangulationBuilder delaunayTriangulationBuilder = new DelaunayTriangulationBuilder();
-                delaunayTriangulationBuilder.setSites(geometry);
-                switch (flag) {
-                    case 1:
-                        return (GeometryCollection)delaunayTriangulationBuilder.getEdges(geometry.getFactory());
-                    default:
-                        return getTriangles(geometry.getFactory(), delaunayTriangulationBuilder);
-                }
+                return delaunayData.getTrianglesSides();
             }
         }
         return null;
-    }
-
-    private static GeometryCollection getTriangles(GeometryFactory geomFact,
-                                        DelaunayTriangulationBuilder delaunayTriangulationBuilder) {
-        QuadEdgeSubdivision subdiv = delaunayTriangulationBuilder.getSubdivision();
-        List triPtsList = subdiv.getTriangleCoordinates(false);
-        Polygon[] tris = new Polygon[triPtsList.size()];
-        int i = 0;
-        for (Object aTriPtsList : triPtsList) {
-            Coordinate[] triPt = (Coordinate[]) aTriPtsList;
-            tris[i++] = geomFact.createPolygon(geomFact.createLinearRing(triPt), null);
-        }
-        return geomFact.createMultiPolygon(tris);
-    }
-
-    /**
-     * Compute a delaunay triangulation
-     *
-     * @param geometry
-     * @return
-     * @throws DelaunayError
-     */
-    private static ConstrainedMesh buildDelaunay(Geometry geometry, double qualityRefinement) throws DelaunayError, SQLException {
-        ConstrainedMesh mesh = new ConstrainedMesh();
-        mesh.setVerbose(true);
-        DelaunayData delaunayData = new DelaunayData();
-        delaunayData.put(geometry);
-        mesh.setPoints(delaunayData.getDelaunayPoints());
-        mesh.processDelaunay();
-        if(qualityRefinement!=-1){
-            if(qualityRefinement>=0 && qualityRefinement<1){
-            mesh.refineMesh(qualityRefinement,new TriangleQuality());
-            }
-            else{
-                throw new SQLException("The quality value must be comprised between 0 and 1");
-            }
-        }
-        return mesh;
     }
 }

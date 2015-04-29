@@ -22,7 +22,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Public-Package>org.h2gis.utilities.*</Public-Package>
+                        <Export-Package>org.h2gis.utilities.*</Export-Package>
                         <Private-Package>org.h2gis.utilities.wrapper</Private-Package>
                     </instructions>
                 </configuration>

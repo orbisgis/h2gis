@@ -26,10 +26,9 @@ package org.h2gis.h2spatialext.function.spatial.topography;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.math.Vector2D;
+import com.vividsolutions.jts.math.Vector3D;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.jdelaunay.delaunay.error.DelaunayError;
-import org.jdelaunay.delaunay.geometries.DPoint;
-import org.jdelaunay.delaunay.geometries.DTriangle;
+import org.h2gis.utilities.jts_utils.TriMarkers;
 
 /**
  * This function is used to compute the aspect of a triangle. Aspect represents
@@ -51,20 +50,19 @@ public class ST_TriangleAspect extends DeterministicScalarFunction {
     
     /**
      * Compute the aspect in degree. The geometry must be a triangle.
-     * @param geometry
-     * @return
-     * @throws DelaunayError 
+     * @param geometry Polygon triangle
+     * @return aspect in degree
+     * @throws IllegalArgumentException  ST_TriangleAspect accept only triangles
      */
-    public static Double computeAspect(Geometry geometry) throws DelaunayError{
+    public static Double computeAspect(Geometry geometry) throws IllegalArgumentException {
         if (geometry == null) {
             return null;
         }
-        DTriangle dTriangle = TINFeatureFactory.createDTriangle(geometry);
-        DPoint steepestVector = dTriangle.getSteepestVector();
-        if (steepestVector.equals(new DPoint(0, 0, 0))) {
+        Vector3D vector = TriMarkers.getSteepestVector(TriMarkers.getNormalVector(TINFeatureFactory.createTriangle(geometry)), TINFeatureFactory.EPSILON);
+        if (vector.length() < TINFeatureFactory.EPSILON) {
             return 0d;
         } else {
-            Vector2D v = new Vector2D(steepestVector.getX(), steepestVector.getY());
+            Vector2D v = new Vector2D(vector.getX(), vector.getY());
             return measureFromNorth(Math.toDegrees(v.angle()));
         }
     }
