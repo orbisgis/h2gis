@@ -32,9 +32,14 @@ public class CoordinateUtilsTest {
     }
 
     @Test
-    public void testTriangeSlope() {
-        Triangle tri = new Triangle(new Coordinate(2, 2, 2), new Coordinate(6, 1, 2), new Coordinate(4, 4, 0));
+    public void testTriangleSlope() {
+        Triangle tri = new Triangle(new Coordinate(2, 2, 0), new Coordinate(6, 1, 0), new Coordinate(4, 4, 0));
         Vector3D slope = TriMarkers.getSteepestVector(TriMarkers.getNormalVector(tri), 1e-12);
-        assertEquals(new Vector3D(0,0 ,0), slope);
+        assertEquals(0, slope.getZ(), 1e-12);
+        tri = new Triangle(new Coordinate(0, 0, 0), new Coordinate(4, 0, 0), new Coordinate(2, 3, 1));
+        slope = TriMarkers.getSteepestVector(TriMarkers.getNormalVector(tri), 1e-12);
+        assertEquals(0, slope.getX(), 0.001);
+        assertEquals(-0.948, slope.getY(), 0.001);
+        assertEquals(-0.316, slope.getZ(), 0.001);
     }
 }

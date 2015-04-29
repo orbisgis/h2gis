@@ -133,7 +133,7 @@ public final class CoordinateUtils {
         // Cramer's rule for compute intersection of two planes
         delta = v1.getX() * (-v2.getY()) - (-v1.getY()) * v2.getX();
         if (delta != 0) {
-            double k = (p2.x - p1.x) * (-v2.getY()) - (p2.y - p1.y) * (-v2.getX()) / delta;
+            double k = ((p2.x - p1.x) * (-v2.getY()) - (p2.y - p1.y) * (-v2.getX())) / delta;
             // Fix precision problem with big decimal
             i = new Coordinate(p1.x + k * v1.getX(), p1.y + k * v1.getY(), p1.z + k * v1.getZ());
             if(new LineSegment(p1, new Coordinate(p1.x + v1.getX(), p1.y + v1.getY())).projectionFactor(i) < 0 ||
