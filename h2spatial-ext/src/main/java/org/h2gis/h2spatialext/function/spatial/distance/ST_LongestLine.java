@@ -22,40 +22,41 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.h2gis.h2spatialext.function.spatial.processing;
 
+package org.h2gis.h2spatialext.function.spatial.distance;
+
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.simplify.TopologyPreservingSimplifier;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- *
+ * Returns the 2-dimensional longest line between the points of two geometries.
  * @author Erwan Bocher
  */
-public class ST_SimplifyPreserveTopology extends DeterministicScalarFunction {
+public class ST_LongestLine extends DeterministicScalarFunction{
 
-    public ST_SimplifyPreserveTopology() {
-        addProperty(PROP_REMARKS, "Simplifies a geometry and ensures that the result is a valid geometry.");
+    public ST_LongestLine(){
+        addProperty(PROP_REMARKS, "Returns the 2-dimensional longest line between the points of two geometries."
+                + "If the geometry 1 and geometry 2 is the same geometry the function will \n "
+                + "return the longest line between the two vertices most far from each other in that geometry.");
     }
-
+    
     @Override
     public String getJavaStaticMethod() {
-        return "simplyPreserve";
+        return "longestLine";
     }
-
+    
     /**
-     * Simplifies a geometry and ensures that the result is a valid geometry
-     * having the same dimension and number of components as the input, and with
-     * the components having the same topological relationship.
-     *
-     * @param geometry
-     * @param distance
-     * @return
+     * Return the longest line between the points of two geometries.
+     * @param geomA
+     * @param geomB
+     * @return 
      */
-    public static Geometry simplyPreserve(Geometry geometry, double distance) {
-        if(geometry == null){
-            return null;
+    public static Geometry longestLine(Geometry geomA, Geometry geomB) {
+        Coordinate[] coords = new MaxDistanceOp(geomA, geomB).getCoordinatesDistance();
+        if(coords!=null){
+            return geomA.getFactory().createLineString(coords);
         }
-        return TopologyPreservingSimplifier.simplify(geometry, distance);
+        return null;
     }
 }

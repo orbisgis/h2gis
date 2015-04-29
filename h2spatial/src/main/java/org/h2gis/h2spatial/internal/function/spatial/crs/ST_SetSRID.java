@@ -22,9 +22,19 @@ public class ST_SetSRID  extends AbstractFunction implements ScalarFunction {
         return "setSRID";
     }
 
-    public static Geometry setSRID(Geometry geometry, int srid) throws SQLException {
-        Geometry geom = (Geometry)geometry.clone();
-        geom.setSRID(srid);
-        return geom;
+    /**
+     * Set a new SRID to the geometry
+     * @param geometry
+     * @param srid
+     * @return
+     * @throws SQLException 
+     */
+    public static Geometry setSRID(Geometry geometry, Integer srid) throws SQLException {
+        if (geometry != null || srid !=null) {
+            Geometry geom = (Geometry) geometry.clone();
+            geom.setSRID(srid);
+            return geom;
+        }
+        return null;
     }
 }

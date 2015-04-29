@@ -50,6 +50,8 @@ import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_LocateAlong;
+import org.h2gis.h2spatialext.function.spatial.distance.ST_LongestLine;
+import org.h2gis.h2spatialext.function.spatial.distance.ST_MaxDistance;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ProjectPoint;
 import org.h2gis.h2spatialext.function.spatial.earth.ST_GeometryShadow;
 import org.h2gis.h2spatialext.function.spatial.earth.ST_SunPosition;
@@ -196,7 +198,10 @@ public class CreateSpatialExtension {
                 new ST_GeometryShadow(),
                 new ST_Voronoi(),
                 new ST_Tessellate(),
-                new ST_LineMerge()};
+                new ST_LineMerge(),
+                new ST_FlipCoordinates(),
+                new ST_MaxDistance(),
+                new ST_LongestLine()};
     }
 
     /**

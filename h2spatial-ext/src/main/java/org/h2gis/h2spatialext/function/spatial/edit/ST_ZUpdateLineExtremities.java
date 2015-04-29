@@ -68,6 +68,9 @@ public class ST_ZUpdateLineExtremities extends DeterministicScalarFunction {
      * @return
      */
     public static Geometry updateZExtremities(Geometry geometry, double startZ, double endZ, boolean interpolate) {
+        if(geometry == null){
+            return null;
+        }
         if (geometry instanceof LineString) {
             return force3DStartEnd((LineString) geometry, startZ, endZ, interpolate);
         } else if (geometry instanceof MultiLineString) {

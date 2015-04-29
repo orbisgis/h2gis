@@ -53,6 +53,9 @@ public class ST_Simplify extends DeterministicScalarFunction {
      * @return 
      */
     public static Geometry simplify(Geometry geometry, double distance) {
+        if(geometry == null){
+            return null;
+        }
         return DouglasPeuckerSimplifier.simplify(geometry, distance);
     }
 }

@@ -27,9 +27,7 @@ package org.h2gis.h2spatialext.function.spatial.properties;
 import com.vividsolutions.jts.algorithm.MinimumDiameter;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
-import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.h2spatialapi.ScalarFunction;
 
 /**
  * Compute a minimum diameter for a given geometry
@@ -49,7 +47,10 @@ public class ST_MinimumDiameter extends DeterministicScalarFunction {
      return "minimumDiameter";
     }
     
-    public static  LineString minimumDiameter(Geometry geometry){ 
+    public static  LineString minimumDiameter(Geometry geometry){
+        if(geometry == null){
+            return null;
+        }
         return new MinimumDiameter(geometry).getDiameter();
     }
 }

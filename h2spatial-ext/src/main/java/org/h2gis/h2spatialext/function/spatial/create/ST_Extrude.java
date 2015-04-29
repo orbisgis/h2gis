@@ -58,6 +58,9 @@ public class ST_Extrude extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static GeometryCollection extrudeGeometry(Geometry geometry, double height) throws SQLException {
+        if(geometry == null){
+            return null;
+        }
         if (geometry instanceof Polygon) {
             return GeometryExtrude.extrudePolygonAsGeometry((Polygon) geometry, height);
         } else if (geometry instanceof LineString) {
@@ -79,6 +82,9 @@ public class ST_Extrude extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static Geometry extrudeGeometry(Geometry geometry, double height, int flag) throws SQLException {
+        if (geometry == null) {
+            return null;
+        }
         if (geometry instanceof Polygon) {
             if (flag == 1) {
                 return GeometryExtrude.extractWalls((Polygon)geometry, height);

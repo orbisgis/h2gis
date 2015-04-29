@@ -28,61 +28,50 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
-import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 
 /**
- * This function add a z value to the z component of (each vertex of) the
- * geometric parameter to the corresponding value given by a field.
- *
+ * Flip the X and Y coordinates of the geometry
+ * 
  * @author Erwan Bocher
  */
-public class ST_AddZ extends DeterministicScalarFunction {
+public class ST_FlipCoordinates extends DeterministicScalarFunction {
 
-    public ST_AddZ() {
-        addProperty(PROP_REMARKS, "This function do a sum with the z value of (each vertex of) the\n"
-                + " geometric parameter to the corresponding value given by a field.");
+    public ST_FlipCoordinates() {
+        addProperty(PROP_REMARKS, "Returns a version of the given geometry with X and Y axis flipped. Useful for people who have built\n"
+                + "latitude/longitude features and need to fix them.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "addZ";
+        return "flipCoordinates";
     }
 
-    /**
-     * Add a z with to the existing value (do the sum). NaN values are not
-     * updated.
-     *
-     * @param geometry
-     * @param z
-     * @return
-     * @throws java.sql.SQLException
-     */
-    public static Geometry addZ(Geometry geometry, double z) throws SQLException {
-        if(geometry == null){
-            return null;
+    public static Geometry flipCoordinates(Geometry geom) {
+        if (geom != null) {
+            geom.apply(new FlipCoordinateSequenceFilter());
+            return geom;
         }
-        geometry.apply(new AddZCoordinateSequenceFilter(z));
-        return geometry;
+        return null;
+
     }
 
     /**
-     * Add a z value to each vertex of the Geometry.
-     *
+     * Returns a version of the given geometry with X and Y axis flipped.
      */
-    public static class AddZCoordinateSequenceFilter implements CoordinateSequenceFilter {
+    public static class FlipCoordinateSequenceFilter implements CoordinateSequenceFilter {
 
         private boolean done = false;
-        private final double z;
-
-        public AddZCoordinateSequenceFilter(double z) {
-            this.z = z;
-        }
 
         @Override
-        public boolean isGeometryChanged() {
-            return true;
+        public void filter(CoordinateSequence seq, int i) {
+            double x = seq.getOrdinate(i, 0);
+            double y = seq.getOrdinate(i, 1);
+            seq.setOrdinate(i, 0, y);
+            seq.setOrdinate(i, 1, x);
+            if (i == seq.size()) {
+                done = true;
+            }
         }
 
         @Override
@@ -91,15 +80,8 @@ public class ST_AddZ extends DeterministicScalarFunction {
         }
 
         @Override
-        public void filter(CoordinateSequence seq, int i) {
-            Coordinate coord = seq.getCoordinate(i);
-            double currentZ = coord.z;
-            if (!Double.isNaN(currentZ)) {
-                seq.setOrdinate(i, 2, currentZ + z);
-            }
-            if (i == seq.size()) {
-                done = true;
-            }
+        public boolean isGeometryChanged() {
+            return true;
         }
     }
 }

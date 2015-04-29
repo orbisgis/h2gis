@@ -50,7 +50,10 @@ public class ST_MinimumRectangle extends DeterministicScalarFunction{
      * @param geometry Input geometry
      * @return 
      */
-    public static Geometry computeMinimumRectangle(Geometry geometry){     
+    public static Geometry computeMinimumRectangle(Geometry geometry){
+        if(geometry == null){
+            return null;
+        }
         return new MinimumDiameter(geometry).getMinimumRectangle();
     }
 }

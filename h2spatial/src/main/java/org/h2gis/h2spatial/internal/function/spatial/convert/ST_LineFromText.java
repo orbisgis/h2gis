@@ -38,13 +38,23 @@ public class ST_LineFromText extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_LineFromText() {
-        addProperty(PROP_REMARKS, "Convert a WKT String into a LINESTRING");
+        addProperty(PROP_REMARKS, "Convert a WKT String into a LINESTRING.\n If an SRID is not specified, it defaults to 0.");
     }
 
     @Override
     public String getJavaStaticMethod() {
         return "toGeometry";
     }
+    
+     /**
+     * @param wKT WellKnown text value
+     * @return Geometry
+     * @throws java.sql.SQLException Invalid argument or the geometry type is wrong.
+     */
+    public static Geometry toGeometry(String wKT) throws SQLException {
+        return toGeometry(wKT, 0);
+    }
+    
 
     /**
      * @param wKT WellKnown text value

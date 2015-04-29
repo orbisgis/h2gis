@@ -58,6 +58,9 @@ public class ST_Interpolate3DLine extends DeterministicScalarFunction {
      * @return
      */
     public static Geometry interpolateLine(Geometry geometry) {
+        if(geometry == null){
+            return null;
+        }
         if (geometry instanceof LineString) {
             return linearZInterpolation((LineString) geometry);
         } else if (geometry instanceof MultiLineString) {

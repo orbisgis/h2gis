@@ -59,6 +59,9 @@ public class ST_RemoveHoles extends DeterministicScalarFunction {
      * @return Geometry with no holes *
      */
     public static Geometry removeHoles(Geometry geometry) {
+        if(geometry == null){
+            return null;
+        }
         if (geometry instanceof Polygon) {
             return removeHolesPolygon((Polygon) geometry);
         } else if (geometry instanceof MultiPolygon) {

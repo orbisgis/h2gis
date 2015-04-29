@@ -57,6 +57,9 @@ public class ST_Polygonize extends DeterministicScalarFunction {
      * @return 
      */
     public static Geometry polygonize(Geometry geometry) {
+        if(geometry == null){
+            return null;
+        }
         Polygonizer polygonizer = new Polygonizer();
         polygonizer.add(geometry);
         Collection pols = polygonizer.getPolygons();

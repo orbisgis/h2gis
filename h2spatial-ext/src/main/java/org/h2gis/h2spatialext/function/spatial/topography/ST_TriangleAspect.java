@@ -54,9 +54,11 @@ public class ST_TriangleAspect extends DeterministicScalarFunction {
      * @return aspect in degree
      * @throws IllegalArgumentException  ST_TriangleAspect accept only triangles
      */
-    public static double computeAspect(Geometry geometry) throws IllegalArgumentException {
-        Vector3D vector = TriMarkers.getSteepestVector(TriMarkers.getNormalVector(
-                TINFeatureFactory.createTriangle(geometry)), TINFeatureFactory.EPSILON);
+    public static Double computeAspect(Geometry geometry) throws IllegalArgumentException {
+        if (geometry == null) {
+            return null;
+        }
+        Vector3D vector = TriMarkers.getSteepestVector(TriMarkers.getNormalVector(TINFeatureFactory.createTriangle(geometry)), TINFeatureFactory.EPSILON);
         if (vector.length() < TINFeatureFactory.EPSILON) {
             return 0d;
         } else {

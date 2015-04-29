@@ -63,6 +63,9 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
      * @throws IllegalArgumentException
      */
     public static LineString computeDirection(Geometry geometry) throws IllegalArgumentException {
+        if(geometry == null){
+            return null;
+        }
         // Convert geometry into triangle
         Triangle triangle = TINFeatureFactory.createTriangle(geometry);
         // Compute slope vector

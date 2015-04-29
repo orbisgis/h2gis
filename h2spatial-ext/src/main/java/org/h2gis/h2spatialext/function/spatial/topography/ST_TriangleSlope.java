@@ -49,7 +49,10 @@ public class ST_TriangleSlope extends DeterministicScalarFunction{
      * @return slope of a triangle expressed in percents
      * @throws IllegalArgumentException Accept only triangles
      */
-    public static double computeSlope(Geometry geometry) throws IllegalArgumentException {
+    public static Double computeSlope(Geometry geometry) throws IllegalArgumentException {
+        if(geometry == null){
+            return null;
+        }
         return TriMarkers.getSlopeInPercent(TriMarkers.getNormalVector(TINFeatureFactory.createTriangle(geometry)), TINFeatureFactory.EPSILON);
     }
 
