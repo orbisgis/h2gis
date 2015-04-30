@@ -33,8 +33,7 @@ import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiSegments;
 import org.h2gis.utilities.jts_utils.Voronoi;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Nicolas Fortin
@@ -97,8 +96,7 @@ public class ST_Voronoi extends DeterministicScalarFunction {
                 return (GeometryCollection) diagramBuilder.getDiagram(geomCollection.getFactory());
             } else if (outputDimension == 1) {
                 // Convert into lineStrings.
-                //TODO remove duplicate segments
-                return ST_ToMultiSegments.createSegments(diagramBuilder.getDiagram(geomCollection.getFactory()));
+                return mergeTrianglesEdges((GeometryCollection)diagramBuilder.getDiagram(geomCollection.getFactory()));
             } else {
                 // Extract triangles Circumcenter
                 QuadEdgeSubdivision subdivision = diagramBuilder.getSubdivision();
@@ -133,6 +131,51 @@ public class ST_Voronoi extends DeterministicScalarFunction {
             Coordinate b = triEdges[1].orig().getCoordinate();
             Coordinate c = triEdges[2].orig().getCoordinate();
             circumCenters.add(Triangle.circumcentre(a, b, c));
+        }
+    }
+
+    private static MultiLineString mergeTrianglesEdges(GeometryCollection polygons) {
+        GeometryFactory factory = polygons.getFactory();
+        Set<LineSegment> segments = new HashSet<LineSegment>(polygons.getNumGeometries());
+        SegmentMerge segmentMerge = new SegmentMerge(segments);
+        for(int idGeom = 0; idGeom < polygons.getNumGeometries(); idGeom++) {
+            Geometry polygonGeom = polygons.getGeometryN(idGeom);
+            if(polygonGeom instanceof Polygon) {
+                Polygon polygon = (Polygon)polygonGeom;
+                segmentMerge.reset();
+                polygon.getExteriorRing().apply(segmentMerge);
+            }
+        }
+        // Convert segments into multilinestring
+        LineString[] lineStrings = new LineString[segments.size()];
+        int idLine = 0;
+        for(LineSegment lineSegment : segments) {
+            lineStrings[idLine++] = factory.createLineString(new Coordinate[] {lineSegment.p0, lineSegment.p1});
+        }
+        segments.clear();
+        return factory.createMultiLineString(lineStrings);
+    }
+
+    private static class SegmentMerge implements CoordinateFilter {
+        private Set<LineSegment> segments;
+        private Coordinate firstPt = null;
+
+        public SegmentMerge(Set<LineSegment> segments) {
+            this.segments = segments;
+        }
+
+        @Override
+        public void filter(Coordinate coord) {
+            if(firstPt != null) {
+                LineSegment segment = new LineSegment(firstPt, coord);
+                segment.normalize();
+                segments.add(segment);
+            }
+            firstPt = coord;
+        }
+
+        public void reset() {
+            firstPt = null;
         }
     }
 }
