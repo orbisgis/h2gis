@@ -24,9 +24,11 @@
 package org.h2gis.h2spatialext.function.spatial.mesh;
 
 import java.sql.SQLException;
+import java.util.List;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
+import com.vividsolutions.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
@@ -65,21 +67,33 @@ public class ST_Delaunay extends DeterministicScalarFunction {
      * Build a delaunay triangulation based on all coordinates of the geometry
      *
      * @param geometry
-     * @param flag
+     * @param flag  for flag=0 (default flag) or a MULTILINESTRING for flag=1
      * @return a set of polygons (triangles)
      * @throws SQLException
      */
     public static GeometryCollection createDT(Geometry geometry, int flag) throws SQLException {
         if (geometry != null) {
-            DelaunayData delaunayData = new DelaunayData();
-            delaunayData.put(geometry, DelaunayData.MODE.DELAUNAY);
-            delaunayData.triangulate();
+            DelaunayTriangulationBuilder triangulationBuilder = new DelaunayTriangulationBuilder();
+            triangulationBuilder.setSites(geometry);
             if(flag == 0) {
-                return delaunayData.getTriangles();
+                return getTriangles(geometry.getFactory(), triangulationBuilder);
             } else {
-                return delaunayData.getTrianglesSides();
+                return (GeometryCollection)triangulationBuilder.getEdges(geometry.getFactory());
             }
         }
         return null;
+    }
+
+    private static GeometryCollection getTriangles(GeometryFactory geomFact,
+                                                   DelaunayTriangulationBuilder delaunayTriangulationBuilder) {
+        QuadEdgeSubdivision subdiv = delaunayTriangulationBuilder.getSubdivision();
+        List triPtsList = subdiv.getTriangleCoordinates(false);
+        Polygon[] tris = new Polygon[triPtsList.size()];
+        int i = 0;
+        for (Object aTriPtsList : triPtsList) {
+            Coordinate[] triPt = (Coordinate[]) aTriPtsList;
+            tris[i++] = geomFact.createPolygon(geomFact.createLinearRing(triPt), null);
+        }
+        return geomFact.createMultiPolygon(tris);
     }
 }

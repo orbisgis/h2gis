@@ -26,6 +26,7 @@ package org.h2gis.spatialut;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
 import org.h2.value.ValueGeometry;
 
 import java.sql.SQLException;
@@ -89,7 +90,9 @@ public class GeometryAsserts {
             expected = ValueGeometry.getFromGeometry(expected.getGeometry().norm());
             String moreInfo = "";
             if(!actual.equals(expected)) {
-                if(expected.getGeometry().equals(actual.getGeometry())) {
+                if(!GeometryCollection.class.getName().equals(expected.getGeometry().getClass().getName()) &&
+                        !GeometryCollection.class.getName().equals(actual.getGeometry().getClass().getName()) &&
+                        expected.getGeometry().equals(actual.getGeometry())) {
                     moreInfo = "\n But are topologically equals";
                 }
             }
