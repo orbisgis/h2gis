@@ -45,6 +45,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.drivers.dbf.DBFRead;
+import org.h2gis.drivers.dbf.DBFWrite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -63,6 +65,8 @@ public class SHPImportExportTest {
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new SHPRead(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new SHPWrite(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFWrite(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFRead(), "");
     }
 
     @AfterClass
@@ -520,5 +524,52 @@ public class SHPImportExportTest {
         stat.execute("insert into GEOM_COLL values(1, 'GEOMETRYCOLLECTION (LINESTRING (184 375, 97 245), POLYGON ((180 270, 220 270, 220 230, 180 230, 180 270)))')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/geomcoll_export.shp', 'GEOM_COLL')");
+    }
+    
+    @Test
+    public void geomTableToDBF() throws SQLException, IOException {        
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA, AREA_READ");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key, type varchar)");
+        stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))'), 1, 'breton')"); 
+        stat.execute("CALL DBFWrite('target/area_export12.dbf', 'AREA')"); 
+        stat.execute("CALL DBFRead('target/area_export12.dbf', 'AREA_READ')");
+        ResultSet res = stat.executeQuery("SELECT * FROM AREA_READ;");
+        res.next();
+        assertTrue(res.getInt(2)==1);
+        assertTrue(res.getString(3).equals("breton"));        
+        res.close();  
+    }
+    
+    @Test
+    public void twoGeomTableToDBF() throws SQLException, IOException {        
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA, AREA_READ");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key, geom GEOMETRY, type varchar)");
+        stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))'), 1,"
+                + "ST_GEOMFROMTEXT('POINT (-10 109)'), 'breton')"); 
+        stat.execute("CALL DBFWrite('target/area_export13.dbf', 'AREA')"); 
+        stat.execute("CALL DBFRead('target/area_export13.dbf', 'AREA_READ')");
+        ResultSet res = stat.executeQuery("SELECT * FROM AREA_READ;");
+        res.next();
+        assertTrue(res.getInt(2)==1);
+        assertTrue(res.getString(3).equals("breton"));        
+        res.close();  
+    }
+    
+     @Test
+    public void writeReadTableWithTwoGeometries() throws SQLException, IOException {        
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA, AREA_READ");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key, geom GEOMETRY)");
+        stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))'), 1,ST_GEOMFROMTEXT('POINT (-10 109)'))"); 
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export14.shp', 'AREA')"); 
+        new File("target/area_export.prj").createNewFile();
+        stat.execute("CALL SHPRead('target/area_export14.shp', 'AREA_READ')");
+        ResultSet res = stat.executeQuery("SELECT * FROM AREA_READ;");
+        res.next();        
+        assertTrue(res.getInt(3)==1);
+        res.close();  
     }
 }

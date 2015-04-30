@@ -32,4 +32,11 @@ public interface FileDriver {
      * @throws java.io.IOException Read error
      */
     public Object[] getRow(long rowId) throws IOException;
+   
+    /**
+     * Insert values to the current row
+     * @param values
+     * @throws IOException 
+     */
+    public void insertRow(Object[] values) throws IOException;
 }

@@ -90,7 +90,10 @@ public class SHPDriverFunction implements DriverFunction {
                 ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                    DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData);
+                    int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
+                    ArrayList<Integer> columnIndexes = new ArrayList<Integer>();                    
+                    DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
+                    columnIndexes.add(0, geoFieldIndex);
                     if (encoding != null) {
                         header.setEncoding(encoding);
                     }
@@ -98,11 +101,11 @@ public class SHPDriverFunction implements DriverFunction {
                     SHPDriver shpDriver = null;
                     Object[] row = new Object[header.getNumFields() + 1];
                     while (rs.next()) {
-                        for (int columnId = 0; columnId < row.length; columnId++) {
-                            row[columnId] = rs.getObject(columnId + 1);
+                        int i = 0;
+                        for (Integer index : columnIndexes) {
+                            row[i++] = rs.getObject(index);
                         }
                         if (shpDriver == null) {
-                            int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
                             // If there is not shape type constraint read the first geometry and use the same type
                             byte[] wkb = rs.getBytes(geoFieldIndex);
                             if (wkb != null) {
@@ -110,7 +113,7 @@ public class SHPDriverFunction implements DriverFunction {
                             }
                             if (shapeType != null) {
                                 shpDriver = new SHPDriver();
-                                shpDriver.setGeometryFieldIndex(geoFieldIndex - 1);
+                                shpDriver.setGeometryFieldIndex(0);
                                 shpDriver.initDriver(fileName, shapeType, header);
                             }
                             else{
