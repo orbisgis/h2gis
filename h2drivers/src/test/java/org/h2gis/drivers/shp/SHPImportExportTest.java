@@ -511,4 +511,14 @@ public class SHPImportExportTest {
         assertTrue(res.getInt(1)==0);
         res.close();  
     }
+    
+    @Test(expected = SQLException.class)
+    public void exportTableGeometryCollection() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS GEOM_COLL");
+        stat.execute("create table GEOM_COLL(idarea int primary key, the_geom GEOMETRY)");
+        stat.execute("insert into GEOM_COLL values(1, 'GEOMETRYCOLLECTION (LINESTRING (184 375, 97 245), POLYGON ((180 270, 220 270, 220 230, 180 230, 180 270)))')");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/geomcoll_export.shp', 'GEOM_COLL')");
+    }
 }

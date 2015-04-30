@@ -113,6 +113,9 @@ public class SHPDriverFunction implements DriverFunction {
                                 shpDriver.setGeometryFieldIndex(geoFieldIndex - 1);
                                 shpDriver.initDriver(fileName, shapeType, header);
                             }
+                            else{
+                                throw new SQLException("Unsupported geometry type.");
+                            }
                         }
                         if (shpDriver != null) {
                             shpDriver.insertRow(row);
@@ -257,6 +260,12 @@ public class SHPDriverFunction implements DriverFunction {
         }
     }
 
+    /**
+     * Return the shape type supported by the shapefile format
+     * @param meta
+     * @return
+     * @throws SQLException 
+     */
     private static ShapeType getShapeTypeFromGeometryMetaData(GeometryMetaData meta) throws SQLException {
         ShapeType shapeType;
         switch (meta.geometryType) {
