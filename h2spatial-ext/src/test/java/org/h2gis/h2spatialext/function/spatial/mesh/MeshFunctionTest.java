@@ -221,6 +221,14 @@ public class MeshFunctionTest {
 
 
     @Test
+    public void test_EdgeST_VORONOI() throws Exception {
+        ResultSet rs = st.executeQuery("select ST_VORONOI('MULTIPOINT(1 5, 4 5)'::geometry, 1) the_geom");
+        assertTrue(rs.next());
+        assertGeometryEquals("MULTILINESTRING ((-2 2, -2 8), (-2 2, 2.5 2), (-2 8, 2.5 8), (2.5 2, 2.5 8), (2.5 2, 7 2), (2.5 8, 7 8), (7 2, 7 8))", rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
     /**
      * Construction of voronoi with three coplanar points make three polygons.
      */
