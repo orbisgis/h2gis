@@ -67,6 +67,12 @@ public class SHPDriver implements FileDriver {
         this.geometryFieldIndex = geometryFieldIndex;
     }
 
+    /**
+     * Insert values in the row
+     * @param values
+     * @throws IOException 
+     */
+    @Override
     public void insertRow(Object[] values) throws IOException {
         if(!(values[geometryFieldIndex] instanceof Geometry)) {
             if(values[geometryFieldIndex]==null) {

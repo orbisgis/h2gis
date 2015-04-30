@@ -81,7 +81,8 @@ public class DBFDriverFunction implements DriverFunction {
                 ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                    DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData);
+                    ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
+                    DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
                     if (encoding != null) {
                         header.setEncoding(encoding);
                     }
@@ -90,8 +91,9 @@ public class DBFDriverFunction implements DriverFunction {
                     dbfDriver.initDriver(fileName, header);
                     Object[] row = new Object[header.getNumFields()];
                     while (rs.next()) {
-                        for (int columnId = 0; columnId < row.length; columnId++) {
-                            row[columnId] = rs.getObject(columnId + 1);
+                        int i = 0;
+                        for (Integer index : columnIndexes) {
+                            row[i++] = rs.getObject(index);
                         }
                         dbfDriver.insertRow(row);
                         if (lineProgress != null) {
@@ -295,10 +297,11 @@ public class DBFDriverFunction implements DriverFunction {
     /**
      * Create a DBF header from the columns specified in parameter.
      * @param metaData SQL ResultSetMetadata
+     * @param retainedColumns list of column indexes
      * @return DbfaseFileHeader instance.
      * @throws SQLException If one or more type are not supported by DBF
      */
-    public static DbaseFileHeader dBaseHeaderFromMetaData(ResultSetMetaData metaData) throws SQLException {
+    public static DbaseFileHeader dBaseHeaderFromMetaData(ResultSetMetaData metaData, List<Integer> retainedColumns) throws SQLException {
         DbaseFileHeader dbaseFileHeader = new DbaseFileHeader();
         for(int fieldId= 1; fieldId <= metaData.getColumnCount(); fieldId++) {
             final String fieldTypeName = metaData.getColumnTypeName(fieldId);
@@ -307,6 +310,7 @@ public class DBFDriverFunction implements DriverFunction {
                 DBFType dbfType = getDBFType(metaData.getColumnType(fieldId), fieldTypeName, metaData.getColumnDisplaySize(fieldId), metaData.getPrecision(fieldId));
                 try {
                     dbaseFileHeader.addColumn(metaData.getColumnName(fieldId),dbfType.type, dbfType.fieldLength, dbfType.decimalCount);
+                    retainedColumns.add(fieldId);
                 } catch (DbaseFileException ex) {
                     throw new SQLException(ex.getLocalizedMessage(), ex);
                 }
