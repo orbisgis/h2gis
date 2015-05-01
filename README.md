@@ -19,25 +19,25 @@ To contribute, fork H2GIS and clone it locally. We will assume your username is
 `user`.
 
 ```bash
-~ $ git clone https://github.com/user/H2GIS.git
+~ $ git clone https://github.com/user/h2gis.git
 ```
 
 The website is located on the branch `gh-pages`. So checkout a new branch
 `work` which tracks your fork's `gh-pages` branch.
 
 ```bash
-~ $ cd H2GIS
-~/H2GIS $ git checkout -b work origin/gh-pages
+~ $ cd h2gis
+~/h2gis $ git checkout -b work origin/gh-pages
 ```
 
 Make changes, commit and push to your fork as usual.
 
 ```bash
-~/H2GIS $ git commit -m "Made some changes"
-~/H2GIS $ git push origin work
+~/h2gis $ git commit -m "Made some changes"
+~/h2gis $ git push origin work
 ```
 
-When you are ready, submit a pull request from `user/work` to `irstv/gh-pages`.
+When you are ready, submit a pull request from `user/work` to `orbisgis/gh-pages`.
 Your work will be peer-reviewed and accepted when approved.
 
 ### Style guide
