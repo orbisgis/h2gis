@@ -1,4 +1,4 @@
-# H2GIS [![Build Status](https://travis-ci.org/irstv/H2GIS.png?branch=master)](https://travis-ci.org/irstv/H2GIS)
+# H2GIS [![Build Status](https://travis-ci.org/orbisgis/h2gis.png?branch=master)](https://travis-ci.org/orbigis/h2gis)
 
 H2GIS is a spatial extension of the [H2](http://www.h2database.com/) database
 engine in the spirit of [PostGIS](http://postgis.net/). It adds support for
