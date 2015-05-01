@@ -341,12 +341,15 @@ public class DelaunayData {
 
         @Override
         public void filter(Coordinate pt) {
-            if(firstPtIndex == -1) {
+            if (firstPtIndex == -1) {
                 firstPtIndex = addPt(pt);
             } else {
-                segments.add(firstPtIndex);
-                firstPtIndex = addPt(pt);
-                segments.add(firstPtIndex);
+                int secondPt = addPt(pt);
+                if (secondPt != firstPtIndex) {
+                    segments.add(firstPtIndex);
+                    segments.add(secondPt);
+                    firstPtIndex = secondPt;
+                }
             }
         }
     }
