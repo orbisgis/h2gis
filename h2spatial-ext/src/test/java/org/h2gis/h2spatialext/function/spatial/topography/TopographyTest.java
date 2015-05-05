@@ -1,9 +1,10 @@
-package org.h2gis.h2spatialext;
+package org.h2gis.h2spatialext.function.spatial.topography;
 
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKTReader;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,6 +12,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryBarelyEquals;
+import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -18,19 +20,136 @@ import static org.junit.Assert.assertTrue;
 /**
  * @author Nicolas Fortin
  */
-public class TableFunctionTest {
+public class TopographyTest {
     private static Connection connection;
+    private Statement st;
+    private static WKTReader WKT_READER;
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase(TableFunctionTest.class.getSimpleName(), false);
+        connection = SpatialH2UT.createSpatialDataBase(TopographyTest.class.getSimpleName(), false);
         CreateSpatialExtension.initSpatialExtension(connection);
+        WKT_READER = new WKTReader();
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
+    }
+
+    @Before
+    public void setUpStatement() throws Exception {
+        st = connection.createStatement();
+    }
+
+    @After
+    public void tearDownStatement() throws Exception {
+        st.close();
+    }
+
+    @Test
+    public void test_ST_TriangleAspect1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
+        rs.next();
+        assertTrue(rs.getDouble(1) == 0);
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_TriangleAspect2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 1, 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
+        rs.next();
+        assertTrue(rs.getDouble(1) == 90);
+        rs.close();
+    }
+
+    @Test(expected = SQLException.class)
+    public void test_ST_TriangleAspect3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 , 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
+        rs.close();
+    }
+
+    @Test
+    public void testMeasureFromNorth() throws Exception {
+        assertEquals(180., ST_TriangleAspect.measureFromNorth(-450.), 0.);
+        assertEquals(180., ST_TriangleAspect.measureFromNorth(-90.), 0.);
+        assertEquals(90., ST_TriangleAspect.measureFromNorth(0.), 0.);
+        assertEquals(0., ST_TriangleAspect.measureFromNorth(90.), 0.);
+        assertEquals(270., ST_TriangleAspect.measureFromNorth(180.), 0.);
+        assertEquals(180., ST_TriangleAspect.measureFromNorth(270.), 0.);
+        assertEquals(90., ST_TriangleAspect.measureFromNorth(360.), 0.);
+        assertEquals(0., ST_TriangleAspect.measureFromNorth(450.), 0.);
+        assertEquals(0., ST_TriangleAspect.measureFromNorth(810.), 0.);
+    }
+
+    @Test
+    public void test_ST_TriangleAspect() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT " +
+                        "ST_TriangleAspect('POLYGON((0 0 0, 3 0 0, 0 3 0, 0 0 0))')," +
+                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 0 3 1, 0 0 1))')," +
+                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 1, 0 3 0, 0 0 1))')," +
+                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 3 3 1, 0 0 1))');");
+        assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1), 1e-12);
+        assertEquals(90, rs.getDouble(2), 1e-12);
+        assertEquals(0, rs.getDouble(3), 1e-12);
+        assertEquals(135, rs.getDouble(4), 1e-12);
+        assertFalse(rs.next());
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_TriangleSlope1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
+        rs.next();
+        assertTrue(rs.getDouble(1) == 0);
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_TriangleSlope2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'::GEOMETRY);");
+        rs.next();
+        assertEquals(127.27, rs.getDouble(1), 10E-2);
+        rs.close();
+    }
+
+    /**
+     * 10% slope. 10m down after 100m distance.
+     * @throws Exception
+     */
+    @Test
+    public void test_ST_TriangleSlope3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);");
+        rs.next();
+        assertEquals(10, rs.getDouble(1), 10E-2);
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_TriangleDirection1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).isEmpty());
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_TriangleDirection2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 4 0 0, 2 3 9, 0 0 0))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(2 1 3, 2 0 0)", rs.getBytes(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_TriangleDirection3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);");
+        rs.next();
+        assertGeometryBarelyEquals("LINESTRING(5 33.33 96.66, 5 100 90)", rs.getObject(1), 0.01);
+        rs.close();
     }
 
 
@@ -123,9 +242,9 @@ public class TableFunctionTest {
             st.close();
         }
     }
-    
-    
-     @Test
+
+
+    @Test
     public void testST_TriangleContouringWithZDoubleRange() throws SQLException {
         Statement st = connection.createStatement();
         try {
