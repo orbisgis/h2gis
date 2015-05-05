@@ -128,6 +128,18 @@ public class TopographyTest {
         rs.close();
     }
 
+    /**
+     * 200% slope.
+     * @throws Exception
+     */
+    @Test
+    public void test_ST_TriangleSlope4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON((0 0 -5, 4 0 -5, 2 3 1, 0 0 -5))');");
+        rs.next();
+        assertEquals(200, rs.getDouble(1), 10E-2);
+        rs.close();
+    }
+
     @Test
     public void test_ST_TriangleDirection1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
