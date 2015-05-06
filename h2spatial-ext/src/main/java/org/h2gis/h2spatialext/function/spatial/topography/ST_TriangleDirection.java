@@ -79,13 +79,15 @@ public class ST_TriangleDirection extends DeterministicScalarFunction {
         final LineSegment[] sides = new LineSegment[] {new LineSegment(triangle.p0, triangle.p1),
                 new LineSegment(triangle.p1, triangle.p2), new LineSegment(triangle.p2, triangle.p0)};
         Coordinate pointIntersection = null;
+        double nearestIntersection = Double.MAX_VALUE;
         for(LineSegment side : sides) {
             Coordinate intersection  = CoordinateUtils.vectorIntersection(inCenter, vector, side.p0,
                     new Vector3D(side.p0,side.p1).normalize());
-            if(intersection != null && side.distance(intersection) < TINFeatureFactory.EPSILON) {
+            double distInters = intersection == null ? Double.MAX_VALUE : side.distance(intersection);
+            if(intersection != null && distInters < nearestIntersection) {
                 pointIntersection = new Coordinate(intersection.x, intersection.y,
                         Triangle.interpolateZ(intersection, triangle.p0, triangle.p1, triangle.p2));
-                break;
+                nearestIntersection = distInters;
             }
         }
         if (pointIntersection != null) {

@@ -166,6 +166,16 @@ public class TopographyTest {
 
 
     @Test
+    public void test_ST_TriangleDirection4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((182966.69179438584 2428143.025232138 70, 183059.9584658498 2428116.2361122346 65, 183056.0723545388 2428151.2111140336 65, 182966.69179438584 2428143.025232138 70))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(5 33.33 96.66, 5 100 90)", rs.getObject(1));
+        rs.close();
+    }
+
+
+
+    @Test
     public void testST_TriangleContouringWithZ() throws SQLException {
         Statement st = connection.createStatement();
         try {
