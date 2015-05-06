@@ -169,11 +169,22 @@ public class TopographyTest {
     public void test_ST_TriangleDirection4() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((182966.69179438584 2428143.025232138 70, 183059.9584658498 2428116.2361122346 65, 183056.0723545388 2428151.2111140336 65, 182966.69179438584 2428143.025232138 70))'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("LINESTRING(5 33.33 96.66, 5 100 90)", rs.getObject(1));
+        assertGeometryBarelyEquals("LINESTRING (183027.57 2428136.82 66.67, 183057.30 2428140.13 65)", rs.getObject(1), 0.01);
         rs.close();
     }
 
 
+
+    @Test
+    public void test_ST_TriangleDirection5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((184994.93499517522 2428907.874116194" +
+                " 65, 184992.64696198824 2428864.401485642 60, 185015.52729385791 2428882.7057511373 65," +
+                " 184994.93499517522 2428907.874116194 65))'::GEOMETRY);");
+        rs.next();
+        assertGeometryBarelyEquals("LINESTRING (185001.03641700713 2428884.9937843247 63.33333333336688," +
+                " 184993.40201293994 2428878.7474537245 61.65000000004103)", rs.getObject(1), 0.01);
+        rs.close();
+    }
 
     @Test
     public void testST_TriangleContouringWithZ() throws SQLException {
