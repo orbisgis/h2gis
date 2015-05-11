@@ -384,4 +384,39 @@ public class SpatialFunction2Test {
         assertEquals(3.256, rs.getDouble(1), 1e-3);
         rs.close();
     }
+    
+    @Test
+    public void test_ST_3DPerimeter() throws Exception {
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(1 4, 15 7, 16 17)',2249)),"
+                + "(ST_GeomFromText('LINESTRING(1 4 3, 15 7 9, 16 17 22)',2249)),"
+                + "(ST_GeomFromText('MULTILINESTRING((1 4 3, 15 7 9, 16 17 22),"
+                + "(0 0 0, 1 0 0, 1 2 0, 0 2 1))',2249)),"
+                + "(ST_GeomFromText('POLYGON((1 1, 3 1, 3 2, 1 2, 1 1))',2249)),"
+                + "(ST_GeomFromText('POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))',2249)),"
+                + "(ST_GeomFromText('POLYGON ((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1),"
+                + "  (1.235 1.83, 1.825 1.83, 1.825 1.605, 1.235 1.605, 1.235 1.83),"
+                + "  (2.235 1.63, 2.635 1.63, 2.635 1.155, 2.235 1.155, 2.235 1.63))',2249)),"
+                + "(ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),"
+                + "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))',2249));");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_3DPerimeter(geom) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(6, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
+        st.execute("DROP TABLE input_table;");
+    }
 }

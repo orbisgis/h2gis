@@ -38,7 +38,8 @@ public class ST_3DLength extends DeterministicScalarFunction {
 
     public ST_3DLength() {
         addProperty(PROP_REMARKS, "Returns the 3D length (of a LineString) or the 3D " +
-                "perimeter (of a Polygon).");
+                "perimeter (of a Polygon).\n"
+                + "Note : For 2D geometries, returns the 2D length.");
     }
 
     @Override

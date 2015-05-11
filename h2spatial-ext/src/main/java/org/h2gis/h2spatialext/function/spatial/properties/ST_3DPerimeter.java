@@ -40,7 +40,7 @@ public class ST_3DPerimeter extends DeterministicScalarFunction{
 
     public ST_3DPerimeter() {
         addProperty(PROP_REMARKS, "Returns the 3D length measurement of the boundary of a Polygon or a MultiPolygon. \n"
-                + "Distance units are those of the geometry spatial reference system.");
+                + "Note : For 2D geometries, returns the 2D length.");
     }
 
     @Override
