@@ -29,7 +29,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.tesselate.EarClipper;
 import java.util.ArrayList;
 
 /**
@@ -57,11 +56,6 @@ public class ST_Tessellate extends DeterministicScalarFunction {
         // Do triangulation
         delaunayData.triangulate();
         return delaunayData.getTriangles();
-    }
-
-    private static MultiPolygon tessellatePolygonEar(Polygon polygon) {
-        EarClipper earClipper = new EarClipper(polygon);
-        return earClipper.getResult(true);
     }
 
     public static MultiPolygon tessellate(Geometry geometry) throws IllegalArgumentException {

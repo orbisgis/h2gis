@@ -203,7 +203,8 @@ public class CreateSpatialExtension {
                 new ST_MaxDistance(),
                 new ST_LongestLine(),
                 new ST_Perimeter(),
-                new ST_3DPerimeter()};
+                new ST_3DPerimeter(),
+                new ST_3DArea()};
     }
 
     /**

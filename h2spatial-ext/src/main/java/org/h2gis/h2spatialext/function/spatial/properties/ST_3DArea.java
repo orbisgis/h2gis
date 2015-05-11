@@ -26,6 +26,7 @@ package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.h2spatialext.function.spatial.mesh.DelaunayData;
 
 /**
  * Compute the 3D area of a polygon or a multiolygon.
@@ -44,7 +45,12 @@ public class ST_3DArea extends DeterministicScalarFunction{
         return "st3darea";
     }
     
-    public Double st3darea(Geometry geometry){
+    /**
+     * 
+     * @param geometry
+     * @return 
+     */
+    public static Double st3darea(Geometry geometry){
         if(geometry==null){
             return null;
         }
@@ -56,12 +62,15 @@ public class ST_3DArea extends DeterministicScalarFunction{
 
     /**
      * Compute the 3D area of a polygon or a multipolygon
-     * 
+     *
      * @param geometry
-     * @return 
+     * @return
      */
-    private Double compute3DArea(Geometry geometry) {
-        return 0d;
-    }
-    
+    private static Double compute3DArea(Geometry geometry) {
+        DelaunayData delaunayData = new DelaunayData();
+        delaunayData.put(geometry, DelaunayData.MODE.TESSELLATION);
+        // Do triangulation
+        delaunayData.triangulate();
+        return delaunayData.get3DArea();
+    }    
 }

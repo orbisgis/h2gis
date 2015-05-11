@@ -316,4 +316,72 @@ public class SpatialFunction2Test {
         assertEquals(660, rs.getDouble(1), 1e-3);
         rs.close();
     }
+    
+    @Test
+    public void test_ST_3DArea1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1, 3 1, 3 2, 1 2, 1 1))'::GEOMETRY)");
+        rs.next();
+        assertEquals(2, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON((1 1 0, 3 1 0, 3 2 0, 1 2 0, 1 1 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(2, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON((1 1 1, 3 1 1, 3 2 1, 1 2 1, 1 1 1))'::GEOMETRY)");
+        rs.next();
+        assertEquals(2, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((0 0 0, 10 0 0, 0 10 0,0 0 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(50, rs.getDouble(1), 1e-1);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((0 0 0, 10 0 10, 0 10 0,0 0 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(70.711, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1 0, 2 1 1, 3 1 0, 3 2 0, 2 2 1, 1 2 0, 1 1 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(2.828, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1, 2 1, 3 1, 3 2, 2 2, 1 2, 1 1),"
+                + "  (1.2 1.8, 1.7 1.8, 1.7 1.5, 1.2 1.5, 1.2 1.8),"
+                + "  (2.2 1.5, 2.8 1.5, 2.8 1.2, 2.2 1.2, 2.2 1.5))'::GEOMETRY)");
+        rs.next();
+        assertEquals(1.67, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1 0, 2 1 1, 3 1 0, 3 2 0, 2 2 1, 1 2 0, 1 1 0),"
+                + "  (1.2 1.8 0, 1.7 1.8 0, 1.7 1.5 0, 1.2 1.5 0, 1.2 1.8 0),"
+                + "  (2.2 1.5 0, 2.8 1.5 0, 2.8 1.2 0, 2.2 1.2 0, 2.2 1.5 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(3.256, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
 }

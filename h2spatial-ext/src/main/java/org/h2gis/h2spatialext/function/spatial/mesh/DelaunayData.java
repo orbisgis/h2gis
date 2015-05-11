@@ -47,6 +47,7 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.Triangle;
 import org.h2gis.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
@@ -214,6 +215,65 @@ public class DelaunayData {
         } else {
             return gf.createMultiPolygon(new Polygon[0]);
         }
+    }
+    
+    
+    /**
+     * Return the 3D area of all triangles
+     * @return 
+     */
+    public double get3DArea(){
+        if(convertedInput != null) {
+            List<DelaunayTriangle> delaunayTriangle = convertedInput.getTriangles();
+            double sum = 0;
+            for (DelaunayTriangle triangle : delaunayTriangle) {
+                sum += computeTriangleArea3D(triangle);                
+            }
+            return sum;
+        } else {
+            return 0;
+        }
+    }
+    
+    /**
+     * Computes the 3D area of a triangle.
+     *
+     * @param triangle
+     * @return
+     */
+    private double computeTriangleArea3D(DelaunayTriangle triangle) {
+        TriangulationPoint[] points = triangle.points;       
+        TriangulationPoint p1 = points[0];
+        TriangulationPoint p2 = points[1];
+        TriangulationPoint p3 = points[2];        
+        /**
+         * Uses the formula 1/2 * | u x v | where u,v are the side vectors of
+         * the triangle x is the vector cross-product
+         */
+        // side vectors u and v
+        double ux = p2.getX() - p1.getX();
+        double uy = p2.getY() - p1.getY();
+        double uz = p2.getZ() - p1.getZ();
+
+        double vx = p3.getX() - p1.getX();
+        double vy = p3.getY() - p1.getY();
+        double vz = p3.getZ() - p1.getZ();
+        
+        if (Double.isNaN(uz) || Double.isNaN(vz)) {
+            //Math
+        //.abs(((c.x - a.x) * (b.y - a.y) - (b.x - a.x) * (c.y - a.y)) / 2);
+            uz=1;
+            vz=1;
+        }
+
+        // cross-product = u x v
+        double crossx = uy * vz - uz * vy;
+        double crossy = uz * vx - ux * vz;
+        double crossz = ux * vy - uy * vx;
+
+        // tri area = 1/2 * | u x v |
+        double absSq = crossx * crossx + crossy * crossy + crossz * crossz;
+        return Math.sqrt(absSq) / 2;
     }
 
     private void addSegment(Set<LineSegment> segmentHashMap, TriangulationPoint a, TriangulationPoint b) {
