@@ -27,7 +27,6 @@ import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.WKTReader;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
-import org.h2gis.h2spatial.internal.function.spatial.properties.ST_CoordDim;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
@@ -1207,6 +1206,14 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);");
         rs.next();
         assertEquals(10, rs.getDouble(1), 10E-2);
+        rs.close();
+    }    
+    
+    @Test
+    public void test_ST_TriangleSlope4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((181220.94577440753 2429445.7473252066 40, 181231.80941891193 2429459.714868141 40, 181223.1566550865 2429451.765528232 45, 181220.94577440753 2429445.7473252066 40))'::GEOMETRY);");
+        rs.next();
+        assertEquals(256.45, rs.getDouble(1), 10E-2);
         rs.close();
     }
 
