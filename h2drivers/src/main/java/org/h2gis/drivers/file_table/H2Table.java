@@ -28,7 +28,6 @@ package org.h2gis.drivers.file_table;
 import org.h2.api.DatabaseEventListener;
 import org.h2.api.ErrorCode;
 import org.h2.command.ddl.CreateTableData;
-import org.h2.engine.Constants;
 import org.h2.engine.Session;
 import org.h2.engine.SysProperties;
 import org.h2.index.Cursor;

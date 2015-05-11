@@ -167,6 +167,7 @@ public class TriMarkers extends Triangle {
 
     /**
      * Get the normal vector to this triangle, of length 1.
+     * @param t input triangle
      * @return vector normal to the triangle.
      */
     public static Vector3D getNormalVector(Triangle t) throws IllegalArgumentException {
@@ -184,6 +185,8 @@ public class TriMarkers extends Triangle {
 
     /**
      * Get the vector with the highest down slope in the plan.
+     * @param normal
+     * @param epsilon
      * @return the steepest vector.
      */
     public static Vector3D getSteepestVector(final Vector3D normal, final double epsilon) {
@@ -220,5 +223,5 @@ public class TriMarkers extends Triangle {
         } else {
             return (Math.abs(vector.getZ()) / new Vector2D(vector.getX(), vector.getY()).length()) * 100;
         }
-    }
+    }   
 }

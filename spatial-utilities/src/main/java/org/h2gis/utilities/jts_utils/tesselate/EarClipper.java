@@ -35,7 +35,6 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geomgraph.GeometryGraph;
 import com.vividsolutions.jts.operation.relate.RelateComputer;
-import com.vividsolutions.jts.operation.relate.RelateOp;
 
 import java.util.ArrayList;
 import java.util.Arrays;
