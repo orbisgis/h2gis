@@ -47,7 +47,6 @@ import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.Triangle;
 import org.h2gis.h2spatial.internal.function.spatial.aggregate.ST_Accum;
 import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
@@ -260,8 +259,6 @@ public class DelaunayData {
         double vz = p3.getZ() - p1.getZ();
         
         if (Double.isNaN(uz) || Double.isNaN(vz)) {
-            //Math
-        //.abs(((c.x - a.x) * (b.y - a.y) - (b.x - a.x) * (c.y - a.y)) / 2);
             uz=1;
             vz=1;
         }
