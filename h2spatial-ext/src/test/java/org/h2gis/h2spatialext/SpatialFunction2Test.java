@@ -34,7 +34,7 @@ import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -277,7 +277,6 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_LongestLine('POLYGON ((50 400, 50 350, 50 300, 70 290, 80 280, 90 260, 99 254, 109 253, 120 252, 130 252, 140 255, 150 259, 159 264, 168 270, 172 280, 174 290, 175 300, 173 310, 167 320, 158 325, 148 325, 138 323, 129 316, 124 306, 114 312, 108 321, 105 332, 106 342, 112 351, 121 357, 132 359, 143 359, 153 359, 163 360, 173 359, 183 357, 193 355, 203 355, 216 355, 227 355, 238 357, 247 362, 256 369, 264 378, 269 387, 275 396, 273 406, 267 414, 259 421, 250 426, 240 426, 230 426, 220 425, 210 420, 199 418, 189 419, 179 419, 169 419, 158 419, 148 419, 138 419, 126 419, 116 419, 101 419, 83 419, 70 421, 60 427, 52 433, 44 441, 40 440, 50 400))'::geometry, "
                 + "'POLYGON ((310 230, 250 160, 280 130, 310 160, 330 130, 327 119, 327 109, 327 99, 329 89, 332 79, 332 69, 342 67, 349 75, 356 83, 420 70, 390 170, 310 230))'::geometry)");
         rs.next();
-        System.out.println(rs.getString(1));
         assertGeometryEquals("LINESTRING (40 440, 420 70)", rs.getBytes(1));
         rs.close();
     }
@@ -287,7 +286,6 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_LongestLine('MULTIPOLYGON (((50 400, 50 350, 50 300, 70 290, 80 280, 90 260, 99 254, 109 253, 120 252, 130 252, 140 255, 150 259, 159 264, 168 270, 172 280, 174 290, 175 300, 173 310, 167 320, 158 325, 148 325, 138 323, 129 316, 124 306, 114 312, 108 321, 105 332, 106 342, 112 351, 121 357, 132 359, 143 359, 153 359, 163 360, 173 359, 183 357, 193 355, 203 355, 216 355, 227 355, 238 357, 247 362, 256 369, 264 378, 269 387, 275 396, 273 406, 267 414, 259 421, 250 426, 240 426, 230 426, 220 425, 210 420, 199 418, 189 419, 179 419, 169 419, 158 419, 148 419, 138 419, 126 419, 116 419, 101 419, 83 419, 70 421, 60 427, 52 433, 44 441, 40 440, 50 400),(80 400, 100 400, 100 390, 80 390, 80 400),(177 395, 200 395, 200 380, 177 380, 177 395), (74 344, 80 344, 80 310, 74 310, 74 344)))'::geometry, "
                 + "'POLYGON ((310 230, 250 160, 280 130, 310 160, 330 130, 327 119, 327 109, 327 99, 329 89, 332 79, 332 69, 342 67, 349 75, 356 83, 420 70, 390 170, 310 230),(310 190, 330 190, 330 180, 310 180, 310 190), (350 140, 364 140, 364 116, 350 116, 350 140))'::geometry)");
         rs.next();
-        System.out.println(rs.getString(1));
         assertGeometryEquals("LINESTRING (40 440, 420 70)", rs.getBytes(1));
         rs.close();
     }
@@ -297,8 +295,128 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_LongestLine('POLYGON ((320 430, 250 370, 220 260, 266 214, 296 164, 380 160, 390 200, 510 110, 510 160, 506 170, 470 200, 450 210, 453 220, 460 240, 469 248, 500 270, 460 320, 480 340, 500 380, 480 430, 460 450, 430 460, 420 460, 325 472, 320 430))'::geometry, "
                 + "'POLYGON ((320 430, 250 370, 220 260, 266 214, 296 164, 380 160, 390 200, 510 110, 510 160, 506 170, 470 200, 450 210, 453 220, 460 240, 469 248, 500 270, 460 320, 480 340, 500 380, 480 430, 460 450, 430 460, 420 460, 325 472, 320 430))'::geometry)");
         rs.next();
-        System.out.println(rs.getString(1));
         assertGeometryEquals("LINESTRING (325 472, 510 110)", rs.getBytes(1));
         rs.close();
+    }
+    
+    @Test
+    public void test_ST_Perimeter1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Perimeter('POLYGON ((130 390, 280 390, 280 210, 130 210, 130 390))'::GEOMETRY)");
+        rs.next();
+        assertEquals(660, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_Perimeter2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Perimeter('POLYGON ((130 390, 280 390, 280 210, 130 210, 130 390),"
+                + "  (160 360, 214 360, 214 324, 160 324, 160 360),"
+                + "  (205 275, 230 275, 230 250, 205 250, 205 275))'::GEOMETRY)");
+        rs.next();
+        assertEquals(660, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1, 3 1, 3 2, 1 2, 1 1))'::GEOMETRY)");
+        rs.next();
+        assertEquals(2, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON((1 1 0, 3 1 0, 3 2 0, 1 2 0, 1 1 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(2, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON((1 1 1, 3 1 1, 3 2 1, 1 2 1, 1 1 1))'::GEOMETRY)");
+        rs.next();
+        assertEquals(2, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((0 0 0, 10 0 0, 0 10 0,0 0 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(50, rs.getDouble(1), 1e-1);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((0 0 0, 10 0 10, 0 10 0,0 0 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(70.711, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1 0, 2 1 1, 3 1 0, 3 2 0, 2 2 1, 1 2 0, 1 1 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(2.828, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1, 2 1, 3 1, 3 2, 2 2, 1 2, 1 1),"
+                + "  (1.2 1.8, 1.7 1.8, 1.7 1.5, 1.2 1.5, 1.2 1.8),"
+                + "  (2.2 1.5, 2.8 1.5, 2.8 1.2, 2.2 1.2, 2.2 1.5))'::GEOMETRY)");
+        rs.next();
+        assertEquals(1.67, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('POLYGON ((1 1 0, 2 1 1, 3 1 0, 3 2 0, 2 2 1, 1 2 0, 1 1 0),"
+                + "  (1.2 1.8 0, 1.7 1.8 0, 1.7 1.5 0, 1.2 1.5 0, 1.2 1.8 0),"
+                + "  (2.2 1.5 0, 2.8 1.5 0, 2.8 1.2 0, 2.2 1.2 0, 2.2 1.5 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(3.256, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DPerimeter() throws Exception {
+        st.execute("DROP TABLE IF EXISTS input_table;"
+                + "CREATE TABLE input_table(geom Geometry);"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('LINESTRING(1 4, 15 7, 16 17)',2249)),"
+                + "(ST_GeomFromText('LINESTRING(1 4 3, 15 7 9, 16 17 22)',2249)),"
+                + "(ST_GeomFromText('MULTILINESTRING((1 4 3, 15 7 9, 16 17 22),"
+                + "(0 0 0, 1 0 0, 1 2 0, 0 2 1))',2249)),"
+                + "(ST_GeomFromText('POLYGON((1 1, 3 1, 3 2, 1 2, 1 1))',2249)),"
+                + "(ST_GeomFromText('POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))',2249)),"
+                + "(ST_GeomFromText('POLYGON ((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1),"
+                + "  (1.235 1.83, 1.825 1.83, 1.825 1.605, 1.235 1.605, 1.235 1.83),"
+                + "  (2.235 1.63, 2.635 1.63, 2.635 1.155, 2.235 1.155, 2.235 1.63))',2249)),"
+                + "(ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),"
+                + "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))',2249));");
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_3DPerimeter(geom) FROM input_table;");
+        assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(6, rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
+        assertTrue(rs.next());
+        assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
+        st.execute("DROP TABLE input_table;");
     }
 }

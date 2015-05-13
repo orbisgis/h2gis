@@ -201,7 +201,10 @@ public class CreateSpatialExtension {
                 new ST_LineMerge(),
                 new ST_FlipCoordinates(),
                 new ST_MaxDistance(),
-                new ST_LongestLine()};
+                new ST_LongestLine(),
+                new ST_Perimeter(),
+                new ST_3DPerimeter(),
+                new ST_3DArea()};
     }
 
     /**

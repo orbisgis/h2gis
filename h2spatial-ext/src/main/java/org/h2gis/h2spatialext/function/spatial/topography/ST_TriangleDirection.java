@@ -24,18 +24,13 @@
  */
 package org.h2gis.h2spatialext.function.spatial.topography;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.math.Vector2D;
 import com.vividsolutions.jts.math.Vector3D;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 import org.h2gis.utilities.jts_utils.CoordinateUtils;
 import org.h2gis.utilities.jts_utils.TriMarkers;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.util.Vector;
 
 /**
  * This function is used to compute the main slope direction on a triangle.
@@ -44,7 +39,7 @@ import java.util.Vector;
  */
 public class ST_TriangleDirection extends DeterministicScalarFunction {
 
-    private static GeometryFactory gf = new GeometryFactory();
+    private static final GeometryFactory gf = new GeometryFactory();
 
     public ST_TriangleDirection() {
         addProperty(PROP_REMARKS, "Compute the steepest vector director for a triangle\n"
