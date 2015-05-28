@@ -31,6 +31,7 @@
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <stagingDirectory>${project.build.directory}/staging/${project.version}</stagingDirectory>
         <!-- Dependency versions -->
         <maven-bundle-plugin-version>2.3.7</maven-bundle-plugin-version>
         <osgi-core-version>4.3.1</osgi-core-version>
@@ -104,6 +105,13 @@
             <organization>IRSTV CNRS-FR-2488</organization>
         </developer>
     </developers>
+    <distributionManagement>
+        <site>
+          <id>h2gis.website</id>
+          <name>H2GIS module Website</name>
+          <url>scp://javadoc.orbisgis.org/h2gis</url>
+        </site>
+    </distributionManagement>
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-nexus</artifactId>
