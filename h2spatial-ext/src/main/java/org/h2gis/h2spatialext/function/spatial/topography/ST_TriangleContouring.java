@@ -128,6 +128,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         // If true, table query is closed the read again
         private boolean firstRow = true;
         private ResultSet tableQuery;
+        private boolean endOfResultSet = false;
         private String tableName;
         private String spatialFieldName;
         private Integer spatialFieldIndex;
@@ -165,7 +166,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
             if(firstRow) {
                 reset();
             }
-            if(generatedRows.isEmpty()) {
+            while(generatedRows.isEmpty() && !endOfResultSet) {
                 parseRow();
             }
             if(generatedRows.isEmpty()) {
@@ -217,6 +218,8 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
                         generatedRows.add(new GeneratedTriangle(polygon, isoResult.getKey()));
                     }
                 }
+            } else {
+                endOfResultSet = true;
             }
         }
 
