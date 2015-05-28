@@ -63,9 +63,9 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
     public ST_TriangleContouring() {
         addProperty(PROP_REMARKS, "Split triangle into polygons within the specified range of values.\n" +
                 "Iso contouring using Z:\n" +
-                "select * from ST_CONTOURING('input_table',10,20,30,40)\n" +
+                "select * from ST_TRIANGLECONTOURING('input_table',10,20,30,40)\n" +
                 "Iso contouring using table columns\n" +
-                "SELECT * FROM ST_CONTOURING('input_table','m1','m2','m3',10,20,30,40)");
+                "SELECT * FROM ST_TRIANGLECONTOURING('input_table','m1','m2','m3',10,20,30,40)");
         addProperty(PROP_NOBUFFER, true);
     }
 
