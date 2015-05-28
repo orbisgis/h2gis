@@ -10,6 +10,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashSet;
+import java.util.Set;
 
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
@@ -316,6 +318,29 @@ public class TopographyTest {
             assertGeometryBarelyEquals("POLYGON ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertFalse(rs.next());
+        } finally {
+            st.close();
+        }
+    }
+
+    @Test
+    /**
+     * Check if an empty contouring does not stop the parsing of input table.
+     */
+    public void testContouringEmptyRow() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            st.execute("DROP TABLE IF EXISTS TIN");
+            st.execute("CREATE TABLE TIN(pk serial, THE_GEOM GEOMETRY);");
+            st.execute("INSERT INTO TIN(THE_GEOM) VALUES ('POLYGON((0 0 5, 3 0 5, 3 3 10, 0 0 10))')");
+            st.execute("INSERT INTO TIN(THE_GEOM) VALUES ('POLYGON((0 0 0, 3 0 0, 3 3 3, 0 0 0))')");
+            ResultSet rs = st.executeQuery("SELECT pk FROM ST_TriangleContouring('TIN', -1 ,1 , 4)");
+            Set<Integer> pk = new HashSet<Integer>();
+            while(rs.next()) {
+                pk.add(rs.getInt("PK"));
+            }
+            // There is no iso with the first triangle, however there is iso with the second
+            assertTrue(pk.contains(2));
         } finally {
             st.close();
         }
