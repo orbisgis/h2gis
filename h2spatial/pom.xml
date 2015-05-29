@@ -14,7 +14,7 @@
   <licenses>
     <license>
       <name>GPL V3</name>
-      <url>https://github.com/irstv/orbisgis/blob/master/Licenses/license-GPL.txt</url>
+      <url>https://github.com/orbisgis/orbisgis/blob/master/Licenses/license-GPL.txt</url>
     </license>
   </licenses>
   <dependencies>
@@ -28,7 +28,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>cts</artifactId>
       <version>${cts-version}</version>
-      <!-- https://github.com/irstv/CTS -->
+      <!-- https://github.com/orbisgis/CTS -->
     </dependency>
     <dependency>
       <groupId>com.vividsolutions</groupId>
@@ -92,7 +92,7 @@
           <instructions>
             <Export-Package>org.h2gis.h2spatial.*</Export-Package>
             <Fragment-Host>org.h2</Fragment-Host>    <!-- ;bundle-version=${h2-osgi-version} -->
-            <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
+            <Bundle-Vendor>CNRS</Bundle-Vendor>
             <Bundle-Category>JDBC</Bundle-Category>
           </instructions>
         </configuration>

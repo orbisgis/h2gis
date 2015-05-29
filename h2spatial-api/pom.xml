@@ -14,7 +14,7 @@
     <licenses>
         <license>
             <name>GPL V3</name>
-            <url>https://github.com/irstv/orbisgis/blob/master/Licenses/license-GPL.txt</url>
+            <url>https://github.com/orbisgis/orbisgis/blob/master/Licenses/license-GPL.txt</url>
         </license>
     </licenses>
     <build>
