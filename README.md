@@ -5,7 +5,7 @@ engine in the spirit of [PostGIS](http://postgis.net/). It adds support for
 managing spatial features and operations on the new `Geometry` type of H2, the [Open
 Geospatial Consortium](http://www.opengeospatial.org/) (OGC) [Simple Features
 for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL) functions and
-additional spatial functions that we (the [Atelier SIG](http://www.irstv.fr/))
+additional spatial functions that we (the [CNRS](http://www.cnrs.fr/))
 develop. There is currently about 70 spatial functions in H2GIS. 
 
 H2GIS is the root project for the new [OrbisGIS](http://www.orbisgis.org/) data
