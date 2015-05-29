@@ -1,0 +1,23 @@
+---
+layout: news_item
+title: "H2GIS 1.2.2 Released"
+date: "2015-05-29 15:00:51 +0100"
+author: nicolas-f
+version: 1.2.2
+categories: [release]
+---
+H2GIS version 1.2.2 use H2 version 1.4.186
+
+New Function list:
+
+ * ST_3DArea
+ * ST_3DPerimeter
+ * ST_BoundingCircleCenter
+ * ST_FlipCoordinates
+ * ST_GeometryShadow
+ * ST_LongestLine
+ * ST_MaxDistance
+ * ST_MinimumBoundingCircle
+ * ST_Perimeter
+ * ST_Tessellate
+ * ST_Voronoi
