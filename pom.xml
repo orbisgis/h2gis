@@ -8,10 +8,10 @@
     <name>H2GIS</name>
     <description>H2GIS is a spatial extension of the H2 database engine in the spirit of PostGIS.  It adds support for the Open Geospatial Consortium (OGC) Simple Features for SQL (SFSQL) functions.</description>
     <organization>
-        <name>IRSTV CNRS-FR-2488</name>
-        <url>http://www.irstv.fr/</url>
+        <name>CNRS</name>
+        <url>http://www.orbisgis.org</url>
     </organization>
-    <url>http://github.com/irstv/H2GIS</url>
+    <url>http://github.com/orbisgis/H2GIS</url>
     <licenses>
         <license>
             <name>GNU General Public License (GPLV3+)</name>
@@ -44,9 +44,9 @@
         <junit-version>4.12</junit-version>
     </properties>
     <scm>
-        <connection>scm:git:https://github.com/irstv/H2GIS.git</connection>
-        <developerConnection>scm:git:https://github.com/irstv/H2GIS.git</developerConnection>
-        <url>git@github.com:irstv/H2GIS.git</url>
+        <connection>scm:git:https://github.com/orbisgis/H2GIS.git</connection>
+        <developerConnection>scm:git:https://github.com/orbisgis/H2GIS.git</developerConnection>
+        <url>git@github.com:orbisgis/H2GIS.git</url>
     </scm>
     <profiles>
         <profile>
@@ -94,15 +94,15 @@
     <developers>
         <developer>
             <name>Nicolas Fortin</name>
-            <organization>IRSTV CNRS-FR-2488</organization>
+            <organization>CNRS-FR-2488</organization>
         </developer>
         <developer>
             <name>Erwan Bocher</name>
-            <organization>IRSTV CNRS-FR-2488</organization>
+            <organization>CNRS-FR-2488</organization>
         </developer>
         <developer>
             <name>Adam Gouge</name>
-            <organization>IRSTV CNRS-FR-2488</organization>
+            <organization>CNRS-FR-2488</organization>
         </developer>
     </developers>
     <distributionManagement>

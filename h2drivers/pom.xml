@@ -101,7 +101,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>cts</artifactId>
             <version>${cts-version}</version>
-            <!-- https://github.com/irstv/CTS -->
+            <!-- https://github.com/orbisgis/CTS -->
         </dependency>
     </dependencies>
 </project>
