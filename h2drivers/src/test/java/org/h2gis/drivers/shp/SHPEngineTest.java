@@ -307,4 +307,35 @@ public class SHPEngineTest {
             rs.close();
         }
     }
+
+    /**
+     * Check the call of special case {@link H2TableIndex#find(org.h2.engine.Session, org.h2.result.SearchRow, org.h2.result.SearchRow)} with null at first and last
+     * @throws SQLException
+     */
+    @Test
+    public void readSHPOrderDataTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM shptable order by PK limit 8");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(2, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(3, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(4, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(5, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(6, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(7, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(8, rs.getInt("gid"));
+        rs.close();
+        st.execute("drop table shptable");
+    }
 }
