@@ -82,7 +82,8 @@ public class H2TableIndex extends BaseIndex {
             IndexColumn indexColumn = new IndexColumn();
             indexColumn.columnName = PK_COLUMN_NAME;
             indexColumn.column = PKColumn;
-            initBaseIndex(table, id, indexName, new IndexColumn[]{indexColumn}, IndexType.createPrimaryKey(true, true));
+            indexColumn.sortType = SortOrder.ASCENDING;
+            initBaseIndex(table, id, indexName, new IndexColumn[]{indexColumn}, IndexType.createPrimaryKey(true, false));
     }
 
     @Override
@@ -131,13 +132,18 @@ public class H2TableIndex extends BaseIndex {
     @Override
     public Cursor find(Session session, SearchRow first, SearchRow last) {
         if (!isScanIndex) {
-            if (first == null || last == null) {
-                throw DbException.throwInternalError();
-            }
             Row remakefirst = new Row(null, 0);
-            remakefirst.setKey(first.getValue(0).getLong());
+            if(first != null) {
+                remakefirst.setKey(first.getValue(0).getLong());
+            } else {
+                remakefirst.setKey(1);
+            }
             Row remakeLast = new Row(null, 0);
-            remakeLast.setKey(last.getValue(0).getLong());
+            if(last != null) {
+                remakeLast.setKey(last.getValue(0).getLong());
+            } else {
+                remakeLast.setKey(getRowCount(session));
+            }
             first = remakefirst;
             last = remakeLast;
         }
