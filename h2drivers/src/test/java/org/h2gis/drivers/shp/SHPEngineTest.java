@@ -32,7 +32,9 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.hamcrest.CoreMatchers;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -325,6 +327,36 @@ public class SHPEngineTest {
         assertEquals(2, rs.getInt("gid"));
         assertTrue(rs.next());
         assertEquals(3, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(4, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(5, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(6, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(7, rs.getInt("gid"));
+        assertTrue(rs.next());
+        assertEquals(8, rs.getInt("gid"));
+        rs.close();
+        st.execute("drop table shptable");
+    }
+
+    /**
+     * Check the call of special case {@link H2TableIndex#find(org.h2.engine.Session, org.h2.result.SearchRow, org.h2.result.SearchRow)} with null at last part only.
+     * @throws SQLException
+     */
+    @Test
+    public void readSHPFilteredOrderDataTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        //
+        ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM shptable where PK >=4 order by PK limit 5");
+        assertTrue(rs.next());
+        Assert.assertThat(rs.getString(1), CoreMatchers.containsString("PUBLIC.\"SHPTABLE.PK_INDEX_1\": PK >= 4"));
+        rs.close();
+        // Query declared Table columns
+        rs = st.executeQuery("SELECT * FROM shptable where PK >=4 order by PK limit 5");
         assertTrue(rs.next());
         assertEquals(4, rs.getInt("gid"));
         assertTrue(rs.next());
