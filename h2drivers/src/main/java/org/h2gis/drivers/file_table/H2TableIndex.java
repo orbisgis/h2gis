@@ -252,6 +252,12 @@ public class H2TableIndex extends BaseIndex {
         public SearchRow getSearchRow() {
             Row row =  new Row(new Value[tIndex.getTable().getColumns().length], Row.MEMORY_CALCULATE);
             row.setKey(rowIndex);
+            // Add indexed columns values
+            for(IndexColumn column : tIndex.getIndexColumns()) {
+                if(column.column.getColumnId() >= 0) {
+                    row.setValue(column.column.getColumnId(), ValueLong.get(rowIndex));
+                }
+            }
             return row;
         }
 
