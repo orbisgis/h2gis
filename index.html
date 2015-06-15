@@ -28,7 +28,7 @@ description: A spatial extension of the H2 database. Compliant, Solid, Tested.
     </div>
     <div class="unit one-third">
         <h2>Tested <a href="https://travis-ci.org/orbisgis/h2gis"><img src="https://travis-ci.org/orbisgis/h2gis.png?branch=master" alt="Build status"></a></h2>
-      <p>Passes over 744 <a href="http://sonar.orbisgis.org/drilldown/measures/2649?metric=tests" target="_blank">unit tests</a> (and counting).</p>
+      <p>Passes over 758 <a href="http://sonar.orbisgis.org/drilldown/measures/2649?metric=tests" target="_blank">unit tests</a> (and counting).</p>
     </div>
     <div class="clear"></div>
   </div>
@@ -47,35 +47,15 @@ description: A spatial extension of the H2 database. Compliant, Solid, Tested.
         </p>
     </div>
     <div class="unit golden-large code">
-      <p class="title">Quick-start Instructions</p>
-      <div class="shell">
-        <p class="line">
-          <span class="output"># Download, unzip & run jar</span>
-        </p>
-        <p class="line">
-          <span class="path">~</span>
-          <span class="prompt">$</span>
-          <span class="command">wget https://github.com/orbisgis/h2gis/releases/download/v1.2.2/h2-dist-1.2.2-bin.zip -O h2gis.zip</span>
-        </p>
-        <p class="line">
-          <span class="path">~</span>
-          <span class="prompt">$</span>
-          <span class="command">unzip h2gis.zip</span>
-        </p>
-        <p class="line">
-          <span class="path">~</span>
-          <span class="prompt">$</span>
-          <span class="command">cd h2gis-standalone</span>
-        </p>
-        <p class="line">
-          <span class="path">~/h2gis-standalone</span>
-          <span class="prompt">$</span>
-          <span class="command">java -jar h2-dist-1.2.2.jar</span>
-        </p>
-        <p class="line">
-          <span class="output"># => Click Connect in the web interface</span>
-        </p>
-      </div>
+      <p class="title">Spatial query</p>
+{% highlight mysql %}
+-- Count White Walkers 5km around "The Wall"
+SELECT COUNT(*) AS NB_WHITE_WALKERS 
+FROM CREATURES, LOCATIONS LOC WHERE 
+ST_INTERSECTS(ST_BUFFER(LOC.THE_GEOM, 5000),
+CREATURES.POSITION) AND LOC.NAME = 'THE WALL'
+AND CREATURES.NAME = 'WHITE WALKERS';
+{% endhighlight %}
     </div>
     <div class="clear"></div>
   </div>
