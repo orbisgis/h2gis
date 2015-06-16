@@ -1,0 +1,44 @@
+- title: Getting Started
+  page: index
+  docs:
+  - home
+  - quickstart
+  - h2drivers
+  - spatial-indices
+  - spatial-jdbc
+  - function-aliases
+  - embedded-spatial-db
+  - functions
+
+- title: Geometry 2D
+  page: geom2D
+  docs:
+  - geom2D/affine-transformations
+  - geom2D/geometry-conversion
+  - geom2D/edit-geometries
+  - geom2D/operators
+  - geom2D/predicates
+  - geom2D/process-geometries
+  - geom2D/projections
+  - geom2D/properties
+  - geom2D/trigonometry
+  
+- title: Geometry 3D
+  page: geom3D
+  docs:
+  - geom3D/geometry-conversion
+  - geom3D/geometry-creation
+  - geom3D/edit-geometries
+  - geom3D/distance-functions
+  - geom3D/properties
+  - geom3D/topography
+  - geom3D/triangulation
+  
+- title: Applications
+  page: applications
+  docs:
+  - h2network
+  
+- title: Raster
+  page: raster
+  docs:
