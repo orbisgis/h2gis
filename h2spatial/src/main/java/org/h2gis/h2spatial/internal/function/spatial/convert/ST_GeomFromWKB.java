@@ -29,7 +29,8 @@ import java.sql.SQLException;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- *
+ * Convert a WKB object to a geometry
+ * 
  * @author Erwan Bocher
  */
 public class ST_GeomFromWKB extends DeterministicScalarFunction{
