@@ -2,19 +2,22 @@
 
 <ul>
 {% for item in items %}
-  {% assign item_url = item | prepend:'/docs/dev/' | append:'/' %}
+  {% assign menu_tuple = item | split: ',' %}
+  {% assign page_location = menu_tuple[0] %}
+  {% assign page_title = menu_tuple[1] | strip %}
+  {% assign item_url = page_location | prepend:'/docs/dev/' | append:'/' %}
 
-  {% if item_url == page.url or item == page.category %}
+  {% if item_url == page.url or page_location == page.category %}
     {% assign c = "current" %}
   {% else %}
     {% assign c = "" %}
   {% endif %}
 
-  {% assign mypage = site.pages | where:"url",item_url %}
-    {% if mypage[0].title == 'Functions' %}
-      <li class="{{ c }}"><a href="{{ site.baseurl }}{{ mypage[0].url }}"><b>{{ mypage[0].title }}</b></a></li>
+
+    {% if page_location == 'Functions' %}
+      <li class="{{ c }}"><a href="{{ site.baseurl }}{{ item_url }}"><b>{{ page_title }}</b></a></li>
     {% else %}
-      <li class="{{ c }}"><a href="{{ site.baseurl }}{{ mypage[0].url }}">{{ mypage[0].title }}</a></li>
+      <li class="{{ c }}"><a href="{{ site.baseurl }}{{ item_url }}">{{ page_title }}</a></li>
     {% endif %}
 {% endfor %}
 
