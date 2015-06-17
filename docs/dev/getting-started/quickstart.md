@@ -6,8 +6,7 @@ next_section: h2drivers
 permalink: /docs/dev/quickstart/
 ---
 
-Download the latest H2GIS web interface on the home page and run the jar
-contained in the zip file. Then click on **Connect** in the web interface. You
+Download the latest H2GIS web interface on the home page, unzip it and finally run the jar called h2-dist. Then click on **Connect** in the web interface. You
 will of course need a working [Java][] runtime environment.
 
 Command-line gurus, just execute the following commands:
@@ -36,5 +35,19 @@ To open a shape file and show its contents:
 CALL FILE_TABLE('/home/user/myshapefile.shp', 'tablename');
 SELECT * FROM TABLENAME;
 {% endhighlight %}
+
+## Web interface
+
+This is the built-in web interface of the H2 Database:
+
+<img class="displayed" src="../getting-started/screenshot_h2gui.png"/>
+
+## Graphical user interface
+
+Software GUI that use H2GIS:
+
+<a href="http://www.orbisgis.org" target="_blank">OrbisGIS 5.1
+<img class="displayed" src="../getting-started/screenshot_wms.png"/></a>
+
 
 [Java]: http://java.com/en/download/index.jsp

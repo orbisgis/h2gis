@@ -28,34 +28,45 @@ description: A spatial extension of the H2 database. Compliant, Solid, Tested.
     </div>
     <div class="unit one-third">
         <h2>Tested <a href="https://travis-ci.org/orbisgis/h2gis"><img src="https://travis-ci.org/orbisgis/h2gis.png?branch=master" alt="Build status"></a></h2>
-      <p>Passes over 758 <a href="http://sonar.orbisgis.org/drilldown/measures/2649?metric=tests" target="_blank">unit tests</a> (and counting).</p>
+      <p>Passes over 766 <a href="http://jenkins.orbisgis.org/job/H2GIS/lastStableBuild/testReport/" target="_blank">unit tests</a> (and counting).</p>
     </div>
     <div class="clear"></div>
   </div>
 </section>
 <section class="quickstart">
   <div class="grid">
-    <div class="unit golden-small center-on-mobiles">
-        <h4>Getting started<br>couldn't be simpler.<br></h4>
-        <p style="text-align:center">
-          <div id="cf">
-            <a href="https://github.com/orbisgis/h2gis/releases/download/v1.2.2/h2-dist-1.2.2-bin.zip" onclick="_gaq.push(['_trackEvent','Download','h2gis-jar',this.href]);setTimeout(function(){return true;},200);">
-                <img class="bottom" src="{{ site.baseurl }}/img/download_button_hover.png" alt="Download"/>
-                <img class="top" src="{{ site.baseurl }}/img/download_button.png" alt="Download"/>
-            </a>
-          </div>
-        </p>
+    <div class="unit golden-small center-on-mobiles align-center">
+        <div class="article"><h4>Getting started<br>couldn't be simpler.<br></h4></div>
+        <div style="padding: 10px;">
+            <div id="cf" style="display:inline-block">
+                <a href="https://github.com/orbisgis/h2gis/releases/download/v1.2.2/h2-dist-1.2.2-bin.zip"
+                   onclick="_gaq.push(['_trackEvent','Download','h2gis-jar',this.href]);setTimeout(function(){return true;},200);">
+                    <img class="bottom" src="{{ site.baseurl }}/img/download_button_hover.png" alt="Download"/>
+                    <img class="top" src="{{ site.baseurl }}/img/download_button.png" alt="Download"/>
+                </a>
+            </div>
+            <div id="cf" style="display:inline-block">
+                <a href="/docs/dev/quickstart/">
+                    <img class="bottom" src="{{ site.baseurl }}/img/quickstart_button_hover.png"
+                         alt="Quick start tutorial"/>
+                    <img class="top" src="{{ site.baseurl }}/img/quickstart_button.png" alt="Quick start tutorial"/>
+                </a>
+            </div>
+        </div>
     </div>
     <div class="unit golden-large code">
-      <p class="title">Spatial query</p>
+      <p class="title">Spatial query sample</p>
+        <div class="shell">
 {% highlight mysql %}
--- Count White Walkers 5km around "The Wall"
-SELECT COUNT(*) AS NB_WHITE_WALKERS 
-FROM CREATURES, LOCATIONS LOC WHERE 
-ST_INTERSECTS(ST_BUFFER(LOC.THE_GEOM, 5000),
-CREATURES.POSITION) AND LOC.NAME = 'THE WALL'
+-- Count White Walkers 500m around "The Wall"
+SELECT COUNT(*) AS NB_WHITE_WALKERS
+FROM CREATURES, LOCATIONS LOC
+WHERE ST_INTERSECTS(ST_BUFFER(LOC.THE_GEOM, 500),
+CREATURES.POSITION)
+AND LOC.NAME = 'THE WALL'
 AND CREATURES.NAME = 'WHITE WALKERS';
 {% endhighlight %}
+        </div>
     </div>
     <div class="clear"></div>
   </div>
