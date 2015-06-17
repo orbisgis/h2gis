@@ -10,9 +10,12 @@
     {% assign c = "" %}
   {% endif %}
 
-  {% for p in site.docs.dev %}
-    <li class="{{ c }}"><a href="{{ site.url }}{{ p.url }}">{{ p.title }}</a></li>
-  {% endfor %}
-
+  {% assign mypage = site.pages | where:"url",item_url %}
+    {% if mypage[0].title == 'Functions' %}
+      <li class="{{ c }}"><a href="{{ site.baseurl }}{{ mypage[0].url }}"><b>{{ mypage[0].title }}</b></a></li>
+    {% else %}
+      <li class="{{ c }}"><a href="{{ site.baseurl }}{{ mypage[0].url }}">{{ mypage[0].title }}</a></li>
+    {% endif %}
 {% endfor %}
+
 </ul>
