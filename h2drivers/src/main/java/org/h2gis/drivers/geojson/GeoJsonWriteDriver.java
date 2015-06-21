@@ -33,7 +33,7 @@ import org.h2gis.utilities.TableLocation;
 
 import java.io.*;
 import java.sql.*;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import org.h2gis.drivers.utility.FileUtil;
@@ -197,7 +197,7 @@ public class GeoJsonWriteDriver {
      * @throws SQLException
      */
     private void cacheMetadata(ResultSetMetaData resultSetMetaData) throws SQLException {
-        cachedColumnNames = new HashMap<String, Integer>();
+        cachedColumnNames = new LinkedHashMap<String, Integer>();
         for (int i = 1; i <= resultSetMetaData.getColumnCount(); i++) {
             final String fieldTypeName = resultSetMetaData.getColumnTypeName(i);
             if (!fieldTypeName.equalsIgnoreCase("geometry")
