@@ -578,7 +578,7 @@ public class GeoJsonReaderDriver {
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ to parse the coordinate
-            Point point = GF.createPoint(parseCoordinate(jp));            
+            Point point = GF.createPoint(parseCoordinate(jp));
             return point;
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");

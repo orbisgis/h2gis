@@ -416,4 +416,18 @@ public class SpatialFunction2Test {
         assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
         st.execute("DROP TABLE input_table;");
     }
+    
+    @Test
+    public void test_ST_GeomFromGML() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GeomFromGML('"
+                + "<gml:LineString srsName=\"EPSG:4269\">"
+                + "<gml:coordinates>"
+                + "-71.16028,42.258729 -71.160837,42.259112 -71.161143,42.25932"
+                + "</gml:coordinates>"
+                + "</gml:LineString>');");
+        
+        rs.close();
+    }
+    
 }
