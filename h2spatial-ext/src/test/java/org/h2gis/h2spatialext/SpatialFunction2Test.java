@@ -495,4 +495,13 @@ public class SpatialFunction2Test {
         }
     }
     
+    @Test
+    public void test_ST_AsGML1() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GeomFromGML(ST_ASGML('POINT(-2.070365 47.643713)'::GEOMETRY));");
+        rs.next();
+        assertGeometryEquals("POINT (-2.070365 47.643713)", rs.getString(1));
+        rs.close();
+    }
+    
 }

@@ -207,7 +207,8 @@ public class CreateSpatialExtension {
                 new ST_GeomFromGML(),
                 new ST_GeomFromGeoJSON(),
                 new ST_OSMMapLink(),
-                new ST_GoogleMapLink()};
+                new ST_GoogleMapLink(),
+                new ST_AsGML()};
     }
 
     /**
