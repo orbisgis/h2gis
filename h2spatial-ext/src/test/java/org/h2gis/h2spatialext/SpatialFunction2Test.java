@@ -384,6 +384,35 @@ public class SpatialFunction2Test {
     }
     
     @Test
+    public void test_ST_3DArea9() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('MULTIPOLYGON(((0 0 0, 10 0 10, 0 10 0,0 0 0)),  ((0 0 0, 10 0 10, 0 10 0,0 0 0)))');");
+        rs.next();
+        assertEquals(141.422, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea10() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('GEOMETRYCOLLECTION("
+                + "MULTIPOINT((4 4), (1 1), (1 0), (0 3)),"
+                + "LINESTRING(2 1, 1 3, 5 2),"
+                + "POLYGON((0 0 0, 10 0 10, 0 10 0,0 0 0)))');");
+        rs.next();
+        assertEquals(70.711, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea11() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('GEOMETRYCOLLECTION("
+                + "MULTIPOINT((4 4), (1 1), (1 0), (0 3)),"
+                + "LINESTRING(2 1, 1 3, 5 2))');");
+        rs.next();
+        assertEquals(0.d, rs.getDouble(1), 1e-1);
+        rs.close();
+    }
+    
+    @Test
     public void test_ST_3DPerimeter() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
