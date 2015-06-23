@@ -563,4 +563,34 @@ public class SpatialFunctionTest {
         Statement st = connection.createStatement();
         st.executeQuery("SELECT ST_PointFromWKB(ST_AsBinary('LINESTRING(0 10, 10 10)'::GEOMETRY));");
     }
+    
+    @Test
+    public void test_ST_GeomFromWKB1() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_GeomFromWKB(ST_AsBinary('POINT(0 10)'::GEOMETRY))");
+        rs.next();
+        assertEquals("POINT (0 10)", rs.getString(1));
+        assertFalse(rs.next());
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_GeomFromWKB2() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_SRID(ST_GeomFromWKB(ST_AsBinary('POINT(0 10)'::GEOMETRY), 4326))");
+        rs.next();
+        assertEquals(4326, rs.getInt(1));        
+        assertFalse(rs.next());
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_GeomFromWKB3() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_GeomFromWKB(ST_AsBinary('LINESTRING(0 10, 10 10)'::GEOMETRY))");
+        rs.next();
+        assertEquals("LINESTRING (0 10, 10 10)", rs.getString(1));
+        assertFalse(rs.next());
+        rs.close();
+    }
 }
