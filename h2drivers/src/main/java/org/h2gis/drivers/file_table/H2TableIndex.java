@@ -152,7 +152,12 @@ public class H2TableIndex extends BaseIndex {
 
     @Override
     public boolean canScan() {
-        return isScanIndex;
+        return true;
+    }
+
+    @Override
+    public boolean canFindNext() {
+        return true;
     }
 
     @Override
@@ -163,7 +168,10 @@ public class H2TableIndex extends BaseIndex {
         for (Column column : columns) {
             int index = column.getColumnId();
             int mask = masks[index];
-            if ((mask & IndexCondition.EQUALITY) != IndexCondition.EQUALITY) {
+            if ((mask & IndexCondition.EQUALITY) != IndexCondition.EQUALITY &&
+                    (mask & IndexCondition.START) != IndexCondition.START &&
+                    (mask & IndexCondition.END) != IndexCondition.END &&
+                    (mask & IndexCondition.RANGE) != IndexCondition.RANGE) {
                 return Double.MAX_VALUE;
             }
         }
@@ -244,6 +252,12 @@ public class H2TableIndex extends BaseIndex {
         public SearchRow getSearchRow() {
             Row row =  new Row(new Value[tIndex.getTable().getColumns().length], Row.MEMORY_CALCULATE);
             row.setKey(rowIndex);
+            // Add indexed columns values
+            for(IndexColumn column : tIndex.getIndexColumns()) {
+                if(column.column.getColumnId() >= 0) {
+                    row.setValue(column.column.getColumnId(), ValueLong.get(rowIndex));
+                }
+            }
             return row;
         }
 

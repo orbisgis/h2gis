@@ -456,6 +456,25 @@ public class GeojsonImportExportTest {
     }
     
     @Test
+    public void testWriteReadGeojsonMixedGeometries() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MIXED");
+        stat.execute("create table TABLE_MIXED(the_geom GEOMETRY)");
+        stat.execute("insert into TABLE_MIXED values( 'MULTIPOINT ((140 260), (246 284))')");
+        stat.execute("insert into TABLE_MIXED values( 'LINESTRING (150 290, 180 170, 266 275)')");
+        stat.execute("CALL GeoJsonWrite('target/mixedgeom.geojson', 'TABLE_MIXED');");
+        stat.execute("CALL GeoJsonRead('target/mixedgeom.geojson', 'TABLE_MIXED_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MIXED_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((140 260), (246 284))")));
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING (150 290, 180 170, 266 275)")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MIXED_READ");
+        stat.close();
+    }
+    
+    
     public void testReadGeoJSON1() throws Exception {
         Statement stat = connection.createStatement();        
         ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[10,1]}')");
