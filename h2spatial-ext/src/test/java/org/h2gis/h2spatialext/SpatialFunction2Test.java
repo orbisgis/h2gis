@@ -502,7 +502,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery(
                 "SELECT ST_GoogleMapLink('POINT(-2.070365 47.643713)'::GEOMETRY);");
         rs.next();
-        assertEquals("https://maps.google.de/maps?q=47.643713,-2.070365&z=19&t=m", rs.getString(1));
+        assertEquals("https://maps.google.com/maps?ll=47.643713,-2.070365&z=19&t=m", rs.getString(1));
         rs.close();
     }
     
@@ -511,7 +511,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery(
                 "SELECT ST_GoogleMapLink('POINT(-2.070365 47.643713)'::GEOMETRY, 'p');");
         rs.next();
-        assertEquals("https://maps.google.de/maps?q=47.643713,-2.070365&z=19&t=p", rs.getString(1));
+        assertEquals("https://maps.google.com/maps?ll=47.643713,-2.070365&z=19&t=p", rs.getString(1));
         rs.close();
     }
     
@@ -522,6 +522,15 @@ public class SpatialFunction2Test {
         } catch (JdbcSQLException e) {
             throw e.getOriginalCause();
         }
+    }
+    
+    @Test
+    public void test_ST_GoogleMapLink4() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GoogleMapLink('POINT(-2.070365 47.643713)'::GEOMETRY, 'p', 8);");
+        rs.next();
+        assertEquals("https://maps.google.com/maps?ll=47.643713,-2.070365&z=8&t=p", rs.getString(1));
+        rs.close();
     }
     
     @Test

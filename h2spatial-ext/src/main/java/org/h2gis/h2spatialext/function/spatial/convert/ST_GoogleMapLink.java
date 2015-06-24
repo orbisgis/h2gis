@@ -84,7 +84,7 @@ public class ST_GoogleMapLink extends DeterministicScalarFunction{
         try {
             LayerType layer = LayerType.valueOf(layerType.toLowerCase());
             Coordinate centre = geom.getEnvelopeInternal().centre();
-            StringBuilder sb = new StringBuilder("https://maps.google.de/maps?q=");
+            StringBuilder sb = new StringBuilder("https://maps.google.com/maps?ll=");
             sb.append(centre.y);
             sb.append(",");
             sb.append(centre.x);
