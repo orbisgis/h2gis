@@ -29,14 +29,14 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * This class is used to generate an OMS map link URL from a geometry.
+ * This class is used to generate an OSM map link URL from a geometry.
  * 
  * @author Erwan Bocher
  */
 public class ST_OSMMapLink extends DeterministicScalarFunction {
 
     public ST_OSMMapLink() {
-        addProperty(PROP_REMARKS, "Generate an OMS map link URL based on the bounding box of the input geometry.\n"
+        addProperty(PROP_REMARKS, "Generate an OSM map link URL based on the bounding box of the input geometry.\n"
                 + "An optional argument could be used to place a marker on the center of the bounding box.");
     }
 
@@ -46,7 +46,7 @@ public class ST_OSMMapLink extends DeterministicScalarFunction {
     }
 
     /**
-     * Create the OMS map link based on the bounding box of the geometry.
+     * Create the OSM map link based on the bounding box of the geometry.
      *
      * @param geom the input geometry.
      * @return
@@ -56,7 +56,7 @@ public class ST_OSMMapLink extends DeterministicScalarFunction {
     }
 
     /**
-     * Create the OMS map link based on the bounding box of the geometry.
+     * Create the OSM map link based on the bounding box of the geometry.
      *
      * @param geom the input geometry.
      * @param withMarker true to place a marker on the center of the BBox.
