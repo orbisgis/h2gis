@@ -31,6 +31,7 @@ import org.h2gis.drivers.dbf.DBFWrite;
 import org.h2gis.drivers.geojson.GeoJsonRead;
 import org.h2gis.drivers.geojson.GeoJsonWrite;
 import org.h2gis.drivers.geojson.ST_AsGeoJSON;
+import org.h2gis.drivers.geojson.ST_GeomFromGeoJSON;
 import org.h2gis.drivers.gpx.GPXRead;
 import org.h2gis.drivers.kml.KMLWrite;
 import org.h2gis.drivers.kml.ST_AsKml;
@@ -202,7 +203,12 @@ public class CreateSpatialExtension {
                 new ST_LongestLine(),
                 new ST_Perimeter(),
                 new ST_3DPerimeter(),
-                new ST_3DArea()};
+                new ST_3DArea(),
+                new ST_GeomFromGML(),
+                new ST_GeomFromGeoJSON(),
+                new ST_OSMMapLink(),
+                new ST_GoogleMapLink(),
+                new ST_AsGML()};
     }
 
     /**

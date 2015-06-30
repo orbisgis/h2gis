@@ -51,6 +51,7 @@ public class GeojsonImportExportTest {
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsGeoJSON(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new GeoJsonWrite(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new GeoJsonRead(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_GeomFromGeoJSON(), "");
     }
 
     @AfterClass
@@ -473,6 +474,33 @@ public class GeojsonImportExportTest {
         assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING (150 290, 180 170, 266 275)")));
         res.close();
         stat.execute("DROP TABLE IF EXISTS TABLE_MIXED_READ");
+        stat.close();
+    }
+    
+    
+    public void testReadGeoJSON1() throws Exception {
+        Statement stat = connection.createStatement();        
+        ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[10,1]}')");
+        res.next();
+        assertTrue(res.getString(1).equals("POINT (10 1)"));
+        stat.close();
+    }
+    
+    @Test
+    public void testReadGeoJSON2() throws Exception {
+        Statement stat = connection.createStatement();        
+        ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON('{\"type\":\"LineString\",\"coordinates\":[[1,1],[10,10]]}')");
+        res.next();
+        assertTrue(res.getString(1).equals("LINESTRING (1 1, 10 10)"));
+        stat.close();
+    }
+    
+    @Test
+    public void testReadGeoJSON3() throws Exception {
+        Statement stat = connection.createStatement();        
+        ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON('{ \"type\": \"MultiPoint\", \"coordinates\": [ [100, 0], [101, 1] ]}')");
+        res.next();
+        assertTrue(res.getString(1).equals("MULTIPOINT ((100 0), (101 1))"));
         stat.close();
     }
 
