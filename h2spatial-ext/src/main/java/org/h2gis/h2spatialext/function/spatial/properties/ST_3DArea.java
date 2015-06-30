@@ -23,6 +23,10 @@
 package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
+import java.util.ArrayList;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialext.function.spatial.mesh.DelaunayData;
 
@@ -44,27 +48,33 @@ public class ST_3DArea extends DeterministicScalarFunction{
     }
     
     /**
-     * 
-     * @param geometry
-     * @return 
-     */
-    public static Double st3darea(Geometry geometry){
-        if(geometry==null){
-            return null;
-        }
-        if(geometry.getDimension()<2){
-            return 0d;
-        }
-        return compute3DArea(geometry);
-    }
-
-    /**
-     * Compute the 3D area of a polygon or a multipolygon
+     * Compute the 3D area of a polygon a geometrycollection that contains
+     * polygons
      *
      * @param geometry
      * @return
      */
-    private static Double compute3DArea(Geometry geometry) {
+    public static Double st3darea(Geometry geometry) {
+        if (geometry == null) {
+            return null;
+        }
+        double area = 0;
+        for (int idPoly = 0; idPoly < geometry.getNumGeometries(); idPoly++) {
+            Geometry subGeom = geometry.getGeometryN(idPoly);
+            if (subGeom instanceof Polygon) {
+                area += compute3DArea((Polygon) subGeom);
+            }
+        }
+        return area;
+    }
+
+    /**
+     * Compute the 3D area of a polygon
+     *
+     * @param geometry
+     * @return
+     */
+    private static Double compute3DArea(Polygon geometry) {
         DelaunayData delaunayData = new DelaunayData();
         delaunayData.put(geometry, DelaunayData.MODE.TESSELLATION);
         // Do triangulation

@@ -26,6 +26,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 import org.junit.After;
@@ -383,6 +384,35 @@ public class SpatialFunction2Test {
     }
     
     @Test
+    public void test_ST_3DArea9() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('MULTIPOLYGON(((0 0 0, 10 0 10, 0 10 0,0 0 0)),  ((0 0 0, 10 0 10, 0 10 0,0 0 0)))');");
+        rs.next();
+        assertEquals(141.422, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea10() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('GEOMETRYCOLLECTION("
+                + "MULTIPOINT((4 4), (1 1), (1 0), (0 3)),"
+                + "LINESTRING(2 1, 1 3, 5 2),"
+                + "POLYGON((0 0 0, 10 0 10, 0 10 0,0 0 0)))');");
+        rs.next();
+        assertEquals(70.711, rs.getDouble(1), 1e-3);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_3DArea11() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_3DArea('GEOMETRYCOLLECTION("
+                + "MULTIPOINT((4 4), (1 1), (1 0), (0 3)),"
+                + "LINESTRING(2 1, 1 3, 5 2))');");
+        rs.next();
+        assertEquals(0.d, rs.getDouble(1), 1e-1);
+        rs.close();
+    }
+    
+    @Test
     public void test_ST_3DPerimeter() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
@@ -416,4 +446,100 @@ public class SpatialFunction2Test {
         assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
         st.execute("DROP TABLE input_table;");
     }
+    
+    @Test
+    public void test_ST_GeomFromGML() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GeomFromGML('"
+                + "<gml:LineString srsName=\"EPSG:4269\">"
+                + "<gml:coordinates>"
+                + "-71.16028,42.258729 -71.160837,42.259112 -71.161143,42.25932"
+                + "</gml:coordinates>"
+                + "</gml:LineString>');");
+        rs.next();
+        assertGeometryEquals("LINESTRING (-71.16028 42.258729, -71.160837 42.259112, -71.161143 42.25932)", rs.getString(1));
+        rs.close();
+    }    
+    
+    @Test
+    public void test_ST_OSMMapLink1() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_OSMMapLink('POINT(-2.070365 47.643713)'::GEOMETRY);");
+        rs.next();
+        assertEquals("http://www.openstreetmap.org/?minlon=-2.070365&minlat=47.643713&maxlon=-2.070365&maxlat=47.643713", rs.getString(1));
+        rs.close();
+    }
+
+    @Test
+    public void test_ST_OSMMapLink2() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_OSMMapLink('POINT(-2.070365 47.643713)'::GEOMETRY, true);");
+        rs.next();
+        assertEquals("http://www.openstreetmap.org/?minlon=-2.070365&minlat=47.643713&maxlon=-2.070365&maxlat=47.643713&mlat=47.643713&mlon=-2.070365", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_OSMMapLink3() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_OSMMapLink('POLYGON ((-2.0709347546515247 47.644338296511584, -2.070931209637288 47.64401570021603, -2.070280699524818 47.64397847756654, -2.070241704368212 47.6441858608994, -2.0703338747383713 47.64435070406142, -2.0709347546515247 47.644338296511584))'::GEOMETRY);");
+        rs.next();
+        assertEquals("http://www.openstreetmap.org/?minlon=-2.0709347546515247&minlat=47.64397847756654&maxlon=-2.070241704368212&maxlat=47.64435070406142", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_OSMMapLink4() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_OSMMapLink('POLYGON ((-2.0709347546515247 47.644338296511584, -2.070931209637288 47.64401570021603, -2.070280699524818 47.64397847756654, -2.070241704368212 47.6441858608994, -2.0703338747383713 47.64435070406142, -2.0709347546515247 47.644338296511584))'::GEOMETRY, true);");
+        rs.next();
+        assertEquals("http://www.openstreetmap.org/?minlon=-2.0709347546515247&minlat=47.64397847756654&maxlon=-2.070241704368212&maxlat=47.64435070406142&mlat=47.64416459081398&mlon=-2.0705882295098683", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_GoogleMapLink1() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GoogleMapLink('POINT(-2.070365 47.643713)'::GEOMETRY);");
+        rs.next();
+        assertEquals("https://maps.google.com/maps?ll=47.643713,-2.070365&z=19&t=m", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_GoogleMapLink2() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GoogleMapLink('POINT(-2.070365 47.643713)'::GEOMETRY, 'p');");
+        rs.next();
+        assertEquals("https://maps.google.com/maps?ll=47.643713,-2.070365&z=19&t=p", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void test_ST_GoogleMapLink3() throws Throwable {
+        try {
+            st.execute("SELECT ST_GoogleMapLink('POINT(-2.070365 47.643713)'::GEOMETRY, 'dsp');");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+    
+    @Test
+    public void test_ST_GoogleMapLink4() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GoogleMapLink('POINT(-2.070365 47.643713)'::GEOMETRY, 'p', 8);");
+        rs.next();
+        assertEquals("https://maps.google.com/maps?ll=47.643713,-2.070365&z=8&t=p", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_AsGML1() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_GeomFromGML(ST_ASGML('POINT(-2.070365 47.643713)'::GEOMETRY));");
+        rs.next();
+        assertGeometryEquals("POINT (-2.070365 47.643713)", rs.getString(1));
+        rs.close();
+    }
+    
 }
