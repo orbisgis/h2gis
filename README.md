@@ -20,7 +20,8 @@ including
   WKB representations
 - spatial operators (`ST_Intersection`, `ST_Difference`, etc.)
 - spatial predicates (`ST_Intersects`, `ST_Contains`, etc.)
-### H2Spatial Extension
+
+#### H2Spatial Extension
 
 Additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
 
