@@ -144,6 +144,14 @@ public class KMLWriterDriver {
                 }
             } catch (IOException ex) {
                 throw new SQLException(ex);
+            } finally {
+                try {
+                    if (zos != null) {
+                        zos.close();
+                    }
+                } catch (IOException ex) {
+                    throw new SQLException(ex);
+                }
             }
         }
 

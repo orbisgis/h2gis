@@ -31,6 +31,7 @@ import org.h2.table.Table;
 import org.h2.util.StringUtils;
 import org.h2.value.Value;
 import org.h2gis.drivers.FileDriver;
+import org.h2gis.utilities.URIUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,7 +52,7 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
         if(data.tableEngineParams.isEmpty()) {
             throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
         }
-        File filePath = new File(StringUtils.javaDecode(data.tableEngineParams.get(0)));
+        File filePath = URIUtility.fileFromString(StringUtils.javaDecode(data.tableEngineParams.get(0)));
         if(!filePath.exists()) {
             // Do not throw an exception as it will prevent the user from opening the database
             LOGGER.error("File not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
