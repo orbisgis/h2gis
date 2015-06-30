@@ -419,7 +419,7 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_MULTILINESTRINGS_READ");
         stat.close();
     }
-    
+
     @Test
     public void testWriteReadGeojsonCRS() throws Exception {
         Statement stat = connection.createStatement();
@@ -438,7 +438,7 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();
     }
-    
+
     @Test
     public void testWriteReadBadSRID() throws Exception {
         Statement stat = connection.createStatement();
@@ -457,7 +457,7 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();
     }
-    
+
     @Test
     public void testWriteReadGeojsonMixedGeometries() throws Exception {
         Statement stat = connection.createStatement();
@@ -503,4 +503,6 @@ public class GeojsonImportExportTest {
         assertTrue(res.getString(1).equals("MULTIPOINT ((100 0), (101 1))"));
         stat.close();
     }
+
+
 }
