@@ -332,7 +332,10 @@ public class DBFDriverFunction implements DriverFunction {
             case Types.DOUBLE:
             case Types.FLOAT:
             case Types.NUMERIC:
-                return new DBFType('f', Math.min(20, length), Math.min(18,
+            case Types.DECIMAL:
+            case Types.REAL:
+                // +1 because Field length is including the decimal separator
+                return new DBFType('f', Math.min(20, length + 1), Math.min(18,
                         precision));
             case Types.INTEGER:
                 return new DBFType('n', Math.min(10, length), 0);
