@@ -184,4 +184,50 @@ public class DBFImportExportTest {
         assertEquals(H2TableIndex.PK_COLUMN_NAME+"2", rs.getMetaData().getColumnName(1));
         assertEquals(H2TableIndex.PK_COLUMN_NAME, rs.getMetaData().getColumnName(2));
     }
+
+    @Test
+    public void testWriteDecimal() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File dbfFile = new File("target/area_export.dbf");
+        stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
+        stat.execute("create table area(id integer, value DECIMAL(13,3), descr CHAR(50))");
+        double v1 = 40656458.41;
+        double v2 = 25073858.50;
+        stat.execute("insert into area values(1, "+v1+", 'main area')");
+        stat.execute("insert into area values(2, "+v2+", 'second area')");
+        // Create a shape file using table area
+        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
+        // Read this shape file to check values
+        stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
+        ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id");
+        assertTrue(rs.next());
+        assertEquals(v1, rs.getDouble(1), 1e-12);
+        assertTrue(rs.next());
+        assertEquals(v2, rs.getDouble(1), 1e-12);
+        assertFalse(rs.next());
+        rs.close();
+    }
+
+    @Test
+    public void testWriteReal() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File dbfFile = new File("target/area_export.dbf");
+        stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
+        stat.execute("create table area(id integer, value REAL, descr CHAR(50))");
+        double v1 = 406.56;
+        double v2 = 250.73;
+        stat.execute("insert into area values(1, "+v1+", 'main area')");
+        stat.execute("insert into area values(2, "+v2+", 'second area')");
+        // Create a shape file using table area
+        stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
+        // Read this shape file to check values
+        stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
+        ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id");
+        assertTrue(rs.next());
+        assertEquals(v1, rs.getDouble(1), 1e-2);
+        assertTrue(rs.next());
+        assertEquals(v2, rs.getDouble(1), 1e-2);
+        assertFalse(rs.next());
+        rs.close();
+    }
 }
