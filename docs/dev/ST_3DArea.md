@@ -22,8 +22,6 @@ In the case of a 2D Geometry, `ST_3DArea` returns the same value as `ST_Area`.
 
 Area is measured in the units of the spatial reference system.
 
-{% include sfs-1-2-1.html %}
-
 ### Examples
 
 {% highlight mysql %}
