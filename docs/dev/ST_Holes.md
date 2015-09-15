@@ -4,7 +4,7 @@ title: ST_Holes
 category: geom2D/geometry-conversion
 is_function: true
 description: Return a Geometry's holes
-prev_section: ST_GeometryTypeCode
+prev_section: ST_GoogleMapLink
 next_section: ST_LineFromText
 permalink: /docs/dev/ST_Holes/
 ---
