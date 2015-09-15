@@ -4,7 +4,7 @@ title: ST_PointFromText
 category: geom2D/geometry-conversion
 is_function: true
 description: Well Known Text &rarr; <code>POINT</code>
-prev_section: ST_MPolyFromText
+prev_section: ST_OSMMapLink
 next_section: ST_PointFromWKB
 permalink: /docs/dev/ST_PointFromText/
 ---
