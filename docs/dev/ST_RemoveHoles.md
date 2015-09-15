@@ -5,7 +5,7 @@ category: geom2D/edit-geometries
 is_function: true
 description: Remove a Geometry's holes
 prev_section: ST_Normalize
-next_section: ST_RemovePoint
+next_section: ST_RemovePoints
 permalink: /docs/dev/ST_RemoveHoles/
 ---
 

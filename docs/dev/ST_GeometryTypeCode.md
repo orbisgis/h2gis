@@ -5,7 +5,7 @@ category: geom2D/geometry-conversion
 is_function: true
 description: Return the OGC SFS type code of a Geometry
 prev_section: ST_GeomFromText
-next_section: ST_Holes
+next_section: ST_GoogleMapLink
 permalink: /docs/dev/ST_GeometryTypeCode/
 ---
 
