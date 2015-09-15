@@ -4,7 +4,7 @@ title: ST_ProjectPoint
 category: geom2D/distance-functions
 is_function: true
 description: Project a <code>POINT</code> on a <code>(MULTI)LINESTRING</code>
-prev_section: ST_MaxDistance
+prev_section: ST_Perimeter
 next_section: geom2D/operators
 permalink: /docs/dev/ST_ProjectPoint/
 ---

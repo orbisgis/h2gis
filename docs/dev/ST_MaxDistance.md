@@ -5,7 +5,7 @@ category: geom2D/distance-functions
 is_function: true
 description: Compute the maximum distance between two geometries
 prev_section: ST_LongestLine
-next_section: ST_ProjectPoint
+next_section: ST_Perimeter
 permalink: /docs/dev/ST_MaxDistance/
 ---
 
