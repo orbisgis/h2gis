@@ -18,11 +18,13 @@ VARCHAR ST_OSMMapLink(GEOMETRY geom, BOOLEAN marker);
 
 ### Description
 
-Create the OSM map link based on the bounding box (bbox) of a `geometry`.
+Create an OSM map link based on the bounding box (bbox) of a `geometry`.
 If `marker` is noted as `true`, then a red dot is placed on the `bbox` center.
 
 ### Remark
-The coordinates of the `geometry` have to be exprimed in WGS84 (EPSG:4326). So to transform from your projection system to WGS84, you can use [`ST_SetSRID`](../ST_SetSRID) (if the current projection is not already defined) and [`ST_Transform`](../ST_Transform) functions.
+The `geometry` must be exprimed in WGS84 (EPSG:4326). 
+
+To transform from your projection system to WGS84, please read [`ST_SetSRID`](../ST_SetSRID) (if the current projection is not already defined) and [`ST_Transform`](../ST_Transform) functions.
 
 ### Examples
 
