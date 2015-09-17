@@ -11,4 +11,4 @@ Follow our progress directly on [GitHub][gh].
 
 {% include all_raster_functions.html %}
 
-[gh]: https://github.com/irstv/h2gis
+[gh]: https://github.com/orbisgis/h2gis
