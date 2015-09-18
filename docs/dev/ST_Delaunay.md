@@ -5,7 +5,7 @@ category: geom3D/triangulation
 is_function: true
 description: Compute a Delaunay triangulation based on points
 prev_section: ST_ConstrainedDelaunay
-next_section: raster
+next_section: ST_Tessellate
 permalink: /docs/dev/ST_Delaunay/
 ---
 
@@ -88,5 +88,5 @@ MULTILINESTRING ((0 4, 1 1), (0 4, 1 8), (0 4, 3 2), (1 1, 3 2),
 
 ##### See also
 
-* [`ST_ConstrainedDelaunay`](../ST_ConstrainedDelaunay)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/mesh/ST_Delaunay.java" target="_blank">Source code</a>
+* [`ST_ConstrainedDelaunay`](../ST_ConstrainedDelaunay), [`ST_Tessellate`](../ST_Tessellate)
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/mesh/ST_Delaunay.java" target="_blank">Source code</a>
