@@ -30,7 +30,7 @@ SELECT ST_PrecisionReducer(
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_PrecisionReducer.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_PrecisionReducer.java" target="_blank">Source code</a>
 * JTS [GeometryPrecisionReducer#reduce][jts]
 
 [jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/precision/GeometryPrecisionReducer.html#reduce(com.vividsolutions.jts.geom.Geometry)

@@ -72,4 +72,4 @@ SELECT ST_ToMultiSegments('POINT(5 5)');
 ##### See also
 
 * [`ST_ToMultiLine`](../ST_ToMultiLine)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_ToMultiSegments.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_ToMultiSegments.java" target="_blank">Source code</a>

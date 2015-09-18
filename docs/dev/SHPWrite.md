@@ -57,6 +57,6 @@ SELECT * FROM AREA2;
 ##### See also
 
 * [`SHPRead`](../SHPRead)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2drivers/src/main/java/org/h2gis/drivers/shp/SHPWrite.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2drivers/src/main/java/org/h2gis/drivers/shp/SHPWrite.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/Shapefile

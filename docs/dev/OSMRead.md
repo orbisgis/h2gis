@@ -83,7 +83,7 @@ ST_MAKEPOLYGON(ST_MAKELINE(THE_GEOM)) THE_GEOM FROM (SELECT (SELECT ST_ACCUM(THE
 ##### See also
 
 * [`ST_OSMDownloader`](../ST_OSMDownloader)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2drivers/src/main/java/org/h2gis/drivers/osm/OSMRead.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2drivers/src/main/java/org/h2gis/drivers/osm/OSMRead.java" target="_blank">Source code</a>
 
 [wiki]: http://wiki.openstreetmap.org/wiki/OSM_XML
 

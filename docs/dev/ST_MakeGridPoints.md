@@ -80,5 +80,5 @@ SELECT * FROM grid;
 ##### See also
 
 * [`ST_MakeGrid`](../ST_MakeGrid)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakeGridPoints.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakeGridPoints.java" target="_blank">Source code</a>
 

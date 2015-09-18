@@ -78,4 +78,4 @@ SELECT ST_MaxDistance('POLYGON ((1 3, 0 0, 3 2, 1 3))',
 ##### See also
 
 * [`ST_LongestLine`](../ST_LongestLine), [`ST_Length`](../ST_Length), [`ST_ClosestCoordinate`](../ST_ClosestCoordinate)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_MaxDistance.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_MaxDistance.java" target="_blank">Source code</a>

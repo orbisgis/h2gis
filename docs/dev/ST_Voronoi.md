@@ -67,9 +67,9 @@ create table voroexpl as select * from st_explode('voro');
 <img class="displayed" src="../voronoi_vitr.png"/>
 
 ### Use case
-A specific use case, using `ST_Voronoi` function is avalaible [HERE](https://github.com/irstv/H2GIS/wiki/3.1-Extract-central-skeleton).
+A specific use case, using `ST_Voronoi` function is avalaible [HERE](https://github.com/orbisgis/h2gis/wiki/3.1-Extract-central-skeleton).
 
 ##### See also
 
 * [`ST_Delaunay`](../ST_Delaunay)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/mesh/ST_Voronoi.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/mesh/ST_Voronoi.java" target="_blank">Source code</a>

@@ -80,7 +80,7 @@ SELECT ST_Reverse('GEOMETRYCOLLECTION(
 ##### See also
 
 * [`ST_Reverse3DLine`](../ST_Reverse3DLine)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_Reverse.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_Reverse.java" target="_blank">Source code</a>
 * JTS [Geometry#reverse][jts]
 
 [jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/geom/Geometry.html#reverse()

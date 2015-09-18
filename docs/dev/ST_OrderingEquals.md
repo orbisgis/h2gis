@@ -55,4 +55,4 @@ SELECT ST_OrderingEquals('MULTIPOLYGON(((0 0, 10 10, 10 5, 0 0)),
 ##### See also
 
 * [`ST_Equals`](../ST_Equals), [`ST_Reverse`](../ST_Reverse)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_OrderingEquals.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_OrderingEquals.java" target="_blank">Source code</a>

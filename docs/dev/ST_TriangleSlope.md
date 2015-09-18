@@ -49,4 +49,4 @@ SELECT ST_TriangleSlope(
 * [`ST_TriangleAspect`](../ST_TriangleAspect),
   [`ST_TriangleContouring`](../ST_TriangleContouring),
   [`ST_TriangleDirection`](../ST_TriangleDirection)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/topography/ST_TriangleSlope.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/topography/ST_TriangleSlope.java" target="_blank">Source code</a>

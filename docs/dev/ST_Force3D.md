@@ -41,4 +41,4 @@ SELECT ST_Force3D('POLYGON((2 2, 10 0 1, 10 5 1, 0 5 2, 2 2))');
 ##### See also
 
 * [`ST_Force2D`](../ST_Force2D), [`ST_UpdateZ`](../ST_UpdateZ)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_Force3D.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_Force3D.java" target="_blank">Source code</a>

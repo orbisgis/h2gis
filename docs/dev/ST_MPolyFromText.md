@@ -47,4 +47,4 @@ SELECT ST_MPolyFromText('POINT(2 3)', 2154);
 
 * [`ST_PolyFromText`](../ST_PolyFromText), [`ST_MPointFromText`](../ST_MPointFromText), [`ST_MLineFromText`](../ST_MLineFromText)
 
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_MPolyFromText.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_MPolyFromText.java" target="_blank">Source code</a>

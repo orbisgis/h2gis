@@ -57,4 +57,4 @@ SELECT ST_NumGeometries('MULTIPOINT((0 2), (3 2), (3 6), (0 6),
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_NumGeometries.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_NumGeometries.java" target="_blank">Source code</a>

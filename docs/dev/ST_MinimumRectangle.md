@@ -61,7 +61,7 @@ SELECT ST_MinimumRectangle('GEOMETRYCOLLECTION(
   [`ST_Extent`](../ST_Extent),
   [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope),
   [`ST_MinimumDiameter`](../ST_MinimumDiameter)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MinimumRectangle.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MinimumRectangle.java" target="_blank">Source code</a>
 * JTS [MinimumDiameter#getMinimumRectangle][jts]
 
 [jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/algorithm/MinimumDiameter.html#getMinimumRectangle()
