@@ -53,4 +53,4 @@ SELECT ST_3DLength('GEOMETRYCOLLECTION(
 ##### See also
 
 * [`ST_Length`](../ST_Length)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_3DLength.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_3DLength.java" target="_blank">Source code</a>

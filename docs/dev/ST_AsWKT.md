@@ -30,4 +30,4 @@ SELECT ST_AsWKT('POLYGON((0 0, 0 1, 1 1, 1 0, 0 0))');
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_AsWKT.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_AsWKT.java" target="_blank">Source code</a>

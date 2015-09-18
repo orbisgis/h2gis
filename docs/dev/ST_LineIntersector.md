@@ -48,4 +48,4 @@ SELECT ST_LineIntersector('LINESTRING(0 0, 4 2)',
 ##### See also
 
 * [`ST_Split`](../ST_Split), [`ST_Intersection`](../ST_Intersection)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_LineIntersector.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_LineIntersector.java" target="_blank">Source code</a>

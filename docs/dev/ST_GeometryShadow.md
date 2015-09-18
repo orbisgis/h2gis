@@ -132,9 +132,9 @@ SELECT ST_Geometryshadow('POINT(356140 6693109)',
 <img class="displayed" src="../ST_GeometryShadow_case3.png"/>
 
 ### Use case
-A specific use case, using `ST_SunPosition` and `ST_GeometryShadow` is avalaible [HERE](https://github.com/irstv/H2GIS/wiki/3.3-Compute-building's-shadow).
+A specific use case, using `ST_SunPosition` and `ST_GeometryShadow` is avalaible [HERE](https://github.com/orbisgis/h2gis/wiki/3.3-Compute-building's-shadow).
 
 ##### See also
 
 * [`ST_SunPosition`](../ST_SunPosition)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/earth/ST_GeometryShadow.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/earth/ST_GeometryShadow.java" target="_blank">Source code</a>

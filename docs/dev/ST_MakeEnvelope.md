@@ -41,4 +41,4 @@ SELECT ST_SRID(ST_MakeEnvelope(0, 0, 1, 1, 4326));
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakeEnvelope.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakeEnvelope.java" target="_blank">Source code</a>

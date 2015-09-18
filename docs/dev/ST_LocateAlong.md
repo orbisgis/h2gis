@@ -69,4 +69,4 @@ SELECT ST_LocateAlong('GEOMETRYCOLLECTION(
 
 ##### See also
 
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_LocateAlong.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_LocateAlong.java" target="_blank">Source code</a>

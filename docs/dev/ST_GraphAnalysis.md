@@ -250,7 +250,7 @@ SELECT EDGE_ID,
   [`ST_ShortestPath`](../ST_ShortestPath),
   [`ST_ShortestPathLength`](../ST_ShortestPathLength),
   [`ST_ShortestPathTree`](../ST_ShortestPathTree)
-* <a href="https://github.com/irstv/H2GIS/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_GraphAnalysis.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_GraphAnalysis.java" target="_blank">Source code</a>
 * JNA <a
 href="https://github.com/irstv/Java-Network-Analyzer/blob/master/src/main/java/org/javanetworkanalyzer/analyzers/GraphAnalyzer.java"
 target="_blank">GraphAnalyzer</a>
