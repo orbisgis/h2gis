@@ -72,6 +72,11 @@ public class CSVDriverFunction implements DriverFunction{
     }
 
     @Override
+    public boolean isSpatialFormat(String extension) {
+        return false;
+    }
+
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         if(FileUtil.isExtensionWellFormated(fileName, "csv")){
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());

@@ -77,6 +77,11 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
         return "";
     }
 
+    @Override
+    public boolean isSpatialFormat(String extension) {
+        return extension.equalsIgnoreCase("shp");
+    }
+
     /**
      * Create a new table
      * @param connection Active connection, do not close this connection.

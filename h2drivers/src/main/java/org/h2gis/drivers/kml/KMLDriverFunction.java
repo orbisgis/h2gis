@@ -58,6 +58,11 @@ public class KMLDriverFunction implements DriverFunction {
     }
 
     @Override
+    public boolean isSpatialFormat(String extension) {
+        return extension.equalsIgnoreCase("kml") || extension.equalsIgnoreCase("kmz");
+    }
+
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {        
         KMLWriterDriver kMLWriter = new KMLWriterDriver(connection, tableReference, fileName);
         kMLWriter.write(progress);
