@@ -64,6 +64,13 @@ public class OSMDriverFunction implements DriverFunction {
     }
 
     @Override
+    public boolean isSpatialFormat(String extension) {
+        return extension.equalsIgnoreCase("osm") ||
+                extension.equalsIgnoreCase("gz") ||
+                extension.equalsIgnoreCase("bz2");
+    }
+
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }

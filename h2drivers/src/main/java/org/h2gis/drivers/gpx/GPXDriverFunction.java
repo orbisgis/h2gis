@@ -64,6 +64,11 @@ public class GPXDriverFunction implements DriverFunction {
     }
 
     @Override
+    public boolean isSpatialFormat(String extension) {
+        return extension.equalsIgnoreCase("gpx");
+    }
+
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }

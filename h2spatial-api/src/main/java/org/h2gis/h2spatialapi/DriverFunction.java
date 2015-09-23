@@ -63,6 +63,13 @@ public interface DriverFunction {
     String getFormatDescription(String format);
 
     /**
+     * Returns true if the file extension is from a spatial file, false otherwise or if the driver does not recognize it.
+     * @param extension Extension to check.
+     * @return True if the extension is a spatial one, false otherwise.
+     */
+    boolean isSpatialFormat(String extension);
+
+    /**
      *
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
