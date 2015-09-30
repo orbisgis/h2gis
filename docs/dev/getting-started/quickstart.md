@@ -12,10 +12,10 @@ will of course need a working [Java][] runtime environment.
 Command-line gurus, just execute the following commands:
 
 {% highlight bash %}
-~ $ wget http://tinyurl.com/h2gis-zip -O h2gis.zip
+~ $ wget https://github.com/orbisgis/h2gis/releases/download/v1.2.3/h2-dist-1.2.3-bin.zip -O h2gis.zip
 ~ $ unzip h2gis.zip
 ~ $ cd h2gis-standalone
-~/h2gis-standalone $ java -jar h2-dist-1.1.0.jar
+~/h2gis-standalone $ java -jar h2-dist-1.2.3.jar
 {% endhighlight %}
 
 ## Initialize the spatial extension
