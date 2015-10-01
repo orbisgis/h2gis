@@ -162,16 +162,26 @@ public class SFSUtilities {
      * @throws SQLException If the table not exists, empty or does not contain a geometry field.
      */
     public static Envelope getTableEnvelope(Connection connection, TableLocation location, String geometryField) throws SQLException {
+        // Cast contain the cast operation if the original column is not a geometry
+        String cast = "";
         if(geometryField==null || geometryField.isEmpty()) {
             List<String> geometryFields = getGeometryFields(connection, location);
             if(geometryFields.isEmpty()) {
-                throw new SQLException("The table "+location+" does not contain a Geometry field, then the extent cannot be computed");
+                geometryFields = getRasterFields(connection, location);
+                if(!geometryFields.isEmpty()) {
+                    geometryField = geometryFields.get(0);
+                    cast = "::geometry";
+                } else {
+                    throw new SQLException("The table " + location +
+                            " does not contain a Geometry field, then the extent cannot be computed");
+                }
+            } else {
+                geometryField = geometryFields.get(0);
             }
-            geometryField = geometryFields.get(0);
         }
-        ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("+TableLocation.quoteIdentifier(geometryField)+") ext FROM "+location);
+        ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("+TableLocation.quoteIdentifier
+                (geometryField)+cast+") ext FROM "+location);
         if(rs.next()) {
-            // Todo under postgis it is a BOX type
             return ((Geometry)rs.getObject(1)).getEnvelopeInternal();
         }
         throw new SQLException("Unable to get the table extent it may be empty");
@@ -257,6 +267,14 @@ public class SFSUtilities {
         PreparedStatement geomStatement = prepareInformationSchemaStatement(connection,catalog, schema, table, "geometry_columns", "");
         return geomStatement.executeQuery();
     }
+
+    private static ResultSet getRasterColumnsView(Connection connection,String catalog, String schema, String table)
+            throws SQLException {
+        PreparedStatement geomStatement = prepareInformationSchemaStatement(connection,catalog, schema, table,
+                "raster_columns", "","r_table_catalog","r_table_schema","r_table_name");
+        return geomStatement.executeQuery();
+    }
+
     /**
      * Find geometry fields name of a table.
      * @param connection Active connection
@@ -275,7 +293,38 @@ public class SFSUtilities {
         geomResultSet.close();
         return fieldsName;
     }
-    
+
+    /**
+     * Find raster fields name of a table.
+     * @param connection Active connection
+     * @param catalog Catalog that contain schema (empty for default catalog)
+     * @param schema Schema that contain table (empty for default schema)
+     * @param table Table name (case insensitive)
+     * @return A list of raster fields name
+     * @throws SQLException
+     */
+    public static List<String> getRasterFields(Connection connection,String catalog, String schema, String table)
+            throws
+            SQLException {
+        List<String> fieldsName = new LinkedList<String>();
+        ResultSet geomResultSet = getRasterColumnsView(connection, catalog, schema, table);
+        while (geomResultSet.next()) {
+            fieldsName.add(geomResultSet.getString("r_geometry_column"));
+        }
+        geomResultSet.close();
+        return fieldsName;
+    }
+
+    /**
+     * Find raster fields name of a table.
+     * @param connection Active connection
+     * @param location Table location
+     * @return A list of raster fields name
+     * @throws SQLException
+     */
+    public static List<String> getRasterFields(Connection connection,TableLocation location) throws SQLException {
+        return getRasterFields(connection, location.getCatalog(), location.getSchema(), location.getTable());
+    }
     /**
      * Find geometry fields name of a resultSet.
      *
