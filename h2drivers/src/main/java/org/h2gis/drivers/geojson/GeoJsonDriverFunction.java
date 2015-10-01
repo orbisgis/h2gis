@@ -64,6 +64,11 @@ public class GeoJsonDriverFunction implements DriverFunction {
     }
 
     @Override
+    public boolean isSpatialFormat(String extension) {
+        return extension.equals("geojson");
+    }
+
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         ProgressVisitor copyProgress = progress.subProcess(recordCount);       

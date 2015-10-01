@@ -135,6 +135,11 @@ public class DBFDriverFunction implements DriverFunction {
     }
 
     @Override
+    public boolean isSpatialFormat(String extension) {
+        return false;
+    }
+
+    @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         importFile(connection, tableReference, fileName, progress, null);
     }
