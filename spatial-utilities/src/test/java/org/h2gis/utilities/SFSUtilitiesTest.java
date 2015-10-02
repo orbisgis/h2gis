@@ -38,8 +38,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import static junit.framework.TestCase.assertNull;
 
 /**
  * Test SFSUtilities
@@ -97,7 +99,8 @@ public class SFSUtilitiesTest {
         st.execute("CREATE TABLE TEST(ID SERIAL, RAST RASTER)");
         st.execute("INSERT INTO TEST(RAST) VALUES (ST_MAKEEMPTYRASTER(256, 512, 47.65318, -2.74131, 0.0001, -0.0001, " +
                 "0, 0, 4326))");
-        ResultSet rs = st.executeQuery("SELECT ST_METADATA(RAST) RASTMETA FROM TEST");
+        st.execute("INSERT INTO TEST(RAST) VALUES (NULL)");
+        ResultSet rs = st.executeQuery("SELECT ST_METADATA(RAST) RASTMETA FROM TEST ORDER BY ID");
         try {
             assertTrue(rs.next());
             RasterMetaData metaData = RasterMetaData.fetchRasterMetaData(rs, "rastmeta");
@@ -111,6 +114,10 @@ public class SFSUtilitiesTest {
             assertEquals(0.0, metaData.getSkewX(), 1e-12);
             assertEquals(0.0, metaData.getSkewY(), 1e-12);
             assertEquals(0, metaData.getNumBands());
+            assertTrue(rs.next());
+            metaData = RasterMetaData.fetchRasterMetaData(rs, "rastmeta");
+            assertNull(metaData);
+            assertFalse(rs.next());
         } finally {
             rs.close();
         }

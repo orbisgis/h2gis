@@ -75,13 +75,13 @@ public class RasterMetaData {
      * Read metadata from the result of ST_METADATA function.
      * @param rs ResultSet
      * @param metaDataField MetaData field name
-     * @return Instance of RasterMetadata
+     * @return Instance of RasterMetadata or null if provided input is not correct
      * @throws SQLException
      */
     public static RasterMetaData fetchRasterMetaData(ResultSet rs, String metaDataField) throws SQLException {
          Object ar = rs.getObject(metaDataField);
          if(!(ar instanceof Object[]) || ((Object[]) ar).length != 10) {
-             throw new SQLException("Not a metadata array instance");
+             return null;
          }
          Object[] metaArray = (Object[])ar;
          return new RasterMetaData(
