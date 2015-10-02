@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
+ * MetaData of raster field
  * @author Nicolas Fortin
  */
 public class RasterMetaData {
@@ -56,7 +57,7 @@ public class RasterMetaData {
     private final int srid;
     private final int numBands;
 
-    public RasterMetaData(double upperLeftX, double upperLeftY, int width, int height, double scaleX, double scaleY,
+    private RasterMetaData(double upperLeftX, double upperLeftY, int width, int height, double scaleX, double scaleY,
             double skewX, double skewY, int srid, int numBands) {
         this.upperLeftX = upperLeftX;
         this.upperLeftY = upperLeftY;
@@ -70,6 +71,13 @@ public class RasterMetaData {
         this.numBands = numBands;
     }
 
+    /**
+     * Read metadata from the result of ST_METADATA function.
+     * @param rs ResultSet
+     * @param metaDataField MetaData field name
+     * @return Instance of RasterMetadata
+     * @throws SQLException
+     */
     public static RasterMetaData fetchRasterMetaData(ResultSet rs, String metaDataField) throws SQLException {
          Object ar = rs.getObject(metaDataField);
          if(!(ar instanceof Object[]) || ((Object[]) ar).length != 10) {
@@ -137,42 +145,72 @@ public class RasterMetaData {
         return env;
     }
 
+    /**
+     * @return Insertion X coordinate of the raster
+     */
     public double getUpperLeftX() {
         return upperLeftX;
     }
 
+    /**
+     * @return Insertion Y coordinate of the raster
+     */
     public double getUpperLeftY() {
         return upperLeftY;
     }
 
+    /**
+     * @return Pixels width of the raster
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * @return Pixels height of the raster
+     */
     public int getHeight() {
         return height;
     }
 
+    /**
+     * @return Scale X of the pixel
+     */
     public double getScaleX() {
         return scaleX;
     }
 
+    /**
+     * @return Scale Y of the raster
+     */
     public double getScaleY() {
         return scaleY;
     }
 
+    /**
+     * @return Rotation X of the raster
+     */
     public double getSkewX() {
         return skewX;
     }
 
+    /**
+     * @return Rotation Y of the raster
+     */
     public double getSkewY() {
         return skewY;
     }
 
+    /**
+     * @return SRID of the raster
+     */
     public int getSrid() {
         return srid;
     }
 
+    /**
+     * @return Number of bands of the raster
+     */
     public int getNumBands() {
         return numBands;
     }

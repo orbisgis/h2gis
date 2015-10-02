@@ -24,8 +24,22 @@ package org.h2gis.utilities;
 
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Test SFSUtilities
@@ -33,6 +47,37 @@ import static junit.framework.Assert.assertEquals;
  * @author Nicolas Fortin
  */
 public class SFSUtilitiesTest {
+
+    private static Connection connection;
+    private static Statement st;
+
+    @BeforeClass
+    public static void init() throws Exception {
+        String dataBaseLocation = new File("target/SFSUtilitiesTest").getAbsolutePath();
+        String databasePath = "jdbc:h2:"+dataBaseLocation;
+        File dbFile = new File(dataBaseLocation+".mv.db");
+        Class.forName("org.h2.Driver");
+        if(dbFile.exists()) {
+            dbFile.delete();
+        }
+        // Keep a connection alive to not close the DataBase on each unit test
+        connection = DriverManager.getConnection(databasePath, "sa", "");
+    }
+
+    @Before
+    public void setUpStatement() throws Exception {
+        st = connection.createStatement();
+    }
+
+    @After
+    public void tearDownStatement() throws Exception {
+        st.close();
+    }
+
+    @AfterClass
+    public static void dispose() throws Exception {
+        connection.close();
+    }
 
     @Test
     public void testGeometryTypeConvert() throws ParseException {
@@ -44,5 +89,30 @@ public class SFSUtilitiesTest {
         assertEquals(GeometryTypeCodes.MULTILINESTRING, SFSUtilities.getGeometryTypeFromGeometry(wktReader.read("MULTILINESTRING((1 1, 2 2))")));
         assertEquals(GeometryTypeCodes.MULTIPOLYGON, SFSUtilities.getGeometryTypeFromGeometry(wktReader.read("MULTIPOLYGON(((1 1, 1 2, 2 2, 2 1, 1 1)))")));
         assertEquals(GeometryTypeCodes.GEOMCOLLECTION, SFSUtilities.getGeometryTypeFromGeometry(wktReader.read("GEOMETRYCOLLECTION(POINT(1 1))")));
+    }
+
+    @Test
+    public void testStMetaData() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS TEST");
+        st.execute("CREATE TABLE TEST(ID SERIAL, RAST RASTER)");
+        st.execute("INSERT INTO TEST(RAST) VALUES (ST_MAKEEMPTYRASTER(256, 512, 47.65318, -2.74131, 0.0001, -0.0001, " +
+                "0, 0, 4326))");
+        ResultSet rs = st.executeQuery("SELECT ST_METADATA(RAST) RASTMETA FROM TEST");
+        try {
+            assertTrue(rs.next());
+            RasterMetaData metaData = RasterMetaData.fetchRasterMetaData(rs, "rastmeta");
+            assertNotNull(metaData);
+            assertEquals(256, metaData.getWidth());
+            assertEquals(512, metaData.getHeight());
+            assertEquals(47.65318, metaData.getUpperLeftX(), 1e-5);
+            assertEquals(-2.74131, metaData.getUpperLeftY(), 1e-5);
+            assertEquals(0.0001, metaData.getScaleX(), 1e-4);
+            assertEquals(-0.0001, metaData.getScaleY(), 1e-4);
+            assertEquals(0.0, metaData.getSkewX(), 1e-12);
+            assertEquals(0.0, metaData.getSkewY(), 1e-12);
+            assertEquals(0, metaData.getNumBands());
+        } finally {
+            rs.close();
+        }
     }
 }
