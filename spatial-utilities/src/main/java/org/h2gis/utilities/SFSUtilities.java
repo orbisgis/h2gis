@@ -309,7 +309,7 @@ public class SFSUtilities {
         List<String> fieldsName = new LinkedList<String>();
         ResultSet geomResultSet = getRasterColumnsView(connection, catalog, schema, table);
         while (geomResultSet.next()) {
-            fieldsName.add(geomResultSet.getString("r_geometry_column"));
+            fieldsName.add(geomResultSet.getString("r_raster_column"));
         }
         geomResultSet.close();
         return fieldsName;
