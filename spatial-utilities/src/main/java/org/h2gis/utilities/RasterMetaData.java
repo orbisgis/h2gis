@@ -27,6 +27,7 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
+import com.vividsolutions.jts.geom.util.NoninvertibleTransformationException;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,7 +58,20 @@ public class RasterMetaData {
     private final int srid;
     private final int numBands;
 
-    private RasterMetaData(double upperLeftX, double upperLeftY, int width, int height, double scaleX, double scaleY,
+    /**
+     * Constructor of raster metadata
+     * @param upperLeftX insertion point X
+     * @param upperLeftY insertion point Y
+     * @param width image width
+     * @param height image height
+     * @param scaleX pixel size x
+     * @param scaleY pixel size y
+     * @param skewX pixel displacement x
+     * @param skewY pixel displacement y
+     * @param srid projection identifier
+     * @param numBands Number of bands
+     */
+    public RasterMetaData(double upperLeftX, double upperLeftY, int width, int height, double scaleX, double scaleY,
             double skewX, double skewY, int srid, int numBands) {
         this.upperLeftX = upperLeftX;
         this.upperLeftY = upperLeftY;
@@ -97,6 +111,13 @@ public class RasterMetaData {
                  getInt(metaArray[META_NUM_BANDS]));
     }
 
+    /**
+     * @return Matrix form of raster attributes
+     */
+    double[] getMatrix() {
+        return new double[]{upperLeftX, scaleX, skewY, upperLeftY, skewY, scaleY};
+    }
+
     private static double getDouble(Object obj) {
         return ((Number) obj).doubleValue();
     }
@@ -106,15 +127,99 @@ public class RasterMetaData {
     }
 
     /**
+     * Apply GeoTransform to x/y coordinate.
+     * convert a (pixel,line) coordinate into a georeferenced (geo_x,geo_y) location.
+     * Converted from GDAL sources (gdaltransformer.cpp::GDALApplyGeoTransform)
+     * @param geoTransform Six coefficient GeoTransform to apply.
+     * @param x pixel position.
+     * @param y line position.
+     * @return World coordinate
+     */
+    private static double[] applyGeoTransform( double[] geoTransform, double x, double y)
+    {
+        return new double[] {
+                geoTransform[0] + x * geoTransform[1]
+            + y  * geoTransform[2],
+                geoTransform[3] + x * geoTransform[4]
+            + y  * geoTransform[5]};
+    }
+
+    /**
+     * 3x2 Matrix inversion. Converted from GDAL sources (gdaltransformer.cpp::GDALInvGeoTransform)
+     * @param matrixIn Six coefficient GeoTransform to invert.
+     * @return Inverted 3x2 matrix
+     * @throws NoninvertibleTransformationException If the matrix is not invertible (det=0)
+     */
+    private static double[] invGeoTransform( double[] matrixIn ) throws NoninvertibleTransformationException
+    {
+        double[] matrixOut = new double[6];
+        /* Special case - no rotation - to avoid computing determinate */
+        /* and potential precision issues. */
+        if( Double.compare(matrixIn[2], 0.0) == 0 && Double.compare(matrixIn[4],0.0) == 0 &&
+                Double.compare(matrixIn[1], 0.0) == 0 && Double.compare(matrixIn[5], 0.0) == 0 )
+        {
+            matrixOut[0] = -matrixIn[0] / matrixIn[1];
+            matrixOut[1] = 1.0 / matrixIn[1];
+            matrixOut[2] = 0.0;
+            matrixOut[3] = -matrixIn[3] / matrixIn[5];
+            matrixOut[4] = 0.0;
+            matrixOut[5] = 1.0 / matrixIn[5];
+            return matrixOut;
+        }
+
+        /* we assume a 3rd row that is [1 0 0] */
+
+        /* Compute determinate */
+
+        double det = matrixIn[1] * matrixIn[5] - matrixIn[2] * matrixIn[4];
+
+        if( Math.abs(det) <= Double.MIN_NORMAL ) {
+            throw new NoninvertibleTransformationException("Transformation is non-invertible");
+        }
+
+        double inv_det = 1.0 / det;
+
+        /* compute adjoint, and divide by determinate */
+
+        matrixOut[1] =  matrixIn[5] * inv_det;
+        matrixOut[4] = -matrixIn[4] * inv_det;
+
+        matrixOut[2] = -matrixIn[2] * inv_det;
+        matrixOut[5] =  matrixIn[1] * inv_det;
+
+        matrixOut[0] = ( matrixIn[2] * matrixIn[3] - matrixIn[0] * matrixIn[5]) * inv_det;
+        matrixOut[3] = (-matrixIn[1] * matrixIn[3] + matrixIn[0] * matrixIn[4]) * inv_det;
+
+        return matrixOut;
+    }
+
+    /**
+     * Compute row-column position from world coordinate
+     * @param coordinate world coordinate.
+     * @return raster row-column (0-based)
+     */
+    public int[] getPixelFromCoordinate(Coordinate coordinate) {
+        try {
+            double[] inv = invGeoTransform(getMatrix());
+            double[] res = applyGeoTransform(inv, coordinate.x, coordinate.y);
+            return new int[]{(int)Math.floor(res[0]), (int)Math.floor(res[1])};
+        } catch (NoninvertibleTransformationException ex) {
+            //todo
+            return null;
+        }
+    }
+
+
+    /**
      * Translate the pixel row,column into map coordinate
      *
-     * @param x Column
-     * @param y Row
+     * @param x Column (0-based)
+     * @param y Row (0-based)
      * @return Pixel world coordinate
      */
     public Coordinate getPixelCoordinate(int x, int y) {
-        return new Coordinate(scaleX * x + skewX * y + upperLeftX, scaleY * y +
-                skewY * x + upperLeftY);
+        double[] res = applyGeoTransform(getMatrix(), x, y);
+        return new Coordinate(res[0], res[1]);
     }
 
     /**

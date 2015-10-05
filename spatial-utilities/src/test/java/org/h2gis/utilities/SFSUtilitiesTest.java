@@ -22,10 +22,12 @@
  */
 package org.h2gis.utilities;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -91,6 +93,16 @@ public class SFSUtilitiesTest {
         assertEquals(GeometryTypeCodes.MULTILINESTRING, SFSUtilities.getGeometryTypeFromGeometry(wktReader.read("MULTILINESTRING((1 1, 2 2))")));
         assertEquals(GeometryTypeCodes.MULTIPOLYGON, SFSUtilities.getGeometryTypeFromGeometry(wktReader.read("MULTIPOLYGON(((1 1, 1 2, 2 2, 2 1, 1 1)))")));
         assertEquals(GeometryTypeCodes.GEOMCOLLECTION, SFSUtilities.getGeometryTypeFromGeometry(wktReader.read("GEOMETRYCOLLECTION(POINT(1 1))")));
+    }
+
+    @Test
+    public void testCoordinateTransform() {
+        // With rotation2
+        RasterMetaData rasterMetaData = new RasterMetaData(1000, 1000, 100, 100, 1, 1, 0.5,
+                0.5, 27572, 0);
+        assertEquals(new Coordinate(1051, 1051), rasterMetaData.getPixelCoordinate(34, 34));
+        Assert.assertArrayEquals(new int[]{33, 33},
+                rasterMetaData.getPixelFromCoordinate(new Coordinate(1050, 1050)));
     }
 
     @Test
