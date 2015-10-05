@@ -44,9 +44,14 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.osgi.service.jdbc.DataSourceFactory;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import javax.inject.Inject;
 import javax.sql.DataSource;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -55,6 +60,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import static org.junit.Assert.*;
@@ -341,6 +347,47 @@ public class BundleTest {
             rs.close();
             stat.execute("drop table area");
             stat.execute("drop table roads");
+        } finally {
+            connection.close();
+        }
+    }
+
+    /**
+     * SPI and OSGi need to be configured to work together. This integration test check if H2 provided services are
+     * seen by OSGi.
+     * @throws Exception
+     */
+    @Test
+    public void test_RasterSPIMechanism() throws Exception {
+        Connection connection = getConnection();
+        try {
+            // Store Image as WKB Raster
+            Statement st = connection.createStatement();
+            st.execute("DROP TABLE IF EXISTS RASTERTEST");
+            st.execute("CREATE TABLE RASTERTEST(ID SERIAL, RAST RASTER);");
+            PreparedStatement pst = connection.prepareStatement("INSERT INTO RASTERTEST(RAST) VALUES" +
+                    "(ST_RasterFromImage(?, -1024, -1024, 1, -1, 0, 0, 27572))");
+            InputStream is = BundleTest.class.getResourceAsStream("austr.jpg");
+            try {
+                pst.setBinaryStream(1, is);
+                pst.execute();
+            } finally {
+                is.close();
+            }
+            // Read image using ImageIO SPI mechanism
+            ResultSet rs = st.executeQuery("SELECT RAST FROM RASTERTEST");
+            assertTrue(rs.next());
+            ImageInputStream iis = ImageIO.createImageInputStream(rs.getBlob(1));
+            assertNotNull(iis);
+            Iterator<ImageReader> imageReaderIterator = ImageIO.getImageReaders(iis);
+            assertNotNull(imageReaderIterator);
+            assertTrue(imageReaderIterator.hasNext());
+            ImageReader wkbReader = imageReaderIterator.next();
+            wkbReader.setInput(iis);
+            BufferedImage im = wkbReader.read(wkbReader.getMinIndex());
+            assertNotNull(im);
+            assertEquals(2048, im.getWidth());
+            assertEquals(2048, im.getHeight());
         } finally {
             connection.close();
         }
