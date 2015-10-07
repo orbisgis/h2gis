@@ -355,6 +355,7 @@ public class BundleTest {
     /**
      * SPI and OSGi need to be configured to work together. This integration test check if H2 provided services are
      * seen by OSGi.
+     * https://aries.apache.org/modules/spi-fly.html#usage
      * @throws Exception
      */
     @Test
