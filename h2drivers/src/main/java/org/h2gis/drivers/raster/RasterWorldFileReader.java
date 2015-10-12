@@ -60,15 +60,15 @@ public class RasterWorldFileReader {
     
     static {
 		worldFileExtensions = new HashMap<String, String[]>();
-		worldFileExtensions.put("tif", new String[] { "tfw" });
-		worldFileExtensions.put("tiff", new String[] { "tfw", "tiffw" });
+		worldFileExtensions.put("tif", new String[] { "tfw", "tifw" , "wld"});
+		worldFileExtensions.put("tiff", new String[] { "tfw", "tiffw" , "wld"});
 		worldFileExtensions.put("jpg", new String[] { "jpw", "jgw", "jpgw",
-				"jpegw" });
+				"jpegw","wld" });
 		worldFileExtensions.put("jpeg", new String[] { "jpw", "jgw", "jpgw",
-				"jpegw" });
-		worldFileExtensions.put("gif", new String[] { "gfw", "gifw" });
-		worldFileExtensions.put("bmp", new String[] { "bpw", "bmpw" });
-		worldFileExtensions.put("png", new String[] { "pgw", "pngw" });
+				"jpegw","wld" });
+		worldFileExtensions.put("gif", new String[] { "gfw", "gifw","wld" });
+		worldFileExtensions.put("bmp", new String[] { "bpw", "bmpw","wld" });
+		worldFileExtensions.put("png", new String[] { "pgw", "pngw","wld" });
 	}
     private String fileNameExtension;
     private String fileNamePrefix;

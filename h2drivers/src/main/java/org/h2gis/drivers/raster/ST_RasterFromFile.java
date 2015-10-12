@@ -22,26 +22,63 @@
  */
 package org.h2gis.drivers.raster;
 
+import java.io.IOException;
 import java.sql.Connection;
+import java.sql.SQLException;
 import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.utilities.URIUtility;
 
 /**
- *
+ * A function to read a georeferenced image.
+ * 
  * @author Erwan Bocher
  */
 public class ST_RasterFromFile extends AbstractFunction implements ScalarFunction{
 
     public ST_RasterFromFile(){
         addProperty(PROP_REMARKS, "Read a world file image.\n"
-                + "Supported formats are ");
+                + "Supported formats are : \n"
+                + "- png with pgw or pngw\n"
+                + "- bmp with bpw or bmpw\n"
+                + "- gif with gfw or gifw\n"
+                + "- jpeg with jpw, jgw, jpgw or jpegw\n"
+                + "- jpg with jpw, jgw, jpgw or jpegw\n"
+                + "- tif with tfw or tifw\n"
+                + "- tiff with tfw or tiffw.\n"
+                + "and wld for all listed formats");
     }
     @Override
     public String getJavaStaticMethod() {
         return "rasterFromFile";
     }
     
-    public void rasterFromFile(Connection connection, String fileName, String tableReference){
-        
+    /**
+     * Copy data from georeferenced world image file into a new table in specified connection.
+     * 
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @throws SQLException
+     * @throws IOException 
+     */
+    public static void rasterFromFile(Connection connection, String fileName, String tableReference) throws SQLException, IOException{
+        RasterWorldFileReader rasterWorldFileReader = new RasterWorldFileReader();
+        rasterWorldFileReader.read(URIUtility.fileFromString(fileName), tableReference, connection, new EmptyProgressVisitor());
+    }
+    
+    /**
+     * Copy data from georeferenced world image file into a new table in specified connection.
+     *
+     *
+     * @param connection
+     * @param fileName
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void rasterFromFile(Connection connection, String fileName) throws IOException, SQLException {
+        final String name = URIUtility.fileFromString(fileName).getName();
+        rasterFromFile(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
     }
 }

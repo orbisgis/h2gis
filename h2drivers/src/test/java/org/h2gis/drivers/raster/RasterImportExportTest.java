@@ -25,6 +25,7 @@ package org.h2gis.drivers.raster;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import org.h2gis.drivers.dbf.DBFRead;
 import org.h2gis.drivers.dbf.DBFWrite;
 import org.h2gis.drivers.shp.SHPRead;
@@ -48,7 +49,7 @@ public class RasterImportExportTest {
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new SHPRead(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_RasterFromFile(), "");
     }
 
     @AfterClass
@@ -57,7 +58,9 @@ public class RasterImportExportTest {
     }
     
     @Test
-    public void exportTableTestGeomEnd() throws SQLException, IOException {
+    public void importRasterFile() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("select st_rasterfromfile('/')");
         
     }
 }
