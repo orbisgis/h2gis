@@ -31,9 +31,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
+import org.h2gis.drivers.utility.PRJUtil;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.URIUtility;
 
 /**
  * Methods to read a georeferenced image
@@ -56,7 +58,7 @@ public class RasterWorldFileReader {
 
     private double upperLeftY = 0;
     
-    private final int srid=0;
+    private int srid=0;
     
     static {
 		worldFileExtensions = new HashMap<String, String[]>();
@@ -94,12 +96,25 @@ public class RasterWorldFileReader {
         fileNamePrefix = fileName.substring(0, dotIndex);
         fileNameExtension = fileName.substring(dotIndex + 1).toLowerCase();
         if (isThereAnyWorldFile()) {
+            readWorldFile(worldFile);
+            //Check PRJ file
+            File prjFile = new File(fileNamePrefix + ".prj");
+            if (prjFile.exists()) {
+                srid = PRJUtil.getSRID(connection, prjFile);
+            }
             readImage(imageFile, tableReference, isH2);
         } else {
             throw new SQLException("Cannot support this extension : " + fileNameExtension);
         }
     }
     
+    /**
+     * Import the image
+     * 
+     * @param imageFile
+     * @param tableReference
+     * @param isH2 
+     */
     public void readImage(File imageFile, String tableReference, boolean isH2){        
         TableLocation location = TableLocation.parse(tableReference, isH2);
         //H2GIS
