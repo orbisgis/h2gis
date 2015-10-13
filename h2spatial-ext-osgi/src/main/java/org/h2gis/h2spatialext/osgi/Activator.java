@@ -32,7 +32,7 @@ import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.h2gis.drivers.osm.OSMDriverFunction;
-import org.h2gis.drivers.raster.RasterDriverFunction;
+import org.h2gis.drivers.raster.WorldFileImageDriverFunction;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -64,7 +64,7 @@ public class Activator implements BundleActivator {
                 bc.registerService(DriverFunction.class, new OSMDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new KMLDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new CSVDriverFunction(), null);
-                bc.registerService(DriverFunction.class, new RasterDriverFunction(), null);
+                bc.registerService(DriverFunction.class, new WorldFileImageDriverFunction(), null);
                 
         }
 
