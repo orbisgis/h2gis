@@ -24,15 +24,15 @@ package org.h2gis.drivers.raster;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.drivers.dbf.DBFRead;
-import org.h2gis.drivers.dbf.DBFWrite;
-import org.h2gis.drivers.shp.SHPRead;
-import org.h2gis.drivers.shp.SHPWrite;
+import org.h2.util.StringUtils;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -40,27 +40,53 @@ import org.junit.Test;
  *
  * @author Erwan Bocher
  */
-public class RasterImportExportTest {
-    
-     private static Connection connection;
-    private static final String DB_NAME = "RasterImportExportTest";
+public class WorldImageImportExportTest {
+
+    private Statement st;
+    private static Connection connection;
+    private static final String DB_NAME = "WorldFileImageImportExportTest";
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_RasterFromFile(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_WorldFileImageRead(), "");
     }
 
     @AfterClass
     public static void tearDown() throws Exception {
         connection.close();
     }
+
+    @Before
+    public void setUpStatement() throws Exception {
+        st = connection.createStatement();
+    }
     
+     @After
+    public void tearDownStatement() throws Exception {
+        st.close();
+    }
+
     @Test
-    public void importRasterFile() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        stat.execute("select st_rasterfromfile('/')");
+    public void importRasterFile1() throws SQLException, IOException {
+        st.execute("select ST_WorldFileImageRead(" + StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
+                + ")");
+        ResultSet rs = st.executeQuery("select the_raster from remote_sensing;");
+        rs.next();
         
+        rs.close();
+
+    }
+    
+     @Test
+    public void importRasterFile2() throws SQLException, IOException {
+        st.execute("select ST_WorldFileImageRead(" + StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
+                + ", 'myraster')");
+        ResultSet rs = st.executeQuery("select the_raster from myraster;");
+        rs.next();
+        
+        rs.close();
+
     }
 }

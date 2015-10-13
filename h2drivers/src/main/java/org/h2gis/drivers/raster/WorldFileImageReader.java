@@ -29,20 +29,20 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 import org.h2gis.drivers.utility.PRJUtil;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.URIUtility;
 
 /**
  * Methods to read a georeferenced image
  * 
  * @author Erwan Bocher
  */
-public class RasterWorldFileReader {
+public class WorldFileImageReader {
     
     private static Map<String, String[]> worldFileExtensions;
     
@@ -73,10 +73,10 @@ public class RasterWorldFileReader {
 		worldFileExtensions.put("png", new String[] { "pgw", "pngw","wld" });
 	}
     private String fileNameExtension;
-    private String fileNamePrefix;
+    private String filePathWithoutExtension;
     private File worldFile;
     
-    public RasterWorldFileReader(){
+    public WorldFileImageReader(){
         
     }
 
@@ -91,18 +91,20 @@ public class RasterWorldFileReader {
      */
     public void read(File imageFile, String tableReference, Connection connection, ProgressVisitor progress) throws SQLException, IOException {
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        String fileName = imageFile.getName();
-        final int dotIndex = fileName.lastIndexOf('.');
-        fileNamePrefix = fileName.substring(0, dotIndex);
-        fileNameExtension = fileName.substring(dotIndex + 1).toLowerCase();
+        String filePath = imageFile.getPath();        
+        final int dotIndex = filePath.lastIndexOf('.');
+        fileNameExtension = filePath.substring(dotIndex + 1).toLowerCase();
+        filePathWithoutExtension = filePath.substring(0, dotIndex+1);
         if (isThereAnyWorldFile()) {
             readWorldFile(worldFile);
             //Check PRJ file
-            File prjFile = new File(fileNamePrefix + ".prj");
-            if (prjFile.exists()) {
-                srid = PRJUtil.getSRID(connection, prjFile);
+            if (new File(filePath + "prj").exists()) {
+                srid = PRJUtil.getSRID(connection, new File(filePath + "prj"));
             }
-            readImage(imageFile, tableReference, isH2);
+            else if (new File(filePath + "PRJ").exists()) {
+                srid = PRJUtil.getSRID(connection, new File(filePath + "PRJ"));
+            }
+            readImage(imageFile, tableReference, isH2, connection);
         } else {
             throw new SQLException("Cannot support this extension : " + fileNameExtension);
         }
@@ -115,11 +117,12 @@ public class RasterWorldFileReader {
      * @param tableReference
      * @param isH2 
      */
-    public void readImage(File imageFile, String tableReference, boolean isH2){        
+    public void readImage(File imageFile, String tableReference, boolean isH2, Connection connection) throws SQLException{        
         TableLocation location = TableLocation.parse(tableReference, isH2);
+        StringBuilder sb = new StringBuilder();
         //H2GIS
         if(isH2){
-        StringBuilder sb = new StringBuilder("create table ").append(location.toString()).append("(id serial, the_raster raster)");
+        sb.append("create table ").append(location.toString()).append("(id serial, the_raster raster);");
         sb.append("insert into ").append(location.toString()).append("(the_raster)").append(" values (ST_RasterFromImage(FILE_READ('");
         sb.append(imageFile.getPath()).append("'), ");
         sb.append(upperLeftX).append(",");
@@ -128,12 +131,15 @@ public class RasterWorldFileReader {
         sb.append(scaleY).append(",");
         sb.append(skewX).append(",");
         sb.append(skewY).append(",");
-        sb.append(srid).append(")");
+        sb.append(srid).append("));");
         }
         else{
         //PostGIS
         
         }        
+        Statement stmt = connection.createStatement();
+        stmt.execute(sb.toString());
+        stmt.close();
     
     }
     
@@ -144,11 +150,11 @@ public class RasterWorldFileReader {
      */
     private boolean isThereAnyWorldFile() throws IOException {
         for (String extension : worldFileExtensions.get(fileNameExtension)) {
-            if (new File(fileNamePrefix + "." + extension).exists()) {
-                worldFile = new File(fileNamePrefix + "." + extension);
+            if (new File(filePathWithoutExtension + extension).exists()) {
+                worldFile = new File(filePathWithoutExtension  + extension);
                 return true;
-            } else if (new File(fileNamePrefix + "." + extension.toUpperCase()).exists()) {
-                worldFile = new File(fileNamePrefix + "."
+            } else if (new File(filePathWithoutExtension + extension.toUpperCase()).exists()) {
+                worldFile = new File(filePathWithoutExtension
                         + extension.toUpperCase());
                 return true;
             }

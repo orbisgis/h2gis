@@ -31,11 +31,11 @@ import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 
 /**
- * Read a georaster world file and convert it into a RASTER datatype.
+ * Read an image world file and convert it into a RASTER datatype.
  * 
  * @author Erwan Bocher
  */
-public class RasterDriverFunction implements DriverFunction{
+public class WorldFileImageDriverFunction implements DriverFunction{
 
     @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
@@ -44,7 +44,7 @@ public class RasterDriverFunction implements DriverFunction{
 
     @Override
     public String[] getImportFormats() {   
-        return new String[]{"png"};
+        return new String[]{"png", "bmp", "gif","jpeg","jpg", "tif", "tiff"};
     }
 
     @Override
@@ -55,15 +55,46 @@ public class RasterDriverFunction implements DriverFunction{
     @Override
     public String getFormatDescription(String format) {
         if (format.equalsIgnoreCase("png")) {
-            return "PNG file with its WorldFile pgw";
-        } else {
+            return "PNG format with pgw, pngw or wld world file.";
+        } 
+        else if (format.equalsIgnoreCase("bmp")) {
+            return "BMP format with bpw, bmpw or wld world file.";
+        } 
+        else if (format.equalsIgnoreCase("gif")) {
+            return "GIF format with gfw, gifw or wld world file.";
+        }
+        else if (format.equalsIgnoreCase("jpg")) {
+            return "JPG format with jpw, jgw, jpgw or wld world file.";
+        }
+        else if (format.equalsIgnoreCase("jpeg")) {
+            return "JPEG format with jpw, jgw, jpgw, jpegw or wld world file.";
+        }
+        else if (format.equalsIgnoreCase("tif")) {
+            return "TIF format with tfw, tifw or wld world file.";
+        }
+        else if (format.equalsIgnoreCase("tiff")) {
+            return "TIFF format with tfw, tiffw or wld world file.";
+        }
+        else {
             return "";
         }
     }
 
     @Override
     public boolean isSpatialFormat(String extension) {
-        return extension.equalsIgnoreCase("png");
+        if (extension.equalsIgnoreCase("png")) {
+            return true;
+        } else if (extension.equalsIgnoreCase("jpeg")) {
+            return true;
+        } else if (extension.equalsIgnoreCase("jpg")) {
+            return true;
+        } else if (extension.equalsIgnoreCase("bmp")) {
+            return true;
+        } else if (extension.equalsIgnoreCase("gif")) {
+            return true;
+        } else if (extension.equalsIgnoreCase("tif")) {
+            return true;
+        } else return extension.equalsIgnoreCase("tiff");
     }
 
     @Override
@@ -73,8 +104,8 @@ public class RasterDriverFunction implements DriverFunction{
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        RasterWorldFileReader rasterWorldFileReader = new RasterWorldFileReader();
-        rasterWorldFileReader.read(fileName, tableReference, connection, progress);
+        WorldFileImageReader worldFileImageReader = new WorldFileImageReader();
+        worldFileImageReader.read(fileName, tableReference, connection, progress);
     }
     
 }

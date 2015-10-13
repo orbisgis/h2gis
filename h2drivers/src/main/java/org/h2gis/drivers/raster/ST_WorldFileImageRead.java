@@ -31,31 +31,33 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.URIUtility;
 
 /**
- * A function to read a georeferenced image.
+ * A function to read a worldfile image.
+ * A world file establish an image-to-world transformation that converts 
+ * the image coordinates to real-world coordinates.
  * 
  * @author Erwan Bocher
  */
-public class ST_RasterFromFile extends AbstractFunction implements ScalarFunction{
+public class ST_WorldFileImageRead extends AbstractFunction implements ScalarFunction{
 
-    public ST_RasterFromFile(){
-        addProperty(PROP_REMARKS, "Read a world file image.\n"
+    public ST_WorldFileImageRead(){
+        addProperty(PROP_REMARKS, "Import a world file image into a new table.\n"
                 + "Supported formats are : \n"
-                + "- png with pgw or pngw\n"
-                + "- bmp with bpw or bmpw\n"
-                + "- gif with gfw or gifw\n"
-                + "- jpeg with jpw, jgw, jpgw or jpegw\n"
-                + "- jpg with jpw, jgw, jpgw or jpegw\n"
-                + "- tif with tfw or tifw\n"
+                + "- png with pgw, pngw,\n"
+                + "- bmp with bpw or bmpw,\n"
+                + "- gif with gfw or gifw,\n"
+                + "- jpeg with jpw, jgw, jpgw or jpegw,\n"
+                + "- jpg with jpw, jgw, jpgw or jpegw,\n"
+                + "- tif with tfw or tifw,\n"
                 + "- tiff with tfw or tiffw.\n"
                 + "and wld for all listed formats");
     }
     @Override
     public String getJavaStaticMethod() {
-        return "rasterFromFile";
+        return "worldFileImageRead";
     }
     
     /**
-     * Copy data from georeferenced world image file into a new table in specified connection.
+     * Copy data from  world image file into a new table in specified connection.
      * 
      * @param connection
      * @param fileName
@@ -63,13 +65,13 @@ public class ST_RasterFromFile extends AbstractFunction implements ScalarFunctio
      * @throws SQLException
      * @throws IOException 
      */
-    public static void rasterFromFile(Connection connection, String fileName, String tableReference) throws SQLException, IOException{
-        RasterWorldFileReader rasterWorldFileReader = new RasterWorldFileReader();
+    public static void worldFileImageRead(Connection connection, String fileName, String tableReference) throws SQLException, IOException{
+        WorldFileImageReader rasterWorldFileReader = new WorldFileImageReader();
         rasterWorldFileReader.read(URIUtility.fileFromString(fileName), tableReference, connection, new EmptyProgressVisitor());
     }
     
     /**
-     * Copy data from georeferenced world image file into a new table in specified connection.
+     * Copy data from world image file into a new table in specified connection.
      *
      *
      * @param connection
@@ -77,8 +79,8 @@ public class ST_RasterFromFile extends AbstractFunction implements ScalarFunctio
      * @throws IOException
      * @throws SQLException
      */
-    public static void rasterFromFile(Connection connection, String fileName) throws IOException, SQLException {
+    public static void worldFileImageRead(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtility.fileFromString(fileName).getName();
-        rasterFromFile(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
+        worldFileImageRead(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
     }
 }
