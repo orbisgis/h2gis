@@ -61,7 +61,7 @@ public class PRJUtil {
     public static int getSRID(Connection connection, File prjFile) throws SQLException, IOException{
         int srid = 0;
         if (prjFile == null) {
-            log.warn("This shapefile has no prj. \n A default srid equals to 0 will be added.");
+            log.warn("This file has no prj. \n A default srid equals to 0 will be added.");
         } else {
             PrjParser parser = new PrjParser();
             String prjString = readPRJFile(prjFile);

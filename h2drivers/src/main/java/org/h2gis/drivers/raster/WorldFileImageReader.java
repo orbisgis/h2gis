@@ -23,22 +23,30 @@
 
 package org.h2gis.drivers.raster;
 
+import org.h2.util.GeoRasterRenderedImage;
+import org.h2.util.imageio.RenderedImageReader;
 import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.drivers.utility.PRJUtil;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.RandomAccessFile;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -138,34 +146,59 @@ public class WorldFileImageReader {
         StringBuilder sb = new StringBuilder();
         sb.append("create table ").append(location.toString()).append("(id serial, the_raster raster) as ");
         sb.append("select null, ");
+        boolean transferWKBRaster;
         if(isH2) {
-            sb.append("ST_RasterFromImage(?, ");
+            sb.append("?;");
+            transferWKBRaster = true;
         } else {
             sb.append("ST_SetGeoReference(ST_FromGDALRaster(?,");
             sb.append(srid);
             sb.append("), ");
+            sb.append(upperLeftX).append(",");
+            sb.append(upperLeftY).append(",");
+            sb.append(scaleX).append(",");
+            sb.append(scaleY).append(",");
+            sb.append(skewX).append(",");
+            sb.append(skewY);
+            sb.append("));");
+            transferWKBRaster = false;
         }
-        sb.append(upperLeftX).append(",");
-        sb.append(upperLeftY).append(",");
-        sb.append(scaleX).append(",");
-        sb.append(scaleY).append(",");
-        sb.append(skewX).append(",");
-        sb.append(skewY);
-        if(isH2) {
-            sb.append(",");
-            sb.append(srid);
-        } else {
-            sb.append(")");
-        }
-        sb.append(");");
         PreparedStatement stmt = connection.prepareStatement(sb.toString());
         try {
-            FileInputStream fileInputStream = new FileInputStream(imageFile);
-            try {
-                stmt.setBinaryStream(1, fileInputStream, imageFile.length());
-                stmt.execute();
-            } finally {
-                fileInputStream.close();
+            if(!transferWKBRaster) {
+                // Transfer the image directly
+                FileInputStream fileInputStream = new FileInputStream(imageFile);
+                try {
+                    stmt.setBinaryStream(1, fileInputStream, imageFile.length());
+                    stmt.execute();
+                } finally {
+                    fileInputStream.close();
+                }
+            } else {
+                // Convert the image to WKB Raster locally then transfer the bytes
+                RandomAccessFile raf = new RandomAccessFile(imageFile, "r");
+                ImageInputStream imageInputStream = ImageIO.createImageInputStream(raf);
+                try {
+                    Iterator<ImageReader> readerIterator = ImageIO.getImageReaders(imageInputStream);
+                    if(readerIterator == null || !readerIterator.hasNext()) {
+                        throw new SQLException("Could not find image reader for "+imageFile);
+                    }
+                    ImageReader imageReader = readerIterator.next();
+                    imageReader.setInput(imageInputStream);
+                    RenderedImageReader renderedImageReader = new RenderedImageReader(imageReader);
+                    InputStream wkbStream = GeoRasterRenderedImage
+                            .create(renderedImageReader, scaleX, scaleY, upperLeftX, upperLeftY, skewX, skewY, srid,
+                                    Double.NaN).asWKBRaster();
+                    try {
+                        stmt.setBinaryStream(1, wkbStream);
+                        stmt.execute();
+                    } finally {
+                        wkbStream.close();
+                    }
+                } finally {
+                    stmt.close();
+                    imageInputStream.close();
+                }
             }
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex.getLocalizedMessage(), ex);
