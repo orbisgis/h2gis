@@ -22,6 +22,7 @@
  */
 package org.h2gis.drivers.raster;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -33,6 +34,7 @@ import org.h2.util.RasterUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
@@ -103,5 +105,34 @@ public class WorldImageImportExportTest {
         }
         rs.close();
 
+    }
+
+    @Test
+    public void testDriver() throws SQLException, IOException {
+        WorldFileImageDriverFunction func = new WorldFileImageDriverFunction();
+        st.execute("DROP TABLE IF EXISTS REMOTE_SENSING");
+        func.importFile(connection, "REMOTE_SENSING", new File(WorldImageImportExportTest.class.getResource
+                ("remote_sensing.png").getFile()), new EmptyProgressVisitor());
+
+        ResultSet rs = st.executeQuery("select the_raster from remote_sensing;");
+        assertTrue(rs.next());
+        // Read metadata from WKB raster stream
+        InputStream is = rs.getBinaryStream(1);
+        try {
+            RasterUtils.RasterMetaData metaData = RasterUtils.RasterMetaData.fetchMetaData(is, true);
+            assertNotNull(metaData);
+            assertEquals(461, metaData.width);
+            assertEquals(346, metaData.height);
+            assertEquals(3, metaData.numBands);
+            assertEquals(319190.95, metaData.ipX, 1e-2);
+            assertEquals(2250332.35, metaData.ipY, 1e-2);
+            assertEquals(2.5, metaData.scaleX, 1e-2);
+            assertEquals(-2.5, metaData.scaleY, 1e-2);
+            assertEquals(0., metaData.skewX, 1e-6);
+            assertEquals(0., metaData.skewY, 1e-6);
+        } finally {
+            is.close();
+        }
+        rs.close();
     }
 }

@@ -29,6 +29,7 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
+import javax.swing.plaf.nimbus.State;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -38,6 +39,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -136,8 +138,8 @@ public class WorldFileImageReader {
     public void readImage(String tableReference, boolean isH2, Connection connection) throws SQLException{
         TableLocation location = TableLocation.parse(tableReference, isH2);
         StringBuilder sb = new StringBuilder();
-        sb.append("create table ").append(location.toString()).append("(id serial, the_raster raster);");
-        sb.append("insert into ").append(location.toString()).append("(the_raster) values (");
+        sb.append("create table ").append(location.toString()).append("(id serial, the_raster raster) as ");
+        sb.append("select null, ");
         if(isH2) {
             sb.append("ST_RasterFromImage(?, ");
         } else {
@@ -157,7 +159,7 @@ public class WorldFileImageReader {
         } else {
             sb.append(")");
         }
-        sb.append("));");
+        sb.append(");");
         PreparedStatement stmt = connection.prepareStatement(sb.toString());
         try {
             FileInputStream fileInputStream = new FileInputStream(imageFile);
