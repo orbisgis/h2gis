@@ -78,6 +78,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.media.jai.JAI;
+import org.h2gis.h2spatialext.function.spatial.raster.ST_Band;
 
 
 /**
@@ -211,7 +212,9 @@ public class CreateSpatialExtension {
                 new ST_GeomFromGeoJSON(),
                 new ST_OSMMapLink(),
                 new ST_GoogleMapLink(),
-                new ST_AsGML()};
+                new ST_AsGML(),
+                //Raster functions
+                new ST_Band()};
     }
 
     /**
