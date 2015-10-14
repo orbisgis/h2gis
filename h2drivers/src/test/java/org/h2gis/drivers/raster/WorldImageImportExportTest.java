@@ -23,10 +23,13 @@
 package org.h2gis.drivers.raster;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import org.h2.util.RasterUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -35,6 +38,10 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  *
@@ -70,22 +77,29 @@ public class WorldImageImportExportTest {
 
     @Test
     public void importRasterFile1() throws SQLException, IOException {
-        st.execute("select ST_WorldFileImageRead(" + StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
+        st.execute("drop table if exists remote_sensing");
+        st.execute("create table remote_sensing(id serial, the_raster raster) as select null, ST_WorldFileImageRead(" +
+                StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
                 + ")");
         ResultSet rs = st.executeQuery("select the_raster from remote_sensing;");
-        rs.next();
-        
-        rs.close();
-
-    }
-    
-     @Test
-    public void importRasterFile2() throws SQLException, IOException {
-        st.execute("select ST_WorldFileImageRead(" + StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
-                + ", 'myraster')");
-        ResultSet rs = st.executeQuery("select the_raster from myraster;");
-        rs.next();
-        
+        assertTrue(rs.next());
+        // Read metadata from WKB raster stream
+        InputStream is = rs.getBinaryStream(1);
+        try {
+            RasterUtils.RasterMetaData metaData = RasterUtils.RasterMetaData.fetchMetaData(is, true);
+            assertNotNull(metaData);
+            assertEquals(461, metaData.width);
+            assertEquals(346, metaData.height);
+            assertEquals(3, metaData.numBands);
+            assertEquals(319190.95, metaData.ipX, 1e-2);
+            assertEquals(2250332.35, metaData.ipY, 1e-2);
+            assertEquals(2.5, metaData.scaleX, 1e-2);
+            assertEquals(-2.5, metaData.scaleY, 1e-2);
+            assertEquals(0., metaData.skewX, 1e-6);
+            assertEquals(0., metaData.skewY, 1e-6);
+        } finally {
+            is.close();
+        }
         rs.close();
 
     }

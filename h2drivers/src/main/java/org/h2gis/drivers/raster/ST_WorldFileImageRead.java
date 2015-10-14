@@ -74,7 +74,7 @@ public class ST_WorldFileImageRead extends AbstractFunction implements ScalarFun
             SQLException, IOException {
         File rasterFile = URIUtility.fileFromString(fileName);
         WorldFileImageReader rasterWorldFileReader = WorldFileImageReader.fetch(connection, rasterFile);
-        PlanarImage input = JAI.create("fileload", rasterFile);
+        PlanarImage input = JAI.create("fileload", rasterFile.getAbsolutePath());
         // TODO Nodata value
         return GeoRasterRenderedImage.create(input, rasterWorldFileReader.getScaleX(), rasterWorldFileReader.getScaleY(),
                 rasterWorldFileReader.getUpperLeftX(), rasterWorldFileReader.getUpperLeftY(), rasterWorldFileReader
