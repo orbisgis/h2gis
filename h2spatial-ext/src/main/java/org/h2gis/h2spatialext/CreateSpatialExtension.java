@@ -242,6 +242,8 @@ public class CreateSpatialExtension {
             return true;
         } catch (ClassNotFoundException ex) {
             return false;
+        } catch (NoClassDefFoundError ex) {
+            return false;
         }
     }
 
