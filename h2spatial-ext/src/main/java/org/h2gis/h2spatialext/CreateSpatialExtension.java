@@ -35,6 +35,7 @@ import org.h2gis.drivers.geojson.ST_GeomFromGeoJSON;
 import org.h2gis.drivers.gpx.GPXRead;
 import org.h2gis.drivers.kml.KMLWrite;
 import org.h2gis.drivers.kml.ST_AsKml;
+import org.h2gis.drivers.raster.ST_WorldFileImageRead;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialapi.Function;
@@ -75,6 +76,8 @@ import org.h2gis.h2spatialext.function.system.IntegerRange;
 import org.h2gis.network.graph_creator.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.media.jai.JAI;
 
 
 /**
@@ -212,6 +215,15 @@ public class CreateSpatialExtension {
     }
 
     /**
+     * @return Function that use optional dependency JAI
+     */
+    public static Function[] getJaiFunctions() {
+        return new Function[] {
+                new ST_WorldFileImageRead()
+        };
+    }
+
+    /**
      * Init H2 DataBase with extended spatial functions
      *
      * @param connection Active connection
@@ -221,6 +233,18 @@ public class CreateSpatialExtension {
         org.h2gis.h2spatial.CreateSpatialExtension.initSpatialExtension(connection);
         // Register project's functions
         addSpatialFunctions(connection);
+    }
+
+    public static boolean isJAIAvailable() {
+        try {
+            Class.forName(JAI.class.getName());
+            // Ok we have it
+            return true;
+        } catch (ClassNotFoundException ex) {
+            return false;
+        } catch (NoClassDefFoundError ex) {
+            return false;
+        }
     }
 
     /**
@@ -237,6 +261,17 @@ public class CreateSpatialExtension {
             } catch (SQLException ex) {
                 // Catch to register other functions
                 LOGGER.error(ex.getLocalizedMessage(), ex);
+            }
+        }
+        // Check if JAI dependency is available
+        if(isJAIAvailable()) {
+            for (Function function : getJaiFunctions()) {
+                try {
+                    org.h2gis.h2spatial.CreateSpatialExtension.registerFunction(st, function, "");
+                } catch (SQLException ex) {
+                    // Catch to register other functions
+                    LOGGER.error(ex.getLocalizedMessage(), ex);
+                }
             }
         }
     }

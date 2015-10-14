@@ -32,8 +32,11 @@ import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.h2gis.drivers.osm.OSMDriverFunction;
+import org.h2gis.drivers.raster.WorldFileImageDriverFunction;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
+
+import java.sql.SQLException;
 
 /**
  * Registers services provided by this plugin bundle.
@@ -55,6 +58,21 @@ public class Activator implements BundleActivator {
                                 (DriverFunction) function,
                                 null);
                     }
+                }
+
+                // Check if JAI dependency is available
+                if(CreateSpatialExtension.isJAIAvailable()) {
+                        for (Function function : CreateSpatialExtension.getJaiFunctions()) {
+                                bc.registerService(Function.class,
+                                        function,
+                                        null);
+                                if(function instanceof DriverFunction) {
+                                        bc.registerService(DriverFunction.class,
+                                                (DriverFunction) function,
+                                                null);
+                                }
+                        }
+                    bc.registerService(DriverFunction.class, new WorldFileImageDriverFunction(), null);
                 }
                 bc.registerService(DriverFunction.class, new DBFDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new SHPDriverFunction(), null);
