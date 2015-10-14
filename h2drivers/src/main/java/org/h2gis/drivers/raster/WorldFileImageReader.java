@@ -29,7 +29,6 @@ import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
-import javax.swing.plaf.nimbus.State;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -39,7 +38,6 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
