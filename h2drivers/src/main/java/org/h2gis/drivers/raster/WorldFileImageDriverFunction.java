@@ -104,8 +104,8 @@ public class WorldFileImageDriverFunction implements DriverFunction{
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        WorldFileImageReader worldFileImageReader = new WorldFileImageReader();
-        worldFileImageReader.read(fileName, tableReference, connection, progress);
+        WorldFileImageReader worldFileImageReader = WorldFileImageReader.fetch(connection, fileName);
+        worldFileImageReader.read(tableReference, connection, progress);
     }
     
 }

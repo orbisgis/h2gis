@@ -26,11 +26,16 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.drivers.FileDriver;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
+import org.h2gis.drivers.utility.FileUtil;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 
 /**
  * Merge ShapeFileReader and DBFReader.
@@ -140,25 +145,11 @@ public class SHPDriver implements FileDriver {
         this.shpFile = shpFile;
         File dbfFile = null;
         // Find appropriate file extension for shx and dbf, maybe SHX or Shx..
-        String shxFileName = shpFile.getName();
-        String nameWithoutExt = shxFileName.substring(0,shxFileName.lastIndexOf('.'));
-        File[] filesInParentFolder = shpFile.getParentFile().listFiles();
-        if(filesInParentFolder != null) {
-            for(File otherFile : filesInParentFolder) {
-                String otherFileName = otherFile.getName();
-                if(otherFileName.startsWith(nameWithoutExt + ".")) {
-                    String fileExt =  otherFileName.substring(otherFileName.lastIndexOf(".") + 1);
-                    if(fileExt.equalsIgnoreCase("shx")) {
-                        shxFile = otherFile;
-                    } else if(fileExt.equalsIgnoreCase("dbf")) {
-                        dbfFile = otherFile;
-                    }
-                    else if(fileExt.equalsIgnoreCase("prj")) {
-                        prjFile = otherFile;
-                    }
-                }
-            }
-        }
+        Map<String, File> matchExt = FileUtil.fetchFileByIgnoreCaseExt(shpFile.getParentFile(), FileUtil.getBaseName(shpFile),
+                "shx", "dbf", "prj");
+        shxFile = matchExt.get("shx");
+        dbfFile = matchExt.get("dbf");
+        prjFile = matchExt.get("prj");
         if(dbfFile != null) {
             dbfDriver.initDriverFromFile(dbfFile, forceEncoding);
         } else {

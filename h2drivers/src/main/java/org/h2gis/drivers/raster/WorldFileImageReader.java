@@ -23,19 +23,23 @@
 
 package org.h2gis.drivers.raster;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.HashMap;
-import java.util.Map;
+import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.drivers.utility.PRJUtil;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Methods to read a georeferenced image
@@ -44,15 +48,15 @@ import org.h2gis.utilities.TableLocation;
  */
 public class WorldFileImageReader {
     
-    private static Map<String, String[]> worldFileExtensions;
+    private static final Map<String, String[]> worldFileExtensions;
     
-    private float scaleX = 1;
+    private double scaleX = 1;
 
-    private float scaleY = -1;
+    private double scaleY = -1;
 
-    private float skewX = 0;
+    private double skewX = 0;
 
-    private float skewY = 0;
+    private double skewY = 0;
 
     private double upperLeftX = 0;
 
@@ -75,70 +79,99 @@ public class WorldFileImageReader {
     private String fileNameExtension;
     private String filePathWithoutExtension;
     private File worldFile;
-    
-    public WorldFileImageReader(){
+    private File imageFile;
+
+    /**
+     * Use {@link #fetch(File)}
+     */
+    private WorldFileImageReader(){
         
     }
 
     /**
-     * Read the georeferenced image
-     * @param imageFile
+     * Create WorldFileImageReader using world file on disk.
+     * @param connection Active connection, not closed by this method
+     * @param imageFile Image file path
+     * @return Instance of WorldFileImageReader
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static WorldFileImageReader fetch(Connection connection, File imageFile) throws IOException, SQLException {
+        WorldFileImageReader worldFileImageReader = new WorldFileImageReader();
+        worldFileImageReader.imageFile = imageFile;
+        String filePath = imageFile.getPath();
+        final int dotIndex = filePath.lastIndexOf('.');
+        worldFileImageReader.fileNameExtension = filePath.substring(dotIndex + 1).toLowerCase();
+        worldFileImageReader.filePathWithoutExtension = filePath.substring(0, dotIndex+1);
+        if (worldFileImageReader.isThereAnyWorldFile()) {
+            worldFileImageReader.readWorldFile();
+            Map<String, File> matchExt = FileUtil.fetchFileByIgnoreCaseExt(imageFile.getParentFile(), FileUtil
+                    .getBaseName(imageFile), "prj");
+            worldFileImageReader.srid = PRJUtil.getSRID(connection, matchExt.get("prj"));
+        } else {
+            throw new IOException("Cannot support this extension : " + worldFileImageReader.fileNameExtension);
+        }
+        return worldFileImageReader;
+    }
+
+    /**
+     * Copy the georeferenced image into a table
      * @param tableReference
      * @param connection
      * @param progress
      * @throws SQLException
      * @throws IOException 
      */
-    public void read(File imageFile, String tableReference, Connection connection, ProgressVisitor progress) throws SQLException, IOException {
+    public void read(String tableReference, Connection connection, ProgressVisitor progress) throws SQLException, IOException {
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        String filePath = imageFile.getPath();        
-        final int dotIndex = filePath.lastIndexOf('.');
-        fileNameExtension = filePath.substring(dotIndex + 1).toLowerCase();
-        filePathWithoutExtension = filePath.substring(0, dotIndex+1);
-        if (isThereAnyWorldFile()) {
-            readWorldFile(worldFile);
-            //Check PRJ file
-            if (new File(filePath + "prj").exists()) {
-                srid = PRJUtil.getSRID(connection, new File(filePath + "prj"));
-            }
-            else if (new File(filePath + "PRJ").exists()) {
-                srid = PRJUtil.getSRID(connection, new File(filePath + "PRJ"));
-            }
-            readImage(imageFile, tableReference, isH2, connection);
-        } else {
-            throw new SQLException("Cannot support this extension : " + fileNameExtension);
-        }
+        readImage(tableReference, isH2, connection);
     }
     
     /**
      * Import the image
-     * 
-     * @param imageFile
+     *
      * @param tableReference
      * @param isH2 
      */
-    public void readImage(File imageFile, String tableReference, boolean isH2, Connection connection) throws SQLException{        
+    public void readImage(String tableReference, boolean isH2, Connection connection) throws SQLException{
         TableLocation location = TableLocation.parse(tableReference, isH2);
         StringBuilder sb = new StringBuilder();
-        //H2GIS
-        if(isH2){
         sb.append("create table ").append(location.toString()).append("(id serial, the_raster raster);");
-        sb.append("insert into ").append(location.toString()).append("(the_raster)").append(" values (ST_RasterFromImage(FILE_READ('");
-        sb.append(imageFile.getPath()).append("'), ");
+        sb.append("insert into ").append(location.toString()).append("(the_raster) values (");
+        if(isH2) {
+            sb.append("ST_RasterFromImage(?, ");
+        } else {
+            sb.append("ST_SetGeoReference(ST_FromGDALRaster(?,");
+            sb.append(srid);
+            sb.append("), ");
+        }
         sb.append(upperLeftX).append(",");
         sb.append(upperLeftY).append(",");
         sb.append(scaleX).append(",");
         sb.append(scaleY).append(",");
         sb.append(skewX).append(",");
-        sb.append(skewY).append(",");
-        sb.append(srid).append("));");
+        sb.append(skewY);
+        if(isH2) {
+            sb.append(",");
+            sb.append(srid);
+        } else {
+            sb.append(")");
         }
-        else{
-        //PostGIS
-        
-        }        
-        Statement stmt = connection.createStatement();
-        stmt.execute(sb.toString());
+        sb.append("));");
+        PreparedStatement stmt = connection.prepareStatement(sb.toString());
+        try {
+            FileInputStream fileInputStream = new FileInputStream(imageFile);
+            try {
+                stmt.setBinaryStream(1, fileInputStream, imageFile.length());
+                stmt.execute();
+            } finally {
+                fileInputStream.close();
+            }
+        } catch (FileNotFoundException ex) {
+            throw new SQLException(ex.getLocalizedMessage(), ex);
+        } catch (IOException ex) {
+            throw new SQLException(ex.getLocalizedMessage(), ex);
+        }
         stmt.close();
     
     }
@@ -149,17 +182,16 @@ public class WorldFileImageReader {
      * @return @throws IOException
      */
     private boolean isThereAnyWorldFile() throws IOException {
-        for (String extension : worldFileExtensions.get(fileNameExtension)) {
-            if (new File(filePathWithoutExtension + extension).exists()) {
-                worldFile = new File(filePathWithoutExtension  + extension);
-                return true;
-            } else if (new File(filePathWithoutExtension + extension.toUpperCase()).exists()) {
-                worldFile = new File(filePathWithoutExtension
-                        + extension.toUpperCase());
-                return true;
-            }
+        File parentFolder = imageFile.getParentFile();
+        String fileNameWithoutExt = FileUtil.getBaseName(imageFile);
+        Map<String, File> worldFiles = FileUtil.fetchFileByIgnoreCaseExt(parentFolder, fileNameWithoutExt,
+                worldFileExtensions.get(fileNameExtension));
+        if(!worldFiles.isEmpty()) {
+            worldFile = worldFiles.values().iterator().next();
+            return true;
+        } else {
+            return false;
         }
-        return false;
     }
     
     /**
@@ -172,45 +204,98 @@ public class WorldFileImageReader {
      * negative pixel Y size 
      * X coordinate of upper left pixel center 
      * Y coordinate of upper left pixel center
-     * 
-     * @param worldFile
+     *
      * @throws IOException 
      */
-    public void readWorldFile(File worldFile) throws IOException {
+    private void readWorldFile() throws IOException {
         final FileReader fin = new FileReader(worldFile);
         final BufferedReader in = new BufferedReader(fin);
-        String lineIn = in.readLine();
-        int line = 0;
-        while ((in.ready() || lineIn != null) && line < 6) {
-            if (lineIn != null && !"".equals(lineIn)) {
-                switch (line) {
-                    case 0:
-                        scaleX = Float.valueOf(lineIn.trim());
-                        break;
-                    case 1:
-                        skewX = Float.valueOf(lineIn.trim());
-                        break;
-                    case 2:
-                        skewY = Float.parseFloat(lineIn.trim());
-                        break;
-                    case 3:
-                        scaleY = Float.valueOf(lineIn.trim());
-                        break;
-                    case 4:
-                        upperLeftX = Double.valueOf(lineIn.trim());
-                        break;
-                    case 5:
-                        upperLeftY = Double.valueOf(lineIn.trim());
-                        break;
+        try {
+            String lineIn = in.readLine();
+            int line = 0;
+            while ((in.ready() || lineIn != null) && line < 6) {
+                if (lineIn != null && !"".equals(lineIn)) {
+                    switch (line) {
+                        case 0:
+                            scaleX = Double.valueOf(lineIn.trim());
+                            break;
+                        case 1:
+                            skewX = Double.valueOf(lineIn.trim());
+                            break;
+                        case 2:
+                            skewY = Double.valueOf(lineIn.trim());
+                            break;
+                        case 3:
+                            scaleY = Double.valueOf(lineIn.trim());
+                            break;
+                        case 4:
+                            upperLeftX = Double.valueOf(lineIn.trim());
+                            break;
+                        case 5:
+                            upperLeftY = Double.valueOf(lineIn.trim());
+                            break;
+                    }
+                }
+                line++;
+                lineIn = null;
+                if (in.ready()) {
+                    lineIn = in.readLine();
                 }
             }
-            line++;
-            lineIn = null;
-            if (in.ready()) {
-                lineIn = in.readLine();
-            }
+        } finally {
+            in.close();
         }
-        in.close();
+        // ESRI and WKB Raster have a slight difference on insertion point
+        upperLeftX = upperLeftX + scaleX * 0.5;
+        upperLeftY = upperLeftY + scaleY * 0.5;
     }
-    
+
+    /**
+     * @return Pixel size X
+     */
+    public double getScaleX() {
+        return scaleX;
+    }
+
+    /**
+     * @return Pixel size Y
+     */
+    public double getScaleY() {
+        return scaleY;
+    }
+
+    /**
+     * @return Pixel rotation X
+     */
+    public double getSkewX() {
+        return skewX;
+    }
+
+    /**
+     * @return Pixel rotation Y
+     */
+    public double getSkewY() {
+        return skewY;
+    }
+
+    /**
+     * @return Upper left image position
+     */
+    public double getUpperLeftX() {
+        return upperLeftX;
+    }
+
+    /**
+     * @return Upper left image position
+     */
+    public double getUpperLeftY() {
+        return upperLeftY;
+    }
+
+    /**
+     * @return Projection id
+     */
+    public int getSrid() {
+        return srid;
+    }
 }

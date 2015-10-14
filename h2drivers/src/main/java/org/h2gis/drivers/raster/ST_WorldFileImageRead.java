@@ -22,13 +22,20 @@
  */
 package org.h2gis.drivers.raster;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import org.h2.api.GeoRaster;
+import org.h2.util.GeoRasterRenderedImage;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.URIUtility;
+
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
 
 /**
  * A function to read a worldfile image.
@@ -58,29 +65,19 @@ public class ST_WorldFileImageRead extends AbstractFunction implements ScalarFun
     
     /**
      * Copy data from  world image file into a new table in specified connection.
-     * 
-     * @param connection
-     * @param fileName
-     * @param tableReference
+     *
+     * @param fileName Image path
      * @throws SQLException
      * @throws IOException 
      */
-    public static void worldFileImageRead(Connection connection, String fileName, String tableReference) throws SQLException, IOException{
-        WorldFileImageReader rasterWorldFileReader = new WorldFileImageReader();
-        rasterWorldFileReader.read(URIUtility.fileFromString(fileName), tableReference, connection, new EmptyProgressVisitor());
-    }
-    
-    /**
-     * Copy data from world image file into a new table in specified connection.
-     *
-     *
-     * @param connection
-     * @param fileName
-     * @throws IOException
-     * @throws SQLException
-     */
-    public static void worldFileImageRead(Connection connection, String fileName) throws IOException, SQLException {
-        final String name = URIUtility.fileFromString(fileName).getName();
-        worldFileImageRead(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
+    public static GeoRaster worldFileImageRead(Connection connection, String fileName) throws
+            SQLException, IOException {
+        File rasterFile = URIUtility.fileFromString(fileName);
+        WorldFileImageReader rasterWorldFileReader = WorldFileImageReader.fetch(connection, rasterFile);
+        PlanarImage input = JAI.create("fileload", rasterFile);
+        // TODO Nodata value
+        return GeoRasterRenderedImage.create(input, rasterWorldFileReader.getScaleX(), rasterWorldFileReader.getScaleY(),
+                rasterWorldFileReader.getUpperLeftX(), rasterWorldFileReader.getUpperLeftY(), rasterWorldFileReader
+                        .getSkewX(), rasterWorldFileReader.getSkewY(), rasterWorldFileReader.getSrid(), 0);
     }
 }
