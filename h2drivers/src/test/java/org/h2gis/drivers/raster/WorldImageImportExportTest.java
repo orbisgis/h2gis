@@ -44,8 +44,9 @@ import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
 /**
- *
+ * Test of Raster drivers
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class WorldImageImportExportTest {
 
