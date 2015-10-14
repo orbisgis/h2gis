@@ -72,6 +72,7 @@ public class Activator implements BundleActivator {
                                                 null);
                                 }
                         }
+                    bc.registerService(DriverFunction.class, new WorldFileImageDriverFunction(), null);
                 }
                 bc.registerService(DriverFunction.class, new DBFDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new SHPDriverFunction(), null);
@@ -80,7 +81,6 @@ public class Activator implements BundleActivator {
                 bc.registerService(DriverFunction.class, new OSMDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new KMLDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new CSVDriverFunction(), null);
-                bc.registerService(DriverFunction.class, new WorldFileImageDriverFunction(), null);
                 
         }
 
