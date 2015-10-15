@@ -41,15 +41,8 @@ import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
 import org.junit.AfterClass;
+import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -89,12 +82,12 @@ public class RasterFunctionTest {
     @Test
     public void testST_BAND1() throws Exception {
         
-        BufferedImage image = new BufferedImage(10, 10, BufferedImage
+        BufferedImage image = new BufferedImage(5, 5, BufferedImage
                 .TYPE_INT_RGB);
         WritableRaster raster = image.getRaster();
         
-        for (int y = 0; y < 10; y++) {
-            for (int x = 0; x < 10; x++) {
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
                 int red = 0;
                 int green = 0;
                 int blue = 255;
@@ -117,8 +110,8 @@ public class RasterFunctionTest {
         Blob blob = rs.getBlob(1);
         RasterUtils.RasterMetaData metaData = RasterUtils.RasterMetaData
                 .fetchMetaData(blob.getBinaryStream());
-        assertEquals(10, metaData.width);
-        assertEquals(10, metaData.height);
+        assertEquals(5, metaData.width);
+        assertEquals(5, metaData.height);
         assertEquals(1, metaData.numBands);
         
         ImageInputStream inputStream = ImageIO.createImageInputStream(blob);
@@ -131,9 +124,14 @@ public class RasterFunctionTest {
         wkbReader.setInput(inputStream);
         // Retrieve data as a BufferedImage
         BufferedImage imageRes = wkbReader.read(wkbReader.getMinIndex());
-        int[] iArray = new int[1];        
-        imageRes.getRaster().getPixel(5, 5, iArray);        
-        assertEquals(0, iArray[1]);        
+        int pixelsSource[] = new int[]{255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255,
+            255, 255, 255, 255, 255};
+        int pixelsDest[] = imageRes.getData().getPixels(0, 0, imageRes.getWidth(),
+                imageRes.getHeight(),(int[])null);
+        Assert.assertArrayEquals(pixelsSource, pixelsDest);            
         rs.close();
     }
     
@@ -141,11 +139,11 @@ public class RasterFunctionTest {
     @Test(expected = IllegalArgumentException.class)
     public void testST_BAND2() throws Exception, Throwable {
 
-        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = image.getRaster();
 
-        for (int y = 0; y < 10; y++) {
-            for (int x = 0; x < 10; x++) {
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
                 int red = 0;
                 int green = 0;
                 int blue = 255;
@@ -173,11 +171,11 @@ public class RasterFunctionTest {
     @Test(expected = IllegalArgumentException.class)
     public void testST_BAND3() throws Exception, Throwable {
 
-        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = image.getRaster();
 
-        for (int y = 0; y < 10; y++) {
-            for (int x = 0; x < 10; x++) {
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
                 int red = 0;
                 int green = 0;
                 int blue = 255;
@@ -205,11 +203,11 @@ public class RasterFunctionTest {
      @Test(expected = IllegalArgumentException.class)
     public void testST_BAND4() throws Exception, Throwable {
 
-        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = image.getRaster();
 
-        for (int y = 0; y < 10; y++) {
-            for (int x = 0; x < 10; x++) {
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
                 int red = 0;
                 int green = 0;
                 int blue = 255;
@@ -236,11 +234,11 @@ public class RasterFunctionTest {
      @Test(expected = IllegalArgumentException.class)
     public void testST_BAND5() throws Exception, Throwable {
 
-        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = image.getRaster();
 
-        for (int y = 0; y < 10; y++) {
-            for (int x = 0; x < 10; x++) {
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
                 int red = 0;
                 int green = 0;
                 int blue = 255;
