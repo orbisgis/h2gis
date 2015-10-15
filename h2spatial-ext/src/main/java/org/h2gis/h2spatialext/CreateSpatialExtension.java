@@ -78,6 +78,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.media.jai.JAI;
+import org.h2gis.h2spatialext.function.spatial.raster.ST_Band;
 
 
 /**
@@ -219,7 +220,8 @@ public class CreateSpatialExtension {
      */
     public static Function[] getJaiFunctions() {
         return new Function[] {
-                new ST_WorldFileImageRead()
+                new ST_WorldFileImageRead(),
+                new ST_Band()
         };
     }
 
