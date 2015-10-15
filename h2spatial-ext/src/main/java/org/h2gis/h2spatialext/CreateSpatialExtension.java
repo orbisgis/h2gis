@@ -212,9 +212,7 @@ public class CreateSpatialExtension {
                 new ST_GeomFromGeoJSON(),
                 new ST_OSMMapLink(),
                 new ST_GoogleMapLink(),
-                new ST_AsGML(),
-                //Raster functions
-                new ST_Band()};
+                new ST_AsGML()};
     }
 
     /**
@@ -222,7 +220,8 @@ public class CreateSpatialExtension {
      */
     public static Function[] getJaiFunctions() {
         return new Function[] {
-                new ST_WorldFileImageRead()
+                new ST_WorldFileImageRead(),
+                new ST_Band()
         };
     }
 

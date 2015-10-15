@@ -25,11 +25,16 @@ package org.h2gis.h2spatialext.function.spatial.raster;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
-import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.Iterator;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.stream.ImageInputStream;
+import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -37,6 +42,12 @@ import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
@@ -101,14 +112,156 @@ public class RasterFunctionTest {
                 .asWKBRaster());
         ps.execute();
         ps.close();        
-        ResultSet rs = st.executeQuery("select st_band(the_raster, 2) from test;");
+        ResultSet rs = st.executeQuery("select st_band(the_raster, 3) from test;");
         assertTrue(rs.next());
+        Blob blob = rs.getBlob(1);
         RasterUtils.RasterMetaData metaData = RasterUtils.RasterMetaData
-                .fetchMetaData(rs.getBinaryStream(1));
+                .fetchMetaData(blob.getBinaryStream());
         assertEquals(10, metaData.width);
         assertEquals(10, metaData.height);
         assertEquals(1, metaData.numBands);
+        
+        ImageInputStream inputStream = ImageIO.createImageInputStream(blob);
+        assertTrue(inputStream != null);
+        // Fetch WKB Raster Image reader
+        Iterator<ImageReader> readers = ImageIO.getImageReaders(inputStream);
+        assertTrue(readers.hasNext());
+        ImageReader wkbReader = readers.next();
+        // Feed WKB Raster Reader with blob data
+        wkbReader.setInput(inputStream);
+        // Retrieve data as a BufferedImage
+        BufferedImage imageRes = wkbReader.read(wkbReader.getMinIndex());
+        int[] iArray = new int[1];        
+        imageRes.getRaster().getPixel(5, 5, iArray);        
+        assertEquals(0, iArray[1]);        
         rs.close();
+    }
+    
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testST_BAND2() throws Exception, Throwable {
+
+        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        WritableRaster raster = image.getRaster();
+
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                int red = 0;
+                int green = 0;
+                int blue = 255;
+                raster.setPixel(x, y, new int[]{red, green, blue});
+            }
+        }
+
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+        try {
+            st.execute("select st_band(the_raster, -1) from test;");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testST_BAND3() throws Exception, Throwable {
+
+        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        WritableRaster raster = image.getRaster();
+
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                int red = 0;
+                int green = 0;
+                int blue = 255;
+                raster.setPixel(x, y, new int[]{red, green, blue});
+            }
+        }
+
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+        try {
+            st.execute("select st_band(the_raster, 0) from test;");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+    
+    
+     @Test(expected = IllegalArgumentException.class)
+    public void testST_BAND4() throws Exception, Throwable {
+
+        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        WritableRaster raster = image.getRaster();
+
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                int red = 0;
+                int green = 0;
+                int blue = 255;
+                raster.setPixel(x, y, new int[]{red, green, blue});
+            }
+        }
+
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+        try {
+            st.execute("select st_band(the_raster, 5, 6, 7) from test;");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+    
+     @Test(expected = IllegalArgumentException.class)
+    public void testST_BAND5() throws Exception, Throwable {
+
+        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        WritableRaster raster = image.getRaster();
+
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                int red = 0;
+                int green = 0;
+                int blue = 255;
+                raster.setPixel(x, y, new int[]{red, green, blue});
+            }
+        }
+
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+        try {
+            st.execute("select st_band(the_raster, 1, 2, -1) from test;");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
     }
     
 }

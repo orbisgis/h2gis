@@ -27,6 +27,7 @@ import java.io.IOException;
 import javax.media.jai.JAI;
 import org.h2.api.GeoRaster;
 import org.h2.util.GeoRasterRenderedImage;
+import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
@@ -45,17 +46,44 @@ public class ST_Band extends DeterministicScalarFunction{
     }
     
     /**
-     * Returns one or more bands of an existing raster as a new raster.  
+     * Returns one or more inputBands of an existing raster as a new raster.  
      * @param rast
      * @param bandIndexes
      * @return
      * @throws IOException 
      */
     public static GeoRasterRenderedImage bandSelect(GeoRaster rast, int... bandIndexes) throws IOException{        
+        if(rast==null){
+            return null;
+        }
+        RasterUtils.RasterMetaData metadata = rast.getMetaData();
+
+        RasterUtils.RasterBandMetaData[] inputBands = metadata.bands;
+        
+        if(bandIndexes.length>inputBands.length){
+             throw new IllegalArgumentException("The number of band indexes doesn't match the number of bands in the raster.\n"
+                     + "The raster contains "+ inputBands.length+ "band(s).");
+        }
+
+        int inputBandsNumb = inputBands.length;
+        RasterUtils.RasterBandMetaData[] newBands = new RasterUtils.RasterBandMetaData[bandIndexes.length];
         int[] updateBandOrder = new int[bandIndexes.length];
-        for (int i = 0; i < bandIndexes.length; i++) {
-                 updateBandOrder[i]= bandIndexes[i]-1;
-        }        
-        return GeoRasterRenderedImage.create(JAI.create("bandselect",rast,updateBandOrder), rast.getMetaData());
+        int i = 0;
+        for (int bandIndex : bandIndexes) {
+            if (bandIndex < 1) {
+                throw new IllegalArgumentException("The band index must be greater or equal to 1.");
+            } else if ((bandIndex - 1) > inputBandsNumb) {
+                throw new IllegalArgumentException("This band index." + bandIndex+ " is out of the \n"
+                     + "The raster contains "+ inputBands.length+ "band(s).");
+            }else{
+                updateBandOrder[i] = bandIndex - 1;
+                newBands[i] = inputBands[bandIndex - 1];                
+            }
+            i++;
+        }
+
+        return GeoRasterRenderedImage.create(JAI.create("bandselect", rast, updateBandOrder),
+                new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, 1, metadata.scaleX, metadata.scaleY,
+                        metadata.ipX, metadata.ipY, metadata.skewX, metadata.skewY, metadata.srid, metadata.width, metadata.height, newBands));
     }
 }
