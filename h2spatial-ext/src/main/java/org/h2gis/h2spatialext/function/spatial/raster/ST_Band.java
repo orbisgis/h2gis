@@ -83,7 +83,8 @@ public class ST_Band extends DeterministicScalarFunction{
         }
 
         return GeoRasterRenderedImage.create(JAI.create("bandselect", rast, updateBandOrder),
-                new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, 1, metadata.scaleX, metadata.scaleY,
-                        metadata.ipX, metadata.ipY, metadata.skewX, metadata.skewY, metadata.srid, metadata.width, metadata.height, newBands));
+                new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, newBands.length, metadata.scaleX, metadata
+                        .scaleY, metadata.ipX, metadata.ipY, metadata.skewX, metadata.skewY, metadata.srid, metadata
+                        .width, metadata.height, newBands));
     }
 }
