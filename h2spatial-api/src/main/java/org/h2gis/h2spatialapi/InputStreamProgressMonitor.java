@@ -32,7 +32,8 @@ public class InputStreamProgressMonitor extends InputStream {
 
     @Override
     public int read() throws IOException {
-        return progress(inputStream.read());
+        progress(1);
+        return inputStream.read();
     }
 
     @Override
@@ -42,8 +43,7 @@ public class InputStreamProgressMonitor extends InputStream {
 
     @Override
     public int read(byte[] b, int off, int len) throws IOException {
-            progress(1);
-            return inputStream.read(b, off, len);
+            return progress(inputStream.read(b, off, len));
     }
 
     @Override
