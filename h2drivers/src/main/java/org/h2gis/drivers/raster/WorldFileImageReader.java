@@ -32,6 +32,8 @@ import org.h2gis.h2spatialapi.InputStreamProgressMonitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -57,7 +59,7 @@ import java.util.Map;
  * @author Erwan Bocher
  */
 public class WorldFileImageReader {
-    
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorldFileImageReader.class);
     private static final Map<String, String[]> worldFileExtensions;
     
     private double scaleX = 1;
@@ -92,7 +94,7 @@ public class WorldFileImageReader {
     private File imageFile;
 
     /**
-     * Use {@link #fetch(File)}
+     * Use {@link #fetch(Connection, File)}
      */
     private WorldFileImageReader(){
         
@@ -115,12 +117,20 @@ public class WorldFileImageReader {
         worldFileImageReader.filePathWithoutExtension = filePath.substring(0, dotIndex+1);
         if (worldFileImageReader.isThereAnyWorldFile()) {
             worldFileImageReader.readWorldFile();
-            Map<String, File> matchExt = FileUtil.fetchFileByIgnoreCaseExt(imageFile.getParentFile(), FileUtil
-                    .getBaseName(imageFile), "prj");
-            worldFileImageReader.srid = PRJUtil.getSRID(connection, matchExt.get("prj"));
         } else {
-            throw new IOException("Cannot support this extension : " + worldFileImageReader.fileNameExtension);
+            // Use default metadata but warn the user
+            // The user may want to be able to create raster metadata through sql commands in H2
+            LOGGER.warn("World file is not available with this raster, default raster metadata has been set");
+            worldFileImageReader.scaleX = 1;
+            worldFileImageReader.scaleY = -1;
+            worldFileImageReader.upperLeftX = 0;
+            worldFileImageReader.upperLeftY = 0; // should be image height
+            worldFileImageReader.skewX = 0;
+            worldFileImageReader.skewY = 0;
         }
+        Map<String, File> matchExt = FileUtil.fetchFileByIgnoreCaseExt(imageFile.getParentFile(), FileUtil
+                .getBaseName(imageFile), "prj");
+        worldFileImageReader.srid = PRJUtil.getSRID(connection, matchExt.get("prj"));
         return worldFileImageReader;
     }
 
