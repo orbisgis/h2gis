@@ -25,13 +25,32 @@ package org.h2gis.drivers.raster;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Blob;
 import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Iterator;
+import java.util.List;
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
+import javax.media.jai.JAI;
 import org.h2.api.GeoRaster;
+import org.h2.util.IOUtils;
 import org.h2.util.RasterUtils;
+import org.h2gis.drivers.utility.PRJUtil;
 import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 
 /**
  * Save a raster to a world file image.
@@ -46,21 +65,99 @@ public class WorldFileImageWriter {
         
     }
     
-    public void write(Connection connection, String tableReference, File fileName, ProgressVisitor progress) {
+    public void write(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        
+        String filePath = fileName.getPath();
+        final int dotIndex = filePath.lastIndexOf('.');
+        String fileNameExtension = filePath.substring(dotIndex + 1).toLowerCase();
+        String filePathWithoutExtension = filePath.substring(0, dotIndex);
 
-    }
+        String[] worldFileExtensions = WorldFileImageReader.worldFileExtensions.get(fileNameExtension);
+
+        if (worldFileExtensions == null) {
+            throw new IOException("Cannot support this format : " + fileName.getAbsolutePath());
+        }
+        
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());        
+        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+        TableLocation location = TableLocation.parse(tableReference, isH2);
+        List<String> rasterFieldNames = SFSUtilities.getRasterFields(connection, location);
+        if (rasterFieldNames.isEmpty()) {
+            throw new SQLException(String.format("The table %s does not contain a raster datatype", tableReference));
+        }
+        ProgressVisitor copyProgress = progress.subProcess(recordCount); 
+        
+        Statement st = connection.createStatement();
+        
+        ResultSet res = st.executeQuery("SELECT "+ rasterFieldNames.get(0)+ " FROM "+ location.toString());
+        
+        String imagePath = filePathWithoutExtension + "." + fileNameExtension;
+        String worldfilePath = filePathWithoutExtension + "." + worldFileExtensions[0];
+        String prjPath = filePathWithoutExtension + ".prj";
+
+        if (recordCount == 1) {
+            res.next();
+            writeRasterToFiles(connection, res.getBlob(1),fileNameExtension, imagePath, worldfilePath, prjPath);
+            progress.endStep();
+
+        } else {
+            int fileIt = 0;
+
+            while (res.next()) {
+                imagePath = filePathWithoutExtension + "_" + fileIt + "." + fileNameExtension;
+                worldfilePath = filePathWithoutExtension + "_" + fileIt + "." + worldFileExtensions[0];
+                prjPath = filePathWithoutExtension + "_" + fileIt + ".prj";
+                writeRasterToFiles(connection, res.getBlob(1),fileNameExtension,imagePath, worldfilePath, prjPath);
+                fileIt++;
+                progress.endStep();
+
+            }
+        }
+        res.close();
+        st.close();
+        copyProgress.endOfProgress();
+        
+    }    
     
+    
+    /**
+     * Write the georaster to an image using the imageio drivers
+     * 
+     * @param connection
+     * @param blob
+     * @param imageFormat
+     * @param imagePath
+     * @param worldfilePath
+     * @param prjPath
+     * @throws IOException
+     * @throws SQLException 
+     */
+    private void writeRasterToFiles(Connection connection,  Blob blob,String imageFormat, String imagePath, String worldfilePath,String prjPath ) throws IOException, SQLException{            
+        ImageInputStream inputStream = ImageIO.createImageInputStream(blob);
+        Iterator<ImageReader> readers = ImageIO.getImageReaders(inputStream);
+        ImageReader wkbReader = readers.next();
+        wkbReader.setInput(inputStream);
+        ImageWriter writer = (ImageWriter) ImageIO.getImageWritersByFormatName(imageFormat).next();
+        ImageOutputStream stream = ImageIO.createImageOutputStream(new File(imagePath));
+        writer.setOutput(stream);
+        writer.write(wkbReader.readAsRenderedImage(wkbReader.getMinIndex(), wkbReader.getDefaultReadParam()));
+        
+        RasterUtils.RasterMetaData met = RasterUtils.RasterMetaData
+                .fetchMetaData(blob.getBinaryStream());
 
-    public void write(GeoRaster rast, File fileName, boolean isH2) {
-        if(isH2){
-            
-        }
-        else{
-           //TODO: Add POSTGIS support
-            
-        }
+        WorldFileImageWriter.writeWorldFile(met, new File(worldfilePath));
 
+        PRJUtil.writePRJ(connection, met.srid, new File(prjPath));
+        
+        stream.flush();
+        stream.close();
+        writer.dispose();
+        inputStream.close();
+
+            
     }
+
+    
 
     /**
      * Write the world file
@@ -75,8 +172,11 @@ public class WorldFileImageWriter {
         writer.println(rasterMetaData.skewX);
         writer.println(rasterMetaData.skewY);
         writer.println(rasterMetaData.scaleY);
-        writer.println(rasterMetaData.ipX);
-        writer.println(rasterMetaData.ipY);
+        // ESRI and WKB Raster have a slight difference on insertion point
+        double upperLeftX = rasterMetaData.ipX - rasterMetaData.scaleX * 0.5;
+        double upperLeftY = rasterMetaData.ipY - rasterMetaData.scaleY * 0.5;        
+        writer.println(upperLeftX);
+        writer.println(upperLeftY);
         writer.close();
     }
 }

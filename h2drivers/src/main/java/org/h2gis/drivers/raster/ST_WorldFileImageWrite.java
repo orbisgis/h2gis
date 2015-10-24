@@ -89,9 +89,9 @@ public class ST_WorldFileImageWrite extends AbstractFunction implements ScalarFu
             RasterUtils.RasterMetaData met = geoRaster.getMetaData();
 
             
-            WorldFileImageWriter.writeWorldFile(met, new File(filePathWithoutExtension + "." + worldFileExtensions[0]));
+            WorldFileImageWriter.writeWorldFile(met, new File(filePathWithoutExtension + worldFileExtensions[0]));
 
-            PRJUtil.writePRJ(connection, met.srid, new File(filePathWithoutExtension + ".prj"));
+            PRJUtil.writePRJ(connection, met.srid, new File(filePathWithoutExtension + "prj"));
 
         }
         throw new SQLException("The raster object cannot be null.");

@@ -105,8 +105,12 @@ public class WorldFileImageDriverFunction implements DriverFunction{
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        WorldFileImageReader worldFileImageReader = WorldFileImageReader.fetch(connection, fileName);
-        worldFileImageReader.read(tableReference, connection, progress);
+        if (fileName.exists()) {
+            WorldFileImageReader worldFileImageReader = WorldFileImageReader.fetch(connection, fileName);
+            worldFileImageReader.read(tableReference, connection, progress);
+        } else {
+            throw new IllegalArgumentException("The file " + fileName + " doesn't exist.")
+        }
     }
     
 }

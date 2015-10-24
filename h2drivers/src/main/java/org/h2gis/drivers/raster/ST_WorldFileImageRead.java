@@ -74,10 +74,14 @@ public class ST_WorldFileImageRead extends AbstractFunction implements ScalarFun
     public static GeoRaster worldFileImageRead(Connection connection, String fileName) throws
             SQLException, IOException {
         File rasterFile = URIUtility.fileFromString(fileName);
-        WorldFileImageReader rasterWorldFileReader = WorldFileImageReader.fetch(connection, rasterFile);
-        PlanarImage input = JAI.create("fileload", rasterFile.getAbsolutePath());        
-        return GeoRasterRenderedImage.create(input, rasterWorldFileReader.getScaleX(), rasterWorldFileReader.getScaleY(),
-                rasterWorldFileReader.getUpperLeftX(), rasterWorldFileReader.getUpperLeftY(), rasterWorldFileReader
-                        .getSkewX(), rasterWorldFileReader.getSkewY(), rasterWorldFileReader.getSrid(), 0);
+        if (rasterFile.exists()) {
+            WorldFileImageReader rasterWorldFileReader = WorldFileImageReader.fetch(connection, rasterFile);
+            PlanarImage input = JAI.create("fileload", rasterFile.getAbsolutePath());            
+            return GeoRasterRenderedImage.create(input, rasterWorldFileReader.getScaleX(), rasterWorldFileReader.getScaleY(),
+                    rasterWorldFileReader.getUpperLeftX(), rasterWorldFileReader.getUpperLeftY(), rasterWorldFileReader
+                    .getSkewX(), rasterWorldFileReader.getSkewY(), rasterWorldFileReader.getSrid(), 0);
+        } else {
+            throw new IllegalArgumentException("The file " + fileName + " doesn't exist.")
+        }
     }
 }
