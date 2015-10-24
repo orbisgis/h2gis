@@ -109,7 +109,7 @@ public class WorldFileImageDriverFunction implements DriverFunction{
             WorldFileImageReader worldFileImageReader = WorldFileImageReader.fetch(connection, fileName);
             worldFileImageReader.read(tableReference, connection, progress);
         } else {
-            throw new IllegalArgumentException("The file " + fileName + " doesn't exist.")
+            throw new IllegalArgumentException("The file " + fileName + " doesn't exist.");
         }
     }
     

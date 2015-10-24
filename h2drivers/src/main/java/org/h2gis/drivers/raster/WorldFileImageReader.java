@@ -60,7 +60,7 @@ import java.util.Map;
  */
 public class WorldFileImageReader {
     private static final Logger LOGGER = LoggerFactory.getLogger(WorldFileImageReader.class);
-    private static final Map<String, String[]> worldFileExtensions;
+    public static final Map<String, String[]> worldFileExtensions;
     
     private double scaleX = 1;
 

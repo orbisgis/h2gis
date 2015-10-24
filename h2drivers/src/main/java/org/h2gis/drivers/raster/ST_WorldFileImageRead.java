@@ -81,7 +81,7 @@ public class ST_WorldFileImageRead extends AbstractFunction implements ScalarFun
                     rasterWorldFileReader.getUpperLeftX(), rasterWorldFileReader.getUpperLeftY(), rasterWorldFileReader
                     .getSkewX(), rasterWorldFileReader.getSkewY(), rasterWorldFileReader.getSrid(), 0);
         } else {
-            throw new IllegalArgumentException("The file " + fileName + " doesn't exist.")
+            throw new IllegalArgumentException("The file " + fileName + " doesn't exist.");
         }
     }
 }

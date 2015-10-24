@@ -40,10 +40,8 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.h2.jdbc.JdbcSQLException;
 
 /**
@@ -206,7 +204,7 @@ public class WorldImageImportExportTest {
         }       
     }
     
-    @Test(expected = IllegalArgumentException.class.class)
+    @Test(expected = IllegalArgumentException.class)
     public void importRasterFile2() throws Exception, Throwable {
          try {
             st.execute("select ST_WorldFileImageRead('target/remote_data3.pnd');");
