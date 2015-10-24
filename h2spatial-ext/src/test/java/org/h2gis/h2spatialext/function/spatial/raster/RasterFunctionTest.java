@@ -23,25 +23,42 @@
 
 package org.h2gis.h2spatialext.function.spatial.raster;
 
+import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
+import java.io.IOException;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
+
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.operation.distance.DistanceOp;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
+import org.h2.util.imageio.WKBRasterReader;
+import org.h2.util.imageio.WKBRasterReaderSpi;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -53,7 +70,7 @@ import org.junit.Test;
  * @author Erwan Bocher
  */
 public class RasterFunctionTest {
-    
+
     private static Connection connection;
     private Statement st;
 
@@ -134,7 +151,105 @@ public class RasterFunctionTest {
         Assert.assertArrayEquals(pixelsSource, pixelsDest);            
         rs.close();
     }
-    
+
+    private static double dist(int x, int y, int targetX, int targetY) {
+        return Math.sqrt(Math.pow(targetX - x,2) + Math.pow(targetY - y,2));
+    }
+
+
+    private static BufferedImage getTestImage(final int width,final int
+            height, int... bands) {
+        BufferedImage image = new BufferedImage(width, height, BufferedImage
+                .TYPE_INT_RGB);
+        final double maxDist = Math.sqrt(width*width+height*height);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                int red = (int)(255 * dist(x,y,0,0) / maxDist);
+                int green = (int)(255 * dist(x,y,width,height / 2) / maxDist);
+                int blue = (int)(255 * dist(x,y,0,height) / maxDist);
+                int[] bandSrc = new int[]{red, green, blue};
+                int[] bandDst = new int[3];
+                int j = 0;
+                for(int i : bands) {
+                    bandDst[j++] = bandSrc[i];
+                }
+                image.setRGB(x, y, (bandDst[0] << 16) | (bandDst[1] << 8) | bandDst[2]);
+            }
+        }
+        return image;
+    }
+
+    private static BufferedImage getImageRegion(Blob blob, Rectangle
+            rectangle) throws IOException {
+        ImageInputStream inputStream = ImageIO.createImageInputStream(blob);
+        // Fetch WKB Raster Image reader
+        Iterator<ImageReader> readers = ImageIO.getImageReaders(inputStream);
+        ImageReader wkbReader = readers.next();
+        // Feed WKB Raster Reader with blob data
+        wkbReader.setInput(inputStream);
+        // Retrieve data as a BufferedImage
+        ImageReadParam param = wkbReader.getDefaultReadParam();
+        param.setSourceRegion(rectangle);
+        return wkbReader.read(wkbReader.getMinIndex(), param);
+    }
+
+    public static void assertImageEquals(RenderedImage expectedImage, RenderedImage imageB) {
+        BufferedImage expectedImageDest = new BufferedImage(expectedImage.getWidth(),expectedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage destB = new BufferedImage(imageB.getWidth(),imageB.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = expectedImageDest.createGraphics();
+        g.drawRenderedImage(expectedImage, new AffineTransform());
+        g.dispose();
+        g = destB.createGraphics();
+        g.drawRenderedImage(imageB, new AffineTransform());
+        g.dispose();
+        int[] pixelsExpected = expectedImageDest.getData().getPixels(0,0,expectedImageDest.getWidth(),
+                expectedImageDest.getHeight(),(int[])null);
+        int[] pixelsSource = destB.getData().getPixels(0, 0, destB.getWidth(), destB.getHeight(), (int[]) null);
+        assertArrayEquals(pixelsExpected, pixelsSource);
+    }
+
+    @Test
+    public void testPlanarImage() throws Exception {
+        PlanarImage input = JAI.create("fileload", RasterFunctionTest.class.getResource("calibration.png").getPath());
+        GeoRasterRenderedImage geoRaster = GeoRasterRenderedImage.create(input, 1, -1, 0, 0, 0, 0, 0, 0);
+        ImageInputStream is = new MemoryCacheImageInputStream(geoRaster.asWKBRaster());
+        WKBRasterReader reader = new WKBRasterReader(new WKBRasterReaderSpi());
+        reader.setInput(is);
+        RenderedImage img = reader.read(reader.getMinIndex());
+        //JAI.create("filestore",img,"/tmp/rastertest/calibration.png","PNG");
+        assertImageEquals(input, img);
+    }
+
+    @Test
+    public void testST_BANDMultiBand() throws Exception{
+        Statement stat = connection.createStatement();
+        // Declare custom function for rescaling image
+        stat.execute("drop table if exists test");
+        stat.execute("create table test(id identity, data raster)");
+        // Create table with test image
+        PreparedStatement st = connection.prepareStatement("INSERT INTO TEST(data) " +
+                "values(?)");
+        BufferedImage srcImage = getTestImage(10, 10, 0, 1, 2);
+        st.setBinaryStream(1,
+                GeoRasterRenderedImage.create(srcImage, 1, -1, 0, 0, 0, 0, 27572, 0).asWKBRaster
+                        ());
+        st.execute();
+        // Call ST_BAND
+        ResultSet rs = stat.executeQuery("SELECT ST_BAND(DATA, 3,2,1) rast from test");
+        assertTrue(rs.next());
+        RasterUtils.RasterMetaData metaData = RasterUtils.RasterMetaData
+                .fetchMetaData(rs.getBinaryStream(1));
+        assertEquals(3, metaData.numBands);
+        // Get image portion
+        BufferedImage image = getImageRegion(rs.getBlob(1), new Rectangle(0, 0, 10, 10));
+        // Produce expected image
+        RenderedImage expectedImage = getTestImage(10, 10, 2, 1, 0);
+        // Compare pixels
+        //JAI.create("filestore",image,"/tmp/rastertest/image.png","PNG");
+        //JAI.create("filestore", expectedImage, "/tmp/rastertest/expectedImage.png", "PNG");
+        assertImageEquals(expectedImage, image);
+        rs.close();
+    }
     
     @Test(expected = IllegalArgumentException.class)
     public void testST_BAND2() throws Exception, Throwable {

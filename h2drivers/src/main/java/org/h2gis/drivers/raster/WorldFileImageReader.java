@@ -23,13 +23,17 @@
 
 package org.h2gis.drivers.raster;
 
+import org.h2.api.GeoRaster;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.imageio.RenderedImageReader;
 import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.drivers.utility.PRJUtil;
+import org.h2gis.h2spatialapi.InputStreamProgressMonitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import javax.imageio.ImageReader;
@@ -55,8 +59,8 @@ import java.util.Map;
  * @author Erwan Bocher
  */
 public class WorldFileImageReader {
-    
-    public static final Map<String, String[]> worldFileExtensions;
+    private static final Logger LOGGER = LoggerFactory.getLogger(WorldFileImageReader.class);
+    private static final Map<String, String[]> worldFileExtensions;
     
     private double scaleX = 1;
 
@@ -91,7 +95,7 @@ public class WorldFileImageReader {
     private File imageFile;
 
     /**
-     * Use {@link #fetch(File)}
+     * Use {@link #fetch(Connection, File)}
      */
     private WorldFileImageReader(){
         
@@ -114,12 +118,20 @@ public class WorldFileImageReader {
         worldFileImageReader.filePathWithoutExtension = filePath.substring(0, dotIndex+1);
         if (worldFileImageReader.isThereAnyWorldFile()) {
             worldFileImageReader.readWorldFile();
-            Map<String, File> matchExt = FileUtil.fetchFileByIgnoreCaseExt(imageFile.getParentFile(), FileUtil
-                    .getBaseName(imageFile), "prj");
-            worldFileImageReader.srid = PRJUtil.getSRID(connection, matchExt.get("prj"));
         } else {
-            throw new IOException("Cannot support this extension : " + worldFileImageReader.fileNameExtension);
+            // Use default metadata but warn the user
+            // The user may want to be able to create raster metadata through sql commands in H2
+            LOGGER.warn("World file is not available with this raster, default raster metadata has been set");
+            worldFileImageReader.scaleX = 1;
+            worldFileImageReader.scaleY = -1;
+            worldFileImageReader.upperLeftX = 0;
+            worldFileImageReader.upperLeftY = 0; // should be image height
+            worldFileImageReader.skewX = 0;
+            worldFileImageReader.skewY = 0;
         }
+        Map<String, File> matchExt = FileUtil.fetchFileByIgnoreCaseExt(imageFile.getParentFile(), FileUtil
+                .getBaseName(imageFile), "prj");
+        worldFileImageReader.srid = PRJUtil.getSRID(connection, matchExt.get("prj"));
         return worldFileImageReader;
     }
 
@@ -133,7 +145,7 @@ public class WorldFileImageReader {
      */
     public void read(String tableReference, Connection connection, ProgressVisitor progress) throws SQLException, IOException {
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        readImage(tableReference, isH2, connection);
+        readImage(tableReference, isH2, connection, progress);
     }
     
     /**
@@ -143,7 +155,8 @@ public class WorldFileImageReader {
      * @param isH2 
      * @param connection 
      */
-    public void readImage(String tableReference, boolean isH2, Connection connection) throws SQLException{
+    public void readImage(String tableReference, boolean isH2, Connection connection, ProgressVisitor progressVisitor) throws
+            SQLException{
         TableLocation location = TableLocation.parse(tableReference, isH2);
         StringBuilder sb = new StringBuilder();
         sb.append("create table ").append(location.toString()).append("(id serial, the_raster raster) as ");
@@ -171,7 +184,8 @@ public class WorldFileImageReader {
                 // Transfer the image directly
                 FileInputStream fileInputStream = new FileInputStream(imageFile);
                 try {
-                    stmt.setBinaryStream(1, fileInputStream, imageFile.length());
+                    stmt.setBinaryStream(1, new InputStreamProgressMonitor(progressVisitor, fileInputStream,
+                                    imageFile.length()), imageFile.length());
                     stmt.execute();
                 } finally {
                     fileInputStream.close();
@@ -188,11 +202,13 @@ public class WorldFileImageReader {
                     ImageReader imageReader = readerIterator.next();
                     imageReader.setInput(imageInputStream);
                     RenderedImageReader renderedImageReader = new RenderedImageReader(imageReader);
-                    InputStream wkbStream = GeoRasterRenderedImage
+                    GeoRaster geoRaster = GeoRasterRenderedImage
                             .create(renderedImageReader, scaleX, scaleY, upperLeftX, upperLeftY, skewX, skewY, srid,
-                                    Double.NaN).asWKBRaster();
+                                    Double.NaN);
+                    InputStream wkbStream = geoRaster.asWKBRaster();
                     try {
-                        stmt.setBinaryStream(1, wkbStream);
+                        stmt.setBinaryStream(1, new InputStreamProgressMonitor(progressVisitor,wkbStream,geoRaster
+                                .getMetaData().getTotalLength()));
                         stmt.execute();
                     } finally {
                         wkbStream.close();
