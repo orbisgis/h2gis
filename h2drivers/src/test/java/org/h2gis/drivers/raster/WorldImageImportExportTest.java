@@ -44,6 +44,7 @@ import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
+import org.h2.jdbc.JdbcSQLException;
 
 /**
  * Test of Raster drivers
@@ -61,6 +62,7 @@ public class WorldImageImportExportTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_WorldFileImageRead(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_WorldFileImageWrite(), "");
     }
 
     @AfterClass
@@ -135,4 +137,29 @@ public class WorldImageImportExportTest {
         }
         rs.close();
     }
+    
+     @Test
+    public void importExportRasterFile1() throws SQLException, IOException {
+        st.execute("drop table if exists remote_sensing");
+        st.execute("create table remote_sensing(id serial, the_raster raster) as select null, ST_WorldFileImageRead(" +
+                StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
+                + ")");
+        st.execute("select ST_WorldFileImageWrite('target/remote_data2.png', the_raster) from remote_sensing;");
+     
+    }
+    
+    @Test(expected = IOException.class)
+    public void importExportRasterFile2() throws Exception, Throwable {
+        st.execute("drop table if exists remote_sensing");
+        st.execute("create table remote_sensing(id serial, the_raster raster) as select null, ST_WorldFileImageRead("
+                + StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
+                + ")");
+        try {
+            st.execute("select ST_WorldFileImageWrite('target/remote_data2.asc', the_raster) from remote_sensing;");
+
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }       
+    }
+
 }

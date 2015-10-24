@@ -49,7 +49,7 @@ public class WorldFileImageDriverFunction implements DriverFunction{
 
     @Override
     public String[] getExportFormats() {
-        return new String[0];
+        return new String[]{"png", "bmp", "gif","jpeg","jpg", "tif", "tiff"};
     }
 
     @Override
@@ -99,7 +99,8 @@ public class WorldFileImageDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        WorldFileImageWriter worldFileImageWriter = new WorldFileImageWriter();
+        worldFileImageWriter.write(connection, tableReference, fileName, progress);                
     }
 
     @Override

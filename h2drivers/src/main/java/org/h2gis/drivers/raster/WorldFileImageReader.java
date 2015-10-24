@@ -56,7 +56,7 @@ import java.util.Map;
  */
 public class WorldFileImageReader {
     
-    private static final Map<String, String[]> worldFileExtensions;
+    public static final Map<String, String[]> worldFileExtensions;
     
     private double scaleX = 1;
 
@@ -75,15 +75,16 @@ public class WorldFileImageReader {
     static {
 		worldFileExtensions = new HashMap<String, String[]>();
 		worldFileExtensions.put("tif", new String[] { "tfw", "tifw" , "wld"});
-		worldFileExtensions.put("tiff", new String[] { "tfw", "tiffw" , "wld"});
+		worldFileExtensions.put("tiff", new String[] {"tfw","tiffw" , "wld"});
 		worldFileExtensions.put("jpg", new String[] { "jpw", "jgw", "jpgw",
 				"jpegw","wld" });
-		worldFileExtensions.put("jpeg", new String[] { "jpw", "jgw", "jpgw",
+		worldFileExtensions.put("jpeg", new String[] { "jgw", "jpw", "jpgw",
 				"jpegw","wld" });
 		worldFileExtensions.put("gif", new String[] { "gfw", "gifw","wld" });
 		worldFileExtensions.put("bmp", new String[] { "bpw", "bmpw","wld" });
 		worldFileExtensions.put("png", new String[] { "pgw", "pngw","wld" });
 	}
+    
     private String fileNameExtension;
     private String filePathWithoutExtension;
     private File worldFile;
@@ -140,6 +141,7 @@ public class WorldFileImageReader {
      *
      * @param tableReference
      * @param isH2 
+     * @param connection 
      */
     public void readImage(String tableReference, boolean isH2, Connection connection) throws SQLException{
         TableLocation location = TableLocation.parse(tableReference, isH2);
