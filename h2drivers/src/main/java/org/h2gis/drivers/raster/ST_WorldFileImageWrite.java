@@ -20,33 +20,31 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
+
 package org.h2gis.drivers.raster;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-
+import java.util.Map;
+import javax.media.jai.JAI;
 import org.h2.api.GeoRaster;
-import org.h2.util.GeoRasterRenderedImage;
+import org.h2.util.RasterUtils;
+import org.h2gis.drivers.utility.FileUtil;
+import org.h2gis.drivers.utility.PRJUtil;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.URIUtility;
 
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-
 /**
- * A function to read a worldfile image.
- * A world file establish an image-to-world transformation that converts 
- * the image coordinates to real-world coordinates.
- * 
+ *
  * @author Erwan Bocher
  */
-public class ST_WorldFileImageRead extends AbstractFunction implements ScalarFunction{
+public class ST_WorldFileImageWrite extends AbstractFunction implements ScalarFunction{
 
-    public ST_WorldFileImageRead(){
-        addProperty(PROP_REMARKS, "Import a world file image into a new table.\n"
+    public ST_WorldFileImageWrite(){
+        addProperty(PROP_REMARKS, "Export a raster to a world file image.\n"
                 + "Supported formats are : \n"
                 + "- png with pgw, pngw,\n"
                 + "- bmp with bpw or bmpw,\n"
@@ -57,31 +55,45 @@ public class ST_WorldFileImageRead extends AbstractFunction implements ScalarFun
                 + "- tiff with tfw or tiffw.\n"
                 + "and wld for all listed formats");
     }
+    
     @Override
     public String getJavaStaticMethod() {
-        return "worldFileImageRead";
+        return "worldFileImageWriter";
     }
     
     /**
-     * Copy data from  world image file into a new table in specified connection.
-     *
+     * 
      * @param connection
-     * @param fileName Image path
-     * @return 
-     * @throws SQLException
-     * @throws IOException 
+     * @param geoRaster
+     * @param fileName 
+     * @throws java.sql.SQLException 
+     * @throws java.io.IOException 
      */
-    public static GeoRaster worldFileImageRead(Connection connection, String fileName) throws
-            SQLException, IOException {
-        File rasterFile = URIUtility.fileFromString(fileName);
-        if (rasterFile.exists()) {
-            WorldFileImageReader rasterWorldFileReader = WorldFileImageReader.fetch(connection, rasterFile);
-            PlanarImage input = JAI.create("fileload", rasterFile.getAbsolutePath());            
-            return GeoRasterRenderedImage.create(input, rasterWorldFileReader.getScaleX(), rasterWorldFileReader.getScaleY(),
-                    rasterWorldFileReader.getUpperLeftX(), rasterWorldFileReader.getUpperLeftY(), rasterWorldFileReader
-                    .getSkewX(), rasterWorldFileReader.getSkewY(), rasterWorldFileReader.getSrid(), 0);
-        } else {
-            throw new IllegalArgumentException("The file " + fileName + " doesn't exist.");
+    public static void worldFileImageWriter(Connection connection, String fileName, GeoRaster geoRaster) throws SQLException, IOException {
+        if (geoRaster != null) {
+            File inputFile = URIUtility.fileFromString(fileName);
+
+            String filePath = inputFile.getPath();
+            final int dotIndex = filePath.lastIndexOf('.');
+            String fileNameExtension = filePath.substring(dotIndex + 1).toLowerCase();
+            String filePathWithoutExtension = filePath.substring(0, dotIndex + 1);
+            
+            String[] worldFileExtensions = WorldFileImageReader.worldFileExtensions.get(fileNameExtension);
+
+            if(worldFileExtensions==null){
+                 throw new IOException("Cannot support this format : " + inputFile.getAbsolutePath());
+            }
+
+            JAI.create("filestore", geoRaster, filePath, fileNameExtension);
+
+            RasterUtils.RasterMetaData met = geoRaster.getMetaData();
+
+            
+            WorldFileImageWriter.writeWorldFile(met, new File(filePathWithoutExtension + worldFileExtensions[0]));
+
+            PRJUtil.writePRJ(connection, met.srid, new File(filePathWithoutExtension + "prj"));
+
         }
+        throw new SQLException("The raster object cannot be null.");
     }
 }

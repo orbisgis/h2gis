@@ -40,10 +40,9 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import org.h2.jdbc.JdbcSQLException;
 
 /**
  * Test of Raster drivers
@@ -61,6 +60,7 @@ public class WorldImageImportExportTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_WorldFileImageRead(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_WorldFileImageWrite(), "");
     }
 
     @AfterClass
@@ -135,4 +135,84 @@ public class WorldImageImportExportTest {
         }
         rs.close();
     }
+    
+    
+    @Test
+    public void testDriver2() throws SQLException, IOException {        
+        st.execute("drop table if exists remote_sensing");
+        st.execute("create table remote_sensing(id serial, the_raster raster) as select null, ST_WorldFileImageRead(" +
+                StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
+                + ")");
+        
+        File outputFile = new File("target/remote_data2.png");        
+        outputFile.delete();
+                
+        WorldFileImageDriverFunction func = new WorldFileImageDriverFunction();
+        func.exportTable(connection, "REMOTE_SENSING", outputFile,  new EmptyProgressVisitor());
+        
+        st.execute("DROP TABLE IF EXISTS REMOTE_SENSING_IMPORT");
+        func.importFile(connection, "REMOTE_SENSING_IMPORT", new File(
+                "target/remote_data2.png"), new EmptyProgressVisitor());
+
+        ResultSet rs = st.executeQuery("select the_raster from remote_sensing_import;");
+        assertTrue(rs.next());
+        // Read metadata from WKB raster stream
+        InputStream is = rs.getBinaryStream(1);
+        try {
+            RasterUtils.RasterMetaData metaData = RasterUtils.RasterMetaData.fetchMetaData(is, true);
+            assertNotNull(metaData);
+            assertEquals(461, metaData.width);
+            assertEquals(346, metaData.height);
+            assertEquals(3, metaData.numBands);
+            assertEquals(319190.95, metaData.ipX, 1e-2);
+            assertEquals(2250332.35, metaData.ipY, 1e-2);
+            assertEquals(2.5, metaData.scaleX, 1e-2);
+            assertEquals(-2.5, metaData.scaleY, 1e-2);
+            assertEquals(0., metaData.skewX, 1e-6);
+            assertEquals(0., metaData.skewY, 1e-6);
+        } finally {
+            is.close();
+        }
+        rs.close();
+
+    }
+    
+    
+     @Test
+    public void importExportRasterFile1() throws SQLException, IOException {
+        st.execute("drop table if exists remote_sensing");
+        st.execute("create table remote_sensing(id serial, the_raster raster) as select null, ST_WorldFileImageRead(" +
+                StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
+                + ")");
+        new File("target/remote_data2.png").delete();
+        
+        st.execute("select ST_WorldFileImageWrite('target/remote_data2.png', the_raster) from remote_sensing;");
+     
+    }
+    
+    @Test(expected = IOException.class)
+    public void importExportRasterFile2() throws Exception, Throwable {
+        st.execute("drop table if exists remote_sensing");
+        st.execute("create table remote_sensing(id serial, the_raster raster) as select null, ST_WorldFileImageRead("
+                + StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
+                + ")");
+        try {
+            st.execute("select ST_WorldFileImageWrite('target/remote_data2.asc', the_raster) from remote_sensing;");
+
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }       
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void importRasterFile2() throws Exception, Throwable {
+         try {
+            st.execute("select ST_WorldFileImageRead('target/remote_data3.pnd');");
+
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }   
+        
+    }
+
 }
