@@ -186,10 +186,12 @@ public class WorldImageImportExportTest {
         st.execute("create table remote_sensing(id serial, the_raster raster) as select null, ST_WorldFileImageRead(" +
                 StringUtils.quoteStringSQL(WorldImageImportExportTest.class.getResource("remote_sensing.png").getPath())
                 + ")");
-        new File("target/remote_data2.png").delete();
-        
+        File targetFile = new File("target/remote_data2.png");
+        if(targetFile.exists()) {
+            assertTrue(targetFile.delete());
+        }
         st.execute("select ST_WorldFileImageWrite('target/remote_data2.png', the_raster) from remote_sensing;");
-     
+        assertTrue(targetFile.exists());
     }
     
     @Test(expected = IOException.class)

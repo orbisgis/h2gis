@@ -93,7 +93,8 @@ public class ST_WorldFileImageWrite extends AbstractFunction implements ScalarFu
 
             PRJUtil.writePRJ(connection, met.srid, new File(filePathWithoutExtension + "prj"));
 
+        } else {
+            throw new SQLException("The raster object cannot be null.");
         }
-        throw new SQLException("The raster object cannot be null.");
     }
 }
