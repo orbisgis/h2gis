@@ -26,6 +26,7 @@ import org.h2.util.RasterUtils;
 
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
+import java.awt.Point;
 import java.awt.image.RenderedImage;
 import java.util.Map;
 
@@ -38,16 +39,11 @@ public class SlopeOpImage extends Area3x3OpImage {
     private enum UnitType {PERCENT, DEGREE, RADIANT};
     private final UnitType unit;
     private RasterUtils.RasterMetaData metaData;
-    private final double pixelSizeX;
-    private final double pixelSizeY;
+    // Distance matrix of neighbors pixels. Take account of skewX and skewY
+    private final double[] distanceMatrix;
+    private final double[] invDistanceMatrix;
     private final static double FACTOR = 180 / Math.PI;
-    private final static short[] neighboursDirection = new short[] { 5, 6, 7,
-            8, 1, 2, 3, 4 };
-    public final static float indecisionDirection = -1;
-    public final static float indecisionAngle = 0;
 
-    private double[] invD8Distances;
-    private double[] d8Distances;
 
     public SlopeOpImage(RenderedImage source, RasterUtils.RasterMetaData metaData, BorderExtender extender,
             Map config, ImageLayout
@@ -56,12 +52,31 @@ public class SlopeOpImage extends Area3x3OpImage {
         super(source, extender, config, layout);
         this.unit = UnitType.valueOf(unitName);
         this.metaData = metaData;
-        pixelSizeX = Math.abs(metaData.scaleX);
-        pixelSizeY = Math.abs(metaData.scaleY);
+        distanceMatrix = new double[NEIGHBORS_INDEX.length];
+        invDistanceMatrix = new double[NEIGHBORS_INDEX.length];
+        int index = 0;
+        for(Point pos : NEIGHBORS_INDEX) {
+            distanceMatrix[index] = metaData.getPixelCoordinate(0, 0).distance(metaData.getPixelCoordinate(pos.x,
+                    pos.y));
+            invDistanceMatrix[index] = 1 / distanceMatrix[index];
+            index++;
+        }
     }
 
     @Override
-    protected double computeCell(int i, int j, int band, final double[] neighborsValues) {
-        return 0;
+    protected double computeCell(int i, int j, int band, double cellValue, double[] neighborsValues) {
+        final double noDataValue = metaData.bands[band].noDataValue;
+        if(Double.compare(cellValue, noDataValue) != 0) {
+            double maxSlope = Double.MIN_VALUE;
+            for (int idNeigh = 0; idNeigh < neighborsValues.length; idNeigh++) {
+                if(Double.compare(neighborsValues[idNeigh], noDataValue) != 0) {
+                    double heightRatio = (cellValue - neighborsValues[idNeigh]) * invDistanceMatrix[idNeigh];
+                    maxSlope = Math.max(maxSlope, heightRatio);
+                }
+            }
+            return maxSlope;
+        } else {
+            return metaData.bands[band].noDataValue;
+        }
     }
 }

@@ -405,7 +405,7 @@ public class RasterFunctionTest {
         float[] imageData = new float[width * height];
         for(int y =0; y < height; y++) {
             for(int x = 0; x < width; x++) {
-                imageData[y * width + x] = y * 1000 + x;
+                imageData[y * width + x] = 50 + x * slope;
             }
         }
         // Create image from int array
@@ -420,7 +420,7 @@ public class RasterFunctionTest {
 //        ps.execute();
 //        ps.close();
 
-        GeoRaster geoRaster = GeoRasterRenderedImage.create(im, 1, -1, 0, height, 0, 0, 0, Double.NaN);
+        GeoRaster geoRaster = GeoRasterRenderedImage.create(im, 15, -15, 0, height, 0, 0, 0, -1);
         RenderedImage wkbRasterImage = ST_D8Slope.slope(geoRaster);
 //
 //        // Call ST_D8SLOPE
@@ -430,16 +430,22 @@ public class RasterFunctionTest {
 //        // Check values
         double min = Double.MAX_VALUE;
         double max = Double.MIN_VALUE;
+        double avgSum = 0;
         Raster rasterSlope = wkbRasterImage.getData();
 
         for(int y =0; y < rasterSlope.getHeight(); y++) {
             for(int x = 0; x < rasterSlope.getWidth(); x++) {
                 double value = rasterSlope.getSampleDouble(x, y, 0);
-                min = Math.min(value, min);
-                max = Math.max(value, max);
+                if(! Double.isNaN(value)) {
+                    avgSum += value;
+                    min = Math.min(value, min);
+                    max = Math.max(value, max);
+                }
             }
         }
-        assertEquals(0.1, max, 1e-12);
-        assertEquals(-1., min, 1e-12);
+        double avg = avgSum / (rasterSlope.getHeight() * rasterSlope.getWidth());
+        assertEquals(0.0066666919738054276, max, 1e-12);
+        assertEquals(0, min, 1e-12);
+        assertEquals(0.006666543893516064, avg, 1e-12);
     }
 }

@@ -18,7 +18,16 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public abstract class Area3x3OpImage extends AreaOpImage {
-
+    public static final Point[] NEIGHBORS_INDEX = new Point[] {
+            new Point(-1, -1), // top left
+            new Point(0, -1), // top
+            new Point(1, -1), // top right
+            new Point(-1, 0), // left
+            new Point(1, 0), // right
+            new Point(-1, 1), // bottom left
+            new Point(0, 1), // bottom
+            new Point(1, 1) // bottom right
+    };
     public Area3x3OpImage(RenderedImage source, BorderExtender extender, Map config, ImageLayout layout) {
         // Require 1 neighbors around the source pixel
         super(source, layout, config, true, extender, 1, 1, 1, 1);
@@ -45,50 +54,52 @@ public abstract class Area3x3OpImage extends AreaOpImage {
 
     protected void processingFloatSource(RasterAccessor rasterAccess, RasterAccessor dst) {
 
-        int destWidth = dst.getWidth();
-        int destHeight = dst.getHeight();
-        int destNumBands = dst.getNumBands();
+        final int destWidth = dst.getWidth();
+        final int destHeight = dst.getHeight();
+        final int destNumBands = dst.getNumBands();
 
-        float destDataArrays[][] = dst.getFloatDataArrays();
-        int destBandOffsets[] = dst.getBandOffsets();
-        int destPixelStride = dst.getPixelStride();
-        int dstScanlineStride = dst.getScanlineStride();
+        final float destDataArrays[][] = dst.getFloatDataArrays();
+        final int destBandOffsets[] = dst.getBandOffsets();
+        final int destPixelStride = dst.getPixelStride();
+        final int dstScanlineStride = dst.getScanlineStride();
 
-        float srcDataArrays[][] = rasterAccess.getFloatDataArrays();
-        int srcBandOffsets[] = rasterAccess.getBandOffsets();
-        int srcPixelStride = rasterAccess.getPixelStride();
-        int srcScanlineStride = rasterAccess.getScanlineStride();
+        final float srcDataArrays[][] = rasterAccess.getFloatDataArrays();
+        final int srcBandOffsets[] = rasterAccess.getBandOffsets();
+        final int srcPixelStride = rasterAccess.getPixelStride();
+        final int srcScanlineStride = rasterAccess.getScanlineStride();
 
         // precalculate offsets
-        int bottomScanlineOffset = srcScanlineStride * 2;
-        int rightPixelOffset = destNumBands * 2;
-        final int k = 0;
-        float dstData[] = destDataArrays[k];
-        float srcData[] = srcDataArrays[k];
-        int srcScanlineOffset = srcBandOffsets[k];
-        int dstScanlineOffset = destBandOffsets[k];
-        for (int j = 0; j < destHeight; j++) {
-            int srcPixelOffset = srcScanlineOffset;
-            int dstPixelOffset = dstScanlineOffset;
-            for (int i = 0; i < destWidth; i++) {
-                final double[] neighborsValues = new double[] {
-                        srcData[srcPixelOffset], // top left
-                        srcData[srcPixelOffset + destNumBands], // top
-                        srcData[srcPixelOffset + rightPixelOffset], // top right
-                        srcData[srcPixelOffset + srcScanlineStride], // left
-                        srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
-                        srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
-                        srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
-                        srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
-                };
-                // Compute in sub method
-                dstData[dstPixelOffset] = (float)computeCell((srcPixelOffset / srcPixelStride) % srcScanlineStride,
-                        (srcPixelOffset / srcPixelStride) / srcScanlineStride, k, neighborsValues);
-                srcPixelOffset += srcPixelStride;
-                dstPixelOffset += destPixelStride;
+        final int bottomScanlineOffset = srcScanlineStride * 2;
+        final int rightPixelOffset = destNumBands * 2;
+        for(int idBand = 0; idBand < destNumBands; idBand++) {
+            final float dstData[] = destDataArrays[idBand];
+            final float srcData[] = srcDataArrays[idBand];
+            int srcScanlineOffset = srcBandOffsets[idBand];
+            int dstScanlineOffset = destBandOffsets[idBand];
+            // Init
+            for (int j = 0; j < destHeight; j++) {
+                int srcPixelOffset = srcScanlineOffset;
+                int dstPixelOffset = dstScanlineOffset;
+                for (int i = 0; i < destWidth; i++) {
+                    final double[] neighborsValues = new double[]{srcData[srcPixelOffset], // top left
+                            srcData[srcPixelOffset + destNumBands], // top
+                            srcData[srcPixelOffset + rightPixelOffset], // top right
+                            srcData[srcPixelOffset + srcScanlineStride], // left
+                            srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
+                            srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
+                            srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
+                            srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
+                    };
+                    int srcPos = srcPixelOffset + srcScanlineStride + destNumBands;
+                    // Compute in sub method
+                    dstData[dstPixelOffset] = (float) computeCell((srcPos / srcPixelStride) % srcScanlineStride,
+                            (srcPos / srcPixelStride) / srcScanlineStride, idBand, srcData[srcPos], neighborsValues);
+                    srcPixelOffset += srcPixelStride;
+                    dstPixelOffset += destPixelStride;
+                }
+                srcScanlineOffset += srcScanlineStride;
+                dstScanlineOffset += dstScanlineStride;
             }
-            srcScanlineOffset += srcScanlineStride;
-            dstScanlineOffset += dstScanlineStride;
         }
         // If the RasterAccessor object set up a temporary buffer for the
         // op to write to, tell the RasterAccessor to write that data
@@ -99,5 +110,5 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    protected abstract double computeCell(int i, int j, int band, final double[] neighborsValues);
+    protected abstract double computeCell(int i, int j, int band, double cellValue, final double[] neighborsValues);
 }

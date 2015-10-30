@@ -24,10 +24,12 @@ package org.h2gis.h2spatialext.jai;
 
 import com.sun.media.jai.opimage.RIFUtil;
 import org.h2.api.GeoRaster;
+import org.h2.util.RasterUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.media.jai.BorderExtender;
+import javax.media.jai.BorderExtenderConstant;
 import javax.media.jai.EnumeratedParameter;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.KernelJAI;
@@ -59,10 +61,6 @@ public class SlopeRIF implements RenderedImageFactory {
         // Get ImageLayout from renderHints if any.
         ImageLayout layout = RIFUtil.getImageLayoutHint(renderHints);
 
-
-        // Get BorderExtender from renderHints if any.
-        BorderExtender extender = RIFUtil.getBorderExtenderHint(renderHints);
-
         EnumeratedParameter unit =
                 (EnumeratedParameter)paramBlock.getObjectParameter(0);
 
@@ -75,7 +73,15 @@ public class SlopeRIF implements RenderedImageFactory {
 
         GeoRaster geoRaster = (GeoRaster) im;
         try {
-            return new SlopeOpImage(geoRaster, geoRaster.getMetaData(), extender, renderHints, layout, unit.getName());
+            final RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
+            double[] noData = new double[metaData.numBands];
+            for(int idBand = 0; idBand < noData.length; idBand++) {
+                RasterUtils.RasterBandMetaData bandMetaData = metaData.bands[idBand];
+                noData[idBand] = bandMetaData.hasNoData ? bandMetaData.noDataValue : Double.NaN;
+            }
+            BorderExtender extender = new BorderExtenderConstant(noData);
+
+            return new SlopeOpImage(geoRaster, metaData, extender, renderHints, layout, unit.getName());
         } catch (IOException ex) {
             LOGGER.error("Error while reading metadata", ex);
             return null;
