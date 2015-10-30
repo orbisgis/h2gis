@@ -23,10 +23,18 @@
 
 package org.h2gis.h2spatialext.function.spatial.raster;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferDouble;
+import java.awt.image.DataBufferInt;
+import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.sql.Blob;
@@ -41,17 +49,19 @@ import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.media.jai.DataBufferFloat;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.RasterFactory;
+import javax.media.jai.TiledImage;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
+import org.h2.api.GeoRaster;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
 import org.h2.util.imageio.WKBRasterReader;
 import org.h2.util.imageio.WKBRasterReaderSpi;
+import org.h2gis.drivers.raster.ST_WorldFileImageRead;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
@@ -376,5 +386,60 @@ public class RasterFunctionTest {
             throw e.getOriginalCause();
         }
     }
-    
+
+    private static RenderedImage imageFromArray(float[] array, int width, int height) {
+        DataBufferFloat dbuffer = new DataBufferFloat(array, width * height);
+        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, width, height, 1);
+        ColorModel colorModel = PlanarImage.createColorModel(sampleModel);
+        Raster raster = RasterFactory.createWritableRaster(sampleModel, dbuffer, new Point());
+        TiledImage tiledImage = new TiledImage(0, 0, width, height, 0, 0, sampleModel, colorModel);
+        tiledImage.setData(raster);
+        return tiledImage;
+    }
+
+    @Test
+    public void testST_D8Slope() throws SQLException, IOException {
+        int width = 100;
+        int height = 100;
+        final float slope = 0.1f;
+        float[] imageData = new float[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = y * 1000 + x;
+            }
+        }
+        // Create image from int array
+        RenderedImage im = imageFromArray(imageData, width, height);
+        // Store into H2 DB
+//        st.execute("drop table if exists test");
+//        st.execute("create table test(id identity, the_raster raster)");
+//        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+//                + "values(?)");
+//        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, 1, -1, 0, 0, 0, 0, 27572, 0)
+//                .asWKBRaster());
+//        ps.execute();
+//        ps.close();
+
+        GeoRaster geoRaster = GeoRasterRenderedImage.create(im, 1, -1, 0, height, 0, 0, 0, Double.NaN);
+        RenderedImage wkbRasterImage = ST_D8Slope.slope(geoRaster);
+//
+//        // Call ST_D8SLOPE
+//        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster) the_raster from test");
+//        assertTrue(rs.next());
+//        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+//        // Check values
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        Raster rasterSlope = wkbRasterImage.getData();
+
+        for(int y =0; y < rasterSlope.getHeight(); y++) {
+            for(int x = 0; x < rasterSlope.getWidth(); x++) {
+                double value = rasterSlope.getSampleDouble(x, y, 0);
+                min = Math.min(value, min);
+                max = Math.max(value, max);
+            }
+        }
+        assertEquals(0.1, max, 1e-12);
+        assertEquals(-1., min, 1e-12);
+    }
 }

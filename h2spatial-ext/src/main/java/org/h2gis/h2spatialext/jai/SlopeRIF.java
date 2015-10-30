@@ -1,19 +1,48 @@
+/**
+ * H2GIS is a library that brings spatial support to the H2 Database Engine
+ * <http://www.h2database.com>.
+ *
+ * H2GIS is distributed under GPL 3 license. It is produced by CNRS
+ * <http://www.cnrs.fr/>.
+ *
+ * H2GIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * H2GIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.h2gis.org/>
+ * or contact directly: info_at_h2gis.org
+ */
 package org.h2gis.h2spatialext.jai;
 
 import com.sun.media.jai.opimage.RIFUtil;
+import org.h2.api.GeoRaster;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.media.jai.BorderExtender;
+import javax.media.jai.EnumeratedParameter;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.KernelJAI;
 import java.awt.RenderingHints;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.awt.image.renderable.RenderedImageFactory;
+import java.io.IOException;
 
 /**
  * @author Nicolas Fortin
  */
 public class SlopeRIF implements RenderedImageFactory {
+    private Logger LOGGER = LoggerFactory.getLogger(SlopeRIF.class);
+
     /**
      * Empty constructor required
      */
@@ -34,14 +63,22 @@ public class SlopeRIF implements RenderedImageFactory {
         // Get BorderExtender from renderHints if any.
         BorderExtender extender = RIFUtil.getBorderExtenderHint(renderHints);
 
-        KernelJAI unRotatedKernel =
-                (KernelJAI)paramBlock.getObjectParameter(0);
-        KernelJAI kJAI = unRotatedKernel.getRotatedKernel();
+        EnumeratedParameter unit =
+                (EnumeratedParameter)paramBlock.getObjectParameter(0);
 
-        return new SlopeOpImage(paramBlock.getRenderedSource(0),
-                extender,
-                renderHints,
-                layout,
-                kJAI);
+        RenderedImage im = paramBlock.getRenderedSource(0);
+
+        if(!(im instanceof GeoRaster)) {
+            LOGGER.error(getClass().getSimpleName()+" require Raster spatial metadata");
+            return null;
+        }
+
+        GeoRaster geoRaster = (GeoRaster) im;
+        try {
+            return new SlopeOpImage(geoRaster, geoRaster.getMetaData(), extender, renderHints, layout, unit.getName());
+        } catch (IOException ex) {
+            LOGGER.error("Error while reading metadata", ex);
+            return null;
+        }
     }
 }
