@@ -401,6 +401,7 @@ public class RasterFunctionTest {
     public void testST_D8Slope() throws SQLException, IOException {
         int width = 100;
         int height = 100;
+        final double noData = -1;
         final float pixelSize = 100;
         final float slope = 0.1f;
         float[] imageData = new float[width * height];
@@ -416,13 +417,13 @@ public class RasterFunctionTest {
         st.execute("create table test(id identity, the_raster raster)");
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
                 .asWKBRaster());
         ps.execute();
         ps.close();
 
         // Call ST_D8SLOPE
-        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster) the_raster from test");
+        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster, 'PERCENT') the_raster from test");
         assertTrue(rs.next());
         RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
         // Check values
@@ -431,9 +432,9 @@ public class RasterFunctionTest {
         for(int y =0; y < rasterSlope.getHeight(); y++) {
             for(int x = 0; x < rasterSlope.getWidth(); x++) {
                 double value = rasterSlope.getSampleDouble(x, y, 0);
-                if(!Double.isNaN(value) && value > 0) {
+                if(!Double.isNaN(value) && value != noData) {
                     assertTrue(Double.compare(value, 0) != 0);
-                    assertEquals(slope, value, 1e-8);
+                    assertEquals(slope, value / 100, 1e-8);
                 }
             }
         }

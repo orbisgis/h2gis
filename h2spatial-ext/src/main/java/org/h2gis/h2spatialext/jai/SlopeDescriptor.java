@@ -38,7 +38,7 @@ import java.util.HashSet;
 public class SlopeDescriptor extends OperationDescriptorImpl {
     public static final EnumeratedParameter SLOPE_PERCENT = new EnumeratedParameter("PERCENT", 0);
     public static final EnumeratedParameter SLOPE_DEGREE = new EnumeratedParameter("DEGREE", 1);
-    public static final EnumeratedParameter SLOPE_RADIANT = new EnumeratedParameter("RADIANT", 2);
+    public static final EnumeratedParameter SLOPE_RADIANT = new EnumeratedParameter("RADIAN", 2);
 
     // A map-like array of strings with resources information.
     private static final String[][] resources =

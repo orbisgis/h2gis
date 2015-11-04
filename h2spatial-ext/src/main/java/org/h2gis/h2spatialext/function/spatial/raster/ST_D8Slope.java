@@ -39,7 +39,7 @@ public class ST_D8Slope extends DeterministicScalarFunction {
         ParameterBlock pb = new ParameterBlock();
         pb.addSource(geoRaster);
         pb.add(unitType);
-        PlanarImage output = JAI.create("D8Slope", geoRaster);
+        PlanarImage output = JAI.create("D8Slope", pb);
         return GeoRasterRenderedImage.create(output, metadata.scaleX,
                 metadata.scaleY, metadata.ipX, metadata.ipY, metadata.skewX, metadata.skewY, metadata.srid,
                 0);

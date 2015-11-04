@@ -36,13 +36,11 @@ import java.util.Map;
  * @author Erwan Bocher
  */
 public class SlopeOpImage extends Area3x3OpImage {
-    private enum UnitType {PERCENT, DEGREE, RADIANT};
-    private final UnitType unit;
+    private enum UnitType {PERCENT, DEGREE, RADIAN}
     private RasterUtils.RasterMetaData metaData;
-    // Distance matrix of neighbors pixels. Take account of skewX and skewY
-    private final double[] distanceMatrix;
     private final double[] invDistanceMatrix;
     private final static double FACTOR = 180 / Math.PI;
+    private ConvertUnit convertUnit;
 
 
     public SlopeOpImage(RenderedImage source, RasterUtils.RasterMetaData metaData, BorderExtender extender,
@@ -50,15 +48,23 @@ public class SlopeOpImage extends Area3x3OpImage {
             layout, String unitName) {
         // Require 1 neighbors around the source pixel
         super(source, extender, config, layout);
-        this.unit = UnitType.valueOf(unitName);
+        switch (UnitType.valueOf(unitName)) {
+            case RADIAN:
+                convertUnit = new ratioToRadian();
+                break;
+            case PERCENT:
+                convertUnit = new ratioToPercent();
+                break;
+            default:
+                convertUnit = new ratioToDegree();
+        }
         this.metaData = metaData;
-        distanceMatrix = new double[NEIGHBORS_INDEX.length];
         invDistanceMatrix = new double[NEIGHBORS_INDEX.length];
         int index = 0;
         for(Point pos : NEIGHBORS_INDEX) {
-            distanceMatrix[index] = metaData.getPixelCoordinate(0, 0).distance(metaData.getPixelCoordinate(pos.x,
+            double distance = metaData.getPixelCoordinate(0, 0).distance(metaData.getPixelCoordinate(pos.x,
                     pos.y));
-            invDistanceMatrix[index] = 1 / distanceMatrix[index];
+            invDistanceMatrix[index] = 1 / distance;
             index++;
         }
     }
@@ -79,9 +85,40 @@ public class SlopeOpImage extends Area3x3OpImage {
                     maxSlope = Math.max(maxSlope, heightRatio);
                 }
             }
-            return maxSlope;
+            if(Double.compare(maxSlope, Double.MIN_VALUE) != 0) {
+                return convertUnit.toRequestedUnit(maxSlope);
+            } else {
+                return metaData.bands[band].noDataValue;
+            }
         } else {
             return metaData.bands[band].noDataValue;
+        }
+    }
+
+    private interface ConvertUnit {
+        double toRequestedUnit(double ratio);
+    }
+
+    private static class ratioToDegree implements ConvertUnit {
+        @Override
+        public double toRequestedUnit(double ratio) {
+            // Return in degree
+            return Math.atan(ratio) * FACTOR;
+        }
+    }
+
+    private static class ratioToRadian implements ConvertUnit {
+        @Override
+        public double toRequestedUnit(double ratio) {
+            // Return in rad
+            return Math.atan(ratio);
+        }
+    }
+
+    private static class ratioToPercent implements ConvertUnit {
+        @Override
+        public double toRequestedUnit(double ratio) {
+            return ratio * 100;
         }
     }
 }
