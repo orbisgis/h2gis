@@ -10,6 +10,7 @@ import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -73,6 +74,8 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int rightPixelOffset = destNumBands * 2;
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final float dstData[] = destDataArrays[idBand];
+            double defaultValue = getBandDefaultValue(idBand);
+            Arrays.fill(dstData, (float)defaultValue);
             final float srcData[] = srcDataArrays[idBand];
             int srcScanlineOffset = srcBandOffsets[idBand];
             int dstScanlineOffset = destBandOffsets[idBand];
@@ -109,6 +112,8 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             dst.copyDataToRaster();
         }
     }
+
+    protected abstract double getBandDefaultValue(int band);
 
     protected abstract double computeCell(int i, int j, int band, double cellValue, final double[] neighborsValues);
 }

@@ -401,51 +401,42 @@ public class RasterFunctionTest {
     public void testST_D8Slope() throws SQLException, IOException {
         int width = 100;
         int height = 100;
+        final float pixelSize = 100;
         final float slope = 0.1f;
         float[] imageData = new float[width * height];
         for(int y =0; y < height; y++) {
             for(int x = 0; x < width; x++) {
-                imageData[y * width + x] = 50 + x * slope;
+                imageData[y * width + x] = 50 + x * pixelSize * slope;
             }
         }
         // Create image from int array
         RenderedImage im = imageFromArray(imageData, width, height);
         // Store into H2 DB
-//        st.execute("drop table if exists test");
-//        st.execute("create table test(id identity, the_raster raster)");
-//        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
-//                + "values(?)");
-//        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, 1, -1, 0, 0, 0, 0, 27572, 0)
-//                .asWKBRaster());
-//        ps.execute();
-//        ps.close();
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, 0)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
 
-        GeoRaster geoRaster = GeoRasterRenderedImage.create(im, 15, -15, 0, height, 0, 0, 0, -1);
-        RenderedImage wkbRasterImage = ST_D8Slope.slope(geoRaster);
-//
-//        // Call ST_D8SLOPE
-//        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster) the_raster from test");
-//        assertTrue(rs.next());
-//        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
-//        // Check values
-        double min = Double.MAX_VALUE;
-        double max = Double.MIN_VALUE;
-        double avgSum = 0;
+        // Call ST_D8SLOPE
+        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster) the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
         Raster rasterSlope = wkbRasterImage.getData();
 
         for(int y =0; y < rasterSlope.getHeight(); y++) {
             for(int x = 0; x < rasterSlope.getWidth(); x++) {
                 double value = rasterSlope.getSampleDouble(x, y, 0);
-                if(! Double.isNaN(value)) {
-                    avgSum += value;
-                    min = Math.min(value, min);
-                    max = Math.max(value, max);
+                if(!Double.isNaN(value) && value > 0) {
+                    assertTrue(Double.compare(value, 0) != 0);
+                    assertEquals(slope, value, 1e-8);
                 }
             }
         }
-        double avg = avgSum / (rasterSlope.getHeight() * rasterSlope.getWidth());
-        assertEquals(0.0066666919738054276, max, 1e-12);
-        assertEquals(0, min, 1e-12);
-        assertEquals(0.006666543893516064, avg, 1e-12);
+        rs.close();
     }
 }
