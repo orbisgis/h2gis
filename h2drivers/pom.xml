@@ -120,5 +120,10 @@
             <version>${cts-version}</version>
             <!-- https://github.com/orbisgis/CTS -->
         </dependency>
+        <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-arcgrid</artifactId>
+            <version>${imageio-ext-arcgrid-version}</version>
+        </dependency>
     </dependencies>
 </project>

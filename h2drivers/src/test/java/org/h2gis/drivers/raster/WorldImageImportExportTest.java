@@ -22,6 +22,9 @@
  */
 package org.h2gis.drivers.raster;
 
+import org.h2gis.drivers.worldFileImage.WorldFileImageDriverFunction;
+import org.h2gis.drivers.worldFileImage.ST_WorldFileImageRead;
+import org.h2gis.drivers.worldFileImage.ST_WorldFileImageWrite;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

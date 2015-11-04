@@ -21,7 +21,7 @@
  * or contact directly: info_at_h2gis.org
  */
 
-package org.h2gis.drivers.raster;
+package org.h2gis.drivers.worldFileImage;
 
 import org.h2.api.GeoRaster;
 import org.h2.util.GeoRasterRenderedImage;
