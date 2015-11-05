@@ -541,7 +541,7 @@ public class RasterFunctionTest {
         byte[] imageData = new byte[width * height];
         for(int y =0; y < height; y++) {
             for(int x = 0; x < width; x++) {
-                imageData[y * width + x] = (byte)(10 + x * pixelSize * slope);
+                imageData[y * width + x] = (byte)(Byte.MIN_VALUE + 1 + x * pixelSize * slope);
             }
         }
         // Create image from int array

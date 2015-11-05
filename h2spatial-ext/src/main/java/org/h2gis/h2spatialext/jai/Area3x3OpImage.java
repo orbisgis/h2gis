@@ -186,7 +186,8 @@ public abstract class Area3x3OpImage extends AreaOpImage {
                         neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
                     }
                     // Compute in sub method
-                    dstData[dstPixelOffset] = (short) computeCell(idBand, neighborsValues);
+                    double value = computeCell(idBand, neighborsValues);
+                    dstData[dstPixelOffset] = (short)Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, value));
                     dstPixelOffset += destPixelStride;
                 }
                 dstScanlineOffset += dstScanlineStride;
@@ -268,7 +269,8 @@ public abstract class Area3x3OpImage extends AreaOpImage {
                         neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
                     }
                     // Compute in sub method
-                    dstData[dstPixelOffset] = (byte) computeCell(idBand, neighborsValues);
+                    double value = computeCell(idBand, neighborsValues);
+                    dstData[dstPixelOffset] =  (byte)Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, value));
                     dstPixelOffset += destPixelStride;
                 }
                 dstScanlineOffset += dstScanlineStride;
@@ -306,15 +308,15 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         double[] getNeighborsValues(int band, int i, int j) {
             byte[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
-            return new double[]{ srcData[srcPixelOffset], // top left
-                    srcData[srcPixelOffset + destNumBands], // top
-                    srcData[srcPixelOffset + rightPixelOffset], // top right
-                    srcData[srcPixelOffset + srcScanlineStride], // left
-                    srcData[srcPixelOffset + srcScanlineStride + destNumBands], //center
-                    srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
-                    srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
-                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
-                    srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
+            return new double[]{ srcData[srcPixelOffset] & 0xff, // top left
+                    srcData[srcPixelOffset + destNumBands] & 0xff, // top
+                    srcData[srcPixelOffset + rightPixelOffset] & 0xff, // top right
+                    srcData[srcPixelOffset + srcScanlineStride] & 0xff, // left
+                    srcData[srcPixelOffset + srcScanlineStride + destNumBands] & 0xff, //center
+                    srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset] & 0xff, // right
+                    srcData[srcPixelOffset + bottomScanlineOffset] & 0xff, // bottom left
+                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands] & 0xff, // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] & 0xff // bottom right
             };
         }
     }
