@@ -66,6 +66,7 @@ import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
 import org.h2gis.h2spatialext.function.spatial.processing.*;
 import org.h2gis.h2spatialext.function.spatial.processing.ST_OffSetCurve;
 import org.h2gis.h2spatialext.function.spatial.properties.*;
+import org.h2gis.h2spatialext.function.spatial.raster.ST_D8Slope;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
@@ -222,7 +223,9 @@ public class CreateSpatialExtension {
     public static Function[] getJaiFunctions() {
         return new Function[] {
                 new ST_WorldFileImageRead(),
-                new ST_Band(), new ST_WorldFileImageWrite()
+                new ST_WorldFileImageWrite(),
+                new ST_Band(),
+                new ST_D8Slope()
         };
     }
 
