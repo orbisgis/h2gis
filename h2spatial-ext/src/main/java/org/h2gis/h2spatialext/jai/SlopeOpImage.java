@@ -70,11 +70,6 @@ public class SlopeOpImage extends Area3x3OpImage {
     }
 
     @Override
-    protected double getBandDefaultValue(int band) {
-        return metaData.bands[band].noDataValue;
-    }
-
-    @Override
     protected double computeCell(int band, double[][] srcNeighborsValues) {
         // Take account of only one source image
         final double[] neighborsValues = srcNeighborsValues[0];
