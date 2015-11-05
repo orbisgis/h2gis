@@ -36,7 +36,7 @@ import org.h2gis.drivers.raster.WorldFileImageDriverFunction;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-import java.sql.SQLException;
+import org.h2gis.drivers.asciiGrid.AsciiGridDriverFunction;
 
 /**
  * Registers services provided by this plugin bundle.
@@ -73,6 +73,7 @@ public class Activator implements BundleActivator {
                                 }
                         }
                     bc.registerService(DriverFunction.class, new WorldFileImageDriverFunction(), null);
+                    bc.registerService(DriverFunction.class, new AsciiGridDriverFunction(), null);
                 }
                 bc.registerService(DriverFunction.class, new DBFDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new SHPDriverFunction(), null);
