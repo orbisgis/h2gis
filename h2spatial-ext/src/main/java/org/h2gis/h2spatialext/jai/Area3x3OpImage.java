@@ -53,7 +53,8 @@ public abstract class Area3x3OpImage extends AreaOpImage {
                         .getColorModel()));
             srcIndex++;
         }
-        RasterAccessor dst = new RasterAccessor(dest, destRect, formatTags[1], getColorModel());
+        // last tag id is for destination
+        RasterAccessor dst = new RasterAccessor(dest, destRect, formatTags[sources.length], getColorModel());
 
         switch (sources[0].getTransferType()) {
             case DataBuffer.TYPE_FLOAT:
@@ -92,8 +93,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final double dstData[] = destDataArrays[idBand];
-            double defaultValue = getBandDefaultValue(idBand);
-            Arrays.fill(dstData, (byte)defaultValue);
             int dstScanlineOffset = destBandOffsets[idBand];
             // Init
             for (int j = 0; j < destHeight; j++) {
@@ -174,8 +173,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final short dstData[] = destDataArrays[idBand];
-            double defaultValue = getBandDefaultValue(idBand);
-            Arrays.fill(dstData, (byte)defaultValue);
             int dstScanlineOffset = destBandOffsets[idBand];
             // Init
             for (int j = 0; j < destHeight; j++) {
@@ -257,8 +254,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final byte dstData[] = destDataArrays[idBand];
-            double defaultValue = getBandDefaultValue(idBand);
-            Arrays.fill(dstData, (byte)defaultValue);
             int dstScanlineOffset = destBandOffsets[idBand];
             // Init
             for (int j = 0; j < destHeight; j++) {
@@ -339,8 +334,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final float dstData[] = destDataArrays[idBand];
-            double defaultValue = getBandDefaultValue(idBand);
-            Arrays.fill(dstData, (float)defaultValue);
             int dstScanlineOffset = destBandOffsets[idBand];
             // Init
             for (int j = 0; j < destHeight; j++) {
@@ -419,8 +412,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final int dstData[] = destDataArrays[idBand];
-            double defaultValue = getBandDefaultValue(idBand);
-            Arrays.fill(dstData, (int)defaultValue);
             int dstScanlineOffset = destBandOffsets[idBand];
             // Init
             for (int j = 0; j < destHeight; j++) {
