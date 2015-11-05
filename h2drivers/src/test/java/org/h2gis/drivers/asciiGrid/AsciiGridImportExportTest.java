@@ -62,7 +62,7 @@ public class AsciiGridImportExportTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsciiGridRead(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_WorldFileImageWrite(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsciiGridWrite(), "");
     }
 
     @AfterClass
@@ -212,11 +212,11 @@ public class AsciiGridImportExportTest {
         st.execute("create table grid(id serial, the_raster raster) as select null, ST_AsciiGridRead("
                 + StringUtils.quoteStringSQL(AsciiGridImportExportTest.class.getResource("esri_grid.asc").getPath())
                 + ")");
-        File targetFile = new File("target/esri_grid.tiff");
+        File targetFile = new File("target/ouput_grid.asc");
         if (targetFile.exists()) {
             assertTrue(targetFile.delete());
         }
-        st.execute("select ST_WorldFileImageWrite('target/esri_grid.tiff', the_raster) from grid;");
+        st.execute("select ST_AsciiGridWrite('target/ouput_grid.asc', the_raster) from grid;");
         assertTrue(targetFile.exists());
     }
     

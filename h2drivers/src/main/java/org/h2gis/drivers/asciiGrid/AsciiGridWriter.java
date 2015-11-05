@@ -50,6 +50,7 @@ import org.h2gis.utilities.TableLocation;
  * @author Erwan Bocher
  */
 public class AsciiGridWriter {
+
     private boolean isGrass;
 
     public AsciiGridWriter() {
@@ -57,18 +58,17 @@ public class AsciiGridWriter {
     }
 
     public void write(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-
         String filePath = fileName.getPath();
         final int dotIndex = filePath.lastIndexOf('.');
         String fileNameExtension = filePath.substring(dotIndex + 1).toLowerCase();
         String filePathWithoutExtension = filePath.substring(0, dotIndex);
-        String imageFormat ;
+        String imageFormat;
         if (fileNameExtension.equals("asc")) {
             imageFormat = "Ascii ArcInfo";
             isGrass = false;
         } else if (fileNameExtension.equals("arx")) {
             imageFormat = "Ascii GRASS";
-            isGrass=true;
+            isGrass = true;
         } else {
             throw new IOException("Cannot support this format : " + fileName.getAbsolutePath());
         }
@@ -131,18 +131,18 @@ public class AsciiGridWriter {
         wkbReader.setInput(inputStream);
         ImageWriter writer = (ImageWriter) ImageIO.getImageWritersByFormatName(imageFormat).next();
         ImageOutputStream stream = ImageIO.createImageOutputStream(new File(imagePath));
-        writer.setOutput(stream);        
+        writer.setOutput(stream);
         RasterUtils.RasterMetaData met = RasterUtils.RasterMetaData
-                .fetchMetaData(blob.getBinaryStream());        
+                .fetchMetaData(blob.getBinaryStream());
         AsciiGridsImageMetadata gridMetadata = new AsciiGridsImageMetadata(
                 met.width, met.height, met.scaleX, met.scaleY,
-                met.ipX, met.ipY, 
+                met.ipX, met.ipY,
                 false, isGrass, met.bands[0].noDataValue);
-        
+
         IIOImage iIOImage = new IIOImage(wkbReader.readAsRenderedImage(wkbReader.getMinIndex(), wkbReader.getDefaultReadParam()), null, gridMetadata);
 
-        writer.write(iIOImage);                
-        
+        writer.write(iIOImage);
+
         PRJUtil.writePRJ(connection, met.srid, new File(prjPath));
 
         stream.flush();

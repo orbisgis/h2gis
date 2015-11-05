@@ -44,7 +44,7 @@ public class ST_AsciiGridRead extends AbstractFunction implements ScalarFunction
 
     
     public ST_AsciiGridRead(){
-        addProperty(PROP_REMARKS, "Import a Arc/Info ASCII or GRASS ASCII Grid file image into a new table");
+        addProperty(PROP_REMARKS, "Import a Arc/Info ASCII or GRASS ASCII Grid file image into a new table.");
     }
     
     
