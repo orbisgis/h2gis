@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.util.RasterUtils;
 import org.h2.util.StringUtils;
-import org.h2gis.drivers.worldFileImage.WorldFileImageDriverFunction;
+import org.h2gis.drivers.worldFileImage.ST_WorldFileImageWrite;
 import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
@@ -60,6 +60,7 @@ public class AsciiGridImportExportTest {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsciiGridRead(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_WorldFileImageWrite(), "");
     }
 
     @AfterClass
@@ -133,6 +134,21 @@ public class AsciiGridImportExportTest {
             is.close();
         }
         rs.close();
+    }
+    
+    @Test
+    public void importExportRasterFile1() throws SQLException, IOException {
+        st.execute("drop table if exists grid");
+        st.execute("create table grid(id serial, the_raster raster) as select null, ST_AsciiGridRead("
+                + StringUtils.quoteStringSQL(AsciiGridImportExportTest.class.getResource("esri_grid.asc").getPath())
+                + ")");
+        File targetFile = new File("target/esri_grid.png");
+        if (targetFile.exists()) {
+            assertTrue(targetFile.delete());
+        }
+        st.execute("select ST_WorldFileImageWrite('target/esri_grid.png', the_raster) from grid;");
+        assertTrue(targetFile.exists());
+
     }
     
     
