@@ -23,10 +23,20 @@
 
 package org.h2gis.h2spatialext.function.spatial.raster;
 
-import java.awt.*;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.DataBufferByte;
+import java.awt.image.DataBufferDouble;
+import java.awt.image.DataBufferInt;
+import java.awt.image.DataBufferShort;
+import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.sql.Blob;
@@ -41,17 +51,19 @@ import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.media.jai.DataBufferFloat;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.RasterFactory;
+import javax.media.jai.TiledImage;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
+import org.h2.api.GeoRaster;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
 import org.h2.util.imageio.WKBRasterReader;
 import org.h2.util.imageio.WKBRasterReaderSpi;
+import org.h2gis.drivers.raster.ST_WorldFileImageRead;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;
@@ -376,5 +388,280 @@ public class RasterFunctionTest {
             throw e.getOriginalCause();
         }
     }
-    
+
+    private static RenderedImage imageFromArray(float[] array, int width, int height) {
+        DataBufferFloat dbuffer = new DataBufferFloat(array, width * height);
+        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_FLOAT, width, height, 1);
+        ColorModel colorModel = PlanarImage.createColorModel(sampleModel);
+        Raster raster = RasterFactory.createWritableRaster(sampleModel, dbuffer, new Point());
+        TiledImage tiledImage = new TiledImage(0, 0, width, height, 0, 0, sampleModel, colorModel);
+        tiledImage.setData(raster);
+        return tiledImage;
+    }
+
+    private static RenderedImage imageFromArray(int[] array, int width, int height) {
+        DataBufferInt dbuffer = new DataBufferInt(array, width * height);
+        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_INT, width, height, 1);
+        ColorModel colorModel = PlanarImage.createColorModel(sampleModel);
+        Raster raster = RasterFactory.createWritableRaster(sampleModel, dbuffer, new Point());
+        TiledImage tiledImage = new TiledImage(0, 0, width, height, 0, 0, sampleModel, colorModel);
+        tiledImage.setData(raster);
+        return tiledImage;
+    }
+
+    private static RenderedImage imageFromArray(byte[] array, int width, int height) {
+        DataBufferByte dbuffer = new DataBufferByte(array, width * height);
+        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_BYTE, width, height, 1);
+        ColorModel colorModel = PlanarImage.createColorModel(sampleModel);
+        Raster raster = RasterFactory.createWritableRaster(sampleModel, dbuffer, new Point());
+        TiledImage tiledImage = new TiledImage(0, 0, width, height, 0, 0, sampleModel, colorModel);
+        tiledImage.setData(raster);
+        return tiledImage;
+    }
+
+    private static RenderedImage imageFromArray(short[] array, int width, int height) {
+        DataBufferShort dbuffer = new DataBufferShort(array, width * height);
+        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_SHORT, width, height, 1);
+        ColorModel colorModel = PlanarImage.createColorModel(sampleModel);
+        Raster raster = RasterFactory.createWritableRaster(sampleModel, dbuffer, new Point());
+        TiledImage tiledImage = new TiledImage(0, 0, width, height, 0, 0, sampleModel, colorModel);
+        tiledImage.setData(raster);
+        return tiledImage;
+    }
+
+    private static RenderedImage imageFromArray(double[] array, int width, int height) {
+        DataBufferDouble dbuffer = new DataBufferDouble(array, width * height);
+        SampleModel sampleModel = RasterFactory.createBandedSampleModel(DataBuffer.TYPE_DOUBLE, width, height, 1);
+        ColorModel colorModel = PlanarImage.createColorModel(sampleModel);
+        Raster raster = RasterFactory.createWritableRaster(sampleModel, dbuffer, new Point());
+        TiledImage tiledImage = new TiledImage(0, 0, width, height, 0, 0, sampleModel, colorModel);
+        tiledImage.setData(raster);
+        return tiledImage;
+    }
+
+    @Test
+    public void testST_D8SlopeFloat() throws SQLException, IOException {
+        int width = 100;
+        int height = 100;
+        final double noData = -1;
+        final float pixelSize = 100;
+        final float slope = 0.1f;
+        float[] imageData = new float[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = 50 + x * pixelSize * slope;
+            }
+        }
+        // Create image from int array
+        RenderedImage im = imageFromArray(imageData, width, height);
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8SLOPE
+        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster, 'PERCENT') the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        Raster rasterSlope = wkbRasterImage.getData();
+
+        for(int y =0; y < rasterSlope.getHeight(); y++) {
+            for(int x = 0; x < rasterSlope.getWidth(); x++) {
+                double value = rasterSlope.getSampleDouble(x, y, 0);
+                if(!Double.isNaN(value) && value != noData) {
+                    assertTrue(Double.compare(value, 0) != 0);
+                    assertEquals(slope, value / 100, 1e-8);
+                }
+            }
+        }
+        rs.close();
+    }
+
+
+
+    @Test
+    public void testST_D8SlopeInt() throws SQLException, IOException {
+        int width = 100;
+        int height = 100;
+        final double noData = -1;
+        final float pixelSize = 100;
+        final float slope = 0.1f;
+        int[] imageData = new int[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (int)(50 + x * pixelSize * slope);
+            }
+        }
+        // Create image from int array
+        RenderedImage im = imageFromArray(imageData, width, height);
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8SLOPE
+        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster, 'PERCENT') the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        Raster rasterSlope = wkbRasterImage.getData();
+
+        for(int y =0; y < rasterSlope.getHeight(); y++) {
+            for(int x = 0; x < rasterSlope.getWidth(); x++) {
+                double value = rasterSlope.getSampleDouble(x, y, 0);
+                if(!Double.isNaN(value) && value != noData) {
+                    assertTrue(Double.compare(value, 0) != 0);
+                    assertEquals(slope, value / 100, 1e-8);
+                }
+            }
+        }
+        rs.close();
+    }
+
+
+
+    @Test
+    public void testST_D8SlopeByte() throws SQLException, IOException {
+        int width = 10;
+        int height = 10;
+        final double noData = 0;
+        final float pixelSize = 10;
+        final float slope = 0.1f;
+        byte[] imageData = new byte[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (byte)(Byte.MIN_VALUE + 1 + x * pixelSize * slope);
+            }
+        }
+        // Create image from int array
+        RenderedImage im = imageFromArray(imageData, width, height);
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8SLOPE
+        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster, 'PERCENT') the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        Raster rasterSlope = wkbRasterImage.getData();
+
+        for(int y =0; y < rasterSlope.getHeight(); y++) {
+            for(int x = 0; x < rasterSlope.getWidth(); x++) {
+                double value = rasterSlope.getSampleDouble(x, y, 0);
+                if(!Double.isNaN(value) && value != noData) {
+                    assertTrue(Double.compare(value, 0) != 0);
+                    assertEquals(slope, value / 100, 1e-8);
+                }
+            }
+        }
+        rs.close();
+    }
+
+
+    @Test
+    public void testST_D8SlopeShort() throws SQLException, IOException {
+        int width = 100;
+        int height = 100;
+        final double noData = -1;
+        final float pixelSize = 100;
+        final float slope = 0.1f;
+        short[] imageData = new short[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (short)(50 + x * pixelSize * slope);
+            }
+        }
+        // Create image from int array
+        RenderedImage im = imageFromArray(imageData, width, height);
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8SLOPE
+        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster, 'PERCENT') the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        Raster rasterSlope = wkbRasterImage.getData();
+
+        for(int y =0; y < rasterSlope.getHeight(); y++) {
+            for(int x = 0; x < rasterSlope.getWidth(); x++) {
+                double value = rasterSlope.getSampleDouble(x, y, 0);
+                if(!Double.isNaN(value) && value != noData) {
+                    assertTrue(Double.compare(value, 0) != 0);
+                    assertEquals(slope, value / 100, 1e-8);
+                }
+            }
+        }
+        rs.close();
+    }
+
+
+    @Test
+    public void testST_D8SlopeDouble() throws SQLException, IOException {
+        int width = 100;
+        int height = 100;
+        final double noData = -1;
+        final float pixelSize = 100;
+        final float slope = 0.1f;
+        double[] imageData = new double[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (short)(50 + x * pixelSize * slope);
+            }
+        }
+        // Create image from int array
+        RenderedImage im = imageFromArray(imageData, width, height);
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8SLOPE
+        ResultSet rs = st.executeQuery("SELECT ST_D8Slope(the_raster, 'PERCENT') the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        Raster rasterSlope = wkbRasterImage.getData();
+
+        for(int y =0; y < rasterSlope.getHeight(); y++) {
+            for(int x = 0; x < rasterSlope.getWidth(); x++) {
+                double value = rasterSlope.getSampleDouble(x, y, 0);
+                if(!Double.isNaN(value) && value != noData) {
+                    assertTrue(Double.compare(value, 0) != 0);
+                    assertEquals(slope, value / 100, 1e-8);
+                }
+            }
+        }
+        rs.close();
+    }
 }
