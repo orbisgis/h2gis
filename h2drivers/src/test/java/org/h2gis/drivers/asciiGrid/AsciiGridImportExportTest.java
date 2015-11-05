@@ -112,7 +112,7 @@ public class AsciiGridImportExportTest {
     }
     
     @Test
-    public void testDriver() throws SQLException, IOException {
+    public void testDriver1() throws SQLException, IOException {
         AsciiGridDriverFunction func = new AsciiGridDriverFunction();
         st.execute("DROP TABLE IF EXISTS GRID");
         func.importFile(connection, "GRID", new File(AsciiGridImportExportTest.class.getResource("esri_grid.asc").getFile()), new EmptyProgressVisitor());
@@ -134,19 +134,90 @@ public class AsciiGridImportExportTest {
         rs.close();
     }
     
+    
+    @Test
+    public void testDriver2() throws SQLException, IOException {
+        st.execute("drop table if exists grid");
+        st.execute("create table grid(id serial, the_raster raster) as select null, ST_AsciiGridRead("
+                + StringUtils.quoteStringSQL(AsciiGridImportExportTest.class.getResource("esri_grid.asc").getPath())
+                + ")");
+
+        File outputFile = new File("target/grid.asc");
+        outputFile.delete();
+
+        AsciiGridDriverFunction func = new AsciiGridDriverFunction();
+        func.exportTable(connection, "GRID", outputFile, new EmptyProgressVisitor());
+
+        st.execute("DROP TABLE IF EXISTS GRID_IMPORT");
+        func.importFile(connection, "GRID_IMPORT", new File(
+                "target/grid.asc"), new EmptyProgressVisitor());
+
+        ResultSet rs = st.executeQuery("select the_raster from grid_import;");
+        assertTrue(rs.next());
+
+        GeoRaster geoRaster = (GeoRaster) rs.getObject(1);
+        RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
+        assertNotNull(metaData);
+        assertEquals(10, metaData.width);
+        assertEquals(5, metaData.height);
+        assertEquals(1, metaData.numBands);
+        assertEquals(273987.50, metaData.ipX, 1e-2);
+        assertEquals(2224987.50, metaData.ipY, 1e-2);
+        assertEquals(25, metaData.scaleX, 1e-2);
+        assertEquals(25, metaData.scaleY, 1e-2);
+        assertEquals(0., metaData.skewX, 1e-6);
+        assertEquals(0., metaData.skewY, 1e-6);
+        rs.close();
+    }
+    
+     @Test
+    public void testDriver3() throws SQLException, IOException {
+        st.execute("drop table if exists grid");
+        st.execute("create table grid(id serial, the_raster raster) as select null, ST_AsciiGridRead("
+                + StringUtils.quoteStringSQL(AsciiGridImportExportTest.class.getResource("esri_grid.asc").getPath())
+                + ")");
+
+        File outputFile = new File("target/grid.arx");
+        outputFile.delete();
+
+        AsciiGridDriverFunction func = new AsciiGridDriverFunction();
+        func.exportTable(connection, "GRID", outputFile, new EmptyProgressVisitor());
+
+        st.execute("DROP TABLE IF EXISTS GRID_IMPORT");
+        func.importFile(connection, "GRID_IMPORT", new File(
+                "target/grid.arx"), new EmptyProgressVisitor());
+
+        ResultSet rs = st.executeQuery("select the_raster from grid_import;");
+        assertTrue(rs.next());
+
+        GeoRaster geoRaster = (GeoRaster) rs.getObject(1);
+        RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
+        assertNotNull(metaData);
+        assertEquals(10, metaData.width);
+        assertEquals(5, metaData.height);
+        assertEquals(1, metaData.numBands);
+        assertEquals(273987.50, metaData.ipX, 1e-2);
+        assertEquals(2224987.50, metaData.ipY, 1e-2);
+        assertEquals(25, metaData.scaleX, 1e-2);
+        assertEquals(25, metaData.scaleY, 1e-2);
+        assertEquals(0., metaData.skewX, 1e-6);
+        assertEquals(0., metaData.skewY, 1e-6);
+        rs.close();
+    }
+    
+    
     @Test
     public void importExportRasterFile1() throws SQLException, IOException {
         st.execute("drop table if exists grid");
         st.execute("create table grid(id serial, the_raster raster) as select null, ST_AsciiGridRead("
                 + StringUtils.quoteStringSQL(AsciiGridImportExportTest.class.getResource("esri_grid.asc").getPath())
                 + ")");
-        File targetFile = new File("target/esri_grid.png");
+        File targetFile = new File("target/esri_grid.tiff");
         if (targetFile.exists()) {
             assertTrue(targetFile.delete());
         }
-        st.execute("select ST_WorldFileImageWrite('target/esri_grid.png', the_raster) from grid;");
+        st.execute("select ST_WorldFileImageWrite('target/esri_grid.tiff', the_raster) from grid;");
         assertTrue(targetFile.exists());
-
     }
     
     

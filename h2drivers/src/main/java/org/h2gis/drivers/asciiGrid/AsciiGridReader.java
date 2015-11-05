@@ -148,7 +148,7 @@ public class AsciiGridReader {
             PreparedStatement stmt = connection.prepareStatement(sb.toString());
 
             try {
-                RasterUtils.RasterBandMetaData rbmd = new RasterUtils.RasterBandMetaData(asciiGridRaster.getNoData(), RasterUtils.PixelType.PT_64BF, true, 0);
+                RasterUtils.RasterBandMetaData rbmd = new RasterUtils.RasterBandMetaData(asciiGridRaster.getNoData(), RasterUtils.PixelType.PT_32BF, true, 0);
 
                 RasterUtils.RasterMetaData rmd = new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, 1, scaleX, scaleY, upperLeftX, upperLeftY, 0, 0, srid,
                         asciiGridRaster.getNCols(), asciiGridRaster.getNRows(),

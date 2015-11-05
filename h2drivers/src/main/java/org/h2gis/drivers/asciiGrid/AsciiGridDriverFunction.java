@@ -26,7 +26,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.drivers.utility.FileUtil;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 
@@ -77,7 +76,8 @@ public class AsciiGridDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            AsciiGridWriter asciiGridWriter = new AsciiGridWriter();
+            asciiGridWriter.write(connection, tableReference, fileName, progress);
     }
 
     @Override
