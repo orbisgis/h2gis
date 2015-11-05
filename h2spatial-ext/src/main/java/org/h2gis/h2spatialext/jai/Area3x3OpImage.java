@@ -59,6 +59,263 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             case DataBuffer.TYPE_FLOAT:
                 processingFloatSource(rasterAccessList, dst);
                 break;
+            case DataBuffer.TYPE_INT:
+                processingIntSource(rasterAccessList, dst);
+                break;
+            case DataBuffer.TYPE_BYTE:
+                processingByteSource(rasterAccessList, dst);
+                break;
+            case DataBuffer.TYPE_SHORT:
+                processingShortSource(rasterAccessList, dst);
+                break;
+            case DataBuffer.TYPE_DOUBLE:
+                processingDoubleSource(rasterAccessList, dst);
+                break;
+        }
+    }
+
+    protected void processingDoubleSource(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+
+        final int destWidth = dst.getWidth();
+        final int destHeight = dst.getHeight();
+        final int destNumBands = dst.getNumBands();
+
+        final double destDataArrays[][] = dst.getDoubleDataArrays();
+        final int destBandOffsets[] = dst.getBandOffsets();
+        final int destPixelStride = dst.getPixelStride();
+        final int dstScanlineStride = dst.getScanlineStride();
+
+        final List<SrcDataStructDouble> srcDataStructs = new ArrayList<SrcDataStructDouble>(rasterAccess.size());
+        for(RasterAccessor rasterAccessor : rasterAccess) {
+            srcDataStructs.add(new SrcDataStructDouble(rasterAccessor));
+        }
+
+        for(int idBand = 0; idBand < destNumBands; idBand++) {
+            final double dstData[] = destDataArrays[idBand];
+            double defaultValue = getBandDefaultValue(idBand);
+            Arrays.fill(dstData, (byte)defaultValue);
+            int dstScanlineOffset = destBandOffsets[idBand];
+            // Init
+            for (int j = 0; j < destHeight; j++) {
+                int dstPixelOffset = dstScanlineOffset;
+                for (int i = 0; i < destWidth; i++) {
+                    double[][] neighborsValues = new double[srcDataStructs.size()][];
+                    for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
+                        neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
+                    }
+                    // Compute in sub method
+                    dstData[dstPixelOffset] = computeCell(idBand, neighborsValues);
+                    dstPixelOffset += destPixelStride;
+                }
+                dstScanlineOffset += dstScanlineStride;
+            }
+        }
+        // If the RasterAccessor object set up a temporary buffer for the
+        // op to write to, tell the RasterAccessor to write that data
+        // to the raster no that we're done with it.
+        if (dst.isDataCopy()) {
+            dst.clampDataArrays();
+            dst.copyDataToRaster();
+        }
+    }
+
+    private static class SrcDataStructDouble {
+
+        public SrcDataStructDouble(RasterAccessor rasterAccess) {
+            srcDataArrays = rasterAccess.getDoubleDataArrays();
+            srcBandOffsets = rasterAccess.getBandOffsets();
+            srcPixelStride = rasterAccess.getPixelStride();
+            srcScanlineStride = rasterAccess.getScanlineStride();
+            destNumBands = rasterAccess.getNumBands();
+            rightPixelOffset = rasterAccess.getNumBands() * 2;
+            bottomScanlineOffset = srcScanlineStride * 2;
+        }
+
+        final double srcDataArrays[][];
+        final int srcBandOffsets[];
+        final int srcPixelStride;
+        final int srcScanlineStride;
+        final int rightPixelOffset;
+        final int destNumBands;
+        final int bottomScanlineOffset;
+
+        double[] getNeighborsValues(int band, int i, int j) {
+            double[] srcData = srcDataArrays[band];
+            int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
+            return new double[]{ srcData[srcPixelOffset], // top left
+                    srcData[srcPixelOffset + destNumBands], // top
+                    srcData[srcPixelOffset + rightPixelOffset], // top right
+                    srcData[srcPixelOffset + srcScanlineStride], // left
+                    srcData[srcPixelOffset + srcScanlineStride + destNumBands], //center
+                    srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
+                    srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
+                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
+            };
+        }
+    }
+
+
+    protected void processingShortSource(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+
+        final int destWidth = dst.getWidth();
+        final int destHeight = dst.getHeight();
+        final int destNumBands = dst.getNumBands();
+
+        final short destDataArrays[][] = dst.getShortDataArrays();
+        final int destBandOffsets[] = dst.getBandOffsets();
+        final int destPixelStride = dst.getPixelStride();
+        final int dstScanlineStride = dst.getScanlineStride();
+
+        final List<SrcDataStructShort> srcDataStructs = new ArrayList<SrcDataStructShort>(rasterAccess.size());
+        for(RasterAccessor rasterAccessor : rasterAccess) {
+            srcDataStructs.add(new SrcDataStructShort(rasterAccessor));
+        }
+
+        for(int idBand = 0; idBand < destNumBands; idBand++) {
+            final short dstData[] = destDataArrays[idBand];
+            double defaultValue = getBandDefaultValue(idBand);
+            Arrays.fill(dstData, (byte)defaultValue);
+            int dstScanlineOffset = destBandOffsets[idBand];
+            // Init
+            for (int j = 0; j < destHeight; j++) {
+                int dstPixelOffset = dstScanlineOffset;
+                for (int i = 0; i < destWidth; i++) {
+                    double[][] neighborsValues = new double[srcDataStructs.size()][];
+                    for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
+                        neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
+                    }
+                    // Compute in sub method
+                    dstData[dstPixelOffset] = (short) computeCell(idBand, neighborsValues);
+                    dstPixelOffset += destPixelStride;
+                }
+                dstScanlineOffset += dstScanlineStride;
+            }
+        }
+        // If the RasterAccessor object set up a temporary buffer for the
+        // op to write to, tell the RasterAccessor to write that data
+        // to the raster no that we're done with it.
+        if (dst.isDataCopy()) {
+            dst.clampDataArrays();
+            dst.copyDataToRaster();
+        }
+    }
+
+    private static class SrcDataStructShort {
+
+        public SrcDataStructShort(RasterAccessor rasterAccess) {
+            srcDataArrays = rasterAccess.getShortDataArrays();
+            srcBandOffsets = rasterAccess.getBandOffsets();
+            srcPixelStride = rasterAccess.getPixelStride();
+            srcScanlineStride = rasterAccess.getScanlineStride();
+            destNumBands = rasterAccess.getNumBands();
+            rightPixelOffset = rasterAccess.getNumBands() * 2;
+            bottomScanlineOffset = srcScanlineStride * 2;
+        }
+
+        final short srcDataArrays[][];
+        final int srcBandOffsets[];
+        final int srcPixelStride;
+        final int srcScanlineStride;
+        final int rightPixelOffset;
+        final int destNumBands;
+        final int bottomScanlineOffset;
+
+        double[] getNeighborsValues(int band, int i, int j) {
+            short[] srcData = srcDataArrays[band];
+            int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
+            return new double[]{ srcData[srcPixelOffset], // top left
+                    srcData[srcPixelOffset + destNumBands], // top
+                    srcData[srcPixelOffset + rightPixelOffset], // top right
+                    srcData[srcPixelOffset + srcScanlineStride], // left
+                    srcData[srcPixelOffset + srcScanlineStride + destNumBands], //center
+                    srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
+                    srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
+                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
+            };
+        }
+    }
+
+
+    protected void processingByteSource(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+
+        final int destWidth = dst.getWidth();
+        final int destHeight = dst.getHeight();
+        final int destNumBands = dst.getNumBands();
+
+        final byte destDataArrays[][] = dst.getByteDataArrays();
+        final int destBandOffsets[] = dst.getBandOffsets();
+        final int destPixelStride = dst.getPixelStride();
+        final int dstScanlineStride = dst.getScanlineStride();
+
+        final List<SrcDataStructByte> srcDataStructs = new ArrayList<SrcDataStructByte>(rasterAccess.size());
+        for(RasterAccessor rasterAccessor : rasterAccess) {
+            srcDataStructs.add(new SrcDataStructByte(rasterAccessor));
+        }
+
+        for(int idBand = 0; idBand < destNumBands; idBand++) {
+            final byte dstData[] = destDataArrays[idBand];
+            double defaultValue = getBandDefaultValue(idBand);
+            Arrays.fill(dstData, (byte)defaultValue);
+            int dstScanlineOffset = destBandOffsets[idBand];
+            // Init
+            for (int j = 0; j < destHeight; j++) {
+                int dstPixelOffset = dstScanlineOffset;
+                for (int i = 0; i < destWidth; i++) {
+                    double[][] neighborsValues = new double[srcDataStructs.size()][];
+                    for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
+                        neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
+                    }
+                    // Compute in sub method
+                    dstData[dstPixelOffset] = (byte) computeCell(idBand, neighborsValues);
+                    dstPixelOffset += destPixelStride;
+                }
+                dstScanlineOffset += dstScanlineStride;
+            }
+        }
+        // If the RasterAccessor object set up a temporary buffer for the
+        // op to write to, tell the RasterAccessor to write that data
+        // to the raster no that we're done with it.
+        if (dst.isDataCopy()) {
+            dst.clampDataArrays();
+            dst.copyDataToRaster();
+        }
+    }
+
+    private static class SrcDataStructByte {
+
+        public SrcDataStructByte(RasterAccessor rasterAccess) {
+            srcDataArrays = rasterAccess.getByteDataArrays();
+            srcBandOffsets = rasterAccess.getBandOffsets();
+            srcPixelStride = rasterAccess.getPixelStride();
+            srcScanlineStride = rasterAccess.getScanlineStride();
+            destNumBands = rasterAccess.getNumBands();
+            rightPixelOffset = rasterAccess.getNumBands() * 2;
+            bottomScanlineOffset = srcScanlineStride * 2;
+        }
+
+        final byte srcDataArrays[][];
+        final int srcBandOffsets[];
+        final int srcPixelStride;
+        final int srcScanlineStride;
+        final int rightPixelOffset;
+        final int destNumBands;
+        final int bottomScanlineOffset;
+
+        double[] getNeighborsValues(int band, int i, int j) {
+            byte[] srcData = srcDataArrays[band];
+            int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
+            return new double[]{ srcData[srcPixelOffset], // top left
+                    srcData[srcPixelOffset + destNumBands], // top
+                    srcData[srcPixelOffset + rightPixelOffset], // top right
+                    srcData[srcPixelOffset + srcScanlineStride], // left
+                    srcData[srcPixelOffset + srcScanlineStride + destNumBands], //center
+                    srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
+                    srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
+                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
+            };
         }
     }
 
@@ -73,9 +330,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
+        final List<SrcDataStructFloat> srcDataStructs = new ArrayList<SrcDataStructFloat>(rasterAccess.size());
         for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(new SrcDataStruct(rasterAccessor));
+            srcDataStructs.add(new SrcDataStructFloat(rasterAccessor));
         }
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
@@ -107,9 +364,89 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    private static class SrcDataStruct {
+    private static class SrcDataStructInt {
 
-        public SrcDataStruct(RasterAccessor rasterAccess) {
+        public SrcDataStructInt(RasterAccessor rasterAccess) {
+            srcDataArrays = rasterAccess.getIntDataArrays();
+            srcBandOffsets = rasterAccess.getBandOffsets();
+            srcPixelStride = rasterAccess.getPixelStride();
+            srcScanlineStride = rasterAccess.getScanlineStride();
+            destNumBands = rasterAccess.getNumBands();
+            rightPixelOffset = rasterAccess.getNumBands() * 2;
+            bottomScanlineOffset = srcScanlineStride * 2;
+        }
+
+        final int srcDataArrays[][];
+        final int srcBandOffsets[];
+        final int srcPixelStride;
+        final int srcScanlineStride;
+        final int rightPixelOffset;
+        final int destNumBands;
+        final int bottomScanlineOffset;
+
+        double[] getNeighborsValues(int band, int i, int j) {
+            int[] srcData = srcDataArrays[band];
+            int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
+            return new double[]{ srcData[srcPixelOffset], // top left
+                    srcData[srcPixelOffset + destNumBands], // top
+                    srcData[srcPixelOffset + rightPixelOffset], // top right
+                    srcData[srcPixelOffset + srcScanlineStride], // left
+                    srcData[srcPixelOffset + srcScanlineStride + destNumBands], //center
+                    srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
+                    srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
+                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
+            };
+        }
+    }
+    protected void processingIntSource(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+
+        final int destWidth = dst.getWidth();
+        final int destHeight = dst.getHeight();
+        final int destNumBands = dst.getNumBands();
+
+        final int destDataArrays[][] = dst.getIntDataArrays();
+        final int destBandOffsets[] = dst.getBandOffsets();
+        final int destPixelStride = dst.getPixelStride();
+        final int dstScanlineStride = dst.getScanlineStride();
+
+        final List<SrcDataStructInt> srcDataStructs = new ArrayList<SrcDataStructInt>(rasterAccess.size());
+        for(RasterAccessor rasterAccessor : rasterAccess) {
+            srcDataStructs.add(new SrcDataStructInt(rasterAccessor));
+        }
+
+        for(int idBand = 0; idBand < destNumBands; idBand++) {
+            final int dstData[] = destDataArrays[idBand];
+            double defaultValue = getBandDefaultValue(idBand);
+            Arrays.fill(dstData, (int)defaultValue);
+            int dstScanlineOffset = destBandOffsets[idBand];
+            // Init
+            for (int j = 0; j < destHeight; j++) {
+                int dstPixelOffset = dstScanlineOffset;
+                for (int i = 0; i < destWidth; i++) {
+                    double[][] neighborsValues = new double[srcDataStructs.size()][];
+                    for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
+                        neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
+                    }
+                    // Compute in sub method
+                    dstData[dstPixelOffset] = (int) computeCell(idBand, neighborsValues);
+                    dstPixelOffset += destPixelStride;
+                }
+                dstScanlineOffset += dstScanlineStride;
+            }
+        }
+        // If the RasterAccessor object set up a temporary buffer for the
+        // op to write to, tell the RasterAccessor to write that data
+        // to the raster no that we're done with it.
+        if (dst.isDataCopy()) {
+            dst.clampDataArrays();
+            dst.copyDataToRaster();
+        }
+    }
+
+    private static class SrcDataStructFloat {
+
+        public SrcDataStructFloat(RasterAccessor rasterAccess) {
             srcDataArrays = rasterAccess.getFloatDataArrays();
             srcBandOffsets = rasterAccess.getBandOffsets();
             srcPixelStride = rasterAccess.getPixelStride();
