@@ -75,12 +75,15 @@ public class SlopeOpImage extends Area3x3OpImage {
     }
 
     @Override
-    protected double computeCell(int i, int j, int band, double cellValue, double[] neighborsValues) {
+    protected double computeCell(int band, double[][] srcNeighborsValues) {
+        // Take account of only one source image
+        final double[] neighborsValues = srcNeighborsValues[0];
         final double noDataValue = metaData.bands[band].noDataValue;
+        final double cellValue = neighborsValues[SRC_INDEX];
         if(Double.compare(cellValue, noDataValue) != 0) {
             double maxSlope = Double.MIN_VALUE;
             for (int idNeigh = 0; idNeigh < neighborsValues.length; idNeigh++) {
-                if(Double.compare(neighborsValues[idNeigh], noDataValue) != 0) {
+                if(idNeigh != SRC_INDEX && Double.compare(neighborsValues[idNeigh], noDataValue) != 0) {
                     double heightRatio = (cellValue - neighborsValues[idNeigh]) * invDistanceMatrix[idNeigh];
                     maxSlope = Math.max(maxSlope, heightRatio);
                 }
