@@ -20,11 +20,8 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-package org.h2gis.drivers.raster;
+package org.h2gis.drivers.worldFileImage;
 
-import org.h2gis.drivers.worldFileImage.WorldFileImageDriverFunction;
-import org.h2gis.drivers.worldFileImage.ST_WorldFileImageRead;
-import org.h2gis.drivers.worldFileImage.ST_WorldFileImageWrite;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;

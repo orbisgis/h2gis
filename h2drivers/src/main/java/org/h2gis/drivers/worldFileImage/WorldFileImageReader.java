@@ -154,6 +154,8 @@ public class WorldFileImageReader {
      * @param tableReference
      * @param isH2 
      * @param connection 
+     * @param progressVisitor 
+     * @throws java.sql.SQLException 
      */
     public void readImage(String tableReference, boolean isH2, Connection connection, ProgressVisitor progressVisitor) throws
             SQLException{
