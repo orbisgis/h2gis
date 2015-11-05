@@ -63,7 +63,7 @@ public class ST_AsciiGridRead extends AbstractFunction implements ScalarFunction
      * @throws java.io.IOException
      * @throws java.sql.SQLException
      */
-    public GeoRaster asciiGridRead(Connection connection, String fileName) throws IOException, SQLException {
+    public static GeoRaster asciiGridRead(Connection connection, String fileName) throws IOException, SQLException {
         File rasterFile = URIUtility.fileFromString(fileName);
         if (rasterFile.exists()) {
             AsciiGridReader asciiGridReader = AsciiGridReader.fetch(connection, rasterFile);
