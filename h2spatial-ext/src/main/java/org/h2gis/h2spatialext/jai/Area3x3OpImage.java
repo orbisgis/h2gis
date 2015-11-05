@@ -473,7 +473,5 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    protected abstract double getBandDefaultValue(int band);
-
     protected abstract double computeCell(int band, final double[][] neighborsValues);
 }
