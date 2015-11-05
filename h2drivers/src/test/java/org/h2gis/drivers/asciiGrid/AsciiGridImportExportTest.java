@@ -23,6 +23,7 @@
 
 package org.h2gis.drivers.asciiGrid;
 
+import java.awt.image.Raster;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -30,6 +31,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2.api.GeoRaster;
 import org.h2.util.RasterUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.drivers.worldFileImage.ST_WorldFileImageWrite;
@@ -85,25 +87,27 @@ public class AsciiGridImportExportTest {
                 StringUtils.quoteStringSQL(AsciiGridImportExportTest.class.getResource("esri_grid.asc").getPath())
                 + ")");
         ResultSet rs = st.executeQuery("select the_raster from grid;");
-        assertTrue(rs.next());
-        // Read metadata from WKB raster stream
-        InputStream is = rs.getBinaryStream(1);
-        try {
-            RasterUtils.RasterMetaData metaData = RasterUtils.RasterMetaData.fetchMetaData(is, true);
-            assertNotNull(metaData);
-            assertEquals(10, metaData.width);
-            assertEquals(5, metaData.height);
-            assertEquals(1, metaData.numBands);
-            assertEquals(273987.50, metaData.ipX, 1e-2);
-            assertEquals(2224987.50, metaData.ipY, 1e-2);
-            assertEquals(25, metaData.scaleX, 1e-2);
-            assertEquals(25, metaData.scaleY, 1e-2);
-            assertEquals(0., metaData.skewX, 1e-6);
-            assertEquals(0., metaData.skewY, 1e-6);
-        } finally {
-            is.close();
-        }
-        rs.close();
+         assertTrue(rs.next());
+         // Read metadata from WKB raster
+         GeoRaster geoRaster = (GeoRaster) rs.getObject(1);
+         RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
+         assertNotNull(metaData);
+         assertEquals(10, metaData.width);
+         assertEquals(5, metaData.height);
+         assertEquals(1, metaData.numBands);
+         assertEquals(273987.50, metaData.ipX, 1e-2);
+         assertEquals(2224987.50, metaData.ipY, 1e-2);
+         assertEquals(25, metaData.scaleX, 1e-2);
+         assertEquals(25, metaData.scaleY, 1e-2);
+         assertEquals(0., metaData.skewX, 1e-6);
+         assertEquals(0., metaData.skewY, 1e-6);
+         
+         Raster data = geoRaster.getData();
+         //Test some pixel values
+         assertEquals(-9999, data.getSample(0, 0, 0), 1e-2);
+         assertEquals(26, data.getSample(4, 0, 0), 1e-2);
+
+         rs.close();
 
     }
     
@@ -111,28 +115,22 @@ public class AsciiGridImportExportTest {
     public void testDriver() throws SQLException, IOException {
         AsciiGridDriverFunction func = new AsciiGridDriverFunction();
         st.execute("DROP TABLE IF EXISTS GRID");
-        func.importFile(connection, "GRID", new File(AsciiGridImportExportTest.class.getResource
-                ("esri_grid.asc").getFile()), new EmptyProgressVisitor());
+        func.importFile(connection, "GRID", new File(AsciiGridImportExportTest.class.getResource("esri_grid.asc").getFile()), new EmptyProgressVisitor());
 
         ResultSet rs = st.executeQuery("select the_raster from grid;");
         assertTrue(rs.next());
-        // Read metadata from WKB raster stream
-        InputStream is = rs.getBinaryStream(1);
-        try {
-            RasterUtils.RasterMetaData metaData = RasterUtils.RasterMetaData.fetchMetaData(is, true);
-            assertNotNull(metaData);
-            assertEquals(10, metaData.width);
-            assertEquals(5, metaData.height);
-            assertEquals(1, metaData.numBands);
-            assertEquals(273987.50, metaData.ipX, 1e-2);
-            assertEquals(2224987.50, metaData.ipY, 1e-2);
-            assertEquals(25, metaData.scaleX, 1e-2);
-            assertEquals(25, metaData.scaleY, 1e-2);
-            assertEquals(0., metaData.skewX, 1e-6);
-            assertEquals(0., metaData.skewY, 1e-6);
-        } finally {
-            is.close();
-        }
+        GeoRaster geoRaster = (GeoRaster) rs.getObject(1);
+        RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
+        assertNotNull(metaData);
+        assertEquals(10, metaData.width);
+        assertEquals(5, metaData.height);
+        assertEquals(1, metaData.numBands);
+        assertEquals(273987.50, metaData.ipX, 1e-2);
+        assertEquals(2224987.50, metaData.ipY, 1e-2);
+        assertEquals(25, metaData.scaleX, 1e-2);
+        assertEquals(25, metaData.scaleY, 1e-2);
+        assertEquals(0., metaData.skewX, 1e-6);
+        assertEquals(0., metaData.skewY, 1e-6);
         rs.close();
     }
     
