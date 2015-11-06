@@ -57,13 +57,11 @@ import javax.media.jai.PlanarImage;
 import javax.media.jai.RasterFactory;
 import javax.media.jai.TiledImage;
 
-import org.h2.api.GeoRaster;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
 import org.h2.util.imageio.WKBRasterReader;
 import org.h2.util.imageio.WKBRasterReaderSpi;
-import org.h2gis.drivers.raster.ST_WorldFileImageRead;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.junit.After;

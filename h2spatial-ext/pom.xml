@@ -124,6 +124,12 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>it.geosolutions.imageio-ext</groupId>
+            <artifactId>imageio-ext-arcgrid</artifactId>
+            <version>${imageio-ext-arcgrid-version}</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>test-utilities</artifactId>
             <version>${project.version}</version>
