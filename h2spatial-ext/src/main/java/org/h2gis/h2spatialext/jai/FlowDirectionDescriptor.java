@@ -51,9 +51,9 @@ public class FlowDirectionDescriptor extends OperationDescriptorImpl {
     // An array of strings with the supported modes for this operator.
     private static final String[] supportedModes = {"rendered"};
     // An array of strings with the parameter names for this operator.
-    private static final String[] paramNames = {"Slope unit"};
+    private static final String[] paramNames = {};
     // An array of Classes with the parameters' classes for this operator.
-    private static final Class[] paramClasses = {EnumeratedParameter.class};
+    private static final Class[] paramClasses = {};
     // An array of Objects with the parameters' default values.
     private static final Object[] paramDefaults = { };
     // An array of valid parameter values.

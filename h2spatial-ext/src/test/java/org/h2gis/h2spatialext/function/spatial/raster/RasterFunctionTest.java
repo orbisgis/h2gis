@@ -23,9 +23,34 @@
 
 package org.h2gis.h2spatialext.function.spatial.raster;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.util.GeoRasterRenderedImage;
+import org.h2.util.RasterUtils;
+import org.h2.util.imageio.WKBRasterReader;
+import org.h2.util.imageio.WKBRasterReaderSpi;
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.media.jai.DataBufferFloat;
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
+import javax.media.jai.RasterFactory;
+import javax.media.jai.TiledImage;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -38,7 +63,11 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
+import java.awt.image.renderable.RenderableImage;
+import java.io.File;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.net.URL;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,34 +75,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-import javax.media.jai.DataBufferFloat;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RasterFactory;
-import javax.media.jai.TiledImage;
-
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.util.GeoRasterRenderedImage;
-import org.h2.util.RasterUtils;
-import org.h2.util.imageio.WKBRasterReader;
-import org.h2.util.imageio.WKBRasterReaderSpi;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
@@ -661,5 +666,58 @@ public class RasterFunctionTest {
             }
         }
         rs.close();
+    }
+
+    private static RenderedImage readImage(URL url) throws IOException {
+        RandomAccessFile randomAccessFile = new RandomAccessFile(url.getFile(), "r");
+        ImageInputStream iis = ImageIO.createImageInputStream(randomAccessFile);
+        try {
+            Iterator<ImageReader> itReaders = ImageIO.getImageReaders(iis);
+            ImageReader imageReader = itReaders.next();
+            imageReader.setInput(iis);
+            return imageReader.readAsRenderedImage(imageReader.getMinIndex(), imageReader.getDefaultReadParam());
+        } finally {
+            iis.close();
+        }
+    }
+
+
+    private static void writeImage(URL url,RenderedImage im, String format) throws IOException {
+        RandomAccessFile randomAccessFile = new RandomAccessFile(url.getFile(), "rw");
+        ImageOutputStream ios = ImageIO.createImageOutputStream(randomAccessFile);
+        try {
+            Iterator<ImageWriter> itWriters = ImageIO.getImageWritersByFormatName(format);
+            ImageWriter imageWriter = itWriters.next();
+            imageWriter.setOutput(ios);
+            imageWriter.write(new IIOImage(im,null,null));
+        } finally {
+            ios.close();
+        }
+    }
+
+    @Test
+    public void testST_D8FlowDirection() throws SQLException, IOException {
+        double pixelSize = 15;
+        double noData = -2;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("dem1.pgm"));
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8SLOPE
+        ResultSet rs = st.executeQuery("SELECT ST_D8FlowDirection(the_raster) the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem1_expected.pgm"));
+        assertImageEquals(expectedImage, wkbRasterImage);
     }
 }
