@@ -21,7 +21,7 @@
  * or contact directly: info_at_h2gis.org
  */
 
-package org.h2gis.drivers.raster;
+package org.h2gis.drivers.worldFileImage;
 
 import org.h2.api.GeoRaster;
 import org.h2.util.GeoRasterRenderedImage;
@@ -154,6 +154,8 @@ public class WorldFileImageReader {
      * @param tableReference
      * @param isH2 
      * @param connection 
+     * @param progressVisitor 
+     * @throws java.sql.SQLException 
      */
     public void readImage(String tableReference, boolean isH2, Connection connection, ProgressVisitor progressVisitor) throws
             SQLException{

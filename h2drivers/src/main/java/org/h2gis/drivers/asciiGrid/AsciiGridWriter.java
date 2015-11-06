@@ -20,15 +20,11 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
+package org.h2gis.drivers.asciiGrid;
 
-package org.h2gis.drivers.raster;
-
-import java.io.BufferedWriter;
+import it.geosolutions.imageio.plugins.arcgrid.AsciiGridsImageMetadata;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -42,9 +38,6 @@ import javax.imageio.ImageReader;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.ImageOutputStream;
-import javax.media.jai.JAI;
-import org.h2.api.GeoRaster;
-import org.h2.util.IOUtils;
 import org.h2.util.RasterUtils;
 import org.h2gis.drivers.utility.PRJUtil;
 import org.h2gis.h2spatialapi.ProgressVisitor;
@@ -53,51 +46,52 @@ import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 
 /**
- * Save a raster to a world file image.
- * 
+ *
  * @author Erwan Bocher
  */
-public class WorldFileImageWriter {
+public class AsciiGridWriter {
 
-    
-    
-    public WorldFileImageWriter(){
-        
+    private boolean isGrass;
+
+    public AsciiGridWriter() {
+
     }
-    
+
     public void write(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        
         String filePath = fileName.getPath();
         final int dotIndex = filePath.lastIndexOf('.');
         String fileNameExtension = filePath.substring(dotIndex + 1).toLowerCase();
         String filePathWithoutExtension = filePath.substring(0, dotIndex);
-
-        String[] worldFileExtensions = WorldFileImageReader.worldFileExtensions.get(fileNameExtension);
-
-        if (worldFileExtensions == null) {
+        String imageFormat;
+        if (fileNameExtension.equals("asc")) {
+            imageFormat = "Ascii ArcInfo";
+            isGrass = false;
+        } else if (fileNameExtension.equals("arx")) {
+            imageFormat = "Ascii GRASS";
+            isGrass = true;
+        } else {
             throw new IOException("Cannot support this format : " + fileName.getAbsolutePath());
         }
-        
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());        
+
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
         TableLocation location = TableLocation.parse(tableReference, isH2);
         List<String> rasterFieldNames = SFSUtilities.getRasterFields(connection, location);
         if (rasterFieldNames.isEmpty()) {
             throw new SQLException(String.format("The table %s does not contain a raster datatype", tableReference));
         }
-        ProgressVisitor copyProgress = progress.subProcess(recordCount); 
-        
+        ProgressVisitor copyProgress = progress.subProcess(recordCount);
+
         Statement st = connection.createStatement();
-        
-        ResultSet res = st.executeQuery("SELECT "+ rasterFieldNames.get(0)+ " FROM "+ location.toString());
-        
+
+        ResultSet res = st.executeQuery("SELECT " + rasterFieldNames.get(0) + " FROM " + location.toString());
+
         String imagePath = filePathWithoutExtension + "." + fileNameExtension;
-        String worldfilePath = filePathWithoutExtension + "." + worldFileExtensions[0];
         String prjPath = filePathWithoutExtension + ".prj";
 
         if (recordCount == 1) {
             res.next();
-            writeRasterToFiles(connection, res.getBlob(1),fileNameExtension, imagePath, worldfilePath, prjPath);
+            writeRasterToFiles(connection, res.getBlob(1), imageFormat, imagePath, prjPath);
             progress.endStep();
 
         } else {
@@ -105,9 +99,8 @@ public class WorldFileImageWriter {
 
             while (res.next()) {
                 imagePath = filePathWithoutExtension + "_" + fileIt + "." + fileNameExtension;
-                worldfilePath = filePathWithoutExtension + "_" + fileIt + "." + worldFileExtensions[0];
                 prjPath = filePathWithoutExtension + "_" + fileIt + ".prj";
-                writeRasterToFiles(connection, res.getBlob(1),fileNameExtension,imagePath, worldfilePath, prjPath);
+                writeRasterToFiles(connection, res.getBlob(1), imageFormat, imagePath, prjPath);
                 fileIt++;
                 progress.endStep();
 
@@ -116,13 +109,12 @@ public class WorldFileImageWriter {
         res.close();
         st.close();
         copyProgress.endOfProgress();
-        
-    }    
-    
-    
+
+    }
+
     /**
      * Write the georaster to an image using the imageio drivers
-     * 
+     *
      * @param connection
      * @param blob
      * @param imageFormat
@@ -130,9 +122,9 @@ public class WorldFileImageWriter {
      * @param worldfilePath
      * @param prjPath
      * @throws IOException
-     * @throws SQLException 
+     * @throws SQLException
      */
-    private void writeRasterToFiles(Connection connection,  Blob blob,String imageFormat, String imagePath, String worldfilePath,String prjPath ) throws IOException, SQLException{            
+    private void writeRasterToFiles(Connection connection, Blob blob, String imageFormat, String imagePath, String prjPath) throws IOException, SQLException {
         ImageInputStream inputStream = ImageIO.createImageInputStream(blob);
         Iterator<ImageReader> readers = ImageIO.getImageReaders(inputStream);
         ImageReader wkbReader = readers.next();
@@ -140,45 +132,23 @@ public class WorldFileImageWriter {
         ImageWriter writer = (ImageWriter) ImageIO.getImageWritersByFormatName(imageFormat).next();
         ImageOutputStream stream = ImageIO.createImageOutputStream(new File(imagePath));
         writer.setOutput(stream);
-        writer.write(wkbReader.readAsRenderedImage(wkbReader.getMinIndex(), wkbReader.getDefaultReadParam()));
-        
         RasterUtils.RasterMetaData met = RasterUtils.RasterMetaData
                 .fetchMetaData(blob.getBinaryStream());
+        AsciiGridsImageMetadata gridMetadata = new AsciiGridsImageMetadata(
+                met.width, met.height, met.scaleX, met.scaleY,
+                met.ipX, met.ipY,
+                false, isGrass, met.bands[0].noDataValue);
 
-        WorldFileImageWriter.writeWorldFile(met, new File(worldfilePath));
+        IIOImage iIOImage = new IIOImage(wkbReader.readAsRenderedImage(wkbReader.getMinIndex(), wkbReader.getDefaultReadParam()), null, gridMetadata);
+
+        writer.write(iIOImage);
 
         PRJUtil.writePRJ(connection, met.srid, new File(prjPath));
-        
+
         stream.flush();
         stream.close();
         writer.dispose();
         inputStream.close();
-
-            
     }
 
-    
-
-    /**
-     * Write the world file
-     * @param rasterMetaData
-     * @param file
-     * @throws IOException 
-     */
-    public static void writeWorldFile(RasterUtils.RasterMetaData rasterMetaData, File file) throws IOException {
-        final PrintWriter writer = new PrintWriter(new BufferedWriter(
-                new FileWriter(file)));
-        writer.println(rasterMetaData.scaleX);
-        writer.println(rasterMetaData.skewX);
-        writer.println(rasterMetaData.skewY);
-        writer.println(rasterMetaData.scaleY);
-        // ESRI and WKB Raster have a slight difference on insertion point
-        double upperLeftX = rasterMetaData.ipX - rasterMetaData.scaleX * 0.5;
-        double upperLeftY = rasterMetaData.ipY - rasterMetaData.scaleY * 0.5;        
-        writer.println(upperLeftX);
-        writer.println(upperLeftY);
-        writer.close();
-    }
 }
-
-
