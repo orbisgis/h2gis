@@ -37,8 +37,8 @@ import java.util.Map;
  */
 public class SlopeOpImage extends Area3x3OpImage {
     private enum UnitType {PERCENT, DEGREE, RADIAN}
-    private RasterUtils.RasterMetaData metaData;
-    private final double[] invDistanceMatrix;
+    protected RasterUtils.RasterMetaData metaData;
+    protected final double[] invDistanceMatrix;
     private final static double FACTOR = 180 / Math.PI;
     private ConvertUnit convertUnit;
 
