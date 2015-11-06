@@ -90,7 +90,6 @@ public class WorldFileImageReader {
 	}
     
     private String fileNameExtension;
-    private String filePathWithoutExtension;
     private File worldFile;
     private File imageFile;
 
@@ -115,7 +114,6 @@ public class WorldFileImageReader {
         String filePath = imageFile.getPath();
         final int dotIndex = filePath.lastIndexOf('.');
         worldFileImageReader.fileNameExtension = filePath.substring(dotIndex + 1).toLowerCase();
-        worldFileImageReader.filePathWithoutExtension = filePath.substring(0, dotIndex+1);
         if (worldFileImageReader.isThereAnyWorldFile()) {
             worldFileImageReader.readWorldFile();
         } else {

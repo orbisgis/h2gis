@@ -25,6 +25,11 @@ package org.h2gis.h2spatialext;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import it.geosolutions.imageio.plugins.arcgrid.AsciiGridsImageMetadata;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.dbf.DBFRead;
 import org.h2gis.drivers.dbf.DBFWrite;
@@ -35,9 +40,10 @@ import org.h2gis.drivers.geojson.ST_GeomFromGeoJSON;
 import org.h2gis.drivers.gpx.GPXRead;
 import org.h2gis.drivers.kml.KMLWrite;
 import org.h2gis.drivers.kml.ST_AsKml;
-import org.h2gis.drivers.raster.ST_WorldFileImageRead;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
+import org.h2gis.drivers.worldFileImage.ST_WorldFileImageRead;
+import org.h2gis.drivers.worldFileImage.ST_WorldFileImageWrite;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.drivers.osm.OSMRead;
 import org.h2gis.drivers.osm.ST_OSMDownloader;
@@ -81,7 +87,6 @@ import org.slf4j.LoggerFactory;
 import javax.media.jai.JAI;
 import org.h2gis.drivers.asciiGrid.ST_AsciiGridRead;
 import org.h2gis.drivers.asciiGrid.ST_AsciiGridWrite;
-import org.h2gis.drivers.raster.ST_WorldFileImageWrite;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_Band;
 
 
@@ -99,7 +104,9 @@ public class CreateSpatialExtension {
      * @throws java.sql.SQLException
      */
     public static Function[] getBuiltInsFunctions() throws SQLException {
-        return new Function[] {
+        List<Function> fl = new LinkedList<Function>();
+        // No dependent to JAI
+        fl.addAll(Arrays.asList(
                 new DBFRead(),
                 new DBFWrite(),
                 new DriverManager(),
@@ -191,7 +198,7 @@ public class CreateSpatialExtension {
                 new ST_ShortestPathLength(),
                 new ST_ShortestPathTree(),
                 //h2network end
-                new ST_LineIntersector(),        
+                new ST_LineIntersector(),
                 new ST_OffSetCurve(),
                 new OSMRead(),
                 new ST_OSMDownloader(),
@@ -216,21 +223,23 @@ public class CreateSpatialExtension {
                 new ST_GeomFromGeoJSON(),
                 new ST_OSMMapLink(),
                 new ST_GoogleMapLink(),
-                new ST_AsGML()};
+                new ST_AsGML()));
+        if(isJAIAvailable()) {
+            fl.addAll(Arrays.asList(
+                    new ST_WorldFileImageRead(),
+                    new ST_WorldFileImageWrite(),
+                    new ST_Band(),
+                    new ST_D8Slope()));
+        }
+        if(isGeoSolutionsAvailable()) {
+            fl.addAll(Arrays.asList(
+                    new ST_AsciiGridRead(),
+                    new ST_AsciiGridWrite()
+            ));
+        }
+        return fl.toArray(new Function[fl.size()]);
     }
 
-    /**
-     * @return Function that use optional dependency JAI
-     */
-    public static Function[] getJaiFunctions() {
-        return new Function[] {
-                new ST_WorldFileImageRead(),
-                new ST_Band(), new ST_WorldFileImageWrite(),new ST_AsciiGridRead(),new ST_AsciiGridWrite()
-                new ST_WorldFileImageWrite(),
-                new ST_Band(),
-                new ST_D8Slope()
-        };
-    }
 
     /**
      * Init H2 DataBase with extended spatial functions
@@ -242,6 +251,18 @@ public class CreateSpatialExtension {
         org.h2gis.h2spatial.CreateSpatialExtension.initSpatialExtension(connection);
         // Register project's functions
         addSpatialFunctions(connection);
+    }
+
+    public static boolean isGeoSolutionsAvailable() {
+        try {
+            Class.forName(AsciiGridsImageMetadata.class.getName());
+            // Ok we have it
+            return true;
+        } catch (ClassNotFoundException ex) {
+            return false;
+        } catch (NoClassDefFoundError ex) {
+            return false;
+        }
     }
 
     public static boolean isJAIAvailable() {
@@ -270,17 +291,6 @@ public class CreateSpatialExtension {
             } catch (SQLException ex) {
                 // Catch to register other functions
                 LOGGER.error(ex.getLocalizedMessage(), ex);
-            }
-        }
-        // Check if JAI dependency is available
-        if(isJAIAvailable()) {
-            for (Function function : getJaiFunctions()) {
-                try {
-                    org.h2gis.h2spatial.CreateSpatialExtension.registerFunction(st, function, "");
-                } catch (SQLException ex) {
-                    // Catch to register other functions
-                    LOGGER.error(ex.getLocalizedMessage(), ex);
-                }
             }
         }
     }
