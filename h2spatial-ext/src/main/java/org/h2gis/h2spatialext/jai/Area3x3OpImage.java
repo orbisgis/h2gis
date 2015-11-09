@@ -12,7 +12,6 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -56,26 +55,41 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         // last tag id is for destination
         RasterAccessor dst = new RasterAccessor(dest, destRect, formatTags[sources.length], getColorModel());
 
-        switch (sources[0].getTransferType()) {
+        switch (dest.getTransferType()) {
             case DataBuffer.TYPE_FLOAT:
-                processingFloatSource(rasterAccessList, dst);
+                processingFloatDest(rasterAccessList, dst);
                 break;
             case DataBuffer.TYPE_INT:
-                processingIntSource(rasterAccessList, dst);
+                processingIntDest(rasterAccessList, dst);
                 break;
             case DataBuffer.TYPE_BYTE:
-                processingByteSource(rasterAccessList, dst);
+                processingByteDest(rasterAccessList, dst);
                 break;
             case DataBuffer.TYPE_SHORT:
-                processingShortSource(rasterAccessList, dst);
+                processingShortDest(rasterAccessList, dst);
                 break;
             case DataBuffer.TYPE_DOUBLE:
-                processingDoubleSource(rasterAccessList, dst);
+                processingDoubleDest(rasterAccessList, dst);
                 break;
         }
     }
 
-    protected void processingDoubleSource(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected static SrcDataStruct dataStructFromRasterAccessor(RasterAccessor rasterAccessor) {
+        switch (rasterAccessor.getDataType())  {
+            case DataBuffer.TYPE_FLOAT:
+                return new SrcDataStructFloat(rasterAccessor);
+            case DataBuffer.TYPE_INT:
+                return new SrcDataStructInt(rasterAccessor);
+            case DataBuffer.TYPE_BYTE:
+                return new SrcDataStructByte(rasterAccessor);
+            case DataBuffer.TYPE_SHORT:
+                return new SrcDataStructShort(rasterAccessor);
+            default:
+                return new SrcDataStructDouble(rasterAccessor);
+        }
+    }
+
+    protected void processingDoubleDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -86,9 +100,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStructDouble> srcDataStructs = new ArrayList<SrcDataStructDouble>(rasterAccess.size());
+        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
         for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(new SrcDataStructDouble(rasterAccessor));
+            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
         }
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
@@ -118,7 +132,18 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    private static class SrcDataStructDouble {
+    private interface SrcDataStruct {
+        /**
+         * Get neighbors value around cell i,j
+         * @param band source band
+         * @param i source column
+         * @param j source row
+         * @return neighbors values
+         */
+        double[] getNeighborsValues(int band, int i, int j);
+    }
+
+    private static class SrcDataStructDouble implements SrcDataStruct {
 
         public SrcDataStructDouble(RasterAccessor rasterAccess) {
             srcDataArrays = rasterAccess.getDoubleDataArrays();
@@ -138,7 +163,8 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destNumBands;
         final int bottomScanlineOffset;
 
-        double[] getNeighborsValues(int band, int i, int j) {
+        @Override
+        public double[] getNeighborsValues(int band, int i, int j) {
             double[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset], // top left
@@ -155,7 +181,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
     }
 
 
-    protected void processingShortSource(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected void processingShortDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -166,9 +192,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStructShort> srcDataStructs = new ArrayList<SrcDataStructShort>(rasterAccess.size());
+        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
         for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(new SrcDataStructShort(rasterAccessor));
+            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
         }
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
@@ -199,7 +225,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    private static class SrcDataStructShort {
+    private static class SrcDataStructShort implements SrcDataStruct{
 
         public SrcDataStructShort(RasterAccessor rasterAccess) {
             srcDataArrays = rasterAccess.getShortDataArrays();
@@ -219,7 +245,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destNumBands;
         final int bottomScanlineOffset;
 
-        double[] getNeighborsValues(int band, int i, int j) {
+
+        @Override
+        public double[] getNeighborsValues(int band, int i, int j) {
             short[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset], // top left
@@ -236,7 +264,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
     }
 
 
-    protected void processingByteSource(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected void processingByteDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -247,9 +275,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStructByte> srcDataStructs = new ArrayList<SrcDataStructByte>(rasterAccess.size());
+        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
         for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(new SrcDataStructByte(rasterAccessor));
+            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
         }
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
@@ -280,7 +308,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    private static class SrcDataStructByte {
+    private static class SrcDataStructByte implements SrcDataStruct {
 
         public SrcDataStructByte(RasterAccessor rasterAccess) {
             srcDataArrays = rasterAccess.getByteDataArrays();
@@ -300,7 +328,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destNumBands;
         final int bottomScanlineOffset;
 
-        double[] getNeighborsValues(int band, int i, int j) {
+
+        @Override
+        public double[] getNeighborsValues(int band, int i, int j) {
             byte[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset] & 0xff, // top left
@@ -316,7 +346,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    protected void processingFloatSource(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected void processingFloatDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -327,9 +357,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStructFloat> srcDataStructs = new ArrayList<SrcDataStructFloat>(rasterAccess.size());
+        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
         for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(new SrcDataStructFloat(rasterAccessor));
+            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
         }
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
@@ -359,7 +389,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    private static class SrcDataStructInt {
+    private static class SrcDataStructInt implements SrcDataStruct{
 
         public SrcDataStructInt(RasterAccessor rasterAccess) {
             srcDataArrays = rasterAccess.getIntDataArrays();
@@ -379,7 +409,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destNumBands;
         final int bottomScanlineOffset;
 
-        double[] getNeighborsValues(int band, int i, int j) {
+
+        @Override
+        public double[] getNeighborsValues(int band, int i, int j) {
             int[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset], // top left
@@ -394,7 +426,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             };
         }
     }
-    protected void processingIntSource(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected void processingIntDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -405,9 +437,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStructInt> srcDataStructs = new ArrayList<SrcDataStructInt>(rasterAccess.size());
+        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
         for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(new SrcDataStructInt(rasterAccessor));
+            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
         }
 
         for(int idBand = 0; idBand < destNumBands; idBand++) {
@@ -437,7 +469,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    private static class SrcDataStructFloat {
+    private static class SrcDataStructFloat implements SrcDataStruct {
 
         public SrcDataStructFloat(RasterAccessor rasterAccess) {
             srcDataArrays = rasterAccess.getFloatDataArrays();
@@ -457,7 +489,9 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destNumBands;
         final int bottomScanlineOffset;
 
-        double[] getNeighborsValues(int band, int i, int j) {
+
+        @Override
+        public double[] getNeighborsValues(int band, int i, int j) {
             float[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset], // top left
