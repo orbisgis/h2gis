@@ -784,4 +784,31 @@ public class RasterFunctionTest {
         RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem1_expected.pgm"));
         assertImageBufferEquals(expectedImage, wkbRasterImage);
     }
+
+    @Test
+    public void testST_D8FlowDirectionSink() throws SQLException, IOException {
+        double pixelSize = 15;
+        double noData = -2;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("dem2.pgm"));
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8SLOPE
+        ResultSet rs = st.executeQuery("SELECT ST_D8FlowDirection(the_raster) the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        //writePlainPGM(wkbRasterImage, new File("target/expect.pgm"));
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem2_expected.pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
 }
