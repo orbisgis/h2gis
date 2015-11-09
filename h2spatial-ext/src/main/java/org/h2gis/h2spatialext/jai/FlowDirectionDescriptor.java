@@ -32,39 +32,32 @@ import java.util.Collections;
 import java.util.HashSet;
 
 /**
- * JAI Api, Description of the slope operator
+ * JAI Api, Description of the flow direction operator
  * @author Nicolas Fortin
  */
-public class SlopeDescriptor extends OperationDescriptorImpl {
-    public static final EnumeratedParameter SLOPE_PERCENT = new EnumeratedParameter("PERCENT", 0);
-    public static final EnumeratedParameter SLOPE_DEGREE = new EnumeratedParameter("DEGREE", 1);
-    public static final EnumeratedParameter SLOPE_RADIANT = new EnumeratedParameter("RADIAN", 2);
+public class FlowDirectionDescriptor extends OperationDescriptorImpl {
 
     // A map-like array of strings with resources information.
     private static final String[][] resources =
             {
-                    {"GlobalName",   "D8Slope"},
-                    {"LocalName",    "D8Slope"},
+                    {"GlobalName",   "D8FlowDirection"},
+                    {"LocalName",    "D8FlowDirection"},
                     {"Vendor",       "org.orbisgis"},
-                    {"Description",  "Compute the steepest downward slope towards one of the eight adjacent or" +
-                            " diagonal neighbors."},
-                    {"DocURL",       "http://www.h2gis.org/docs/dev/ST_D8SLOPE"},
-                    {"Version",      "1.0"},
-                    {"arg0Desc",     "Slope unit, in degree, radian or percent"}
+                    {"Description",  "Compute the steepest downward slope direction towards one of the eight adjacent" +
+                            " or diagonal neighbors."},
+                    {"DocURL",       "http://www.h2gis.org/docs/dev/ST_D8FlowDirection"},
+                    {"Version",      "1.0"}
             };
     // An array of strings with the supported modes for this operator.
     private static final String[] supportedModes = {"rendered"};
     // An array of strings with the parameter names for this operator.
-    private static final String[] paramNames = {"Slope unit"};
+    private static final String[] paramNames = {};
     // An array of Classes with the parameters' classes for this operator.
-    private static final Class[] paramClasses = {EnumeratedParameter.class};
+    private static final Class[] paramClasses = {};
     // An array of Objects with the parameters' default values.
-    private static final Object[] paramDefaults =
-            {SLOPE_DEGREE};
+    private static final Object[] paramDefaults = { };
     // An array of valid parameter values.
-    public static final Object[] VALID_PARAM_VALUES =
-            {Collections.unmodifiableSet(new HashSet<EnumeratedParameter>(Arrays.asList(SLOPE_DEGREE, SLOPE_PERCENT,
-                    SLOPE_RADIANT)))};
+    public static final Object[] VALID_PARAM_VALUES = { };
     // The number of sources required for this operator.
     private static final int numSources = 1;
     // A flag that indicates whether the operator is already registered.
@@ -74,7 +67,7 @@ public class SlopeDescriptor extends OperationDescriptorImpl {
      * The constructor for this descriptor, which just calls the constructor
      * for its ancestral class (OperationDescriptorImpl).
      */
-    public SlopeDescriptor()
+    public FlowDirectionDescriptor()
     {
         super(resources,supportedModes,numSources,paramNames,
                 paramClasses,paramDefaults, VALID_PARAM_VALUES);
@@ -91,12 +84,12 @@ public class SlopeDescriptor extends OperationDescriptorImpl {
             // Get the OperationRegistry.
             OperationRegistry op = JAI.getDefaultInstance().getOperationRegistry();
             // Register the operator's descriptor.
-            SlopeDescriptor desc =
-                    new SlopeDescriptor();
+            FlowDirectionDescriptor desc =
+                    new FlowDirectionDescriptor();
             op.registerDescriptor(desc);
             // Register the operators's RIF.
-            SlopeRIF rif = new SlopeRIF();
-            RIFRegistry.register(op, "D8Slope", "h2gis", rif);
+            FlowDirectionRIF rif = new FlowDirectionRIF();
+            RIFRegistry.register(op, "D8FlowDirection", "h2gis", rif);
             registered = true;
         }
     }

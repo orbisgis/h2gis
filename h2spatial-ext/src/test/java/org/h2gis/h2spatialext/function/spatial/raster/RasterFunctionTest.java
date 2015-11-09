@@ -23,9 +23,36 @@
 
 package org.h2gis.h2spatialext.function.spatial.raster;
 
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import com.sun.media.jai.opimage.FilteredSubsampleOpImage;
+import com.vividsolutions.jts.geom.Coordinate;
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.util.GeoRasterRenderedImage;
+import org.h2.util.RasterUtils;
+import org.h2.util.imageio.WKBRasterReader;
+import org.h2.util.imageio.WKBRasterReaderSpi;
+import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
+import javax.imageio.ImageReader;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
+import javax.imageio.stream.MemoryCacheImageInputStream;
+import javax.media.jai.DataBufferFloat;
+import javax.media.jai.JAI;
+import javax.media.jai.PlanarImage;
+import javax.media.jai.RasterFactory;
+import javax.media.jai.TiledImage;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
@@ -38,7 +65,13 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
+import java.awt.image.renderable.RenderableImage;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.net.URL;
 import java.sql.Blob;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -46,34 +79,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageReadParam;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.MemoryCacheImageInputStream;
-import javax.media.jai.DataBufferFloat;
-import javax.media.jai.JAI;
-import javax.media.jai.PlanarImage;
-import javax.media.jai.RasterFactory;
-import javax.media.jai.TiledImage;
-
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.util.GeoRasterRenderedImage;
-import org.h2.util.RasterUtils;
-import org.h2.util.imageio.WKBRasterReader;
-import org.h2.util.imageio.WKBRasterReaderSpi;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
@@ -203,6 +212,69 @@ public class RasterFunctionTest {
         return wkbReader.read(wkbReader.getMinIndex(), param);
     }
 
+    public static void writePlainPGM(RenderedImage image, File path) throws IOException {
+        Raster data = image.getData();
+        BufferedWriter writer = null;
+        try {
+            final int width = image.getWidth();
+            final int height = image.getHeight();
+            writer = new BufferedWriter(new FileWriter(path));
+            // write header
+            writer.write("P2\n");
+            // Write width height
+            writer.write(String.valueOf(image.getWidth()));
+            writer.write(" ");
+            writer.write(String.valueOf(image.getHeight()));
+            writer.write("\n");
+            // Write max value
+            int[] pixelValues = data.getPixels(0, 0, width, height, (int[]) null);
+            int maxValue = Integer.MIN_VALUE;
+            for (int pixelValue : pixelValues) {
+                maxValue = Math.max(pixelValue, maxValue);
+            }
+            String maxVal = String.valueOf(maxValue);
+            writer.write(maxVal);
+            writer.write("\n");
+            final String format = "%0"+maxVal.length()+"d";
+            // Write pixels values
+            int lineCarCount = 0;
+            for(int y = 0; y < height; y++) {
+                for(int x=0; x < width; x++) {
+                    String val = String.format(format ,pixelValues[y*width + x])+ " ";
+                    if(val.length() + lineCarCount > 70 || (x == 0 && y > 0)) {
+                        writer.write("\n");
+                        lineCarCount = val.length();
+                    } else {
+                        lineCarCount += val.length();
+                    }
+                    writer.write(val);
+                }
+            }
+        } finally {
+            if(writer != null) {
+                writer.close();
+            }
+        }
+
+    }
+
+    /**
+     * Compare image buffer. Does not take account of ColorModel.
+     * @param expectedImage
+     * @param imageB
+     */
+    public static void assertImageBufferEquals(RenderedImage expectedImage, RenderedImage imageB) {
+        int[] pixelsExpected = expectedImage.getData().getPixels(0,0,expectedImage.getWidth(),
+                expectedImage.getHeight(),(int[])null);
+        int[] pixelsSource = imageB.getData().getPixels(0, 0, imageB.getWidth(), imageB.getHeight(), (int[]) null);
+        assertArrayEquals(pixelsExpected, pixelsSource);
+    }
+
+    /**
+     * Compare the rendered result of the two provided image.
+     * @param expectedImage
+     * @param imageB
+     */
     public static void assertImageEquals(RenderedImage expectedImage, RenderedImage imageB) {
         BufferedImage expectedImageDest = new BufferedImage(expectedImage.getWidth(),expectedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
         BufferedImage destB = new BufferedImage(imageB.getWidth(),imageB.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -212,10 +284,7 @@ public class RasterFunctionTest {
         g = destB.createGraphics();
         g.drawRenderedImage(imageB, new AffineTransform());
         g.dispose();
-        int[] pixelsExpected = expectedImageDest.getData().getPixels(0,0,expectedImageDest.getWidth(),
-                expectedImageDest.getHeight(),(int[])null);
-        int[] pixelsSource = destB.getData().getPixels(0, 0, destB.getWidth(), destB.getHeight(), (int[]) null);
-        assertArrayEquals(pixelsExpected, pixelsSource);
+        assertImageBufferEquals(expectedImageDest, destB);
     }
 
     @Test
@@ -661,5 +730,120 @@ public class RasterFunctionTest {
             }
         }
         rs.close();
+    }
+
+    private static RenderedImage readImage(URL url) throws IOException {
+        RandomAccessFile randomAccessFile = new RandomAccessFile(url.getFile(), "r");
+        ImageInputStream iis = ImageIO.createImageInputStream(randomAccessFile);
+        try {
+            Iterator<ImageReader> itReaders = ImageIO.getImageReaders(iis);
+            ImageReader imageReader = itReaders.next();
+            imageReader.setInput(iis);
+            return imageReader.readAsRenderedImage(imageReader.getMinIndex(), imageReader.getDefaultReadParam());
+        } finally {
+            iis.close();
+        }
+    }
+
+
+    private static void writeImage(URL url,RenderedImage im, String format) throws IOException {
+        RandomAccessFile randomAccessFile = new RandomAccessFile(url.getFile(), "rw");
+        ImageOutputStream ios = ImageIO.createImageOutputStream(randomAccessFile);
+        try {
+            Iterator<ImageWriter> itWriters = ImageIO.getImageWritersByFormatName(format);
+            ImageWriter imageWriter = itWriters.next();
+            imageWriter.setOutput(ios);
+            imageWriter.write(new IIOImage(im,null,null));
+        } finally {
+            ios.close();
+        }
+    }
+
+    @Test
+    public void testST_D8FlowDirection() throws SQLException, IOException {
+        double pixelSize = 15;
+        double noData = -2;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("dem1.pgm"));
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery("SELECT ST_D8FlowDirection(the_raster) the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        //writePlainPGM(wkbRasterImage, new File("target/expect.pgm"));
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem1_expected.pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
+
+    @Test
+    public void testST_D8FlowDirectionSink() throws SQLException, IOException {
+        double pixelSize = 15;
+        double noData = -2;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("dem2.pgm"));
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery("SELECT ST_D8FlowDirection(the_raster) the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        //writePlainPGM(wkbRasterImage, new File("target/expect.pgm"));
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem2_expected.pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
+
+    @Test
+    public void testST_D8FlowDirectionDouble() throws SQLException, IOException {
+
+        int width = 15;
+        int height = 15;
+        final double noData = -1;
+        final float pixelSize = 100;
+        double[] imageData = new double[width * height];
+        Coordinate mountPos = new Coordinate(width / 2 + 0.5, height / 2 + 0.5);
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (1 / new Coordinate(x, y).distance(mountPos)) * width;
+            }
+        }
+        // Create image from int array
+        RenderedImage im = imageFromArray(imageData, width, height);
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery("SELECT ST_D8FlowDirection(the_raster) the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem3_expected.pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
     }
 }

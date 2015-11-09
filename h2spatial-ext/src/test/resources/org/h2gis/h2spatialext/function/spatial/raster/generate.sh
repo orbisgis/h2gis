@@ -1,0 +1,1 @@
+pgmramp 15 15 -plain -ellipse -maxval 9 > dem1.pgm

@@ -21,7 +21,7 @@ import java.util.Set;
 public class ST_D8Slope extends DeterministicScalarFunction {
     public ST_D8Slope() {
         addProperty(PROP_REMARKS, "Compute the steepest downward slope towards one of the eight adjacent or diagonal" +
-                " neighbors.");
+                " neighbors. Optional parameter is one of DEGREE(default), PERCENT or RADIAN");
         SlopeDescriptor.register();
     }
 
@@ -45,6 +45,12 @@ public class ST_D8Slope extends DeterministicScalarFunction {
                 0);
     }
 
+    /**
+     * @param geoRaster GeoRaster instance or null
+     * @return Slope raster
+     * @throws SQLException Error while computing raster
+     * @throws IOException IO Error while computing raster
+     */
     public static GeoRaster slope(GeoRaster geoRaster) throws SQLException, IOException {
         if(geoRaster == null) {
             return null;
@@ -52,6 +58,13 @@ public class ST_D8Slope extends DeterministicScalarFunction {
         return computeSlope(geoRaster, SlopeDescriptor.SLOPE_DEGREE);
     }
 
+    /**
+     * @param geoRaster GeoRaster instance or null
+     * @param unit Output slope unit. One of PERCENT, RADIAN or DEGREE (default)
+     * @return Slope raster
+     * @throws SQLException Error while computing raster
+     * @throws IOException IO Error while computing raster
+     */
     public static GeoRaster slope(GeoRaster geoRaster, String unit) throws SQLException, IOException {
         if(geoRaster == null) {
             return null;
