@@ -33,8 +33,11 @@ import javax.media.jai.BorderExtenderConstant;
 import javax.media.jai.EnumeratedParameter;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
+import javax.media.jai.RasterFactory;
 import java.awt.*;
+import java.awt.image.DataBuffer;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.awt.image.renderable.ParameterBlock;
 import java.awt.image.renderable.RenderedImageFactory;
 import java.io.IOException;
@@ -82,22 +85,27 @@ public class FlowDirectionRIF implements RenderedImageFactory {
         }
 
         GeoRaster geoRaster = (GeoRaster) im;
+
+        if(DataBuffer.TYPE_BYTE != geoRaster.getSampleModel().getDataType()) {
+            // Flow direction are coded in bytes
+            SampleModel sampleModel;
+            if(layout == null) {
+                sampleModel = geoRaster.getSampleModel();
+                layout = new ImageLayout(im);
+            } else {
+                sampleModel = layout.getSampleModel(geoRaster);
+            }
+
+            int numBands = geoRaster.getSampleModel().getNumBands();
+
+            SampleModel csm = RasterFactory.createComponentSampleModel(sampleModel, DataBuffer.TYPE_BYTE, layout
+                            .getTileWidth(geoRaster), layout.getTileHeight(geoRaster), numBands);
+
+            layout.setSampleModel(csm);
+        }
         try {
             final RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
             return new FlowDirectionOpImage(geoRaster, metaData, renderHints, layout);
-            // TODO surround by special border
-            //ParameterBlock pb = new ParameterBlock();
-            //pb.addSource(flowDirectionOpImage);
-            //pb.add(1); // left side value
-            //pb.add(1); // right side value
-            //pb.add(1); // top side
-            //pb.add(1); // bottom side
-            //pb.add(FLOW_LEFT); // left side value
-            //pb.add(FLOW_RIGHT); // right side value
-            //pb.add(FLOW_TOP); // top side
-            //pb.add(FLOW_BOTTOM); // bottom side
-            //pb.add("SidedConstantBorder"); // op
-            //return JAI.create("border", pb);
         } catch (IOException ex) {
             LOGGER.error("Error while reading metadata", ex);
             return null;

@@ -55,7 +55,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         // last tag id is for destination
         RasterAccessor dst = new RasterAccessor(dest, destRect, formatTags[sources.length], getColorModel());
 
-        switch (dest.getTransferType()) {
+        switch (dst.getDataType()) {
             case DataBuffer.TYPE_FLOAT:
                 processingFloatDest(rasterAccessList, dst);
                 break;

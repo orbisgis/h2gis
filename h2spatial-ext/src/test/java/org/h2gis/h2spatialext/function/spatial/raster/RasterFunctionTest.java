@@ -24,6 +24,7 @@
 package org.h2gis.h2spatialext.function.spatial.raster;
 
 import com.sun.media.jai.opimage.FilteredSubsampleOpImage;
+import com.vividsolutions.jts.geom.Coordinate;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
@@ -775,7 +776,7 @@ public class RasterFunctionTest {
         ps.execute();
         ps.close();
 
-        // Call ST_D8SLOPE
+        // Call ST_D8FlowDirection
         ResultSet rs = st.executeQuery("SELECT ST_D8FlowDirection(the_raster) the_raster from test");
         assertTrue(rs.next());
         RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
@@ -802,13 +803,47 @@ public class RasterFunctionTest {
         ps.execute();
         ps.close();
 
-        // Call ST_D8SLOPE
+        // Call ST_D8FlowDirection
         ResultSet rs = st.executeQuery("SELECT ST_D8FlowDirection(the_raster) the_raster from test");
         assertTrue(rs.next());
         RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
         // Check values
         //writePlainPGM(wkbRasterImage, new File("target/expect.pgm"));
         RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem2_expected.pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
+
+    @Test
+    public void testST_D8FlowDirectionDouble() throws SQLException, IOException {
+
+        int width = 15;
+        int height = 15;
+        final double noData = -1;
+        final float pixelSize = 100;
+        double[] imageData = new double[width * height];
+        Coordinate mountPos = new Coordinate(width / 2 + 0.5, height / 2 + 0.5);
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (1 / new Coordinate(x, y).distance(mountPos)) * width;
+            }
+        }
+        // Create image from int array
+        RenderedImage im = imageFromArray(imageData, width, height);
+        // Store into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery("SELECT ST_D8FlowDirection(the_raster) the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem3_expected.pgm"));
         assertImageBufferEquals(expectedImage, wkbRasterImage);
     }
 }
