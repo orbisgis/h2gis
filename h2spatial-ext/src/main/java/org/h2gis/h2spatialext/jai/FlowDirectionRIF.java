@@ -44,15 +44,16 @@ import java.io.IOException;
  */
 public class FlowDirectionRIF implements RenderedImageFactory {
     private Logger LOGGER = LoggerFactory.getLogger(FlowDirectionRIF.class);
-    public static final int FLOW_TOP_LEFT = 64;
-    public static final int FLOW_TOP = 128;
-    public static final int FLOW_TOP_RIGHT = 1;
-    public static final int FLOW_LEFT = 32;
+    // Coded direction are CCW order starting from right.
+    public static final int FLOW_TOP_LEFT = 4;
+    public static final int FLOW_TOP = 3;
+    public static final int FLOW_TOP_RIGHT = 2;
+    public static final int FLOW_LEFT = 5;
     public static final int FLOW_NO_DIRECTION = 0;
-    public static final int FLOW_RIGHT = 2;
-    public static final int FLOW_BOTTOM_LEFT = 16;
-    public static final int FLOW_BOTTOM = 8;
-    public static final int FLOW_BOTTOM_RIGHT = 4;
+    public static final int FLOW_RIGHT = 1;
+    public static final int FLOW_BOTTOM_LEFT = 6;
+    public static final int FLOW_BOTTOM = 7;
+    public static final int FLOW_BOTTOM_RIGHT = 8;
     public static final int FLOW_SINK = -1;
 
     public static int[] DIRECTIONS = new int[] {FLOW_TOP_LEFT, FLOW_TOP, FLOW_TOP_RIGHT, FLOW_LEFT,FLOW_NO_DIRECTION,

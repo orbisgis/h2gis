@@ -23,6 +23,7 @@
 
 package org.h2gis.h2spatialext.function.spatial.raster;
 
+import com.sun.media.jai.opimage.FilteredSubsampleOpImage;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
@@ -64,7 +65,9 @@ import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
 import java.awt.image.renderable.RenderableImage;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.net.URL;
@@ -208,6 +211,69 @@ public class RasterFunctionTest {
         return wkbReader.read(wkbReader.getMinIndex(), param);
     }
 
+    public static void writePlainPGM(RenderedImage image, File path) throws IOException {
+        Raster data = image.getData();
+        BufferedWriter writer = null;
+        try {
+            final int width = image.getWidth();
+            final int height = image.getHeight();
+            writer = new BufferedWriter(new FileWriter(path));
+            // write header
+            writer.write("P2\n");
+            // Write width height
+            writer.write(String.valueOf(image.getWidth()));
+            writer.write(" ");
+            writer.write(String.valueOf(image.getHeight()));
+            writer.write("\n");
+            // Write max value
+            int[] pixelValues = data.getPixels(0, 0, width, height, (int[]) null);
+            int maxValue = Integer.MIN_VALUE;
+            for (int pixelValue : pixelValues) {
+                maxValue = Math.max(pixelValue, maxValue);
+            }
+            String maxVal = String.valueOf(maxValue);
+            writer.write(maxVal);
+            writer.write("\n");
+            final String format = "%0"+maxVal.length()+"d";
+            // Write pixels values
+            int lineCarCount = 0;
+            for(int y = 0; y < height; y++) {
+                for(int x=0; x < width; x++) {
+                    String val = String.format(format ,pixelValues[y*width + x])+ " ";
+                    if(val.length() + lineCarCount > 70 || (x == 0 && y > 0)) {
+                        writer.write("\n");
+                        lineCarCount = val.length();
+                    } else {
+                        lineCarCount += val.length();
+                    }
+                    writer.write(val);
+                }
+            }
+        } finally {
+            if(writer != null) {
+                writer.close();
+            }
+        }
+
+    }
+
+    /**
+     * Compare image buffer. Does not take account of ColorModel.
+     * @param expectedImage
+     * @param imageB
+     */
+    public static void assertImageBufferEquals(RenderedImage expectedImage, RenderedImage imageB) {
+        int[] pixelsExpected = expectedImage.getData().getPixels(0,0,expectedImage.getWidth(),
+                expectedImage.getHeight(),(int[])null);
+        int[] pixelsSource = imageB.getData().getPixels(0, 0, imageB.getWidth(), imageB.getHeight(), (int[]) null);
+        assertArrayEquals(pixelsExpected, pixelsSource);
+    }
+
+    /**
+     * Compare the rendered result of the two provided image.
+     * @param expectedImage
+     * @param imageB
+     */
     public static void assertImageEquals(RenderedImage expectedImage, RenderedImage imageB) {
         BufferedImage expectedImageDest = new BufferedImage(expectedImage.getWidth(),expectedImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
         BufferedImage destB = new BufferedImage(imageB.getWidth(),imageB.getHeight(), BufferedImage.TYPE_INT_ARGB);
@@ -217,10 +283,7 @@ public class RasterFunctionTest {
         g = destB.createGraphics();
         g.drawRenderedImage(imageB, new AffineTransform());
         g.dispose();
-        int[] pixelsExpected = expectedImageDest.getData().getPixels(0,0,expectedImageDest.getWidth(),
-                expectedImageDest.getHeight(),(int[])null);
-        int[] pixelsSource = destB.getData().getPixels(0, 0, destB.getWidth(), destB.getHeight(), (int[]) null);
-        assertArrayEquals(pixelsExpected, pixelsSource);
+        assertImageBufferEquals(expectedImageDest, destB);
     }
 
     @Test
@@ -717,7 +780,8 @@ public class RasterFunctionTest {
         assertTrue(rs.next());
         RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
         // Check values
+        //writePlainPGM(wkbRasterImage, new File("target/expect.pgm"));
         RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem1_expected.pgm"));
-        assertImageEquals(expectedImage, wkbRasterImage);
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
     }
 }
