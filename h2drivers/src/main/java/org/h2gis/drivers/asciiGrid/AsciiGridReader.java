@@ -22,21 +22,10 @@
  */
 package org.h2gis.drivers.asciiGrid;
 
-import com.sun.media.jai.operator.ImageReadDescriptor;
 import it.geosolutions.imageio.plugins.arcgrid.AsciiGridsImageReader;
 import it.geosolutions.imageio.plugins.arcgrid.raster.AsciiGridRaster;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Map;
-import javax.imageio.ImageReader;
-import javax.media.jai.JAI;
-import javax.media.jai.ParameterBlockJAI;
-import javax.media.jai.RenderedOp;
+import it.geosolutions.imageio.plugins.arcgrid.spi.AsciiGridsImageReaderSpi;
+import it.geosolutions.imageio.stream.input.FileImageInputStreamExtImpl;
 import org.h2.api.GeoRaster;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
@@ -46,6 +35,17 @@ import org.h2gis.h2spatialapi.InputStreamProgressMonitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+
+import javax.imageio.stream.ImageInputStream;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Class to read an Arc/Info ASCII Grid or GRASS ASCII Grid format using
@@ -61,7 +61,7 @@ public class AsciiGridReader {
     private String fileNameExtension;
     private int srid = 0;
     private AsciiGridRaster asciiGridRaster;
-    private RenderedOp image;
+    private RenderedImage image;
 
     /**
      * Use {@link #fetch(Connection, File)}
@@ -180,13 +180,13 @@ public class AsciiGridReader {
     /**
      * Prepare the image reader to get AsciiGridRaster metadata
      */
-    private void prepareImage() {
-        ParameterBlockJAI pbjImageRead = new ParameterBlockJAI("ImageRead");
-        pbjImageRead.setParameter("Input", imageFile);
-        image = JAI.create("ImageRead", pbjImageRead);
-        final ImageReader reader = (ImageReader) image
-                .getProperty(ImageReadDescriptor.PROPERTY_NAME_IMAGE_READER);
-        asciiGridRaster = ((AsciiGridsImageReader) reader).getRasterReader();       
+    private void prepareImage() throws IOException {
+        AsciiGridsImageReader asciiGridsImageReader = new AsciiGridsImageReader(new AsciiGridsImageReaderSpi());
+        ImageInputStream fileImageInputStreamExt = new FileImageInputStreamExtImpl(imageFile);
+        asciiGridsImageReader.setInput(fileImageInputStreamExt);
+        asciiGridRaster = asciiGridsImageReader.getRasterReader();
+        image = asciiGridsImageReader.readAsRenderedImage(asciiGridsImageReader.getMinIndex(), asciiGridsImageReader
+                .getDefaultReadParam());
     }
 
     /**
@@ -210,7 +210,7 @@ public class AsciiGridReader {
      * 
      * @return 
      */
-    public RenderedOp getImage() {
+    public RenderedImage getImage() {
         return image;
     }
     
