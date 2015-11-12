@@ -22,25 +22,8 @@
  */
 package org.h2gis.drivers.asciiGrid;
 
-import com.sun.media.jai.operator.ImageReadDescriptor;
 import it.geosolutions.imageio.plugins.arcgrid.AsciiGridsImageReader;
 import it.geosolutions.imageio.plugins.arcgrid.raster.AsciiGridRaster;
-
-import java.awt.image.RenderedImage;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Map;
-import javax.imageio.ImageReader;
-import javax.imageio.stream.ImageInputStream;
-import javax.media.jai.JAI;
-import javax.media.jai.ParameterBlockJAI;
-import javax.media.jai.RenderedOp;
-
 import it.geosolutions.imageio.plugins.arcgrid.spi.AsciiGridsImageReaderSpi;
 import it.geosolutions.imageio.stream.input.FileImageInputStreamExtImpl;
 import org.h2.api.GeoRaster;
@@ -52,6 +35,17 @@ import org.h2gis.h2spatialapi.InputStreamProgressMonitor;
 import org.h2gis.h2spatialapi.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+
+import javax.imageio.stream.ImageInputStream;
+import java.awt.image.RenderedImage;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * Class to read an Arc/Info ASCII Grid or GRASS ASCII Grid format using
