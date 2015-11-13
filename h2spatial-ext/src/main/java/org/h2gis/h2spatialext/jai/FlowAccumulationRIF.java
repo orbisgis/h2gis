@@ -84,6 +84,6 @@ public class FlowAccumulationRIF implements RenderedImageFactory {
         }
 
         BorderExtender extender = new BorderExtenderConstant(noData);
-        return new FlowAccumulationOpImage(weightImage,flowDirectionImage, noData, null, renderHints, layout);
+        return new FlowAccumulationOpImage(weightImage,flowDirectionImage, noData, extender, renderHints, layout);
     }
 }

@@ -65,10 +65,11 @@ public class FlowAccumulationOpImage extends Area3x3OpImage {
     protected double computeCell(int band, double[][] srcNeighborsValues) {
         final double[] weightValues = srcNeighborsValues[WEIGHT];
         final double[] dirValues = srcNeighborsValues[DIR];
-        final double noDataValue = bandsNoDataValue == null ? Double.NaN : bandsNoDataValue[band];
+        final double noDataValue = bandsNoDataValue == null ? Double.NaN : bandsNoDataValue[DIR];
         if(bandsNoDataValue == null || Double.compare(dirValues[SRC_INDEX], noDataValue) != 0) {
             double sum = 0;
             for (int idNeigh = 0; idNeigh < weightValues.length; idNeigh++) {
+                // If this is not our cell, and neighbor is not nodata
                 if(idNeigh != SRC_INDEX && (bandsNoDataValue == null || Double.compare(dirValues[idNeigh], noDataValue)
                         != 0) && dirValues[idNeigh] == DO_ACCUMULATION[idNeigh]) {
                     sum += weightValues[idNeigh];

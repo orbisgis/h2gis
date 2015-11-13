@@ -45,15 +45,18 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
         if(metadata.numBands != 1) {
             throw new SQLException("ST_D8FlowAccumulation accept only slope raster with one band");
         }
-        double[] noData = null;
+        // External border initial weight and external border direction
+        double[] noData = new double[] {1., 0};
         if(metadata.bands[0].hasNoData) {
-            noData = new double[] {metadata.bands[0].noDataValue};
+            noData = new double[] {1.,metadata.bands[0].noDataValue};
         }
         // Create initial weight of 1 in each cell
         RenderedImage weight = ConstantDescriptor.create((float) metadata.width, (float) metadata.height,
                 new Float[] {1.f}, null);
         RenderedImage weightAccum = ConstantDescriptor.create((float) metadata.width, (float) metadata.height,
                 new Float[] {0.f}, null);
+        int loopId = 0;
+        final int maxLoop = (int)Math.sqrt(metadata.width * metadata.width + metadata.height * metadata.height);
         do {
             ParameterBlock pb = new ParameterBlock();
             pb.addSource(weight);
@@ -68,7 +71,7 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
             pbMaxMin.addSource(outputWeight);
             RenderedOp extremaOp = JAI.create("extrema", pbMaxMin);
             double maxValue = ((double[])extremaOp.getProperty("maximum"))[0];
-            if(Double.compare(maxValue, 0.d) != 0) {
+            if(Double.compare(maxValue, 0.d) == 0) {
                 break;
             } else {
                 // Add output weight to weight accum
@@ -76,12 +79,12 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
                 pbAdd.addSource(weightAccum);
                 pbAdd.addSource(outputWeight);
                 weightAccum = JAI.create("add", pbAdd).getAsBufferedImage();
+                weight = outputWeight;
             }
-        } while (true);
+        } while (loopId++ < maxLoop);
         // TODO Set noData layer to weightAccum
         return GeoRasterRenderedImage
-                .create(weightAccum, metadata.scaleX, metadata.scaleY, metadata.ipX, metadata.ipY, metadata.skewX,
-                        metadata.skewY, metadata.srid, noData == null ? 0 : noData[0]);
+                .create(weightAccum, metadata);
     }
 
 }
