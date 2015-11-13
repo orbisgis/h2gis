@@ -26,6 +26,7 @@ package org.h2gis.h2spatialext.jai;
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
 import java.awt.image.RenderedImage;
+import java.util.Arrays;
 import java.util.Map;
 
 /**
@@ -52,10 +53,11 @@ public class FlowAccumulationOpImage extends Area3x3OpImage {
             FlowDirectionRIF.FLOW_TOP_LEFT
     };
 
-    public FlowAccumulationOpImage(RenderedImage source, double[] noData, BorderExtender extender,
+    public FlowAccumulationOpImage(RenderedImage weightSource,RenderedImage flowDirectionSource, double[] noData,
+            BorderExtender extender,
             Map config, ImageLayout layout) {
         // Require 1 neighbors around the source pixel
-        super(source, extender, config, layout);
+        super(Arrays.asList(weightSource, flowDirectionSource), extender, config, layout);
         bandsNoDataValue = noData;
     }
 
@@ -74,7 +76,7 @@ public class FlowAccumulationOpImage extends Area3x3OpImage {
             }
             return sum;
         } else {
-            return noDataValue;
+            return 0;
         }
     }
 }

@@ -60,9 +60,11 @@ public class FlowAccumulationRIF implements RenderedImageFactory {
         ImageLayout layout = RIFUtil.getImageLayoutHint(renderHints);
 
         RenderedImage weightImage = paramBlock.getRenderedSource(0);
-        double[] noData = (double[])paramBlock.getObjectParameter(2);
+        RenderedImage flowDirectionImage = paramBlock.getRenderedSource(1);
+        double[] noData = (double[])paramBlock.getObjectParameter(0);
         int weightDataType = weightImage.getSampleModel().getDataType();
-        if(DataBuffer.TYPE_BYTE == weightDataType || DataBuffer.TYPE_SHORT == weightDataType) {
+        if(DataBuffer.TYPE_BYTE == weightDataType || DataBuffer.TYPE_USHORT == weightDataType || DataBuffer.TYPE_SHORT
+                == weightDataType) {
             // Flow weight are coded in insufficient number range
             SampleModel sampleModel;
             if(layout == null) {
@@ -82,6 +84,6 @@ public class FlowAccumulationRIF implements RenderedImageFactory {
         }
 
         BorderExtender extender = new BorderExtenderConstant(noData);
-        return new FlowAccumulationOpImage(weightImage, noData, extender, renderHints, layout);
+        return new FlowAccumulationOpImage(weightImage,flowDirectionImage, noData, null, renderHints, layout);
     }
 }

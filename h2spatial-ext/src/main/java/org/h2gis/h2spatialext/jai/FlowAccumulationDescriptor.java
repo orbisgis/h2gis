@@ -86,7 +86,7 @@ public class FlowAccumulationDescriptor extends OperationDescriptorImpl {
                     new FlowAccumulationDescriptor();
             op.registerDescriptor(desc);
             // Register the operators's RIF.
-            SlopeRIF rif = new SlopeRIF();
+            FlowAccumulationRIF rif = new FlowAccumulationRIF();
             RIFRegistry.register(op, "D8FlowAccumulation", "h2gis", rif);
             registered = true;
         }

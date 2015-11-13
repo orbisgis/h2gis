@@ -3,17 +3,24 @@ package org.h2gis.h2spatialext.jai;
 import javax.media.jai.AreaOpImage;
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
+import javax.media.jai.JAI;
+import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RasterAccessor;
+import javax.media.jai.RasterFactory;
 import javax.media.jai.RasterFormatTag;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
+import java.awt.image.renderable.ParameterBlock;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * 3x3 computing helper. Do the computation in double scale, in order to avoid code redundancy.
@@ -37,6 +44,64 @@ public abstract class Area3x3OpImage extends AreaOpImage {
     public Area3x3OpImage(RenderedImage source, BorderExtender extender, Map config, ImageLayout layout) {
         // Require 1 neighbors around the source pixel
         super(source, layout, config, true, extender, 1, 1, 1, 1);
+    }
+
+    public Area3x3OpImage(Collection<RenderedImage> sources, BorderExtender extender, Map config, ImageLayout layout) {
+        // Require 1 neighbors around the source pixel
+        super(mergeSources(sources), imageLayoutForMultipleSource(sources, layout), config, true, extender, 1, 1, 1, 1);
+    }
+
+    public static ImageLayout imageLayoutForMultipleSource(Collection<RenderedImage> vectSource, ImageLayout layout) {
+        if(vectSource.isEmpty()) {
+            throw new IllegalArgumentException("AreaOpImage without sources");
+        }
+        RenderedImage refImage = vectSource.iterator().next();
+        SampleModel sampleModel;
+        if(layout == null) {
+            sampleModel = refImage.getSampleModel();
+            layout = new ImageLayout(refImage);
+        } else {
+            sampleModel = layout.getSampleModel(refImage);
+        }
+
+        int numBands = refImage.getSampleModel().getNumBands();
+
+        SampleModel csm = RasterFactory
+                .createComponentSampleModel(sampleModel, sampleModel.getDataType(), layout.getTileWidth(refImage),
+                        layout.getTileHeight(refImage), numBands);
+
+        layout.setSampleModel(csm);
+        return layout;
+    }
+
+    public static RenderedImage mergeSources(Collection<RenderedImage> sources) {
+        // Before merging sources, all data type must be the same, without loosing precision
+        int upperByteSize = 0;
+        int upperTypeFormat = -1;
+        for (RenderedImage im : sources) {
+            int imDataType = im.getSampleModel().getDataType();
+            int imTypeSize = DataBuffer.getDataTypeSize(imDataType);
+            if(imTypeSize > upperByteSize) {
+                upperTypeFormat = imDataType;
+                upperByteSize = imTypeSize;
+            }
+        }
+
+        ParameterBlockJAI pbjai = new ParameterBlockJAI("bandmerge");
+        int srcIndex = 0;
+        for (RenderedImage im : sources) {
+            if(im.getSampleModel().getDataType() == upperTypeFormat) {
+                pbjai.setSource(im, srcIndex++);
+            } else {
+                // Scale up format
+                ParameterBlock pbConvert = new ParameterBlock();
+                pbConvert.addSource(im);
+                pbConvert.add(upperTypeFormat);
+                pbjai.setSource(JAI.create("format", pbConvert), srcIndex++);
+            }
+        }
+        RenderedImage merged = JAI.create("bandmerge", pbjai, null);
+        return merged;
     }
 
     @Override
