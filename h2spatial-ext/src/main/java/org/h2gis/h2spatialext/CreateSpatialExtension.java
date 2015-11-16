@@ -99,6 +99,8 @@ import org.h2gis.h2spatialext.function.spatial.raster.ST_Band;
  * @author Adam Gouge
  */
 public class CreateSpatialExtension {
+    public static final boolean DEFAULT_RASTER_PROCESSING_IN_MEMORY = false;
+    public static final String RASTER_PROCESSING_IN_MEMORY_KEY = "h2gis.RasterProcessingInMemory";
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateSpatialExtension.class);
 
     /**

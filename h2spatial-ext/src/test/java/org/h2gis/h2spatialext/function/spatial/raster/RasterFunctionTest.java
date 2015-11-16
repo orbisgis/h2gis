@@ -28,6 +28,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
+import org.h2.util.Utils;
 import org.h2.util.imageio.WKBRasterReader;
 import org.h2.util.imageio.WKBRasterReaderSpi;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -848,8 +849,8 @@ public class RasterFunctionTest {
     }
 
 
-    @Test
-    public void testST_D8FlowAccumulation() throws SQLException, IOException {
+
+    private void testST_D8FlowAccumulation() throws SQLException, IOException {
         double pixelSize = 15;
         double noData = 0;
         // Read unit test image
@@ -873,5 +874,17 @@ public class RasterFunctionTest {
         //writePlainPGM(wkbRasterImage, new File("target/expect.pgm"));
         RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("flowDir1_expected.pgm"));
         assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
+
+    @Test
+    public void testST_D8FlowAccumulationCached() throws SQLException, IOException {
+        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(false));
+        testST_D8FlowAccumulation();
+    }
+
+    @Test
+    public void testST_D8FlowAccumulationMemory() throws SQLException, IOException {
+        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
+        testST_D8FlowAccumulation();
     }
 }
