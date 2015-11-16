@@ -25,7 +25,10 @@ package org.h2gis.h2spatialext.jai;
 
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
+import java.awt.*;
+import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.awt.image.WritableRaster;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -59,6 +62,28 @@ public class FlowAccumulationOpImage extends Area3x3OpImage {
         // Require 1 neighbors around the source pixel
         super(Arrays.asList(weightSource, flowDirectionSource), extender, config, layout);
         bandsNoDataValue = noData;
+    }
+
+    @Override
+    protected void computeRect(Raster[] sources, WritableRaster dest, Rectangle destRect) {
+        // If input weight is != 0 then do the computation
+        Raster source = sources[0];
+        boolean doComputation = false;
+        final int minY = destRect.y - 1;
+        final int minX = destRect.x - 1;
+        final int maxY = destRect.y + destRect.height + 1;
+        final int maxX = destRect.x + destRect.width + 1;
+        for(int y = minY; y < maxY; y++) {
+            for(int x = minX; x < maxX; x++) {
+                if(Double.compare(source.getSampleDouble(x, y, WEIGHT), 0.d) != 0) {
+                    doComputation = true;
+                    break;
+                }
+            }
+        }
+        if(doComputation) {
+            super.computeRect(sources, dest, destRect);
+        }
     }
 
     @Override
