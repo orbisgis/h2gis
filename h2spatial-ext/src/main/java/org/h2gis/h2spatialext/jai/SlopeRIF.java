@@ -32,7 +32,6 @@ import javax.media.jai.BorderExtender;
 import javax.media.jai.BorderExtenderConstant;
 import javax.media.jai.EnumeratedParameter;
 import javax.media.jai.ImageLayout;
-import javax.media.jai.KernelJAI;
 import java.awt.RenderingHints;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -55,7 +54,9 @@ public class SlopeRIF implements RenderedImageFactory {
     /**
      * The create method, that will be called to create a RenderedImage (or chain
      * of operators that represents one).
+     * @param renderHints
      */
+    @Override
     public RenderedImage create(ParameterBlock paramBlock, RenderingHints renderHints)
     {
         // Get ImageLayout from renderHints if any.
