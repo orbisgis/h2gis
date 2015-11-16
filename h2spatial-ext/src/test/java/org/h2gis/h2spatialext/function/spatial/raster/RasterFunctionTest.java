@@ -844,7 +844,7 @@ public class RasterFunctionTest {
         assertTrue(rs.next());
         RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
         // Check values
-        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem3_expected.pgm"));
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem3.pgm"));
         assertImageBufferEquals(expectedImage, wkbRasterImage);
     }
 
