@@ -117,7 +117,6 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
             } while (loopId++ < maxLoop);
         } finally {
             weightBuffer.free();
-            weightAccumBuffer.free();
         }
         // TODO Set noData layer to weightAccum
         return GeoRasterRenderedImage
@@ -181,17 +180,22 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
         private Connection connection;
         private ResultSet rs = null;
         private RenderedImage storedImage = null;
+        private boolean dropIntermediate;
 
         public JDBCBuffer(RenderedImage image, Connection connection, RasterUtils.RasterMetaData metaData) throws
                 SQLException, IOException {
             globalCpt++;
+            dropIntermediate = Utils.getProperty("h2gis.dropTableCache", true);
             this.connection = connection;
             tempTableName = findUniqueName();
             Statement st = connection.createStatement();
             try {
-                st.execute("DROP TABLE IF EXISTS " + tempTableName);
+                String tmp = "TEMPORARY";
+                if(!dropIntermediate) {
+                    tmp = "";
+                }
                 PreparedStatement pst = connection.prepareStatement(
-                        "CREATE TABLE " + tempTableName + "(the_raster raster) as select ?;");
+                        "CREATE "+tmp+" TABLE " + tempTableName + "(the_raster raster) as select ?::raster;");
                 try {
                     InputStream inputStream = GeoRasterRenderedImage.create(image, metaData).asWKBRaster();
                     try {
@@ -239,7 +243,9 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
             }
             Statement st = connection.createStatement();
             try {
-                st.execute("DROP TABLE IF EXISTS "+tempTableName);
+                if(dropIntermediate) {
+                    st.execute("DROP TABLE IF EXISTS " + tempTableName);
+                }
             } finally {
                 st.close();
             }
