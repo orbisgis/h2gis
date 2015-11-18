@@ -74,33 +74,4 @@ public class ST_Extrema extends DeterministicScalarFunction {
         return new double[]{allMins[0], allMaxs[0]};
     }
     
-    /**
-     * 
-     * @param geoRaster
-     * @param nodataValue
-     * @return
-     * @throws IOException
-     * @throws SQLException 
-     */
-    public static double[] extrema(GeoRaster geoRaster, double nodataValue) throws IOException, SQLException {
-        if (geoRaster == null) {
-            return null;
-        }
-        if (geoRaster.getMetaData().numBands != 1) {
-            throw new IllegalArgumentException("ST_Extrema accept only raster with one band");
-        }
-
-        ParameterBlock pb = new ParameterBlock();
-        pb.addSource(geoRaster);
-        ROI roi = new ROI(geoRaster);
-        pb.add(roi);        
-        
-        RenderedOp op = JAI.create("extrema", pb);
-
-        // Retrieve both the maximum and minimum pixel value
-        double[] allMins = (double[]) op.getProperty("minimum");
-        double[] allMaxs = (double[]) op.getProperty("maximum");
-        return new double[]{allMins[0], allMaxs[0]};
-    }
-    
 }
