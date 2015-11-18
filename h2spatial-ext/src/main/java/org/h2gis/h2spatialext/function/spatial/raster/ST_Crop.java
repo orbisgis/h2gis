@@ -55,23 +55,30 @@ public class ST_Crop extends DeterministicScalarFunction{
         return "crop";
     }
     
-    public static GeoRaster crop(GeoRaster geoRaster, Geometry geom) throws IOException{
-        if(geom == null){
+    /**
+     * Crop the geoRaster 
+     * 
+     * @param geoRaster
+     * @param geom
+     * @return
+     * @throws IOException 
+     */
+    public static GeoRaster crop(GeoRaster geoRaster, Geometry geom) throws IOException {
+        if (geom == null) {
             throw new IllegalArgumentException("A geometry must be specified");
         }
-        
+
         Envelope inputCropEnv = geom.getEnvelopeInternal();
-   
+
         if ((inputCropEnv.getWidth() == 0) || (inputCropEnv.getHeight() == 0)) {
             throw new IllegalArgumentException("The envelope of the input geometry must be greater than zero");
-        }        
-        if(geoRaster==null){
+        }
+        if (geoRaster == null) {
             return null;
         }
 
         RasterMetaData metaData = geoRaster.getMetaData();
-        
-      
+
         // Compute pixel envelope source
         // As raster can be transformed, all corners are retrieved
         int[] p0 = metaData.getPixelFromCoordinate(new Coordinate(inputCropEnv.getMinX(), inputCropEnv.getMinY()));
@@ -84,21 +91,20 @@ public class ST_Crop extends DeterministicScalarFunction{
         int maxY = Math.min(metaData.height, Math.max(Math.max(Math.max(p0[1], p1[1]), p2[1]), p3[1]));
         Rectangle envPixSource = new Rectangle(minX, minY, maxX - minX, maxY - minY);
 
-        int newWidth = maxX - minX;
-        int newHeight =maxY - minY;
-        
-        if (!(envPixSource.width > 0 && envPixSource.height > 0)) {
-            return null;
-        }        
-        Coordinate upCorner = metaData.getPixelCoordinate(minX, minY);
-        
-        RasterMetaData outputMetadata = new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, metaData.numBands, metaData.scaleX, metaData
-                .scaleY, upCorner.x, upCorner.y, metaData.skewX, metaData.skewY, metaData.srid, newWidth, newHeight, metaData.bands);
+        int newWidth = envPixSource.width;
+        int newHeight = envPixSource.height;
 
-        
+        if (!(newWidth > 0 && newHeight > 0)) {
+            return null;
+        }
+        Coordinate upCorner = metaData.getPixelCoordinate(minX, minY);
+
+        RasterMetaData outputMetadata = new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, metaData.numBands, metaData.scaleX, metaData.scaleY, upCorner.x, upCorner.y, metaData.skewX, metaData.skewY, metaData.srid, newWidth, newHeight, metaData.bands);
+
         return GeoRasterRenderedImage.create(cropOp(geoRaster, minX, minY, newWidth, newHeight), outputMetadata);
 
-    }   
+    }  
+    
     
     
     
