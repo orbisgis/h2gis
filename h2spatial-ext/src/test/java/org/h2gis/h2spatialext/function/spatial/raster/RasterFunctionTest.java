@@ -76,7 +76,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Iterator;
 import org.h2.api.GeoRaster;
 
@@ -850,11 +849,9 @@ public class RasterFunctionTest {
     
     
     @Test
-    public void testST_Crop() throws SQLException, IOException {
-        BufferedImage image = new BufferedImage(10, 10, BufferedImage
-                .TYPE_INT_RGB);
+    public void testST_Crop1() throws SQLException, IOException {
+        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = image.getRaster();
-        
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
                 int red = 0;
@@ -863,40 +860,35 @@ public class RasterFunctionTest {
                 raster.setPixel(x, y, new int[]{red, green, blue});
             }
         }
-        
         st.execute("drop table if exists test");
         st.execute("create table test(id identity, the_raster raster)");
         // Create table with test image
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " +
-                "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image
-                , 1, -1, 0, 10, 0, 0, 27572, 0)
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0)
                 .asWKBRaster());
         ps.execute();
-        ps.close();  
-        
+        ps.close();
+
         ResultSet rs = st.executeQuery("select st_crop(the_raster, 'POLYGON((0 0, 5 0, 5 5, 0 5, 0 0))'::GEOMETRY) from test;");
         assertTrue(rs.next());
-        
+
         GeoRaster gr = (GeoRaster) rs.getObject(1);
-        
+
         RasterUtils.RasterMetaData metaData = gr.getMetaData();
-        
+
         assertNotNull(metaData);
         assertEquals(5, metaData.width);
         assertEquals(5, metaData.height);
         assertEquals(0, metaData.ipX, 1e-2);
-        assertEquals(5, metaData.ipX, 1e-2);
-        
+        assertEquals(5, metaData.ipY, 1e-2);
         rs.close();
     }
     
     @Test
-    public void testGetPixel() throws SQLException, IOException {
-        BufferedImage image = new BufferedImage(10, 10, BufferedImage
-                .TYPE_INT_RGB);
+    public void testST_Crop2() throws SQLException, IOException {
+        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
         WritableRaster raster = image.getRaster();
-        
         for (int y = 0; y < 10; y++) {
             for (int x = 0; x < 10; x++) {
                 int red = 0;
@@ -905,17 +897,29 @@ public class RasterFunctionTest {
                 raster.setPixel(x, y, new int[]{red, green, blue});
             }
         }
-        
-        GeoRasterRenderedImage geoRaster = GeoRasterRenderedImage.create(image
-                , 1, -1, 0, 10, 0, 0, 27572, 0);
-        
-        int[] pixels = geoRaster.getMetaData().getPixelFromCoordinate(new Coordinate(0, 0));
-        
-        System.out.println("Pixels " + Arrays.toString(pixels));
-        
-        pixels = geoRaster.getMetaData().getPixelFromCoordinate(new Coordinate(0, 5));
-        
-        System.out.println("Pixels 2 " + Arrays.toString(pixels));
-    }
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        ResultSet rs = st.executeQuery("select st_crop(the_raster, 'POLYGON((-5 0 0, 5 0, 5 5, -5 5, -5 0))'::GEOMETRY) from test;");
+        assertTrue(rs.next());
+
+        GeoRaster gr = (GeoRaster) rs.getObject(1);
+
+        RasterUtils.RasterMetaData metaData = gr.getMetaData();
+
+        assertNotNull(metaData);
+        assertEquals(5, metaData.width);
+        assertEquals(5, metaData.height);
+        assertEquals(0, metaData.ipX, 1e-2);
+        assertEquals(5, metaData.ipY, 1e-2);
+        rs.close();
+    }   
     
 }

@@ -1,18 +1,24 @@
-/*
- * Copyright (C) 2015 CNRS
+/**
+ * H2GIS is a library that brings spatial support to the H2 Database Engine
+ * <http://www.h2database.com>.
  *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * H2GIS is distributed under GPL 3 license. It is produced by CNRS
+ * <http://www.cnrs.fr/>.
  *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
+ * H2GIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * H2GIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.h2gis.org/>
+ * or contact directly: info_at_h2gis.org
  */
 
 package org.h2gis.h2spatialext.function.spatial.raster;
@@ -20,6 +26,7 @@ package org.h2gis.h2spatialext.function.spatial.raster;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import java.awt.Rectangle;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import javax.media.jai.JAI;
@@ -31,15 +38,10 @@ import org.h2.util.RasterUtils.RasterMetaData;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
- * Crops the pixel values of a raster to the envelope of the geometry or a set
- * of parameters :
- *
- * The x origin for each band. 
- * The y origin for each band. 
- * The width for each band. 
- * The height for each band.
+ * Crops the pixel values of a raster to the envelope of the geometry.
  *
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class ST_Crop extends DeterministicScalarFunction{
 
@@ -67,53 +69,50 @@ public class ST_Crop extends DeterministicScalarFunction{
             return null;
         }
 
-        RasterMetaData metadata = geoRaster.getMetaData();
-        Envelope geoRasterEnv = metadata.getEnvelope();
+        RasterMetaData metaData = geoRaster.getMetaData();
         
-        int[] origin = metadata.getPixelFromCoordinate(new Coordinate(inputCropEnv.getMinX(), inputCropEnv.getMinY()));
+      
+        // Compute pixel envelope source
+        // As raster can be transformed, all corners are retrieved
+        int[] p0 = metaData.getPixelFromCoordinate(new Coordinate(inputCropEnv.getMinX(), inputCropEnv.getMinY()));
+        int[] p1 = metaData.getPixelFromCoordinate(new Coordinate(inputCropEnv.getMaxX(), inputCropEnv.getMinY()));
+        int[] p2 = metaData.getPixelFromCoordinate(new Coordinate(inputCropEnv.getMaxX(), inputCropEnv.getMaxY()));
+        int[] p3 = metaData.getPixelFromCoordinate(new Coordinate(inputCropEnv.getMinX(), inputCropEnv.getMaxY()));
+        int minX = Math.max(0, Math.min(Math.min(Math.min(p0[0], p1[0]), p2[0]), p3[0]));
+        int maxX = Math.min(metaData.width, Math.max(Math.max(Math.max(p0[0], p1[0]), p2[0]), p3[0]));
+        int minY = Math.max(0, Math.min(Math.min(Math.min(p0[1], p1[1]), p2[1]), p3[1]));
+        int maxY = Math.min(metaData.height, Math.max(Math.max(Math.max(p0[1], p1[1]), p2[1]), p3[1]));
+        Rectangle envPixSource = new Rectangle(minX, minY, maxX - minX, maxY - minY);
 
-        int[] corner = metadata.getPixelFromCoordinate(new Coordinate(inputCropEnv.getMaxX(), inputCropEnv.getMaxY()));
+        int newWidth = maxX - minX;
+        int newHeight =maxY - minY;
         
-        int x = Math.min(origin[0], corner[0]);
-        x = Math.max(x, 0);
-        int y = Math.min(origin[1], corner[1]);
-        y = Math.max(y, 0);
-        int width = Math.abs(origin[0] - corner[0]);
-        width = Math.min(width, geoRaster.getWidth());
-        int height = Math.abs(origin[1] - corner[1]);
-        height = Math.min(height, geoRaster.getHeight());
-
-        int maxWidth = Math.max(geoRaster.getWidth() - x, 0);
-        int maxHeight = Math.max(geoRaster.getWidth() - y, 0);
-        width = Math.min(maxWidth, width);
-        height = Math.min(maxHeight, height);
-        if ((width == 0) || (height == 0)) {
+        if (!(envPixSource.width > 0 && envPixSource.height > 0)) {
             return null;
-        }
+        }        
+        Coordinate upCorner = metaData.getPixelCoordinate(minX, minY);
         
-        Coordinate upCorner = metadata.getPixelCoordinate(x, y+height);
-        
-        RasterMetaData outputMetadata = new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, metadata.numBands, metadata.scaleX, metadata
-                .scaleY, upCorner.x, upCorner.y, metadata.skewX, metadata.skewY, metadata.srid, width, height, metadata.bands);
+        RasterMetaData outputMetadata = new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, metaData.numBands, metaData.scaleX, metaData
+                .scaleY, upCorner.x, upCorner.y, metaData.skewX, metaData.skewY, metaData.srid, newWidth, newHeight, metaData.bands);
 
         
-        return GeoRasterRenderedImage.create(cropOp(geoRaster, metadata, x, y, width, height), outputMetadata);
+        return GeoRasterRenderedImage.create(cropOp(geoRaster, minX, minY, newWidth, newHeight), outputMetadata);
 
-    }
+    }   
+    
     
     
     /**
      * Crops the pixel values of a rendered image to a specified rectangle.
      *
      * @param geoRaster The input GeoRaster.
-     * @param metadata The metadata of the input GeoRaster.
      * @param x The x origin for each band.
      * @param y The y origin for each band.
      * @param width The width for each band.
      * @param height The height for each band.
      * @return
      */
-    public static RenderedOp cropOp(GeoRaster geoRaster, RasterMetaData metadata, double x, double y, int width, int height) {
+    public static RenderedOp cropOp(GeoRaster geoRaster, double x, double y, int width, int height) {
 
         if ((width == 0) || (height == 0)) {
             throw new IllegalArgumentException("The width and height value cannot be equal to zero.");
