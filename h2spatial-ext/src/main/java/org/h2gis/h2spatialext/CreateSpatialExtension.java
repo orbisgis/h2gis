@@ -89,6 +89,7 @@ import javax.media.jai.JAI;
 import org.h2gis.drivers.asciiGrid.ST_AsciiGridRead;
 import org.h2gis.drivers.asciiGrid.ST_AsciiGridWrite;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_Band;
+import org.h2gis.h2spatialext.function.spatial.raster.ST_Extrema;
 
 
 /**
@@ -231,7 +232,8 @@ public class CreateSpatialExtension {
                     new ST_WorldFileImageWrite(),
                     new ST_Band(),
                     new ST_D8Slope(),
-                    new ST_D8FlowDirection()));
+                    new ST_D8FlowDirection(),
+                    new ST_Extrema()));
         }
         if(isGeoSolutionsAvailable()) {
             fl.addAll(Arrays.asList(
