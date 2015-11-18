@@ -24,9 +24,7 @@ package org.h2gis.h2spatialext.jai;
 
 import org.h2.util.RasterUtils;
 
-import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
-import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.util.Map;
 

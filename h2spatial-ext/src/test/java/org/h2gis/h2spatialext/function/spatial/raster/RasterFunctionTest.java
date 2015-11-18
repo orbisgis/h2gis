@@ -23,7 +23,6 @@
 
 package org.h2gis.h2spatialext.function.spatial.raster;
 
-import com.sun.media.jai.opimage.FilteredSubsampleOpImage;
 import com.vividsolutions.jts.geom.Coordinate;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
@@ -65,7 +64,6 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
-import java.awt.image.renderable.RenderableImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -79,9 +77,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
+import org.h2.api.GeoRaster;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -846,4 +846,80 @@ public class RasterFunctionTest {
         RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("dem3_expected.pgm"));
         assertImageBufferEquals(expectedImage, wkbRasterImage);
     }
+    
+    
+    @Test
+    public void testST_Crop1() throws SQLException, IOException {
+        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        WritableRaster raster = image.getRaster();
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                int red = 0;
+                int green = 0;
+                int blue = 255;
+                raster.setPixel(x, y, new int[]{red, green, blue});
+            }
+        }
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        ResultSet rs = st.executeQuery("select st_crop(the_raster, 'POLYGON((0 0, 5 0, 5 5, 0 5, 0 0))'::GEOMETRY) from test;");
+        assertTrue(rs.next());
+
+        GeoRaster gr = (GeoRaster) rs.getObject(1);
+
+        RasterUtils.RasterMetaData metaData = gr.getMetaData();
+
+        assertNotNull(metaData);
+        assertEquals(5, metaData.width);
+        assertEquals(5, metaData.height);
+        assertEquals(0, metaData.ipX, 1e-2);
+        assertEquals(5, metaData.ipY, 1e-2);
+        rs.close();
+    }
+    
+    @Test
+    public void testST_Crop2() throws SQLException, IOException {
+        BufferedImage image = new BufferedImage(10, 10, BufferedImage.TYPE_INT_RGB);
+        WritableRaster raster = image.getRaster();
+        for (int y = 0; y < 10; y++) {
+            for (int x = 0; x < 10; x++) {
+                int red = 0;
+                int green = 0;
+                int blue = 255;
+                raster.setPixel(x, y, new int[]{red, green, blue});
+            }
+        }
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        ResultSet rs = st.executeQuery("select st_crop(the_raster, 'POLYGON((-5 0 0, 5 0, 5 5, -5 5, -5 0))'::GEOMETRY) from test;");
+        assertTrue(rs.next());
+
+        GeoRaster gr = (GeoRaster) rs.getObject(1);
+
+        RasterUtils.RasterMetaData metaData = gr.getMetaData();
+
+        assertNotNull(metaData);
+        assertEquals(5, metaData.width);
+        assertEquals(5, metaData.height);
+        assertEquals(0, metaData.ipX, 1e-2);
+        assertEquals(5, metaData.ipY, 1e-2);
+        rs.close();
+    }   
+    
 }
