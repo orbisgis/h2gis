@@ -7,12 +7,12 @@ import org.h2.util.Utils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.h2gis.h2spatialext.jai.FlowAccumulationDescriptor;
+import org.h2gis.h2spatialext.jai.FlowAccumulationOpImage;
 import org.h2gis.utilities.JDBCUtilities;
 
 
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
-import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.ConstantDescriptor;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -23,6 +23,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Flow accumulation calculation according to the flow direction until all streams are exhausted.
@@ -49,7 +50,6 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
     public static GeoRaster doComputeFlow(Connection connection, GeoRaster flowDirection, boolean useCache) throws
             SQLException,
             IOException {
-        // TODO store intermediate results in H2 temporary table
         if(flowDirection == null) {
             return null;
         }
@@ -82,9 +82,13 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
                 if (metadata.bands[0].hasNoData) {
                     pb.add(noData);
                 }
-                // TODO use ROI/layer/rtree in order to compute only near non-zero weight cells
-                StoredImage nextWeightBuffer = createBuffer(JAI.create("D8FlowAccumulation", pb), connection,
+                // TODO Use ROI/layer/rtree in order to compute and store only near non-zero weight cells
+                PlanarImage flowAccum = JAI.create("D8FlowAccumulation", pb);
+                AtomicBoolean hasRemainingFlow = (AtomicBoolean)flowAccum.getProperty(
+                        FlowAccumulationOpImage.PROPERTY_NON_ZERO_FLOW_ACCUM);
+                StoredImage nextWeightBuffer = createBuffer(flowAccum, connection,
                         metadata, useCache);
+                //hasRemainingFlow is computed from here
                 try {
                     weightBuffer.free();
                 } finally {
@@ -93,11 +97,8 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
                 }
                 RenderedImage outputWeight = weightBuffer.getImage();
                 // Check if the flow is still in the new weight raster
-                ParameterBlock pbMaxMin = new ParameterBlock();
-                pbMaxMin.addSource(outputWeight);
-                RenderedOp extremaOp = JAI.create("extrema", pbMaxMin);
-                double maxValue = ((double[])extremaOp.getProperty("maximum"))[0];
-                if(Double.compare(maxValue, 0.d) == 0) {
+                if(!hasRemainingFlow.get()) {
+                    // The flow has stopped, accumulation is complete
                     break;
                 } else {
                     // Add output weight to weight accum

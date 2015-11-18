@@ -31,6 +31,7 @@ import java.awt.image.RenderedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Flow accumulation operation on raster
@@ -39,6 +40,9 @@ import java.util.Map;
  */
 public class FlowAccumulationOpImage extends Area3x3OpImage {
     private final double[] bandsNoDataValue;
+    public static final String PROPERTY_NON_ZERO_FLOW_ACCUM = "nonZeroFlowAccum";
+
+    private AtomicBoolean nonZeroFlowAccum = new AtomicBoolean(false);
     // Index of raster
     private static final int WEIGHT = 0;
     private static final int DIR = 1;
@@ -62,6 +66,12 @@ public class FlowAccumulationOpImage extends Area3x3OpImage {
         // Require 1 neighbors around the source pixel
         super(Arrays.asList(weightSource, flowDirectionSource), extender, config, layout);
         bandsNoDataValue = noData;
+        properties.setProperty(PROPERTY_NON_ZERO_FLOW_ACCUM, nonZeroFlowAccum);
+    }
+
+    @Override
+    public Object getProperty(String name) {
+        return super.getProperty(name);
     }
 
     @Override
@@ -99,6 +109,9 @@ public class FlowAccumulationOpImage extends Area3x3OpImage {
                         != 0) && dirValues[idNeigh] == DO_ACCUMULATION[idNeigh]) {
                     sum += weightValues[idNeigh];
                 }
+            }
+            if(!nonZeroFlowAccum.get() && Double.compare(sum, 0) != 0) {
+                nonZeroFlowAccum.set(true);
             }
             return sum;
         } else {
