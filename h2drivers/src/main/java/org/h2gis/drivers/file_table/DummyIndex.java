@@ -72,7 +72,7 @@ public class DummyIndex extends BaseIndex {
     }
 
     @Override
-    public double getCost(Session session, int[] masks, TableFilter filter, SortOrder sortOrder) {
+    public double getCost(Session session, int[] masks, TableFilter[] filters, int filter, SortOrder sortOrder) {
         return 0;
     }
 
