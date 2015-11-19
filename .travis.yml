@@ -2,4 +2,4 @@ language: java
 jdk:
     - openjdk6
 install: travis_retry mvn install -DskipTests -Dcobertura.skip=true -B -P osgi
-script: mvn test -B -P osgi
+script: mvn package test -B -P osgi
