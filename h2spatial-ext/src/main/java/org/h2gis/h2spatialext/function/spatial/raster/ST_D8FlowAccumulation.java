@@ -8,11 +8,16 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
 import org.h2gis.h2spatialext.jai.FlowAccumulationDescriptor;
 import org.h2gis.h2spatialext.jai.FlowAccumulationOpImage;
+import org.h2gis.h2spatialext.jai.RangeFilterDescriptor;
 import org.h2gis.utilities.JDBCUtilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
+import javax.media.jai.Histogram;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.ROI;
 import javax.media.jai.operator.ConstantDescriptor;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
@@ -30,11 +35,16 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author Nicolas Fortin
  */
 public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
+    public static final String PROP_LOG_FLOWACCUM_STATS = "h2gis.logflowaccumstats";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ST_D8FlowAccumulation.class);
+
+
     public ST_D8FlowAccumulation() {
         addProperty(PROP_REMARKS, "Flow accumulation calculation according to the flow direction until all streams " +
                 "are exhausted. Arguments are:" +
                 "(1): Flow direction (output of ST_D8FlowDirection)");
         FlowAccumulationDescriptor.register();
+        RangeFilterDescriptor.register();
     }
 
     @Override
@@ -53,7 +63,7 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
         if(flowDirection == null) {
             return null;
         }
-
+        boolean printStats = Utils.getProperty(PROP_LOG_FLOWACCUM_STATS, false);
         RasterUtils.RasterMetaData metadata = flowDirection.getMetaData();
         if(metadata.numBands != 1) {
             throw new SQLException("ST_D8FlowAccumulation accept only slope raster with one band");
@@ -74,7 +84,6 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
 
         try {
             int loopId = 0;
-            final int maxLoop = (int)Math.sqrt(metadata.width * metadata.width + metadata.height * metadata.height);
             do {
                 ParameterBlock pb = new ParameterBlock();
                 pb.addSource(weight);
@@ -83,6 +92,7 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
                     pb.add(noData);
                 }
                 // TODO Use ROI/layer/rtree in order to compute and store only near non-zero weight cells
+
                 PlanarImage flowAccum = JAI.create("D8FlowAccumulation", pb);
                 AtomicBoolean hasRemainingFlow = (AtomicBoolean)flowAccum.getProperty(
                         FlowAccumulationOpImage.PROPERTY_NON_ZERO_FLOW_ACCUM);
@@ -96,6 +106,21 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
                     // If something goes wrong, while freeing then last table is also cleared
                 }
                 RenderedImage outputWeight = weightBuffer.getImage();
+                if(printStats) {
+                    ParameterBlock pb1 = new ParameterBlock();
+                    pb1.addSource(outputWeight);
+                    pb1.add(null);//region of interest
+                    pb1.add(1); // Sampling
+                    pb1.add(1); // Sampling
+                    pb1.add(new int[]{2}); // Bins
+                    pb1.add(new double[]{0});
+                    pb1.add(new double[]{0.1}); // Range for inclusion
+                    PlanarImage dummyImage1 = JAI.create("histogram", pb1);
+                    Histogram histo1 = (Histogram)dummyImage1.getProperty("histogram");
+                    int pixelCount = weight.getWidth() * weight.getHeight();
+                    LOGGER.info("Step " + (loopId + 1) + " non-zero output weight pixel " + (pixelCount - histo1
+                            .getSubTotal(0, 0, 0)) + "/" + pixelCount+ " pixels");
+                }
                 // Check if the flow is still in the new weight raster
                 if(!hasRemainingFlow.get()) {
                     // The flow has stopped, accumulation is complete
@@ -114,14 +139,29 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
                     }
                     weightAccum = weightAccumBuffer.getImage();
                     weight = outputWeight;
+                    loopId++;
                 }
-            } while (loopId++ < maxLoop);
+            } while (true);
         } finally {
             weightBuffer.free();
         }
-        // TODO Set noData layer to weightAccum
+        // Set noData layer on weightAccum
+        ParameterBlock filterParam = new ParameterBlock();
+        filterParam.addSource(weightAccum); // Source to copy
+        filterParam.addSource(flowDirection); // source with nodata
+        double[][] filterNodata = new double[metadata.numBands][2];
+        for(int idBand = 0; idBand < filterNodata.length; idBand++) {
+            final RasterUtils.RasterBandMetaData bandMetaData = metadata.bands[idBand];
+            if(bandMetaData.hasNoData) {
+                filterNodata[idBand] = new double[]{bandMetaData.noDataValue, bandMetaData.noDataValue};
+            } else {
+                filterNodata[idBand] = new double[]{Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY};
+            }
+        }
+        filterParam.add(filterNodata);
+        filterParam.add(true); // Return nodata when dir is nodata
         return GeoRasterRenderedImage
-                .create(weightAccum, metadata);
+                .create(JAI.create("RangeFilter", filterParam), metadata);
     }
 
     private static StoredImage createBuffer(PlanarImage image, Connection connection, RasterUtils.RasterMetaData

@@ -885,6 +885,7 @@ public class RasterFunctionTest {
     @Test
     public void testST_D8FlowAccumulationMemory() throws SQLException, IOException {
         System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
+        System.setProperty(ST_D8FlowAccumulation.PROP_LOG_FLOWACCUM_STATS, String.valueOf(true));
         testST_D8FlowAccumulation();
     }
 }
