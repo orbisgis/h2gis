@@ -160,8 +160,9 @@ public class H2TableIndex extends BaseIndex {
         return true;
     }
 
+
     @Override
-    public double getCost(Session session, int[] masks,TableFilter filter ,SortOrder sortOrder) {
+    public double getCost(Session session, int[] masks, TableFilter[] filters, int filter, SortOrder sortOrder) {
         if(masks == null) {
             return Double.MAX_VALUE;
         }
