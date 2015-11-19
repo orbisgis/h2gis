@@ -1,9 +1,5 @@
 language: java
 jdk:
     - openjdk6
-    - oraclejdk7
-    - openjdk7
-# Do not install anything so that we can use our custom script. Instead, just
-# return true.
-install: true
-script: "./travis-build.sh"
+install: travis_retry mvn install -DskipTests -Dcobertura.skip=true -B
+script: mvn test -B -P osgi
