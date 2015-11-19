@@ -5,15 +5,11 @@ import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialext.jai.FlowDirectionDescriptor;
-import org.h2gis.h2spatialext.jai.SlopeDescriptor;
-
-import javax.media.jai.EnumeratedParameter;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Set;
 
 /**
  * Compute the steepest downward slope towards one of the eight adjacent or diagonal neighbors.
