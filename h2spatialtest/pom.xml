@@ -19,6 +19,7 @@
                 <version>2.5.1</version>
                 <executions>
                     <execution>
+                        <phase>prepare-package</phase>
                         <id>copy-dependencies</id>
                         <goals>
                             <goal>copy-dependencies</goal>
