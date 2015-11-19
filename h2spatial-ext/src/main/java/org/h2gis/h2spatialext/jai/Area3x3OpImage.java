@@ -1,19 +1,48 @@
+/**
+ * H2GIS is a library that brings spatial support to the H2 Database Engine
+ * <http://www.h2database.com>.
+ *
+ * H2GIS is distributed under GPL 3 license. It is produced by CNRS
+ * <http://www.cnrs.fr/>.
+ *
+ * H2GIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * H2GIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.h2gis.org/>
+ * or contact directly: info_at_h2gis.org
+ */
 package org.h2gis.h2spatialext.jai;
 
 import javax.media.jai.AreaOpImage;
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
+import javax.media.jai.JAI;
+import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RasterAccessor;
+import javax.media.jai.RasterFactory;
 import javax.media.jai.RasterFormatTag;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
+import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
+import java.awt.image.renderable.ParameterBlock;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Vector;
 
 /**
  * 3x3 computing helper. Do the computation in double scale, in order to avoid code redundancy.
@@ -32,11 +61,79 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             new Point(0, 1), // bottom
             new Point(1, 1) // bottom right
     };
+    // For composite image source. This information help to decompose bands into multiple sources
+    private final int[] sourcesBandsIndex;
     // in {@link NEIGHBORS_INDEX} the index of center.
     public static final int SRC_INDEX = 4;
     public Area3x3OpImage(RenderedImage source, BorderExtender extender, Map config, ImageLayout layout) {
         // Require 1 neighbors around the source pixel
         super(source, layout, config, true, extender, 1, 1, 1, 1);
+        sourcesBandsIndex = new int[] {0};
+    }
+
+    public Area3x3OpImage(Collection<RenderedImage> sources, BorderExtender extender, Map config, ImageLayout layout) {
+        // Require 1 neighbors around the source pixel
+        super(mergeSources(sources), imageLayoutForMultipleSource(sources, layout), config, true, extender, 1, 1, 1, 1);
+        sourcesBandsIndex = new int[sources.size()];
+        int bandId = 0;
+        int idSource = 0;
+        for(RenderedImage source : sources) {
+            sourcesBandsIndex[idSource++] = bandId;
+            bandId += source.getSampleModel().getNumBands();
+        }
+    }
+
+    public static ImageLayout imageLayoutForMultipleSource(Collection<RenderedImage> vectSource, ImageLayout layout) {
+        if(vectSource.isEmpty()) {
+            throw new IllegalArgumentException("AreaOpImage without sources");
+        }
+        RenderedImage refImage = vectSource.iterator().next();
+        SampleModel sampleModel;
+        if(layout == null) {
+            sampleModel = refImage.getSampleModel();
+            layout = new ImageLayout(refImage);
+        } else {
+            sampleModel = layout.getSampleModel(refImage);
+        }
+
+        int numBands = refImage.getSampleModel().getNumBands();
+
+        SampleModel csm = RasterFactory
+                .createComponentSampleModel(sampleModel, sampleModel.getDataType(), layout.getTileWidth(refImage),
+                        layout.getTileHeight(refImage), numBands);
+
+        layout.setSampleModel(csm);
+        return layout;
+    }
+
+    public static RenderedImage mergeSources(Collection<RenderedImage> sources) {
+        // Before merging sources, all data type must be the same, without loosing precision
+        int upperByteSize = 0;
+        int upperTypeFormat = -1;
+        for (RenderedImage im : sources) {
+            int imDataType = im.getSampleModel().getDataType();
+            int imTypeSize = DataBuffer.getDataTypeSize(imDataType);
+            if(imTypeSize > upperByteSize) {
+                upperTypeFormat = imDataType;
+                upperByteSize = imTypeSize;
+            }
+        }
+
+        ParameterBlockJAI pbjai = new ParameterBlockJAI("bandmerge");
+        int srcIndex = 0;
+        for (RenderedImage im : sources) {
+            if(im.getSampleModel().getDataType() == upperTypeFormat) {
+                pbjai.setSource(im, srcIndex++);
+            } else {
+                // Scale up format
+                ParameterBlock pbConvert = new ParameterBlock();
+                pbConvert.addSource(im);
+                pbConvert.add(upperTypeFormat);
+                pbjai.setSource(JAI.create("format", pbConvert), srcIndex++);
+            }
+        }
+        RenderedImage merged = JAI.create("bandmerge", pbjai, null);
+        return merged;
     }
 
     @Override
@@ -44,32 +141,26 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         // Retrieve format tags.
         RasterFormatTag[] formatTags = getFormatTags();
         Rectangle srcRect = mapDestRect(destRect, 0);
-
-        List<RasterAccessor> rasterAccessList = new ArrayList<RasterAccessor>(sources.length);
-        int srcIndex = 0;
-        for(Raster source : sources) {
-                rasterAccessList.add(new RasterAccessor(source, srcRect, formatTags[srcIndex], getSourceImage(srcIndex)
-                        .getColorModel()));
-            srcIndex++;
-        }
+        Raster source = sources[0];
+        RasterAccessor sourceAccessor = new RasterAccessor(source, srcRect, formatTags[0], null);
         // last tag id is for destination
         RasterAccessor dst = new RasterAccessor(dest, destRect, formatTags[sources.length], getColorModel());
-
+        SrcDataStruct srcDataStruct = dataStructFromRasterAccessor(sourceAccessor);
         switch (dst.getDataType()) {
             case DataBuffer.TYPE_FLOAT:
-                processingFloatDest(rasterAccessList, dst);
+                processingFloatDest(srcDataStruct, dst);
                 break;
             case DataBuffer.TYPE_INT:
-                processingIntDest(rasterAccessList, dst);
+                processingIntDest(srcDataStruct, dst);
                 break;
             case DataBuffer.TYPE_BYTE:
-                processingByteDest(rasterAccessList, dst);
+                processingByteDest(srcDataStruct, dst);
                 break;
             case DataBuffer.TYPE_SHORT:
-                processingShortDest(rasterAccessList, dst);
+                processingShortDest(srcDataStruct, dst);
                 break;
             case DataBuffer.TYPE_DOUBLE:
-                processingDoubleDest(rasterAccessList, dst);
+                processingDoubleDest(srcDataStruct, dst);
                 break;
         }
     }
@@ -89,7 +180,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    protected void processingDoubleDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected void processingDoubleDest(SrcDataStruct srcDataStruct, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -100,11 +191,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
-        for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
-        }
-
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final double dstData[] = destDataArrays[idBand];
             int dstScanlineOffset = destBandOffsets[idBand];
@@ -112,10 +198,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             for (int j = 0; j < destHeight; j++) {
                 int dstPixelOffset = dstScanlineOffset;
                 for (int i = 0; i < destWidth; i++) {
-                    double[][] neighborsValues = new double[srcDataStructs.size()][];
-                    for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
-                        neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
-                    }
+                    double[][] neighborsValues = getNeighborsValues(srcDataStruct, i, j, idBand);
                     // Compute in sub method
                     dstData[dstPixelOffset] = computeCell(idBand, neighborsValues);
                     dstPixelOffset += destPixelStride;
@@ -181,7 +264,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
     }
 
 
-    protected void processingShortDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected void processingShortDest(SrcDataStruct srcDataStruct, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -192,11 +275,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
-        for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
-        }
-
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final short dstData[] = destDataArrays[idBand];
             int dstScanlineOffset = destBandOffsets[idBand];
@@ -204,10 +282,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             for (int j = 0; j < destHeight; j++) {
                 int dstPixelOffset = dstScanlineOffset;
                 for (int i = 0; i < destWidth; i++) {
-                    double[][] neighborsValues = new double[srcDataStructs.size()][];
-                    for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
-                        neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
-                    }
+                    double[][] neighborsValues = getNeighborsValues(srcDataStruct, i, j, idBand);
                     // Compute in sub method
                     double value = computeCell(idBand, neighborsValues);
                     dstData[dstPixelOffset] = (short)Math.max(Short.MIN_VALUE, Math.min(Short.MAX_VALUE, value));
@@ -263,8 +338,16 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
+    private double[][] getNeighborsValues(SrcDataStruct srcDataStruct,int i, int j, int idBand) {
+        double[][] neighborsValues = new double[sourcesBandsIndex.length][];
+        for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
+            int sourceBandIndex = sourcesBandsIndex[idSrc] + idBand;
+            neighborsValues[idSrc] = srcDataStruct.getNeighborsValues(sourceBandIndex, i, j);
+        }
+        return neighborsValues;
+    }
 
-    protected void processingByteDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected void processingByteDest(SrcDataStruct srcDataStruct, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -275,11 +358,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
-        for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
-        }
-
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final byte dstData[] = destDataArrays[idBand];
             int dstScanlineOffset = destBandOffsets[idBand];
@@ -287,10 +365,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             for (int j = 0; j < destHeight; j++) {
                 int dstPixelOffset = dstScanlineOffset;
                 for (int i = 0; i < destWidth; i++) {
-                    double[][] neighborsValues = new double[srcDataStructs.size()][];
-                    for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
-                        neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
-                    }
+                    double[][] neighborsValues = getNeighborsValues(srcDataStruct, i, j, idBand);
                     // Compute in sub method
                     double value = computeCell(idBand, neighborsValues);
                     dstData[dstPixelOffset] =  (byte)Math.max(Byte.MIN_VALUE, Math.min(Byte.MAX_VALUE, value));
@@ -346,7 +421,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         }
     }
 
-    protected void processingFloatDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected void processingFloatDest(SrcDataStruct srcDataStruct, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -357,11 +432,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
-        for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
-        }
-
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final float dstData[] = destDataArrays[idBand];
             int dstScanlineOffset = destBandOffsets[idBand];
@@ -369,10 +439,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             for (int j = 0; j < destHeight; j++) {
                 int dstPixelOffset = dstScanlineOffset;
                 for (int i = 0; i < destWidth; i++) {
-                    double[][] neighborsValues = new double[srcDataStructs.size()][];
-                    for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
-                        neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
-                    }
+                    double[][] neighborsValues = getNeighborsValues(srcDataStruct, i, j, idBand);
                     // Compute in sub method
                     dstData[dstPixelOffset] = (float) computeCell(idBand, neighborsValues);
                     dstPixelOffset += destPixelStride;
@@ -426,7 +493,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             };
         }
     }
-    protected void processingIntDest(List<RasterAccessor> rasterAccess, RasterAccessor dst) {
+    protected void processingIntDest(SrcDataStruct srcDataStruct, RasterAccessor dst) {
 
         final int destWidth = dst.getWidth();
         final int destHeight = dst.getHeight();
@@ -437,11 +504,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int destPixelStride = dst.getPixelStride();
         final int dstScanlineStride = dst.getScanlineStride();
 
-        final List<SrcDataStruct> srcDataStructs = new ArrayList<SrcDataStruct>(rasterAccess.size());
-        for(RasterAccessor rasterAccessor : rasterAccess) {
-            srcDataStructs.add(dataStructFromRasterAccessor(rasterAccessor));
-        }
-
         for(int idBand = 0; idBand < destNumBands; idBand++) {
             final int dstData[] = destDataArrays[idBand];
             int dstScanlineOffset = destBandOffsets[idBand];
@@ -449,10 +511,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             for (int j = 0; j < destHeight; j++) {
                 int dstPixelOffset = dstScanlineOffset;
                 for (int i = 0; i < destWidth; i++) {
-                    double[][] neighborsValues = new double[srcDataStructs.size()][];
-                    for(int idSrc=0; idSrc < neighborsValues.length; idSrc++) {
-                        neighborsValues[idSrc] = srcDataStructs.get(idSrc).getNeighborsValues(idBand, i, j);
-                    }
+                    double[][] neighborsValues = getNeighborsValues(srcDataStruct, i, j, idBand);
                     // Compute in sub method
                     dstData[dstPixelOffset] = (int) computeCell(idBand, neighborsValues);
                     dstPixelOffset += destPixelStride;

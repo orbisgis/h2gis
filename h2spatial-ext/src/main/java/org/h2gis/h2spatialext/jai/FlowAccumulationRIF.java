@@ -23,16 +23,12 @@
 package org.h2gis.h2spatialext.jai;
 
 import com.sun.media.jai.opimage.RIFUtil;
-import org.h2.api.GeoRaster;
-import org.h2.util.RasterUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.media.jai.BorderExtender;
 import javax.media.jai.BorderExtenderConstant;
-import javax.media.jai.EnumeratedParameter;
 import javax.media.jai.ImageLayout;
-import javax.media.jai.JAI;
 import javax.media.jai.RasterFactory;
 import java.awt.*;
 import java.awt.image.DataBuffer;
@@ -40,31 +36,17 @@ import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.renderable.ParameterBlock;
 import java.awt.image.renderable.RenderedImageFactory;
-import java.io.IOException;
 
 /**
  * @author Nicolas Fortin
  */
-public class FlowDirectionRIF implements RenderedImageFactory {
-    private Logger LOGGER = LoggerFactory.getLogger(FlowDirectionRIF.class);
-    // Coded direction are CCW order starting from right.
-    public static final int FLOW_TOP_LEFT = 4;
-    public static final int FLOW_TOP = 3;
-    public static final int FLOW_TOP_RIGHT = 2;
-    public static final int FLOW_LEFT = 5;
-    public static final int FLOW_NO_DIRECTION = 0;
-    public static final int FLOW_RIGHT = 1;
-    public static final int FLOW_BOTTOM_LEFT = 6;
-    public static final int FLOW_BOTTOM = 7;
-    public static final int FLOW_BOTTOM_RIGHT = 8;
-    public static final int FLOW_SINK = -1;
+public class FlowAccumulationRIF implements RenderedImageFactory {
+    private Logger LOGGER = LoggerFactory.getLogger(FlowAccumulationRIF.class);
 
-    public static int[] DIRECTIONS = new int[] {FLOW_TOP_LEFT, FLOW_TOP, FLOW_TOP_RIGHT, FLOW_LEFT,FLOW_NO_DIRECTION,
-            FLOW_RIGHT, FLOW_BOTTOM_LEFT, FLOW_BOTTOM, FLOW_BOTTOM_RIGHT};
     /**
      * Empty constructor required
      */
-    public FlowDirectionRIF()
+    public FlowAccumulationRIF()
     {
     }
 
@@ -77,21 +59,31 @@ public class FlowDirectionRIF implements RenderedImageFactory {
         // Get ImageLayout from renderHints if any.
         ImageLayout layout = RIFUtil.getImageLayoutHint(renderHints);
 
-        RenderedImage im = paramBlock.getRenderedSource(0);
+        RenderedImage weightImage = paramBlock.getRenderedSource(0);
+        RenderedImage flowDirectionImage = paramBlock.getRenderedSource(1);
+        double[] noData = (double[])paramBlock.getObjectParameter(0);
+        int weightDataType = weightImage.getSampleModel().getDataType();
+        if(DataBuffer.TYPE_BYTE == weightDataType || DataBuffer.TYPE_USHORT == weightDataType || DataBuffer.TYPE_SHORT
+                == weightDataType) {
+            // Flow weight are coded in insufficient number range
+            SampleModel sampleModel;
+            if(layout == null) {
+                sampleModel = weightImage.getSampleModel();
+                layout = new ImageLayout(weightImage);
+            } else {
+                sampleModel = layout.getSampleModel(weightImage);
+            }
 
-        if(!(im instanceof GeoRaster)) {
-            LOGGER.error(getClass().getSimpleName()+" require Raster spatial metadata");
-            return null;
+            int numBands = weightImage.getSampleModel().getNumBands();
+
+            SampleModel csm = RasterFactory
+                    .createComponentSampleModel(sampleModel, DataBuffer.TYPE_FLOAT, layout.getTileWidth(weightImage),
+                            layout.getTileHeight(weightImage), numBands);
+
+            layout.setSampleModel(csm);
         }
 
-        GeoRaster geoRaster = (GeoRaster) im;
-
-        try {
-            final RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
-            return new FlowDirectionOpImage(geoRaster, metaData, renderHints, layout);
-        } catch (IOException ex) {
-            LOGGER.error("Error while reading metadata", ex);
-            return null;
-        }
+        BorderExtender extender = new BorderExtenderConstant(noData);
+        return new FlowAccumulationOpImage(weightImage,flowDirectionImage, noData, extender, renderHints, layout);
     }
 }

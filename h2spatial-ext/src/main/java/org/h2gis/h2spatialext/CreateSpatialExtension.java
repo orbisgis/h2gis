@@ -22,15 +22,10 @@
  */
 package org.h2gis.h2spatialext;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
 import it.geosolutions.imageio.plugins.arcgrid.AsciiGridsImageMetadata;
 import org.h2gis.drivers.DriverManager;
+import org.h2gis.drivers.asciiGrid.ST_AsciiGridRead;
+import org.h2gis.drivers.asciiGrid.ST_AsciiGridWrite;
 import org.h2gis.drivers.dbf.DBFRead;
 import org.h2gis.drivers.dbf.DBFWrite;
 import org.h2gis.drivers.geojson.GeoJsonRead;
@@ -40,18 +35,41 @@ import org.h2gis.drivers.geojson.ST_GeomFromGeoJSON;
 import org.h2gis.drivers.gpx.GPXRead;
 import org.h2gis.drivers.kml.KMLWrite;
 import org.h2gis.drivers.kml.ST_AsKml;
+import org.h2gis.drivers.osm.OSMRead;
+import org.h2gis.drivers.osm.ST_OSMDownloader;
 import org.h2gis.drivers.shp.SHPRead;
 import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.drivers.worldFileImage.ST_WorldFileImageRead;
 import org.h2gis.drivers.worldFileImage.ST_WorldFileImageWrite;
 import org.h2gis.h2spatialapi.Function;
-import org.h2gis.drivers.osm.OSMRead;
-import org.h2gis.drivers.osm.ST_OSMDownloader;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
-import org.h2gis.h2spatialext.function.spatial.convert.*;
-import org.h2gis.h2spatialext.function.spatial.create.*;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_AsGML;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_Force2D;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_Force3D;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_GeomFromGML;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_GoogleMapLink;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_Holes;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_OSMMapLink;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiLine;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiPoint;
+import org.h2gis.h2spatialext.function.spatial.convert.ST_ToMultiSegments;
+import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircle;
+import org.h2gis.h2spatialext.function.spatial.create.ST_BoundingCircleCenter;
+import org.h2gis.h2spatialext.function.spatial.create.ST_Expand;
+import org.h2gis.h2spatialext.function.spatial.create.ST_Extrude;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeEllipse;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeEnvelope;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGrid;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeGridPoints;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakeLine;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakePoint;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MakePolygon;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MinimumBoundingCircle;
+import org.h2gis.h2spatialext.function.spatial.create.ST_MinimumRectangle;
+import org.h2gis.h2spatialext.function.spatial.create.ST_OctogonalEnvelope;
+import org.h2gis.h2spatialext.function.spatial.create.ST_RingBuffer;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestCoordinate;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ClosestPoint;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_FurthestCoordinate;
@@ -61,7 +79,21 @@ import org.h2gis.h2spatialext.function.spatial.distance.ST_MaxDistance;
 import org.h2gis.h2spatialext.function.spatial.distance.ST_ProjectPoint;
 import org.h2gis.h2spatialext.function.spatial.earth.ST_GeometryShadow;
 import org.h2gis.h2spatialext.function.spatial.earth.ST_SunPosition;
-import org.h2gis.h2spatialext.function.spatial.edit.*;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_AddPoint;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_AddZ;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_CollectionExtract;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_Densify;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_FlipCoordinates;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_Interpolate3DLine;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_MultiplyZ;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_Normalize;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_RemoveHoles;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_RemovePoints;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_RemoveRepeatedPoints;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_Reverse3DLine;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_UpdateZ;
+import org.h2gis.h2spatialext.function.spatial.edit.ST_ZUpdateLineExtremities;
 import org.h2gis.h2spatialext.function.spatial.graph.ST_Graph;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Delaunay;
@@ -69,9 +101,38 @@ import org.h2gis.h2spatialext.function.spatial.mesh.ST_Tessellate;
 import org.h2gis.h2spatialext.function.spatial.mesh.ST_Voronoi;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_Covers;
 import org.h2gis.h2spatialext.function.spatial.predicates.ST_DWithin;
-import org.h2gis.h2spatialext.function.spatial.processing.*;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_LineIntersector;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_LineMerge;
 import org.h2gis.h2spatialext.function.spatial.processing.ST_OffSetCurve;
-import org.h2gis.h2spatialext.function.spatial.properties.*;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_Polygonize;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_PrecisionReducer;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_RingSideBuffer;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_SideBuffer;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_Simplify;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_SimplifyPreserveTopology;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_Snap;
+import org.h2gis.h2spatialext.function.spatial.processing.ST_Split;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_3DArea;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_3DLength;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_3DPerimeter;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_CompactnessRatio;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_Explode;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_Extent;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_IsRectangle;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_IsValid;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_IsValidDetail;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_IsValidReason;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_MinimumDiameter;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_Perimeter;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_XMax;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_XMin;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_YMax;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_YMin;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_ZMax;
+import org.h2gis.h2spatialext.function.spatial.properties.ST_ZMin;
+import org.h2gis.h2spatialext.function.spatial.raster.ST_Band;
+import org.h2gis.h2spatialext.function.spatial.raster.ST_Crop;
+import org.h2gis.h2spatialext.function.spatial.raster.ST_D8FlowAccumulation;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_D8FlowDirection;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_D8Slope;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
@@ -81,7 +142,12 @@ import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleSlope;
 import org.h2gis.h2spatialext.function.spatial.trigonometry.ST_Azimuth;
 import org.h2gis.h2spatialext.function.system.DoubleRange;
 import org.h2gis.h2spatialext.function.system.IntegerRange;
-import org.h2gis.network.graph_creator.*;
+import org.h2gis.network.graph_creator.ST_Accessibility;
+import org.h2gis.network.graph_creator.ST_ConnectedComponents;
+import org.h2gis.network.graph_creator.ST_GraphAnalysis;
+import org.h2gis.network.graph_creator.ST_ShortestPath;
+import org.h2gis.network.graph_creator.ST_ShortestPathLength;
+import org.h2gis.network.graph_creator.ST_ShortestPathTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,6 +156,12 @@ import org.h2gis.drivers.asciiGrid.ST_AsciiGridRead;
 import org.h2gis.drivers.asciiGrid.ST_AsciiGridWrite;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_Band;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_Extrema;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
@@ -99,6 +171,8 @@ import org.h2gis.h2spatialext.function.spatial.raster.ST_Extrema;
  * @author Adam Gouge
  */
 public class CreateSpatialExtension {
+    public static final boolean DEFAULT_RASTER_PROCESSING_IN_MEMORY = false;
+    public static final String RASTER_PROCESSING_IN_MEMORY_KEY = "h2gis.RasterProcessingInMemory";
     private static final Logger LOGGER = LoggerFactory.getLogger(CreateSpatialExtension.class);
 
     /**
@@ -233,7 +307,9 @@ public class CreateSpatialExtension {
                     new ST_Band(),
                     new ST_D8Slope(),
                     new ST_D8FlowDirection(),
-                    new ST_Extrema()));
+                    new ST_Extrema(),
+                    new ST_D8FlowAccumulation(),
+                    new ST_Crop()));
         }
         if(isGeoSolutionsAvailable()) {
             fl.addAll(Arrays.asList(

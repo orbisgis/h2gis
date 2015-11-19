@@ -30,6 +30,7 @@ import javax.media.jai.JAI;
 import javax.media.jai.ROI;
 import javax.media.jai.RenderedOp;
 import org.h2.api.GeoRaster;
+import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
@@ -60,12 +61,25 @@ public class ST_Extrema extends DeterministicScalarFunction {
         if (geoRaster == null) {
             return null;
         }
+        RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
         if (geoRaster.getMetaData().numBands != 1) {
             throw new IllegalArgumentException("ST_Extrema accept only raster with one band");
         }
 
         ParameterBlock pb = new ParameterBlock();
         pb.addSource(geoRaster);
+        
+        RasterUtils.RasterBandMetaData band = metaData.bands[0];
+        
+        if (band.hasNoData) {
+            ParameterBlock pbSub = new ParameterBlock();
+            pbSub.addSource(geoRaster);
+            pbSub.add(new double[]{band.noDataValue});
+
+            ROI roi = new ROI(JAI.create("SubtractConst", pbSub));
+            pb.add(roi);
+        }
+        
         RenderedOp op = JAI.create("extrema", pb);
 
         // Retrieve both the maximum and minimum pixel value
