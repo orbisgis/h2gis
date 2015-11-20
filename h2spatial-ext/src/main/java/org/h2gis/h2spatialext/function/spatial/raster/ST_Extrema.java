@@ -32,6 +32,8 @@ import javax.media.jai.RenderedOp;
 import org.h2.api.GeoRaster;
 import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.h2spatialext.jai.UnaryFunction;
+import org.h2gis.h2spatialext.jai.UnaryFunctionDescriptor;
 
 /**
  * Return the min and max value for one band of the input raster.
@@ -43,6 +45,7 @@ public class ST_Extrema extends DeterministicScalarFunction {
     
     public ST_Extrema(){
         addProperty(PROP_REMARKS, "");
+        UnaryFunctionDescriptor.register();
     }
     
     @Override
@@ -72,14 +75,28 @@ public class ST_Extrema extends DeterministicScalarFunction {
         RasterUtils.RasterBandMetaData band = metaData.bands[0];
         
         if (band.hasNoData) {
-            ParameterBlock pbSub = new ParameterBlock();
-            pbSub.addSource(geoRaster);
-            pbSub.add(new double[]{band.noDataValue});
+            final double nodataValue = band.noDataValue;
+            UnaryFunction<Double, Double> replaceNodata = new UnaryFunction<Double, Double>() {
 
-            ROI roi = new ROI(JAI.create("SubtractConst", pbSub));
+                @Override
+                public Double invoke(Double arg) {
+                    if(Double.compare(arg, nodataValue) != 0) {
+                        return 1d;
+                    } else {
+                        return 0d;
+                    }
+                }
+
+            };
+            ParameterBlock pbNodata = new ParameterBlock().addSource(geoRaster)
+                    .add(replaceNodata);
+
+            RenderedOp image = JAI.create("unaryfunction", pbNodata);
+
+            ROI roi = new ROI(image, 0);
             pb.add(roi);
         }
-        
+
         RenderedOp op = JAI.create("extrema", pb);
 
         // Retrieve both the maximum and minimum pixel value

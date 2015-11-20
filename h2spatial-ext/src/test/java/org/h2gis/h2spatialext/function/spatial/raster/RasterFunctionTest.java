@@ -27,7 +27,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
-import org.h2.util.Utils;
 import org.h2.util.imageio.WKBRasterReader;
 import org.h2.util.imageio.WKBRasterReaderSpi;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -1092,9 +1091,42 @@ public class RasterFunctionTest {
         ResultSet rs = st.executeQuery("select st_extrema(the_raster) from test;");
         assertTrue(rs.next());
         double[] values  = (double[]) rs.getObject(1);
-        assertEquals(50, values[0], 1e-2);
+        assertEquals(60, values[0], 1e-2);
         assertEquals(140, values[1], 1e-2);
-        rs.close();
+        rs.close();        
+    }
+    
+    @Test
+    public void testST_Extrema4() throws SQLException, IOException {
         
+        int width = 10;
+        int height = 10;
+        final double noData = 140;
+        final float pixelSize = 100;
+        final float slope = 0.1f;
+        double[] imageData = new double[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (short)(50 + x * pixelSize * slope);
+            }
+        }
+        // Create image from int array
+        RenderedImage image = imageFromArray(imageData, width, height);
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        ResultSet rs = st.executeQuery("select st_extrema(the_raster) from test;");
+        assertTrue(rs.next());
+        double[] values  = (double[]) rs.getObject(1);
+        assertEquals(50, values[0], 1e-2);
+        assertEquals(130, values[1], 1e-2);
+        rs.close();        
     }
 }

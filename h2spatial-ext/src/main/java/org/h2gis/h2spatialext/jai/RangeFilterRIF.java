@@ -37,7 +37,6 @@ import java.awt.image.renderable.RenderedImageFactory;
  * @author Nicolas Fortin
  */
 public class RangeFilterRIF implements RenderedImageFactory {
-    private Logger LOGGER = LoggerFactory.getLogger(RangeFilterRIF.class);
 
     /**
      * Empty constructor required
@@ -49,7 +48,9 @@ public class RangeFilterRIF implements RenderedImageFactory {
     /**
      * The create method, that will be called to create a RenderedImage (or chain
      * of operators that represents one).
+     * @param renderHints
      */
+    @Override
     public RenderedImage create(ParameterBlock paramBlock, RenderingHints renderHints)
     {
         // Get ImageLayout from renderHints if any.
