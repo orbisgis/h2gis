@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import javax.media.jai.Histogram;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
-import javax.media.jai.ROI;
 import javax.media.jai.operator.ConstantDescriptor;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;

@@ -27,7 +27,6 @@ import org.h2.util.RasterUtils;
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
 import java.awt.Point;
-import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.util.Map;
 

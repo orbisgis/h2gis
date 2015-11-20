@@ -33,6 +33,7 @@ import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 /**
  *
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class ST_Band extends DeterministicScalarFunction{
 
