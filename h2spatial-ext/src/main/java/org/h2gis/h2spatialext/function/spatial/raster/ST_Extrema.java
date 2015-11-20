@@ -45,7 +45,10 @@ public class ST_Extrema extends DeterministicScalarFunction {
 
     
     public ST_Extrema(){
-        addProperty(PROP_REMARKS, "");
+        addProperty(PROP_REMARKS, "Compute the min and max value of a geoRaster.\n"
+                + "Note : "
+                + "- the geoRaster must contains only one band,\n"
+                + "- if the geoRaster has a nodata value, the nodata value is excluded from min and max. ");
         UnaryFunctionDescriptor.register();
     }
     
