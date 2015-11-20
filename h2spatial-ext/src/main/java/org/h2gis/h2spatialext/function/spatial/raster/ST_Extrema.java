@@ -80,20 +80,9 @@ public class ST_Extrema extends DeterministicScalarFunction {
         
         if (band.hasNoData) {
             final double nodataValue = band.noDataValue;
-            UnaryFunction<Double, Double> replaceNodata = new UnaryFunction<Double, Double>() {
-
-                @Override
-                public Double invoke(Double arg) {
-                    if(Double.compare(arg, nodataValue) != 0) {
-                        return 1d;
-                    } else {
-                        return 0d;
-                    }
-                }
-
-            };
+            
             ParameterBlock pbNodata = new ParameterBlock().addSource(geoRaster)
-                    .add(replaceNodata);
+                    .add(new ReplaceNodata(nodataValue));
 
             RenderedOp image = JAI.create("unaryfunction", pbNodata);
 
@@ -107,6 +96,26 @@ public class ST_Extrema extends DeterministicScalarFunction {
         double[] allMins = (double[]) op.getProperty("minimum");
         double[] allMaxs = (double[]) op.getProperty("maximum");
         return new double[]{allMins[0], allMaxs[0]};
+    }
+    
+    /**
+     * A static class to replace the nodata values by 0 and other values by 1. 
+     */
+    private static class ReplaceNodata implements UnaryFunction<Double, Double>{
+        private final double nodataValue;
+        
+        public ReplaceNodata(double nodataValue){
+            this.nodataValue = nodataValue;
+        }
+        
+        @Override
+        public Double invoke(Double arg) {
+            if (Double.compare(arg, nodataValue) != 0) {
+                return 1d;
+            } else {
+                return 0d;
+            }
+        }
     }
     
 }
