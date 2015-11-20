@@ -478,6 +478,7 @@ public class GeojsonImportExportTest {
     }
     
     
+    @Test
     public void testReadGeoJSON1() throws Exception {
         Statement stat = connection.createStatement();        
         ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[10,1]}')");

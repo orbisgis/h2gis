@@ -61,7 +61,7 @@ public class PRJUtil {
     public static int getSRID(Connection connection, File prjFile) throws SQLException, IOException{
         int srid = 0;
         if (prjFile == null) {
-            log.warn("This shapefile has no prj. \n A default srid equals to 0 will be added.");
+            log.warn("This file has no prj. \n A default srid equals to 0 will be added.");
         } else {
             PrjParser parser = new PrjParser();
             String prjString = readPRJFile(prjFile);
@@ -128,7 +128,7 @@ public class PRJUtil {
     
     
     /**
-     * Write a prj file according a given SRID code.
+     * Write a prj file according a given SRID code of a geometry column.
      * @param connection
      * @param location
      * @param geomField
@@ -138,6 +138,18 @@ public class PRJUtil {
      */   
     public static void writePRJ(Connection connection, TableLocation location, String geomField, File fileName) throws SQLException, FileNotFoundException {
         int srid = SFSUtilities.getSRID(connection, location, geomField);
+        writePRJ(connection, srid, fileName);
+    }
+    
+    /**
+     * Write a prj file according a given SRID code.
+     * @param connection
+     * @param srid
+     * @param fileName
+     * @throws SQLException
+     * @throws FileNotFoundException
+     */
+    public static void writePRJ(Connection connection, int srid, File fileName) throws SQLException, FileNotFoundException {
         if (srid != 0) {
             StringBuilder sb = new StringBuilder("SELECT SRTEXT FROM ");
             sb.append("PUBLIC.SPATIAL_REF_SYS ").append(" WHERE SRID = ?");
@@ -151,7 +163,7 @@ public class PRJUtil {
                     printWriter = new PrintWriter(fileName);
                     printWriter.println(rs.getString(1));
                 } else {
-                    log.warn("This SRID { "+ srid +" } is not supported. \n The PRJ file won't be created.");
+                    log.warn("This SRID { " + srid + " } is not supported. \n The PRJ file won't be created.");
                 }
             } finally {
                 if (printWriter != null) {

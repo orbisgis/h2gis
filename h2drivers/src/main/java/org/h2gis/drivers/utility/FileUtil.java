@@ -25,11 +25,16 @@ package org.h2gis.drivers.utility;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Some utilities
  * 
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class FileUtil {
     
@@ -69,5 +74,45 @@ public class FileUtil {
             extension = path.substring(i + 1);
         }
         return extension.equalsIgnoreCase(prefix);
+    }
+
+    /**
+     * @param file File, may not exists
+     * @return File name, without extension
+     */
+    public static String getBaseName(File file) {
+        String name = file.getName();
+        return name.substring(0, name.lastIndexOf('.'));
+    }
+
+    /**
+     * Given a folder, a base file name and a set of extension. Return all files that match the base file name and
+     * one of the extension ignoring case. Not recursive.
+     * @param parentFolder Parent folder that contain all files.
+     * @param nameWithoutExt Base file name (without ext) {@link #getBaseName(File)}
+     * @param extensions Extensions to search
+     * @return Map, key is extension lowercase, value is file that match the base file name
+     */
+    public static Map<String, File> fetchFileByIgnoreCaseExt(File parentFolder, String nameWithoutExt,String...
+            extensions) {
+        Set<String>
+                lookingExt = new HashSet<String>(extensions.length);
+        for(String ext : extensions) {
+            lookingExt.add(ext.toLowerCase());
+        }
+        Map<String, File> result = new HashMap<String, File>(lookingExt.size());
+        File[] filesInParentFolder = parentFolder.listFiles();
+        if(filesInParentFolder != null) {
+            for(File otherFile : filesInParentFolder) {
+                String otherFileName = otherFile.getName();
+                if(otherFileName.startsWith(nameWithoutExt + ".")) {
+                    String fileExt =  otherFileName.substring(otherFileName.lastIndexOf(".") + 1);
+                    if(lookingExt.contains(fileExt.toLowerCase())) {
+                        result.put(fileExt.toLowerCase(), otherFile);
+                    }
+                }
+            }
+        }
+        return result;
     }
 }

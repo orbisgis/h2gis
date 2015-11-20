@@ -235,6 +235,23 @@ public class CreateSpatialExtension {
                 "_ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid," +
                 " _GeometryTypeNameFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) type" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
+        st.execute("create view raster_columns as select " +
+                "TABLE_CATALOG r_table_catalog," +
+                "TABLE_SCHEMA r_table_schema," +
+                "TABLE_NAME r_table_name," +
+                "COLUMN_NAME r_raster_column, " +
+                "0 srid," +
+                "0 scale_x," +
+                "0 scale_y," +
+                "0 blocksize_x," +
+                "0 blocksize_y," +
+                "true same_alignement," +
+                "true regular_blocking," +
+                "3 num_bands," +
+                "null pixel_types," +
+                "null nodata_values," +
+                "null extent" +
+                " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'RASTER'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {
         	InputStreamReader reader = new InputStreamReader(
