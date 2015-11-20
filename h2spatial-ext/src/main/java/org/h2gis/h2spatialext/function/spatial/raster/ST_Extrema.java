@@ -39,6 +39,7 @@ import org.h2gis.h2spatialext.jai.UnaryFunctionDescriptor;
  * Return the min and max value for one band of the input raster.
  *
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class ST_Extrema extends DeterministicScalarFunction {
 
