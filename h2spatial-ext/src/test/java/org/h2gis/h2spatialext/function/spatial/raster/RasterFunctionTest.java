@@ -27,6 +27,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
+import org.h2.util.Utils;
 import org.h2.util.imageio.WKBRasterReader;
 import org.h2.util.imageio.WKBRasterReaderSpi;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
@@ -733,16 +734,7 @@ public class RasterFunctionTest {
     }
 
     private static RenderedImage readImage(URL url) throws IOException {
-        RandomAccessFile randomAccessFile = new RandomAccessFile(url.getFile(), "r");
-        ImageInputStream iis = ImageIO.createImageInputStream(randomAccessFile);
-        try {
-            Iterator<ImageReader> itReaders = ImageIO.getImageReaders(iis);
-            ImageReader imageReader = itReaders.next();
-            imageReader.setInput(iis);
-            return imageReader.readAsRenderedImage(imageReader.getMinIndex(), imageReader.getDefaultReadParam());
-        } finally {
-            iis.close();
-        }
+        return JAI.create("fileload", url.getFile());
     }
 
 

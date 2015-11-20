@@ -23,8 +23,6 @@
 package org.h2gis.h2spatialext.jai;
 
 import com.sun.media.jai.opimage.RIFUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.media.jai.ImageLayout;
 import java.awt.*;
@@ -38,6 +36,7 @@ import java.awt.image.renderable.RenderedImageFactory;
  */
 public class RangeFilterRIF implements RenderedImageFactory {
 
+
     /**
      * Empty constructor required
      */
@@ -48,9 +47,7 @@ public class RangeFilterRIF implements RenderedImageFactory {
     /**
      * The create method, that will be called to create a RenderedImage (or chain
      * of operators that represents one).
-     * @param renderHints
      */
-    @Override
     public RenderedImage create(ParameterBlock paramBlock, RenderingHints renderHints)
     {
         // Get ImageLayout from renderHints if any.
