@@ -203,8 +203,7 @@ public class WorldFileImageReader {
                     imageReader.setInput(imageInputStream);
                     RenderedImageReader renderedImageReader = new RenderedImageReader(imageReader);
                     GeoRaster geoRaster = GeoRasterRenderedImage
-                            .create(renderedImageReader, scaleX, scaleY, upperLeftX, upperLeftY, skewX, skewY, srid,
-                                    Double.NaN);
+                            .create(renderedImageReader, scaleX, scaleY, upperLeftX, upperLeftY, skewX, skewY, srid);
                     InputStream wkbStream = geoRaster.asWKBRaster();
                     try {
                         stmt.setBinaryStream(1, new InputStreamProgressMonitor(progressVisitor,wkbStream,geoRaster

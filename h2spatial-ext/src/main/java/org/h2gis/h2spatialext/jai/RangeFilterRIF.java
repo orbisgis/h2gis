@@ -23,8 +23,6 @@
 package org.h2gis.h2spatialext.jai;
 
 import com.sun.media.jai.opimage.RIFUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.media.jai.ImageLayout;
 import java.awt.*;
@@ -37,7 +35,7 @@ import java.awt.image.renderable.RenderedImageFactory;
  * @author Nicolas Fortin
  */
 public class RangeFilterRIF implements RenderedImageFactory {
-    private Logger LOGGER = LoggerFactory.getLogger(RangeFilterRIF.class);
+
 
     /**
      * Empty constructor required

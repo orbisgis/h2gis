@@ -138,7 +138,7 @@ public class RasterFunctionTest {
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " +
                 "values(?)");
         ps.setBinaryStream(1, GeoRasterRenderedImage.create(image
-                , 1, -1, 0, 0, 0, 0, 27572, 0)
+                , 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();        
@@ -291,7 +291,7 @@ public class RasterFunctionTest {
     @Test
     public void testPlanarImage() throws Exception {
         PlanarImage input = JAI.create("fileload", RasterFunctionTest.class.getResource("calibration.png").getPath());
-        GeoRasterRenderedImage geoRaster = GeoRasterRenderedImage.create(input, 1, -1, 0, 0, 0, 0, 0, 0);
+        GeoRasterRenderedImage geoRaster = GeoRasterRenderedImage.create(input, 1, -1, 0, 0, 0, 0, 0, 0.);
         ImageInputStream is = new MemoryCacheImageInputStream(geoRaster.asWKBRaster());
         WKBRasterReader reader = new WKBRasterReader(new WKBRasterReaderSpi());
         reader.setInput(is);
@@ -311,7 +311,7 @@ public class RasterFunctionTest {
                 "values(?)");
         BufferedImage srcImage = getTestImage(10, 10, 0, 1, 2);
         st.setBinaryStream(1,
-                GeoRasterRenderedImage.create(srcImage, 1, -1, 0, 0, 0, 0, 27572, 0).asWKBRaster
+                GeoRasterRenderedImage.create(srcImage, 1, -1, 0, 0, 0, 0, 27572, 0.).asWKBRaster
                         ());
         st.execute();
         // Call ST_BAND
@@ -351,7 +351,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -383,7 +383,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -415,7 +415,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -446,7 +446,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -928,7 +928,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -965,7 +965,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -985,4 +985,140 @@ public class RasterFunctionTest {
         rs.close();
     }   
     
+    
+    @Test
+    public void testST_Extrema1() throws SQLException, IOException {
+        
+        int width = 10;
+        int height = 10;
+        final double noData = -1;
+        final float pixelSize = 100;
+        final float slope = 0.1f;
+        double[] imageData = new double[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (short)(50 + x * pixelSize * slope);
+            }
+        }
+        // Create image from int array
+        RenderedImage image = imageFromArray(imageData, width, height);
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        ResultSet rs = st.executeQuery("select st_extrema(the_raster) from test;");
+        assertTrue(rs.next());
+        double[] values  = (double[]) rs.getObject(1);
+        assertEquals(50, values[0], 1e-2);
+        assertEquals(140, values[1], 1e-2);
+        rs.close();
+        
+    }
+    
+     @Test(expected = IllegalArgumentException.class)
+    public void testST_Extrema2() throws Exception, Throwable {
+
+        BufferedImage image = new BufferedImage(5, 5, BufferedImage.TYPE_INT_RGB);
+        WritableRaster raster = image.getRaster();
+
+        for (int y = 0; y < 5; y++) {
+            for (int x = 0; x < 5; x++) {
+                int red = 0;
+                int green = 0;
+                int blue = 255;
+                raster.setPixel(x, y, new int[]{red, green, blue});
+            }
+        }
+
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+        try {
+            st.execute("select st_extrema(the_raster) from test;");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+
+    }
+    
+    
+    @Test
+    public void testST_Extrema3() throws SQLException, IOException {
+        
+        int width = 10;
+        int height = 10;
+        final double noData = 50;
+        final float pixelSize = 100;
+        final float slope = 0.1f;
+        double[] imageData = new double[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (short)(50 + x * pixelSize * slope);
+            }
+        }
+        // Create image from int array
+        RenderedImage image = imageFromArray(imageData, width, height);
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        ResultSet rs = st.executeQuery("select st_extrema(the_raster) from test;");
+        assertTrue(rs.next());
+        double[] values  = (double[]) rs.getObject(1);
+        assertEquals(60, values[0], 1e-2);
+        assertEquals(140, values[1], 1e-2);
+        rs.close();        
+    }
+    
+    @Test
+    public void testST_Extrema4() throws SQLException, IOException {
+        
+        int width = 10;
+        int height = 10;
+        final double noData = 140;
+        final float pixelSize = 100;
+        final float slope = 0.1f;
+        double[] imageData = new double[width * height];
+        for(int y =0; y < height; y++) {
+            for(int x = 0; x < width; x++) {
+                imageData[y * width + x] = (short)(50 + x * pixelSize * slope);
+            }
+        }
+        // Create image from int array
+        RenderedImage image = imageFromArray(imageData, width, height);
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        ResultSet rs = st.executeQuery("select st_extrema(the_raster) from test;");
+        assertTrue(rs.next());
+        double[] values  = (double[]) rs.getObject(1);
+        assertEquals(50, values[0], 1e-2);
+        assertEquals(130, values[1], 1e-2);
+        rs.close();        
+    }
 }

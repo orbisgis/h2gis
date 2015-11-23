@@ -15,10 +15,11 @@ import org.slf4j.LoggerFactory;
 
 
 import javax.media.jai.Histogram;
+import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
-import javax.media.jai.ROI;
 import javax.media.jai.operator.ConstantDescriptor;
+import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
@@ -74,10 +75,11 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
             noData = new double[] {1.,metadata.bands[0].noDataValue};
         }
         // Create initial weight of 1 in each cell
+        RenderingHints renderingHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, new ImageLayout(flowDirection));
         RenderedImage weight = ConstantDescriptor.create((float) metadata.width, (float) metadata.height,
-                new Float[] {1.f}, null);
+                new Float[] {1.f}, renderingHints);
         RenderedImage weightAccum = ConstantDescriptor.create((float) metadata.width, (float) metadata.height,
-                new Float[] {0.f}, null);
+                new Float[] {0.f}, renderingHints);
 
         StoredImage weightBuffer = new NoBuffer(weight);
         StoredImage weightAccumBuffer = new NoBuffer(weightAccum);

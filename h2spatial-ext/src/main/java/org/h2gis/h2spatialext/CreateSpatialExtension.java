@@ -23,6 +23,13 @@
 package org.h2gis.h2spatialext;
 
 import it.geosolutions.imageio.plugins.arcgrid.AsciiGridsImageMetadata;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+import javax.media.jai.JAI;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.asciiGrid.ST_AsciiGridRead;
 import org.h2gis.drivers.asciiGrid.ST_AsciiGridWrite;
@@ -135,6 +142,7 @@ import org.h2gis.h2spatialext.function.spatial.raster.ST_Crop;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_D8FlowAccumulation;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_D8FlowDirection;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_D8Slope;
+import org.h2gis.h2spatialext.function.spatial.raster.ST_Extrema;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
@@ -150,14 +158,6 @@ import org.h2gis.network.graph_creator.ST_ShortestPathLength;
 import org.h2gis.network.graph_creator.ST_ShortestPathTree;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.media.jai.JAI;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
 
 
 /**
@@ -303,6 +303,7 @@ public class CreateSpatialExtension {
                     new ST_Band(),
                     new ST_D8Slope(),
                     new ST_D8FlowDirection(),
+                    new ST_Extrema(),
                     new ST_D8FlowAccumulation(),
                     new ST_Crop()));
         }
