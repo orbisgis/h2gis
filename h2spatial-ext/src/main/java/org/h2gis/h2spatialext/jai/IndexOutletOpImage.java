@@ -44,10 +44,10 @@ public class IndexOutletOpImage extends Area3x3OpImage {
 
     private AtomicInteger maxOutletIndex = new AtomicInteger(1);
 
-    public IndexOutletOpImage(RenderedImage weightSource, RenderedImage flowDirectionSource, double[] noData,
+    public IndexOutletOpImage(RenderedImage flowDirectionSource, double[] noData,
             BorderExtender extender, Map config, ImageLayout layout) {
         // Require 1 neighbors around the source pixel
-        super(Arrays.asList(weightSource, flowDirectionSource), extender, config, layout);
+        super(flowDirectionSource, extender, config, layout);
         bandsNoDataValue = noData;
     }
 
