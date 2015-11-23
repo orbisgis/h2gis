@@ -23,12 +23,19 @@
 
 package org.h2gis.h2spatialext.function.spatial.raster;
 
+import java.awt.*;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Map;
+import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import javax.media.jai.ROI;
 import javax.media.jai.RenderedOp;
+import javax.media.jai.operator.ConstantDescriptor;
+
 import org.h2.api.GeoRaster;
 import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
@@ -58,6 +65,32 @@ public class ST_Extrema extends DeterministicScalarFunction {
     }
 
     /**
+     * Fetch the first data value
+     * @param im image
+     * @param noData nodata
+     * @return data value or null if not found
+     */
+    private static Double fetchDataValue(RenderedImage im, double noData) {
+        for(int yTile = im.getMinTileY(); yTile < im.getNumYTiles() - im.getMinTileY() ;
+            yTile++) {
+            for(int xTile = im.getMinTileX(); xTile < im.getNumXTiles() - im.getMinTileX
+                    (); xTile++) {
+                Raster tile  = im.getTile(xTile, yTile);
+                double[] samples = new double[tile.getWidth()];
+                for(int y = tile.getMinY(); y < tile.getHeight() - tile.getMinY(); y++) {
+                    tile.getSamples(0, y, tile.getWidth(), 1, 0, samples);
+                    for(double sample : samples) {
+                        if(Double.compare(sample, noData) != 0) {
+                            return sample;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
      * 
      * @param geoRaster
      * @return
@@ -74,20 +107,33 @@ public class ST_Extrema extends DeterministicScalarFunction {
         }
 
         ParameterBlock pb = new ParameterBlock();
-        pb.addSource(geoRaster);
         
         RasterUtils.RasterBandMetaData band = metaData.bands[0];
         
         if (band.hasNoData) {
+            // Image has NoData
+            // ROI can't be used as it is very slow when using Image as ROI
+            // Using RangeFilter we will just replace noData by any non-nodata value
             final double nodataValue = band.noDataValue;
-            
-            ParameterBlock pbNodata = new ParameterBlock().addSource(geoRaster)
-                    .add(new ReplaceNodata(nodataValue));
-
-            RenderedOp image = JAI.create("unaryfunction", pbNodata);
-
-            ROI roi = new ROI(image, 0);
-            pb.add(roi);
+            Double dataValue = fetchDataValue(geoRaster, nodataValue);
+            if(dataValue != null) {
+                ParameterBlock pbNodata = new ParameterBlock();
+                // Constant stick to the image layout of georaster for tile compatibility
+                RenderingHints renderingHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, new ImageLayout(geoRaster));
+                pbNodata.addSource(ConstantDescriptor.create((float) metaData.width, (float) metaData.height,
+                        new Double[]{dataValue}, renderingHints));
+                pbNodata.addSource(geoRaster);
+                pbNodata.add(new double[][]{{nodataValue, nodataValue}});
+                pbNodata.add(false); // return dataValue on nodata
+                RenderedOp image = JAI.create("RangeFilter", pbNodata, renderingHints);
+                pb.addSource(image);
+            } else {
+                // There is only no-data in this image
+                return null;
+            }
+            // Loop through bands to fetch pixel != nodata
+        } else {
+            pb.addSource(geoRaster);
         }
 
         RenderedOp op = JAI.create("extrema", pb);
