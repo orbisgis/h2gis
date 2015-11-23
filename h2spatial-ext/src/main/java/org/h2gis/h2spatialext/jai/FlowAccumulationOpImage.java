@@ -48,7 +48,7 @@ public class FlowAccumulationOpImage extends Area3x3OpImage {
     private static final int DIR = 1;
     // Sum weight where direction goes to central cell
     // Ex: If on right cell the direction is left them sum it
-    private static final double[] DO_ACCUMULATION = new double[] {
+    public static final double[] DO_ACCUMULATION = new double[] {
             FlowDirectionRIF.FLOW_BOTTOM_RIGHT,
             FlowDirectionRIF.FLOW_BOTTOM,
             FlowDirectionRIF.FLOW_BOTTOM_LEFT,

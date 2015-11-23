@@ -41,6 +41,8 @@ import java.awt.image.SampleModel;
 import java.awt.image.renderable.ParameterBlock;
 import java.awt.image.renderable.RenderedImageFactory;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Nicolas Fortin
@@ -59,8 +61,16 @@ public class FlowDirectionRIF implements RenderedImageFactory {
     public static final int FLOW_BOTTOM_RIGHT = 8;
     public static final int FLOW_SINK = -1;
 
-    public static int[] DIRECTIONS = new int[] {FLOW_TOP_LEFT, FLOW_TOP, FLOW_TOP_RIGHT, FLOW_LEFT,FLOW_NO_DIRECTION,
-            FLOW_RIGHT, FLOW_BOTTOM_LEFT, FLOW_BOTTOM, FLOW_BOTTOM_RIGHT};
+    public static final int[] DIRECTIONS = new int[] {FLOW_TOP_LEFT, FLOW_TOP, FLOW_TOP_RIGHT, FLOW_LEFT,
+            FLOW_NO_DIRECTION, FLOW_RIGHT, FLOW_BOTTOM_LEFT, FLOW_BOTTOM, FLOW_BOTTOM_RIGHT};
+    public static final Map<Integer, Integer> DIRECTIONS_INDEX;
+    static {
+        DIRECTIONS_INDEX = new HashMap<Integer, Integer>(DIRECTIONS.length);
+        for(int i=0;i<DIRECTIONS.length;i++) {
+            DIRECTIONS_INDEX.put(DIRECTIONS[i], i);
+        }
+    }
+
     /**
      * Empty constructor required
      */
