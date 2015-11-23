@@ -79,7 +79,7 @@ public class ST_WorldFileImageRead extends AbstractFunction implements ScalarFun
             PlanarImage input = JAI.create("fileload", rasterFile.getAbsolutePath());            
             return GeoRasterRenderedImage.create(input, rasterWorldFileReader.getScaleX(), rasterWorldFileReader.getScaleY(),
                     rasterWorldFileReader.getUpperLeftX(), rasterWorldFileReader.getUpperLeftY(), rasterWorldFileReader
-                    .getSkewX(), rasterWorldFileReader.getSkewY(), rasterWorldFileReader.getSrid(), 0);
+                    .getSkewX(), rasterWorldFileReader.getSkewY(), rasterWorldFileReader.getSrid());
         } else {
             throw new IllegalArgumentException("The file " + fileName + " doesn't exist.");
         }

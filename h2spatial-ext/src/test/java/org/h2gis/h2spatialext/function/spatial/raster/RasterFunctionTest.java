@@ -138,7 +138,7 @@ public class RasterFunctionTest {
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " +
                 "values(?)");
         ps.setBinaryStream(1, GeoRasterRenderedImage.create(image
-                , 1, -1, 0, 0, 0, 0, 27572, 0)
+                , 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();        
@@ -291,7 +291,7 @@ public class RasterFunctionTest {
     @Test
     public void testPlanarImage() throws Exception {
         PlanarImage input = JAI.create("fileload", RasterFunctionTest.class.getResource("calibration.png").getPath());
-        GeoRasterRenderedImage geoRaster = GeoRasterRenderedImage.create(input, 1, -1, 0, 0, 0, 0, 0, 0);
+        GeoRasterRenderedImage geoRaster = GeoRasterRenderedImage.create(input, 1, -1, 0, 0, 0, 0, 0, 0.);
         ImageInputStream is = new MemoryCacheImageInputStream(geoRaster.asWKBRaster());
         WKBRasterReader reader = new WKBRasterReader(new WKBRasterReaderSpi());
         reader.setInput(is);
@@ -311,7 +311,7 @@ public class RasterFunctionTest {
                 "values(?)");
         BufferedImage srcImage = getTestImage(10, 10, 0, 1, 2);
         st.setBinaryStream(1,
-                GeoRasterRenderedImage.create(srcImage, 1, -1, 0, 0, 0, 0, 27572, 0).asWKBRaster
+                GeoRasterRenderedImage.create(srcImage, 1, -1, 0, 0, 0, 0, 27572, 0.).asWKBRaster
                         ());
         st.execute();
         // Call ST_BAND
@@ -351,7 +351,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -383,7 +383,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -415,7 +415,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -446,7 +446,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -928,7 +928,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -965,7 +965,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 10, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
@@ -1041,7 +1041,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0)
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
         ps.close();
