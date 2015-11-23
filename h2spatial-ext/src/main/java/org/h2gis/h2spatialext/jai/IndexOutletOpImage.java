@@ -40,15 +40,17 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @author Erwan Bocher
  */
 public class IndexOutletOpImage extends Area3x3OpImage {
-    private final double[] bandsNoDataValue;
+    private final double noDataValue;
+    private final boolean hasNoData;
 
     private AtomicInteger maxOutletIndex = new AtomicInteger(1);
 
-    public IndexOutletOpImage(RenderedImage flowDirectionSource, double[] noData,
+    public IndexOutletOpImage(RenderedImage flowDirectionSource,boolean hasNoData ,double noData,
             BorderExtender extender, Map config, ImageLayout layout) {
         // Require 1 neighbors around the source pixel
         super(flowDirectionSource, extender, config, layout);
-        bandsNoDataValue = noData;
+        noDataValue = noData;
+        this.hasNoData = hasNoData;
     }
 
     @Override
@@ -59,16 +61,17 @@ public class IndexOutletOpImage extends Area3x3OpImage {
     @Override
     protected double computeCell(int band, double[][] srcNeighborsValues) {
         final double[] dirValues = srcNeighborsValues[0];
-        final double noDataValue = bandsNoDataValue == null ? Double.NaN : bandsNoDataValue[0];
-        if(bandsNoDataValue == null || Double.compare(dirValues[SRC_INDEX], noDataValue) != 0) {
+        // If flow of current cell goes somewhere
+        if(!hasNoData || Double.compare(dirValues[SRC_INDEX], noDataValue) != 0) {
             // Look for incoming stream
             final double outputCellDir = dirValues[FlowDirectionRIF.DIRECTIONS_INDEX.get((int)dirValues[SRC_INDEX])];
-            // If output cell goes somewhere
-            if(!FlowDirectionRIF.DIRECTIONS_INDEX.containsKey((int)outputCellDir)) {
+            // If output cell flow ends (border of image or sink)
+            Integer neighDirection = FlowDirectionRIF.DIRECTIONS_INDEX.get((int) outputCellDir);
+            if(neighDirection == null || neighDirection.equals(SRC_INDEX)) {
                 // Look at neighbor if stream is incoming
                 for (int idNeigh = 0; idNeigh < dirValues.length; idNeigh++) {
                     // If this is not our cell, and neighbor is not nodata
-                    if(idNeigh != SRC_INDEX && (bandsNoDataValue == null || Double.compare(dirValues[idNeigh], noDataValue)
+                    if(idNeigh != SRC_INDEX && (!hasNoData || Double.compare(dirValues[idNeigh], noDataValue)
                             != 0) && dirValues[idNeigh] == FlowAccumulationOpImage.DO_ACCUMULATION[idNeigh]) {
                         // Stream goes in but do not goes out
                         return maxOutletIndex.getAndAdd(1);

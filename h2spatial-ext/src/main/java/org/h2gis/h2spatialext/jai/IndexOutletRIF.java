@@ -62,29 +62,24 @@ public class IndexOutletRIF implements RenderedImageFactory {
         ImageLayout layout = RIFUtil.getImageLayoutHint(renderHints);
 
         RenderedImage im = paramBlock.getRenderedSource(0);
-
-        if(!(im instanceof GeoRaster)) {
-            LOGGER.error(getClass().getSimpleName()+" require Raster spatial metadata");
-            return null;
-        }
-
-        GeoRaster geoRaster = (GeoRaster) im;
-
-        try {
-            final RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
-
-
-            double[] noData = new double[metaData.numBands];
-            for(int idBand = 0; idBand < noData.length; idBand++) {
-                RasterUtils.RasterBandMetaData bandMetaData = metaData.bands[idBand];
-                noData[idBand] = bandMetaData.hasNoData ? bandMetaData.noDataValue : Double.NaN;
+        boolean hasNoData = false;
+        double noData = 0;
+        if (im instanceof GeoRaster) {
+            try {
+                GeoRaster geoRaster = (GeoRaster) im;
+                final RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
+                hasNoData = metaData.bands[0].hasNoData;
+                if(hasNoData) {
+                    noData = metaData.bands[0].noDataValue;
+                }
+            } catch (IOException ex) {
+                LOGGER.error("Error while reading metadata", ex);
+                return null;
             }
-            BorderExtender extender = new BorderExtenderConstant(noData);
-
-            return new IndexOutletOpImage(im,noData, extender, renderHints, layout);
-        } catch (IOException ex) {
-            LOGGER.error("Error while reading metadata", ex);
-            return null;
         }
+
+        BorderExtender extender = new BorderExtenderConstant(new double[]{0});
+        return new IndexOutletOpImage(im, hasNoData,noData, extender,
+                renderHints, layout);
     }
 }

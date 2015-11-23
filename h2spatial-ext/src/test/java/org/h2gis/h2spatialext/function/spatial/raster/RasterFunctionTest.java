@@ -24,14 +24,15 @@
 package org.h2gis.h2spatialext.function.spatial.raster;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import org.h2.api.GeoRaster;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
-import org.h2.util.Utils;
 import org.h2.util.imageio.WKBRasterReader;
 import org.h2.util.imageio.WKBRasterReaderSpi;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.h2spatialext.jai.IndexOutletDescriptor;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -78,7 +79,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Iterator;
-import org.h2.api.GeoRaster;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -383,8 +383,7 @@ public class RasterFunctionTest {
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
                 + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
-                .asWKBRaster());
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.).asWKBRaster());
         ps.execute();
         ps.close();
         try {
@@ -413,8 +412,7 @@ public class RasterFunctionTest {
         st.execute("drop table if exists test");
         st.execute("create table test(id identity, the_raster raster)");
         // Create table with test image
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
-                + "values(?)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
         ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, 1, -1, 0, 0, 0, 0, 27572, 0.)
                 .asWKBRaster());
         ps.execute();
@@ -1073,8 +1071,7 @@ public class RasterFunctionTest {
         st.execute("drop table if exists test");
         st.execute("create table test(id identity, the_raster raster)");
         // Create table with test image
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
-                + "values(?)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
         ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
                 .asWKBRaster());
         ps.execute();
@@ -1107,8 +1104,7 @@ public class RasterFunctionTest {
         st.execute("drop table if exists test");
         st.execute("create table test(id identity, the_raster raster)");
         // Create table with test image
-        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
-                + "values(?)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
         ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
                 .asWKBRaster());
         ps.execute();
@@ -1120,5 +1116,15 @@ public class RasterFunctionTest {
         assertEquals(50, values[0], 1e-2);
         assertEquals(130, values[1], 1e-2);
         rs.close();        
+    }
+
+    @Test
+    public void testIndexOutlet() throws IOException {
+        IndexOutletDescriptor.register();
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("flowDir2.pgm"));
+        RenderedImage indexedOutlet = JAI.create("IndexOutlet", im);
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("expectedOutlet.pgm"));
+        assertImageBufferEquals(expectedImage, indexedOutlet);
     }
 }
