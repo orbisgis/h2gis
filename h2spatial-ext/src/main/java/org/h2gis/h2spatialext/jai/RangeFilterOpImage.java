@@ -59,7 +59,7 @@ public class RangeFilterOpImage extends PointOpImage {
             boolean returnFilterOnMatch, ImageLayout layout, Map configuration) {
         super(source0, filter, layout, configuration, true);
         this.minMaxMatchFilter = minMaxMatchFilter;
-        this.returnFilterOnMatch = true;
+        this.returnFilterOnMatch = returnFilterOnMatch;
         if(getNumBands() != minMaxMatchFilter.length) {
             throw new IllegalArgumentException(
                     "Input image have " + getNumBands() + " bands and constant filter have " +
