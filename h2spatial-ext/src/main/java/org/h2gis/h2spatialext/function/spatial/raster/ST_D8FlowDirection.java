@@ -63,7 +63,11 @@ public class ST_D8FlowDirection extends DeterministicScalarFunction {
         ParameterBlock pb = new ParameterBlock();
         pb.addSource(geoRaster);
         PlanarImage output = JAI.create("D8FlowDirection", pb);
+        Double nodata = null;
+        if(metadata.bands[0].hasNoData) {
+            nodata = metadata.bands[0].noDataValue;
+        }
         return GeoRasterRenderedImage.create(output, metadata.scaleX, metadata.scaleY, metadata.ipX, metadata.ipY,
-                metadata.skewX, metadata.skewY, metadata.srid, 0);
+                metadata.skewX, metadata.skewY, metadata.srid, nodata);
     }
 }
