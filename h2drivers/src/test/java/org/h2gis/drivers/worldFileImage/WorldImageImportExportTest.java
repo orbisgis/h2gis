@@ -42,6 +42,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.h2.jdbc.JdbcSQLException;
@@ -102,6 +103,12 @@ public class WorldImageImportExportTest {
             assertEquals(-2.5, metaData.scaleY, 1e-2);
             assertEquals(0., metaData.skewX, 1e-6);
             assertEquals(0., metaData.skewY, 1e-6);
+            assertFalse(metaData.bands[0].hasNoData);
+            assertFalse(metaData.bands[1].hasNoData);
+            assertFalse(metaData.bands[2].hasNoData);
+            assertEquals(RasterUtils.PixelType.PT_8BUI, metaData.bands[0].pixelType);
+            assertEquals(RasterUtils.PixelType.PT_8BUI, metaData.bands[1].pixelType);
+            assertEquals(RasterUtils.PixelType.PT_8BUI, metaData.bands[2].pixelType);
         } finally {
             is.close();
         }
@@ -132,6 +139,12 @@ public class WorldImageImportExportTest {
             assertEquals(-2.5, metaData.scaleY, 1e-2);
             assertEquals(0., metaData.skewX, 1e-6);
             assertEquals(0., metaData.skewY, 1e-6);
+            assertFalse(metaData.bands[0].hasNoData);
+            assertFalse(metaData.bands[1].hasNoData);
+            assertFalse(metaData.bands[2].hasNoData);
+            assertEquals(RasterUtils.PixelType.PT_8BUI, metaData.bands[0].pixelType);
+            assertEquals(RasterUtils.PixelType.PT_8BUI, metaData.bands[1].pixelType);
+            assertEquals(RasterUtils.PixelType.PT_8BUI, metaData.bands[2].pixelType);
         } finally {
             is.close();
         }
@@ -172,6 +185,12 @@ public class WorldImageImportExportTest {
             assertEquals(-2.5, metaData.scaleY, 1e-2);
             assertEquals(0., metaData.skewX, 1e-6);
             assertEquals(0., metaData.skewY, 1e-6);
+            assertFalse(metaData.bands[0].hasNoData);
+            assertFalse(metaData.bands[1].hasNoData);
+            assertFalse(metaData.bands[2].hasNoData);
+            assertEquals(RasterUtils.PixelType.PT_8BUI, metaData.bands[0].pixelType);
+            assertEquals(RasterUtils.PixelType.PT_8BUI, metaData.bands[1].pixelType);
+            assertEquals(RasterUtils.PixelType.PT_8BUI, metaData.bands[2].pixelType);
         } finally {
             is.close();
         }
