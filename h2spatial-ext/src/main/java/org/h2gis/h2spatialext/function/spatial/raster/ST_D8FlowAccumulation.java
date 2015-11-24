@@ -6,13 +6,15 @@ import org.h2.util.RasterUtils;
 import org.h2.util.Utils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.h2spatialext.function.spatial.raster.cache.JDBCBuffer;
+import org.h2gis.h2spatialext.function.spatial.raster.cache.MemoryBuffer;
+import org.h2gis.h2spatialext.function.spatial.raster.cache.NoBuffer;
+import org.h2gis.h2spatialext.function.spatial.raster.cache.StoredImage;
 import org.h2gis.h2spatialext.jai.FlowAccumulationDescriptor;
 import org.h2gis.h2spatialext.jai.FlowAccumulationOpImage;
 import org.h2gis.h2spatialext.jai.RangeFilterDescriptor;
-import org.h2gis.utilities.JDBCUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 
 import javax.media.jai.Histogram;
 import javax.media.jai.ImageLayout;
@@ -23,12 +25,8 @@ import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -174,124 +172,6 @@ public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
             return new JDBCBuffer(image, connection, metaData);
         } else {
             return new MemoryBuffer(image);
-        }
-    }
-
-    private interface StoredImage {
-        RenderedImage getImage() throws SQLException;
-        void free() throws SQLException;
-    }
-
-    private static class NoBuffer implements StoredImage {
-        private RenderedImage image;
-
-        public NoBuffer(RenderedImage image) {
-            this.image = image;
-        }
-
-        @Override
-        public RenderedImage getImage() throws SQLException {
-            return image;
-        }
-
-        @Override
-        public void free() throws SQLException {
-            image = null;
-        }
-    }
-
-    private static class MemoryBuffer implements StoredImage {
-        private RenderedImage imageCopy;
-        public MemoryBuffer(PlanarImage image) {
-            imageCopy = image.getAsBufferedImage();
-        }
-
-        @Override
-        public RenderedImage getImage() {
-            return imageCopy;
-        }
-
-        @Override
-        public void free() {
-            imageCopy = null;
-        }
-    }
-
-    private static class JDBCBuffer implements StoredImage {
-        private String tempTableName;
-        private static int globalCpt = 0;
-        private Connection connection;
-        private ResultSet rs = null;
-        private RenderedImage storedImage = null;
-        private boolean dropIntermediate;
-
-        public JDBCBuffer(RenderedImage image, Connection connection, RasterUtils.RasterMetaData metaData) throws
-                SQLException, IOException {
-            globalCpt++;
-            dropIntermediate = Utils.getProperty("h2gis.dropTableCache", true);
-            this.connection = connection;
-            tempTableName = findUniqueName();
-            Statement st = connection.createStatement();
-            try {
-                String tmp = "TEMPORARY";
-                if(!dropIntermediate) {
-                    tmp = "";
-                }
-                PreparedStatement pst = connection.prepareStatement(
-                        "CREATE "+tmp+" TABLE " + tempTableName + "(the_raster raster) as select ?::raster;");
-                try {
-                    InputStream inputStream = GeoRasterRenderedImage.create(image, metaData).asWKBRaster();
-                    try {
-                        pst.setBinaryStream(1, inputStream);
-                        pst.execute();
-                    } finally {
-                        inputStream.close();
-                    }
-                } finally {
-                    pst.close();
-                }
-            } finally {
-                st.close();
-            }
-        }
-
-        @Override
-        public RenderedImage getImage() throws SQLException {
-            if(storedImage == null) {
-                Statement st = connection.createStatement();
-                rs = st.executeQuery("SELECT THE_RASTER FROM "+tempTableName);
-                try {
-                    rs.next();
-                    storedImage = (RenderedImage)rs.getObject(1);
-                } finally {
-                    rs.close();
-                }
-            }
-            return storedImage;
-        }
-
-        private String findUniqueName() throws SQLException {
-            int cpt = globalCpt;
-            String testName = "TMP_FLOWACCUM_"+ cpt;
-            while(JDBCUtilities.tableExists(connection, testName)) {
-                testName = "TMP_FLOWACCUM_"+ ++cpt;
-            }
-            return testName;
-        }
-
-        @Override
-        public void free() throws SQLException {
-            if(rs != null) {
-                rs.close();
-            }
-            Statement st = connection.createStatement();
-            try {
-                if(dropIntermediate) {
-                    st.execute("DROP TABLE IF EXISTS " + tempTableName);
-                }
-            } finally {
-                st.close();
-            }
         }
     }
 }

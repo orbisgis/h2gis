@@ -34,39 +34,27 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Flow accumulation operation on raster
+ * Propagate outlet index in raster according to reverse flow direction
  * @author Nicolas Fortin
  * @author Erwan Bocher
  */
-public class FlowAccumulationOpImage extends Area3x3OpImage {
-    private final double[] bandsNoDataValue;
-    public static final String PROPERTY_NON_ZERO_FLOW_ACCUM = "nonZeroFlowAccum";
+public class IndexPropagationOpImage extends Area3x3OpImage {
+    private final double noDataValue;
+    private final boolean hasNoData;
+    public static final String PROPERTY_EFFECTIVE_INDEX_COPY = "effectiveIndexCopy";
 
-    private AtomicBoolean nonZeroFlowAccum = new AtomicBoolean(false);
+    private AtomicBoolean effectiveIndexCopy = new AtomicBoolean(false);
     // Index of raster
-    private static final int WEIGHT = 0;
+    private static final int INDEX = 0;
     private static final int DIR = 1;
-    // Sum weight where direction goes to central cell
-    // Ex: If on right cell the direction is left them sum it
-    public static final double[] DO_ACCUMULATION = new double[] {
-            FlowDirectionRIF.FLOW_BOTTOM_RIGHT,
-            FlowDirectionRIF.FLOW_BOTTOM,
-            FlowDirectionRIF.FLOW_BOTTOM_LEFT,
-            FlowDirectionRIF.FLOW_RIGHT,
-            FlowDirectionRIF.FLOW_NO_DIRECTION,
-            FlowDirectionRIF.FLOW_LEFT,
-            FlowDirectionRIF.FLOW_TOP_RIGHT,
-            FlowDirectionRIF.FLOW_TOP,
-            FlowDirectionRIF.FLOW_TOP_LEFT
-    };
 
-    public FlowAccumulationOpImage(RenderedImage weightSource,RenderedImage flowDirectionSource, double[] noData,
-            BorderExtender extender,
-            Map config, ImageLayout layout) {
+    public IndexPropagationOpImage(RenderedImage weightSource, RenderedImage flowDirectionSource, boolean hasNoData,
+            double noData, BorderExtender extender, Map config, ImageLayout layout) {
         // Require 1 neighbors around the source pixel
         super(Arrays.asList(weightSource, flowDirectionSource), extender, config, layout);
-        bandsNoDataValue = noData;
-        properties.setProperty(PROPERTY_NON_ZERO_FLOW_ACCUM, nonZeroFlowAccum);
+        this.hasNoData = hasNoData;
+        this.noDataValue = noData;
+        properties.setProperty(PROPERTY_EFFECTIVE_INDEX_COPY, effectiveIndexCopy);
     }
 
     @Override
@@ -80,7 +68,7 @@ public class FlowAccumulationOpImage extends Area3x3OpImage {
         final int maxX = destRect.x + destRect.width + 1;
         for(int y = minY; y < maxY; y++) {
             for(int x = minX; x < maxX; x++) {
-                if(Double.compare(source.getSampleDouble(x, y, WEIGHT), 0.d) != 0) {
+                if(Double.compare(source.getSampleDouble(x, y, INDEX), 0.d) != 0) {
                     doComputation = true;
                     break;
                 }
@@ -93,22 +81,21 @@ public class FlowAccumulationOpImage extends Area3x3OpImage {
 
     @Override
     protected double computeCell(int band, double[][] srcNeighborsValues) {
-        final double[] weightValues = srcNeighborsValues[WEIGHT];
+        final double[] outletIndexValues = srcNeighborsValues[INDEX];
         final double[] dirValues = srcNeighborsValues[DIR];
-        final double noDataValue = bandsNoDataValue == null ? Double.NaN : bandsNoDataValue[DIR];
-        if(bandsNoDataValue == null || Double.compare(dirValues[SRC_INDEX], noDataValue) != 0) {
-            double sum = 0;
-            for (int idNeigh = 0; idNeigh < weightValues.length; idNeigh++) {
-                // If this is not our cell, and neighbor is not nodata
-                if(idNeigh != SRC_INDEX && (bandsNoDataValue == null || Double.compare(dirValues[idNeigh], noDataValue)
-                        != 0) && dirValues[idNeigh] == DO_ACCUMULATION[idNeigh]) {
-                    sum += weightValues[idNeigh];
-                }
+        // Get neighbor index following direction of current cell
+        Integer neighIndex = FlowDirectionRIF.DIRECTIONS_INDEX.get((int)dirValues[SRC_INDEX]);
+        // If neigh direction is not nodata
+        if(neighIndex != null && neighIndex != SRC_INDEX &&
+                (!hasNoData || Double.compare(dirValues[neighIndex], noDataValue) != 0)) {
+            final double outletIndex = outletIndexValues[neighIndex];
+            // Check if we copy nothing or an actual outlet
+            if(Double.compare(outletIndex, 0) != 0) {
+                effectiveIndexCopy.set(true);
+                return outletIndex;
+            } else {
+                return 0;
             }
-            if(!nonZeroFlowAccum.get() && Double.compare(sum, 0) != 0) {
-                nonZeroFlowAccum.set(true);
-            }
-            return sum;
         } else {
             return 0;
         }

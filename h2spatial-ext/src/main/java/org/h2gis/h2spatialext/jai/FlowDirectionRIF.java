@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * RenderedImageFactory for D8_FlowDirection
  * @author Nicolas Fortin
  */
 public class FlowDirectionRIF implements RenderedImageFactory {
