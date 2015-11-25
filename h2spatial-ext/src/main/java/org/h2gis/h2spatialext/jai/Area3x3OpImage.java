@@ -30,8 +30,7 @@ import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RasterAccessor;
 import javax.media.jai.RasterFactory;
 import javax.media.jai.RasterFormatTag;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
@@ -132,7 +131,8 @@ public abstract class Area3x3OpImage extends AreaOpImage {
                 pbjai.setSource(JAI.create("format", pbConvert), srcIndex++);
             }
         }
-        RenderedImage merged = JAI.create("bandmerge", pbjai, null);
+        RenderingHints renderingHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, new ImageLayout(sources.iterator().next()));
+        RenderedImage merged = JAI.create("bandmerge", pbjai, renderingHints);
         return merged;
     }
 
@@ -142,7 +142,8 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         RasterFormatTag[] formatTags = getFormatTags();
         Rectangle srcRect = mapDestRect(destRect, 0);
         Raster source = sources[0];
-        RasterAccessor sourceAccessor = new RasterAccessor(source, srcRect, formatTags[0], null);
+        RasterAccessor sourceAccessor = new RasterAccessor(source, srcRect, formatTags[0],
+                getSourceImage(0).getColorModel());
         // last tag id is for destination
         RasterAccessor dst = new RasterAccessor(dest, destRect, formatTags[sources.length], getColorModel());
         SrcDataStruct srcDataStruct = dataStructFromRasterAccessor(sourceAccessor);
@@ -233,8 +234,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             srcBandOffsets = rasterAccess.getBandOffsets();
             srcPixelStride = rasterAccess.getPixelStride();
             srcScanlineStride = rasterAccess.getScanlineStride();
-            destNumBands = rasterAccess.getNumBands();
-            rightPixelOffset = rasterAccess.getNumBands() * 2;
+            rightPixelOffset = srcPixelStride * 2;
             bottomScanlineOffset = srcScanlineStride * 2;
         }
 
@@ -243,7 +243,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int srcPixelStride;
         final int srcScanlineStride;
         final int rightPixelOffset;
-        final int destNumBands;
         final int bottomScanlineOffset;
 
         @Override
@@ -251,13 +250,13 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             double[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset], // top left
-                    srcData[srcPixelOffset + destNumBands], // top
+                    srcData[srcPixelOffset + srcPixelStride], // top
                     srcData[srcPixelOffset + rightPixelOffset], // top right
                     srcData[srcPixelOffset + srcScanlineStride], // left
-                    srcData[srcPixelOffset + srcScanlineStride + destNumBands], //center
+                    srcData[srcPixelOffset + srcScanlineStride + srcPixelStride], //center
                     srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
                     srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
-                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + srcPixelStride], // bottom
                     srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
             };
         }
@@ -307,8 +306,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             srcBandOffsets = rasterAccess.getBandOffsets();
             srcPixelStride = rasterAccess.getPixelStride();
             srcScanlineStride = rasterAccess.getScanlineStride();
-            destNumBands = rasterAccess.getNumBands();
-            rightPixelOffset = rasterAccess.getNumBands() * 2;
+            rightPixelOffset = srcPixelStride * 2;
             bottomScanlineOffset = srcScanlineStride * 2;
         }
 
@@ -317,7 +315,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int srcPixelStride;
         final int srcScanlineStride;
         final int rightPixelOffset;
-        final int destNumBands;
         final int bottomScanlineOffset;
 
 
@@ -326,13 +323,13 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             short[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset], // top left
-                    srcData[srcPixelOffset + destNumBands], // top
+                    srcData[srcPixelOffset + srcPixelStride], // top
                     srcData[srcPixelOffset + rightPixelOffset], // top right
                     srcData[srcPixelOffset + srcScanlineStride], // left
-                    srcData[srcPixelOffset + srcScanlineStride + destNumBands], //center
+                    srcData[srcPixelOffset + srcScanlineStride + srcPixelStride], //center
                     srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
                     srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
-                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + srcPixelStride], // bottom
                     srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
             };
         }
@@ -390,18 +387,16 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             srcBandOffsets = rasterAccess.getBandOffsets();
             srcPixelStride = rasterAccess.getPixelStride();
             srcScanlineStride = rasterAccess.getScanlineStride();
-            destNumBands = rasterAccess.getNumBands();
-            rightPixelOffset = rasterAccess.getNumBands() * 2;
             bottomScanlineOffset = srcScanlineStride * 2;
+            rightMostOffset = srcPixelStride * 2;
         }
 
         final byte srcDataArrays[][];
         final int srcBandOffsets[];
         final int srcPixelStride;
         final int srcScanlineStride;
-        final int rightPixelOffset;
-        final int destNumBands;
         final int bottomScanlineOffset;
+        final int rightMostOffset;
 
 
         @Override
@@ -409,14 +404,14 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             byte[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset] & 0xff, // top left
-                    srcData[srcPixelOffset + destNumBands] & 0xff, // top
-                    srcData[srcPixelOffset + rightPixelOffset] & 0xff, // top right
+                    srcData[srcPixelOffset + srcPixelStride] & 0xff, // top
+                    srcData[srcPixelOffset + rightMostOffset] & 0xff, // top right
                     srcData[srcPixelOffset + srcScanlineStride] & 0xff, // left
-                    srcData[srcPixelOffset + srcScanlineStride + destNumBands] & 0xff, //center
-                    srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset] & 0xff, // right
+                    srcData[srcPixelOffset + srcScanlineStride + srcPixelStride] & 0xff, //center
+                    srcData[srcPixelOffset + srcScanlineStride + rightMostOffset] & 0xff, // right
                     srcData[srcPixelOffset + bottomScanlineOffset] & 0xff, // bottom left
-                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands] & 0xff, // bottom
-                    srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] & 0xff // bottom right
+                    srcData[srcPixelOffset + bottomScanlineOffset + srcPixelStride] & 0xff, // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + rightMostOffset] & 0xff // bottom right
             };
         }
     }
@@ -463,7 +458,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             srcBandOffsets = rasterAccess.getBandOffsets();
             srcPixelStride = rasterAccess.getPixelStride();
             srcScanlineStride = rasterAccess.getScanlineStride();
-            destNumBands = rasterAccess.getNumBands();
             rightPixelOffset = rasterAccess.getNumBands() * 2;
             bottomScanlineOffset = srcScanlineStride * 2;
         }
@@ -473,7 +467,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int srcPixelStride;
         final int srcScanlineStride;
         final int rightPixelOffset;
-        final int destNumBands;
         final int bottomScanlineOffset;
 
 
@@ -482,13 +475,13 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             int[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset], // top left
-                    srcData[srcPixelOffset + destNumBands], // top
+                    srcData[srcPixelOffset + srcPixelStride], // top
                     srcData[srcPixelOffset + rightPixelOffset], // top right
                     srcData[srcPixelOffset + srcScanlineStride], // left
-                    srcData[srcPixelOffset + srcScanlineStride + destNumBands], //center
+                    srcData[srcPixelOffset + srcScanlineStride + srcPixelStride], //center
                     srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
                     srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
-                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + srcPixelStride], // bottom
                     srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
             };
         }
@@ -535,8 +528,7 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             srcBandOffsets = rasterAccess.getBandOffsets();
             srcPixelStride = rasterAccess.getPixelStride();
             srcScanlineStride = rasterAccess.getScanlineStride();
-            destNumBands = rasterAccess.getNumBands();
-            rightPixelOffset = rasterAccess.getNumBands() * 2;
+            rightPixelOffset = srcPixelStride * 2;
             bottomScanlineOffset = srcScanlineStride * 2;
         }
 
@@ -545,7 +537,6 @@ public abstract class Area3x3OpImage extends AreaOpImage {
         final int srcPixelStride;
         final int srcScanlineStride;
         final int rightPixelOffset;
-        final int destNumBands;
         final int bottomScanlineOffset;
 
 
@@ -554,13 +545,13 @@ public abstract class Area3x3OpImage extends AreaOpImage {
             float[] srcData = srcDataArrays[band];
             int srcPixelOffset = srcBandOffsets[band] + j * srcScanlineStride + i * srcPixelStride;
             return new double[]{ srcData[srcPixelOffset], // top left
-                    srcData[srcPixelOffset + destNumBands], // top
+                    srcData[srcPixelOffset + srcPixelStride], // top
                     srcData[srcPixelOffset + rightPixelOffset], // top right
                     srcData[srcPixelOffset + srcScanlineStride], // left
-                    srcData[srcPixelOffset + srcScanlineStride + destNumBands], //center
+                    srcData[srcPixelOffset + srcScanlineStride + srcPixelStride], //center
                     srcData[srcPixelOffset + srcScanlineStride + rightPixelOffset], // right
                     srcData[srcPixelOffset + bottomScanlineOffset], // bottom left
-                    srcData[srcPixelOffset + bottomScanlineOffset + destNumBands], // bottom
+                    srcData[srcPixelOffset + bottomScanlineOffset + srcPixelStride], // bottom
                     srcData[srcPixelOffset + bottomScanlineOffset + rightPixelOffset] // bottom right
             };
         }
