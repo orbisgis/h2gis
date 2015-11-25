@@ -1160,10 +1160,8 @@ public class RasterFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_D8Watershed(the_raster) the_raster from test");
         assertTrue(rs.next());
         RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
-
-        writePlainPGM(wkbRasterImage, new File("target/expect.pgm"));
         // Check values
-        //RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("flowDirNoData_expected.pgm"));
-        //assertImageBufferEquals(expectedImage, wkbRasterImage);
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("expectedWatershed.pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
     }
 }
