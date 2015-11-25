@@ -64,17 +64,21 @@ public class IndexOutletOpImage extends Area3x3OpImage {
         // If flow of current cell goes somewhere
         if(!hasNoData || Double.compare(dirValues[SRC_INDEX], noDataValue) != 0) {
             // Look for incoming stream
-            final double outputCellDir = dirValues[FlowDirectionRIF.DIRECTIONS_INDEX.get((int)dirValues[SRC_INDEX])];
-            // If output cell flow ends (border of image or sink)
-            Integer neighDirection = FlowDirectionRIF.DIRECTIONS_INDEX.get((int) outputCellDir);
-            if(neighDirection == null || neighDirection.equals(SRC_INDEX)) {
-                // Look at neighbor if stream is incoming
-                for (int idNeigh = 0; idNeigh < dirValues.length; idNeigh++) {
-                    // If this is not our cell, and neighbor is not nodata
-                    if(idNeigh != SRC_INDEX && (!hasNoData || Double.compare(dirValues[idNeigh], noDataValue)
-                            != 0) && dirValues[idNeigh] == FlowAccumulationOpImage.DO_ACCUMULATION[idNeigh]) {
-                        // Stream goes in but do not goes out
-                        return maxOutletIndex.getAndAdd(1);
+            Integer neighIndex = FlowDirectionRIF.DIRECTIONS_INDEX.get((int)dirValues[SRC_INDEX]);
+            if(neighIndex != null && neighIndex != SRC_INDEX &&
+                    (!hasNoData || Double.compare(dirValues[neighIndex], noDataValue) != 0)) {
+                final double outputCellDir = dirValues[neighIndex];
+                // If output cell flow ends (border of image or sink)
+                Integer neighDirection = FlowDirectionRIF.DIRECTIONS_INDEX.get((int) outputCellDir);
+                if(neighDirection == null || neighDirection.equals(SRC_INDEX)) {
+                    // Look at neighbor if stream is incoming
+                    for (int idNeigh = 0; idNeigh < dirValues.length; idNeigh++) {
+                        // If this is not our cell, and neighbor is not nodata
+                        if(idNeigh != SRC_INDEX && (!hasNoData || Double.compare(dirValues[idNeigh], noDataValue)
+                                != 0) && dirValues[idNeigh] == FlowAccumulationOpImage.DO_ACCUMULATION[idNeigh]) {
+                            // Stream goes in but do not goes out
+                            return maxOutletIndex.getAndAdd(1);
+                        }
                     }
                 }
             }
