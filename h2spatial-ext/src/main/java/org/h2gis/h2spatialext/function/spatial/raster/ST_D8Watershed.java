@@ -22,6 +22,7 @@
  */
 package org.h2gis.h2spatialext.function.spatial.raster;
 
+import com.vividsolutions.jts.geom.*;
 import org.h2.api.GeoRaster;
 import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
@@ -39,13 +40,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.media.jai.Histogram;
+import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import javax.media.jai.PlanarImage;
+import javax.media.jai.TiledImage;
+import javax.media.jai.operator.ConstantDescriptor;
+import java.awt.*;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -67,7 +74,8 @@ public class ST_D8Watershed extends DeterministicScalarFunction {
         return "watershed";
     }
 
-    public static GeoRaster doWatershed(Connection connection, GeoRaster flowDirection, boolean useCache) throws
+    public static GeoRaster doWatershed(Connection connection, GeoRaster flowDirection, boolean useCache,
+            Coordinate[] coordinates) throws
             SQLException, IOException {
         if(flowDirection == null) {
             return null;
@@ -78,11 +86,38 @@ public class ST_D8Watershed extends DeterministicScalarFunction {
             throw new SQLException("ST_D8FlowAccumulation accept only slope raster with one band");
         }
         // Compute outlets to propagate
-        PlanarImage compOutlets = JAI.create("IndexOutlet", flowDirection);
-        StoredImage outletsBuffer = createBuffer(compOutlets, connection, metadata, useCache);
-        RenderedImage outlets = outletsBuffer.getImage();
-        RenderedImage outletsPropa = outlets;
-        StoredImage outletsPropaBuffer = new NoBuffer(outlets);
+        StoredImage outletsPropaBuffer;
+        RenderedImage outletsPropa;
+        StoredImage outletsBuffer;
+        RenderedImage outlets;
+        if(coordinates.length == 0) {
+            // Find all outlets
+            PlanarImage compOutlets = JAI.create("IndexOutlet", flowDirection);
+            outletsBuffer = createBuffer(compOutlets, connection, metadata, useCache);
+            outlets = outletsBuffer.getImage();
+            outletsPropa = outlets;
+            outletsPropaBuffer = new NoBuffer(outlets);
+        } else {
+            // Use TiledImage as an empty matrix. Only tiles that will store an outlet will be kept in memory (until
+            // next loop)
+            RenderingHints renderingHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, new ImageLayout(flowDirection));
+            RenderedImage nonOutlet = ConstantDescriptor
+                    .create((float) metadata.width, (float) metadata.height, new Byte[]{0}, renderingHints);
+            TiledImage tiledImage = new TiledImage(nonOutlet, flowDirection.getTileWidth() ,
+                    flowDirection.getTileHeight());
+            int outletIndex = 1;
+            for(Coordinate coordinate : coordinates) {
+                // Convert coordinates to pixel index
+                int[] pixelIndex = metadata.getPixelFromCoordinate(coordinate);
+                if(pixelIndex[0] >= tiledImage.getMinX() && pixelIndex[0] < tiledImage.getMaxX() &&
+                        pixelIndex[1] >= tiledImage.getMinY() && pixelIndex[1] < tiledImage.getMaxY())
+                tiledImage.setSample(pixelIndex[0], pixelIndex[1], 0, outletIndex++);
+            }
+            outlets = tiledImage;
+            outletsBuffer = new NoBuffer(outlets);
+            outletsPropa = tiledImage;
+            outletsPropaBuffer = new NoBuffer(outletsPropa);
+        }
 
         try {
             int loopId = 0;
@@ -175,9 +210,41 @@ public class ST_D8Watershed extends DeterministicScalarFunction {
      */
     public static GeoRaster watershed(Connection connection, GeoRaster flowDirection) throws SQLException, IOException {
         return doWatershed(connection, flowDirection, !Utils.getProperty("h2gis.RasterProcessingInMemory",
-                CreateSpatialExtension.DEFAULT_RASTER_PROCESSING_IN_MEMORY));
+                CreateSpatialExtension.DEFAULT_RASTER_PROCESSING_IN_MEMORY), new Coordinate[0]);
     }
 
+    /**
+     * @param connection JDBC Connection
+     * @param flowDirection Flow direction
+     * @param geometry Point or MultiPoint
+     * @return Watershed raster
+     * @throws SQLException Error while computing raster
+     * @throws IOException IO Error while computing raster
+     */
+    public static GeoRaster watershed(Connection connection, GeoRaster flowDirection, Geometry geometry)
+            throws SQLException, IOException {
+        if(geometry == null) {
+            return null;
+        }
+        List<Coordinate> coordinates = new ArrayList<Coordinate>(geometry.getNumPoints());
+        if(geometry instanceof com.vividsolutions.jts.geom.Point) {
+            coordinates.add(geometry.getCoordinate());
+        } else if(geometry instanceof GeometryCollection) {
+            for(int geomId = 0; geomId < geometry.getNumGeometries(); geomId++) {
+                Geometry geom = geometry.getGeometryN(geomId);
+                if(geom instanceof com.vividsolutions.jts.geom.Point) {
+                    coordinates.add(geom.getCoordinate());
+                } else {
+                    throw new SQLException("Unsupported geometry type "+geom.getGeometryType());
+                }
+            }
+        } else {
+            throw new SQLException("Unsupported geometry type "+geometry.getGeometryType());
+        }
+        return doWatershed(connection, flowDirection, !Utils.getProperty("h2gis.RasterProcessingInMemory",
+                CreateSpatialExtension.DEFAULT_RASTER_PROCESSING_IN_MEMORY), coordinates.toArray(new
+                Coordinate[coordinates.size()]));
+    }
 
 
     private static StoredImage createBuffer(PlanarImage image, Connection connection, RasterUtils.RasterMetaData
