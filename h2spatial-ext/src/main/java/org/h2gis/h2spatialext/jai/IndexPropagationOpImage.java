@@ -48,10 +48,10 @@ public class IndexPropagationOpImage extends Area3x3OpImage {
     private static final int INDEX = 0;
     private static final int DIR = 1;
 
-    public IndexPropagationOpImage(RenderedImage weightSource, RenderedImage flowDirectionSource, boolean hasNoData,
+    public IndexPropagationOpImage(RenderedImage outletIndex, RenderedImage flowDirectionSource, boolean hasNoData,
             double noData, BorderExtender extender, Map config, ImageLayout layout) {
         // Require 1 neighbors around the source pixel
-        super(Arrays.asList(weightSource, flowDirectionSource), extender, config, layout);
+        super(Arrays.asList(outletIndex, flowDirectionSource), extender, config, layout);
         this.hasNoData = hasNoData;
         this.noDataValue = noData;
         properties.setProperty(PROPERTY_EFFECTIVE_INDEX_COPY, effectiveIndexCopy);

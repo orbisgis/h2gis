@@ -78,10 +78,11 @@ public class ST_D8Watershed extends DeterministicScalarFunction {
             throw new SQLException("ST_D8FlowAccumulation accept only slope raster with one band");
         }
         // Compute outlets to propagate
-        RenderedImage outlets = JAI.create("IndexOutlet", flowDirection);
+        PlanarImage compOutlets = JAI.create("IndexOutlet", flowDirection);
+        StoredImage outletsBuffer = createBuffer(compOutlets, connection, metadata, useCache);
+        RenderedImage outlets = outletsBuffer.getImage();
         RenderedImage outletsPropa = outlets;
-        StoredImage outletsBuffer = new NoBuffer(outlets);
-        StoredImage outletsPropaBuffer = new NoBuffer(outletsPropa);
+        StoredImage outletsPropaBuffer = new NoBuffer(outlets);
 
         try {
             int loopId = 0;
