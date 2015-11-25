@@ -1139,6 +1139,7 @@ public class RasterFunctionTest {
         RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("expectedOutletPropa.pgm"));
         assertImageBufferEquals(expectedImage, indexedOutlet);
     }
+
     @Test
     public void testST_D8WaterShed_All() throws Exception {
         System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
@@ -1163,5 +1164,150 @@ public class RasterFunctionTest {
         // Check values
         RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("expectedWatershed.pgm"));
         assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
+
+    @Test
+    public void testST_D8WaterShed_Point() throws Exception {
+        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
+        double pixelSize = 15;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("flowDir2.pgm"));
+        // Store direction into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery("SELECT ST_D8Watershed(the_raster, 'POINT(31 "+(pixelSize * (im.getHeight() - 1)
+                - 7)
+                +")') the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("expectedWatershedPoint.pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
+
+
+
+    @Test
+    public void testST_D8WaterShed_MultiPoint() throws Exception {
+        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
+        double pixelSize = 15;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("flowDir2.pgm"));
+        // Store direction into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_D8Watershed(the_raster, 'MULTIPOINT((95 95),(20 20),(120 90))') the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        //writePlainPGM(wkbRasterImage, new File("target/expect.pgm"));
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("expectedWatershedMultiPoint" +
+                ".pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
+
+
+
+    @Test
+    public void testST_D8WaterShed_GeomCollection() throws Exception {
+        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
+        double pixelSize = 15;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("flowDir2.pgm"));
+        // Store direction into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_D8Watershed(the_raster, 'GEOMETRYCOLLECTION(POINT(95 95),POINT(20 20),POINT(120 90))') " +
+                        "the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        //writePlainPGM(wkbRasterImage, new File("target/expect.pgm"));
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("expectedWatershedMultiPoint" +
+                ".pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
+
+
+    @Test(expected = SQLException.class)
+    public void testST_D8WaterShed_WrongType() throws Exception {
+        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
+        double pixelSize = 15;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("flowDir2.pgm"));
+        // Store direction into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_D8Watershed(the_raster, 'LINESTRING(95 95,20 20,120 90)') the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Evaluate
+        wkbRasterImage.getData();
+    }
+
+    @Test(expected = SQLException.class)
+    public void testST_D8WaterShed_WrongSubType() throws Exception {
+        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
+        double pixelSize = 15;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("flowDir2.pgm"));
+        // Store direction into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_D8Watershed(the_raster, 'GEOMETRYCOLLECTION(POINT(95 95), LINESTRING(20 20, 120 90))') " +
+                        "the_raster from  test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Evaluate
+        wkbRasterImage.getData();
     }
 }
