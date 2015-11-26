@@ -126,7 +126,7 @@ public class AsciiGridImportExportTest {
         assertEquals(273987.50, metaData.ipX, 1e-2);
         assertEquals(2224987.50, metaData.ipY, 1e-2);
         assertEquals(25, metaData.scaleX, 1e-2);
-        assertEquals(25, metaData.scaleY, 1e-2);
+        assertEquals(-25, metaData.scaleY, 1e-2);
         assertEquals(0., metaData.skewX, 1e-6);
         assertEquals(0., metaData.skewY, 1e-6);
         rs.close();
@@ -162,7 +162,7 @@ public class AsciiGridImportExportTest {
         assertEquals(273987.50, metaData.ipX, 1e-2);
         assertEquals(2224987.50, metaData.ipY, 1e-2);
         assertEquals(25, metaData.scaleX, 1e-2);
-        assertEquals(25, metaData.scaleY, 1e-2);
+        assertEquals(-25, metaData.scaleY, 1e-2);
         assertEquals(0., metaData.skewX, 1e-6);
         assertEquals(0., metaData.skewY, 1e-6);
         rs.close();
@@ -197,7 +197,7 @@ public class AsciiGridImportExportTest {
         assertEquals(273987.50, metaData.ipX, 1e-2);
         assertEquals(2224987.50, metaData.ipY, 1e-2);
         assertEquals(25, metaData.scaleX, 1e-2);
-        assertEquals(25, metaData.scaleY, 1e-2);
+        assertEquals(-25, metaData.scaleY, 1e-2);
         assertEquals(0., metaData.skewX, 1e-6);
         assertEquals(0., metaData.skewY, 1e-6);
         rs.close();

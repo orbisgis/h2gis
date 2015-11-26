@@ -124,7 +124,7 @@ public class AsciiGridReader {
         TableLocation location = TableLocation.parse(tableReference, isH2);
         try {            
             double scaleX = asciiGridRaster.getCellSizeX();
-            double scaleY = asciiGridRaster.getCellSizeX();
+            double scaleY = - asciiGridRaster.getCellSizeY();
             double upperLeftX = asciiGridRaster.getXllCellCoordinate();
             double upperLeftY = asciiGridRaster.getYllCellCoordinate();
 
