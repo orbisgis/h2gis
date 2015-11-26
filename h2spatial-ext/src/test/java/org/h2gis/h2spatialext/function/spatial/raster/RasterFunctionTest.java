@@ -66,6 +66,7 @@ import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
 import java.awt.image.SampleModel;
 import java.awt.image.WritableRaster;
+import java.awt.image.renderable.ParameterBlock;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -82,6 +83,7 @@ import java.util.Iterator;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -1310,4 +1312,68 @@ public class RasterFunctionTest {
         // Evaluate
         wkbRasterImage.getData();
     }
+
+    @Test
+    public void testST_FillSinks() throws Exception {
+        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
+        double pixelSize = 15;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("demSink.pgm"));
+        // Store direction into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_FillSinks(the_raster, 0.01) " +
+                        "the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        RenderedImage expectedImage = readImage(RasterFunctionTest.class.getResource("demSinkFix.pgm"));
+        assertImageBufferEquals(expectedImage, wkbRasterImage);
+    }
+
+
+
+    @Test
+    public void testST_FillSinksDouble() throws Exception {
+        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
+        double pixelSize = 15;
+        // Read unit test image
+        RenderedImage im = readImage(RasterFunctionTest.class.getResource("demSink.pgm"));
+        // Convert to double
+        ParameterBlock pbConvert = new ParameterBlock();
+        pbConvert.addSource(im);
+        pbConvert.add(DataBuffer.TYPE_FLOAT);
+        im = JAI.create("format", pbConvert);
+        // Store direction into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster)");
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) "
+                + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(im, pixelSize, -pixelSize, 0, pixelSize * im.getHeight(),
+                0, 0,  27572)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_FillSinks(the_raster, 0.01) " +
+                        "the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values
+        Raster data = wkbRasterImage.getData();
+        assertEquals(3.002, data.getSampleDouble(4, 4, 0), 1e-3);
+    }
+
 }
