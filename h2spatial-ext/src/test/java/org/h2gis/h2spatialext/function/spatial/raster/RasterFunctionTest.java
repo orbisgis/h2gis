@@ -1372,7 +1372,7 @@ public class RasterFunctionTest {
         RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
         // Check values
         Raster data = wkbRasterImage.getData();
-        assertEquals(3.002, data.getSampleDouble(4, 4, 0), 1e-3);
+        assertEquals(3.007, data.getSampleDouble(4, 4, 0), 1e-3);
     }
 
     @Test
