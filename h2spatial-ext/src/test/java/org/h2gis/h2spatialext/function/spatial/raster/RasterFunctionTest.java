@@ -1345,7 +1345,6 @@ public class RasterFunctionTest {
 
     @Test
     public void testST_FillSinksDouble() throws Exception {
-        System.setProperty(CreateSpatialExtension.RASTER_PROCESSING_IN_MEMORY_KEY, String.valueOf(true));
         double pixelSize = 15;
         // Read unit test image
         RenderedImage im = readImage(RasterFunctionTest.class.getResource("demSink.pgm"));
@@ -1376,4 +1375,24 @@ public class RasterFunctionTest {
         assertEquals(3.002, data.getSampleDouble(4, 4, 0), 1e-3);
     }
 
+    @Test
+    public void testST_FillSinksChezine() throws Exception {
+        // Store direction into H2 DB
+        st.execute("drop table if exists test");
+        st.execute("create table test(id identity, the_raster raster) as select null, ST_AsciiGridRead" +
+                "('"+RasterFunctionTest.class.getResource("chezine.asc").getPath()+"')");
+        // Call ST_D8FlowDirection
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_D8FlowDirection(ST_FillSinks(the_raster, 0.1)) " +
+                        "the_raster from test");
+        assertTrue(rs.next());
+        RenderedImage wkbRasterImage = (RenderedImage)rs.getObject(1);
+        // Check values, should not get NO_DIRECTION cells
+        Raster data = wkbRasterImage.getData();
+        for(int y = 0; y < data.getHeight(); y++) {
+            for (int x = 0; x < data.getWidth(); x++) {
+                assertNotEquals("Found flat area in x:"+x+" y:"+y, 0, data.getSampleFloat(x, y, 0));
+            }
+        }
+    }
 }

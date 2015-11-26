@@ -189,7 +189,7 @@ public class OpFillSinks {
 
             for (y = 0; y < nrows; y++) {
 
-                iValue = m_Border.getSample(x, y, 0);
+                iValue = m_Border.getSampleFloat(x, y, 0);
 
                 if (iValue == 1) {
                     dryUpwardCell(x, y);
@@ -205,15 +205,15 @@ public class OpFillSinks {
                 something_done = false;
 
                 do {
-                    z = m_DEM.getSample(C, R, 0);
-                    wz = m_PreprocessedDEM.getSample(C, R, 0);
+                    z = m_DEM.getSampleFloat(C, R, 0);
+                    wz = m_PreprocessedDEM.getSampleFloat(C, R, 0);
                     if (!Float.isNaN(z) && (wz > z)) {
                         for (i = 0; i < 8; i++) {
                             ix = C + m_iOffsetX[i];
                             iy = R + m_iOffsetY[i];
-                            z2 = m_DEM.getSample(ix, iy, 0);
+                            z2 = m_DEM.getSampleFloat(ix, iy, 0);
                             if (!Float.isNaN(z2)) {
-                                wzn = m_PreprocessedDEM.getSample(ix, iy, 0)
+                                wzn = m_PreprocessedDEM.getSampleFloat(ix, iy, 0)
                                         + (float) dEpsilon[i];
                                 if (z >= wzn) {
                                     m_PreprocessedDEM
@@ -249,10 +249,10 @@ public class OpFillSinks {
         m_Border = WritableRaster.createWritableRaster(geoRaster.getSampleModel(), null);
         for (x = 0; x < ncols; x++) {
             for (y = 0; y < nrows; y++) {
-                float dValue = m_DEM.getSample(x, y, 0);
+                float dValue = m_DEM.getSampleFloat(x, y, 0);
                 if (x == 0 || x == ncols - 1 || y == 0 || y == nrows - 1) {
                     m_Border.setSample(x, y,0, 1);
-                    m_PreprocessedDEM.setSample(x, y,0, m_DEM.getSample(
+                    m_PreprocessedDEM.setSample(x, y,0, m_DEM.getSampleFloat(
                             x, y, 0));
                 } else {
                     m_Border.setSample(x, y, 0, geoRaster.getMetaData().bands[0].noDataValue);
@@ -279,11 +279,11 @@ public class OpFillSinks {
                 ix = x + m_iOffsetX[i];
                 iy = y + m_iOffsetY[i];
                 if(ix > 0 && iy > 0 && ix < ncols && iy < nrows) {
-                    zw = m_PreprocessedDEM.getSample(ix, iy, 0);
+                    zw = m_PreprocessedDEM.getSampleFloat(ix, iy, 0);
 
-                    zn = m_DEM.getSample(ix, iy, 0);
+                    zn = m_DEM.getSampleFloat(ix, iy, 0);
                     if ((zn != geoRaster.getMetaData().bands[0].noDataValue) && zw == INIT_ELEVATION) {
-                        zw = m_PreprocessedDEM.getSample(x, y, 0) + (float) dEpsilon[i];
+                        zw = m_PreprocessedDEM.getSampleFloat(x, y, 0) + (float) dEpsilon[i];
                         if (zn >= zw) {
                             m_PreprocessedDEM.setSample(ix, iy, 0, zn);
                             dryUpwardCell(ix, iy);
