@@ -144,6 +144,7 @@ import org.h2gis.h2spatialext.function.spatial.raster.ST_D8FlowDirection;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_D8Slope;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_D8Watershed;
 import org.h2gis.h2spatialext.function.spatial.raster.ST_Extrema;
+import org.h2gis.h2spatialext.function.spatial.raster.ST_FillSinks;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleAspect;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleContouring;
 import org.h2gis.h2spatialext.function.spatial.topography.ST_TriangleDirection;
@@ -307,7 +308,8 @@ public class CreateSpatialExtension {
                     new ST_Extrema(),
                     new ST_D8FlowAccumulation(),
                     new ST_Crop(),
-                    new ST_D8Watershed()));
+                    new ST_D8Watershed(),
+                    new ST_FillSinks()));
         }
         if(isGeoSolutionsAvailable()) {
             fl.addAll(Arrays.asList(
