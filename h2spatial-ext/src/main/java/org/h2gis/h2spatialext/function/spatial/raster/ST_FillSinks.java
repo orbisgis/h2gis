@@ -23,7 +23,6 @@
 package org.h2gis.h2spatialext.function.spatial.raster;
 
 import org.h2.api.GeoRaster;
-import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.h2gis.h2spatialext.function.spatial.raster.utility.OpFillSinks;

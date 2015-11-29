@@ -29,17 +29,14 @@ import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Map;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
-import javax.media.jai.ROI;
 import javax.media.jai.RenderedOp;
 import javax.media.jai.operator.ConstantDescriptor;
 
 import org.h2.api.GeoRaster;
 import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.h2spatialext.jai.UnaryFunction;
 import org.h2gis.h2spatialext.jai.UnaryFunctionDescriptor;
 
 /**
@@ -113,7 +110,7 @@ public class ST_Extrema extends DeterministicScalarFunction {
         if (band.hasNoData) {
             // Image has NoData
             // ROI can't be used as it is very slow when using Image as ROI
-            // Using RangeFilter we will just replace noData by any non-nodata value
+            // Using RangeFilter we will just replace noData by any no-nodata value
             final double nodataValue = band.noDataValue;
             Double dataValue = fetchDataValue(geoRaster, nodataValue);
             if(dataValue != null) {
@@ -143,25 +140,4 @@ public class ST_Extrema extends DeterministicScalarFunction {
         double[] allMaxs = (double[]) op.getProperty("maximum");
         return new double[]{allMins[0], allMaxs[0]};
     }
-    
-    /**
-     * A static class to replace the nodata values by 0 and other values by 1. 
-     */
-    private static class ReplaceNodata implements UnaryFunction<Double, Double>{
-        private final double nodataValue;
-        
-        public ReplaceNodata(double nodataValue){
-            this.nodataValue = nodataValue;
-        }
-        
-        @Override
-        public Double invoke(Double arg) {
-            if (Double.compare(arg, nodataValue) != 0) {
-                return 1d;
-            } else {
-                return 0d;
-            }
-        }
-    }
-    
 }
