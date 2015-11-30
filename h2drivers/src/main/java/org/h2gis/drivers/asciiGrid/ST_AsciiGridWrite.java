@@ -40,13 +40,15 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.URIUtility;
 
 /**
- *
+ * H2 Function - Export a raster table into a Arc/Info ASCII or GRASS ASCII Grid file.
  * @author Erwan Bocher
  */
 public class ST_AsciiGridWrite extends AbstractFunction implements ScalarFunction {
 
     public ST_AsciiGridWrite() {
-        addProperty(PROP_REMARKS, "Export a raster table into a Arc/Info ASCII or GRASS ASCII Grid file.");
+        addProperty(PROP_REMARKS, "Export a raster table into a Arc/Info ASCII or GRASS ASCII Grid file.\n" +
+                "Accept only raster with one band\n" +
+                "SELECT ST_AsciiGridWrite('/home/user/myraster.asc', the_raster) from rastertable");
     }
 
     @Override

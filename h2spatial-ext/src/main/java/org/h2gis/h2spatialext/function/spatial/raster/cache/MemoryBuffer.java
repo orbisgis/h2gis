@@ -28,6 +28,7 @@ import java.awt.image.RenderedImage;
 /**
  * Image copied in memory
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class MemoryBuffer implements StoredImage {
     private RenderedImage imageCopy;

@@ -58,6 +58,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Extract all watersheds or one based on a list of pixels location.
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class ST_D8Watershed extends DeterministicScalarFunction {
     public static final String PROP_LOG_INDEX_PROPAGATION_STATS = "h2gis.logindexpropagationstats";

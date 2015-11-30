@@ -35,6 +35,7 @@ import java.util.Map;
 
 /**
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  * For returnFilterOnMatch=true:
  * Take image A, image B and interval min max. if min <= B <= max then output B else A.
  * For returnFilterOnMatch=false:

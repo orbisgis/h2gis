@@ -32,6 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Flow accumulation calculation according to the flow direction until all streams are exhausted.
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class ST_D8FlowAccumulation extends DeterministicScalarFunction {
     public static final String PROP_LOG_FLOWACCUM_STATS = "h2gis.logflowaccumstats";

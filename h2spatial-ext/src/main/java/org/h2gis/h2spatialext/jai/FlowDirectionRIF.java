@@ -47,6 +47,7 @@ import java.util.Map;
 /**
  * RenderedImageFactory for D8_FlowDirection
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class FlowDirectionRIF implements RenderedImageFactory {
     private Logger LOGGER = LoggerFactory.getLogger(FlowDirectionRIF.class);

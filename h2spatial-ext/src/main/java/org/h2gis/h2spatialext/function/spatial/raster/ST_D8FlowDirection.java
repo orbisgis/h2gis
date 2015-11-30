@@ -36,6 +36,7 @@ import java.sql.SQLException;
 /**
  * Compute the steepest downward slope towards one of the eight adjacent or diagonal neighbors.
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class ST_D8FlowDirection extends DeterministicScalarFunction {
     public ST_D8FlowDirection() {

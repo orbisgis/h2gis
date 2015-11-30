@@ -37,6 +37,7 @@ import java.awt.image.renderable.RenderedImageFactory;
 /**
  * RenderedImageFactory for D8_Watershed
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class IndexPropagationRIF implements RenderedImageFactory {
     private Logger LOGGER = LoggerFactory.getLogger(IndexPropagationRIF.class);

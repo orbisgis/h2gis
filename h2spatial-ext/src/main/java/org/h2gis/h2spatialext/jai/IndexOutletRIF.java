@@ -40,6 +40,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
+ * RenderedImageFactory for automatically finding outlets in a Flow direction image
+ * @author Erwan Bocher
  * @author Nicolas Fortin
  */
 public class IndexOutletRIF implements RenderedImageFactory {
