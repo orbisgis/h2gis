@@ -17,6 +17,7 @@ import java.util.Set;
 /**
  * Compute the steepest downward slope towards one of the eight adjacent or diagonal neighbors.
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class ST_D8Slope extends DeterministicScalarFunction {
     public ST_D8Slope() {

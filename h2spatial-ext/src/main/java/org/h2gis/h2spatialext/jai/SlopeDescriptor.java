@@ -34,6 +34,7 @@ import java.util.HashSet;
 /**
  * JAI Api, Description of the slope operator
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class SlopeDescriptor extends OperationDescriptorImpl {
     public static final EnumeratedParameter SLOPE_PERCENT = new EnumeratedParameter("PERCENT", 0);

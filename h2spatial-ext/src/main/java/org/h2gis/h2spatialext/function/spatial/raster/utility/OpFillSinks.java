@@ -37,6 +37,7 @@ import java.io.IOException;
  * TODO  as done in {@link org.h2gis.h2spatialext.function.spatial.raster.ST_D8FlowAccumulation}
  *
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class OpFillSinks {
 

@@ -25,13 +25,8 @@ package org.h2gis.h2spatialext.jai;
 
 import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
-import java.awt.*;
-import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
-import java.awt.image.WritableRaster;
-import java.util.Arrays;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**

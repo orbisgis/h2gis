@@ -38,7 +38,9 @@ import java.awt.image.renderable.ParameterBlock;
 import java.awt.image.renderable.RenderedImageFactory;
 
 /**
+ * RenderedImageFactory for  ST_D8FlowAccumulation
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class FlowAccumulationRIF implements RenderedImageFactory {
     private Logger LOGGER = LoggerFactory.getLogger(FlowAccumulationRIF.class);

@@ -47,6 +47,7 @@ import java.util.Vector;
  * 3x3 computing helper. Do the computation in double scale, in order to avoid code redundancy.
  * TODO Thread worker pool in order to use all cores
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public abstract class Area3x3OpImage extends AreaOpImage {
     public static final Point[] NEIGHBORS_INDEX = new Point[] {

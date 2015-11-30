@@ -22,18 +22,15 @@
  */
 package org.h2gis.h2spatialext.jai;
 
-import javax.media.jai.EnumeratedParameter;
 import javax.media.jai.JAI;
 import javax.media.jai.OperationDescriptorImpl;
 import javax.media.jai.OperationRegistry;
 import javax.media.jai.registry.RIFRegistry;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 
 /**
  * JAI Api, Description of the slope operator
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class IndexOutletDescriptor extends OperationDescriptorImpl {
 

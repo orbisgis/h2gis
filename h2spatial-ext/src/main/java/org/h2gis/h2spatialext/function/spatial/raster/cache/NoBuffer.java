@@ -28,6 +28,7 @@ import java.sql.SQLException;
 /**
  * Image not stored
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class NoBuffer implements StoredImage {
     private RenderedImage image;

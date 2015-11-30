@@ -28,7 +28,9 @@ import javax.media.jai.OperationRegistry;
 import javax.media.jai.registry.RIFRegistry;
 
 /**
+ * RangeFilter is a filter to compose one image using two images and range conditions.
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class RangeFilterDescriptor extends OperationDescriptorImpl {
 

@@ -39,6 +39,7 @@ import java.sql.Statement;
 /**
  * Image stored in temporary table
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class JDBCBuffer implements StoredImage {
     private String tempTableName;
