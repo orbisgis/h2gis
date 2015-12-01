@@ -23,7 +23,9 @@
 
 package org.h2gis.h2spatialext.function.spatial.raster.utility;
 
+import java.awt.image.ColorModel;
 import java.awt.image.DataBuffer;
+import java.awt.image.IndexColorModel;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.IOException;
@@ -31,19 +33,22 @@ import javax.media.jai.JAI;
 import javax.media.jai.LookupTableJAI;
 import javax.media.jai.PlanarImage;
 import javax.media.jai.RenderedOp;
+import org.h2.api.GeoRaster;
+import org.h2.util.RasterUtils;
 
 /**
  * Some utilities 
  * @author Erwan Bocher
  */
 public class GeoRasterUtils {
-
     
      /**
       * 
      * Returns a rescaled version of the given RenderedImage in the given sample value range.
      * The image returned is always of type 'byte' and has the same number of bands as the source image.
      *
+     * TODO : Check byte band
+     * 
      * @param renderedImage the source georaster, can be of any type
      * @param low   the minimum value of the range
      * @param high  the maximum value of the range
@@ -152,7 +157,8 @@ public class GeoRasterUtils {
                 y_int = 0.0;
             }
 
-            dst = createRescaleOp(renderedImage, slope, y_int);
+            dst = createRescaleOp(renderedImage, slope, y_int);          
+            
 
             // produce a byte image
             pb = new ParameterBlock();
