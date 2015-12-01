@@ -18,11 +18,9 @@
 package org.h2gis.h2spatialext.function.spatial.raster;
 
 import com.vividsolutions.jts.geom.Polygon;
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Collection;
 import java.util.List;
 import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
@@ -39,15 +37,13 @@ import org.h2gis.h2spatialext.jai.VectorizeDescriptor;
  * @author Erwan Bocher
  */
 public class VectorizeRowSet implements SimpleRowSource{
-    private final Connection connection;
     private final GeoRasterRenderedImage raster;
     private final boolean excludeNodata;
-    private boolean firstRow;
+    private boolean firstRow = true;
     private int id = 0;
     private List<Polygon> polygons;
 
-    public VectorizeRowSet(Connection connection, GeoRasterRenderedImage raster, boolean excludeNodata) {
-            this.connection = connection;
+    public VectorizeRowSet(GeoRasterRenderedImage raster, boolean excludeNodata) {
             this.raster=raster;
             this.excludeNodata =excludeNodata;
     }
@@ -56,8 +52,9 @@ public class VectorizeRowSet implements SimpleRowSource{
     public Object[] readRow() throws SQLException {
         if (firstRow) {
             reset();
-        }        
-        return new Object[]{polygons.get(id), id++};        
+        }     
+        Polygon poly = polygons.get(id);
+        return new Object[]{poly, id++, (Double) poly.getUserData()};        
     }
 
     @Override
@@ -79,6 +76,7 @@ public class VectorizeRowSet implements SimpleRowSource{
         SimpleResultSet srs = new SimpleResultSet(this);
         srs.addColumn("THE_GEOM", Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
         srs.addColumn("ID", Types.INTEGER, 10, 0);
+        srs.addColumn("VALUE", Types.DOUBLE, 0, 0);
         return srs;
     }
 

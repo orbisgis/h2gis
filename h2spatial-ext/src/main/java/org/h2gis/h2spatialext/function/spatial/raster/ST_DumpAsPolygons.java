@@ -35,10 +35,10 @@ import org.h2gis.h2spatialext.jai.VectorizeDescriptor;
  * 
  * @author Erwan Bocher
  */
-public class ST_DumpPolygons extends AbstractFunction implements ScalarFunction{
+public class ST_DumpAsPolygons extends AbstractFunction implements ScalarFunction{
 
     
-    public ST_DumpPolygons(){
+    public ST_DumpAsPolygons(){
         addProperty(PROP_REMARKS, "");
         VectorizeDescriptor.register();
     }
@@ -51,32 +51,30 @@ public class ST_DumpPolygons extends AbstractFunction implements ScalarFunction{
     
     /**
      * 
-     * @param connection
      * @param geoRaster
      * @return 
+     * @throws java.io.IOException 
      */
-    public static ResultSet vectorizePolygons(Connection connection, GeoRaster geoRaster) throws IOException{        
-       return  vectorizePolygons(connection, geoRaster, 1, true);
+    public static ResultSet vectorizePolygons(GeoRaster geoRaster) throws IOException{        
+       return  vectorizePolygons( geoRaster, 1, true);
         
     }
     
     /**
      * 
-     * @param connection
      * @param geoRaster
      * @param bandIndice
      * @param excludeNodata
      * @return 
      * @throws java.io.IOException 
      */
-    public static ResultSet vectorizePolygons(Connection connection, GeoRaster geoRaster, int bandIndice, boolean excludeNodata) throws IOException{        
+    public static ResultSet vectorizePolygons(GeoRaster geoRaster, int bandIndice, boolean excludeNodata) throws IOException{        
         if(geoRaster==null){
             return null;
         }        
-        VectorizeRowSet vectorizeRowSet  = new VectorizeRowSet(connection,
+        VectorizeRowSet vectorizeRowSet  = new VectorizeRowSet(
                 ST_Band.bandSelect(geoRaster, new int[]{bandIndice}), excludeNodata);        
-        return vectorizeRowSet.getResultSet();       
-        
+        return vectorizeRowSet.getResultSet();  
     }
     
 }

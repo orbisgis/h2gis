@@ -24,6 +24,7 @@
 package org.h2gis.h2spatialext.function.spatial.raster;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2.api.GeoRaster;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.GeoRasterRenderedImage;
@@ -1394,5 +1395,40 @@ public class RasterFunctionTest {
                 assertNotEquals("Found flat area in x:"+x+" y:"+y, 0, data.getSampleFloat(x, y, 0));
             }
         }
+    }
+    
+    @Test
+    public void testST_DumpAsPolygons1() throws SQLException, IOException {        
+        int width = 5;
+        int height = 4;
+        final double noData = 0;
+        final float pixelSize = 100;
+
+        int[] pixels = new int[]{
+            0, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            0, 1, 1, 1, 0,
+            0, 0, 0, 0, 0
+        };
+                
+        // Create image from int array
+        RenderedImage image = imageFromArray(pixels, width, height);
+        st.execute("drop table if exists test, vectorize;");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
+        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
+                .asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        st.execute("create table vectorize as SELECT ST_DumpAsPolygons(the_raster) FROM test");
+        ResultSet rs = st.executeQuery("select count(*) from vectorize;");
+        rs.next();
+        assertEquals(rs.getInt(1), 1);
+        rs = st.executeQuery("select * from vectorize;");
+        rs.next();     
+        System.out.println("Passage " + (Geometry)rs.getObject(1));       
+        rs.close();        
     }
 }
