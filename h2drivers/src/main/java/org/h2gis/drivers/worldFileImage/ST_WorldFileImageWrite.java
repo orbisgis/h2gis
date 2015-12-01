@@ -36,7 +36,7 @@ import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.URIUtility;
 
 /**
- *
+ * Export a raster to a world file image
  * @author Erwan Bocher
  */
 public class ST_WorldFileImageWrite extends AbstractFunction implements ScalarFunction{

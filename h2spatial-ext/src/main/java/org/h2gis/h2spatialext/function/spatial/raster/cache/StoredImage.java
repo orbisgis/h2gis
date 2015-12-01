@@ -28,6 +28,7 @@ import java.sql.SQLException;
 /**
  * Interface to manage storing of images for multi-step process.
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public interface StoredImage  {
     RenderedImage getImage() throws SQLException;

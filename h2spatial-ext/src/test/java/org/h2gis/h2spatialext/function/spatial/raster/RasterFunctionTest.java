@@ -89,8 +89,9 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
- *
+ * Unit test for raster processing
  * @author Erwan Bocher
+ * @author Nicolas Fortin
  */
 public class RasterFunctionTest {
 
