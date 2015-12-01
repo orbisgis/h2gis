@@ -18,16 +18,21 @@
 package org.h2gis.h2spatialext.function.spatial.raster;
 
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.util.AffineTransformation;
+import java.awt.geom.AffineTransform;
+import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RenderedOp;
+import org.h2.api.GeoRaster;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
-import org.h2.util.GeoRasterRenderedImage;
 import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialext.jai.VectorizeDescriptor;
 
@@ -37,15 +42,43 @@ import org.h2gis.h2spatialext.jai.VectorizeDescriptor;
  * @author Erwan Bocher
  */
 public class VectorizeRowSet implements SimpleRowSource{
-    private final GeoRasterRenderedImage raster;
-    private final boolean excludeNodata;
+    private final GeoRaster raster;
     private boolean firstRow = true;
-    private int id = 0;
-    private List<Polygon> polygons;
+    private int id = 0;   
+    final AffineTransformation pixelToGeoTrans;
+    private Iterator<Polygon> itpolys;
+    private final int bandIndice;
+    private final List<Number> outsideValues;
 
-    public VectorizeRowSet(GeoRasterRenderedImage raster, boolean excludeNodata) {
-            this.raster=raster;
-            this.excludeNodata =excludeNodata;
+
+    /**
+     * 
+     * @param raster the input raster
+     * @param bandIndice the band indice
+     * @param excludeNodata true is nodata must be excluded
+     * @throws java.io.IOException
+     */
+    public VectorizeRowSet(GeoRaster raster, int bandIndice, boolean excludeNodata) throws IOException {
+        this.raster = raster;
+        this.bandIndice = bandIndice;
+        RasterUtils.RasterMetaData metadata = raster.getMetaData();
+        AffineTransform trans = metadata.getTransform();
+        pixelToGeoTrans = new AffineTransformation(trans.getScaleX(),
+                trans.getShearX(),
+                trans.getTranslateX(),
+                trans.getShearY(),
+                trans.getScaleY(),
+                trans.getTranslateY());
+        RasterUtils.RasterBandMetaData band = metadata.bands[bandIndice];
+        outsideValues = new ArrayList<Number>();
+        if (excludeNodata) {
+            if (band.hasNoData) {
+                outsideValues.add(band.noDataValue);
+            } else {
+                outsideValues.add(0);
+            }
+        }
+        
     }
 
     @Override
@@ -53,7 +86,8 @@ public class VectorizeRowSet implements SimpleRowSource{
         if (firstRow) {
             reset();
         }     
-        Polygon poly = polygons.get(id);
+        Polygon poly = itpolys.next();
+        poly.apply(pixelToGeoTrans);
         return new Object[]{poly, id++, (Double) poly.getUserData()};        
     }
 
@@ -72,28 +106,30 @@ public class VectorizeRowSet implements SimpleRowSource{
 
     }
 
-    public ResultSet getResultSet() {
+    /**
+     * Return the resulset
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public ResultSet getResultSet() throws SQLException {
         SimpleResultSet srs = new SimpleResultSet(this);
         srs.addColumn("THE_GEOM", Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
         srs.addColumn("ID", Types.INTEGER, 10, 0);
-        srs.addColumn("VALUE", Types.DOUBLE, 0, 0);
+        srs.addColumn("VALUE", Types.DOUBLE, 10, 0);
         return srs;
     }
 
     /**
-     * Use vectorize JAI operator
+     * Use the vectorize JAI operator
      */
-    private void vectorize() {
+    public  void vectorize() {
         ParameterBlockJAI pb = new ParameterBlockJAI("Vectorize");
-        pb.setSource("source0", raster);       
-        if (excludeNodata) {
-            RasterUtils.RasterBandMetaData bandInfo = raster.getMetaData().bands[0];
-            if (bandInfo.hasNoData) {
-                pb.setParameter("outsideValues", bandInfo.noDataValue);
-            }
-        }
+        pb.setSource("source0", raster);
+        pb.setParameter("band", bandIndice);
+        pb.setParameter("outsideValues", outsideValues);
         RenderedOp resultVectorize = JAI.create("Vectorize", pb);
-        polygons = (List<Polygon>) resultVectorize.getProperty(VectorizeDescriptor.VECTOR_PROPERTY_NAME);
+        List<Polygon> polygons = (List<Polygon>) resultVectorize.getProperty(VectorizeDescriptor.VECTOR_PROPERTY_NAME);
+        itpolys = polygons.iterator();
     }
     
 }

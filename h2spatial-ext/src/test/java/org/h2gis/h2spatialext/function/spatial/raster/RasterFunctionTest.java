@@ -1422,13 +1422,14 @@ public class RasterFunctionTest {
         ps.execute();
         ps.close();
 
-        st.execute("create table vectorize as SELECT ST_DumpAsPolygons(the_raster) FROM test");
+        st.execute("create table vectorize as select ST_DumpAsPolygons(the_raster) FROM test");
         ResultSet rs = st.executeQuery("select count(*) from vectorize;");
         rs.next();
         assertEquals(rs.getInt(1), 1);
+        rs.close();
         rs = st.executeQuery("select * from vectorize;");
-        rs.next();     
-        System.out.println("Passage " + (Geometry)rs.getObject(1));       
+        rs.next();
+        System.out.println("Geom  " + rs.getString(1));       
         rs.close();        
     }
 }

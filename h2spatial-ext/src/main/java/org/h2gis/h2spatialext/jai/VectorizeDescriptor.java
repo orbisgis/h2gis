@@ -319,7 +319,7 @@ public class VectorizeDescriptor extends OperationDescriptorImpl {
                     new VectorizeDescriptor();
             op.registerDescriptor(desc);
             // Register the operators's RIF.
-            SlopeRIF rif = new SlopeRIF();
+            VectorizeRIF rif = new VectorizeRIF();
             RIFRegistry.register(op, "Vectorize", "JAITOOLS", rif);
             registered = true;
         }
