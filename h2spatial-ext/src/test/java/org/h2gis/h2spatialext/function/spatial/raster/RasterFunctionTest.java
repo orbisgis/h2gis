@@ -24,6 +24,7 @@
 package org.h2gis.h2spatialext.function.spatial.raster;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import org.h2.api.GeoRaster;
 import org.h2.jdbc.JdbcSQLException;
@@ -1400,14 +1401,15 @@ public class RasterFunctionTest {
     @Test
     public void testST_DumpAsPolygons1() throws SQLException, IOException {        
         int width = 5;
-        int height = 4;
+        int height = 5;
         final double noData = 0;
-        final float pixelSize = 100;
+        final float pixelSize = 1;
 
         int[] pixels = new int[]{
             0, 0, 0, 0, 0,
             0, 1, 0, 0, 0,
             0, 1, 1, 1, 0,
+            0, 0, 0, 0, 0,
             0, 0, 0, 0, 0
         };
                 
@@ -1417,19 +1419,99 @@ public class RasterFunctionTest {
         st.execute("create table test(id identity, the_raster raster)");
         // Create table with test image
         PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
-        ps.setBinaryStream(1, GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData)
-                .asWKBRaster());
+        GeoRasterRenderedImage inputRaster = GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData);
+        ps.setBinaryStream(1, inputRaster.asWKBRaster());
         ps.execute();
         ps.close();
 
-        st.execute("create table vectorize as select ST_DumpAsPolygons(the_raster) FROM test");
+        st.execute("create table vectorize as select * from ST_DumpAsPolygons((SELECT the_raster from test limit 1));");
         ResultSet rs = st.executeQuery("select count(*) from vectorize;");
         rs.next();
         assertEquals(rs.getInt(1), 1);
         rs.close();
         rs = st.executeQuery("select * from vectorize;");
         rs.next();
-        System.out.println("Geom  " + rs.getString(1));       
+        Geometry vectorizedGeom =  (Geometry) rs.getObject(1);        
+        Envelope inputRasterEnv = inputRaster.getMetaData().getEnvelope();        
+        assertTrue(vectorizedGeom.getEnvelopeInternal().intersects(inputRasterEnv));
+        assertEquals(rs.getDouble(3), 1d, 1e-2);
+        rs.close();        
+    }
+    
+    @Test
+    public void testST_DumpAsPolygons2() throws SQLException, IOException {        
+        int width = 5;
+        int height = 5;
+        final double noData = 0;
+        final float pixelSize = 1;
+
+        int[] pixels = new int[]{
+            0, 0, 0, 0, 0,
+            0, 1, 0, 0, 0,
+            0, 1, 0, 2, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 3, 0, 0
+        };
+                
+        // Create image from int array
+        RenderedImage image = imageFromArray(pixels, width, height);
+        st.execute("drop table if exists test, vectorize;");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
+        GeoRasterRenderedImage inputRaster = GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData);
+        ps.setBinaryStream(1, inputRaster.asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        st.execute("create table vectorize as select * from ST_DumpAsPolygons((SELECT the_raster from test limit 1));");
+        ResultSet rs = st.executeQuery("select count(*) from vectorize;");
+        rs.next();
+        assertEquals(rs.getInt(1), 3);
+        rs.close();
+        rs = st.executeQuery("select * from vectorize order by value;");
+        rs.next();
+        Geometry vectorizedGeom =  (Geometry) rs.getObject(1);        
+        Envelope inputRasterEnv = inputRaster.getMetaData().getEnvelope();        
+        assertTrue(vectorizedGeom.getEnvelopeInternal().intersects(inputRasterEnv));
+        assertEquals(rs.getDouble(3), 1d, 1e-2);
+        rs.next();
+        assertEquals(rs.getDouble(3), 2d, 1e-2);        
+        rs.next();
+        assertEquals(rs.getDouble(3), 3d, 1e-2);
+        rs.close();        
+    }
+    
+    @Test
+    public void testST_DumpAsPolygons3() throws SQLException, IOException {        
+        int width = 5;
+        int height = 5;
+        final double noData = 0;
+        final float pixelSize = 1;
+
+        int[] pixels = new int[]{
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0
+        };
+                
+        // Create image from int array
+        RenderedImage image = imageFromArray(pixels, width, height);
+        st.execute("drop table if exists test, vectorize;");
+        st.execute("create table test(id identity, the_raster raster)");
+        // Create table with test image
+        PreparedStatement ps = connection.prepareStatement("INSERT INTO TEST(the_raster) " + "values(?)");
+        GeoRasterRenderedImage inputRaster = GeoRasterRenderedImage.create(image, pixelSize, -pixelSize, 0, height, 0, 0, 27572, noData);
+        ps.setBinaryStream(1, inputRaster.asWKBRaster());
+        ps.execute();
+        ps.close();
+
+        st.execute("create table vectorize as select * from ST_DumpAsPolygons((SELECT the_raster from test limit 1));");
+        ResultSet rs = st.executeQuery("select count(*) from vectorize;");
+        rs.next();
+        assertEquals(rs.getInt(1), 0);
         rs.close();        
     }
 }

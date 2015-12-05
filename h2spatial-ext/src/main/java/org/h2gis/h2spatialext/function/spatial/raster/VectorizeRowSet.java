@@ -25,7 +25,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
@@ -46,9 +45,9 @@ public class VectorizeRowSet implements SimpleRowSource{
     private boolean firstRow = true;
     private int id = 0;   
     final AffineTransformation pixelToGeoTrans;
-    private Iterator<Polygon> itpolys;
     private final int bandIndice;
     private final List<Number> outsideValues;
+    private List<Polygon> polygons;
 
 
     /**
@@ -86,7 +85,10 @@ public class VectorizeRowSet implements SimpleRowSource{
         if (firstRow) {
             reset();
         }     
-        Polygon poly = itpolys.next();
+        if(id>=polygons.size()){
+            return null;
+        }
+        Polygon poly = polygons.get(id);
         poly.apply(pixelToGeoTrans);
         return new Object[]{poly, id++, (Double) poly.getUserData()};        
     }
@@ -122,14 +124,13 @@ public class VectorizeRowSet implements SimpleRowSource{
     /**
      * Use the vectorize JAI operator
      */
-    public  void vectorize() {
+    public void vectorize() {
         ParameterBlockJAI pb = new ParameterBlockJAI("Vectorize");
         pb.setSource("source0", raster);
         pb.setParameter("band", bandIndice);
         pb.setParameter("outsideValues", outsideValues);
         RenderedOp resultVectorize = JAI.create("Vectorize", pb);
-        List<Polygon> polygons = (List<Polygon>) resultVectorize.getProperty(VectorizeDescriptor.VECTOR_PROPERTY_NAME);
-        itpolys = polygons.iterator();
+        polygons = (List<Polygon>) resultVectorize.getProperty(VectorizeDescriptor.VECTOR_PROPERTY_NAME);
     }
-    
+
 }

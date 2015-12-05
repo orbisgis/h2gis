@@ -28,8 +28,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import org.h2.api.GeoRaster;
 import org.h2gis.h2spatialapi.AbstractFunction;
+import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.h2spatialext.jai.VectorizeDescriptor;
+import sun.security.util.DerEncoder;
 
 /**
  * Extract polygons from a raster
@@ -37,7 +39,7 @@ import org.h2gis.h2spatialext.jai.VectorizeDescriptor;
  * @author Erwan Bocher
  * @author Nicolas Fortin
  */
-public class ST_DumpAsPolygons extends AbstractFunction implements ScalarFunction{
+public class ST_DumpAsPolygons extends DeterministicScalarFunction{
 
     
     public ST_DumpAsPolygons(){
