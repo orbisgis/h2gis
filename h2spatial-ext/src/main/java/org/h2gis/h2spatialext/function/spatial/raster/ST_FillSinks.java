@@ -37,6 +37,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Compute the steepest downward slope towards one of the eight adjacent or diagonal neighbors.
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class ST_FillSinks extends DeterministicScalarFunction {
     private static final AtomicBoolean warnedPrinted = new AtomicBoolean(false);

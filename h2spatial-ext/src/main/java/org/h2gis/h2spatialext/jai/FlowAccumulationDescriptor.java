@@ -30,6 +30,7 @@ import javax.media.jai.registry.RIFRegistry;
 /**
  * JAI Api, Description of the flow accumulation operator
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class FlowAccumulationDescriptor extends OperationDescriptorImpl {
 

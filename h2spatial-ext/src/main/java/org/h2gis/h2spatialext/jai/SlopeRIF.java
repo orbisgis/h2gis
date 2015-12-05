@@ -39,7 +39,9 @@ import java.awt.image.renderable.RenderedImageFactory;
 import java.io.IOException;
 
 /**
+ * RenderedImageFactory for ST_D8Slope
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class SlopeRIF implements RenderedImageFactory {
     private Logger LOGGER = LoggerFactory.getLogger(SlopeRIF.class);

@@ -33,6 +33,7 @@ import java.awt.image.renderable.RenderedImageFactory;
 /**
  * Filter image operator
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class RangeFilterRIF implements RenderedImageFactory {
 

@@ -168,6 +168,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author Nicolas Fortin
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public class CreateSpatialExtension {
     public static final boolean DEFAULT_RASTER_PROCESSING_IN_MEMORY = false;
