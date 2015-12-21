@@ -30,6 +30,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2.jdbc.JdbcSQLException;
 
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
@@ -144,7 +145,36 @@ public class CRSFunctionTest {
                 "MULTIPOLYGON (((614156.72100231 5877577.312128516, 700000 5877033.734723133, 700000 1336875.474634381, "
                         + "556660.5833028702 1337783.1294808295, 614156.72100231 5877577.312128516)))", 2154, 10E-15);
     }
-
+    
+    @Test
+    public void testST_TransformOnNullGeometry() throws Exception {
+        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "null, 2154);");
+        rs.next();
+        Assert.assertNull(rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void testST_TransformOnNulls() throws Exception {
+        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "null, null);");
+        rs.next();
+        Assert.assertNull(rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testST_TransformOnNullSRID() throws Throwable {
+        try {
+            st.execute("SELECT ST_TRANSFORM("
+                    + "ST_GeomFromText('MULTIPOLYGON (((2 40, 3 40, 3 3, 2 3, 2 40)))',  4326 ), null);");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
+    
+        
     private void checkProjectedGeom(String inputGeom, int inProj, int outProj, String expectedGeom) throws SQLException {
         check(compute(inputGeom, inProj, outProj), expectedGeom, outProj);
     }
