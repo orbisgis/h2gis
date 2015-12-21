@@ -4,7 +4,7 @@
     <parent>
         <artifactId>h2gis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>1.2.4-SNAPSHOT</version>
+        <version>1.2.5-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>h2spatial-ext</artifactId>
@@ -73,9 +73,15 @@
         </dependency>
         <dependency>
             <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
+            <artifactId>jts-core</artifactId>
             <version>${jts-version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts-io</artifactId>
+            <version>${jts-version}</version>
+        </dependency>
+
         <dependency>
             <groupId>${h2-package}</groupId>
             <artifactId>h2</artifactId>
