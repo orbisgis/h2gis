@@ -26,7 +26,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 
-import java.sql.SQLException;
 
 /**
  * Return a new geometry with a replaced spatial reference id.
@@ -49,14 +48,17 @@ public class ST_SetSRID  extends AbstractFunction implements ScalarFunction {
      * @param geometry
      * @param srid
      * @return
-     * @throws SQLException 
+     * @throws IllegalArgumentException 
      */
-    public static Geometry setSRID(Geometry geometry, Integer srid) throws SQLException {
-        if (geometry != null || srid !=null) {
-            Geometry geom = (Geometry) geometry.clone();
-            geom.setSRID(srid);
-            return geom;
+    public static Geometry setSRID(Geometry geometry, Integer srid) throws IllegalArgumentException {
+        if (geometry == null) {
+            return null;
         }
-        return null;
+        if (srid == null) {
+            throw new IllegalArgumentException("The SRID code cannot be null.");
+        }
+        Geometry geom = (Geometry) geometry.clone();
+        geom.setSRID(srid);
+        return geom;
     }
 }

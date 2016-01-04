@@ -187,6 +187,25 @@ public class SpatialFunctionTest {
         assertEquals(27572, rs.getInt("original"));
         assertEquals(5321, rs.getInt("trans"));
     }
+    
+    @Test
+    public void testSetSRIDNullGeom() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_SETSRID(null,5321)");
+        assertTrue(rs.next());
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test(expected = IllegalArgumentException.class)
+    public void testSetSRIDNullSRID() throws Throwable {
+        try {
+            Statement st = connection.createStatement();
+            st.execute("SELECT ST_SETSRID('POINT(12 13)',null)");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
 
     @Test
     public void test_ST_CoordDim() throws Exception {
