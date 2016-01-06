@@ -20,7 +20,8 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-package org.h2gis.drivers.cvs;
+
+package org.h2gis.drivers.tsv;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,13 +29,18 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.drivers.csv.CSVDriverFunction;
+import org.h2gis.h2spatial.CreateSpatialExtension;
 import org.h2gis.h2spatial.ut.SpatialH2UT;
 import org.h2gis.h2spatialapi.DriverFunction;
 import org.h2gis.h2spatialapi.EmptyProgressVisitor;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -44,17 +50,19 @@ import org.junit.Test;
  *
  * @author Erwan Bocher
  */
-public class CSVDriverTest {
-    
-    
+public class TSVDriverTest {
+
     private static Connection connection;
-    private static final String DB_NAME = "CSVImportExportTest";
+    private static final String DB_NAME = "TSVImportExportTest";
     private Statement st;
 
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new TSVRead(), "");
+        CreateSpatialExtension.registerFunction(connection.createStatement(), new TSVWrite(), "");
+        
     }
 
     @AfterClass
@@ -79,19 +87,41 @@ public class CSVDriverTest {
         stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
         stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
         stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
-        // Export in target with special chars
-        File csvFile = new File("target/area éxport.csv");
-        DriverFunction exp = new CSVDriverFunction();
-        exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor());
-        stat.execute("DROP TABLE IF EXISTS mycsv");
-        exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor());
-        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from mycsv");
+        File tsvFile = new File("target/area éxport.tsv");
+        DriverFunction exp = new TSVDriverFunction();
+        exp.exportTable(connection, "AREA", tsvFile, new EmptyProgressVisitor());
+        stat.execute("DROP TABLE IF EXISTS mytsv");
+        exp.importFile(connection, "MYTSV", tsvFile, new EmptyProgressVisitor());
+        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from mytsv");
         try {
             assertTrue(rs.next());
-            assertEquals(20000,rs.getDouble(1),1e-6);
+            assertEquals(20000, rs.getDouble(1), 1e-6);
         } finally {
             rs.close();
         }
-    }   
+    }
+    
+    @Test
+    public void testWriteRead() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File tsvFile = new File("target/mytsv_export.tsv");
+        stat.execute("DROP TABLE IF EXISTS myTSV");
+        stat.execute("create table myTSV(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into myTSV values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        stat.execute("insert into myTSV values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        stat.execute("CALL TSVWrite('target/mytsv_export.tsv', 'myTSV')");
+        assertTrue(tsvFile.exists());
+        stat.execute("CALL TSVRead('target/mytsv_export.tsv', 'TSV_IMPORT');");
+        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from TSV_IMPORT");
+        try {
+            assertTrue(rs.next());
+            assertEquals(20000, rs.getDouble(1), 1e-6);
+        } finally {
+            rs.close();
+        }
+
+    }
+    
+    
     
 }
