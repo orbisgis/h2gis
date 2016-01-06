@@ -40,6 +40,8 @@ import org.h2gis.drivers.shp.SHPWrite;
 import org.h2gis.h2spatialapi.Function;
 import org.h2gis.drivers.osm.OSMRead;
 import org.h2gis.drivers.osm.ST_OSMDownloader;
+import org.h2gis.drivers.tsv.TSVRead;
+import org.h2gis.drivers.tsv.TSVWrite;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Scale;
 import org.h2gis.h2spatialext.function.spatial.affine_transformations.ST_Translate;
@@ -208,7 +210,9 @@ public class CreateSpatialExtension {
                 new ST_GeomFromGeoJSON(),
                 new ST_OSMMapLink(),
                 new ST_GoogleMapLink(),
-                new ST_AsGML()};
+                new ST_AsGML(),
+                new TSVRead(),
+                new TSVWrite()};
     }
 
     /**
