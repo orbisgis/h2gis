@@ -55,6 +55,9 @@ public class ST_Rotate extends DeterministicScalarFunction {
      * @return The geometry rotated about the center of its envelope
      */
     public static Geometry rotate(Geometry geom, double theta) {
+        if(geom==null){
+            return null;
+        }
         Coordinate center = geom.getEnvelopeInternal().centre();
         return rotate(geom, theta, center.x, center.y);
     }
