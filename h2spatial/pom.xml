@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.orbisgis</groupId>
     <artifactId>h2gis</artifactId>
-    <version>1.2.4-SNAPSHOT</version>
+    <version>1.2.5-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
   <artifactId>h2spatial</artifactId>
@@ -32,7 +32,7 @@
     </dependency>
     <dependency>
       <groupId>com.vividsolutions</groupId>
-      <artifactId>jts</artifactId>
+      <artifactId>jts-core</artifactId>
       <version>${jts-version}</version>
     </dependency>
     <dependency>
