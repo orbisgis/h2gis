@@ -1017,7 +1017,7 @@ public class RasterFunctionTest {
 
         ResultSet rs = st.executeQuery("select st_extrema(the_raster) from test;");
         assertTrue(rs.next());
-        double[] values  = (double[]) rs.getObject(1);
+        Double[] values  = (Double[]) rs.getObject(1);
         assertEquals(50, values[0], 1e-2);
         assertEquals(140, values[1], 1e-2);
         rs.close();
@@ -1084,7 +1084,7 @@ public class RasterFunctionTest {
 
         ResultSet rs = st.executeQuery("select st_extrema(the_raster) from test;");
         assertTrue(rs.next());
-        double[] values  = (double[]) rs.getObject(1);
+        Double[] values  = (Double[]) rs.getObject(1);
         assertEquals(60, values[0], 1e-2);
         assertEquals(140, values[1], 1e-2);
         rs.close();        
@@ -1117,7 +1117,7 @@ public class RasterFunctionTest {
 
         ResultSet rs = st.executeQuery("select st_extrema(the_raster) from test;");
         assertTrue(rs.next());
-        double[] values  = (double[]) rs.getObject(1);
+        Double[] values  = (Double[]) rs.getObject(1);
         assertEquals(50, values[0], 1e-2);
         assertEquals(130, values[1], 1e-2);
         rs.close();        
