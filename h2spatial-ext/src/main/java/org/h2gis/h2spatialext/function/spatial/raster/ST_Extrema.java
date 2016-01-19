@@ -37,7 +37,6 @@ import javax.media.jai.operator.ConstantDescriptor;
 import org.h2.api.GeoRaster;
 import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
-import org.h2gis.h2spatialext.jai.UnaryFunctionDescriptor;
 
 /**
  * Return the min and max value for one band of the input raster.
@@ -48,12 +47,11 @@ import org.h2gis.h2spatialext.jai.UnaryFunctionDescriptor;
 public class ST_Extrema extends DeterministicScalarFunction {
 
     
-    public ST_Extrema(){
+    public ST_Extrema() {
         addProperty(PROP_REMARKS, "Compute the min and max value of a geoRaster.\n"
                 + "Note : "
                 + "- the geoRaster must contains only one band,\n"
                 + "- if the geoRaster has a nodata value, the nodata value is excluded from min and max. ");
-        UnaryFunctionDescriptor.register();
     }
     
     @Override
@@ -88,13 +86,14 @@ public class ST_Extrema extends DeterministicScalarFunction {
     }
 
     /**
+     * Compute the extrema value for an input geoRaster
      * 
      * @param geoRaster
      * @return
      * @throws IOException
      * @throws SQLException 
      */
-    public static double[] extrema(GeoRaster geoRaster) throws IOException, SQLException {
+    public static Double[] extrema(GeoRaster geoRaster) throws IOException, SQLException {
         if (geoRaster == null) {
             return null;
         }
@@ -138,6 +137,6 @@ public class ST_Extrema extends DeterministicScalarFunction {
         // Retrieve both the maximum and minimum pixel value
         double[] allMins = (double[]) op.getProperty("minimum");
         double[] allMaxs = (double[]) op.getProperty("maximum");
-        return new double[]{allMins[0], allMaxs[0]};
+        return new Double[]{allMins[0], allMaxs[0]};
     }
 }
