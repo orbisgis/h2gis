@@ -135,8 +135,8 @@ public class AsciiGridWriter {
         RasterUtils.RasterMetaData met = RasterUtils.RasterMetaData
                 .fetchMetaData(blob.getBinaryStream());
         AsciiGridsImageMetadata gridMetadata = new AsciiGridsImageMetadata(
-                met.width, met.height, met.scaleX, met.scaleY,
-                met.ipX, met.ipY,
+                met.width, met.height, met.scaleX, -met.scaleY,
+                met.ipX, met.ipY - ((-met.scaleY) * met.height),
                 false, isGrass, met.bands[0].noDataValue);
 
         IIOImage iIOImage = new IIOImage(wkbReader.readAsRenderedImage(wkbReader.getMinIndex(), wkbReader.getDefaultReadParam()), null, gridMetadata);

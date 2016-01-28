@@ -23,14 +23,12 @@
 
 package org.h2gis.drivers.asciiGrid;
 
-import it.geosolutions.imageio.plugins.arcgrid.raster.AsciiGridRaster;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2.api.GeoRaster;
 import org.h2.util.GeoRasterRenderedImage;
-import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.URIUtility;
@@ -69,18 +67,8 @@ public class ST_AsciiGridRead extends AbstractFunction implements ScalarFunction
         if (rasterFile.exists()) {
             AsciiGridReader asciiGridReader = AsciiGridReader.fetch(connection, rasterFile);
 
-            AsciiGridRaster metadataAscii = asciiGridReader.getAsciiGridRaster();
-
-            RasterUtils.RasterBandMetaData rbmd = new RasterUtils.RasterBandMetaData(metadataAscii.getNoData(), RasterUtils.PixelType.PT_64BF, true, 0);
-
-            RasterUtils.RasterMetaData rmd = new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, 1,
-                    metadataAscii.getCellSizeX(), metadataAscii.getCellSizeY(),
-                    metadataAscii.getXllCellCoordinate(), metadataAscii.getYllCellCoordinate(),
-                    0, 0, asciiGridReader.getSrid(),
-                    metadataAscii.getNCols(), metadataAscii.getNRows(),
-                    new RasterUtils.RasterBandMetaData[]{rbmd});
             return GeoRasterRenderedImage
-                    .create(asciiGridReader.getImage(), rmd);
+                    .create(asciiGridReader.getImage(), asciiGridReader.getRasterMetaData());
         } else {
             throw new IllegalArgumentException("The file " + fileName + " doesn't exist.");
         }
