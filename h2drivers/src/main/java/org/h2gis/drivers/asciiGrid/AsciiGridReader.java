@@ -113,7 +113,7 @@ public class AsciiGridReader {
     /**
      * @return MetaData of loaded ascii grid file
      */
-    public RasterUtils.RasterMetaData getMeta() {
+    public RasterUtils.RasterMetaData getRasterMetaData() {
         double scaleX = asciiGridRaster.getCellSizeX();
         // WKB Raster is mirrored on Y plane
         double scaleY = - asciiGridRaster.getCellSizeY();
@@ -139,7 +139,7 @@ public class AsciiGridReader {
             SQLException {
         TableLocation location = TableLocation.parse(tableReference, isH2);
         try {
-            RasterUtils.RasterMetaData rmd = getMeta();
+            RasterUtils.RasterMetaData rmd = getRasterMetaData();
             StringBuilder sb = new StringBuilder();
             sb.append("create table ").append(location.toString()).append("(id serial, the_raster raster) as ");
             sb.append("select null, ");

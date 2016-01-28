@@ -23,14 +23,12 @@
 
 package org.h2gis.drivers.asciiGrid;
 
-import it.geosolutions.imageio.plugins.arcgrid.raster.AsciiGridRaster;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2.api.GeoRaster;
 import org.h2.util.GeoRasterRenderedImage;
-import org.h2.util.RasterUtils;
 import org.h2gis.h2spatialapi.AbstractFunction;
 import org.h2gis.h2spatialapi.ScalarFunction;
 import org.h2gis.utilities.URIUtility;
@@ -70,7 +68,7 @@ public class ST_AsciiGridRead extends AbstractFunction implements ScalarFunction
             AsciiGridReader asciiGridReader = AsciiGridReader.fetch(connection, rasterFile);
 
             return GeoRasterRenderedImage
-                    .create(asciiGridReader.getImage(), asciiGridReader.getMeta());
+                    .create(asciiGridReader.getImage(), asciiGridReader.getRasterMetaData());
         } else {
             throw new IllegalArgumentException("The file " + fileName + " doesn't exist.");
         }
