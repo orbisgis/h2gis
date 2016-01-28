@@ -69,18 +69,8 @@ public class ST_AsciiGridRead extends AbstractFunction implements ScalarFunction
         if (rasterFile.exists()) {
             AsciiGridReader asciiGridReader = AsciiGridReader.fetch(connection, rasterFile);
 
-            AsciiGridRaster metadataAscii = asciiGridReader.getAsciiGridRaster();
-
-            RasterUtils.RasterBandMetaData rbmd = new RasterUtils.RasterBandMetaData(metadataAscii.getNoData(), RasterUtils.PixelType.PT_64BF, true, 0);
-
-            RasterUtils.RasterMetaData rmd = new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, 1,
-                    metadataAscii.getCellSizeX(), metadataAscii.getCellSizeY(),
-                    metadataAscii.getXllCellCoordinate(), metadataAscii.getYllCellCoordinate(),
-                    0, 0, asciiGridReader.getSrid(),
-                    metadataAscii.getNCols(), metadataAscii.getNRows(),
-                    new RasterUtils.RasterBandMetaData[]{rbmd});
             return GeoRasterRenderedImage
-                    .create(asciiGridReader.getImage(), rmd);
+                    .create(asciiGridReader.getImage(), asciiGridReader.getMeta());
         } else {
             throw new IllegalArgumentException("The file " + fileName + " doesn't exist.");
         }

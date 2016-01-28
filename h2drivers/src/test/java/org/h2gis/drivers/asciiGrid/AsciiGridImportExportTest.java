@@ -30,6 +30,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import com.vividsolutions.jts.geom.Envelope;
 import org.h2.api.GeoRaster;
 import org.h2.util.RasterUtils;
 import org.h2.util.StringUtils;
@@ -94,11 +96,16 @@ public class AsciiGridImportExportTest {
          assertEquals(5, metaData.height);
          assertEquals(1, metaData.numBands);
          assertEquals(273987.50, metaData.ipX, 1e-2);
-         assertEquals(2224987.50, metaData.ipY, 1e-2);
+         assertEquals(2225112.5, metaData.ipY, 1e-2);
          assertEquals(25, metaData.scaleX, 1e-2);
-         assertEquals(25, metaData.scaleY, 1e-2);
+         assertEquals(-25, metaData.scaleY, 1e-2);
          assertEquals(0., metaData.skewX, 1e-6);
          assertEquals(0., metaData.skewY, 1e-6);
+         Envelope env = metaData.getEnvelope();
+         assertEquals(273987.5, env.getMinX(), 1e-2);
+         assertEquals(274237.5, env.getMaxX(), 1e-2);
+         assertEquals(2224987.5, env.getMinY(), 1e-2);
+         assertEquals(2225112.5, env.getMaxY(), 1e-2);
          
          Raster data = geoRaster.getData();
          //Test some pixel values
@@ -120,11 +127,16 @@ public class AsciiGridImportExportTest {
         GeoRaster geoRaster = (GeoRaster) rs.getObject(1);
         RasterUtils.RasterMetaData metaData = geoRaster.getMetaData();
         assertNotNull(metaData);
+        Envelope env = metaData.getEnvelope();
+        assertEquals(273987.5, env.getMinX(), 1e-2);
+        assertEquals(274237.5, env.getMaxX(), 1e-2);
+        assertEquals(2224987.5, env.getMinY(), 1e-2);
+        assertEquals(2225112.5, env.getMaxY(), 1e-2);
         assertEquals(10, metaData.width);
         assertEquals(5, metaData.height);
         assertEquals(1, metaData.numBands);
         assertEquals(273987.50, metaData.ipX, 1e-2);
-        assertEquals(2224987.50, metaData.ipY, 1e-2);
+        assertEquals(2225112.5, metaData.ipY, 1e-2);
         assertEquals(25, metaData.scaleX, 1e-2);
         assertEquals(-25, metaData.scaleY, 1e-2);
         assertEquals(0., metaData.skewX, 1e-6);
@@ -160,7 +172,7 @@ public class AsciiGridImportExportTest {
         assertEquals(5, metaData.height);
         assertEquals(1, metaData.numBands);
         assertEquals(273987.50, metaData.ipX, 1e-2);
-        assertEquals(2224987.50, metaData.ipY, 1e-2);
+        assertEquals(2225112.5, metaData.ipY, 1e-2);
         assertEquals(25, metaData.scaleX, 1e-2);
         assertEquals(-25, metaData.scaleY, 1e-2);
         assertEquals(0., metaData.skewX, 1e-6);
@@ -194,8 +206,13 @@ public class AsciiGridImportExportTest {
         assertEquals(10, metaData.width);
         assertEquals(5, metaData.height);
         assertEquals(1, metaData.numBands);
+        Envelope env = metaData.getEnvelope();
+        assertEquals(273987.5, env.getMinX(), 1e-2);
+        assertEquals(274237.5, env.getMaxX(), 1e-2);
+        assertEquals(2224987.5, env.getMinY(), 1e-2);
+        assertEquals(2225112.5, env.getMaxY(), 1e-2);
         assertEquals(273987.50, metaData.ipX, 1e-2);
-        assertEquals(2224987.50, metaData.ipY, 1e-2);
+        assertEquals(2225112.5, metaData.ipY, 1e-2);
         assertEquals(25, metaData.scaleX, 1e-2);
         assertEquals(-25, metaData.scaleY, 1e-2);
         assertEquals(0., metaData.skewX, 1e-6);

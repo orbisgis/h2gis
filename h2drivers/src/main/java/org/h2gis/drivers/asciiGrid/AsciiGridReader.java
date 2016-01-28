@@ -111,6 +111,22 @@ public class AsciiGridReader {
     }
 
     /**
+     * @return MetaData of loaded ascii grid file
+     */
+    public RasterUtils.RasterMetaData getMeta() {
+        double scaleX = asciiGridRaster.getCellSizeX();
+        // WKB Raster is mirrored on Y plane
+        double scaleY = - asciiGridRaster.getCellSizeY();
+        double upperLeftX = asciiGridRaster.getXllCellCoordinate();
+        // WKB Raster Y is Upper. Ascii Grid Y is Lower (ll for lower left)
+        double upperLeftY = asciiGridRaster.getYllCellCoordinate() + (-scaleY * (asciiGridRaster.getNRows()));// + scaleY * asciiGridRaster.getNRows();
+        RasterUtils.RasterBandMetaData rbmd = new RasterUtils.RasterBandMetaData(asciiGridRaster.getNoData(), RasterUtils.PixelType.PT_32BF, true, 0);
+        return new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, 1, scaleX, scaleY, upperLeftX, upperLeftY, 0, 0, srid,
+                asciiGridRaster.getNCols(), asciiGridRaster.getNRows(),
+                new RasterUtils.RasterBandMetaData[]{rbmd});
+    }
+
+    /**
      * Import the ascii grid file
      *
      * @param tableReference
@@ -122,12 +138,8 @@ public class AsciiGridReader {
     public void readImage(String tableReference, boolean isH2, Connection connection, ProgressVisitor progressVisitor) throws
             SQLException {
         TableLocation location = TableLocation.parse(tableReference, isH2);
-        try {            
-            double scaleX = asciiGridRaster.getCellSizeX();
-            double scaleY = - asciiGridRaster.getCellSizeY();
-            double upperLeftX = asciiGridRaster.getXllCellCoordinate();
-            double upperLeftY = asciiGridRaster.getYllCellCoordinate();
-
+        try {
+            RasterUtils.RasterMetaData rmd = getMeta();
             StringBuilder sb = new StringBuilder();
             sb.append("create table ").append(location.toString()).append("(id serial, the_raster raster) as ");
             sb.append("select null, ");
@@ -137,10 +149,10 @@ public class AsciiGridReader {
                 sb.append("ST_SetGeoReference(ST_FromGDALRaster(?,");
                 sb.append(srid);
                 sb.append("), ");
-                sb.append(upperLeftX).append(",");
-                sb.append(upperLeftY).append(",");
-                sb.append(scaleX).append(",");
-                sb.append(scaleY).append(",");
+                sb.append(rmd.ipX).append(",");
+                sb.append(rmd.ipY).append(",");
+                sb.append(rmd.scaleX).append(",");
+                sb.append(rmd.scaleY).append(",");
                 sb.append(0).append(",");
                 sb.append(0);
                 sb.append("));");
@@ -148,12 +160,6 @@ public class AsciiGridReader {
             PreparedStatement stmt = connection.prepareStatement(sb.toString());
 
             try {
-                RasterUtils.RasterBandMetaData rbmd = new RasterUtils.RasterBandMetaData(asciiGridRaster.getNoData(), RasterUtils.PixelType.PT_32BF, true, 0);
-
-                RasterUtils.RasterMetaData rmd = new RasterUtils.RasterMetaData(RasterUtils.LAST_WKB_VERSION, 1, scaleX, scaleY, upperLeftX, upperLeftY, 0, 0, srid,
-                        asciiGridRaster.getNCols(), asciiGridRaster.getNRows(),
-                        new RasterUtils.RasterBandMetaData[]{rbmd});
-
                 GeoRaster geoRaster = GeoRasterRenderedImage
                         .create(image, rmd);
                 
