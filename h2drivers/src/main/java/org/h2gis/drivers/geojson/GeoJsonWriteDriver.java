@@ -119,7 +119,7 @@ public class GeoJsonWriteDriver {
                 writeCRS(jsonGenerator,SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
                 jsonGenerator.writeArrayFieldStart("features");
                 
-                ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
+                ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
 
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
