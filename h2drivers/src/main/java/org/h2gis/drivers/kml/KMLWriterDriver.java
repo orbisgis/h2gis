@@ -75,19 +75,11 @@ public class KMLWriterDriver {
      */
     public void write(ProgressVisitor progress) throws SQLException {        
         if (FileUtil.isExtensionWellFormated(fileName, "kml")) {
-            if (!fileName.exists()) {
-                writeKML(progress);
-            } else {
-                throw new SQLException("The file " + fileName.getPath() + " already exists.");
-            }
+            writeKML(progress);
         } else if (FileUtil.isExtensionWellFormated(fileName, "kmz")) {
-            if (!fileName.exists()) {
-                String name = fileName.getName();
-                int pos = name.lastIndexOf(".");
-                writeKMZ(progress, name.substring(0, pos) + ".kml");
-            } else {
-                throw new SQLException("The file " + fileName.getPath() + " already exists.");
-            }
+            String name = fileName.getName();
+            int pos = name.lastIndexOf(".");
+            writeKMZ(progress, name.substring(0, pos) + ".kml");
         } else {
             throw new SQLException("Please use the extensions .kml or kmz.");
         }
@@ -190,7 +182,7 @@ public class KMLWriterDriver {
             // Read table content
             Statement st = connection.createStatement();
             try {
-                ResultSet rs = st.executeQuery(String.format("select * from `%s`", tableName));
+                ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
                 try {
                     int recordCount = JDBCUtilities.getRowCount(connection, tableName);
                     ProgressVisitor copyProgress = progress.subProcess(recordCount);
