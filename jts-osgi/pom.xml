@@ -4,12 +4,12 @@
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>h2gis</artifactId>
-        <version>1.2.5-SNAPSHOT</version>
+        <version>1.2.4-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>jts-core</artifactId>
+    <artifactId>jts</artifactId>
     <name>jts</name>
-    <version>1.14.0</version>
+    <version>1.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>A jar with additional information in the jar MANIFEST in order to comply with OSGi environment</description>
     <build>
@@ -36,7 +36,7 @@
         <dependencies>
             <dependency>
             <groupId>com.vividsolutions</groupId>
-            <artifactId>jts-core</artifactId>
+            <artifactId>jts</artifactId>
             <version>${jts-version}</version>
         </dependency>
     </dependencies>
