@@ -153,7 +153,7 @@ public class JDBCUtilities {
      * @return The list of field name.
      * @throws SQLException If jdbc throws an error
      */
-    public static List<String> getAllFieldName(DatabaseMetaData meta, String table) throws SQLException {
+    public static List<String> getFieldNames(DatabaseMetaData meta, String table) throws SQLException {
         List<String> fieldNameList = new ArrayList<String>();
         TableLocation location = TableLocation.parse(table);
         ResultSet rs = meta.getColumns(location.getCatalog(null), location.getSchema(null), location.getTable(), null);
@@ -319,7 +319,7 @@ public class JDBCUtilities {
      * @return The integer primary key used for edition[1-n]; 0 if the source is closed or if the table has no primary
      *         key or more than one column as primary key
      */
-    public static List<String> getTableNameList(DatabaseMetaData metaData, String catalog, String schemaPattern,
+    public static List<String> getTableNames(DatabaseMetaData metaData, String catalog, String schemaPattern,
                                                  String tableNamePattern, String [] types) throws SQLException {
         List<String> tableList = new ArrayList<String>();
         ResultSet rs = metaData.getTables(catalog, schemaPattern, tableNamePattern, types);
@@ -341,7 +341,7 @@ public class JDBCUtilities {
      * @param fieldName Name of the field containing the values.
      * @return The list of distinct values of the field.
      */
-    public static List<String> getFieldValueList(Connection connection, String tableName, String fieldName) throws SQLException {
+    public static List<String> getUniqueFieldValues(Connection connection, String tableName, String fieldName) throws SQLException {
         final Statement statement = connection.createStatement();
         List<String> fieldValues = new ArrayList<String>();
         try {
