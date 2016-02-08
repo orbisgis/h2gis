@@ -345,7 +345,7 @@ public class JDBCUtilities {
         final Statement statement = connection.createStatement();
         List<String> fieldValues = new ArrayList<String>();
         try {
-            ResultSet result = statement.executeQuery("SELECT DISTINCT "+fieldName+" FROM "+TableLocation.parse(tableName));
+            ResultSet result = statement.executeQuery("SELECT DISTINCT "+TableLocation.quoteIdentifier(fieldName)+" FROM "+TableLocation.parse(tableName));
             while(result.next()){
                 fieldValues.add(result.getString(1));
             }
