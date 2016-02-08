@@ -34,6 +34,8 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * DBMS should follow standard but it is not always the case, this class do some common operations.
@@ -144,6 +146,28 @@ public class JDBCUtilities {
     }
 
     /**
+     * Returns the list of all the field name of a table.
+     *
+     * @param meta DataBase meta data
+     * @param table Table identifier [[catalog.]schema.]table
+     * @return The list of field name.
+     * @throws SQLException If jdbc throws an error
+     */
+    public static List<String> getFieldNames(DatabaseMetaData meta, String table) throws SQLException {
+        List<String> fieldNameList = new ArrayList<String>();
+        TableLocation location = TableLocation.parse(table);
+        ResultSet rs = meta.getColumns(location.getCatalog(null), location.getSchema(null), location.getTable(), null);
+        try {
+            while(rs.next()) {
+                fieldNameList.add(rs.getString("COLUMN_NAME"));
+            }
+        } finally {
+            rs.close();
+        }
+        return fieldNameList;
+    }
+
+    /**
      * Fetch the row count of a table.
      * @param connection Active connection.
      * @param tableReference Table reference
@@ -198,6 +222,8 @@ public class JDBCUtilities {
         }
         return isTemporary;
     }
+
+
 
     /**
      * @param metaData Database meta data
@@ -275,6 +301,58 @@ public class JDBCUtilities {
         } finally {
             statement.close();
         }
+    }
+
+    /**
+     * Returns the list of table names.
+     *
+     * @param metaData Database meta data
+     * @param catalog A catalog name. Must match the catalog name as it is stored in the database.
+     *                      "" retrieves those without a catalog; null means that the catalog name should not be used to
+     *                      narrow the search
+     * @param schemaPattern A schema name pattern. Must match the schema name as it is stored in the database.
+     *                      "" retrieves those without a schema.
+     *                      null means that the schema name should not be used to narrow the search
+     * @param tableNamePattern A table name pattern. Must match the table name as it is stored in the database
+     * @param types A list of table types, which must be from the list of table types returned from getTableTypes(),
+     *              to include. null returns all types
+     * @return The integer primary key used for edition[1-n]; 0 if the source is closed or if the table has no primary
+     *         key or more than one column as primary key
+     */
+    public static List<String> getTableNames(DatabaseMetaData metaData, String catalog, String schemaPattern,
+                                                 String tableNamePattern, String [] types) throws SQLException {
+        List<String> tableList = new ArrayList<String>();
+        ResultSet rs = metaData.getTables(catalog, schemaPattern, tableNamePattern, types);
+        try {
+            while (rs.next()) {
+                tableList.add(rs.getString("TABLE_NAME"));
+            }
+        } finally {
+            rs.close();
+        }
+        return tableList;
+    }
+
+    /**
+     * Returns the list of distinct values contained by a field from a table from the database
+     *
+     * @param connection Connection
+     * @param tableName Name of the table containing the field.
+     * @param fieldName Name of the field containing the values.
+     * @return The list of distinct values of the field.
+     */
+    public static List<String> getUniqueFieldValues(Connection connection, String tableName, String fieldName) throws SQLException {
+        final Statement statement = connection.createStatement();
+        List<String> fieldValues = new ArrayList<String>();
+        try {
+            ResultSet result = statement.executeQuery("SELECT DISTINCT "+TableLocation.quoteIdentifier(fieldName)+" FROM "+TableLocation.parse(tableName));
+            while(result.next()){
+                fieldValues.add(result.getString(1));
+            }
+        } finally {
+            statement.close();
+        }
+        return fieldValues;
     }
 
     /**
