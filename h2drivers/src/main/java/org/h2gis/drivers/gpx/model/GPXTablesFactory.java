@@ -56,12 +56,12 @@ public class GPXTablesFactory {
              sb.append("the_geom GEOMETRY(POINT, 4326),");
         }
         sb.append(" id INT,");
-        sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.LAT.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.LON.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.ELE.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.TIME.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
         sb.append("description").append(" TEXT,");
@@ -72,10 +72,10 @@ public class GPXTablesFactory {
         sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.FIX.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SAT.toLowerCase()).append(" INT,");
-        sb.append(GPXTags.HDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.VDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.PDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.HDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.VDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.PDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.DGPSID.toLowerCase()).append(" INT,");
         sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" BOOLEAN);");
         stmt.execute(sb.toString());
@@ -148,12 +148,12 @@ public class GPXTablesFactory {
             sb.append("the_geom GEOMETRY(POINT, 4326),");
         }
         sb.append(" id INT,");
-        sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.LAT.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.LON.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.ELE.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.TIME.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
         sb.append("description").append(" TEXT,");
@@ -164,10 +164,10 @@ public class GPXTablesFactory {
         sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.FIX.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SAT.toLowerCase()).append(" INT,");
-        sb.append(GPXTags.HDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.VDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.PDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.HDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.VDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.PDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.DGPSID.toLowerCase()).append(" INT,");
         sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" BOOLEAN,");
         sb.append("route_id").append(" INT);");
@@ -276,12 +276,12 @@ public class GPXTablesFactory {
             sb.append("the_geom GEOMETRY(POINT, 4326),");
         }
         sb.append(" id INT,");
-        sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.LAT.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.LON.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.ELE.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.TIME.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
         sb.append("description").append(" TEXT,");
@@ -292,10 +292,10 @@ public class GPXTablesFactory {
         sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.FIX.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SAT.toLowerCase()).append(" INT,");
-        sb.append(GPXTags.HDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.VDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.PDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.HDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.VDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.PDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.DGPSID.toLowerCase()).append(" INT,");
         sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" BOOLEAN,");
         sb.append("track_segment_id").append(" INT);");

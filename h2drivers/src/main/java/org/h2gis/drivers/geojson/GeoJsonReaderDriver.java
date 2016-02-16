@@ -376,7 +376,7 @@ public class GeoJsonReaderDriver {
                 metadataBuilder.append(fieldName).append(" BOOLEAN");
                 fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
-                metadataBuilder.append(fieldName).append(" DOUBLE");
+                metadataBuilder.append(fieldName).append(" FLOAT8");
                 fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
                 metadataBuilder.append(fieldName).append(" INT");
