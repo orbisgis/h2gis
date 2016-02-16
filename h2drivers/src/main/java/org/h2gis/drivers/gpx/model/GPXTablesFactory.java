@@ -53,7 +53,7 @@ public class GPXTablesFactory {
         if (isH2) {
             sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-             sb.append("GEOMETRY(POINT, 4326)");
+             sb.append("GEOMETRY(POINT, 4326),");
         }
         sb.append(" id INT,");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
@@ -105,7 +105,7 @@ public class GPXTablesFactory {
         if (isH2) {
             sb.append(" (the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-            sb.append("GEOMETRY(LINESTRING, 4326)");
+            sb.append("GEOMETRY(LINESTRING, 4326),");
         }
         sb.append(" id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
@@ -145,7 +145,7 @@ public class GPXTablesFactory {
         if (isH2) {
             sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-            sb.append("GEOMETRY(POINT, 4326)");
+            sb.append("GEOMETRY(POINT, 4326),");
         }
         sb.append(" id INT,");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
@@ -199,7 +199,7 @@ public class GPXTablesFactory {
         if (isH2) {
             sb.append(" (the_geom MULTILINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-            sb.append("GEOMETRY(MULTILINESTRING, 4326)");
+            sb.append("GEOMETRY(MULTILINESTRING, 4326),");
         }
         sb.append(" id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
@@ -239,7 +239,7 @@ public class GPXTablesFactory {
         if (isH2) {
             sb.append(" (the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-            sb.append("GEOMETRY(LINESTRING, 4326)");
+            sb.append("GEOMETRY(LINESTRING, 4326),");
         }
         sb.append(" id INT,");
         sb.append(GPXTags.EXTENSIONS).append(" TEXT,");
@@ -273,7 +273,7 @@ public class GPXTablesFactory {
         sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
         }
         else{
-            sb.append("GEOMETRY(POINT, 4326)");
+            sb.append("GEOMETRY(POINT, 4326),");
         }
         sb.append(" id INT,");
         sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
