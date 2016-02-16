@@ -64,7 +64,7 @@ public class GPXTablesFactory {
         sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
@@ -110,7 +110,7 @@ public class GPXTablesFactory {
         sb.append(" id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
@@ -156,7 +156,7 @@ public class GPXTablesFactory {
         sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
@@ -204,7 +204,7 @@ public class GPXTablesFactory {
         sb.append(" id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
@@ -284,7 +284,7 @@ public class GPXTablesFactory {
         sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
