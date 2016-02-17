@@ -158,18 +158,18 @@ public class CSVDriverFunction implements DriverFunction{
                         pst.clearBatch();
                         batchSize = 0;
                     }
+                    if (nodeCountProgress++ % readFileSizeEachNode == 0) {
+                        // Update Progress
+                        try {
+                            progress.setStep((int) (((double) fc.position() / fileSize) * 100));
+                        } catch (IOException ex) {
+                            // Ignore
+                        }
+                    }
                 }
                 if (batchSize > 0) {
                     pst.executeBatch();
-                }
-                if (nodeCountProgress++ % readFileSizeEachNode == 0) {
-                    // Update Progress
-                    try {
-                        progress.setStep((int) (((double) fc.position() / fileSize) * 100));
-                    } catch (IOException ex) {
-                        // Ignore
-                    }
-                }
+                }                
 
             } finally {
                 pst.close();
