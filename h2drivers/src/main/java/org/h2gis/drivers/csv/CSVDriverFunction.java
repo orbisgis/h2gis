@@ -114,7 +114,7 @@ public class CSVDriverFunction implements DriverFunction{
             // Given the file size and an average node file size.
             // Skip how many nodes in order to update progression at a step of 1%
             long readFileSizeEachNode = Math.max(1, (fileSize / AVERAGE_NODE_SIZE) / 100);            
-            int nodeCountProgress = 0;
+            int average_row_size = 0;
             ResultSet reader = new Csv().read(new BufferedReader(new InputStreamReader(fis)), null);
             ResultSetMetaData metadata = reader.getMetaData();
             int columnCount = metadata.getColumnCount();
@@ -158,7 +158,7 @@ public class CSVDriverFunction implements DriverFunction{
                         pst.clearBatch();
                         batchSize = 0;
                     }
-                    if (nodeCountProgress++ % readFileSizeEachNode == 0) {
+                    if (average_row_size++ % readFileSizeEachNode == 0) {
                         // Update Progress
                         try {
                             progress.setStep((int) (((double) fc.position() / fileSize) * 100));
