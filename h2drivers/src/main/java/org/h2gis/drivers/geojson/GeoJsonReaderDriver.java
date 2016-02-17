@@ -388,9 +388,7 @@ public class GeoJsonReaderDriver {
                 metadataBuilder.append(fieldName).append(" VARCHAR");
                 fieldIndex++;
             } else {
-                // TODO: ignore value.
             }
-            //metadataBuilder.append(",");
         }
         return fieldIndex;
     }
