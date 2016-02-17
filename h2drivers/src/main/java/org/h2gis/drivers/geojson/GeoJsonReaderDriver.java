@@ -288,7 +288,7 @@ public class GeoJsonReaderDriver {
                     jp.nextToken(); //END_OBJECT } feature
                 }
                 if (!hasProperties) {
-                    metadataBuilder.append("ID INT, PRIMARY KEY (ID)");
+                    metadataBuilder.append(",ID INT, PRIMARY KEY (ID)");
                     fieldIndex++;
                 }
                 metadataBuilder.append(")");
@@ -317,10 +317,10 @@ public class GeoJsonReaderDriver {
             if (jp.getText().equalsIgnoreCase(GeoJsonField.GEOMETRIES)) {
                 jp.skipChildren();
                 if(isH2){
-                metadataBuilder.append("THE_GEOM GEOMETRY,");
+                metadataBuilder.append("THE_GEOM GEOMETRY");
                 }
                 else{
-                    metadataBuilder.append("THE_GEOM GEOMETRY(geometry,").append(parsedSRID).append("),");
+                    metadataBuilder.append("THE_GEOM GEOMETRY(geometry,").append(parsedSRID).append(")");
                 }
                 firstGeometryType=GeoJsonField.GEOMETRY;
                 mixedGeometries=true;
@@ -346,9 +346,9 @@ public class GeoJsonReaderDriver {
             jp.nextToken();//START coordinates array
             jp.skipChildren();
             if (isH2) {
-                metadataBuilder.append("THE_GEOM GEOMETRY,");
+                metadataBuilder.append("THE_GEOM GEOMETRY");
             } else {
-                metadataBuilder.append("THE_GEOM GEOMETRY(geometry,").append(parsedSRID).append("),");
+                metadataBuilder.append("THE_GEOM GEOMETRY(geometry,").append(parsedSRID).append(")");
             }
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + jp.getText() + "'");
@@ -366,6 +366,9 @@ public class GeoJsonReaderDriver {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
             String fieldName = jp.getText().toUpperCase(); //FIELD_NAME columnName            
             JsonToken value = jp.nextToken();
+            if(fieldIndex>0){
+                metadataBuilder.append(",");
+            }
             if (value == JsonToken.VALUE_STRING) {
                 metadataBuilder.append(fieldName).append(" VARCHAR");
                 fieldIndex++;
@@ -376,7 +379,7 @@ public class GeoJsonReaderDriver {
                 metadataBuilder.append(fieldName).append(" BOOLEAN");
                 fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
-                metadataBuilder.append(fieldName).append(" DOUBLE");
+                metadataBuilder.append(fieldName).append(" FLOAT8");
                 fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
                 metadataBuilder.append(fieldName).append(" INT");
@@ -385,9 +388,7 @@ public class GeoJsonReaderDriver {
                 metadataBuilder.append(fieldName).append(" VARCHAR");
                 fieldIndex++;
             } else {
-                // TODO: ignore value.
             }
-            metadataBuilder.append(",");
         }
         return fieldIndex;
     }

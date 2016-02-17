@@ -23,8 +23,12 @@
 
 package org.h2gis.drivers.tsv;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -101,6 +105,7 @@ public class TSVDriverFunction implements DriverFunction{
             try {
                 st = connection.createStatement();
                 Csv csv = new Csv();
+                csv.setFieldDelimiter('\t');
                 csv.setFieldSeparatorWrite("\t");
                 csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
             } finally {
@@ -120,9 +125,20 @@ public class TSVDriverFunction implements DriverFunction{
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
+            
+            int AVERAGE_NODE_SIZE = 500;
+            FileInputStream fis = new FileInputStream(fileName);
+            FileChannel fc = fis.getChannel();
+            long fileSize = fc.size();
+            // Given the file size and an average node file size.
+            // Skip how many nodes in order to update progression at a step of 1%
+            long readFileSizeEachNode = Math.max(1, (fileSize / AVERAGE_NODE_SIZE) / 100);            
+            int average_row_size = 0;
+            
             Csv csv = new Csv();
+            csv.setFieldDelimiter('\t');
             csv.setFieldSeparatorRead('\t');
-            ResultSet reader = csv.read(fileName.getPath(), null, null);
+            ResultSet reader = csv.read(new BufferedReader(new InputStreamReader(fis)), null);
             ResultSetMetaData metadata = reader.getMetaData();
             int columnCount = metadata.getColumnCount();
 
@@ -147,6 +163,10 @@ public class TSVDriverFunction implements DriverFunction{
             long batchSize = 0;
             try {
                 while (reader.next()) {
+                    if (progress.isCanceled()) {
+                        throw new SQLException("Canceled by user");
+                    }
+                    
                     for (int i = 0; i < columnCount; i++) {
                         pst.setString(i + 1, reader.getString(i + 1));
                     }
@@ -157,11 +177,19 @@ public class TSVDriverFunction implements DriverFunction{
                         pst.clearBatch();
                         batchSize = 0;
                     }
+                    
+                    if (average_row_size++ % readFileSizeEachNode == 0) {
+                        // Update Progress
+                        try {
+                            progress.setStep((int) (((double) fc.position() / fileSize) * 100));
+                        } catch (IOException ex) {
+                            // Ignore
+                        }
+                    }
                 }
                 if (batchSize > 0) {
                     pst.executeBatch();
                 }
-
             } finally {
                 pst.close();
             }
