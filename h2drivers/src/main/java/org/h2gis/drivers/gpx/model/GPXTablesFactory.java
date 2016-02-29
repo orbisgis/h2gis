@@ -49,22 +49,22 @@ public class GPXTablesFactory {
     public static PreparedStatement createWayPointsTable(Connection connection, String wayPointsTableName, boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(wayPointsTableName);
+        sb.append(wayPointsTableName).append(" (");
         if (isH2) {
-            sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
+            sb.append("the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-             sb.append("GEOMETRY(POINT, 4326)");
+             sb.append("the_geom GEOMETRY(POINT, 4326),");
         }
         sb.append(" id INT,");
-        sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.LAT.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.LON.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.ELE.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.TIME.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
@@ -72,10 +72,10 @@ public class GPXTablesFactory {
         sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.FIX.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SAT.toLowerCase()).append(" INT,");
-        sb.append(GPXTags.HDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.VDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.PDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.HDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.VDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.PDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.DGPSID.toLowerCase()).append(" INT,");
         sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" BOOLEAN);");
         stmt.execute(sb.toString());
@@ -101,16 +101,16 @@ public class GPXTablesFactory {
     public static PreparedStatement createRouteTable(Connection connection, String routeTableName, boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(routeTableName);
+        sb.append(routeTableName).append(" (");
         if (isH2) {
-            sb.append(" (the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
+            sb.append("the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-            sb.append("GEOMETRY(LINESTRING, 4326)");
+            sb.append("the_geom GEOMETRY(LINESTRING, 4326),");
         }
         sb.append(" id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
@@ -141,22 +141,22 @@ public class GPXTablesFactory {
     public static PreparedStatement createRoutePointsTable(Connection connection, String routePointsTable,boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(routePointsTable);
+        sb.append(routePointsTable).append(" (");
         if (isH2) {
-            sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
+            sb.append("the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-            sb.append("GEOMETRY(POINT, 4326)");
+            sb.append("the_geom GEOMETRY(POINT, 4326),");
         }
         sb.append(" id INT,");
-        sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.LAT.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.LON.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.ELE.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.TIME.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
@@ -164,10 +164,10 @@ public class GPXTablesFactory {
         sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.FIX.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SAT.toLowerCase()).append(" INT,");
-        sb.append(GPXTags.HDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.VDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.PDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.HDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.VDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.PDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.DGPSID.toLowerCase()).append(" INT,");
         sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" BOOLEAN,");
         sb.append("route_id").append(" INT);");
@@ -195,16 +195,16 @@ public class GPXTablesFactory {
     public static PreparedStatement createTrackTable(Connection connection, String trackTableName,boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(trackTableName);
+        sb.append(trackTableName).append(" (");
         if (isH2) {
-            sb.append(" (the_geom MULTILINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
+            sb.append("the_geom MULTILINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-            sb.append("GEOMETRY(MULTILINESTRING, 4326)");
+            sb.append("the_geom GEOMETRY(MULTILINESTRING, 4326),");
         }
         sb.append(" id INT,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
@@ -235,11 +235,11 @@ public class GPXTablesFactory {
     public static PreparedStatement createTrackSegmentsTable(Connection connection, String trackSegementsTableName,boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(trackSegementsTableName);
+        sb.append(trackSegementsTableName).append(" (");
         if (isH2) {
-            sb.append(" (the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
+            sb.append("the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
         } else {
-            sb.append("GEOMETRY(LINESTRING, 4326)");
+            sb.append("the_geom GEOMETRY(LINESTRING, 4326),");
         }
         sb.append(" id INT,");
         sb.append(GPXTags.EXTENSIONS).append(" TEXT,");
@@ -268,23 +268,23 @@ public class GPXTablesFactory {
     public static PreparedStatement createTrackPointsTable(Connection connection, String trackPointsTableName,boolean isH2) throws SQLException {
         Statement stmt = connection.createStatement();
         StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(trackPointsTableName);
+        sb.append(trackPointsTableName).append(" (");
         if(isH2){
-        sb.append(" (the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
+        sb.append("the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
         }
         else{
-            sb.append("GEOMETRY(POINT, 4326)");
+            sb.append("the_geom GEOMETRY(POINT, 4326),");
         }
         sb.append(" id INT,");
-        sb.append(GPXTags.LAT.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.LON.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.ELE.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.LAT.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.LON.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.ELE.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.TIME.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.MAGVAR.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.GEOIDHEIGHT.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
-        sb.append(GPXTags.DESC.toLowerCase()).append(" TEXT,");
+        sb.append("description").append(" TEXT,");
         sb.append(GPXTags.SRC.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREF.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.HREFTITLE.toLowerCase()).append(" TEXT,");
@@ -292,10 +292,10 @@ public class GPXTablesFactory {
         sb.append(GPXTags.TYPE.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.FIX.toLowerCase()).append(" TEXT,");
         sb.append(GPXTags.SAT.toLowerCase()).append(" INT,");
-        sb.append(GPXTags.HDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.VDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.PDOP.toLowerCase()).append(" DOUBLE,");
-        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" DOUBLE,");
+        sb.append(GPXTags.HDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.VDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.PDOP.toLowerCase()).append(" FLOAT8,");
+        sb.append(GPXTags.AGEOFDGPSDATA.toLowerCase()).append(" FLOAT8,");
         sb.append(GPXTags.DGPSID.toLowerCase()).append(" INT,");
         sb.append(GPXTags.EXTENSIONS.toLowerCase()).append(" BOOLEAN,");
         sb.append("track_segment_id").append(" INT);");
