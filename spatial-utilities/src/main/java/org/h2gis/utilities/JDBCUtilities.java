@@ -323,9 +323,10 @@ public class JDBCUtilities {
                                                  String tableNamePattern, String [] types) throws SQLException {
         List<String> tableList = new ArrayList<String>();
         ResultSet rs = metaData.getTables(catalog, schemaPattern, tableNamePattern, types);
+        boolean isH2 = isH2DataBase(metaData);
         try {
             while (rs.next()) {
-                tableList.add(rs.getString("TABLE_NAME"));
+                tableList.add(new TableLocation(rs).toString(isH2));
             }
         } finally {
             rs.close();
