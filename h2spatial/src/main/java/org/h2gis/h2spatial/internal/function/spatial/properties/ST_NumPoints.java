@@ -23,11 +23,13 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
  * Get the number of points inside a geometry
  * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
 public class ST_NumPoints extends DeterministicScalarFunction {
 
@@ -35,7 +37,7 @@ public class ST_NumPoints extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_NumPoints() {
-        addProperty(PROP_REMARKS, "Get the number of points inside a geometry.");
+        addProperty(PROP_REMARKS, "Return the number of points in an LineString.");
     }
 
     @Override
@@ -51,6 +53,9 @@ public class ST_NumPoints extends DeterministicScalarFunction {
         if(geometry==null) {
             return null;
         }
-        return geometry.getNumPoints();
+        if(geometry instanceof LineString) {
+            return geometry.getNumPoints();
+        }
+        return null;        
     }
 }

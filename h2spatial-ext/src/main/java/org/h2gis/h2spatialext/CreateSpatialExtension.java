@@ -212,7 +212,8 @@ public class CreateSpatialExtension {
                 new ST_GoogleMapLink(),
                 new ST_AsGML(),
                 new TSVRead(),
-                new TSVWrite()};
+                new TSVWrite(),
+                new ST_NPoints()};
     }
 
     /**

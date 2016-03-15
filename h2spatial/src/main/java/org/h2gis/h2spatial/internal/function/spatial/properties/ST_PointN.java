@@ -64,6 +64,9 @@ public class ST_PointN extends DeterministicScalarFunction {
      * @throws SQLException if index is out of bound.
      */
     public static Geometry getPointN(Geometry geometry, int pointIndex) throws SQLException {
+        if (geometry == null) {
+            return null;
+        }
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {
                 return getPointNFromLine((LineString) geometry.getGeometryN(0), pointIndex);

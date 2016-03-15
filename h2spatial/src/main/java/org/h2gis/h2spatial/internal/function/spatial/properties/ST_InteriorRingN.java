@@ -59,6 +59,9 @@ public class ST_InteriorRingN extends DeterministicScalarFunction {
      * @throws SQLException
      */
     public static LineString getInteriorRing(Geometry geometry, Integer n) throws SQLException {
+        if(geometry==null){
+            return null;
+        }
         if (geometry instanceof Polygon) {
             Polygon polygon = (Polygon) geometry;
             if (n >= 1 && n <= polygon.getNumInteriorRing()) {

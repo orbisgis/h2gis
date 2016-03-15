@@ -58,6 +58,9 @@ public class ST_EndPoint extends DeterministicScalarFunction {
      * LINESTRING; Returns NULL for all other Geometries.
      */
     public static Geometry getEndPoint(Geometry geometry) {
+        if(geometry== null){
+            return null;
+        }
         if (geometry instanceof MultiLineString) {
             if (geometry.getNumGeometries() == 1) {
                 return ((LineString) geometry.getGeometryN(0)).getEndPoint();
