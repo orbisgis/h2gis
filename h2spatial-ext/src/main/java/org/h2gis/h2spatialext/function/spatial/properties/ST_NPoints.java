@@ -20,48 +20,40 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-package org.h2gis.h2spatial.internal.function.spatial.properties;
+
+package org.h2gis.h2spatialext.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import static org.h2gis.h2spatialapi.Function.PROP_REMARKS;
 
 /**
- * Return TRUE if the provided geometry is a closed LINESTRING or
- * MULTILINESTRING, null otherwise.
  *
- * @author Nicolas Fortin
+ * @author Erwan Bocher
  */
-public class ST_IsClosed extends DeterministicScalarFunction {
+public class ST_NPoints extends DeterministicScalarFunction {
 
     /**
      * Default constructor
      */
-    public ST_IsClosed() {
-        addProperty(PROP_REMARKS, "Return TRUE if the provided geometry is " +
-                "a closed LINESTRING or MULTILINESTRING, null otherwise.");
+    public ST_NPoints() {
+        addProperty(PROP_REMARKS, "Return the number of points (vertexes) in a geometry.");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "isClosed";
+        return "getNPoints";
     }
 
     /**
-     * @param geometry Geometry
-     * @return True if the provided geometry is a closed LINESTRING or
-     * MULTILINESTRING, null otherwise
+     * @param geometry Geometry instance or null
+     * @return Number of points or null if Geometry is null.
      */
-    public static Boolean isClosed(Geometry geometry) {
-        if (geometry == null) {
+    public static Integer getNPoints(Geometry geometry) {
+        if(geometry==null) {
             return null;
         }
-        if (geometry instanceof MultiLineString) {
-            return ((MultiLineString) geometry).isClosed();
-        } else if (geometry instanceof LineString) {
-            return ((LineString) geometry).isClosed();
-        }
-        return null;
+        return geometry.getNumPoints();
     }
+    
 }

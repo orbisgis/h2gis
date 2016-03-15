@@ -53,6 +53,9 @@ public class ST_IsRing extends DeterministicScalarFunction {
      * @return True if the provided geometry is a ring; null otherwise
      */
     public static Boolean isRing(Geometry geometry) {
+        if(geometry==null){
+            return null;
+        }
         if (geometry instanceof MultiLineString) {
             MultiLineString mString = ((MultiLineString) geometry);
             return mString.isClosed() && mString.isSimple();

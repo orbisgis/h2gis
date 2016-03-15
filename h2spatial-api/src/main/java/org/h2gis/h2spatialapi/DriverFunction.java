@@ -84,6 +84,7 @@ public interface DriverFunction {
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
+     * @param progress
      * @throws SQLException Table write error
      * @throws IOException File read error
      */

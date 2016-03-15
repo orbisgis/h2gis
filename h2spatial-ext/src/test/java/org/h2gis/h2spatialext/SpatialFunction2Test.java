@@ -542,4 +542,31 @@ public class SpatialFunction2Test {
         rs.close();
     }
     
+    @Test
+    public void test_ST_NPoints1() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_NPoints('POINT(-2.070365 47.643713)'::GEOMETRY);");
+        rs.next();
+        assertEquals(1, rs.getInt(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_NPoints2() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_NPoints('MULTIPOINT((4 4), (1 1), (1 0), (0 3))'::GEOMETRY);");
+        rs.next();
+        assertEquals(4, rs.getInt(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_NPoints3() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_NPoints('POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))'::GEOMETRY);");
+        rs.next();
+        assertEquals(5, rs.getInt(1));
+        rs.close();
+    }
+    
 }
