@@ -23,6 +23,8 @@
 package org.h2gis.h2spatial.internal.function.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import org.h2gis.h2spatialapi.DeterministicScalarFunction;
 
 /**
@@ -35,7 +37,8 @@ public class ST_Length extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_Length() {
-        addProperty(PROP_REMARKS, "Compute the geometry length.");
+        addProperty(PROP_REMARKS, "Returns the 2D length of the geometry if it is a LineString or MultiLineString.\n"
+                + " 0 is returned for other geometries");
     }
 
     @Override
@@ -44,13 +47,16 @@ public class ST_Length extends DeterministicScalarFunction {
     }
 
     /**
-     * @param geometry Geometry instance or null
-     * @return Geometry length or null
+     * @param geometry Geometry instance or 0
+     * @return Geometry length for LineString or MultiLineString otherwise 0
      */
     public static Double getLength(Geometry geometry) {
-        if(geometry==null) {
+        if (geometry == null) {
             return null;
         }
-        return geometry.getLength();
+        if (geometry instanceof LineString || geometry instanceof MultiLineString) {
+            return geometry.getLength();
+        }
+        return 0.0d;
     }
 }

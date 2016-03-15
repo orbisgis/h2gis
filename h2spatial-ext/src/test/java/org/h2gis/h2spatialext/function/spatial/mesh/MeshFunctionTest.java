@@ -231,7 +231,7 @@ public class MeshFunctionTest {
                 "drop table if exists voro;\n" +
                 "create table voro as select ST_VORONOI(st_accum(the_geom), 2, " +
                 "ST_ENVELOPE(ST_ACCUM(the_geom))) the_geom from PTS;");
-        ResultSet rs = st.executeQuery("select ST_NUMGEOMETRIES(the_geom) cpt,st_length(the_geom) lngth," +
+        ResultSet rs = st.executeQuery("select ST_NUMGEOMETRIES(the_geom) cpt,st_perimeter(the_geom) lngth," +
                 "st_npoints(the_geom) numpts  from voro;");
         assertTrue(rs.next());
         assertEquals(1071, rs.getInt(1));
