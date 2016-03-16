@@ -518,14 +518,13 @@ public class SpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals(Math.sqrt(241) + Math.sqrt(270) + 3 + Math.sqrt(2), rs.getDouble(1), 0.0);
         assertTrue(rs.next());
-        assertEquals(6, rs.getDouble(1), 0.0);
+        assertEquals(0, rs.getDouble(1), 0.0);
         assertTrue(rs.next());
-        assertEquals(Math.sqrt(2) + 2 * Math.sqrt(5) + Math.sqrt(10), rs.getDouble(1), 0.0);
+        assertEquals(0, rs.getDouble(1), 0.0);
         assertTrue(rs.next());
-        assertEquals(16 + 2 * Math.sqrt(13), rs.getDouble(1), 0.0);
+        assertEquals(0, rs.getDouble(1), 0.0);
         assertTrue(rs.next());
-        assertEquals(Math.sqrt(241) + Math.sqrt(270) + Math.sqrt(2) + 2 * Math.sqrt(5)
-                + Math.sqrt(10), rs.getDouble(1), 0.0);
+        assertEquals(0, rs.getDouble(1), 0.0);
         st.execute("DROP TABLE input_table;");
     }
     
@@ -533,7 +532,7 @@ public class SpatialFunctionTest {
     public void test_ST_3DLength2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_3DLength('MULTIPOLYGON (((898458.2 6245894.6, 898493.4 6245894.5, 898492.3 6245888.4, 898458.7 6245888.5, 898458.2 6245894.6)))')");
         rs.next();        
-        assertEquals(81.11, rs.getDouble(1),0.01);
+        assertEquals(0, rs.getDouble(1),0);
         rs.close();
     }
 

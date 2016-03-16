@@ -45,17 +45,19 @@ public class ST_3DLength extends DeterministicScalarFunction {
     }
 
     /**
-     * Returns the 3D length (of a LineString) or the 3D perimeter (of a Polygon).
+     * Returns the 3D length (of a LineString or MultiLineString) ortherwise 0.
      *
      * @param geom Geometry
-     * @return The 3D length (of a LineString) or the 3D perimeter (of a Polygon)
+     * @return The 3D length (of a LineString or MultiLineString) ortherwise 0
      */
     public static Double stLength3D(Geometry geom) {
-        if (geom != null) {
-            return length3D(geom);
-        } else {
+        if (geom == null) {
             return null;
         }
+        if(geom instanceof LineString || geom instanceof MultiLineString){
+            return length3D(geom);
+        }
+        return 0.0D;
     }
 
     /**
@@ -67,12 +69,8 @@ public class ST_3DLength extends DeterministicScalarFunction {
     public static double length3D(Geometry geom) {
         double sum = 0;
         for (int i = 0; i < geom.getNumGeometries(); i++) {
-            Geometry subGeom = geom.getGeometryN(i);
-            if (subGeom instanceof Polygon) {
-                sum += length3D((Polygon) subGeom);
-            } else if (subGeom instanceof LineString) {
-                sum += length3D((LineString) subGeom);
-            }
+            sum += length3D((LineString) geom.getGeometryN(i));
+
         }
         return sum;
     }

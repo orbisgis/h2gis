@@ -612,4 +612,14 @@ public class SpatialFunctionTest {
         assertFalse(rs.next());
         rs.close();
     }
+    
+    @Test
+    public void test_ST_LengthOnPolygon() throws SQLException {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_LENGTH('POLYGON ((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY)");
+        rs.next();
+        assertEquals(0, rs.getDouble(1), 0);
+        assertFalse(rs.next());
+        rs.close();
+    }
 }
