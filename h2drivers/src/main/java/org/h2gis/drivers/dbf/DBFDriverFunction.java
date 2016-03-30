@@ -159,8 +159,9 @@ public class DBFDriverFunction implements DriverFunction {
             dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
-            try {
-                DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
+            DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
+            ProgressVisitor copyProgress = progress.subProcess((int)(dbfDriver.getRowCount() / BATCH_MAX_SIZE));
+            try {       
                 // Build CREATE TABLE sql request
                 Statement st = connection.createStatement();
                 List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
@@ -189,6 +190,7 @@ public class DBFDriverFunction implements DriverFunction {
                                 preparedStatement.executeBatch();
                                 preparedStatement.clearBatch();
                                 batchSize = 0;
+                                copyProgress.endStep();
                             }
                         }
                         if (batchSize > 0) {
@@ -196,14 +198,14 @@ public class DBFDriverFunction implements DriverFunction {
                         }
                     } finally {
                         preparedStatement.close();
-                    }
-                    //TODO create spatial index on the_geom ?
+                    }                 
                 } catch (Exception ex) {
                     connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);
                     throw new SQLException(ex.getLocalizedMessage(), ex);
                 }
             } finally {
                 dbfDriver.close();
+                copyProgress.endOfProgress();
             }
         }
     }
