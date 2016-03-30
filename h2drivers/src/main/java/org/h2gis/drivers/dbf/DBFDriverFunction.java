@@ -173,14 +173,15 @@ public class DBFDriverFunction implements DriverFunction {
                 st.close();
                 try {
                     PreparedStatement preparedStatement = connection.prepareStatement(
-                            String.format("INSERT INTO %s VALUES (null, %s )", parsedTable,
+                            String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
                                     getQuestionMark(dbfHeader.getNumFields())));
                     try {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
+                            preparedStatement.setObject(1, rowId+1);
                             Object[] values = dbfDriver.getRow(rowId);
                             for (int columnId = 0; columnId < values.length; columnId++) {
-                                preparedStatement.setObject(columnId + 1, values[columnId]);
+                                preparedStatement.setObject(columnId + 2, values[columnId]);
                             }
                             preparedStatement.addBatch();
                             batchSize++;
