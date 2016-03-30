@@ -174,7 +174,7 @@ public class DBFDriverFunction implements DriverFunction {
                 try {
                     PreparedStatement preparedStatement = connection.prepareStatement(
                             String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
-                                    getQuestionMark(dbfHeader.getNumFields())));
+                                    getQuestionMark(dbfHeader.getNumFields()+1)));
                     try {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
