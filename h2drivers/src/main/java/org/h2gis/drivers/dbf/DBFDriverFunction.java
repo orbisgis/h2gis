@@ -159,8 +159,9 @@ public class DBFDriverFunction implements DriverFunction {
             dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
-            try {
-                DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
+            DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
+            ProgressVisitor copyProgress = progress.subProcess((int)(dbfDriver.getRowCount() / BATCH_MAX_SIZE));
+            try {       
                 // Build CREATE TABLE sql request
                 Statement st = connection.createStatement();
                 List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
@@ -173,14 +174,15 @@ public class DBFDriverFunction implements DriverFunction {
                 st.close();
                 try {
                     PreparedStatement preparedStatement = connection.prepareStatement(
-                            String.format("INSERT INTO %s VALUES (null, %s )", parsedTable,
-                                    getQuestionMark(dbfHeader.getNumFields())));
+                            String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
+                                    getQuestionMark(dbfHeader.getNumFields()+1)));
                     try {
                         long batchSize = 0;
                         for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
+                            preparedStatement.setObject(1, rowId+1);
                             Object[] values = dbfDriver.getRow(rowId);
                             for (int columnId = 0; columnId < values.length; columnId++) {
-                                preparedStatement.setObject(columnId + 1, values[columnId]);
+                                preparedStatement.setObject(columnId + 2, values[columnId]);
                             }
                             preparedStatement.addBatch();
                             batchSize++;
@@ -188,6 +190,7 @@ public class DBFDriverFunction implements DriverFunction {
                                 preparedStatement.executeBatch();
                                 preparedStatement.clearBatch();
                                 batchSize = 0;
+                                copyProgress.endStep();
                             }
                         }
                         if (batchSize > 0) {
@@ -195,14 +198,14 @@ public class DBFDriverFunction implements DriverFunction {
                         }
                     } finally {
                         preparedStatement.close();
-                    }
-                    //TODO create spatial index on the_geom ?
+                    }                 
                 } catch (Exception ex) {
                     connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);
                     throw new SQLException(ex.getLocalizedMessage(), ex);
                 }
             } finally {
                 dbfDriver.close();
+                copyProgress.endOfProgress();
             }
         }
     }
