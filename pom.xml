@@ -23,10 +23,10 @@
         <module>h2gis-api</module>
         <module>h2gis-test-utilities</module>
         <module>h2gis-sfs</module>
-        <module>h2gis-nosfs</module>
+        <module>h2gis-ext</module>
         <module>h2gis-drivers</module>
         <module>h2gis-sfs-osgi</module>
-        <module>h2gis-nosfs-osgi</module>
+        <module>h2gis-ext-osgi</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
