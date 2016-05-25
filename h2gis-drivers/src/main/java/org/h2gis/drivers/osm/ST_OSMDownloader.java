@@ -31,7 +31,7 @@ import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
-import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.URIUtility;
 
 /**

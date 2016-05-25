@@ -25,8 +25,8 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.drivers.gpx.model.GpxParser;
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.ProgressVisitor;
 
 /**
  * This class is used to read a GPX file

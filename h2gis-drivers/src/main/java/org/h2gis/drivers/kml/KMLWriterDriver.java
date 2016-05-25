@@ -42,7 +42,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.h2gis.drivers.utility.FileUtil;
-import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;

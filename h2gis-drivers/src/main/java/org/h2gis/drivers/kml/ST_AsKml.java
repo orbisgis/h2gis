@@ -22,7 +22,7 @@ package org.h2gis.drivers.kml;
 
 import com.vividsolutions.jts.geom.Geometry;
 import java.sql.SQLException;
-import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Convert a JTS geometry to a KML geometry representation.

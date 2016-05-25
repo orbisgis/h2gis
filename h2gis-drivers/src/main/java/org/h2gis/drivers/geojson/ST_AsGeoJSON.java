@@ -30,7 +30,7 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Transform a JTS geometry to a GeoJSON geometry representation.

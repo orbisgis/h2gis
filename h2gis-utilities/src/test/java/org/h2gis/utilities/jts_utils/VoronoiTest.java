@@ -22,14 +22,13 @@ package org.h2gis.utilities.jts_utils;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
-import org.junit.Test;
-
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 
-import static org.h2gis.spatialut.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 /**
  * Test class voronoi

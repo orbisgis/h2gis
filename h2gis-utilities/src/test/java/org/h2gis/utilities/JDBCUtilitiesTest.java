@@ -20,8 +20,8 @@
 
 package org.h2gis.utilities;
 
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
-import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
 import org.junit.*;
 
 import java.beans.PropertyChangeListener;

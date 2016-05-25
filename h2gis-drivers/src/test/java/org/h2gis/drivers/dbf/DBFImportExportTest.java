@@ -24,10 +24,10 @@ import org.h2.util.StringUtils;
 import org.h2gis.drivers.dbf.internal.DBFDriver;
 import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.SHPEngineTest;
-import org.h2gis.h2spatial.CreateSpatialExtension;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
+import org.h2gis.sfs.CreateSpatialExtension;
+import org.h2gis.sfs.unitTest.SpatialDBFactory;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -54,7 +54,7 @@ public class DBFImportExportTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
+        connection = SpatialDBFactory.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFRead(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFWrite(), "");
     }

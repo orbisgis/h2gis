@@ -27,7 +27,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import java.io.IOException;
 import java.sql.SQLException;
-import org.h2gis.h2spatialapi.DeterministicScalarFunction;
+import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  *

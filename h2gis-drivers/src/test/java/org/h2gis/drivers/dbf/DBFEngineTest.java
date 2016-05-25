@@ -25,8 +25,8 @@ import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.SHPEngineTest;
-import org.h2gis.h2spatial.CreateSpatialExtension;
-import org.h2gis.h2spatial.ut.SpatialH2UT;
+import org.h2gis.sfs.CreateSpatialExtension;
+import org.h2gis.sfs.unitTest.SpatialDBFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,7 +49,7 @@ public class  DBFEngineTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialH2UT.createSpatialDataBase(DB_NAME);
+        connection = SpatialDBFactory.createSpatialDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DriverManager(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFRead(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFWrite(), "");
@@ -178,7 +178,7 @@ public class  DBFEngineTest {
             assertTrue(dstDbf.delete());
             // Reopen it
         } finally {
-            connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
+            connection = SpatialDBFactory.openSpatialDataBase(DB_NAME);
             st = connection.createStatement();
         }
         ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt FROM dbftable");
@@ -238,7 +238,7 @@ public class  DBFEngineTest {
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'dbftable');");
         // Close Db
         st.execute("SHUTDOWN");
-        connection = SpatialH2UT.openSpatialDataBase(DB_NAME);
+        connection = SpatialDBFactory.openSpatialDataBase(DB_NAME);
         st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
         assertTrue(rs.next());

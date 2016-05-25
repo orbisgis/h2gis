@@ -34,8 +34,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.tools.Csv;
 import org.h2gis.drivers.utility.FileUtil;
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 

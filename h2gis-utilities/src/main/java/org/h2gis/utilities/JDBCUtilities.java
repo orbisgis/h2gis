@@ -20,7 +20,7 @@
 
 package org.h2gis.utilities;
 
-import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -359,7 +359,7 @@ public class JDBCUtilities {
      * @param st Statement to cancel
      * @param progressVisitor Progress to link with
      * @return call
-     * {@link org.h2gis.h2spatialapi.ProgressVisitor#removePropertyChangeListener(java.beans.PropertyChangeListener)}
+     * {@link org.h2gis.api.ProgressVisitor#removePropertyChangeListener(java.beans.PropertyChangeListener)}
      * with this object as argument
      */
     public static PropertyChangeListener attachCancelResultSet(Statement st, ProgressVisitor progressVisitor) {

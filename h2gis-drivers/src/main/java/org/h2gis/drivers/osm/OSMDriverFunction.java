@@ -24,8 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.ProgressVisitor;
 
 /**
  *

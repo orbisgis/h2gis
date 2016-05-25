@@ -10,7 +10,7 @@
     <artifactId>h2gis-nosfs</artifactId>
     <name>h2gis-nosfs</name>
     <packaging>bundle</packaging>
-    <description>Extends h2spatial with non-SFS functions</description>
+    <description>Extends H2GIS with non-SFS functions</description>
     <organization>
         <name>CNRS</name>
         <url>http://www.orbisgis.org</url>

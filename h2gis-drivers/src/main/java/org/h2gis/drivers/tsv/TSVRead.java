@@ -27,9 +27,9 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.drivers.utility.FileUtil;
-import org.h2gis.h2spatialapi.AbstractFunction;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
-import org.h2gis.h2spatialapi.ScalarFunction;
+import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.URIUtility;
 
 /**

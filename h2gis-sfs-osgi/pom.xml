@@ -56,8 +56,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Private-Package>org.h2gis.h2spatial.osgi</Private-Package>
-                        <Bundle-Activator>org.h2gis.h2spatial.osgi.Activator</Bundle-Activator>
+                        <Private-Package>org.h2gis.sfs.osgi</Private-Package>
+                        <Bundle-Activator>org.h2gis.sfs.osgi.Activator</Bundle-Activator>
                         <Bundle-Vendor>CNRS</Bundle-Vendor>
                         <Bundle-Category>JDBC</Bundle-Category>
                     </instructions>

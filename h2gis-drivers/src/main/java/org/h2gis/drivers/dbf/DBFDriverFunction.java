@@ -26,9 +26,9 @@ import org.h2gis.drivers.dbf.internal.DbaseFileException;
 import org.h2gis.drivers.dbf.internal.DbaseFileHeader;
 import org.h2gis.drivers.file_table.FileEngine;
 import org.h2gis.drivers.file_table.H2TableIndex;
-import org.h2gis.h2spatialapi.DriverFunction;
-import org.h2gis.h2spatialapi.EmptyProgressVisitor;
-import org.h2gis.h2spatialapi.ProgressVisitor;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
