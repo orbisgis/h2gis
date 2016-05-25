@@ -87,7 +87,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-nosfs</artifactId>
+            <artifactId>h2gis-ext</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
