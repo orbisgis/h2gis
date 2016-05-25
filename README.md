@@ -21,9 +21,9 @@ including
 - spatial operators (`ST_Intersection`, `ST_Difference`, etc.)
 - spatial predicates (`ST_Intersects`, `ST_Contains`, etc.)
 
-#### h2gis-nosfs
+#### h2gis-ext
 
-h2gis-nosfs contains additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
+h2gis-ext contains additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
 
 Ex: `ST_Extent`, `ST_Explode`
 
@@ -37,6 +37,7 @@ It include also file copy functions:
 * DBFREAD( ) and DBFWRITE( ) to read and write DBase III files.
 * GeoJsonRead() and GeoJsonWrite() to read and write GeoJSON files.
 * GPXRead() to read GPX files.
+
 ### Usage
 
 For now, H2GIS requires Java 6. Run `maven clean install -P standalone` in the H2GIS's root directory.
@@ -55,7 +56,7 @@ Click Connect in the web interface
 [Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
 ```sql
-CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.h2spatialext.CreateSpatialExtension.initSpatialExtension";
+CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.ext.CreateSpatialExtension.initSpatialExtension";
 CALL SPATIAL_INIT();
 ```
 
