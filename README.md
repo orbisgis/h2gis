@@ -9,11 +9,11 @@ additional spatial functions that we (the [CNRS](http://www.cnrs.fr/))
 develop. 
 
 H2GIS is the root project for the new [OrbisGIS](http://www.orbisgis.org/) data
-management library. It contains two main subprojects: H2Spatial and
-H2Drivers, both of which are licensed under the GPL 3 license terms.
+management library. It contains two main subprojects: h2gis-sfs and
+h2gis-drivers, both of which are licensed under the LGPL 3 license terms.
 
-#### H2Spatial
-H2Spatial extends H2 by adding spatial storage and analysis capabilities,
+#### h2gis-sfs
+h2gis-sfs extends H2 by adding spatial storage and analysis capabilities,
 including
 
 - a constraint on `Geometry` data type storing `POINT`, `CURVE` and `SURFACE` types in
@@ -21,14 +21,14 @@ including
 - spatial operators (`ST_Intersection`, `ST_Difference`, etc.)
 - spatial predicates (`ST_Intersects`, `ST_Contains`, etc.)
 
-#### H2Spatial Extension
+#### h2gis-ext
 
-Additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
+h2gis-ext contains additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
 
 Ex: `ST_Extent`, `ST_Explode`
 
-#### H2Drivers
-H2Drivers add H2 read/write support for file formats such as .shp, .dbf, .geojson, .gpx
+#### h2gis-drivers
+h2gis-drivers add H2 read/write support for file formats such as .shp, .dbf, .geojson, .gpx
 
 This package include 2 implementation of TableEngine that allow you to immediatly 'link' a table with a shape file.
 
@@ -37,17 +37,18 @@ It include also file copy functions:
 * DBFREAD( ) and DBFWRITE( ) to read and write DBase III files.
 * GeoJsonRead() and GeoJsonWrite() to read and write GeoJSON files.
 * GPXRead() to read GPX files.
+
 ### Usage
 
 For now, H2GIS requires Java 6. Run `maven clean install -P standalone` in the H2GIS's root directory.
 
-In the folder `h2-dist/target/` you will find a zip file `h2gis-standalone-bin.zip`.Unzip the file then open `h2-dist-1.1.1.jar` It will open a browser based console application.
+In the folder `h2gis-dist/target/` you will find a zip file `h2gis-standalone-bin.zip`.Unzip the file then open `h2gis-dist-xxx.jar` It will open a browser based console application.
 
 ~ $ unzip h2gis-standalone-bin.zip
 
 ~ $ cd h2gis-standalone
 
-~/h2gis-standalone $ java -jar h2-dist-1.1.1.jar
+~/h2gis-standalone $ java -jar h2gis-dist-xxx.jar
 
 Click Connect in the web interface
 
@@ -55,7 +56,7 @@ Click Connect in the web interface
 [Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
 ```sql
-CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.h2spatialext.CreateSpatialExtension.initSpatialExtension";
+CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.ext.CreateSpatialExtension.initSpatialExtension";
 CALL SPATIAL_INIT();
 ```
 
@@ -95,7 +96,7 @@ For a significant contribution, send a PR on GitHub and refer it in your message
 The H2GIS team utilizes open source software. Specifically, we would like to thank  :
 
 * Thomas Mueller and Noel Grandin from the [H2 database community] (http://www.h2database.com).
-* Martin Davis from the [JTS community] (http://tsusiatsoftware.net/jts/main.html).
+* Martin Davis from the [JTS community] (https://github.com/dr-jts).
 
 #### Supporters
 
@@ -107,9 +108,11 @@ Many thanks for those who reported bugs or provide patches...
 
 #### Team
 
-H2GIS is composed of three qualified professionals in GIS and informatic sciences.
+H2GIS is composed of four qualified professionals in GIS and informatic sciences.
 Erwan Bocher leads the project.
 Nicolas Fortin is the lead programmer. 
+Sylvain Palominos is the lead programmer of the OrbisGIS platform.
 Gwendall Petit is in charge of the documentation and manages all public relations with the community users.
+
 
 

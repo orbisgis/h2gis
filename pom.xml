@@ -14,20 +14,19 @@
     <url>http://github.com/orbisgis/H2GIS</url>
     <licenses>
         <license>
-            <name>GNU General Public License (GPLV3+)</name>
-            <url>http://www.gnu.org/licenses/gpl-3.0.html</url>
+            <name>GNU Lesser General Public License (LGPLV3+)</name>
+            <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
         </license>
     </licenses>
     <modules>
-        <module>spatial-utilities</module>
-        <module>h2spatial-api</module>
-        <module>test-utilities</module>
-        <module>h2spatial</module>
-        <module>h2spatial-ext</module>
-        <module>h2drivers</module>
-        <module>h2spatial-osgi</module>
-        <module>h2spatial-ext-osgi</module>
-        <module>h2network</module>
+        <module>h2gis-utilities</module>
+        <module>h2gis-api</module>
+        <module>h2gis-test-utilities</module>
+        <module>h2gis-sfs</module>
+        <module>h2gis-ext</module>
+        <module>h2gis-drivers</module>
+        <module>h2gis-sfs-osgi</module>
+        <module>h2gis-ext-osgi</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -40,7 +39,7 @@
         <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
         <jts-version>1.13</jts-version>
         <sl4j-version>1.6.0</sl4j-version>
-        <cts-version>1.3.4</cts-version>
+        <cts-version>1.4.0</cts-version>
         <junit-version>4.12</junit-version>
     </properties>
     <scm>
@@ -53,13 +52,13 @@
             <id>osgi</id>
             <modules>
                 <module>jts-osgi</module>
-                <module>h2spatialtest</module>
+                <module>h2gis-test</module>
             </modules>
         </profile>
         <profile>
             <id>standalone</id>
             <modules>
-                <module>h2-dist</module>
+                <module>h2gis-dist</module>
             </modules>
         </profile>
     </profiles>
@@ -94,15 +93,15 @@
     <developers>
         <developer>
             <name>Nicolas Fortin</name>
-            <organization>CNRS-FR-2488</organization>
+            <organization>Laboratoire d’Acoustique Environnementale (LAE) - IFSTTAR</organization>
         </developer>
         <developer>
             <name>Erwan Bocher</name>
-            <organization>CNRS-FR-2488</organization>
+            <organization>Lab-STICC – CNRS UMR 6285</organization>
         </developer>
         <developer>
-            <name>Adam Gouge</name>
-            <organization>CNRS-FR-2488</organization>
+            <name>Sylvain Palominos</name>
+            <organization>Lab-STICC – CNRS UMR 6285</organization>
         </developer>
     </developers>
     <parent>
