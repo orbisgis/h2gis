@@ -27,9 +27,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2gis.drivers.csv.CSVDriverFunction;
-import org.h2gis.sfs.unitTest.SpatialDBFactory;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.drivers.DataBaseFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
@@ -42,8 +42,7 @@ import org.junit.Test;
  *
  * @author Erwan Bocher
  */
-public class CSVDriverTest {
-    
+public class CSVDriverTest {    
     
     private static Connection connection;
     private static final String DB_NAME = "CSVImportExportTest";
@@ -52,7 +51,7 @@ public class CSVDriverTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialDBFactory.createSpatialDataBase(DB_NAME);
+        connection = DataBaseFactory.createDataBase(DB_NAME);
     }
 
     @AfterClass
@@ -83,10 +82,10 @@ public class CSVDriverTest {
         exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS mycsv");
         exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor());
-        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from mycsv");
+        ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv");
         try {
             assertTrue(rs.next());
-            assertEquals(20000,rs.getDouble(1),1e-6);
+            assertEquals(3,rs.getDouble(1),1e-2);
         } finally {
             rs.close();
         }

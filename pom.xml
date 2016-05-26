@@ -27,6 +27,7 @@
         <module>h2gis-drivers</module>
         <module>h2gis-sfs-osgi</module>
         <module>h2gis-ext-osgi</module>
+	<module>h2gis-network</module>
     </modules>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

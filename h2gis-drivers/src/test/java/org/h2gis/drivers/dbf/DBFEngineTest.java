@@ -25,14 +25,13 @@ import org.h2.util.StringUtils;
 import org.h2gis.drivers.DriverManager;
 import org.h2gis.drivers.file_table.H2TableIndex;
 import org.h2gis.drivers.shp.SHPEngineTest;
-import org.h2gis.sfs.CreateSpatialExtension;
-import org.h2gis.sfs.unitTest.SpatialDBFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 import java.sql.*;
+import org.h2gis.drivers.DataBaseFactory;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -49,7 +48,7 @@ public class  DBFEngineTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialDBFactory.createSpatialDataBase(DB_NAME);
+        connection = DataBaseFactory.createDataBase(DB_NAME);
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DriverManager(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFRead(), "");
         CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFWrite(), "");

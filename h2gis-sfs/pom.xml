@@ -84,6 +84,16 @@
           <version>${project.version}</version>
           <scope>test</scope>
       </dependency>
+       <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>poly2tri-core</artifactId>
+            <version>0.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2gis-drivers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
   </dependencies>
   <build>
     <plugins>

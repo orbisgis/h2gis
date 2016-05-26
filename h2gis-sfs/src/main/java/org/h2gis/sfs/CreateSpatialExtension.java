@@ -300,13 +300,16 @@ public class CreateSpatialExtension {
         return value instanceof Boolean ? (Boolean)value : defaultValue;
     }
 
-	/**
-	 * Create java code to add function copy paste into
-	 * GeoSpatialFunctionsAddRemove to upload it
-	 * @param st SQL Statement
-	 * @param function Function instance
-     * @param packagePrepend For OSGi environment only, use Bundle-SymbolicName:Bundle-Version:
-	 */
+    /**
+     * Create java code to add function copy paste into
+     * GeoSpatialFunctionsAddRemove to upload it
+     *
+     * @param st SQL Statement
+     * @param function Function instance
+     * @param packagePrepend For OSGi environment only, use
+     * Bundle-SymbolicName:Bundle-Version:
+     * @throws java.sql.SQLException
+     */
     public static void registerFunction(Statement st,Function function,String packagePrepend) throws SQLException {
         registerFunction(st,function,packagePrepend,true);
     }
