@@ -25,8 +25,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import org.h2gis.sfs.CreateSpatialExtension;
-import org.h2gis.sfs.unitTest.SpatialDBFactory;
+import org.h2gis.utilities.DataBaseUtilities;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -45,11 +44,14 @@ public class GeojsonImportExportTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialDBFactory.createSpatialDataBase(DB_NAME);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_AsGeoJSON(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new GeoJsonWrite(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new GeoJsonRead(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_GeomFromGeoJSON(), "");
+        connection = DataBaseUtilities.createDataBase(DB_NAME);
+        DataBaseUtilities.registerGeometryType(connection);
+        DataBaseUtilities.registerSpatialTables(connection);
+        DataBaseUtilities.registerFunction(connection.createStatement(), new ST_AsGeoJSON(), "");
+        DataBaseUtilities.registerFunction(connection.createStatement(), new GeoJsonWrite(), "");
+        DataBaseUtilities.registerFunction(connection.createStatement(), new GeoJsonRead(), "");
+        DataBaseUtilities.registerFunction(connection.createStatement(), new ST_GeomFromGeoJSON(), "");
+        
     }
 
     @AfterClass

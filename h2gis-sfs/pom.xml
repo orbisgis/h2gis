@@ -90,9 +90,21 @@
             <version>0.1.2</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-drivers</artifactId>
-            <version>${project.version}</version>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>2.3.1</version>
+        </dependency>
+        <dependency>
+            <!-- Open osm.bz2 files -->
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-compress</artifactId>
+            <version>1.9</version>
+        </dependency>        
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>1.3.2</version>
+            <scope>test</scope>
         </dependency>
   </dependencies>
   <build>
@@ -104,7 +116,7 @@
         <extensions>true</extensions>
         <configuration>
           <instructions>
-            <Export-Package>org.h2gis.sfs.*</Export-Package>
+            <Export-Package>org.h2gis.functions.*</Export-Package>
             <Fragment-Host>org.h2</Fragment-Host>    <!-- ;bundle-version=${h2-osgi-version} -->
             <Bundle-Vendor>CNRS</Bundle-Vendor>
             <Bundle-Category>JDBC</Bundle-Category>
@@ -130,8 +142,8 @@
                     <lineRate>0</lineRate>
                     <haltOnFailure>true</haltOnFailure>
                     <totalBranchRate>50</totalBranchRate>
-                    <totalLineRate>78</totalLineRate>
-                    <packageLineRate>20</packageLineRate>
+                    <totalLineRate>77</totalLineRate>
+                    <packageLineRate>18</packageLineRate>
                     <packageBranchRate>10</packageBranchRate>
                 </check>
             </configuration>

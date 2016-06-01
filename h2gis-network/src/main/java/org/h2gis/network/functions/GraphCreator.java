@@ -29,7 +29,7 @@ import static org.h2gis.network.functions.GraphConstants.EDGE_ID;
 import static org.h2gis.network.functions.GraphConstants.END_NODE;
 import static org.h2gis.network.functions.GraphConstants.START_NODE;
 import static org.h2gis.network.functions.GraphFunction.logTime;
-import static org.h2gis.network.functions.GraphFunctionParser.parseInputTable;
+import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.data.VId;
 import org.javanetworkanalyzer.model.*;
 import org.jgrapht.WeightedGraph;
@@ -123,7 +123,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
         }
         final Statement st = connection.createStatement();
         final ResultSet edges = st.executeQuery("SELECT * FROM " +
-                parseInputTable(connection, inputTable));
+                TableUtilities.parseInputTable(connection, inputTable));
         // Initialize the indices.
         initIndices(edges);
         try {

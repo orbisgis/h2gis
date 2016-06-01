@@ -32,9 +32,9 @@ import static org.h2gis.network.functions.GraphConstants.CLOSEST_DEST;
 import static org.h2gis.network.functions.GraphConstants.DESTINATION;
 import static org.h2gis.network.functions.GraphConstants.DISTANCE;
 import static org.h2gis.network.functions.GraphConstants.SOURCE;
-import static org.h2gis.network.functions.GraphFunctionParser.parseInputTable;
-import static org.h2gis.sfs.TableFunctionUtil.isColumnListConnection;
+import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.analyzers.AccessibilityAnalyzer;
 import org.javanetworkanalyzer.data.VAccess;
 import org.javanetworkanalyzer.model.Edge;
@@ -148,7 +148,7 @@ public class ST_Accessibility extends GraphFunction implements ScalarFunction {
         final Statement st = connection.createStatement();
         Set<VAccess> destinations = new HashSet<VAccess>();
         try {
-            final TableLocation destinationTable = parseInputTable(connection, destTable);
+            final TableLocation destinationTable = TableUtilities.parseInputTable(connection, destTable);
             final ResultSet rs = st.executeQuery(
                     "SELECT " + DESTINATION + " FROM " + destinationTable);
             while (rs.next()) {

@@ -26,21 +26,19 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import static junit.framework.Assert.assertFalse;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
-import static junit.framework.Assert.assertTrue;
 import org.h2.jdbc.JdbcSQLException;
-import org.h2gis.sfs.CreateSpatialExtension;
-import org.h2gis.sfs.unitTest.SpatialDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctionsFactory;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import org.junit.*;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public class ST_ShortestPathTest {
 
@@ -56,8 +54,8 @@ public class ST_ShortestPathTest {
     @BeforeClass
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialDBFactory.createSpatialDataBase("ST_ShortestPathTest", true);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ShortestPath(), "");
+        connection = H2GISDBFactory.createSpatialDataBase("ST_ShortestPathTest", true);
+        H2GISFunctionsFactory.registerFunction(connection.createStatement(), new ST_ShortestPath(), "");
         GraphCreatorTest.registerCormenGraph(connection);
     }
 

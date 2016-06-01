@@ -9,7 +9,7 @@
 	</parent>
 	<artifactId>h2gis-sfs-osgi</artifactId>
         <name>h2gis-sfs-osgi</name>
-        <description>Register H2 Spatial functions when a DataSource is declared as OSGi services</description>
+        <description>Register H2GIS functions when a DataSource is declared as OSGi services</description>
         <packaging>bundle</packaging>
         <organization>
             <name>CNRS</name>

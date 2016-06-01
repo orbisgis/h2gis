@@ -74,7 +74,7 @@ public class JDBCUrlParser {
         String query = uri.getQuery();
         if(query!=null) {
             try {
-                for(Map.Entry<String,String> entry : URIUtility.getQueryKeyValuePairs(uri).entrySet()) {
+                for(Map.Entry<String,String> entry : URIUtilities.getQueryKeyValuePairs(uri).entrySet()) {
                     properties.setProperty(entry.getKey(),entry.getValue());
                 }
             } catch (UnsupportedEncodingException ex) {

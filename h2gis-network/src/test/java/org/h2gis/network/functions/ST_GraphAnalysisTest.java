@@ -24,6 +24,8 @@ package org.h2gis.network.functions;
 
 
 import java.sql.*;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctionsFactory;
 
 import static org.h2gis.network.functions.GraphConstants.EDGE_CENT_SUFFIX;
 import static org.h2gis.network.functions.GraphConstants.EDGE_ID;
@@ -31,13 +33,12 @@ import static org.h2gis.network.functions.GraphConstants.END_NODE;
 import static org.h2gis.network.functions.GraphConstants.NODE_CENT_SUFFIX;
 import static org.h2gis.network.functions.GraphConstants.START_NODE;
 import static org.h2gis.network.functions.ST_GraphAnalysis.BATCH_SIZE;
-import org.h2gis.sfs.CreateSpatialExtension;
-import org.h2gis.sfs.unitTest.SpatialDBFactory;
 import org.junit.*;
 import static org.junit.Assert.*;
 
 /**
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public class ST_GraphAnalysisTest {
 
@@ -61,8 +62,8 @@ public class ST_GraphAnalysisTest {
     @BeforeClass
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialDBFactory.createSpatialDataBase("ST_GraphAnalysisTest", true);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_GraphAnalysis(), "");
+        connection = H2GISDBFactory.createSpatialDataBase("ST_GraphAnalysisTest", true);
+        H2GISFunctionsFactory.registerFunction(connection.createStatement(), new ST_GraphAnalysis(), "");
         GraphCreatorTest.registerCormenGraph(connection);
     }
 

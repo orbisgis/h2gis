@@ -35,9 +35,8 @@ import static org.h2gis.network.functions.GraphConstants.EDGE_CENT_SUFFIX;
 import static org.h2gis.network.functions.GraphConstants.EDGE_ID;
 import static org.h2gis.network.functions.GraphConstants.NODE_CENT_SUFFIX;
 import static org.h2gis.network.functions.GraphConstants.NODE_ID;
-import static org.h2gis.network.functions.GraphFunctionParser.parseInputTable;
-import static org.h2gis.network.functions.GraphFunctionParser.suffixTableLocation;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.analyzers.GraphAnalyzer;
 import org.javanetworkanalyzer.analyzers.UnweightedGraphAnalyzer;
 import org.javanetworkanalyzer.analyzers.WeightedGraphAnalyzer;
@@ -134,9 +133,9 @@ public class ST_GraphAnalysis extends GraphFunction implements ScalarFunction {
                                           String weight)
             throws SQLException, InvocationTargetException, NoSuchMethodException,
             InstantiationException, IllegalAccessException {
-        final TableLocation tableName = parseInputTable(connection, inputTable);
-        final TableLocation nodesName = suffixTableLocation(tableName, NODE_CENT_SUFFIX);
-        final TableLocation edgesName = suffixTableLocation(tableName, EDGE_CENT_SUFFIX);
+        final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
+        final TableLocation nodesName = TableUtilities.suffixTableLocation(tableName, NODE_CENT_SUFFIX);
+        final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGE_CENT_SUFFIX);
         try {
             createTables(connection, nodesName, edgesName);
             final KeyedGraph graph =

@@ -28,6 +28,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctionsFactory;
 
 import static org.h2gis.network.functions.GraphConstants.CONNECTED_COMPONENT;
 import static org.h2gis.network.functions.GraphConstants.EDGE_COMP_SUFFIX;
@@ -35,13 +37,12 @@ import static org.h2gis.network.functions.GraphConstants.NODE_COMP_SUFFIX;
 import static org.h2gis.network.functions.ST_ConnectedComponents.NULL_CONNECTED_COMPONENT_NUMBER;
 import static org.h2gis.network.functions.ST_GraphAnalysisTest.LINE_GRAPH_TABLE;
 import static org.h2gis.network.functions.ST_GraphAnalysisTest.createLineGraphTable;
-import org.h2gis.sfs.CreateSpatialExtension;
-import org.h2gis.sfs.unitTest.SpatialDBFactory;
 import org.junit.*;
 import static org.junit.Assert.*;
 
 /**
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public class ST_ConnectedComponentsTest {
 
@@ -55,8 +56,8 @@ public class ST_ConnectedComponentsTest {
     @BeforeClass
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialDBFactory.createSpatialDataBase("ST_ConnectedComponentsTest", true);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new ST_ConnectedComponents(), "");
+        connection = H2GISDBFactory.createSpatialDataBase("ST_ConnectedComponentsTest", true);
+        H2GISFunctionsFactory.registerFunction(connection.createStatement(), new ST_ConnectedComponents(), "");
         registerEdges(connection);
     }
 

@@ -30,7 +30,7 @@ import org.h2gis.drivers.shp.SHPDriverFunction;
 import org.h2gis.drivers.tsv.TSVDriverFunction;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.Function;
-import org.h2gis.ext.CreateSpatialExtension;
+import org.h2gis.ext.H2GISExtensionFactory;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -45,7 +45,7 @@ public class Activator implements BundleActivator {
          */
         @Override
         public void start(BundleContext bc) throws Exception {
-                for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
+                for(Function function : H2GISExtensionFactory.getBuiltInsFunctions()) {
                     bc.registerService(Function.class,
                             function,
                             null);

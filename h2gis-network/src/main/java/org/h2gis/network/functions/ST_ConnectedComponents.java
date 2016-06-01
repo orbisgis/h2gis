@@ -39,6 +39,7 @@ import static org.h2gis.network.functions.GraphConstants.START_NODE;
 import static org.h2gis.network.functions.GraphFunctionParser.*;
 import static org.h2gis.network.functions.GraphFunctionParser.Orientation.UNDIRECTED;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.data.VUCent;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
@@ -104,9 +105,9 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
         }
         final List<Set<VUCent>> componentsList = getConnectedComponents(graph, orientation);
 
-        final TableLocation tableName = parseInputTable(connection, inputTable);
-        final TableLocation nodesName = suffixTableLocation(tableName, NODE_COMP_SUFFIX);
-        final TableLocation edgesName = suffixTableLocation(tableName, EDGE_COMP_SUFFIX);
+        final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
+        final TableLocation nodesName = TableUtilities.suffixTableLocation(tableName, NODE_COMP_SUFFIX);
+        final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGE_COMP_SUFFIX);
 
         if (storeNodeConnectedComponents(connection, nodesName, edgesName, componentsList)) {
             if (storeEdgeConnectedComponents(connection, tableName, nodesName, edgesName)) {

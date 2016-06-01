@@ -246,30 +246,5 @@ public class GraphFunctionParser {
         }
         return destinations;
     }
-
-    /**
-     * Convert an input table String to a TableLocation
-     *
-     * @param connection Connection
-     * @param inputTable Input table
-     * @return corresponding TableLocation
-     * @throws SQLException
-     */
-    public static TableLocation parseInputTable(Connection connection,
-                                                String inputTable) throws SQLException {
-       return TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
-    }
-
-    /**
-     * Suffix a TableLocation
-     *
-     * @param inputTable Input table
-     * @param suffix     Suffix
-     * @return suffixed TableLocation
-     */
-    public static TableLocation suffixTableLocation(TableLocation inputTable,
-                                                    String suffix) {
-        return new TableLocation(inputTable.getCatalog(), inputTable.getSchema(),
-                inputTable.getTable() + suffix);
-    }
+    
 }

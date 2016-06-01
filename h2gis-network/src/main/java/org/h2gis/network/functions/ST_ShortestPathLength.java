@@ -36,7 +36,7 @@ import org.h2gis.api.ScalarFunction;
 import static org.h2gis.network.functions.GraphConstants.DESTINATION;
 import static org.h2gis.network.functions.GraphConstants.DISTANCE;
 import static org.h2gis.network.functions.GraphConstants.SOURCE;
-import static org.h2gis.sfs.TableFunctionUtil.isColumnListConnection;
+import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 import org.h2gis.utilities.JDBCUtilities;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;

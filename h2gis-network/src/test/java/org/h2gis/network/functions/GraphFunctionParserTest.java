@@ -22,23 +22,27 @@
  */
 package org.h2gis.network.functions;
 
-import org.h2gis.utilities.TableLocation;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
+import static junit.framework.Assert.assertTrue;
 
 import static junit.framework.Assert.assertTrue;
-import org.h2gis.sfs.unitTest.SpatialDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
+import static org.h2gis.utilities.TableUtilities.parseInputTable;
+import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Tests the parsing methods of {@link org.h2gis.network.graph_creator.GraphFunctionParser}.
  *
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public class GraphFunctionParserTest {
 
@@ -48,7 +52,7 @@ public class GraphFunctionParserTest {
     @BeforeClass
     public static void setUp() throws Exception {
         parser = new GraphFunctionParser();
-        connection = SpatialDBFactory.createSpatialDataBase(GraphFunctionParserTest.class.getSimpleName(), true);
+        connection = H2GISDBFactory.createSpatialDataBase(GraphFunctionParserTest.class.getSimpleName());
     }
 
     @AfterClass
@@ -202,7 +206,7 @@ public class GraphFunctionParserTest {
 
     @Test
     public void testParseInputTable() throws SQLException {
-        final TableLocation roads_edges = GraphFunctionParser.parseInputTable(connection, "ROADS_EDGES");
+        final TableLocation roads_edges = TableUtilities.parseInputTable(connection, "ROADS_EDGES");
         assertEquals("", roads_edges.getCatalog());
         assertEquals("", roads_edges.getSchema());
         assertEquals("ROADS_EDGES", roads_edges.getTable());
@@ -210,8 +214,8 @@ public class GraphFunctionParserTest {
 
     @Test
     public void testSuffixTableLocation() throws SQLException {
-        final TableLocation roads_edges = GraphFunctionParser.parseInputTable(connection, "ROADS_EDGES");
-        final TableLocation suffixed = GraphFunctionParser.suffixTableLocation(roads_edges, "_SUFFIX");
+        final TableLocation roads_edges = TableUtilities.parseInputTable(connection, "ROADS_EDGES");
+        final TableLocation suffixed = TableUtilities.suffixTableLocation(roads_edges, "_SUFFIX");
         assertEquals("", suffixed.getCatalog());
         assertEquals("", suffixed.getSchema());
         assertEquals("ROADS_EDGES_SUFFIX", suffixed.getTable());

@@ -29,7 +29,7 @@ import java.sql.Statement;
 import org.h2gis.drivers.csv.CSVDriverFunction;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.drivers.DataBaseFactory;
+import org.h2gis.utilities.DataBaseUtilities;
 import org.junit.After;
 import org.junit.AfterClass;
 import static org.junit.Assert.assertEquals;
@@ -51,7 +51,7 @@ public class CSVDriverTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = DataBaseFactory.createDataBase(DB_NAME);
+        connection = DataBaseUtilities.createDataBase(DB_NAME);
     }
 
     @AfterClass

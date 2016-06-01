@@ -38,7 +38,7 @@ public class URIUtilityTest {
                 "&LAYERS=cantons_dep44&CRS=EPSG:27572" +
                 "&BBOX=259555.01152073737,2218274.7695852537,342561.9239631337,2287024.7695852537&WIDTH=524&HEIGHT=434" +
                 "&FORMAT=image/png&STYLES=");
-        Map<String,String> query = URIUtility.getQueryKeyValuePairs(uri);
+        Map<String,String> query = URIUtilities.getQueryKeyValuePairs(uri);
         assertEquals(10,query.size());
         assertEquals("GetMap",query.get("request"));
         assertEquals("WMS",query.get("service"));
@@ -54,7 +54,7 @@ public class URIUtilityTest {
     @Test
     public void testGetQueryKeyValuePairsJDBC() throws Exception {
         URI uri = URI.create("h2:target/test-resources/dbH2OwsMapContextTest?catalog=&schema=PUBLIC&table=LANDCOVER2000");
-        Map<String,String> query = URIUtility.getQueryKeyValuePairs(uri);
+        Map<String,String> query = URIUtilities.getQueryKeyValuePairs(uri);
         assertEquals(3,query.size());
         assertEquals("",query.get("catalog"));
         assertEquals("PUBLIC",query.get("schema"));
@@ -65,38 +65,38 @@ public class URIUtilityTest {
     public void testRelativize() throws Exception {
         URI rel = new URI("file:///home/user/OrbisGIS/maps/landcover/bla/text.txt");
         URI folder = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/");
-        assertEquals("../bla/text.txt", URIUtility.relativize(folder, rel).toString());
+        assertEquals("../bla/text.txt", URIUtilities.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/maps/landcover/text.txt");
-        assertEquals("../text.txt", URIUtility.relativize(folder, rel).toString());
+        assertEquals("../text.txt", URIUtilities.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/maps/text.txt");
-        assertEquals("../../text.txt", URIUtility.relativize(folder, rel).toString());
+        assertEquals("../../text.txt", URIUtilities.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/text.txt");
-        assertEquals("text.txt", URIUtility.relativize(folder, rel).toString());
+        assertEquals("text.txt", URIUtilities.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/sub/text.txt");
-        assertEquals("sub/text.txt", URIUtility.relativize(folder, rel).toString());
+        assertEquals("sub/text.txt", URIUtilities.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/text.txt");
-        assertEquals("../../../text.txt", URIUtility.relativize(folder, rel).toString());
+        assertEquals("../../../text.txt", URIUtilities.relativize(folder, rel).toString());
         rel = new URI("file:///home/user/OrbisGIS/maps/landcover/test/folder/text.txt");
-        assertEquals("../test/folder/text.txt", URIUtility.relativize(folder, rel).toString());
+        assertEquals("../test/folder/text.txt", URIUtilities.relativize(folder, rel).toString());
         rel = new URI("file:///");
-        assertEquals("../../../../../../", URIUtility.relativize(folder, rel).toString());
+        assertEquals("../../../../../../", URIUtilities.relativize(folder, rel).toString());
         // This with a file in the base part, file is ignored by relativize
         folder = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/bla.ows");
         rel = new URI("file:///home/user/OrbisGIS/maps/landcover/data/data.shp");
-        assertEquals("../data/data.shp", URIUtility.relativize(folder, rel).toString());
+        assertEquals("../data/data.shp", URIUtilities.relativize(folder, rel).toString());
     }
 
     @Test
     public void testRelativizeSpace() throws Exception {
         URI rel = new URI("file:///home/user/OrbisGIS/maps/landcover/bla%20bla/text.txt");
         URI folder = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/");
-        assertEquals("../bla%20bla/text.txt", URIUtility.relativize(folder, rel).toString());
+        assertEquals("../bla%20bla/text.txt", URIUtilities.relativize(folder, rel).toString());
     }
 
     @Test
     public void testFileFromURI() throws Exception {
-        assertEquals(new File("/mnt/stock/hello.png"), URIUtility.fileFromString("/mnt/stock/hello.png"));
+        assertEquals(new File("/mnt/stock/hello.png"), URIUtilities.fileFromString("/mnt/stock/hello.png"));
         assertEquals(new File("/mnt/stock/hello.png"),
-                URIUtility.fileFromString(new File("/mnt/stock/hello.png").toString()));
+                URIUtilities.fileFromString(new File("/mnt/stock/hello.png").toString()));
     }
 }

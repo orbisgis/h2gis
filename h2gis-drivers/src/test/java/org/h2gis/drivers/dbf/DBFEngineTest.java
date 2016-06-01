@@ -31,7 +31,7 @@ import org.junit.Test;
 
 import java.io.File;
 import java.sql.*;
-import org.h2gis.drivers.DataBaseFactory;
+import org.h2gis.utilities.DataBaseUtilities;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -48,10 +48,10 @@ public class  DBFEngineTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = DataBaseFactory.createDataBase(DB_NAME);
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new DriverManager(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFRead(), "");
-        CreateSpatialExtension.registerFunction(connection.createStatement(), new DBFWrite(), "");
+        connection = DataBaseUtilities.createDataBase(DB_NAME);
+        DataBaseUtilities.registerFunction(connection.createStatement(), new DriverManager(), "");
+        DataBaseUtilities.registerFunction(connection.createStatement(), new DBFRead(), "");
+        DataBaseUtilities.registerFunction(connection.createStatement(), new DBFWrite(), "");
     }
 
     @AfterClass
@@ -177,7 +177,7 @@ public class  DBFEngineTest {
             assertTrue(dstDbf.delete());
             // Reopen it
         } finally {
-            connection = SpatialDBFactory.openSpatialDataBase(DB_NAME);
+            connection = DataBaseUtilities.openDataBase(DB_NAME);
             st = connection.createStatement();
         }
         ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt FROM dbftable");
@@ -237,7 +237,7 @@ public class  DBFEngineTest {
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'dbftable');");
         // Close Db
         st.execute("SHUTDOWN");
-        connection = SpatialDBFactory.openSpatialDataBase(DB_NAME);
+        connection = DataBaseUtilities.openDataBase(DB_NAME);
         st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
         assertTrue(rs.next());

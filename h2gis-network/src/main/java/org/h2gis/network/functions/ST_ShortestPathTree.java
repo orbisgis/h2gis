@@ -39,9 +39,9 @@ import static org.h2gis.network.functions.GraphConstants.EDGE_ID;
 import static org.h2gis.network.functions.GraphConstants.SOURCE;
 import static org.h2gis.network.functions.GraphConstants.THE_GEOM;
 import static org.h2gis.network.functions.GraphConstants.WEIGHT;
-import static org.h2gis.network.functions.GraphFunctionParser.parseInputTable;
-import static org.h2gis.sfs.TableFunctionUtil.isColumnListConnection;
+import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.Edge;
@@ -161,7 +161,7 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
                                       String weight,
                                       int source,
                                       double radius) throws SQLException {
-        final TableLocation tableName = parseInputTable(connection, inputTable);
+        final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
         final String firstGeometryField =
                 ST_ShortestPath.getFirstGeometryField(connection, tableName);
         final boolean containsGeomField = firstGeometryField != null;

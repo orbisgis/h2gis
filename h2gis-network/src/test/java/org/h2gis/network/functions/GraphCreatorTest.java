@@ -34,13 +34,14 @@ import java.sql.Statement;
 import java.util.Set;
 
 import static junit.framework.Assert.assertTrue;
-import org.h2gis.sfs.unitTest.SpatialDBFactory;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import static org.junit.Assert.assertEquals;
 
 /**
  * Tests the graph creators under all possible configurations.
  *
  * @author Adam Gouge
+ * @author Erwan Bocher
  */
 public class GraphCreatorTest {
 
@@ -50,7 +51,7 @@ public class GraphCreatorTest {
     @BeforeClass
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SpatialDBFactory.createSpatialDataBase("GraphCreatorTest", true);
+        connection = H2GISDBFactory.createSpatialDataBase("GraphCreatorTest");
         registerCormenGraph(connection);
     }
 
