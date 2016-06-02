@@ -20,17 +20,15 @@
 
 package org.h2gis.ext.osgi;
 
-import org.h2gis.drivers.csv.CSVDriverFunction;
-import org.h2gis.drivers.dbf.DBFDriverFunction;
-import org.h2gis.drivers.geojson.GeoJsonDriverFunction;
-import org.h2gis.drivers.gpx.GPXDriverFunction;
-import org.h2gis.drivers.kml.KMLDriverFunction;
-import org.h2gis.drivers.osm.OSMDriverFunction;
-import org.h2gis.drivers.shp.SHPDriverFunction;
-import org.h2gis.drivers.tsv.TSVDriverFunction;
+import org.h2gis.functions.io.csv.CSVDriverFunction;
+import org.h2gis.functions.io.dbf.DBFDriverFunction;
+import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
+import org.h2gis.functions.io.gpx.GPXDriverFunction;
+import org.h2gis.functions.io.kml.KMLDriverFunction;
+import org.h2gis.functions.io.osm.OSMDriverFunction;
+import org.h2gis.functions.io.shp.SHPDriverFunction;
+import org.h2gis.functions.io.tsv.TSVDriverFunction;
 import org.h2gis.api.DriverFunction;
-import org.h2gis.api.Function;
-import org.h2gis.ext.CreateSpatialExtension;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -44,17 +42,7 @@ public class Activator implements BundleActivator {
          * @throws Exception
          */
         @Override
-        public void start(BundleContext bc) throws Exception {
-                for(Function function : CreateSpatialExtension.getBuiltInsFunctions()) {
-                    bc.registerService(Function.class,
-                            function,
-                            null);
-                    if(function instanceof DriverFunction) {
-                        bc.registerService(DriverFunction.class,
-                                (DriverFunction) function,
-                                null);
-                    }
-                }
+        public void start(BundleContext bc) throws Exception {                
                 bc.registerService(DriverFunction.class, new DBFDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new SHPDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new GPXDriverFunction(), null);

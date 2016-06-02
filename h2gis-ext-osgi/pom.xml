@@ -10,7 +10,7 @@
     <artifactId>h2gis-ext-osgi</artifactId>
     <name>h2gis-ext-osgi</name>
     <packaging>bundle</packaging>
-    <description>Extends H2GIS with non-SFS functions</description>
+    <description>Extends H2 database with all H2GIS functions</description>
     <organization>
         <name>CNRS</name>
         <url>http://www.orbisgis.org</url>

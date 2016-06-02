@@ -110,6 +110,16 @@
             <groupId>${h2-package}</groupId>
             <artifactId>h2</artifactId>
             <version>${h2-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${sl4j-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${sl4j-version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
