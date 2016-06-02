@@ -9,30 +9,25 @@ additional spatial functions that we (the [CNRS](http://www.cnrs.fr/))
 develop. 
 
 H2GIS is the root project for the new [OrbisGIS](http://www.orbisgis.org/) data
-management library. It contains two main subprojects: h2gis-sfs and
-h2gis-drivers, both of which are licensed under the LGPL 3 license terms.
+management library. It contains tools to execute geometry analysis and read/write geospatial file formats.
 
-#### h2gis-sfs
-h2gis-sfs extends H2 by adding spatial storage and analysis capabilities,
-including
+H2GIS is licensed under the LGPL 3 license terms.
 
-- a constraint on `Geometry` data type storing `POINT`, `CURVE` and `SURFACE` types in
-  WKB representations
+#### h2gis-functions
+h2gis-functions is the main module of the H2GIS distribution. 
+It extends H2 by adding spatial storage and analysis capabilities,including
+- a constraint on `Geometry` data type storing `POINT`, `CURVE` and `SURFACE` types in WKB representations
 - spatial operators (`ST_Intersection`, `ST_Difference`, etc.)
 - spatial predicates (`ST_Intersects`, `ST_Contains`, etc.)
+- additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
 
-#### h2gis-ext
+Ex: `ST_Extent`, `ST_Explode`, `ST_MakeGrid`
 
-h2gis-ext contains additional spatial SQL functions that are not in [Simple Features for SQL](http://www.opengeospatial.org/standards/sfs) (SFSQL)
+It contains a set of driver functions (I/O)) to read/write file formats such as .shp, .dbf, .geojson, .gpx
 
-Ex: `ST_Extent`, `ST_Explode`
+This I/O package include 2 implementation of TableEngine that allow you to immediatly 'link' a table with a shape file.
 
-#### h2gis-drivers
-h2gis-drivers add H2 read/write support for file formats such as .shp, .dbf, .geojson, .gpx
-
-This package include 2 implementation of TableEngine that allow you to immediatly 'link' a table with a shape file.
-
-It include also file copy functions:
+It include also file copy functions (import):
 * SHPREAD( ) and SHPWRITE( ) to read and write Esri shape files.
 * DBFREAD( ) and DBFWRITE( ) to read and write DBase III files.
 * GeoJsonRead() and GeoJsonWrite() to read and write GeoJSON files.
@@ -55,12 +50,19 @@ Click Connect in the web interface
 
 [Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
+
 ```sql
-CREATE ALIAS IF NOT EXISTS SPATIAL_INIT FOR "org.h2gis.ext.CreateSpatialExtension.initSpatialExtension";
-CALL SPATIAL_INIT();
+CREATE ALIAS IF NOT EXISTS H2GIS_EXTENSION FOR "org.h2gis.ext.H2GISExtension.load";
+CALL H2GIS_EXTENSION();
+```
+Note : This command load all H2GIS functions : spatial, drivers and network. If you don't want to install the network functions please use :
+
+```sql
+CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR "org.h2gis.functions.H2GISFunctions.load";
+CALL H2GIS_SPATIAL();
 ```
 
-You can open a shapefile by calling the following SQL request:
+When the functions are installed you can open a shapefile by calling the following SQL request:
 
 ```sql
 CALL FILE_TABLE('/home/user/myshapefile.shp', 'tablename');

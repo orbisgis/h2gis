@@ -1,21 +1,18 @@
 /**
  * H2GIS is a library that brings spatial support to the H2 Database Engine
- * <http://www.h2database.com>.
- *
- * H2GIS is distributed under GPL 3 license. It is produced by CNRS
+ * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * H2GIS is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * This code is part of the H2GIS project. H2GIS is free software; 
+ * you can redistribute it and/or modify it under the terms of the GNU
+ * Lesser General Public License as published by the Free Software Foundation;
+ * version 3.0 of the License.
  *
- * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * H2GIS is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
+ * for more details <http://www.gnu.org/licenses/>.
  *
- * You should have received a copy of the GNU General Public License along with
- * H2GIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
@@ -29,7 +26,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctionsFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 
 import static org.h2gis.network.functions.GraphConstants.CONNECTED_COMPONENT;
 import static org.h2gis.network.functions.GraphConstants.EDGE_COMP_SUFFIX;
@@ -57,7 +54,7 @@ public class ST_ConnectedComponentsTest {
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase("ST_ConnectedComponentsTest", true);
-        H2GISFunctionsFactory.registerFunction(connection.createStatement(), new ST_ConnectedComponents(), "");
+        H2GISFunctions.registerFunction(connection.createStatement(), new ST_ConnectedComponents(), "");
         registerEdges(connection);
     }
 
