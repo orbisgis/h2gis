@@ -42,7 +42,7 @@ public class Activator implements BundleActivator {
          * @throws Exception
          */
         @Override
-        public void start(BundleContext bc) throws Exception {                
+        public void start(BundleContext bc) throws Exception {
                 bc.registerService(DriverFunction.class, new DBFDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new SHPDriverFunction(), null);
                 bc.registerService(DriverFunction.class, new GPXDriverFunction(), null);
