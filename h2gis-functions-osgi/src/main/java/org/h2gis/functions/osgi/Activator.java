@@ -28,7 +28,7 @@ import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 import javax.sql.DataSource;
-import org.h2gis.functions.factory.H2GISFunctionsFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 
 /**
  * Publish H2GIS service on OSGi. Track for DataSource service, register spatial features into it.
@@ -40,7 +40,7 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext bc) throws Exception {
-        for(Function function : H2GISFunctionsFactory.getBuiltInsFunctions()) {
+        for(Function function : H2GISFunctions.getBuiltInsFunctions()) {
             bc.registerService(Function.class,
                     function,
                     null);

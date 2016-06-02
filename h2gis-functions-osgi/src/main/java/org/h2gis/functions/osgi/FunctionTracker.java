@@ -24,7 +24,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import javax.sql.DataSource;
 import org.h2gis.api.Function;
-import org.h2gis.functions.factory.H2GISFunctionsFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
@@ -63,7 +63,7 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
             try {
                 Connection connection = dataSource.getConnection();
                 try {
-                    H2GISFunctionsFactory.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
+                    H2GISFunctions.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
                 } finally {
                     connection.close();
                 }
@@ -83,7 +83,7 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
             try {
                 Connection connection = dataSource.getConnection();
                 try {
-                    H2GISFunctionsFactory.unRegisterFunction(connection.createStatement(), service);
+                    H2GISFunctions.unRegisterFunction(connection.createStatement(), service);
                 } finally {
                     connection.close();
                 }
