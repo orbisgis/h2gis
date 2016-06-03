@@ -9,7 +9,7 @@ categories: [release]
 
 H2GIS version 1.1.0 use H2 version 1.3.176
 
-Change log
+### Change log ###
 
  * Handle GeoJSON format
  * Handle GPX format
@@ -101,3 +101,8 @@ New Function list:
  * ST_GraphAnalysis
  * ST_ShortestPath
  * ST_ShortestPathLength
+
+
+### Download ###
+
+Download H2GIS : <a href="https://github.com/orbisgis/h2gis/releases/tag/v1.1.0" target="_blank">https://github.com/orbisgis/h2gis/releases/tag/v1.1.0</a>
