@@ -7,4 +7,11 @@ version: 1.0.2
 categories: [release]
 ---
 
+### Change log ###
+
+
 This release fixes a few errors in the various poms.
+
+### Download ###
+
+Download H2GIS : <a href="https://github.com/orbisgis/h2gis/releases/tag/v1.0.2" target="_blank">https://github.com/orbisgis/h2gis/releases/tag/v1.0.2</a>

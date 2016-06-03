@@ -7,8 +7,15 @@ version: 1.0.1
 categories: [release]
 ---
 
+### Change log ###
+
 We are proud to announce the first major release of H2GIS!
 
 This release includes the implentations of all functions given by the OpenGIS
 Simple Features Implementation Specification for SQL <a
 href="http://www.opengeospatial.org/standards/sfs">version 1.2.1</a>.
+
+
+### Download ###
+
+Download H2GIS : <a href="https://github.com/orbisgis/h2gis/releases/tag/v1.0.1" target="_blank">https://github.com/orbisgis/h2gis/releases/tag/v1.0.1</a>
