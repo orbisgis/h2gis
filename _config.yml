@@ -1,4 +1,4 @@
-pygments: true
+rouge: true
 relative_permalinks: false
 permalink: /news/:year/:month/:day/:title/
 excerpt_separator: noifniof3nioaniof3nioafafinoafnoif

@@ -5,7 +5,8 @@
   {% assign menu_tuple = item | split: ',' %}
   {% assign page_location = menu_tuple[0] %}
   {% assign page_title = menu_tuple[1] | strip %}
-  {% assign item_url = page_location | prepend:'/docs/dev/' | append:'/' %}
+  {% assign version = page.url | replace_first:'/docs/','' | split:"/" | first %}
+  {% assign item_url = page_location | prepend:"/" | prepend:version | prepend:'/docs/' | append:'/' %}
 
   {% if item_url == page.url or page_location == page.category %}
     {% assign c = "current" %}

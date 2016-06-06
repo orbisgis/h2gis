@@ -1,7 +1,7 @@
 <div class="section-nav">
   <div class="left align-right">
     {% if page.prev_section != null %}
-      <a href="{{ site.baseurl }}/docs/dev/{{ page.prev_section }}/" class="prev">
+      <a href="{{ site.baseurl }}/docs/{{ page.url | replace_first:'/docs/','' | split:"/" | first }}/{{ page.prev_section }}/" class="prev">
         Back
       </a>
     {% else %}
@@ -10,7 +10,7 @@
   </div>
   <div class="right align-left">
     {% if page.next_section != null %}
-      <a href="{{ site.baseurl }}/docs/dev/{{ page.next_section }}/" class="next">
+      <a href="{{ site.baseurl }}/docs/{{ page.url | replace_first:'/docs/','' | split:"/" | first }}/{{ page.next_section }}/" class="next">
         Next
       </a>
     {% else %}

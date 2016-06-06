@@ -8,16 +8,19 @@
 </thead>
 <tbody>
 {% assign pages = site.pages | sort: 'name' %}
+{% assign version = page.url | replace_first:'/docs/','' | split:"/" | first %}
 {% for p in pages %}
-    {% if p.is_function %}
-        {% if p.description %}
-            {% capture described %}{{ described | plus:1 }}{% endcapture %}
-        {% endif %}
-        {% capture total %}{{ total | plus:1 }}{% endcapture %}
-        <tr>
-        <td><a href="{{ p.url }}"><code>{{ p.title }}</code></a></td>
-        <td>{{ p.description }}</td>
-        </tr>
+    {% if p.url contains version %}
+	    {% if p.is_function %}
+		{% if p.description %}
+		    {% capture described %}{{ described | plus:1 }}{% endcapture %}
+		{% endif %}
+		{% capture total %}{{ total | plus:1 }}{% endcapture %}
+		<tr>
+		<td><a href="{{ p.url }}"><code>{{ p.title }}</code></a></td>
+		<td>{{ p.description }}</td>
+		</tr>
+	    {% endif %}
     {% endif %}
 {% endfor %}
 </tbody>
