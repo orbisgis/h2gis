@@ -8,18 +8,21 @@
 </thead>
 <tbody>
 {% assign pages = site.pages | sort: 'name' %}
+{% assign version = page.url | replace_first:'/docs/','' | split:"/" | first %}
 {% for p in pages %}
-    {% if p.category contains 'drivers' %}
-        {% unless p.permalink contains 'drivers' %}
-            {% if p.description %}
-                {% capture described %}{{ described | plus:1 }}{% endcapture %}
-            {% endif %}
-            {% capture total %}{{ total | plus:1 }}{% endcapture %}
-            <tr>
-            <td><a href="{{ p.url }}"><code>{{ p.title }}</code></a></td>
-            <td>{{ p.description }}</td>
-            </tr>
-        {% endunless %}
+    {% if p.url contains version %}
+	    {% if p.category contains 'drivers' %}
+		{% unless p.permalink contains 'drivers' %}
+		    {% if p.description %}
+		        {% capture described %}{{ described | plus:1 }}{% endcapture %}
+		    {% endif %}
+		    {% capture total %}{{ total | plus:1 }}{% endcapture %}
+		    <tr>
+		    <td><a href="{{ p.url }}"><code>{{ p.title }}</code></a></td>
+		    <td>{{ p.description }}</td>
+		    </tr>
+		{% endunless %}
+	    {% endif %}
     {% endif %}
 {% endfor %}
 </tbody>

@@ -39,7 +39,6 @@ please [file an issue][] and we'll potentially include it in this guide.
 [PostgreSQL]: http://www.postgresql.org/
 [OpenGIS]: http://www.opengeospatial.org/
 [Simple Features Implementation Specification for SQL]: http://www.opengeospatial.org/standards/sfs
-[Atelier SIG]: http://www.irstv.fr/
 [file an issue]: http://github.com/orbisgis/h2gis/issues/new
 [user]: http://h2gis.1099522.n5.nabble.com/H2GIS-users-f2.html
 [developer]: http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html

@@ -17,6 +17,7 @@
   docs:
   - geom2D/affine-transformations, Affine transformations
   - geom2D/geometry-conversion, Convert geometries
+  - geom2D/geometry-creation, Create geometries
   - geom2D/edit-geometries, Edit geometries
   - geom2D/distance-functions, Measures
   - geom2D/operators, Operators

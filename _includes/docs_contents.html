@@ -1,7 +1,7 @@
 <div class="unit one-fifth hide-on-mobiles">
     <aside>
         {% for section in site.data.docs %}
-        <h4><a href="/docs/dev/{{ section.page }}">{{ section.title }}</a></h4>
+        <h4><a href="/docs/{{ page.url | replace_first:'/docs/','' | split:"/" | first }}/{{ section.page }}">{{ section.title }}</a></h4>
         {% include docs_ul.html items=section.docs %}
         {% endfor %}
     </aside>
