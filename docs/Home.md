@@ -6,7 +6,7 @@ permalink: /docs/home/
 
 Welcome to the H2GIS documentation. Please choose your version :
 
-## User documentation
+## Users documentation
 
 * [dev]
 * [1.3]
