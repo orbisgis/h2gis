@@ -8,7 +8,7 @@ categories: [release]
 ---
 H2GIS version 1.2.3 use H2 version 1.4.188
 
-Change log:
+### Change log ###
 
  - Fix DBF decimal operator overflow error.
  - Fix URI storage error when importing database from other operating system (Windows/Linux) Thanks to @bedla for providing the patch #556 
@@ -21,3 +21,8 @@ Change log:
  - Add ST_AsGML
  - Add ST_GeomFromWKB
  - Upgrade H2 database from version 1.4.186 to version 1.4.188
+
+
+### Download ###
+
+Download H2GIS : <a href="https://github.com/orbisgis/h2gis/releases/tag/v1.2.3" target="_blank">https://github.com/orbisgis/h2gis/releases/tag/v1.2.3</a>

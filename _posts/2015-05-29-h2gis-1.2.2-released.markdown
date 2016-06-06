@@ -8,7 +8,7 @@ categories: [release]
 ---
 H2GIS version 1.2.2 use H2 version 1.4.186
 
-Change log:
+### Change log ###
 
  * Ability to use request in ST_EXPLODE
  * Add CSV DriverFunction implementation
@@ -39,3 +39,7 @@ New Function list:
  * ST_SunPosition
  * ST_GeometryShadow
  * ST_LineMerge
+
+### Download ###
+
+Download H2GIS : <a href="https://github.com/orbisgis/h2gis/releases/tag/v1.2.2" target="_blank">https://github.com/orbisgis/h2gis/releases/tag/v1.2.2</a>
