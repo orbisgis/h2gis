@@ -40,6 +40,7 @@ import org.h2.value.ValueLong;
 import org.h2gis.functions.io.FileDriver;
 
 import java.io.IOException;
+import java.util.HashSet;
 
 /**
  * ScanIndex of {@link org.h2gis.drivers.FileDriver}, the key is the row index [1-n].
@@ -104,7 +105,7 @@ public class H2TableIndex extends BaseIndex {
                 // TODO in H2, switch on type parameter instead of if elseif
                 values[idField] = DataType.convertToValue(session, driverRow[idField - 1], columns[idField - 1].getType());
             }
-            Row row =  new Row(values, Row.MEMORY_CALCULATE);
+            Row row = session.createRow(values, Row.MEMORY_CALCULATE);
             row.setKey(key);
             return row;
         } catch (IOException ex) {
@@ -130,13 +131,13 @@ public class H2TableIndex extends BaseIndex {
     @Override
     public Cursor find(Session session, SearchRow first, SearchRow last) {
         if (!isScanIndex) {
-            Row remakefirst = new Row(null, 0);
+            Row remakefirst = session.createRow(null, 0);
             if(first != null) {
                 remakefirst.setKey(first.getValue(0).getLong());
             } else {
                 remakefirst.setKey(1);
             }
-            Row remakeLast = new Row(null, 0);
+            Row remakeLast = session.createRow(null, 0);
             if(last != null) {
                 remakeLast.setKey(last.getValue(0).getLong());
             } else {
@@ -157,9 +158,9 @@ public class H2TableIndex extends BaseIndex {
     public boolean canFindNext() {
         return true;
     }
-
+    
     @Override
-    public double getCost(Session session, int[] masks,TableFilter filter ,SortOrder sortOrder) {
+    public double getCost(Session session, int[] masks, TableFilter[] filter, int i, SortOrder so, HashSet<Column> hs) {
         if(masks == null) {
             return Double.MAX_VALUE;
         }
@@ -221,6 +222,8 @@ public class H2TableIndex extends BaseIndex {
         return isScanIndex;
     }
 
+    
+
     private static class SHPCursor implements Cursor {
         private H2TableIndex tIndex;
         private long rowIndex;
@@ -248,7 +251,7 @@ public class H2TableIndex extends BaseIndex {
 
         @Override
         public SearchRow getSearchRow() {
-            Row row =  new Row(new Value[tIndex.getTable().getColumns().length], Row.MEMORY_CALCULATE);
+            Row row =  session.createRow(new Value[tIndex.getTable().getColumns().length], Row.MEMORY_CALCULATE);
             row.setKey(rowIndex);
             // Add indexed columns values
             for(IndexColumn column : tIndex.getIndexColumns()) {
