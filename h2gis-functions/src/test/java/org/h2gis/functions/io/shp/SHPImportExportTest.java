@@ -288,6 +288,37 @@ public class SHPImportExportTest {
         st.execute("CALL SHPRead(" + path + ", 'WATERNETWORK');");
         checkSHPReadResult(st);
     }
+
+    @Test
+    public void readSHPIntoTwoTablesWithSameSridTest() throws Exception {
+        doReadSHPIntoTwoTables("SRIDTABLE1", "SRIDTABLE2", "sridtable1.shp", "sridtable1.shp");
+    }
+
+    @Test
+    public void readSHPIntoTwoTablesWithDifferentSridTest() throws Exception {
+        doReadSHPIntoTwoTables("SRIDTABLE1", "SRIDTABLE2", "sridtable1.shp", "sridtable2.shp");
+    }
+
+    private void doReadSHPIntoTwoTables(String table1, String table2, String shpFile1, String shpFile2) throws Exception {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS " + table1);
+        st.execute("DROP TABLE IF EXISTS " + table2);
+        final String path1 = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource(shpFile1).toURI().toString());
+        final String path2 = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource(shpFile2).toURI().toString());
+        st.execute("CALL SHPRead(" + path1 + ", '" + table1 + "');");
+        st.execute("CALL SHPRead(" + path2 + ", '" + table2 + "');");
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM " + table1);
+        assertTrue(rs.next());
+        assertEquals(382, rs.getInt(1));
+        rs.close();
+        rs = st.executeQuery("SELECT count(*) FROM " + table2);
+        assertTrue(rs.next());
+        assertEquals(382, rs.getInt(1));
+        rs.close();
+        st.execute("drop table " + table1);
+        st.execute("drop table " + table2);
+    }
+
     @Test
     public void testReservedKeyWord() throws SQLException, IOException {
         Statement stat = connection.createStatement();
