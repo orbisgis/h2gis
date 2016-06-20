@@ -88,7 +88,7 @@ We invite each contributor to send a mail to the [H2GIS developer] (http://h2gis
 
 The mail need to include the following statement:
 
-"I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the [GPL 3.0] (http://www.gnu.org/copyleft/gpl.html)." 
+"I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the [LGPL 3.0] (http://www.gnu.org/copyleft/lgpl.html)." 
 
 For a significant contribution, send a PR on GitHub and refer it in your message. For a single contribution join a patch to your mail.
 
@@ -105,7 +105,7 @@ The H2GIS team utilizes open source software. Specifically, we would like to tha
 Many thanks for those who reported bugs or provide patches...  
 
 * Steve Hruda aka shruda [PR #453] (https://github.com/irstv/H2GIS/pull/453)
-* Ivo Šmíd aka bedla [PR #556] (https://github.com/orbisgis/h2gis/pull/556)
+* Ivo Šmíd aka bedla [PR #556] (https://github.com/orbisgis/h2gis/pull/556), [PR #695] (https://github.com/orbisgis/h2gis/pull/695)
 
 
 #### Team
