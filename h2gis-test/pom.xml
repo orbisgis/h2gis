@@ -4,7 +4,7 @@
     <parent>
         <artifactId>h2gis</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>1.3.0-SNAPSHOT</version>
+        <version>1.3.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>h2gis-test</artifactId>
@@ -70,20 +70,14 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-nosfs-osgi</artifactId>
+            <artifactId>h2gis-ext-osgi</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-osgi</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>com.vividsolutions</groupId>
             <artifactId>jts</artifactId>
-            <version>1.14-SNAPSHOT</version>
+            <version>${jts-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
