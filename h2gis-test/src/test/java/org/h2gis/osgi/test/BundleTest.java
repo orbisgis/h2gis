@@ -25,7 +25,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTReader;
-import org.h2gis.h2spatialext.CreateSpatialExtension;
+import org.h2gis.ext.H2GISExtension;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -138,7 +138,7 @@ public class BundleTest {
             }
             Connection connection = dataSource.getConnection();
             try {
-                CreateSpatialExtension.initSpatialExtension(connection);
+                H2GISExtension.load(connection);
             } finally {
                 connection.close();
             }
