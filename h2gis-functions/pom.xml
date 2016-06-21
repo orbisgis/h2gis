@@ -143,8 +143,8 @@
                     <haltOnFailure>true</haltOnFailure>
                     <totalBranchRate>50</totalBranchRate>
                     <totalLineRate>77</totalLineRate>
-                    <packageLineRate>18</packageLineRate>
-                    <packageBranchRate>10</packageBranchRate>
+                    <packageLineRate>0</packageLineRate>
+                    <packageBranchRate>0</packageBranchRate>
                 </check>
             </configuration>
             <executions>
