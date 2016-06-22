@@ -165,14 +165,14 @@ public class ST_GraphTest {
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
         assertFalse(rs.next());
-        nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
+        nodesResult = st.executeQuery("SELECT * FROM TEST_NODES ORDER BY NODE_ID");
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
         checkNode(nodesResult, 1, "POINT (1 1)");
         checkNode(nodesResult, 2, "POINT (3 1)");
         checkNode(nodesResult, 3, "POINT (2 1)");
         assertFalse(nodesResult.next());
         nodesResult.close();
-        edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
+        edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES ORDER BY EDGE_ID");
         assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
         checkEdge(edgesResult, 1, 1, 2);
         checkEdge(edgesResult, 2, 2, 1);
@@ -211,7 +211,7 @@ public class ST_GraphTest {
         checkNode(nodesResult, 7, "POINT (2 1)");
         assertFalse(nodesResult.next());
         nodesResult.close();
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES ORDER BY EDGE_ID");
         assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
         checkEdge(edgesResult, 1, 1, 2);
         checkEdge(edgesResult, 2, 2, 3);
@@ -434,7 +434,7 @@ public class ST_GraphTest {
         assertEquals(true, rs.getBoolean(1));
         assertFalse(rs.next());
         // Test nodes table.
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES ORDER BY NODE_ID");
         assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
         checkNode(nodesResult, 1, "POINT (0 0)");
         checkNode(nodesResult, 2, "POINT (1 0)");
