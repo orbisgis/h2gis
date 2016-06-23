@@ -34,7 +34,7 @@
         <!-- Dependency versions -->
         <maven-bundle-plugin-version>2.3.7</maven-bundle-plugin-version>
         <osgi-core-version>4.3.1</osgi-core-version>
-        <h2-version>1.4.190</h2-version>
+        <h2-version>1.4.192</h2-version>
         <h2-package>com.h2database</h2-package>
         <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
         <jts-version>1.13</jts-version>
@@ -68,8 +68,8 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>2.3.2</version>
                 <configuration>
-                    <source>1.6</source>
-                    <target>1.6</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                 </configuration>
             </plugin>
             <plugin>

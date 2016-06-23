@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.io.file_table;
 
+import java.util.HashSet;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
@@ -70,7 +71,7 @@ public class DummyIndex extends BaseIndex {
     }
 
     @Override
-    public double getCost(Session session, int[] masks, TableFilter filter, SortOrder sortOrder) {
+    public double getCost(Session sn, int[] ints, TableFilter[] tfs, int i, SortOrder so, HashSet<Column> hs) {
         return 0;
     }
 
@@ -110,7 +111,7 @@ public class DummyIndex extends BaseIndex {
     @Override
     public long getDiskSpaceUsed() {
         return 0;
-    }
+    }    
 
     private static class DummyCursor implements Cursor {
         @Override
