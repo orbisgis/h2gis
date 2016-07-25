@@ -36,9 +36,14 @@
     </dependency>
     <dependency>
       <groupId>com.vividsolutions</groupId>
-      <artifactId>jts</artifactId>
-      <version>${jts-version}</version>
+      <artifactId>jts-core</artifactId>
+      <version>${jts-core-version}</version>
     </dependency>
+    <dependency>
+      <groupId>com.vividsolutions</groupId>
+      <artifactId>jts-io</artifactId>
+      <version>${jts-io-version}</version>
+     </dependency>
     <dependency>
       <groupId>${h2-package}</groupId>
       <artifactId>h2</artifactId>
@@ -120,6 +125,17 @@
             <Fragment-Host>org.h2</Fragment-Host>    <!-- ;bundle-version=${h2-osgi-version} -->
             <Bundle-Vendor>CNRS</Bundle-Vendor>
             <Bundle-Category>JDBC</Bundle-Category>
+              <Import-Package>
+                  !org.h2.command,
+                  !org.h2.command.ddl,
+                  !org.h2.engine,
+                  !org.h2.expression,
+                  !org.h2.index,
+                  !org.h2.message,
+                  !org.h2.result,
+                  !org.h2.schema,
+                  !org.h2.table,*
+              </Import-Package>
           </instructions>
         </configuration>
       </plugin>
