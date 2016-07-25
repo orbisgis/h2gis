@@ -51,8 +51,8 @@
         </dependency>
         <dependency>
             <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
-            <version>${jts-version}</version>
+            <artifactId>jts-core</artifactId>
+            <version>${jts-core-version}</version>
         </dependency>
     </dependencies>
 </project>
