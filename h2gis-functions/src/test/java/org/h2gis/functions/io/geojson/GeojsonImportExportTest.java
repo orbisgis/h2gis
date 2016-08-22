@@ -502,6 +502,25 @@ public class GeojsonImportExportTest {
         assertTrue(res.getString(1).equals("MULTIPOINT ((100 0), (101 1))"));
         stat.close();
     }
+    
+     @Test
+    public void testWriteReadNullGeojsonPoint() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+        stat.execute("create table TABLE_POINTS(the_geom POINT)");
+        stat.execute("insert into TABLE_POINTS values( null)");
+        stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)')");
+        stat.execute("CALL GeoJsonWrite('target/null_point.geojson', 'TABLE_POINTS');");
+        stat.execute("CALL GeoJsonRead('target/null_point.geojson', 'TABLE_POINTS_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(1 2)")));
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.close();
+    }
 
 
 }
