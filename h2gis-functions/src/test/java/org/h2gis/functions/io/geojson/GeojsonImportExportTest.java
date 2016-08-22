@@ -32,6 +32,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertEquals;
 
 /**
  *
@@ -518,6 +519,29 @@ public class GeojsonImportExportTest {
         assertNull(res.getObject(1));
         res.next();
         assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.close();
+    }
+    
+    
+    @Test
+    public void testWriteReadlGeojsonComplex() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_COMPLEX");
+        stat.execute("create table TABLE_COMPLEX(the_geom geometry, gid long)");
+        stat.execute("insert into TABLE_COMPLEX values( null, 1463655908000)");
+        stat.execute("insert into TABLE_COMPLEX values( 'POINT(10 200)', 1)");
+        stat.execute("insert into TABLE_COMPLEX values( 'LINESTRING(15 20, 0 0)',  NULL)");
+        stat.execute("CALL GeoJsonWrite('target/complex.geojson', 'TABLE_COMPLEX');");
+        stat.execute("CALL GeoJsonRead('target/complex.geojson', 'TABLE_COMPLEX_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_COMPLEX_READ;");
+        res.next();
+        assertNull(res.getObject(1));
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING(15 20, 0 0)")));
         res.close();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();

@@ -389,7 +389,7 @@ public class GeoJsonReaderDriver {
                 metadataBuilder.append(fieldName).append(" FLOAT8");
                 fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                metadataBuilder.append(fieldName).append(" INT");
+                metadataBuilder.append(fieldName).append(" BIGINT");
                 fieldIndex++;
             } else if (value == JsonToken.VALUE_NULL) {
                 metadataBuilder.append(fieldName).append(" VARCHAR");
@@ -540,7 +540,7 @@ public class GeoJsonReaderDriver {
                 getPreparedStatement().setObject(fieldIndex, jp.getValueAsDouble());
                 fieldIndex++;
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                getPreparedStatement().setObject(fieldIndex, jp.getValueAsInt());
+                getPreparedStatement().setObject(fieldIndex, jp.getBigIntegerValue());
                 fieldIndex++;
             } else if (value == JsonToken.VALUE_NULL) {
                 getPreparedStatement().setObject(fieldIndex, null);
