@@ -203,6 +203,7 @@ import org.h2gis.functions.spatial.topography.ST_TriangleAspect;
 import org.h2gis.functions.spatial.topography.ST_TriangleContouring;
 import org.h2gis.functions.spatial.topography.ST_TriangleDirection;
 import org.h2gis.functions.spatial.topography.ST_TriangleSlope;
+import org.h2gis.functions.spatial.topology.ST_Graph;
 import org.h2gis.functions.spatial.topology.ST_Polygonize;
 import org.h2gis.functions.spatial.trigonometry.ST_Azimuth;
 import org.h2gis.functions.spatial.type.DimensionFromConstraint;
@@ -417,7 +418,8 @@ public class H2GISFunctions {
                 new ST_AsGML(),
                 new TSVRead(),
                 new TSVWrite(),
-                new ST_NPoints()};
+                new ST_NPoints(),
+                new ST_Graph()};
     }
 
     /**
