@@ -31,6 +31,7 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNull;
 
 /**
  *
@@ -503,7 +504,7 @@ public class GeojsonImportExportTest {
         stat.close();
     }
     
-     @Test
+    @Test
     public void testWriteReadNullGeojsonPoint() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
@@ -514,13 +515,15 @@ public class GeojsonImportExportTest {
         stat.execute("CALL GeoJsonRead('target/null_point.geojson', 'TABLE_POINTS_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
         res.next();
-        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(1 2)")));
+        assertNull(res.getObject(1));
         res.next();
         assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(10 200)")));
         res.close();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();
     }
+    
+    
 
 
 }

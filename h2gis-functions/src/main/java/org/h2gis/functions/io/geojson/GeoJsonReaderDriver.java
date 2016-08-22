@@ -303,7 +303,7 @@ public class GeoJsonReaderDriver {
      * @param metadataBuilder
      */
     private void parseGeometryMetadata(JsonParser jp, StringBuilder metadataBuilder) throws IOException, SQLException {
-        jp.nextToken(); //START_OBJECT {
+        if(jp.nextToken()!=JsonToken.VALUE_NULL){//START_OBJECT { in case of null geometry
         jp.nextToken(); // FIELD_NAME type     
         jp.nextToken(); //VALUE_STRING Point
         firstGeometryType = jp.getText().toLowerCase();
@@ -327,6 +327,15 @@ public class GeoJsonReaderDriver {
             }
         } else {
             throw new SQLException("Unsupported geometry : " + firstGeometryType);
+        }
+        }
+        else{
+            if (isH2) {
+                metadataBuilder.append("THE_GEOM GEOMETRY");
+            } else {
+                metadataBuilder.append("THE_GEOM GEOMETRY(geometry,").append(parsedSRID).append(")");
+            }
+            firstGeometryType=GeoJsonField.GEOMETRY;
         }
     }
     
@@ -455,7 +464,7 @@ public class GeoJsonReaderDriver {
      * @throws SQLException 
      */
     private void setGeometry(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); //START_OBJECT {
+        if(jp.nextToken()!=JsonToken.VALUE_NULL){//START_OBJECT { in case of null geometry
         jp.nextToken(); // FIELD_NAME type     
         jp.nextToken(); //VALUE_STRING Point
         String geometryType = jp.getText();
@@ -467,6 +476,10 @@ public class GeoJsonReaderDriver {
             }
         }
         getPreparedStatement().setObject(fieldIndex, parseGeometry(jp, geometryType));
+        }
+        else{
+             getPreparedStatement().setObject(fieldIndex, null);
+        }
         fieldIndex++;
     }
 
