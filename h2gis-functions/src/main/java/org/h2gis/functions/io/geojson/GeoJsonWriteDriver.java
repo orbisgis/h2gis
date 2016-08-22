@@ -216,26 +216,31 @@ public class GeoJsonWriteDriver {
      * @param jsonGenerator
      * @param geometry
      */
-    private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {
-        gen.writeObjectFieldStart("geometry");
-        if (geom instanceof Point) {
-            write((Point) geom, gen);
-        } else if (geom instanceof MultiPoint) {
-            write((MultiPoint) geom, gen);
-        } else if (geom instanceof LineString) {
-            write((LineString) geom, gen);
-        } else if (geom instanceof MultiLineString) {
-            write((MultiLineString) geom, gen);
-        } else if (geom instanceof Polygon) {
-            write((Polygon) geom, gen);
-        } else if (geom instanceof MultiPolygon) {
-            write((MultiPolygon) geom, gen);
-        } else if (geom instanceof GeometryCollection) {
-            write((GeometryCollection) geom, gen);
+    private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {       
+        if (geom != null) {
+            gen.writeObjectFieldStart("geometry");
+            if (geom instanceof Point) {
+                write((Point) geom, gen);
+            } else if (geom instanceof MultiPoint) {
+                write((MultiPoint) geom, gen);
+            } else if (geom instanceof LineString) {
+                write((LineString) geom, gen);
+            } else if (geom instanceof MultiLineString) {
+                write((MultiLineString) geom, gen);
+            } else if (geom instanceof Polygon) {
+                write((Polygon) geom, gen);
+            } else if (geom instanceof MultiPolygon) {
+                write((MultiPolygon) geom, gen);
+            } else if (geom instanceof GeometryCollection) {
+                write((GeometryCollection) geom, gen);
+            } else {
+                throw new RuntimeException("Unsupported Geomery type");
+            }
+            gen.writeEndObject();
         } else {
-            throw new RuntimeException("Unsupported Geomery type");
+            gen.writeNullField("geometry");
         }
-        gen.writeEndObject();
+        
     }
 
     /**
