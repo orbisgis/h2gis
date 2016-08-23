@@ -46,8 +46,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
@@ -70,9 +72,7 @@ import org.slf4j.LoggerFactory;
  * @author Erwan Bocher
  */
 public class GeoJsonReaderDriver {
-    private final static ArrayList<String> geomTypes;
-
-    
+    private final static ArrayList<String> geomTypes;    
     private final File fileName;
     private final Connection connection;
     private static GeometryFactory GF ;
@@ -105,7 +105,7 @@ public class GeoJsonReaderDriver {
         geomTypes.add(GeoJsonField.MULTIPOLYGON);
 
     }
-    private String finalGeometryType;
+    private Set finalGeometryTypes;
 
     /**
      * Driver to import a GeoJSON file into a spatial table.
@@ -190,7 +190,7 @@ public class GeoJsonReaderDriver {
             readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
             nodeCountProgress = 0;
             cachedColumnNames = new LinkedHashMap<String, String>();
-            finalGeometryType=GeoJsonField.GEOMETRY;
+            finalGeometryTypes=new HashSet<String>();
             
             JsonParser jp = jsFactory.createParser(fis);           
 
@@ -369,18 +369,25 @@ public class GeoJsonReaderDriver {
     private void parseGeometryMetadata(JsonParser jsParser, String geometryType) throws IOException, SQLException {        
         if (geometryType.equalsIgnoreCase(GeoJsonField.POINT)) {
              parsePointMetadata(jsParser);
+             finalGeometryTypes.add(GeoJsonField.POINT);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTIPOINT)) {
              parseMultiPointMetadata(jsParser);
+             finalGeometryTypes.add(GeoJsonField.MULTIPOINT);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.LINESTRING)) {
              parseLinestringMetadata(jsParser);
+             finalGeometryTypes.add(GeoJsonField.LINESTRING);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTILINESTRING)) {
             parseMultiLinestringMetadata(jsParser);
+            finalGeometryTypes.add(GeoJsonField.MULTILINESTRING);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.POLYGON)) {
              parsePolygonMetadata(jsParser);
+             finalGeometryTypes.add(GeoJsonField.POLYGON);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTIPOLYGON)) {
              parseMultiPolygonMetadata(jsParser);
+             finalGeometryTypes.add(GeoJsonField.MULTIPOLYGON);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.GEOMETRYCOLLECTION)) {
              parseGeometryCollectionMetadata(jsParser);
+             finalGeometryTypes.add(GeoJsonField.GEOMETRYCOLLECTION);
         } else {
             throw new SQLException("Unsupported geometry : " + geometryType);
         }
@@ -1269,6 +1276,10 @@ public class GeoJsonReaderDriver {
      * Add the geometry type constraint and the SRID
      */
     private void setGeometryTypeConstraints() throws SQLException {
+        String finalGeometryType = GeoJsonField.GEOMETRY;
+        if (finalGeometryTypes.size() == 1) {
+            finalGeometryType = (String) finalGeometryTypes.iterator().next();
+        }        
         if(isH2){
              connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom %s", tableLocation.toString(), finalGeometryType));        
              SFSUtilities.addTableSRIDConstraint(connection, tableLocation, parsedSRID);
