@@ -41,7 +41,10 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
     private int maxDim = Integer.MIN_VALUE;
 
     public ST_Accum() {
-        addProperty(PROP_REMARKS, "This aggregate function returns a GeometryCollection.");
+        addProperty(PROP_REMARKS, "This aggregate function returns a GeometryCollection "
+                + "from a column of mixed dimension Geometries.\n"
+                + "If there is only POINTs in the column of Geometries, a MULTIPOINT is returned. \n"
+                + "Same process with LINESTRINGs and POLYGONs.");
     }
 
     @Override
