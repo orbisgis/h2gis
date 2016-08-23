@@ -867,6 +867,7 @@ public class GeoJsonReaderDriver {
                 }
             }
             //LOOP END_ARRAY ]
+            log.info(featureCounter+ " geojson features have been imported.");
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'features', found '" + firstParam + "'");
         }
