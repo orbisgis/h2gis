@@ -25,6 +25,7 @@ import com.vividsolutions.jts.io.WKTReader;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.AfterClass;
@@ -424,19 +425,19 @@ public class GeojsonImportExportTest {
     @Test
     public void testWriteReadGeojsonCRS() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-        stat.execute("create table TABLE_POINTS(the_geom POINT CHECK ST_SRID(THE_GEOM)=4326, id INT, climat VARCHAR)");
-        stat.execute("insert into TABLE_POINTS values( ST_GEOMFROMTEXT('POINT(1 2)', 4326), 1, 'bad')");
-        stat.execute("insert into TABLE_POINTS values( ST_GEOMFROMTEXT('POINT(10 200)',4326), 2, 'good')");
-        stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'TABLE_POINTS');");
-        stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'TABLE_POINTS_READ');");
-        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_CRS");
+        stat.execute("create table TABLE_POINTS_CRS(the_geom POINT CHECK ST_SRID(THE_GEOM)=4326, id INT, climat VARCHAR)");
+        stat.execute("insert into TABLE_POINTS_CRS values( ST_GEOMFROMTEXT('POINT(1 2)', 4326), 1, 'bad')");
+        stat.execute("insert into TABLE_POINTS_CRS values( ST_GEOMFROMTEXT('POINT(10 200)',4326), 2, 'good')");
+        stat.execute("CALL GeoJsonWrite('target/points_crs_properties.geojson', 'TABLE_POINTS_CRS');");
+        stat.execute("CALL GeoJsonRead('target/points_crs_properties.geojson', 'TABLE_POINTS_CRS_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_CRS_READ;");
         res.next();
         Geometry geom = (Geometry) res.getObject(1);
         assertTrue(geom.equals(WKTREADER.read("POINT(1 2)")));
         assertTrue((geom.getSRID() == 4326));
         res.close();
-        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_CRS_READ");
         stat.close();
     }
 
@@ -509,9 +510,9 @@ public class GeojsonImportExportTest {
     public void testWriteReadNullGeojsonPoint() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
-        stat.execute("create table TABLE_POINTS(the_geom POINT)");
-        stat.execute("insert into TABLE_POINTS values( null)");
-        stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)')");
+        stat.execute("create table TABLE_POINTS(the_geom POINT, id int)");
+        stat.execute("insert into TABLE_POINTS values( null, 1)");
+        stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)', 2)");
         stat.execute("CALL GeoJsonWrite('target/null_point.geojson', 'TABLE_POINTS');");
         stat.execute("CALL GeoJsonRead('target/null_point.geojson', 'TABLE_POINTS_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
@@ -528,7 +529,7 @@ public class GeojsonImportExportTest {
     @Test
     public void testWriteReadlGeojsonComplex() throws Exception {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS TABLE_COMPLEX");
+        stat.execute("DROP TABLE IF EXISTS TABLE_COMPLEX, TABLE_COMPLEX_READ");
         stat.execute("create table TABLE_COMPLEX(the_geom geometry, gid long)");
         stat.execute("insert into TABLE_COMPLEX values( null, 1463655908000)");
         stat.execute("insert into TABLE_COMPLEX values( 'POINT(10 200)', 1)");
@@ -547,6 +548,26 @@ public class GeojsonImportExportTest {
         stat.close();
     }
     
+    
+    @Test
+    public void testRead() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_COMPLEX_READ");
+        stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("complex.geojson").getPath()) + ", 'TABLE_COMPLEX_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_COMPLEX_READ;");
+        res.next();
+        assertNull(res.getObject(1));
+        assertTrue(res.getString(7).equals("#C5E805"));
+        assertNull(res.getObject(31));
+        assertNull(res.getObject(32));
+        res.next();
+        assertEquals(10.2d, ((Geometry) res.getObject(1)).getCoordinate().z, 0);
+        assertEquals(0.87657195d, res.getDouble(31), 0);
+        assertEquals(234.16d, res.getDouble(32), 0);
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.close();
+    }
     
 
 
