@@ -45,7 +45,8 @@ public class ST_OSMDownloader extends DeterministicScalarFunction {
 
     public ST_OSMDownloader() {
         addProperty(PROP_REMARKS, "Extract an OSM XML file from the OSM api server using a the bounding box of a given geometry.\n"
-                + "A path must be set to specified where the OSM file will be stored.");
+                + "A path must be set to specified where the OSM file will be stored./n"
+                + "Set true to delete the XML file if exists. Default behaviour is false.");
     }
 
     @Override
@@ -61,19 +62,35 @@ public class ST_OSMDownloader extends DeterministicScalarFunction {
      * @throws IOException
      */
     public static void downloadData(Geometry area, String fileName) throws FileNotFoundException, IOException, SQLException {
+            downloadData(area, fileName, false);
+    }   
+    
+    /**
+     * 
+     * @param area The geometry used to compute the area set to the OSM server
+     * @param fileName The path to save the osm file
+     * @param deleteFile True to delete the file if exists
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void downloadData(Geometry area, String fileName, boolean deleteFile) throws FileNotFoundException, IOException, SQLException {
         File file = URIUtilities.fileFromString(fileName);
-
         if (file.exists()) {
+            if(deleteFile){
+              file.delete();
+            }
+            else{
             throw new FileNotFoundException("The following file already exists:\n" + fileName);
+            }
         }
         if (file.getName().toLowerCase().endsWith(".osm")) {
             if (area != null) {
                 downloadOSMFile(file, area.getEnvelopeInternal());
             }
         } else {
-            throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
+            throw new SQLException("Supported format is .osm");
         }
-    }   
+    }
     
      
 
