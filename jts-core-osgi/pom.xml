@@ -7,8 +7,8 @@
         <version>1.3.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>jts</artifactId>
-    <name>jts</name>
+    <artifactId>jts-core-osgi</artifactId>
+    <name>jts-core-osgi</name>
     <version>1.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>A jar with additional information in the jar MANIFEST in order to comply with OSGi environment</description>
@@ -22,7 +22,7 @@
                 <configuration>
                     <unpackBundle>true</unpackBundle>
                     <instructions>
-                        <Embed-Dependency>jts;scope=compile;inline=true</Embed-Dependency>
+                        <Embed-Dependency>jts-core;scope=compile;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <_exportcontents>com.vividsolutions.jts,com.vividsolutions.jts.*</_exportcontents>
                     </instructions>
@@ -36,8 +36,8 @@
         <dependencies>
             <dependency>
             <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
-            <version>${jts-version}</version>
+            <artifactId>jts-core</artifactId>
+            <version>${jts-core-version}</version>
         </dependency>
     </dependencies>
 </project>
