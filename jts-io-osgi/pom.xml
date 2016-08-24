@@ -7,8 +7,8 @@
         <version>1.3.1-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <artifactId>jts</artifactId>
-    <name>jts</name>
+    <artifactId>jts-io-osgi</artifactId>
+    <name>jts-io-osgi</name>
     <version>1.14-SNAPSHOT</version>
     <packaging>bundle</packaging>
     <description>A jar with additional information in the jar MANIFEST in order to comply with OSGi environment</description>
