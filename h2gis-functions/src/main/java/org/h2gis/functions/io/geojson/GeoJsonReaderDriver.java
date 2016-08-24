@@ -1283,41 +1283,9 @@ public class GeoJsonReaderDriver {
         if(isH2){
              finalGeometryType = GeoJsonField.GEOMETRY;//workaround for H2
              connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom %s", tableLocation.toString(), finalGeometryType));        
-             SFSUtilities.addTableSRIDConstraint(connection, tableLocation, parsedSRID);
         }
         else{
             connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom SET DATA TYPE geometry(%s,%d)", tableLocation.toString(), finalGeometryType, parsedSRID));
         }
-    }
-
-    /**
-     * A class to manage the SQL type and the field index of a json property
-     */
-    private static class JsonField {
-
-        String type;
-        int index;
-
-        public JsonField(String type, int index) {
-            this.type = type;
-            this.index = index;
-        }
-
-        /**
-         * Returns the index of the json field name related to the table
-         * @return 
-         */
-        public int getIndex() {
-            return index;
-        }
-
-        /**
-         * Returns the sql type in a human readable representation
-         * @return 
-         */
-        public String getType() {
-            return type;
-        }
-
     }
 }

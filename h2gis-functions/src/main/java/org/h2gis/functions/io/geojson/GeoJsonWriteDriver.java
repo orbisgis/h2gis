@@ -122,12 +122,15 @@ public class GeoJsonWriteDriver {
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
-
+                    int recordCount = JDBCUtilities.getRowCount(connection, tableName);
+                    ProgressVisitor copyProgress = progress.subProcess(recordCount);
+                    
                     cacheMetadata(resultSetMetaData);
                     while (rs.next()) {
                         writeFeature(jsonGenerator, rs, geoFieldIndex);
+                        copyProgress.endStep();
                     }
-                    progress.endStep();
+                    copyProgress.endOfProgress();
                     // footer
                     jsonGenerator.writeEndArray();
                     jsonGenerator.writeEndObject();

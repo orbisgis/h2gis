@@ -550,7 +550,7 @@ public class GeojsonImportExportTest {
     
     
     @Test
-    public void testRead() throws Exception {
+    public void testReadComplexFile() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_COMPLEX_READ");
         stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("complex.geojson").getPath()) + ", 'TABLE_COMPLEX_READ');");
@@ -568,4 +568,13 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();
     }
+    
+    @Test
+    public void testRead() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_COMPLEX_READ");
+        stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL("/tmp/bigdata.geojson") + ", 'TABLE_COMPLEX_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_COMPLEX_READ;");
+    }
+        
 }
