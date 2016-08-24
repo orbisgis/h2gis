@@ -115,7 +115,7 @@ public class SHPDriver implements FileDriver {
         String nameWithoutExt = path.substring(0,path.lastIndexOf('.'));
         this.shpFile = new File(nameWithoutExt+".shp");
         this.shxFile = new File(nameWithoutExt+".shx");
-        File dbfFile = new File(nameWithoutExt+".dbf");
+        this.dbfFile = new File(nameWithoutExt+".dbf");
         FileOutputStream shpFos = new FileOutputStream(shpFile);
         FileOutputStream shxFos = new FileOutputStream(shxFile);
         shapefileWriter = new ShapefileWriter(shpFos.getChannel(), shxFos.getChannel());
