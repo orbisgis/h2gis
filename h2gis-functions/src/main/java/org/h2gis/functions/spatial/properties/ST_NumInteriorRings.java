@@ -22,6 +22,7 @@ package org.h2gis.functions.spatial.properties;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.api.DeterministicScalarFunction;
 
@@ -35,7 +36,7 @@ public class ST_NumInteriorRings extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_NumInteriorRings() {
-        addProperty(PROP_REMARKS, "Return the number of holes in a geometry.");
+        addProperty(PROP_REMARKS, "Return the number of interior rings of the first polygon in the geometry. \nThis will work with both POLYGON and MULTIPOLYGON.\n Return NULL if there is no polygon in the geometry.");
     }
 
     @Override
@@ -44,23 +45,22 @@ public class ST_NumInteriorRings extends DeterministicScalarFunction {
     }
 
     /**
-     * Return the number of holes in a geometry
+     * Return the number of holes in a Polygon or MultiPolygon
      * @param g Geometry instance
-     * @return Number of hole or null if geometry is null
+     * @return Number of holes or null if geometry is null
      */
     public static Integer getHoles(Geometry g) {
         if(g == null) {
             return null;
         }
-        int holes = 0;
-        if (g instanceof GeometryCollection) {
-            int geomCount = g.getNumGeometries();
-            for (int i = 0; i < geomCount; i++) {
-                holes += getHoles(g.getGeometryN(i));
-            }
+        if (g instanceof MultiPolygon) {            
+            Polygon p = (Polygon) g.getGeometryN(0);
+            if(p!=null){
+                return p.getNumInteriorRing();
+            }            
         } else if (g instanceof Polygon) {
-            holes = ((Polygon) g).getNumInteriorRing();
+            return ((Polygon) g).getNumInteriorRing();
         }
-        return holes;
+        return null;
     }
 }
