@@ -27,8 +27,12 @@ import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 /**
  * Merge ShapeFileReader and DBFReader.
@@ -47,6 +51,7 @@ public class SHPDriver implements FileDriver {
     private DBFDriver dbfDriver = new DBFDriver();
     private File shpFile;
     private File shxFile;
+    private File dbfFile ;
     private ShapefileReader shapefileReader;
     private ShapefileWriter shapefileWriter;
     private IndexFile shxFileReader;
@@ -135,32 +140,48 @@ public class SHPDriver implements FileDriver {
      * @throws IOException
      */
     public void initDriverFromFile(File shpFile, String forceEncoding) throws IOException {             // Read columns from files metadata
-        this.shpFile = shpFile;
-        File dbfFile = null;
+        this.shpFile = shpFile;        
+        
+        if(!shpFile.exists()){
+            throw new FileNotFoundException("The following file does not exists: " + shpFile.getPath());
+        }        
         // Find appropriate file extension for shx and dbf, maybe SHX or Shx..
         String shxFileName = shpFile.getName();
-        String nameWithoutExt = shxFileName.substring(0,shxFileName.lastIndexOf('.'));
-        File[] filesInParentFolder = shpFile.getParentFile().listFiles();
-        if(filesInParentFolder != null) {
-            for(File otherFile : filesInParentFolder) {
-                String otherFileName = otherFile.getName();
-                if(otherFileName.startsWith(nameWithoutExt + ".")) {
-                    String fileExt =  otherFileName.substring(otherFileName.lastIndexOf(".") + 1);
-                    if(fileExt.equalsIgnoreCase("shx")) {
-                        shxFile = otherFile;
-                    } else if(fileExt.equalsIgnoreCase("dbf")) {
-                        dbfFile = otherFile;
-                    }
-                    else if(fileExt.equalsIgnoreCase("prj")) {
-                        prjFile = otherFile;
-                    }
+        final String nameWithoutExt = shxFileName.substring(0,shxFileName.lastIndexOf('.'));
+             
+        DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {            
+            @Override
+            public boolean accept(Path entry) throws IOException {
+                String path = entry.toString().toLowerCase();
+                if(path.endsWith(nameWithoutExt+".shx")){
+                    shxFile = entry.toFile();
+                    return true;
                 }
+                else if(path.endsWith(nameWithoutExt+".dbf")){
+                    dbfFile = entry.toFile();
+                    return true;
+                }
+                else if(path.endsWith(nameWithoutExt+".prj")){
+                    prjFile = entry.toFile();
+                    return true;
+                }
+                return false;
             }
+
+        };
+        
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(shpFile.getParentFile().toPath(), filter)) {            
+            for (Path pathDir : stream) {                
+               //Do nothing   
+            } 
         }
         if(dbfFile != null) {
             dbfDriver.initDriverFromFile(dbfFile, forceEncoding);
         } else {
             throw new IllegalArgumentException("DBF File not found");
+        }
+        if(shxFile==null){
+            throw new IllegalArgumentException("SHX File not found");
         }
         FileInputStream shpFis = new FileInputStream(shpFile);
         shapefileReader = new ShapefileReader(shpFis.getChannel());
