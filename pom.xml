@@ -52,7 +52,8 @@
         <profile>
             <id>osgi</id>
             <modules>
-                <module>jts-osgi</module>
+                <module>jts-core-osgi</module>
+                <module>jts-io-osgi</module>
                 <module>h2gis-test</module>
             </modules>
         </profile>
