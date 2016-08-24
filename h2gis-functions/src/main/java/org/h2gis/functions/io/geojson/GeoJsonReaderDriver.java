@@ -1281,6 +1281,7 @@ public class GeoJsonReaderDriver {
             finalGeometryType = (String) finalGeometryTypes.iterator().next();
         }        
         if(isH2){
+             finalGeometryType = GeoJsonField.GEOMETRY;//workaround for H2
              connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom %s", tableLocation.toString(), finalGeometryType));        
              SFSUtilities.addTableSRIDConstraint(connection, tableLocation, parsedSRID);
         }
