@@ -22,7 +22,7 @@
                 <configuration>
                     <unpackBundle>true</unpackBundle>
                     <instructions>
-                        <Embed-Dependency>jts;scope=compile;inline=true</Embed-Dependency>
+                        <Embed-Dependency>jts-io;scope=compile;inline=true</Embed-Dependency>
                         <Embed-Transitive>true</Embed-Transitive>
                         <_exportcontents>com.vividsolutions.jts,com.vividsolutions.jts.*</_exportcontents>
                     </instructions>
@@ -36,8 +36,8 @@
         <dependencies>
             <dependency>
             <groupId>com.vividsolutions</groupId>
-            <artifactId>jts</artifactId>
-            <version>${jts-version}</version>
+            <artifactId>jts-io</artifactId>
+            <version>${jts-io-version}</version>
         </dependency>
     </dependencies>
 </project>
