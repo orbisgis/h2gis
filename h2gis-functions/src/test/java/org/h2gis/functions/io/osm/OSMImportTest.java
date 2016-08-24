@@ -229,6 +229,17 @@ public class OSMImportTest {
     }
     
     //Disable this @Test to avoid internet connection error
+    public void downloadOSMFileTwice() throws SQLException, IOException {
+        if(IsNetworkAvailable()){
+        File file = File.createTempFile("osm_"+ System.currentTimeMillis(), ".osm");    
+        file.delete();
+        st.execute("CALL ST_OSMDownloader('POLYGON ((-2.12679 47.63418, -2.12679 47.63753, -2.11823 47.63753, -2.11823 47.63418, -2.12679 47.63418))'::GEOMETRY, '"+ file.getPath()+"')");
+        st.execute("CALL ST_OSMDownloader('POLYGON ((-2.12679 47.63418, -2.12679 47.63753, -2.11823 47.63753, -2.11823 47.63418, -2.12679 47.63418))'::GEOMETRY, '"+ file.getPath()+"', true)");
+        assertTrue(new File(file.getPath()).exists());
+        }
+    }
+    
+    //Disable this @Test to avoid internet connection error
     public void downloadOSMFileAndImport() throws SQLException, IOException {
         if(IsNetworkAvailable()){
         File file = File.createTempFile("osm3_"+ System.currentTimeMillis(), ".osm");    
