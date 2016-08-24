@@ -472,28 +472,4 @@ public class SFSUtilities {
                     tableLocation.toString(), srid));
         }
     }
-    
-    /**
-     * Alter a table to add a SRID constraint.
-     * The srid must be greater than zero.
-     * Set true to disable the check option
-     * 
-     * @param connection
-     * @param tableLocation
-     * @param srid
-     * @param nocheck
-     * @throws SQLException 
-     */
-    public static void addTableSRIDConstraint(Connection connection, TableLocation tableLocation, int srid, boolean nocheck) throws SQLException {
-        //Alter table to set the SRID constraint
-        if (srid > 0) {
-            if (nocheck) {
-                connection.createStatement().execute(String.format("ALTER TABLE %s ADD NOCHECK ST_SRID(the_geom)=%d",
-                        tableLocation.toString(), srid));
-            } else {
-                connection.createStatement().execute(String.format("ALTER TABLE %s ADD CHECK ST_SRID(the_geom)=%d",
-                        tableLocation.toString(), srid));
-            }
-        }
-    }
 }
