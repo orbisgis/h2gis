@@ -153,15 +153,16 @@ public class SHPDriver implements FileDriver {
             @Override
             public boolean accept(Path entry) throws IOException {
                 String path = entry.toString().toLowerCase();
-                if(path.endsWith(nameWithoutExt+".shx")){
+                String nameWithoutExtLC = nameWithoutExt.toLowerCase();
+                if(path.endsWith(nameWithoutExtLC+".shx")){
                     shxFile = entry.toFile();
                     return true;
                 }
-                else if(path.endsWith(nameWithoutExt+".dbf")){
+                else if(path.endsWith(nameWithoutExtLC+".dbf")){
                     dbfFile = entry.toFile();
                     return true;
                 }
-                else if(path.endsWith(nameWithoutExt+".prj")){
+                else if(path.endsWith(nameWithoutExtLC+".prj")){
                     prjFile = entry.toFile();
                     return true;
                 }
