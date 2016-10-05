@@ -2070,4 +2070,12 @@ public class SpatialFunctionTest {
         assertNull(rs.getObject(1));
         rs.close();
     }
+    
+    @Test
+    public void testNull_ST_Buffer() throws Exception{
+        ResultSet rs = st.executeQuery("SELECT ST_Buffer(null, 0.005, 'join=mitre')");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
 }

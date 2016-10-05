@@ -73,6 +73,9 @@ public class ST_Buffer extends DeterministicScalarFunction {
      * @return a buffer around a geometry.
      */
     public static Geometry buffer(Geometry geom,Double distance, Value value) throws IllegalArgumentException {
+        if(geom ==null){
+            return null;
+        }        
         if(value instanceof ValueString){
             String[] buffParemeters = value.getString().split("\\s+");  
             BufferParameters bufferParameters = new BufferParameters();
