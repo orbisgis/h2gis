@@ -50,8 +50,11 @@ public class JDBCUrlParser {
             throw new IllegalArgumentException("JDBC Url must start with "+URL_STARTS);
         }
         String driverAndURI = jdbcUrl.substring(URL_STARTS.length());
-        String driver = driverAndURI.substring(0,driverAndURI.indexOf(':'));
-        Properties properties = new Properties();
+        String driver = driverAndURI.substring(0,driverAndURI.indexOf(':'));        
+        Properties properties = new Properties();        
+        if(driver!=null){
+             properties.setProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, driver);
+        }
         URI uri = URI.create(driverAndURI.substring(driverAndURI.indexOf(':')+1));
         if(uri.getHost()!=null) {
             properties.setProperty(DataSourceFactory.JDBC_SERVER_NAME,uri.getHost());
