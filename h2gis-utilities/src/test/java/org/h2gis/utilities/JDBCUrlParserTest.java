@@ -67,6 +67,13 @@ public class JDBCUrlParserTest {
         assertEquals("localhost",properties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
         assertEquals("test",properties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
         assertEquals("8080",properties.getProperty(DataSourceFactory.JDBC_PORT_NUMBER));
-
+    }
+    
+     @Test
+    public void testParseH2ServerMode() throws Exception {
+        Properties properties = JDBCUrlParser.parse("jdbc:h2:tcp://localhost/~/test");
+        assertEquals("h2",properties.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME));
+        assertEquals("~/test",properties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
+        assertEquals("tcp",properties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL));
     }
 }
