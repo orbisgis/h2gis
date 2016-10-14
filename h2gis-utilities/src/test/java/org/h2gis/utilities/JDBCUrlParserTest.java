@@ -34,7 +34,7 @@ public class JDBCUrlParserTest {
     @Test
     public void testParsePostgreSQL() throws Exception {
         Properties properties = JDBCUrlParser.parse("jdbc:postgresql://localhost/test?user=fred&password=secret&ssl=true");
-        assertEquals("postgresql",properties.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME));
+        assertEquals("postgresql",properties.getProperty("jdbc"));
         assertEquals("localhost",properties.getProperty(DataSourceFactory.JDBC_SERVER_NAME));
         assertEquals("test",properties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
         assertEquals("fred",properties.getProperty(DataSourceFactory.JDBC_USER));
@@ -45,7 +45,7 @@ public class JDBCUrlParserTest {
     @Test
     public void testParseH2Embeded() throws Exception {
         Properties properties = JDBCUrlParser.parse("jdbc:h2:~/test");
-        assertEquals("h2",properties.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME));
+        assertEquals("h2",properties.getProperty("jdbc"));
         assertEquals("~/test",properties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
     }
     @Test
@@ -72,7 +72,7 @@ public class JDBCUrlParserTest {
      @Test
     public void testParseH2ServerMode() throws Exception {
         Properties properties = JDBCUrlParser.parse("jdbc:h2:tcp://localhost/~/test");
-        assertEquals("h2",properties.getProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME));
+        assertEquals("h2",properties.getProperty("jdbc"));
         assertEquals("~/test",properties.getProperty(DataSourceFactory.JDBC_DATABASE_NAME));
         assertEquals("tcp",properties.getProperty(DataSourceFactory.JDBC_NETWORK_PROTOCOL));
     }

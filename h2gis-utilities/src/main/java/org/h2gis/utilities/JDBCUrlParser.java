@@ -52,8 +52,8 @@ public class JDBCUrlParser {
         String driverAndURI = jdbcUrl.substring(URL_STARTS.length());
         String driver = driverAndURI.substring(0,driverAndURI.indexOf(':'));        
         Properties properties = new Properties();        
-        if(driver!=null){
-             properties.setProperty(DataSourceFactory.OSGI_JDBC_DRIVER_NAME, driver);
+        if(driver!=null){            
+             properties.setProperty("jdbc", driver);
         }
         URI uri = URI.create(driverAndURI.substring(driverAndURI.indexOf(':')+1));
         if(uri.getHost()!=null) {
