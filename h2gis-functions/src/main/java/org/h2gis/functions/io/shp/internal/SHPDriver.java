@@ -237,7 +237,9 @@ public class SHPDriver implements FileDriver {
             System.arraycopy(dbfValues, 0, values, 0, geometryFieldIndex);
         }
         Geometry geom = shapefileReader.geomAt(shxFileReader.getOffset((int)rowId));
+        if(geom!=null){
         geom.setSRID(getSrid());
+        }
         values[geometryFieldIndex] = geom;
         // Copy dbf values after geometryFieldIndex
         if(geometryFieldIndex < dbfValues.length) {
