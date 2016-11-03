@@ -56,6 +56,9 @@ public class ST_SideBuffer extends DeterministicScalarFunction{
      * @return 
      */
     public static Geometry singleSideBuffer(Geometry geometry, double distance){
+        if(geometry==null){
+            return null;
+        }
         return computeSingleSideBuffer(geometry, distance, new BufferParameters());
     }
     
