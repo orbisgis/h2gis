@@ -52,6 +52,8 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path of the SHP file or URI
      * @param forceEncoding Use this encoding instead of DBF file header encoding property.
+     * @throws java.io.IOException
+     * @throws java.sql.SQLException
      */
     public static void readShape(Connection connection, String fileName, String tableReference,String forceEncoding) throws IOException, SQLException {
         File file = URIUtilities.fileFromString(fileName);

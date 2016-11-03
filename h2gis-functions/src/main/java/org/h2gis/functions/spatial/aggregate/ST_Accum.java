@@ -68,17 +68,23 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
         minDim = Math.min(minDim, geomDim);
     }
 
+    /**
+     * Add geometry into an array to accumulate
+     * @param geom 
+     */
     private void addGeometry(Geometry geom) {
-        if (geom instanceof GeometryCollection) {
-            List<Geometry> toUnitTmp = new ArrayList<Geometry>(geom.getNumGeometries());
-            for (int i = 0; i < geom.getNumGeometries(); i++) {
-                toUnitTmp.add(geom.getGeometryN(i));
-                feedDim(geom.getGeometryN(i));
+        if (geom != null) {
+            if (geom instanceof GeometryCollection) {
+                List<Geometry> toUnitTmp = new ArrayList<Geometry>(geom.getNumGeometries());
+                for (int i = 0; i < geom.getNumGeometries(); i++) {
+                    toUnitTmp.add(geom.getGeometryN(i));
+                    feedDim(geom.getGeometryN(i));
+                }
+                toUnite.addAll(toUnitTmp);
+            } else {
+                toUnite.add(geom);
+                feedDim(geom);
             }
-            toUnite.addAll(toUnitTmp);
-        } else {
-            toUnite.add(geom);
-            feedDim(geom);
         }
     }
 
