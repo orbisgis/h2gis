@@ -401,6 +401,16 @@ public class ProcessingFunctionTest {
                 rs.getString(1));
         rs.close();
     }
+    
+    
+    @Test
+    public void test_ST_SideBuffer6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SideBuffer(null, 10);");
+        rs.next();
+        assertNull(rs.getObject(1));        
+        rs.close();
+    }
+    
     @Test
     public void test_ST_Simplify1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Simplify('MULTIPOINT( (190 300), (10 11 50))'::GEOMETRY, 4);");
