@@ -20,9 +20,9 @@ H2GIS adds support for
 * additional spatial functions we develop, including our graph analysis package
   [H2Network][]
 
-## Download the last unreleased version of H2GIS
+## Download the last unstable version
 
-You can download the last unreleased version of H2GIS [here][]. 
+You can download the last unstable version of H2GIS [here][]. 
 
 This version is under active development, so feel free to contact us if you are experiencing problems.
 
