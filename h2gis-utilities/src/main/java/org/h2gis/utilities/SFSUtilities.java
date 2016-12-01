@@ -111,6 +111,33 @@ public class SFSUtilities {
         throw new SQLException("Field not found "+fieldName);
     }
 
+    /**
+     * Returns a map containing the field names as key and the SFS geometry type as value from the given table.
+     *
+     * @param connection Active connection
+     * @param location Catalog, schema and table name
+     * @return A map containing the geometric fields names as key and the SFS geometry type as value.
+     * @see GeometryTypeCodes
+     * @throws SQLException
+     */
+    public static Map<String, Integer> getGeometryTypes(Connection connection, TableLocation location)
+            throws SQLException {
+        Map<String, Integer> map = new HashMap<>();
+        ResultSet geomResultSet = getGeometryColumnsView(connection,location.getCatalog(),location.getSchema(),location.getTable());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        while(geomResultSet.next()) {
+            String fieldName = geomResultSet.getString("F_GEOMETRY_COLUMN");
+            int type;
+            if(isH2) {
+                type = geomResultSet.getInt("GEOMETRY_TYPE");
+            } else {
+                type = GEOM_TYPE_TO_SFS_CODE.get(geomResultSet.getString("type").toLowerCase());
+            }
+            map.put(fieldName, type);
+        }
+        return map;
+    }
+
 
     /**
      * In order to be able to use {@link ResultSet#unwrap(Class)} and
