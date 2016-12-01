@@ -56,4 +56,4 @@ SELECT ST_GeometryTypeCode(
 ##### See also
 
 * [`ST_GeometryType`](../ST_GeometryType)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_GeometryTypeCode.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_GeometryTypeCode.java" target="_blank">Source code</a>

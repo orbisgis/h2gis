@@ -54,4 +54,4 @@ SELECT ST_PROJECTPOINT('POINT(4 3)',
 ##### See also
 
 * [`ST_LocateAlong`](../ST_LocateAlong), [`ST_ClosestPoint`](../ST_ClosestPoint)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_ProjectPoint.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_ProjectPoint.java" target="_blank">Source code</a>

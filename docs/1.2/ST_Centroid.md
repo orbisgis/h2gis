@@ -75,4 +75,4 @@ SELECT ST_Centroid('GEOMETRYCOLLECTION(
 ##### See also
 
 * [`ST_PointOnSurface`](../ST_PointOnSurface)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Centroid.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Centroid.java" target="_blank">Source code</a>

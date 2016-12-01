@@ -44,4 +44,4 @@ SELECT ST_EndPoint('MULTILINESTRING((1 1, 3 2, 3 1),
 ##### See also
 
 * [`ST_StartPoint`](../ST_StartPoint), [`ST_PointN`](../ST_PointN)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_EndPoint.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_EndPoint.java" target="_blank">Source code</a>

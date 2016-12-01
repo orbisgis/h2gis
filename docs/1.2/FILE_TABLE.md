@@ -63,7 +63,7 @@ SELECT * FROM commune44 LIMIT 2;
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2drivers/src/main/java/org/h2gis/drivers/DriverManager.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2drivers/src/main/java/org/h2gis/drivers/DriverManager.java" target="_blank">Source code</a>
 
 [wikidbf]: http://en.wikipedia.org/wiki/DBase
 [wikishp]: http://en.wikipedia.org/wiki/Shapefile

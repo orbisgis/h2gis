@@ -54,6 +54,6 @@ CALL GPXRead('/home/user/station.gpx');
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2drivers/src/main/java/org/h2gis/drivers/gpx/GPXRead.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2drivers/src/main/java/org/h2gis/drivers/gpx/GPXRead.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/GPS_eXchange_Format

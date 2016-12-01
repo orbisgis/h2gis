@@ -85,4 +85,4 @@ SELECT ST_Overlaps(geomA, geomB) FROM input_table;
 ##### See also
 
 * [`ST_Intersects`](../ST_Intersects), [`ST_Contains`](../ST_Contains)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_Overlaps.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_Overlaps.java" target="_blank">Source code</a>

@@ -51,4 +51,4 @@ SELECT ST_FurthestCoordinate('POINT(5 2.5)',
 ##### See also
 
 * [`ST_ClosestCoordinate`](../ST_ClosestCoordinate)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_FurthestCoordinate.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_FurthestCoordinate.java" target="_blank">Source code</a>

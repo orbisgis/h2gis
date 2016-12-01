@@ -173,6 +173,6 @@ SELECT * FROM ST_ShortestPathTree('EDGES_EO_W',
 * [`ST_ShortestPath`](../ST_ShortestPath),
   [`ST_ShortestPathLength`](../ST_ShortestPathLength),
   [`ST_ConnectedComponents`](../ST_ConnectedComponents)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPathTree.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPathTree.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/Shortest-path_tree
