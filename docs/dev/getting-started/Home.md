@@ -5,7 +5,7 @@ next_section: quickstart
 permalink: /docs/dev/home/
 ---
 
-This site aims to be a comprehensive guide to H2GIS, the new spatial extension
+You are here in the documentation part dedicated to the "under development" version of H2GIS, the spatial extension
 of the [H2][] database engine.
 
 ## What is H2GIS?
@@ -20,6 +20,12 @@ H2GIS adds support for
 * additional spatial functions we develop, including our graph analysis package
   [H2Network][]
 
+## Download the last unreleased version of H2GIS
+
+You can download the last unreleased version of H2GIS [here][]. 
+
+This version is under active development, so feel free to contact us if you are experiencing problems.
+
 ## Get help
 
 If you get stuck or just have a question, send us a line on our H2GIS [user][]
@@ -28,8 +34,7 @@ developers can check out our [Javadoc page][].
 
 ## Check back soon!
 
-This documentation is currently under active development, so check back soon
-for updates!
+This documentation is currently under active development, so check back soon for updates!
 
 If you have suggestions for topics we have not yet covered, or you have a tip that others could find useful,
 please [file an issue][] and we'll potentially include it in this guide.
@@ -40,8 +45,9 @@ please [file an issue][] and we'll potentially include it in this guide.
 [OpenGIS]: http://www.opengeospatial.org/
 [Simple Features Implementation Specification for SQL]: http://www.opengeospatial.org/standards/sfs
 [file an issue]: http://github.com/orbisgis/h2gis/issues/new
+[here]: http://jenkins.orbisgis.org/job/H2GIS/lastSuccessfulBuild/artifact/h2gis-dist/target/h2gis-standalone-bin.zip
 [user]: http://h2gis.1099522.n5.nabble.com/H2GIS-users-f2.html
 [developer]: http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html
 [H2 Google Group]: https://groups.google.com/forum/#!forum/h2-database
-[Javadoc page]: http://javadoc.orbisgis.org/latest/h2gis/classes.html
+[Javadoc page]: http://javadoc.orbisgis.org/h2gis/1.3.1-SNAPSHOT/doxygen/
 [H2Network]: ../h2network
