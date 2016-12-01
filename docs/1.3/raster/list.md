@@ -6,9 +6,6 @@ prev_section: h2network
 permalink: /docs/1.3/raster/
 ---
 
-We are currently working on implementing raster functionality in H2GIS.
-Follow our progress directly on [GitHub][gh].
+Sorry, there is no raster functions available in the v1.3 of H2GIS.
 
-{% include all_raster_functions.html %}
-
-[gh]: https://github.com/orbisgis/h2gis
+Please refers to the documentation under [development](../../dev/raster).
