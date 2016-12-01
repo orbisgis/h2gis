@@ -54,4 +54,4 @@ SELECT ST_IsRing('MULTILINESTRING((0 2, 3 2, 3 6, 0 6, 0 1),
 
 * [`ST_IsClosed`](../ST_IsClosed), [`ST_IsSimple`](../ST_IsSimple),
   [`ST_StartPoint`](../ST_StartPoint), [`ST_EndPoint`](../ST_EndPoint)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_IsRing.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_IsRing.java" target="_blank">Source code</a>

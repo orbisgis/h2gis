@@ -45,7 +45,7 @@ SELECT ST_Densify('POLYGON((2 0, 2 8, 4 8, 4 0, 2 0))', 4.5)
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_Densify.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_Densify.java" target="_blank">Source code</a>
 * JTS [Densifier#densify][jts]
 
 [jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/densify/Densifier.html#densify(com.vividsolutions.jts.geom.Geometry, double)

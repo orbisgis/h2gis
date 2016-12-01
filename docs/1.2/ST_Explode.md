@@ -61,4 +61,4 @@ SELECT * FROM ST_Explode('test_point', 'the_geomB');
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_Explode.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_Explode.java" target="_blank">Source code</a>

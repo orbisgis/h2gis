@@ -52,4 +52,4 @@ SELECT ST_ExteriorRing('POINT(1 2)');
 ##### See also
 
 * [`ST_Boundary`](../ST_Boundary), [`ST_InteriorRingN`](../ST_InteriorRingN)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_ExteriorRing.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_ExteriorRing.java" target="_blank">Source code</a>

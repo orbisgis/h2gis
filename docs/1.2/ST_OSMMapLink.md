@@ -59,4 +59,4 @@ SELECT ST_OSMMAPLINK(ST_TRANSFORM(ST_SETSRID(THE_GEOM, 2154), 4326), true) as UR
 ##### See also
 
 * [`ST_GoogleMapLink`](../ST_GoogleMapLink), [`ST_OSMDownloader`](../ST_OSMDownloader), [`OSMRead`](../OSMRead)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_OSMMapLink.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_OSMMapLink.java" target="_blank">Source code</a>

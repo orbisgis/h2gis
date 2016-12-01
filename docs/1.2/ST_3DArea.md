@@ -49,4 +49,4 @@ SELECT ST_3DArea('LINESTRING(5 4, 1 1, 3 4, 4 5)');
 ##### See also
 
 * [`ST_Area`](../ST_Area), [`ST_Length`](../ST_Length), [`ST_3DLength`](../ST_3DLength)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Area.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Area.java" target="_blank">Source code</a>

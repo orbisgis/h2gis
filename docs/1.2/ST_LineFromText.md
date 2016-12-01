@@ -42,4 +42,4 @@ SELECT ST_LineFromText('POINT(2 3)', 2154);
 
 * [`ST_MLineFromText`](../ST_MLineFromText), [`ST_PointFromText`](../ST_PointFromText), [`ST_PolyFromText`](../ST_PolyFromText)
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_LineFromText.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_LineFromText.java" target="_blank">Source code</a>

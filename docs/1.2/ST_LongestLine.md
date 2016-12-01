@@ -72,4 +72,4 @@ SELECT ST_Longestline('POLYGON ((1 3, 0 0, 3 2, 1 3))',
 ##### See also
 
 * [`ST_MaxDistance`](../ST_MaxDistance), [`ST_ClosestCoordinate`](../ST_ClosestCoordinate)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_LongestLine.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/distance/ST_LongestLine.java" target="_blank">Source code</a>

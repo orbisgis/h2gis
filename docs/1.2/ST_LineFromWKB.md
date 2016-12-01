@@ -38,4 +38,4 @@ SELECT ST_LineFromWKB(ST_AsBinary('POINT(2 3)'::Geometry), 2154);
 
 * [`ST_PointFromWKB`](../ST_PointFromWKB), [`ST_PolyFromWKB`](../ST_PolyFromWKB)
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_LineFromWKB.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_LineFromWKB.java" target="_blank">Source code</a>

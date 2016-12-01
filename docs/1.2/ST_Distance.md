@@ -58,4 +58,4 @@ SELECT ST_Distance('POLYGON((8 0, 8 4, 10 4, 10 0, 8 0))',
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Distance.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.2.4/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Distance.java" target="_blank">Source code</a>
