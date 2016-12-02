@@ -17,7 +17,9 @@ INT ST_NumInteriorRings(GEOMETRY geom);
 
 ### Description
 
-Returns the number of interior rings of `geom`.
+Return the number of interior rings of the first `POLYGON` in the geometry. 
+This will work with both `POLYGON` and `MULTIPOLYGON`.
+Return `NULL` if there is no polygon in the geometry.
 
 <!-- This function does not seem to be SFS. Is it SQL-MM? -->
 
