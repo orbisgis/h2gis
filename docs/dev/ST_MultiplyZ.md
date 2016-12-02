@@ -36,4 +36,4 @@ SELECT ST_MultiplyZ('MULTIPOINT((190 300 10), (10 11))', 10);
 ##### See also
 
 * [`ST_UpdateZ`](../ST_UpdateZ)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_MultiplyZ.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/edit/ST_MultiplyZ.java" target="_blank">Source code</a>

@@ -54,4 +54,4 @@ SELECT ST_LineMerge('GEOMETRYCOLLECTION (
 ##### See also
 
 * [`ST_Simplify`](../ST_Simplify)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/processing/ST_LineMerge.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/aggregate/ST_LineMerge.java" target="_blank">Source code</a>

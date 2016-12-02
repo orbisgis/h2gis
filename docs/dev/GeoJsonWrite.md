@@ -40,6 +40,6 @@ SELECT * FROM TEST2;
 ##### See also
 
 * [`GeoJsonRead`](../GeoJsonRead)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2drivers/src/main/java/org/h2gis/drivers/geojson/GeoJsonWrite.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/io/geojson/GeoJsonWrite.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/GeoJSON

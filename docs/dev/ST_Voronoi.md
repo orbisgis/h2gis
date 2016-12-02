@@ -72,4 +72,4 @@ A specific use case, using `ST_Voronoi` function is avalaible [HERE](https://git
 ##### See also
 
 * [`ST_Delaunay`](../ST_Delaunay)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/mesh/ST_Voronoi.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/mesh/ST_Voronoi.java" target="_blank">Source code</a>

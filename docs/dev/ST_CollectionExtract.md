@@ -59,4 +59,4 @@ SELECT ST_CollectionExtract('POLYGON ((1 3, 1 0, 4 0, 4 2, 5 5, 1 3))', 2) as TH
 ##### See also
 
 * [`ST_Dimension`](../ST_Dimension), [`ST_GeometryType`](../ST_GeometryType), [`ST_CoordDim`](../ST_CoordDim)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_CollectionExtract.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/edit/ST_CollectionExtract.java" target="_blank">Source code</a>

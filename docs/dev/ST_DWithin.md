@@ -52,4 +52,4 @@ SELECT ST_DWithin(geomA, geomA, 5000.0) FROM input_table;
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/predicates/ST_DWithin.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/predicates/ST_DWithin.java" target="_blank">Source code</a>

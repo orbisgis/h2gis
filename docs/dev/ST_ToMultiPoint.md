@@ -73,4 +73,4 @@ SELECT ST_ToMultiPoint(ST_Accum(line)) FROM input_table;
 ##### See also
 
 * [`ST_Accum`](../ST_Accum)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_ToMultiPoint.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/convert/ST_ToMultiPoint.java" target="_blank">Source code</a>
