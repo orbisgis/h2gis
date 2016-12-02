@@ -29,6 +29,6 @@ CALL GeoJsonRead('/home/user/data.geojson', 'NEW_DATA');
 ##### See also
 
 * [`GeoJsonWrite`](../GeoJsonWrite)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2drivers/src/main/java/org/h2gis/drivers/geojson/GeoJsonRead.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/io/geojson/GeoJsonRead.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/GeoJSON

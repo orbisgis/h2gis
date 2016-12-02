@@ -21,7 +21,7 @@ Returns a copy of `geom` with spatial reference id set to `srid`.
 
 <div class="note warning">
   <h5>ST_SetSRID does not  to actually change the SRID of <code>geom</code>.
-  For this purpose, use <a href="/docs/1.3/ST_Transform">ST_Transform</a>.</h5>
+  For this purpose, use <a href="/docs/dev/ST_Transform">ST_Transform</a>.</h5>
 </div>
 
 {% include sfs-1-2-1.html %}
@@ -43,4 +43,4 @@ SELECT ST_SRID(ST_SETSRID(the_geom, 5321)) trans,
 ##### See also
 
 * [`ST_Transform`](../ST_Transform), [`ST_SRID`](../ST_SRID)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/crs/ST_SetSRID.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/crs/ST_SetSRID.java" target="_blank">Source code</a>

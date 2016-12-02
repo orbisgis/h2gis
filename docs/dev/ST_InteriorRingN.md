@@ -57,4 +57,4 @@ SELECT ST_InteriorRingN('POINT(1 2)', 1);
 ##### See also
 
 * [`ST_ExteriorRing`](../ST_ExteriorRing)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_InteriorRingN.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_InteriorRingN.java" target="_blank">Source code</a>

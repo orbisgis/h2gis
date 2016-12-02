@@ -292,7 +292,7 @@ return the same results? Why or why not?
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ConnectedComponents.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-network/src/main/java/org/h2gis/network/functions/ST_ConnectedComponents.java" target="_blank">Source code</a>
 
 [cc]: http://en.wikipedia.org/wiki/Connected_component_(graph_theory)
 [scc]: http://en.wikipedia.org/wiki/Strongly_connected_component

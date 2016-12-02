@@ -38,7 +38,7 @@ SELECT ST_Normalize('LINESTRING(3 1, 6 1, 6 3, 3 3, 1 1)');
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_Normalize.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/edit/ST_Normalize.java" target="_blank">Source code</a>
 * JTS [Geometry#normalize][jts]
 
 [jts]: http://tsusiatsoftware.net/jts/javadoc/com/vividsolutions/jts/geom/Geometry.html#normalize()

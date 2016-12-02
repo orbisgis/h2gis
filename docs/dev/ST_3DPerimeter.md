@@ -53,4 +53,4 @@ SELECT ST_3DPerimeter('LINESTRING(2 1, 1 3, 5 2)');
 ##### See also
 
 * [`ST_Perimeter`](../ST_Perimeter), [`ST_3DLength`](../ST_3DLength), [`ST_Length`](../ST_Length)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_Perimeter.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_3DPerimeter.java" target="_blank">Source code</a>

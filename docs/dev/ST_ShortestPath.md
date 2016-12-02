@@ -179,4 +179,4 @@ WHERE A.ID=ABS(B.EDGE_ID);
 
 * [`ST_ShortestPathLength`](../ST_ShortestPathLength),
   [`ST_ShortestPathTree`](../ST_ShortestPathTree)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPath.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-network/src/main/java/org/h2gis/network/functions/ST_ShortestPath.java" target="_blank">Source code</a>

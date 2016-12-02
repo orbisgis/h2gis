@@ -46,6 +46,6 @@ SELECT * FROM commune44 LIMIT 2;
 ##### See also
 
 * [`DBFRead`](../DBFRead)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2drivers/src/main/java/org/h2gis/drivers/dbf/DBFWrite.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/io/dbf/DBFWrite.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/DBase

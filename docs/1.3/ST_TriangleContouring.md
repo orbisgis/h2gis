@@ -101,4 +101,4 @@ SELECT * FROM ST_TriangleContouring('TIN', 2, 3, 4);
 * [`ST_TriangleAspect`](../ST_TriangleAspect),
   [`ST_TriangleDirection`](../ST_TriangleDirection),
   [`ST_TriangleSlope`](../ST_TriangleSlope)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/topography/ST_TriangleContouring.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/topography/ST_TriangleContouring.java" target="_blank">Source code</a>

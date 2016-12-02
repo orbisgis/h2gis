@@ -120,4 +120,4 @@ SELECT ST_RemovePoints(
 
 * [`ST_AddPoint`](../ST_AddPoint), [`ST_RemoveRepeatedPoints`](../ST_RemoveRepeatedPoints),
 [`ST_RemoveHoles`](../ST_RemoveHoles)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/edit/ST_RemovePoints.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/edit/ST_RemovePoints.java" target="_blank">Source code</a>

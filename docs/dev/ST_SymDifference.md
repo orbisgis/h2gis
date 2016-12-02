@@ -38,4 +38,4 @@ SELECT ST_SymDifference(geomA, geomB) FROM input_table;
 ##### See also
 
 * [`ST_Difference`](../ST_Difference)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/operators/ST_SymDifference.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/operators/ST_SymDifference.java" target="_blank">Source code</a>

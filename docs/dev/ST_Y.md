@@ -60,4 +60,4 @@ SELECT ST_Y('GEOMETRYCOLLECTION(
 
 * [`ST_X`](../ST_X), [`ST_Z`](../ST_Z)
 * [`ST_GeometryN`](../ST_GeometryN), [`ST_PointN`](../ST_PointN), [`ST_ExteriorRing`](../ST_ExteriorRing)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_Y.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_Y.java" target="_blank">Source code</a>

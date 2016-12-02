@@ -103,4 +103,4 @@ SELECT ST_MakeLine(ST_Accum(multi_point)) FROM input_table;
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_MakeLine.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_MakeLine.java" target="_blank">Source code</a>

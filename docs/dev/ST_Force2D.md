@@ -44,4 +44,4 @@ SELECT ST_Force2D('LINESTRING(-10 10, 10 10 3)');
 ##### See also
 
 * [`ST_Force3D`](../ST_Force3D)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/convert/ST_Force2D.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/convert/ST_Force2D.java" target="_blank">Source code</a>

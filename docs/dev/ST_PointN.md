@@ -48,4 +48,4 @@ SELECT ST_PointN('LINESTRING(1 1, 1 6, 2 2, -1 2))', 0);
 ##### See also
 
 * [`ST_StartPoint`](../ST_StartPoint), [`ST_EndPoint`](../ST_EndPoint)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/properties/ST_PointN.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_PointN.java" target="_blank">Source code</a>

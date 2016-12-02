@@ -286,4 +286,4 @@ SELECT * FROM
 * [`ST_Accessibility`](../ST_Accessibility),
   [`ST_ShortestPath`](../ST_ShortestPath),
   [`ST_ShortestPathTree`](../ST_ShortestPathTree),
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2network/src/main/java/org/h2gis/network/graph_creator/ST_ShortestPathLength.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-network/src/main/java/org/h2gis/network/functions/ST_ShortestPathLength.java" target="_blank">Source code</a>

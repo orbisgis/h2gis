@@ -114,4 +114,4 @@ SELECT ST_Touches(geomA, geomB) FROM input_table;
 ##### See also
 
 * [`ST_Intersects`](../ST_Intersects)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_Touches.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/predicates/ST_Touches.java" target="_blank">Source code</a>
