@@ -39,6 +39,6 @@ SELECT ST_Azimuth('POINT(0 1)', 'POINT(10 1)');
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/trigonometry/ST_Azimuth.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/trigonometry/ST_Azimuth.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/Azimuth

@@ -43,4 +43,4 @@ SELECT ST_Extent('POINT(5 6)'::Geometry);
 * [`ST_Envelope`](../ST_Envelope),
   [`ST_MinimumRectangle`](../ST_MinimumRectangle),
   [`ST_OctogonalEnvelope`](../ST_OctogonalEnvelope)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/properties/ST_Extent.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/properties/ST_Extent.java" target="_blank">Source code</a>

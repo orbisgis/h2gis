@@ -94,4 +94,4 @@ SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))', 10, 2);
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/create/ST_Extrude.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/create/ST_Extrude.java" target="_blank">Source code</a>

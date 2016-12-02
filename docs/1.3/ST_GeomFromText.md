@@ -39,4 +39,4 @@ SELECT ST_GeomFromText('POLYGON((0 0 -1, 2 0 2, 2 1 3, 0 0 -1))');
 
 ##### See also
 
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/convert/ST_GeomFromText.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/convert/ST_GeomFromText.java" target="_blank">Source code</a>

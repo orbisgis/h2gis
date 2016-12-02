@@ -70,6 +70,6 @@ SELECT ST_Relate('POINT(1 2)', ST_Buffer('POINT(1 2)', 2),
  [`ST_Equals`](../ST_Equals), [`ST_Intersects`](../ST_Intersects),
  [`ST_Overlaps`](../ST_Overlaps), [`ST_Touches`](../ST_Touches),
  [`ST_Within`](../ST_Within),
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial/src/main/java/org/h2gis/h2spatial/internal/function/spatial/predicates/ST_Relate.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/predicates/ST_Relate.java" target="_blank">Source code</a>
 
 [DE-9IM]: http://en.wikipedia.org/wiki/DE-9IM

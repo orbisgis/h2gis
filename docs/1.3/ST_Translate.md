@@ -83,4 +83,4 @@ SELECT ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2, 3);
 ##### See also
 
 * [`ST_Rotate`](../ST_Rotate)
-* <a href="https://github.com/orbisgis/h2gis/blob/master/h2spatial-ext/src/main/java/org/h2gis/h2spatialext/function/spatial/affine_transformations/ST_Translate.java" target="_blank">Source code</a>
+* <a href="https://github.com/orbisgis/h2gis/blob/v1.3.0/h2gis-functions/src/main/java/org/h2gis/functions/spatial/affine_transformations/ST_Translate.java" target="_blank">Source code</a>
