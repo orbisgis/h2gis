@@ -13,11 +13,12 @@ permalink: /docs/dev/ST_OSMDownloader/
 
 {% highlight mysql %}
 ST_OSMDownloader(GEOMETRY geom, VARCHAR path);
+ST_OSMDownloader(GEOMETRY geom, VARCHAR path, BOOLEAN delete);
 {% endhighlight %}
 
 ### Description
 
-Download data from the [OSM][wiki] api using a bounding box (`geom`). The result is stored in an .osm file which the place and the name are defined in the `path`.
+Download data from the [OSM][wiki] api using a bounding box (`geom`). The result is stored in an .osm file which the place and the name are defined in the `path`. If the `delete` parameter is equal to one (true), then the .osm file will be overwritten if it already exists.
 
 ### Examples
 
