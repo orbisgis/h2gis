@@ -39,6 +39,7 @@ SELECT ST_AsGeoJSON('POLYGON((101 345 1, 300 345 2, 300 100 2,
 
 ##### See also
 
+* [`GeoJsonWrite`](../GeoJsonWrite), [`GeoJsonRead`](../GeoJsonRead), [`ST_GeomFromGeoJson`](../ST_GeomFromGeoJson)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/io/geojson/ST_AsGeoJSON.java" target="_blank">Source code</a>
 
 [wiki]: http://en.wikipedia.org/wiki/GeoJSON

@@ -4,7 +4,7 @@ title: ST_OSMDownloader
 category: h2drivers
 is_function: true
 description: OSM &rarr; File
-prev_section: ST_AsKML
+prev_section: ST_GeomFromGeoJson
 next_section: spatial-indices
 permalink: /docs/dev/ST_OSMDownloader/
 ---
