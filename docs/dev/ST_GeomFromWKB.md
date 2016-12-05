@@ -3,7 +3,7 @@ layout: docs
 title: ST_GeomFromWKB
 category: geom2D/geometry-conversion
 is_function: true
-description: Well Known Binary &rarr; <code>POLYGON</code>
+description: Well Known Binary &rarr; Geometry
 prev_section: ST_GeomFromText
 next_section: ST_GeometryTypeCode
 permalink: /docs/dev/ST_GeomFromWKB/
