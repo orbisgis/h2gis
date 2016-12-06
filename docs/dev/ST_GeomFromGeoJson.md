@@ -17,7 +17,7 @@ VARCHAR ST_GeomFromGeoJson(VARCHAR geojson);
 
 ### Description
 
-Converts a `geojson` (more details [here][wiki]) representation of a geometry into a `geometry`object.
+Converts a `geojson` (more details [here][wiki]) representation of a geometry into a `geometry` object.
 
 Both 2D and 3D Geometries are supported.
 

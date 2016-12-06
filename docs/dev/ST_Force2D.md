@@ -5,7 +5,7 @@ category: geom2D/geometry-conversion
 is_function: true
 description: 3D Geometry &rarr; 2D Geometry
 prev_section: ST_AsWKT
-next_section: ST_GeomFromText
+next_section: ST_GeomFromGML
 permalink: /docs/dev/ST_Force2D/
 ---
 
