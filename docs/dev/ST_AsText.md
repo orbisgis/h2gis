@@ -4,7 +4,7 @@ title: ST_AsText
 category: geom2D/geometry-conversion
 is_function: true
 description: Alias for <code>ST_AsWKT</code>
-prev_section: ST_AsBinary
+prev_section: ST_AsGML
 next_section: ST_AsWKT
 permalink: /docs/dev/ST_AsText/
 ---

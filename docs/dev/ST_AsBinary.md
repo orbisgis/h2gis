@@ -5,7 +5,7 @@ category: geom2D/geometry-conversion
 is_function: true
 description: Geometry &rarr; Well Known Binary
 prev_section: geom2D/geometry-conversion
-next_section: ST_AsText
+next_section: ST_AsGML
 permalink: /docs/dev/ST_AsBinary/
 ---
 
