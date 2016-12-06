@@ -4,7 +4,7 @@ title: ST_GeomFromText
 category: geom2D/geometry-conversion
 is_function: true
 description: Well Known Text &rarr; Geometry
-prev_section: ST_Force2D
+prev_section: ST_GeomFromGML
 next_section: ST_GeomFromWKB
 permalink: /docs/dev/ST_GeomFromText/
 ---
