@@ -23,8 +23,8 @@ Command-line gurus, just execute the following commands:
 If the user needs only the basic spatial functions it must apply the SQL syntax
 
 {% highlight mysql %}
-CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR "org.h2gis.functions.H2GISFunctions.load";
-CALL H2GIS_SPATIAL()
+CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR "org.h2gis.functions.factory.H2GISFunctions.load";
+CALL H2GIS_SPATIAL();
 {% endhighlight %}
 
 Otherwise please run the command
