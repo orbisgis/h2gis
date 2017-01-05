@@ -150,12 +150,12 @@ public class SHPDriver implements FileDriver {
         
         String fileName = shpFile.getAbsolutePath();
         final int dotIndex = fileName.lastIndexOf('.');
-        final String fileNamePrefix = fileName.substring(0, dotIndex);
+        final String fileNamePrefix = fileName.substring(0, dotIndex).toLowerCase();
                      
         DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {            
             @Override
             public boolean accept(Path entry) throws IOException {
-                String path = entry.toAbsolutePath().toString();
+                String path = entry.toAbsolutePath().toString().toLowerCase();
                 if(path.equals(fileNamePrefix+".shx")){
                     shxFile = entry.toFile();
                     return true;
