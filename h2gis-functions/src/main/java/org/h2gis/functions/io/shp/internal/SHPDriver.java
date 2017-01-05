@@ -146,23 +146,25 @@ public class SHPDriver implements FileDriver {
             throw new FileNotFoundException("The following file does not exists: " + shpFile.getPath());
         }        
         // Find appropriate file extension for shx and dbf, maybe SHX or Shx..
-        String shxFileName = shpFile.getName();
-        final String nameWithoutExt = shxFileName.substring(0,shxFileName.lastIndexOf('.'));
-             
+        //String shxFileName = shpFile.getName();
+        
+        String fileName = shpFile.getAbsolutePath();
+        final int dotIndex = fileName.lastIndexOf('.');
+        final String fileNamePrefix = fileName.substring(0, dotIndex);
+                     
         DirectoryStream.Filter<Path> filter = new DirectoryStream.Filter<Path>() {            
             @Override
             public boolean accept(Path entry) throws IOException {
-                String path = entry.toString().toLowerCase();
-                String nameWithoutExtLC = nameWithoutExt.toLowerCase();
-                if(path.endsWith(nameWithoutExtLC+".shx")){
+                String path = entry.toAbsolutePath().toString();
+                if(path.equals(fileNamePrefix+".shx")){
                     shxFile = entry.toFile();
                     return true;
                 }
-                else if(path.endsWith(nameWithoutExtLC+".dbf")){
+                else if(path.equals(fileNamePrefix+".dbf")){
                     dbfFile = entry.toFile();
                     return true;
                 }
-                else if(path.endsWith(nameWithoutExtLC+".prj")){
+                else if(path.equals(fileNamePrefix+".prj")){
                     prjFile = entry.toFile();
                     return true;
                 }
