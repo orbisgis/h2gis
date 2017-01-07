@@ -599,4 +599,20 @@ public class SHPImportExportTest {
         assertTrue(res.getInt(3)==1);
         res.close();  
     }
+    
+    
+    @Test
+    public void exportAndReadFileWithOGCPRJ() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA, AREA_READ");
+        stat.execute("create table area(the_geom GEOMETRY CHECK ST_SRID(THE_GEOM) = 4326, idarea int primary key)");
+        stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 4326), 1)"); 
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export_srid.shp', 'AREA')");
+        stat.execute("CALL FILE_TABLE('target/area_export_srid.shp', 'AREA_SRID');");
+        ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM AREA_SRID;");
+        res.next();
+        assertTrue(res.getInt(1)==4326);
+        res.close();        
+    }
 }

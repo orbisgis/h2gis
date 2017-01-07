@@ -207,7 +207,7 @@ public class SHPDriverFunction implements DriverFunction {
                 otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
             }
             String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
-            int srid = PRJUtil.getSRID(connection, shpDriver.prjFile);
+            int srid = PRJUtil.getSRID(shpDriver.prjFile);
             shpDriver.setSRID(srid);
             if(isH2) {                
                 //H2 Syntax
