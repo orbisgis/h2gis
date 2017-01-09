@@ -170,4 +170,4 @@ public class BasicTest {
             assertEquals(1, geomFields.size());
             assertEquals("THE_GEOM", geomFields.get(0));
         }
-}
+        }

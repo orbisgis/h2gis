@@ -33,6 +33,7 @@ import org.h2gis.utilities.GeometryTypeCodes;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import org.h2gis.functions.io.utility.PRJUtil;
 
 /**
  * SHP Table factory.
@@ -43,7 +44,9 @@ public class SHPEngine extends FileEngine<SHPDriver> {
     @Override
     protected SHPDriver createDriver(File filePath, List<String> args) throws IOException {
         SHPDriver driver = new SHPDriver();
-        driver.initDriverFromFile(filePath, args.size() > 1 ? args.get(1) : null);
+        driver.initDriverFromFile(filePath, args.size() > 1 ? args.get(1) : null);        
+        int srid = PRJUtil.getSRID(driver.prjFile);
+        driver.setSRID(srid);
         return driver;
     }
 
