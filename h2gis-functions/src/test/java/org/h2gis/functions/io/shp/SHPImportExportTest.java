@@ -600,6 +600,31 @@ public class SHPImportExportTest {
         res.close();  
     }
     
+    @Test
+    public void read_similar_paths() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS WATERNETWORK");
+        final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath());
+        st.execute("CALL SHPRead(" + path + ", 'WATERNETWORK');");        
+        st.execute("CALL SHPWrite('target/test_river.shp', 'WATERNETWORK')");
+        st.execute("CALL SHPWrite('target/river.shp', 'WATERNETWORK')");
+        st.execute("CALL SHPRead('target/test_river.shp', 'RIVER');"); 
+        
+        // Check content
+        ResultSet rs = st.executeQuery("SELECT * FROM RIVER");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(H2TableIndex.PK_COLUMN_NAME));
+        assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))",rs.getString("the_geom"));
+        assertEquals("river",rs.getString("type_axe"));
+        assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
+        assertEquals(1, rs.getInt("GID"));
+        assertTrue(rs.next());
+        assertEquals("ditch", rs.getString("type_axe"));
+        assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
+        assertEquals(2, rs.getInt("GID"));
+        rs.close();
+}
+    
     
     @Test
     public void exportAndReadFileWithOGCPRJ() throws SQLException, IOException {
