@@ -54,7 +54,6 @@ import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
