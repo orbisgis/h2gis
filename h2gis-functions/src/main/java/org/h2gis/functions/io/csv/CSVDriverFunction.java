@@ -86,6 +86,7 @@ public class CSVDriverFunction implements DriverFunction{
         Statement st = null;
         try {
             st = connection.createStatement();
+            JDBCUtilities.attachCancelResultSet(st, progress);
             new Csv().write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
         } finally {
             if (st != null) {
