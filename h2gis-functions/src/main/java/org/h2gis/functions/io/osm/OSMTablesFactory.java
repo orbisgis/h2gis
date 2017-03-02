@@ -24,6 +24,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
 
 /**
  * Class to create the tables to import osm data
@@ -47,6 +50,19 @@ import java.sql.Statement;
 public class OSMTablesFactory {
 
     
+    //Suffix table names
+    public static final String TAG = "_tag";
+    public static final String NODE = "_node";
+    public static final String WAY = "_way";
+    public static final String NODE_TAG = "_node_tag";
+    public static final String WAY_TAG = "_way_tag";
+    public static final String WAY_NODE = "_way_node";
+    public static final String RELATION = "_relation";
+    public static final String RELATION_TAG = "_relation_tag";
+    public static final String NODE_MEMBER = "_node_member";
+    public static final String WAY_MEMBER = "_way_member";
+    public static final String RELATION_MEMBER = "_relation_member";    
+   
 
     private OSMTablesFactory() {
 
@@ -296,5 +312,32 @@ public class OSMTablesFactory {
         stmt.execute(sb.toString());
         stmt.close();
         return connection.prepareStatement("INSERT INTO " + relationMemberTable + " VALUES ( ?,?,?,?);");
+    }
+    
+    
+    /**
+     * Drop the existing OSM tables used to store the imported OSM data 
+     *
+     * @param connection
+     * @param isH2
+     * @param tablePrefix
+     * @throws SQLException
+     */
+    public static void dropOSMTables(Connection connection, boolean isH2, String tablePrefix) throws SQLException {
+        TableLocation requestedTable = TableLocation.parse(tablePrefix, isH2);
+        String osmTableName = requestedTable.getTable();        
+        String[] omsTables = new String[]{TAG, NODE, NODE_TAG, WAY, WAY_NODE, WAY_TAG, RELATION, RELATION_TAG, NODE_MEMBER, WAY_MEMBER, RELATION_MEMBER};
+        StringBuilder sb =  new StringBuilder("drop table if exists ");     
+        String omsTableSuffix = omsTables[0];
+        String osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);           
+        sb.append(osmTable);
+        for (int i = 1; i < omsTables.length; i++) {
+            omsTableSuffix = omsTables[i];
+            osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);
+            sb.append(",").append(osmTable);
+        }        
+        Statement stmt = connection.createStatement();
+        stmt.execute(sb.toString());
+        stmt.close();
     }
 }

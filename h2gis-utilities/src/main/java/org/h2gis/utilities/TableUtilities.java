@@ -113,4 +113,17 @@ public class TableUtilities {
         return new TableLocation(inputTable.getCatalog(), inputTable.getSchema(),
                 inputTable.getTable() + suffix);
     }
+    
+    /**
+     * Return the table identifier in the best fit depending on database type
+     *
+     * @param requestedTable Catalog and schema used
+     * @param tableName Table without quotes
+     * @param isH2 True if H2, false if PostGRES
+     * @return Find table identifier
+     */
+    public static String caseIdentifier(TableLocation requestedTable, String tableName, boolean isH2) {
+        return new TableLocation(requestedTable.getCatalog(), requestedTable.getSchema(),
+                TableLocation.parse(tableName, isH2).getTable()).toString();
+    }
 }
