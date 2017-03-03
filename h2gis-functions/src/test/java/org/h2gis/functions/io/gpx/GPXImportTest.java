@@ -202,4 +202,26 @@ public class GPXImportTest {
         assertTrue(!rs.next());
         rs.close();    
     }
+    
+    @Test
+    public void importGPXTwiceWithDelete() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT, GPXDATA_ROUTE, GPXDATA_ROUTEPOINT,GPXDATA_TRACK, GPXDATA_TRACKSEGMENT, GPXDATA_TRACKPOINT;");
+        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA');");
+        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA', true);");
+        
+        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'GPXDATA_WAYPOINT'");
+        assertTrue(rs.next());
+        rs.close();
+        // Check number
+        rs = st.executeQuery("SELECT count(id) FROM GPXDATA_WAYPOINT");
+        rs.next();
+        assertTrue(rs.getInt(1) == 3);
+        rs.close();
+        // Check content
+        rs = st.executeQuery("SELECT * FROM GPXDATA_WAYPOINT");
+        assertTrue(rs.next());
+        assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
+        assertEquals(4326, ((Geometry)rs.getObject("the_geom")).getSRID());
+        rs.close();
+    }
 }
