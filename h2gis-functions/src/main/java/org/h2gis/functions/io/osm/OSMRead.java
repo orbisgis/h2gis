@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.URIUtilities;
 
 /**
@@ -37,8 +38,10 @@ import org.h2gis.utilities.URIUtilities;
 public class OSMRead extends AbstractFunction implements ScalarFunction {
 
     public OSMRead() {
-        addProperty(PROP_REMARKS, "Read a OSM file and copy the content in the specified tables.\n" +
-                "Here a sample in order to extract buildings polygons using way nodes:\n" +
+        addProperty(PROP_REMARKS, "Read a OSM file and copy the content in the specified tables.\n"
+                + "The user can set a prefix name for all OSM tables and specify if the existing OSM\n"
+                + " tables must be dropped." +
+                "\nHere a sample in order to extract buildings polygons using way nodes:\n" +
                 "create index on MAP_WAY_NODE(ID_WAY,ID_NODE);\n" +
                 "drop table if exists MAP_BUILDINGS,MAP_WAY_GEOM;\n" +
                 "create table MAP_BUILDINGS(ID_WAY bigint primary key) as SELECT DISTINCT ID_WAY FROM MAP_WAY_TAG WT," +
@@ -55,16 +58,21 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
     public String getJavaStaticMethod() {
         return "readOSM";
     }
-
+    
     /**
      * 
      * @param connection
      * @param fileName
      * @param tableReference
+     * @param deleteTables  true to delete the existing tables
      * @throws FileNotFoundException
      * @throws SQLException 
      */
-    public static void readOSM(Connection connection, String fileName, String tableReference) throws FileNotFoundException, SQLException {
+    public static void readOSM(Connection connection, String fileName, String tableReference, boolean deleteTables) throws FileNotFoundException, SQLException {
+        if(deleteTables){
+            OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection.getMetaData()), tableReference);
+        }
+        
         File file = URIUtilities.fileFromString(fileName);
         if (!file.exists()) {
             throw new FileNotFoundException("The following file does not exists:\n" + fileName);
@@ -81,6 +89,18 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
         } else {
             throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
         }
+    }
+
+    /**
+     * 
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @throws FileNotFoundException
+     * @throws SQLException 
+     */
+    public static void readOSM(Connection connection, String fileName, String tableReference) throws FileNotFoundException, SQLException {
+        readOSM(connection, fileName, tableReference, false);
     }
 
     /**
