@@ -22,6 +22,7 @@ package org.h2gis.functions.io.osm;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.api.AbstractFunction;
@@ -68,27 +69,16 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws FileNotFoundException
      * @throws SQLException 
      */
-    public static void readOSM(Connection connection, String fileName, String tableReference, boolean deleteTables) throws FileNotFoundException, SQLException {
+    public static void readOSM(Connection connection, String fileName, String tableReference, boolean deleteTables) throws FileNotFoundException, SQLException, IOException {
         if(deleteTables){
             OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection.getMetaData()), tableReference);
-        }
-        
+        }        
         File file = URIUtilities.fileFromString(fileName);
         if (!file.exists()) {
             throw new FileNotFoundException("The following file does not exists:\n" + fileName);
         }
-        if (file.getName().toLowerCase().endsWith(".osm")) {
-            OSMParser osmp = new OSMParser();
-            osmp.read(connection, tableReference, file, new EmptyProgressVisitor());
-        } else if (file.getName().toLowerCase().endsWith(".osm.gz")) {
-            OSMParser osmp = new OSMParser();
-            osmp.read(connection, tableReference, file, new EmptyProgressVisitor());
-        } else if (file.getName().toLowerCase().endsWith(".osm.bz2")) {
-            OSMParser osmp = new OSMParser();
-            osmp.read(connection, tableReference, file, new EmptyProgressVisitor());
-        } else {
-            throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
-        }
+        OSMDriverFunction osmdf = new OSMDriverFunction();
+        osmdf.importFile(connection, tableReference, file, new EmptyProgressVisitor(), deleteTables);
     }
 
     /**
@@ -99,7 +89,7 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws FileNotFoundException
      * @throws SQLException 
      */
-    public static void readOSM(Connection connection, String fileName, String tableReference) throws FileNotFoundException, SQLException {
+    public static void readOSM(Connection connection, String fileName, String tableReference) throws FileNotFoundException, SQLException, IOException {
         readOSM(connection, fileName, tableReference, false);
     }
 
@@ -110,7 +100,7 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws FileNotFoundException
      * @throws SQLException 
      */
-    public static void readOSM(Connection connection, String fileName) throws FileNotFoundException, SQLException {
+    public static void readOSM(Connection connection, String fileName) throws FileNotFoundException, SQLException, IOException {
         final String name = URIUtilities.fileFromString(fileName).getName();
         readOSM(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
     }

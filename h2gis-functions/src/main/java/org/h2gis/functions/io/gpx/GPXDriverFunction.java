@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import org.h2gis.functions.io.gpx.model.GpxParser;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.gpx.model.GPXTablesFactory;
 
 /**
  * This class is used to read a GPX file
@@ -73,6 +74,23 @@ public class GPXDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress, false);
+    }
+    
+     /**
+     *
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference prefix uses to store the GPX tables
+     * @param fileName File path to read
+     * @param progress
+     * @param deleteTables true to delete the existing tables
+     * @throws SQLException Table write error
+     * @throws IOException File read error
+     */
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, boolean deleteTables) throws SQLException, IOException {
+        if(deleteTables){
+            GPXTablesFactory.dropOSMTables(connection, deleteTables, tableReference);
+        }        
         GpxParser gpd = new GpxParser();
         gpd.read(fileName, tableReference, connection);
     }
