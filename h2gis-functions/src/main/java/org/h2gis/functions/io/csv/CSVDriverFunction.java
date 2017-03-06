@@ -77,9 +77,23 @@ public class CSVDriverFunction implements DriverFunction{
     public boolean isSpatialFormat(String extension) {
         return false;
     }
-
-    @Override
+    
+     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+         exportTable(connection, tableReference, fileName, progress, null);
+    }
+
+    /**
+     * 
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path to read
+     * @param progress
+     * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
+     * @throws SQLException
+     * @throws IOException 
+     */
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String csvOptions) throws SQLException, IOException {
         if(FileUtil.isExtensionWellFormated(fileName, "csv")){
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         TableLocation location = TableLocation.parse(tableReference, isH2);
@@ -87,7 +101,11 @@ public class CSVDriverFunction implements DriverFunction{
         try {
             st = connection.createStatement();
             JDBCUtilities.attachCancelResultSet(st, progress);
-            new Csv().write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
+            Csv csv = new Csv();
+            if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
+                csv.setOptions(csvOptions);
+            }  
+            csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
         } finally {
             if (st != null) {
                 st.close();
@@ -99,9 +117,23 @@ public class CSVDriverFunction implements DriverFunction{
         }
         
     }
-
+    
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress, null);
+    }
+
+    /**
+     * 
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path to read
+     * @param progress
+     * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
+     * @throws SQLException
+     * @throws IOException 
+     */
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String csvOptions) throws SQLException, IOException {
         if (FileUtil.isFileImportable(fileName, "csv")) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
@@ -114,7 +146,11 @@ public class CSVDriverFunction implements DriverFunction{
             // Skip how many nodes in order to update progression at a step of 1%
             long readFileSizeEachNode = Math.max(1, (fileSize / AVERAGE_NODE_SIZE) / 100);            
             int average_row_size = 0;
-            ResultSet reader = new Csv().read(new BufferedReader(new InputStreamReader(fis)), null);
+            Csv csv = new Csv();
+            if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
+                csv.setOptions(csvOptions);
+            }            
+            ResultSet reader = csv.read(new BufferedReader(new InputStreamReader(fis)), null);
             ResultSetMetaData metadata = reader.getMetaData();
             int columnCount = metadata.getColumnCount();
 
