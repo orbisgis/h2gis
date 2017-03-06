@@ -27,9 +27,7 @@ import java.sql.SQLException;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
-import org.h2gis.functions.io.gpx.model.GPXTablesFactory;
 import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.URIUtilities;
 
 /**
@@ -62,13 +60,10 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      * @throws java.sql.SQLException
      */
     public static void readGPX(Connection connection, String fileName, String tableReference, boolean deleteTables) throws IOException, SQLException {
-        if(deleteTables){
-            GPXTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection.getMetaData()), tableReference);
-        }
         File file = URIUtilities.fileFromString(fileName);
         if (FileUtil.isFileImportable(file, "gpx")) {
             GPXDriverFunction gpxdf = new GPXDriverFunction();
-            gpxdf.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
+            gpxdf.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), deleteTables);
         }
     }
     

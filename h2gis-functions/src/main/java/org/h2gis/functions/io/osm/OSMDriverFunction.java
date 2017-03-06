@@ -21,11 +21,13 @@
 package org.h2gis.functions.io.osm;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
 
 /**
  *
@@ -75,8 +77,26 @@ public class OSMDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress, false);
+    }
+    
+    
+     /**
+     *
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference prefix uses to store the OSM tables
+     * @param fileName File path to read
+     * @param progress
+     * @param deleteTables  true to delete the existing tables
+     * @throws SQLException Table write error
+     * @throws IOException File read error
+     */
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, boolean deleteTables) throws SQLException, IOException {
         if(fileName == null || !(fileName.getName().endsWith(".osm") || fileName.getName().endsWith("osm.gz") || fileName.getName().endsWith("osm.bz2"))) {
-            throw new IOException(new IllegalArgumentException("This driver handle only osm and osm.gz files"));
+            throw new IOException(new IllegalArgumentException("This driver handle only .osm, .osm.gz and .osm.bz2 files"));
+        }
+        if(deleteTables){
+            OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection.getMetaData()), tableReference);
         }
         OSMParser osmp = new OSMParser();
         osmp.read(connection, tableReference, fileName, progress);
