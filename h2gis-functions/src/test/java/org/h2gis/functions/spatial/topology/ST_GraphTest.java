@@ -636,5 +636,41 @@ public class ST_GraphTest {
             assertTrue(originalCause.getMessage().equals(ST_Graph.ALREADY_RUN_ERROR + "TEST"));
             throw originalCause;
         }
+    }  
+    
+    
+    @Test
+    public void test_ST_Graph_DeleteTables() throws Throwable {
+        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
+        st.execute("CREATE TABLE test(road GEOMETRY, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
+                "INSERT INTO test VALUES "
+                + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
+                + "('MULTILINESTRING((1 2, 2 3, 4 3))', 'road2', DEFAULT);");
+        st.execute("SELECT ST_Graph('TEST', 'road', 0.1, false)");
+        final ResultSet rs  = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false, true)");
+        assertTrue(rs.next());
+        assertTrue(rs.getBoolean(1));
+        assertFalse(rs.next());
+
+        // Test nodes table.
+        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
+        assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
+        checkNode(nodesResult, 1, "POINT (0 0)");
+        checkNode(nodesResult, 2, "POINT (1 2)");
+        checkNode(nodesResult, 3, "POINT (4 3)");
+        assertFalse(nodesResult.next());
+        nodesResult.close();
+
+        // Test edges table.
+        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
+        // This is a copy of the original table with three columns added.
+        assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
+        checkEdge(edgesResult, 1, 1, 2);
+        checkEdge(edgesResult, 2, 2, 3);
+        assertFalse(edgesResult.next());
+        edgesResult.close();
+        rs.close();
     }
+    
+    
 }
