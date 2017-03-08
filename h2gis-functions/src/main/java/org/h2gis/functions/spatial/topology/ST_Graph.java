@@ -159,7 +159,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         // By default we do not orient by slope.
         return createGraph(connection, tableName, spatialFieldName, tolerance, false);
     }
-
+    
     /**
      * Create the nodes and edges tables from the input table containing
      * LINESTRINGs or MULTILINESTRINGs in the given column and using the given
@@ -195,14 +195,62 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                       String spatialFieldName,
                                       double tolerance,
                                       boolean orientBySlope) throws SQLException {
+         return createGraph(connection, inputTable, spatialFieldName, tolerance, orientBySlope, false);
+     }
+
+    /**
+     * Create the nodes and edges tables from the input table containing
+     * LINESTRINGs or MULTILINESTRINGs in the given column and using the given
+     * tolerance, and potentially orienting edges by slope.
+     * <p/>
+     * The tolerance value is used specify the side length of a square Envelope
+     * around each node used to snap together other nodes within the same
+     * Envelope. Note, however, that edge geometries are left untouched.
+     * Note also that coordinates within a given tolerance of each
+     * other are not necessarily snapped together. Only the first and last
+     * coordinates of a geometry are considered to be potential nodes, and
+     * only nodes within a given tolerance of each other are snapped
+     * together. The tolerance works only in metric units.
+     * <p/>
+     * The boolean orientBySlope is set to true if edges should be oriented by
+     * the z-value of their first and last coordinates (decreasing).
+     * <p/>
+     * If the input table has name 'input', then the output tables are named
+     * 'input_nodes' and 'input_edges'.
+     *
+     * @param connection       Connection
+     * @param inputTable        Input table
+     * @param spatialFieldName Name of column containing LINESTRINGs or
+     *                         MULTILINESTRINGs
+     * @param tolerance        Tolerance
+     * @param orientBySlope    True if edges should be oriented by the z-value of
+     *                         their first and last coordinates (decreasing)
+     * @param deleteTables     True delete the existing tables
+     * @return true if both output tables were created
+     * @throws SQLException
+     */
+    public static boolean createGraph(Connection connection,
+                                      String inputTable,
+                                      String spatialFieldName,
+                                      double tolerance,
+                                      boolean orientBySlope,
+                                      boolean deleteTables) throws SQLException {
         if (tolerance < 0) {
             throw new IllegalArgumentException("Only positive tolerances are allowed.");
         }
         final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
         final TableLocation nodesName = TableUtilities.suffixTableLocation(tableName, NODES_SUFFIX);
-        final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGES_SUFFIX);
+        final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGES_SUFFIX);        
+        if(deleteTables){
+            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            Statement stmt = connection.createStatement();
+            StringBuilder sb = new StringBuilder("drop table if exists ");
+            sb.append(nodesName.toString(isH2)).append(",").append(edgesName.toString(isH2));
+            stmt.execute(sb.toString());
+            stmt.close();
+        }
         // Check if ST_Graph has already been run on this table.
-        if (JDBCUtilities.tableExists(connection, nodesName.getTable()) ||
+        else if (JDBCUtilities.tableExists(connection, nodesName.getTable()) ||
                 JDBCUtilities.tableExists(connection, edgesName.getTable())) {
             throw new IllegalArgumentException(ALREADY_RUN_ERROR + tableName.getTable());
         }
