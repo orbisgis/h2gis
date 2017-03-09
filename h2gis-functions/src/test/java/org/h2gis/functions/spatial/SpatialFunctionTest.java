@@ -1172,6 +1172,31 @@ public class SpatialFunctionTest {
         assertTrue(geom.getGeometryN(1).equals(WKT_READER.read("POLYGON ((210 320, 160 240, 220 230, 246 254, 220 260, 240 280, 280 320, 270 350, 210 320))")));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_RemoveRepeatedPointsTolerance() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0, 10 0, 100 0)'::GEOMETRY, 3);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (0 0,  10 0, 100 0)")));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RemoveRepeatedPointsTolerance1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('POLYGON ((0 0, 2 0, 10 10, 100 10, 0 0))'::GEOMETRY, 3);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((0 0,  10 10, 100 10, 0 0))")));
+        rs.close();
+    }
+    
+    @Test(expected = SQLException.class)
+    public void test_ST_RemoveRepeatedPointsTolerance2() throws Throwable {
+        try {
+            st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0)'::GEOMETRY, 3);");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
 
     @Test
     public void test_ST_InterpolateLineWithoutZ() throws Exception {
