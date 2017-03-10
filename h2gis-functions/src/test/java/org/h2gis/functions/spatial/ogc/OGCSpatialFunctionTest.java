@@ -166,6 +166,15 @@ public class OGCSpatialFunctionTest {
         assertGeometryEquals("GEOMETRYCOLLECTION EMPTY", rs.getObject(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Collect() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Collect(footprint) FROM buildings GROUP BY SUBSTRING(address,4)");
+        assertTrue(rs.next());
+        assertEquals("MULTIPOLYGON (((50 31, 54 31, 54 29, 50 29, 50 31)), ((66 34, 62 34, 62 32, 66 32, 66 34)))", rs.getString(1));
+        rs.close();
+    }
 
     @Test
     public void testFunctionRemarks() throws SQLException {
