@@ -27,6 +27,7 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.spatial.affine_transformations.ST_Translate;
+import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.*;
@@ -35,7 +36,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Map;
 
+import static junit.framework.Assert.assertTrue;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.*;
 
@@ -1169,6 +1172,31 @@ public class SpatialFunctionTest {
         assertTrue(geom.getGeometryN(1).equals(WKT_READER.read("POLYGON ((210 320, 160 240, 220 230, 246 254, 220 260, 240 280, 280 320, 270 350, 210 320))")));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_RemoveRepeatedPointsTolerance() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0, 10 0, 100 0)'::GEOMETRY, 3);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (0 0,  10 0, 100 0)")));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RemoveRepeatedPointsTolerance1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('POLYGON ((0 0, 2 0, 10 10, 100 10, 0 0))'::GEOMETRY, 3);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((0 0,  10 10, 100 10, 0 0))")));
+        rs.close();
+    }
+    
+    @Test(expected = SQLException.class)
+    public void test_ST_RemoveRepeatedPointsTolerance2() throws Throwable {
+        try {
+            st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0)'::GEOMETRY, 3);");
+        } catch (JdbcSQLException e) {
+            throw e.getOriginalCause();
+        }
+    }
 
     @Test
     public void test_ST_InterpolateLineWithoutZ() throws Exception {
@@ -2069,5 +2097,44 @@ public class SpatialFunctionTest {
         rs.next();
         assertNull(rs.getObject(1));
         rs.close();
+    }
+
+    @Test
+    public void testNull_ST_Buffer() throws Exception{
+        ResultSet rs = st.executeQuery("SELECT ST_Buffer(null, 0.005, 'join=mitre')");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+
+    @Test
+    public void testGetGeometryTypes() throws SQLException {
+        st.execute("DROP SCHEMA IF EXISTS testschema");
+        st.execute("CREATE SCHEMA testschema");
+        st.execute("DROP TABLE IF EXISTS testschema.testRowCount");
+        st.execute("CREATE TABLE testschema.testRowCount(id integer primary key, geometry_field GEOMETRY," +
+                " point_field POINT, linestring_field LINESTRING, polygon_field POLYGON, multipoint_field MULTIPOINT," +
+                "multilinestring_field MULTILINESTRING, multipolygon_field MULTIPOLYGON," +
+                " geomcollection_field GEOMCOLLECTION)");
+        TableLocation location = new TableLocation("testschema", "testRowCount");
+        Map<String, Integer> resultMap = SFSUtilities.getGeometryTypes(connection, location);
+        assertNotNull(resultMap);
+        assertTrue(resultMap.containsKey("GEOMETRY_FIELD"));
+        assertTrue(resultMap.get("GEOMETRY_FIELD").equals(GeometryTypeCodes.GEOMETRY));
+        assertTrue(resultMap.containsKey("POINT_FIELD"));
+        assertTrue(resultMap.get("POINT_FIELD").equals(GeometryTypeCodes.POINT));
+        assertTrue(resultMap.containsKey("LINESTRING_FIELD"));
+        assertTrue(resultMap.get("LINESTRING_FIELD").equals(GeometryTypeCodes.LINESTRING));
+        assertTrue(resultMap.containsKey("POLYGON_FIELD"));
+        assertTrue(resultMap.get("POLYGON_FIELD").equals(GeometryTypeCodes.POLYGON));
+        assertTrue(resultMap.containsKey("MULTIPOINT_FIELD"));
+        assertTrue(resultMap.get("MULTIPOINT_FIELD").equals(GeometryTypeCodes.MULTIPOINT));
+        assertTrue(resultMap.containsKey("MULTILINESTRING_FIELD"));
+        assertTrue(resultMap.get("MULTILINESTRING_FIELD").equals(GeometryTypeCodes.MULTILINESTRING));
+        assertTrue(resultMap.containsKey("MULTIPOLYGON_FIELD"));
+        assertTrue(resultMap.get("MULTIPOLYGON_FIELD").equals(GeometryTypeCodes.MULTIPOLYGON));
+        assertTrue(resultMap.containsKey("GEOMCOLLECTION_FIELD"));
+        assertTrue(resultMap.get("GEOMCOLLECTION_FIELD").equals(GeometryTypeCodes.GEOMCOLLECTION));
+        assertFalse(resultMap.containsKey("ID"));
     }
 }

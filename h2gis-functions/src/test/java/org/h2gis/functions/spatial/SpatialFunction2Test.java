@@ -566,4 +566,53 @@ public class SpatialFunction2Test {
         rs.close();
     }
     
+    @Test
+    public void test_ST_NumInteriorRings1() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_NumInteriorRings('POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))'::GEOMETRY);");
+        rs.next();
+        assertEquals(0, rs.getInt(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_NumInteriorRings2() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_NumInteriorRings(null);");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_NumInteriorRings3() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_NumInteriorRings('POLYGON ((95 371, 310 371, 310 230, 95 230, 95 371),  (120 350, 185 350, 185 301, 120 301, 120 350))'::geometry);");
+        rs.next();
+        assertEquals(1, rs.getInt(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_NumInteriorRings4() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_NumInteriorRings('GEOMETRYCOLLECTION (POLYGON ((95 371, 310 371, 310 230, 95 230, 95 371),"
+                + "  (120 350, 185 350, 185 301, 120 301, 120 350)),"
+                + "  LINESTRING (112 165, 200 140))'::geometry);");
+        rs.next();
+        assertNull(rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_NumInteriorRings5() throws Exception {
+        ResultSet rs = st.executeQuery(
+                "SELECT ST_NumInteriorRings('MULTIPOLYGON (((95 371, 310 371, 310 230, 95 230, 95 371),"
+                + "  (120 350, 185 350, 185 301, 120 301, 120 350)),"
+                + "  ((150 190, 210 190, 210 160, 150 160, 150 190)))'::geometry);");
+        rs.next();
+        assertEquals(1, rs.getInt(1));
+        rs.close();
+    }
+    
 }

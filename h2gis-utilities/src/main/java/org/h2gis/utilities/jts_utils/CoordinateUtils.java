@@ -23,6 +23,9 @@ package org.h2gis.utilities.jts_utils;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.math.Vector3D;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 
 /**
@@ -134,6 +137,29 @@ public final class CoordinateUtils {
             }
         }
         return i;
+    }
+    
+    /**
+     * Remove repeated coordinates according a given tolerance
+     * 
+     * @param coords the input coordinates
+     * @param tolerance to delete the coordinates
+     * @return 
+     */
+    public static Coordinate[] removeRepeatedCoordinates(Coordinate[] coords, double tolerance) {
+        ArrayList<Coordinate> finalCoords = new ArrayList<Coordinate>();
+        Coordinate prevCoord = coords[0];
+        finalCoords.add(prevCoord);
+        for (int i = 1; i < coords.length; i++) {
+            Coordinate currentCoord = coords[i];
+            if (currentCoord.distance(prevCoord) <= tolerance) {
+                continue;
+            }
+            finalCoords.add(currentCoord);
+            prevCoord = currentCoord;
+
+        }
+        return finalCoords.toArray(new Coordinate[finalCoords.size()]);
     }
 
     /**

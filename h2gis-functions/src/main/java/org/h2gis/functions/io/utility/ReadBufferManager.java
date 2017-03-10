@@ -76,7 +76,7 @@ public final class ReadBufferManager {
                         if (res < Integer.MAX_VALUE) {
                                 return (int) res;
                         } else {
-                                throw new IOException("this buffer is quite large...");
+                                throw new IOException("This buffer is quite large...");
                         }
                 } else {
                         long bufferCapacity = Math.max(bufferSize, length);
@@ -160,7 +160,6 @@ public final class ReadBufferManager {
         /**
          * Gets the long value at the current position
          *
-         * @param bytePos
          * @return
          * @throws java.io.IOException
          */

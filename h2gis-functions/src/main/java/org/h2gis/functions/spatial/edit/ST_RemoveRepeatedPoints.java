@@ -21,7 +21,6 @@
 package org.h2gis.functions.spatial.edit;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -32,8 +31,10 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.utilities.jts_utils.CoordinateUtils;
 
 /**
  * Remove duplicated points on a geometry
@@ -45,7 +46,8 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     private static final GeometryFactory FACTORY = new GeometryFactory();
 
     public ST_RemoveRepeatedPoints() {
-        addProperty(PROP_REMARKS, "Returns a version of the given geometry with duplicated points removed.");
+        addProperty(PROP_REMARKS, "Returns a version of the given geometry with duplicated points removed.\n"
+                + "If the tolerance parameter is provided, vertices within the tolerance of one another will be considered the same for the purposes of removal. ");
     }
 
     @Override
@@ -58,18 +60,33 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      *
      * @param geometry
      * @return
+     * @throws java.sql.SQLException
      */
-    public static Geometry removeRepeatedPoints(Geometry geometry) {
-        return removeDuplicateCoordinates(geometry);
+    public static Geometry removeRepeatedPoints(Geometry geometry) throws SQLException, SQLException, SQLException, SQLException {
+        return removeDuplicateCoordinates(geometry, 0);
+    }
+    
+     /**
+     * Returns a version of the given geometry with duplicated points removed.
+     *
+     * @param geometry
+     * @param tolerance to delete the coordinates
+     * @return
+     * @throws java.sql.SQLException
+     */
+    public static Geometry removeRepeatedPoints(Geometry geometry, double tolerance) throws SQLException {
+        return removeDuplicateCoordinates(geometry, tolerance);
     }
 
     /**
      * Removes duplicated points within a geometry.
      *
      * @param geom
+     * @param tolerance to delete the coordinates
      * @return
+     * @throws java.sql.SQLException
      */
-    public static Geometry removeDuplicateCoordinates(Geometry geom) {
+    public static Geometry removeDuplicateCoordinates(Geometry geom, double tolerance) throws SQLException {
         if(geom ==null){
             return null;
         }
@@ -78,15 +95,15 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
         } else if (geom instanceof Point || geom instanceof MultiPoint) {
             return geom;
         } else if (geom instanceof LineString) {
-            return removeDuplicateCoordinates((LineString) geom);
+            return removeDuplicateCoordinates((LineString) geom, tolerance);
         } else if (geom instanceof MultiLineString) {
-            return removeDuplicateCoordinates((MultiLineString) geom);
+            return removeDuplicateCoordinates((MultiLineString) geom, tolerance);
         } else if (geom instanceof Polygon) {
-            return removeDuplicateCoordinates((Polygon) geom);
+            return removeDuplicateCoordinates((Polygon) geom, tolerance);
         } else if (geom instanceof MultiPolygon) {
-            return removeDuplicateCoordinates((MultiPolygon) geom);
+            return removeDuplicateCoordinates((MultiPolygon) geom, tolerance);
         } else if (geom instanceof GeometryCollection) {
-            return removeDuplicateCoordinates((GeometryCollection) geom);
+            return removeDuplicateCoordinates((GeometryCollection) geom, tolerance);
         }
         return null;
     }
@@ -94,36 +111,43 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated coordinates within a LineString.
      *
-     * @param g
+     * @param linestring
+     * @param tolerance to delete the coordinates
      * @return
+     * @throws java.sql.SQLException
      */
-    public static LineString removeDuplicateCoordinates(LineString g) {
-        Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(g.getCoordinates());
+    public static LineString removeDuplicateCoordinates(LineString linestring, double tolerance) throws SQLException {
+        Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(linestring.getCoordinates(), tolerance);
+        if(coords.length<2){  
+            throw new SQLException("Not enough coordinates to build a new LineString.\n Please adjust the tolerance");
+        }
         return FACTORY.createLineString(coords);
     }
 
     /**
      * Removes duplicated coordinates within a linearRing.
      *
-     * @param g
+     * @param linearRing
+     * @param tolerance to delete the coordinates
      * @return
      */
-    public static LinearRing removeDuplicateCoordinates(LinearRing g) {
-        Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(g.getCoordinates());
+    public static LinearRing removeDuplicateCoordinates(LinearRing linearRing, double tolerance) {
+        Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(linearRing.getCoordinates(), tolerance);
         return FACTORY.createLinearRing(coords);
     }
 
     /**
      * Removes duplicated coordinates in a MultiLineString.
      *
-     * @param g
+     * @param multiLineString
+     * @param tolerance to delete the coordinates
      * @return
      */
-    public static MultiLineString removeDuplicateCoordinates(MultiLineString g) {
+    public static MultiLineString removeDuplicateCoordinates(MultiLineString multiLineString, double tolerance) throws SQLException {
         ArrayList<LineString> lines = new ArrayList<LineString>();
-        for (int i = 0; i < g.getNumGeometries(); i++) {
-            LineString line = (LineString) g.getGeometryN(i);
-            lines.add(removeDuplicateCoordinates(line));
+        for (int i = 0; i < multiLineString.getNumGeometries(); i++) {
+            LineString line = (LineString) multiLineString.getGeometryN(i);
+            lines.add(removeDuplicateCoordinates(line, tolerance));
         }
         return FACTORY.createMultiLineString(GeometryFactory.toLineStringArray(lines));
     }
@@ -131,15 +155,20 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated coordinates within a Polygon.
      *
-     * @param poly
+     * @param polygon the input polygon
+     * @param tolerance to delete the coordinates
      * @return
+     * @throws java.sql.SQLException
      */
-    public static Polygon removeDuplicateCoordinates(Polygon poly) {
-        Coordinate[] shellCoords = CoordinateArrays.removeRepeatedPoints(poly.getExteriorRing().getCoordinates());
+    public static Polygon removeDuplicateCoordinates(Polygon polygon, double tolerance) throws SQLException {
+        Coordinate[] shellCoords = CoordinateUtils.removeRepeatedCoordinates(polygon.getExteriorRing().getCoordinates(),tolerance);
         LinearRing shell = FACTORY.createLinearRing(shellCoords);
         ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
-        for (int i = 0; i < poly.getNumInteriorRing(); i++) {
-            Coordinate[] holeCoords = CoordinateArrays.removeRepeatedPoints(poly.getInteriorRingN(i).getCoordinates());
+        for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
+            Coordinate[] holeCoords = CoordinateUtils.removeRepeatedCoordinates(polygon.getInteriorRingN(i).getCoordinates(), tolerance);
+            if (holeCoords.length < 4) {
+                throw new SQLException("Not enough coordinates to build a new LinearRing.\n Please adjust the tolerance");
+            }
             holes.add(FACTORY.createLinearRing(holeCoords));
         }
         return FACTORY.createPolygon(shell, GeometryFactory.toLinearRingArray(holes));
@@ -148,14 +177,16 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated coordinates within a MultiPolygon.
      *
-     * @param g
+     * @param multiPolygon
+     * @param tolerance to delete the coordinates
      * @return
+     * @throws java.sql.SQLException
      */
-    public static MultiPolygon removeDuplicateCoordinates(MultiPolygon g) {
+    public static MultiPolygon removeDuplicateCoordinates(MultiPolygon multiPolygon, double tolerance) throws SQLException {
         ArrayList<Polygon> polys = new ArrayList<Polygon>();
-        for (int i = 0; i < g.getNumGeometries(); i++) {
-            Polygon poly = (Polygon) g.getGeometryN(i);
-            polys.add(removeDuplicateCoordinates(poly));
+        for (int i = 0; i < multiPolygon.getNumGeometries(); i++) {
+            Polygon poly = (Polygon) multiPolygon.getGeometryN(i);
+            polys.add(removeDuplicateCoordinates(poly, tolerance));
         }
         return FACTORY.createMultiPolygon(GeometryFactory.toPolygonArray(polys));
     }
@@ -163,14 +194,16 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
     /**
      * Removes duplicated coordinates within a GeometryCollection
      *
-     * @param g
+     * @param geometryCollection
+     * @param tolerance to delete the coordinates
      * @return
+     * @throws java.sql.SQLException
      */
-    public static GeometryCollection removeDuplicateCoordinates(GeometryCollection g) {
-        ArrayList<Geometry> geoms = new ArrayList<Geometry>();
-        for (int i = 0; i < g.getNumGeometries(); i++) {
-            Geometry geom = g.getGeometryN(i);
-            geoms.add(removeDuplicateCoordinates(geom));
+    public static GeometryCollection removeDuplicateCoordinates(GeometryCollection geometryCollection, double tolerance) throws SQLException {
+        ArrayList<Geometry> geoms = new ArrayList<>();
+        for (int i = 0; i < geometryCollection.getNumGeometries(); i++) {
+            Geometry geom = geometryCollection.getGeometryN(i);
+            geoms.add(removeDuplicateCoordinates(geom, tolerance));
         }
         return FACTORY.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
     }

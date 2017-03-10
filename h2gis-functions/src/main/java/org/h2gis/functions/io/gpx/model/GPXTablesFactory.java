@@ -24,6 +24,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
 
 /**
  * A factory to create the tables that are used to import GPX data
@@ -31,6 +33,14 @@ import java.sql.Statement;
  * @author Erwan Bocher
  */
 public class GPXTablesFactory {
+    
+     //Suffix table names
+    public static final String WAYPOINT = "_waypoint";
+    public static final String ROUTE = "_route";
+    public static final String ROUTEPOINT = "_routepoint";
+    public static final String TRACK = "_track";
+    public static final String TRACKSEGMENT = "_tracksegment";
+    public static final String TRACKPOINT = "_trackpoint";
 
     private GPXTablesFactory() {
     }
@@ -306,5 +316,32 @@ public class GPXTablesFactory {
         }
         insert.append(");");
         return connection.prepareStatement(insert.toString());
+    }
+    
+    
+    /**
+     * Drop the existing GPX tables used to store the imported OSM GPX 
+     *
+     * @param connection
+     * @param isH2
+     * @param tablePrefix
+     * @throws SQLException
+     */
+    public static void dropOSMTables(Connection connection, boolean isH2, String tablePrefix) throws SQLException {
+        TableLocation requestedTable = TableLocation.parse(tablePrefix, isH2);
+        String gpxTableName = requestedTable.getTable();        
+        String[] gpxTables = new String[]{WAYPOINT,ROUTE,ROUTEPOINT, TRACK, TRACKPOINT, TRACKSEGMENT};
+        StringBuilder sb =  new StringBuilder("drop table if exists ");     
+        String gpxTableSuffix = gpxTables[0];
+        String gpxTable = TableUtilities.caseIdentifier(requestedTable, gpxTableName + gpxTableSuffix, isH2);           
+        sb.append(gpxTable);
+        for (int i = 1; i < gpxTables.length; i++) {
+            gpxTableSuffix = gpxTables[i];
+            gpxTable = TableUtilities.caseIdentifier(requestedTable, gpxTableName + gpxTableSuffix, isH2);
+            sb.append(",").append(gpxTable);
+        }        
+        Statement stmt = connection.createStatement();
+        stmt.execute(sb.toString());
+        stmt.close();
     }
 }

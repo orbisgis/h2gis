@@ -48,53 +48,59 @@ import org.slf4j.LoggerFactory;
 public class PRJUtil {
     private static final Logger log = LoggerFactory.getLogger(PRJUtil.class);
     
+    
     /**
+     * Return the SRID value stored in a prj file
+     * 
+     * If the the prj file 
+     * - is null,
+     * - is empty
+     * then a default srid equals to 0 is added.
+     * 
+     * @param prjFile
+     * @return
+     * @throws IOException 
+     */
+    public static int getSRID(File prjFile) throws IOException {
+        int srid = 0;
+        if (prjFile == null) {
+            log.warn("This prj file is null. \n A default srid equals to 0 will be added.");
+        } else {
+            PrjParser parser = new PrjParser();
+            String prjString = readPRJFile(prjFile);
+            if (!prjString.isEmpty()) {
+                Map<String, String> p = parser.getParameters(prjString);
+                String authorityWithCode = p.get(PrjKeyParameters.REFNAME);
+                if (authorityWithCode != null) {
+                    String[] authorityNameWithKey = authorityWithCode.split(":");
+                    srid = Integer.valueOf(authorityNameWithKey[1]);
+                }
+            }
+            else{
+                log.warn("The prj is empty. \n A default srid equals to 0 will be added.");
+            }
+        }
+        return srid;
+    }
+   
+    /**
+     * Get a valid SRID value from a prj file.
+     * If the the prj file 
+     * - is null,
+     * - doesn't contain a valid srid code,
+     * - is empty     * 
+     * then a default srid equals to 0 is added.
      * 
      * @param connection
      * @param prjFile
      * @return
      * @throws SQLException
-     * @throws IOException 
+     * @throws IOException
      */
-    public static int getSRID(Connection connection, File prjFile) throws SQLException, IOException{
-        int srid = 0;
-        if (prjFile == null) {
-            log.warn("This shapefile has no prj. \n A default srid equals to 0 will be added.");
-        } else {
-            PrjParser parser = new PrjParser();
-            String prjString = readPRJFile(prjFile);
-            if(!prjString.isEmpty()){
-            Map<String, String> p = parser.getParameters(prjString);
-            String authorityWithCode = p.get(PrjKeyParameters.REFNAME);
-            if (authorityWithCode != null) {
-                String[] authorityNameWithKey = authorityWithCode.split(":");
-                String queryCheck = "SELECT count(SRID) from PUBLIC.SPATIAL_REF_SYS WHERE SRID = ?";
-                PreparedStatement ps = null;
-                ResultSet rs = null;
-                try {
-                    ps = connection.prepareStatement(queryCheck);
-                    srid = Integer.valueOf(authorityNameWithKey[1]);
-                    ps.setInt(1, srid);
-                    rs = ps.executeQuery();
-                    if (rs.next()) {
-                        if (rs.getInt(1) == 0) {
-                            log.warn("The prj doesn't contain a valid srid code. \n A default srid equals to 0 will be added.");
-                        }
-                    }
-                } finally {
-                    if (rs != null) {
-                        rs.close();
-                    }
-                    if (ps != null) {
-                        ps.close();
-                    }
-                }
-            }
-            }
-            else{
-                 log.warn("The prj is empty. \n A default srid equals to 0 will be added.");
-            }
-
+    public static int getValidSRID(Connection connection, File prjFile) throws SQLException, IOException {
+        int srid = getSRID(prjFile);
+        if(!isSRIDValid(srid, connection)){
+            srid = 0;
         }
         return srid;
     }
@@ -162,4 +168,37 @@ public class PRJUtil {
             }
         }
     }
+    
+    
+    /**
+     * This method checks if a SRID value is valid according a list of SRID's
+     * avalaible on spatial_ref table of the datababase.
+     * 
+     * @param srid
+     * @param connection
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public static boolean isSRIDValid(int srid, Connection connection) throws SQLException {
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        String queryCheck = "SELECT count(SRID) from PUBLIC.SPATIAL_REF_SYS WHERE SRID = ?";
+        try {
+            ps = connection.prepareStatement(queryCheck);
+            ps.setInt(1, srid);
+            rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) != 0;
+            }
+        } finally {
+            if (rs != null) {
+                rs.close();
+            }
+            if (ps != null) {
+                ps.close();
+            }
+        }
+        return false;
+    }
+    
 }

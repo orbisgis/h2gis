@@ -288,6 +288,7 @@ public class JDBCUtilities {
      * @param connection Connection
      * @param tableName  Table name
      * @return true if the table exists
+     * @throws java.sql.SQLException
      */
     public static boolean tableExists(Connection connection, String tableName) throws SQLException {
         final Statement statement = connection.createStatement();

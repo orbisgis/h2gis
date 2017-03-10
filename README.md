@@ -98,7 +98,7 @@ For a significant contribution, send a PR on GitHub and refer it in your message
 The H2GIS team utilizes open source software. Specifically, we would like to thank  :
 
 * Thomas Mueller and Noel Grandin from the [H2 database community] (http://www.h2database.com).
-* Martin Davis from the [JTS community] (https://github.com/dr-jts).
+* Martin Davis from the [JTS Topology Suite community] (https://github.com/locationtech/jts).
 
 #### Supporters
 
