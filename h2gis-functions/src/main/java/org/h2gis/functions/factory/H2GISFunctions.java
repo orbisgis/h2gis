@@ -53,6 +53,7 @@ import org.h2gis.functions.spatial.affine_transformations.ST_Rotate;
 import org.h2gis.functions.spatial.affine_transformations.ST_Scale;
 import org.h2gis.functions.spatial.affine_transformations.ST_Translate;
 import org.h2gis.functions.spatial.aggregate.ST_Accum;
+import org.h2gis.functions.spatial.aggregate.ST_Collect;
 import org.h2gis.functions.spatial.aggregate.ST_LineMerge;
 import org.h2gis.functions.spatial.buffer.ST_Buffer;
 import org.h2gis.functions.spatial.buffer.ST_OffSetCurve;
@@ -419,7 +420,8 @@ public class H2GISFunctions {
                 new TSVRead(),
                 new TSVWrite(),
                 new ST_NPoints(),
-                new ST_Graph()};
+                new ST_Graph(),
+                new ST_Collect()};
     }
 
     /**
