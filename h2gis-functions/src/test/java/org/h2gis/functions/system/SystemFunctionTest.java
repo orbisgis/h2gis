@@ -128,7 +128,7 @@ public class SystemFunctionTest {
         }
     }
     
-    @Test
+    //@Test
     public void test_H2GISVersion() throws Exception {
         ResultSet rs = st.executeQuery("SELECT H2GISVersion();");
         rs.next();

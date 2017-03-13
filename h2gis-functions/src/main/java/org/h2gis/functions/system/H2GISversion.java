@@ -19,12 +19,12 @@
  */
 package org.h2gis.functions.system;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.jar.Attributes;
-import java.util.jar.Manifest;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.functions.factory.H2GISFunctions;
 
 /**
  * Return the current version of H2GIS stored in the manifest
@@ -45,20 +45,22 @@ public class H2GISversion extends DeterministicScalarFunction{
     }
     
     /**
-     * Return the H2GIS version available in the MANISFEST file
-     * Otherwise return unknown
-     * 
-     * @return 
+     * Return the H2GIS version available in the version txt file Otherwise
+     * return unknown
+     *
+     * @return
      */
     public static String geth2gisVersion() {
-        URLClassLoader cl = (URLClassLoader) H2GISversion.class.getClassLoader();
-        try {
-            URL url = cl.findResource("META-INF/MANIFEST.MF");
-            Manifest manifest = new Manifest(url.openStream());
-            Attributes att = manifest.getMainAttributes();
-            return att.getValue("bundle-version");
+        try (InputStream fs = H2GISFunctions.class.getResourceAsStream("/org/h2gis/functions/system/version.txt")) {
+            BufferedReader bufRead = new BufferedReader(new InputStreamReader(fs));
+            StringBuilder builder = new StringBuilder();
+            String line = null;
+            while ((line = bufRead.readLine()) != null) {
+                builder.append(line).append(" ");
+            }
+            return builder.toString();
 
-        } catch (IOException e) {
+        } catch (IOException ex) {
             return "unknown";
         }
     }
