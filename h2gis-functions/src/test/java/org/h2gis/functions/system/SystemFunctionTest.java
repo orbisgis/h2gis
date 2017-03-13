@@ -127,5 +127,13 @@ public class SystemFunctionTest {
             throw e.getOriginalCause();
         }
     }
+    
+    @Test
+    public void test_H2GISVersion() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT H2GISVersion();");
+        rs.next();
+        System.out.println("version " + rs.getString(1));
+        rs.close();
+    }
 
 }
