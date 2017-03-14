@@ -213,6 +213,7 @@ import org.h2gis.functions.spatial.type.GeometryTypeFromConstraint;
 import org.h2gis.functions.spatial.type.GeometryTypeNameFromConstraint;
 import org.h2gis.functions.string.HexToVarBinary;
 import org.h2gis.functions.system.DoubleRange;
+import org.h2gis.functions.system.H2GISversion;
 import org.h2gis.functions.system.IntegerRange;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.slf4j.Logger;
@@ -421,6 +422,7 @@ public class H2GISFunctions {
                 new TSVWrite(),
                 new ST_NPoints(),
                 new ST_Graph(),
+                new H2GISversion(),
                 new ST_Collect()};
     }
 

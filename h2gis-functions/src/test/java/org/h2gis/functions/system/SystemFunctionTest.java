@@ -30,6 +30,7 @@ import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import static org.junit.Assert.assertNotEquals;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -126,6 +127,14 @@ public class SystemFunctionTest {
         } catch (JdbcSQLException e) {
             throw e.getOriginalCause();
         }
+    }
+    
+    @Test
+    public void test_H2GISVersion() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT H2GISVersion();");
+        rs.next();
+        assertNotEquals("unknown", rs.getString(1));
+        rs.close();
     }
 
 }
