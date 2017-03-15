@@ -92,8 +92,11 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
         }
         else if (geom.isEmpty()) {
             return geom;
-        } else if (geom instanceof Point || geom instanceof MultiPoint) {
+        } else if (geom instanceof Point){
             return geom;
+        }
+        else if (geom instanceof MultiPoint){
+            return removeDuplicateCoordinates((MultiPoint) geom, tolerance);
         } else if (geom instanceof LineString) {
             return removeDuplicateCoordinates((LineString) geom, tolerance);
         } else if (geom instanceof MultiLineString) {
@@ -107,6 +110,19 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
         }
         return null;
     }
+    
+    /**
+     * Removes duplicated coordinates within a MultiPoint.
+     *
+     * @param multiPoint
+     * @param tolerance to delete the coordinates
+     * @return
+     * @throws java.sql.SQLException
+     */
+    public static MultiPoint removeDuplicateCoordinates(MultiPoint multiPoint, double tolerance) throws SQLException {
+        Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(multiPoint.getCoordinates(), tolerance, false);
+        return FACTORY.createMultiPoint(coords);
+    }
 
     /**
      * Removes duplicated coordinates within a LineString.
@@ -117,7 +133,7 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      * @throws java.sql.SQLException
      */
     public static LineString removeDuplicateCoordinates(LineString linestring, double tolerance) throws SQLException {
-        Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(linestring.getCoordinates(), tolerance);
+        Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(linestring.getCoordinates(), tolerance, false);
         if(coords.length<2){  
             throw new SQLException("Not enough coordinates to build a new LineString.\n Please adjust the tolerance");
         }
@@ -132,7 +148,7 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      * @return
      */
     public static LinearRing removeDuplicateCoordinates(LinearRing linearRing, double tolerance) {
-        Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(linearRing.getCoordinates(), tolerance);
+        Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(linearRing.getCoordinates(), tolerance, true);
         return FACTORY.createLinearRing(coords);
     }
 
@@ -161,11 +177,11 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      * @throws java.sql.SQLException
      */
     public static Polygon removeDuplicateCoordinates(Polygon polygon, double tolerance) throws SQLException {
-        Coordinate[] shellCoords = CoordinateUtils.removeRepeatedCoordinates(polygon.getExteriorRing().getCoordinates(),tolerance);
+        Coordinate[] shellCoords = CoordinateUtils.removeRepeatedCoordinates(polygon.getExteriorRing().getCoordinates(),tolerance,true);
         LinearRing shell = FACTORY.createLinearRing(shellCoords);
         ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
         for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
-            Coordinate[] holeCoords = CoordinateUtils.removeRepeatedCoordinates(polygon.getInteriorRingN(i).getCoordinates(), tolerance);
+            Coordinate[] holeCoords = CoordinateUtils.removeRepeatedCoordinates(polygon.getInteriorRingN(i).getCoordinates(), tolerance, true);
             if (holeCoords.length < 4) {
                 throw new SQLException("Not enough coordinates to build a new LinearRing.\n Please adjust the tolerance");
             }
