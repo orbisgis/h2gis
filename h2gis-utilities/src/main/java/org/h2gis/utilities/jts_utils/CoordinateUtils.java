@@ -24,8 +24,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.math.Vector3D;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
 
 
 /**
@@ -144,13 +142,20 @@ public final class CoordinateUtils {
      * 
      * @param coords the input coordinates
      * @param tolerance to delete the coordinates
+     * @param duplicateFirstLast false to delete the first and last coordinates 
+     * if there are equals
      * @return 
      */
-    public static Coordinate[] removeRepeatedCoordinates(Coordinate[] coords, double tolerance) {
-        ArrayList<Coordinate> finalCoords = new ArrayList<Coordinate>();
+    public static Coordinate[] removeRepeatedCoordinates(Coordinate[] coords, double tolerance, boolean duplicateFirstLast) {
+        ArrayList<Coordinate> finalCoords = new ArrayList<Coordinate>();        
         Coordinate prevCoord = coords[0];
         finalCoords.add(prevCoord);
-        for (int i = 1; i < coords.length; i++) {
+        Coordinate firstCoord = null ;
+        if (!duplicateFirstLast) {
+            firstCoord = prevCoord;
+        }
+        int nbCoords = coords.length;
+        for (int i = 1; i < nbCoords; i++) {
             Coordinate currentCoord = coords[i];
             if (currentCoord.distance(prevCoord) <= tolerance) {
                 continue;
@@ -159,8 +164,13 @@ public final class CoordinateUtils {
             prevCoord = currentCoord;
 
         }
+        if (!duplicateFirstLast) {
+            if (firstCoord.distance(prevCoord) <= tolerance) {
+                finalCoords.remove(finalCoords.size()-1);
+            }
+        }
         return finalCoords.toArray(new Coordinate[finalCoords.size()]);
-    }
+        }
 
     /**
      * Private constructor for utility class.
