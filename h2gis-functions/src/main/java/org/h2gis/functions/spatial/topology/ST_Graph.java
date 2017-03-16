@@ -56,7 +56,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             "`end_node` correspond to the `node_id`s in the nodes table.\n" +
             "\n" +
             "If the specified geometry column of the input table contains geometries other\n" +
-            "than `LINESTRING`s or `MULTILINESTRING`s, the operation will fail.\n" +
+            "than `LINESTRING`s, the operation will fail.\n" +
             "\n" +
             "A tolerance value may be given to specify the side length of a square envelope\n" +
             "around each node used to snap together other nodes within the same envelope.\n" +
@@ -70,7 +70,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             "the z-value of their first and last coordinates (decreasing).\n";
 
     private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ST_Graph.class);
-    public static final String TYPE_ERROR = "Only LINESTRINGs and MULTILINESTRINGs " +
+    public static final String TYPE_ERROR = "Only LINESTRINGs " +
             "are accepted. Type code: ";
     public static final String ALREADY_RUN_ERROR = "ST_Graph has already been called on table ";
 
@@ -88,7 +88,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     /**
      * Create the nodes and edges tables from the input table containing
-     * LINESTRINGs or MULTILINESTRINGs.
+     * LINESTRINGs.
      * <p/>
      * Since no column is specified in this signature, we take the first
      * geometry column we find.
@@ -97,7 +97,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * 'input_nodes' and 'input_edges'.
      *
      * @param connection Connection
-     * @param tableName  Input table containing LINESTRINGs or MULTILINESTRINGs
+     * @param tableName  Input table containing LINESTRINGs
      * @return true if both output tables were created
      * @throws SQLException
      */
@@ -108,15 +108,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     /**
      * Create the nodes and edges tables from the input table containing
-     * LINESTRINGs or MULTILINESTRINGs in the given column.
+     * LINESTRINGs in the given column.
      * <p/>
      * If the input table has name 'input', then the output tables are named
      * 'input_nodes' and 'input_edges'.
      *
      * @param connection       Connection
      * @param tableName        Input table
-     * @param spatialFieldName Name of column containing LINESTRINGs or
-     *                         MULTILINESTRINGs
+     * @param spatialFieldName Name of column containing LINESTRINGs
      * @return true if both output tables were created
      * @throws SQLException
      */
@@ -129,7 +128,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     /**
      * Create the nodes and edges tables from the input table containing
-     * LINESTRINGs or MULTILINESTRINGs in the given column and using the given
+     * LINESTRINGs in the given column and using the given
      * tolerance.
      * <p/>
      * The tolerance value is used specify the side length of a square Envelope
@@ -146,8 +145,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      *
      * @param connection       Connection
      * @param tableName        Input table
-     * @param spatialFieldName Name of column containing LINESTRINGs or
-     *                         MULTILINESTRINGs
+     * @param spatialFieldName Name of column containing LINESTRINGs
      * @param tolerance        Tolerance
      * @return true if both output tables were created
      * @throws SQLException
@@ -162,7 +160,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     
     /**
      * Create the nodes and edges tables from the input table containing
-     * LINESTRINGs or MULTILINESTRINGs in the given column and using the given
+     * LINESTRINGs in the given column and using the given
      * tolerance, and potentially orienting edges by slope.
      * <p/>
      * The tolerance value is used specify the side length of a square Envelope
@@ -182,8 +180,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      *
      * @param connection       Connection
      * @param inputTable        Input table
-     * @param spatialFieldName Name of column containing LINESTRINGs or
-     *                         MULTILINESTRINGs
+     * @param spatialFieldName Name of column containing LINESTRINGs
      * @param tolerance        Tolerance
      * @param orientBySlope    True if edges should be oriented by the z-value of
      *                         their first and last coordinates (decreasing)
@@ -200,7 +197,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     /**
      * Create the nodes and edges tables from the input table containing
-     * LINESTRINGs or MULTILINESTRINGs in the given column and using the given
+     * LINESTRINGs in the given column and using the given
      * tolerance, and potentially orienting edges by slope.
      * <p/>
      * The tolerance value is used specify the side length of a square Envelope
@@ -220,8 +217,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      *
      * @param connection       Connection
      * @param inputTable        Input table
-     * @param spatialFieldName Name of column containing LINESTRINGs or
-     *                         MULTILINESTRINGs
+     * @param spatialFieldName Name of column containing LINESTRINGs
      * @param tolerance        Tolerance
      * @param orientBySlope    True if edges should be oriented by the z-value of
      *                         their first and last coordinates (decreasing)
@@ -240,9 +236,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         }
         final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
         final TableLocation nodesName = TableUtilities.suffixTableLocation(tableName, NODES_SUFFIX);
-        final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGES_SUFFIX);        
-        if(deleteTables){
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGES_SUFFIX); 
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        if(deleteTables){            
             Statement stmt = connection.createStatement();
             StringBuilder sb = new StringBuilder("drop table if exists ");
             sb.append(nodesName.toString(isH2)).append(",").append(edgesName.toString(isH2));
@@ -269,9 +265,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final Statement st = connection.createStatement();
         try {
             firstFirstLastLast(st, tableName, pkColName, geomCol, tolerance);
-            makeEnvelopes(st, tolerance);
+            makeEnvelopes(st, tolerance, isH2);
             nodesTable(st, nodesName, tolerance);
-            edgesTable(st, nodesName, edgesName, tolerance);
+            edgesTable(st, nodesName, edgesName, tolerance, isH2);
             checkForNullEdgeEndpoints(st, edgesName);
             if (orientBySlope) {
                 orientBySlope(st, nodesName, edgesName);
@@ -283,23 +279,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     private static void checkGeometryType(Connection connection,
-                                          TableLocation tableName,
-                                          int spatialFieldIndex) throws SQLException {
-        final Statement st = connection.createStatement();
-        try {
-            final String fieldName =
-                    JDBCUtilities.getFieldName(connection.getMetaData(), tableName.getTable(), spatialFieldIndex);
-            final ResultSet geomTypeCodes =
-                    st.executeQuery("SELECT DISTINCT ST_GeometryTypeCode(" + fieldName + ") FROM " + tableName);
-            while (geomTypeCodes.next()) {
-                final int type = geomTypeCodes.getInt(1);
-                if (type != GeometryTypeCodes.LINESTRING && type != GeometryTypeCodes.MULTILINESTRING) {
-                    throw new IllegalArgumentException(TYPE_ERROR +
-                            SFSUtilities.getGeometryTypeNameFromCode(type));
-                }
-            }
-        } finally {
-            st.close();
+            TableLocation tableName,
+            int spatialFieldIndex) throws SQLException {
+        final String fieldName
+                = JDBCUtilities.getFieldName(connection.getMetaData(), tableName.getTable(), spatialFieldIndex);
+        int geomType = SFSUtilities.getGeometryType(connection, tableName, fieldName);
+        if (geomType != GeometryTypeCodes.LINESTRING) {
+            throw new IllegalArgumentException(TYPE_ERROR
+                    + SFSUtilities.getGeometryTypeNameFromCode(geomType));
         }
     }
 
@@ -346,6 +333,15 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return "ST_Expand(" + geom + ", " + tol + ", " + tol + ")";
     }
 
+    /**
+     * Return the first and last coordinates table
+     * @param st
+     * @param tableName
+     * @param pkCol
+     * @param geomCol
+     * @param tolerance
+     * @throws SQLException 
+     */
     private static void firstFirstLastLast(Statement st,
                                            TableLocation tableName,
                                            String pkCol,
@@ -360,7 +356,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final String lastPointLastGeom = "ST_PointN(" + lastGeom + ", ST_NumPoints(" + lastGeom + "))";
         st.execute("drop TABLE if exists COORDS");
         if (tolerance > 0) {
-            st.execute("CREATE CACHED LOCAL TEMPORARY TABLE COORDS AS "
+            st.execute("CREATE TEMPORARY TABLE COORDS AS "
                     + "SELECT " + pkCol + " EDGE_ID, "
                     + firstPointFirstGeom + " START_POINT, "
                     + expand(firstPointFirstGeom, tolerance) + " START_POINT_EXP, "
@@ -369,7 +365,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + "FROM " + tableName);
         } else {
             // If the tolerance is zero, there is no need to call ST_Expand.
-            st.execute("CREATE CACHED LOCAL TEMPORARY TABLE COORDS AS "
+            st.execute("CREATE TEMPORARY TABLE COORDS AS "
                     + "SELECT " + pkCol + " EDGE_ID, "
                     + firstPointFirstGeom + " START_POINT, "
                     + lastPointLastGeom + " END_POINT "
@@ -381,13 +377,13 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Make a big table of all points in the coords table with an envelope around each point.
      * We will use this table to remove duplicate points.
      */
-    private static void makeEnvelopes(Statement st, double tolerance) throws SQLException {
+    private static void makeEnvelopes(Statement st, double tolerance, boolean isH2) throws SQLException {
         st.execute("DROP TABLE IF EXISTS PTS;");
         if (tolerance > 0) {
             LOGGER.info("Calculating envelopes around coordinates...");
             // Putting all points and their envelopes together...
-            st.execute("CREATE CACHED LOCAL TEMPORARY TABLE PTS( " +
-                    "ID INT AUTO_INCREMENT PRIMARY KEY, " +
+            st.execute("CREATE TEMPORARY TABLE PTS( " +
+                    "ID SERIAL PRIMARY KEY, " +
                     "THE_GEOM POINT, " +
                     "AREA POLYGON " +
                     ") AS " +
@@ -395,19 +391,27 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "UNION ALL " +
                     "SELECT NULL, END_POINT, END_POINT_EXP FROM COORDS;");
             // Putting a spatial index on the envelopes...
-            st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
+            if (isH2) {
+                st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
+            } else {
+                st.execute("CREATE INDEX ON PTS USING GIST(AREA);");
+            }
         } else {
             LOGGER.info("Preparing temporary nodes table from coordinates...");
             // If the tolerance is zero, we just put all points together
-            st.execute("CREATE CACHED LOCAL TEMPORARY TABLE PTS( " +
-                    "ID INT AUTO_INCREMENT PRIMARY KEY, " +
+            st.execute("CREATE TEMPORARY TABLE PTS( " +
+                    "ID INT SERIAL PRIMARY KEY, " +
                     "THE_GEOM POINT" +
                     ") AS " +
                     "SELECT NULL, START_POINT FROM COORDS " +
                     "UNION ALL " +
                     "SELECT NULL, END_POINT FROM COORDS;");
             // Putting a spatial index on the points themselves...
-            st.execute("CREATE SPATIAL INDEX ON PTS(THE_GEOM);");
+            if (isH2) {
+                st.execute("CREATE SPATIAL INDEX ON PTS(THE_GEOM);");
+            } else {
+                st.execute("CREATE INDEX ON PTS USING GIST(THE_GEOM);");
+            }            
         }
     }
 
@@ -421,7 +425,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         // Creating nodes table by removing copies from the pts table.
         if (tolerance > 0) {
             st.execute("CREATE TABLE " + nodesName + "(" +
-                    "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "NODE_ID SERIAL PRIMARY KEY, " +
                     "THE_GEOM POINT, " +
                     "EXP POLYGON" +
                     ") AS " +
@@ -433,7 +437,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             // If the tolerance is zero, we can create the NODES table
             // by using = rather than &&.
             st.execute("CREATE TABLE " + nodesName + "(" +
-                    "NODE_ID INT AUTO_INCREMENT PRIMARY KEY, " +
+                    "NODE_ID SERIAL PRIMARY KEY, " +
                     "THE_GEOM POINT " +
                     ") AS " +
                     "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
@@ -449,12 +453,18 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static void edgesTable(Statement st,
                                    TableLocation nodesName,
                                    TableLocation edgesName,
-                                   double tolerance) throws SQLException {
+                                   double tolerance, boolean isH2) throws SQLException {
         LOGGER.info("Creating the edges table...");
         if (tolerance > 0) {
-            st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(EXP);");
-            st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT_EXP);");
-            st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT_EXP);");
+            if (isH2) {
+                st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(EXP);");
+                st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT_EXP);");
+                st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT_EXP);");
+            } else {
+                st.execute("CREATE  INDEX ON " + nodesName + " USING GIST(EXP);");
+                st.execute("CREATE  INDEX ON COORDS USING GIST(START_POINT_EXP);");
+                st.execute("CREATE  INDEX ON COORDS USING GIST(END_POINT_EXP);");
+            }
             st.execute("CREATE TABLE " + edgesName + " AS " +
                     "SELECT EDGE_ID, " +
                     "(SELECT NODE_ID FROM " + nodesName +
@@ -464,9 +474,15 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "FROM COORDS;");
             st.execute("ALTER TABLE " + nodesName + " DROP COLUMN EXP;");
         } else {
-            st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(THE_GEOM);");
-            st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT);");
-            st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT);");
+            if (isH2) {
+                st.execute("CREATE SPATIAL INDEX ON " + nodesName + "(THE_GEOM);");
+                st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT);");
+                st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT);");
+            } else {
+                st.execute("CREATE SPATIAL INDEX ON " + nodesName + " USING GIST(THE_GEOM);");
+                st.execute("CREATE SPATIAL INDEX ON COORDS USING GIST(START_POINT);");
+                st.execute("CREATE SPATIAL INDEX ON COORDS USING GIST(END_POINT);");
+            }
             // If the tolerance is zero, then we can use = on the geometries
             // instead of && on the envelopes.
             st.execute("CREATE TABLE " + edgesName + " AS " +
