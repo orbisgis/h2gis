@@ -73,6 +73,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     public static final String TYPE_ERROR = "Only LINESTRINGs " +
             "are accepted. Type code: ";
     public static final String ALREADY_RUN_ERROR = "ST_Graph has already been called on table ";
+    private static  String spatialFieldName;
 
     /**
      * Constructor
@@ -259,14 +260,17 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final DatabaseMetaData md = connection.getMetaData();
         final String pkColName = JDBCUtilities.getFieldName(md, tableName.getTable(), pkIndex);
         // Check the geometry column type;
-        final int spatialFieldIndex = getSpatialFieldIndex(connection, tableName, spatialFieldName);
+        final Object[] spatialFieldIndexAndName = getSpatialFieldIndexAndName(connection, tableName, spatialFieldName);
+        int spatialFieldIndex = (int) spatialFieldIndexAndName[1];
+        spatialFieldName = (String) spatialFieldIndexAndName[0];
         checkGeometryType(connection, tableName, spatialFieldIndex);
         final String geomCol = JDBCUtilities.getFieldName(md, tableName.getTable(), spatialFieldIndex);
         final Statement st = connection.createStatement();
         try {
-            firstFirstLastLast(st, tableName, pkColName, geomCol, tolerance);
-            makeEnvelopes(st, tolerance, isH2);
-            nodesTable(st, nodesName, tolerance);
+            firstFirstLastLast(st, tableName, pkColName, geomCol, tolerance);            
+            int srid = SFSUtilities.getSRID(connection, tableName, spatialFieldName);
+            makeEnvelopes(st, tolerance, isH2, srid);
+            nodesTable(st, nodesName, tolerance, isH2,srid);
             edgesTable(st, nodesName, edgesName, tolerance, isH2);
             checkForNullEdgeEndpoints(st, edgesName);
             if (orientBySlope) {
@@ -293,12 +297,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     /**
      * Get the column index of the given spatial field, or the first one found
      * if none is given (specified by null).
+     * 
+     * Return the first geometry field if the spatialFieldName name is null.
      *
      * @param spatialFieldName Spatial field name
-     * @return Spatial field index
+     * @return Spatial field index and its name
      * @throws SQLException
      */
-    private static int getSpatialFieldIndex(Connection connection,
+    private static Object[] getSpatialFieldIndexAndName(Connection connection,
                                             TableLocation tableName,
                                             String spatialFieldName) throws SQLException {
         // Find the name of the first geometry column if not provided by the user.
@@ -326,7 +332,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         if (spatialFieldIndex == -1) {
             throw new SQLException("Geometry field " + spatialFieldName + " of table " + tableName + " not found");
         }
-        return spatialFieldIndex;
+        return new Object[]{spatialFieldName,spatialFieldIndex};
     }
 
     private static String expand(String geom, double tol) {
@@ -377,39 +383,58 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      * Make a big table of all points in the coords table with an envelope around each point.
      * We will use this table to remove duplicate points.
      */
-    private static void makeEnvelopes(Statement st, double tolerance, boolean isH2) throws SQLException {
+    private static void makeEnvelopes(Statement st, double tolerance, boolean isH2, int srid) throws SQLException {
         st.execute("DROP TABLE IF EXISTS PTS;");
         if (tolerance > 0) {
-            LOGGER.info("Calculating envelopes around coordinates...");
-            // Putting all points and their envelopes together...
-            st.execute("CREATE TEMPORARY TABLE PTS( " +
-                    "ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM POINT, " +
-                    "AREA POLYGON " +
-                    ") AS " +
-                    "SELECT NULL, START_POINT, START_POINT_EXP FROM COORDS " +
-                    "UNION ALL " +
-                    "SELECT NULL, END_POINT, END_POINT_EXP FROM COORDS;");
-            // Putting a spatial index on the envelopes...
+            LOGGER.info("Calculating envelopes around coordinates...");            
             if (isH2) {
+                // Putting all points and their envelopes together...
+                st.execute("CREATE TEMPORARY TABLE PTS( "
+                        + "ID SERIAL PRIMARY KEY, "
+                        + "THE_GEOM POINT, "
+                        + "AREA POLYGON "
+                        + ") AS "
+                        + "SELECT NULL, START_POINT, START_POINT_EXP FROM COORDS "
+                        + "UNION ALL "
+                        + "SELECT NULL, END_POINT, END_POINT_EXP FROM COORDS;");
+                // Putting a spatial index on the envelopes...
                 st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
             } else {
+                // Putting all points and their envelopes together...
+                st.execute("CREATE TEMPORARY TABLE PTS( "
+                        + "ID SERIAL PRIMARY KEY, "
+                        + "THE_GEOM GEOMETRY(POINT,"+srid+"),"
+                        + "AREA GEOMETRY(POLYGON, "+srid+")"
+                        + ") AS "
+                        + "SELECT NULL, START_POINT, START_POINT_EXP FROM COORDS "
+                        + "UNION ALL "
+                        + "SELECT NULL, END_POINT, END_POINT_EXP FROM COORDS;");
+                // Putting a spatial index on the envelopes...
                 st.execute("CREATE INDEX ON PTS USING GIST(AREA);");
             }
         } else {
             LOGGER.info("Preparing temporary nodes table from coordinates...");
-            // If the tolerance is zero, we just put all points together
-            st.execute("CREATE TEMPORARY TABLE PTS( " +
-                    "ID INT SERIAL PRIMARY KEY, " +
-                    "THE_GEOM POINT" +
-                    ") AS " +
-                    "SELECT NULL, START_POINT FROM COORDS " +
-                    "UNION ALL " +
-                    "SELECT NULL, END_POINT FROM COORDS;");
-            // Putting a spatial index on the points themselves...
             if (isH2) {
+                // If the tolerance is zero, we just put all points together
+                st.execute("CREATE TEMPORARY TABLE PTS( "
+                        + "ID INT SERIAL PRIMARY KEY, "
+                        + "THE_GEOM POINT"
+                        + ") AS "
+                        + "SELECT NULL, START_POINT FROM COORDS "
+                        + "UNION ALL "
+                        + "SELECT NULL, END_POINT FROM COORDS;");
+                // Putting a spatial index on the points themselves...
                 st.execute("CREATE SPATIAL INDEX ON PTS(THE_GEOM);");
             } else {
+                // If the tolerance is zero, we just put all points together
+                st.execute("CREATE TEMPORARY TABLE PTS( "
+                        + "ID INT SERIAL PRIMARY KEY, "
+                        + "THE_GEOM GEOMETRY(POINT,"+srid+")"
+                        + ") AS "
+                        + "SELECT NULL, START_POINT FROM COORDS "
+                        + "UNION ALL "
+                        + "SELECT NULL, END_POINT FROM COORDS;");
+                // Putting a spatial index on the points themselves...
                 st.execute("CREATE INDEX ON PTS USING GIST(THE_GEOM);");
             }            
         }
@@ -420,10 +445,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     private static void nodesTable(Statement st,
                                    TableLocation nodesName,
-                                   double tolerance) throws SQLException {
+                                   double tolerance, boolean isH2, int srid) throws SQLException {
         LOGGER.info("Creating the nodes table...");
         // Creating nodes table by removing copies from the pts table.
         if (tolerance > 0) {
+            if(isH2){
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
                     "THE_GEOM POINT, " +
@@ -433,17 +459,44 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "WHERE A.AREA && B.AREA " +
                     "GROUP BY A.ID " +
                     "HAVING A.ID=MIN(B.ID);");
+            }
+            else{
+               st.execute("CREATE TABLE " + nodesName + "(" +
+                    "NODE_ID SERIAL PRIMARY KEY, " +
+                    "THE_GEOM GEOMETRY(POINT, " + srid+"), "+
+                    "EXP GEOMETRY(POLYGON" +srid+")"+
+                    ") AS " +
+                    "SELECT NULL, A.THE_GEOM, A.AREA FROM PTS A, PTS B " +
+                    "WHERE A.AREA && B.AREA " +
+                    "GROUP BY A.ID " +
+                    "HAVING A.ID=MIN(B.ID);"); 
+            }
         } else {
+            
+            if(isH2){
+               // If the tolerance is zero, we can create the NODES table
+            // by using = rather than &&.
+            st.execute("CREATE TABLE " + nodesName + "(" +
+                    "NODE_ID SERIAL PRIMARY KEY, " +
+                    "THE_GEOM POINT" +
+                    ") AS " +
+                    "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
+                    "WHERE A.THE_GEOM && B.THE_GEOM AND A.THE_GEOM=B.THE_GEOM " +
+                    "GROUP BY A.ID " +
+                    "HAVING A.ID=MIN(B.ID);"); 
+            }
+            else{
             // If the tolerance is zero, we can create the NODES table
             // by using = rather than &&.
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM POINT " +
+                    "THE_GEOM GEOMETRY(POINT, "+srid+")" +
                     ") AS " +
                     "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
                     "WHERE A.THE_GEOM && B.THE_GEOM AND A.THE_GEOM=B.THE_GEOM " +
                     "GROUP BY A.ID " +
                     "HAVING A.ID=MIN(B.ID);");
+            }
         }
     }
 
