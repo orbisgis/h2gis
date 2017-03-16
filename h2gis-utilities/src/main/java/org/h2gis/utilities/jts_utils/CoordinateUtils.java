@@ -21,9 +21,13 @@
 package org.h2gis.utilities.jts_utils;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.math.Vector3D;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 
 
 /**
@@ -136,6 +140,39 @@ public final class CoordinateUtils {
         }
         return i;
     }
+    
+    /**
+     * Remove dupliacted coordinates 
+     * Note : This method doesn't preserve the topology of geometry
+     * 
+     * @param coords the input coordinates
+     * @param closeRing is true the first coordinate is added at the end to close the array
+     * @return 
+     */
+    public static Coordinate[] removeDuplicatedCoordinates(Coordinate[] coords, boolean closeRing) {
+        LinkedHashSet<Coordinate> finalCoords = new LinkedHashSet<Coordinate>();
+        Coordinate prevCoord = coords[0];
+        finalCoords.add(prevCoord);
+        Coordinate firstCoord = prevCoord;
+        int nbCoords = coords.length;
+        for (int i = 1; i < nbCoords; i++) {
+            Coordinate currentCoord = coords[i];
+            if (currentCoord.equals2D(prevCoord)) {
+                continue;
+            }
+            finalCoords.add(currentCoord);
+            prevCoord = currentCoord;
+        }
+        if (closeRing) {
+            Coordinate[] coordsFinal = finalCoords.toArray(new Coordinate[finalCoords.size()]);
+            Coordinate[] closedCoords = Arrays.copyOf(coordsFinal, coordsFinal.length + 1);
+            closedCoords[closedCoords.length-1] = firstCoord;
+            return closedCoords;
+        }
+        return finalCoords.toArray(new Coordinate[finalCoords.size()]);
+
+    }
+    
     
     /**
      * Remove repeated coordinates according a given tolerance

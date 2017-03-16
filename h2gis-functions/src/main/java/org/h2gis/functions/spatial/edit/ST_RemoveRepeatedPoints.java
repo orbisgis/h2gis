@@ -87,16 +87,14 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      * @throws java.sql.SQLException
      */
     public static Geometry removeDuplicateCoordinates(Geometry geom, double tolerance) throws SQLException {
-        if(geom ==null){
+        if (geom == null) {
             return null;
-        }
-        else if (geom.isEmpty()) {
+        } else if (geom.isEmpty()) {
             return geom;
-        } else if (geom instanceof Point){
+        } else if (geom instanceof Point) {
             return geom;
-        }
-        else if (geom instanceof MultiPoint){
-            return removeDuplicateCoordinates((MultiPoint) geom, tolerance);
+        } else if (geom instanceof MultiPoint) {
+            return geom;
         } else if (geom instanceof LineString) {
             return removeDuplicateCoordinates((LineString) geom, tolerance);
         } else if (geom instanceof MultiLineString) {
@@ -111,19 +109,8 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
         return null;
     }
     
-    /**
-     * Removes duplicated coordinates within a MultiPoint.
-     *
-     * @param multiPoint
-     * @param tolerance to delete the coordinates
-     * @return
-     * @throws java.sql.SQLException
-     */
-    public static MultiPoint removeDuplicateCoordinates(MultiPoint multiPoint, double tolerance) throws SQLException {
-        Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(multiPoint.getCoordinates(), tolerance, false);
-        return FACTORY.createMultiPoint(coords);
-    }
-
+    
+    
     /**
      * Removes duplicated coordinates within a LineString.
      *

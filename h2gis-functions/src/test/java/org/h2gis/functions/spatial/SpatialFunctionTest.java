@@ -1178,7 +1178,7 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))'::GEOMETRY);");
         rs.next();
         Geometry geom = (Geometry) rs.getObject(1);
-        assertTrue(geom.equals(WKT_READER.read("MULTIPOINT((4 4), (1 1), (1 0), (0 3))")));
+        assertTrue(geom.equals(WKT_READER.read("MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))")));
         rs.close();
     }
     
@@ -1231,7 +1231,8 @@ public class SpatialFunctionTest {
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (0 0,  10 0, 100 0)")));
         rs.close();
-    }
+    }    
+    
 
     @Test
     public void test_ST_InterpolateLineWithoutZ() throws Exception {
