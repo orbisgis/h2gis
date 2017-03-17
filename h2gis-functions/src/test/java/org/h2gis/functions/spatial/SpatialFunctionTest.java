@@ -1174,12 +1174,31 @@ public class SpatialFunctionTest {
     }
     
     @Test
+    public void test_ST_RemoveRepeatedPoints3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))'::GEOMETRY);");
+        rs.next();
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertTrue(geom.equals(WKT_READER.read("MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))")));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RemoveRepeatedPoints4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (1 1, 2 2, 0 2, 1 1 )'::GEOMETRY);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (1 1, 2 2, 0 2)")));
+        rs.close();
+    }
+    
+    @Test
     public void test_ST_RemoveRepeatedPointsTolerance() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0, 10 0, 100 0)'::GEOMETRY, 3);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (0 0,  10 0, 100 0)")));
         rs.close();
     }
+    
+    
     
     @Test
     public void test_ST_RemoveRepeatedPointsTolerance1() throws Exception {
@@ -1197,6 +1216,23 @@ public class SpatialFunctionTest {
             throw e.getOriginalCause();
         }
     }
+    
+    @Test
+    public void test_ST_RemoveRepeatedPointsTolerance3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('POINT (0 0)'::GEOMETRY, 3);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT (0 0)")));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RemoveRepeatedPointsTolerance4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0, 10 0, 100 0, 1 1)'::GEOMETRY, 3);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (0 0,  10 0, 100 0)")));
+        rs.close();
+    }    
+    
 
     @Test
     public void test_ST_InterpolateLineWithoutZ() throws Exception {
