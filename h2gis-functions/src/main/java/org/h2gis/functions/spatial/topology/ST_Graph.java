@@ -335,7 +335,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     }
 
     private static String expand(String geom, double tol) {
-        return "ST_Expand(" + geom + ", " + tol + ", " + tol + ")";
+        return "ST_Expand(" + geom + ", " + tol + ")";
     }
 
     /**
@@ -464,7 +464,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
                     "THE_GEOM GEOMETRY(POINT, " + srid+"), "+
-                    "EXP GEOMETRY(POLYGON" +srid+")"+
+                    "EXP GEOMETRY(POLYGON," +srid+")"+
                     ") " );
                 st.execute( "INSERT INTO "+nodesName +" (SELECT (row_number() over())::int , c.the_geom, c.area FROM (SELECT  A.THE_GEOM, A.AREA FROM PTS A, PTS B " +
                     "WHERE A.AREA && B.AREA " +

@@ -32,7 +32,7 @@ import org.h2gis.api.DeterministicScalarFunction;
 public class ST_Expand extends DeterministicScalarFunction {
 
     public ST_Expand() {
-        addProperty(PROP_REMARKS, "Expands a geometry's envelope by the given delta X and delta Y.\n Both"
+        addProperty(PROP_REMARKS, "Expands a geometry's envelope in both X and or X directions.\n Both"
                 + " positive and negative distances are supported.");
     }
 
@@ -40,14 +40,26 @@ public class ST_Expand extends DeterministicScalarFunction {
     public String getJavaStaticMethod() {
         return "expand";
     }
+    
+    /**
+     * Expands a geometry's envelope by the given delta X and delta Y. Both
+     * positive and negative distances are supported.
+     *
+     * @param geometry the input geometry
+     * @param delta the distance to expand the envelope along the X and Y axis
+     * @return the expanded geometry
+     */
+    public static Geometry expand(Geometry geometry, double delta) {
+        return expand(geometry, delta, delta);
+    }
 
     /**
      * Expands a geometry's envelope by the given delta X and delta Y. Both
      * positive and negative distances are supported.
      *
      * @param geometry the input geometry
-     * @param deltaX the distance to expand the envelope along the the X axis
-     * @param deltaY the distance to expand the envelope along the the Y axis
+     * @param deltaX the distance to expand the envelope along the X axis
+     * @param deltaY the distance to expand the envelope along the Y axis
      * @return the expanded geometry
      */
     public static Geometry expand(Geometry geometry, double deltaX, double deltaY) {
