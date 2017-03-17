@@ -25,6 +25,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import static junit.framework.Assert.assertTrue;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
@@ -612,6 +613,38 @@ public class SpatialFunction2Test {
                 + "  ((150 190, 210 190, 210 160, 150 160, 150 190)))'::geometry);");
         rs.next();
         assertEquals(1, rs.getInt(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RemoveDuplicatedCoordinates1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveDuplicatedCoordinates('MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTIPOINT((4 4), (1 1), (1 0), (0 3))", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RemoveDuplicatedCoordinates2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveDuplicatedCoordinates('MULTIPOINT((4 4), (1 1), (1 0), (1 1), (4 4), (0 3), (4 4))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTIPOINT((4 4), (1 1), (1 0), (0 3))", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RemoveDuplicatedCoordinates3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveDuplicatedCoordinates('LINESTRING(4 4, 1 1, 1 1)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(4 4,  1 1)", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RemoveDuplicatedCoordinates4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveDuplicatedCoordinates('POLYGON((4 4, 1 1, 1 1, 0 0, 4 4))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("POLYGON((4 4, 1 1, 0 0, 4 4))", rs.getString(1));
         rs.close();
     }
     

@@ -117,6 +117,7 @@ import org.h2gis.functions.spatial.edit.ST_FlipCoordinates;
 import org.h2gis.functions.spatial.edit.ST_Interpolate3DLine;
 import org.h2gis.functions.spatial.edit.ST_MultiplyZ;
 import org.h2gis.functions.spatial.edit.ST_Normalize;
+import org.h2gis.functions.spatial.edit.ST_RemoveDuplicatedCoordinates;
 import org.h2gis.functions.spatial.edit.ST_RemoveHoles;
 import org.h2gis.functions.spatial.edit.ST_RemovePoints;
 import org.h2gis.functions.spatial.edit.ST_RemoveRepeatedPoints;
@@ -423,7 +424,8 @@ public class H2GISFunctions {
                 new ST_NPoints(),
                 new ST_Graph(),
                 new H2GISversion(),
-                new ST_Collect()};
+                new ST_Collect(),
+                new ST_RemoveDuplicatedCoordinates()};
     }
 
     /**
