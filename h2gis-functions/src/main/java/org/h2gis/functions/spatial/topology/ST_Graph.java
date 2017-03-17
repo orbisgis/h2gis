@@ -73,8 +73,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     public static final String TYPE_ERROR = "Only LINESTRINGs " +
             "are accepted. Type code: ";
     public static final String ALREADY_RUN_ERROR = "ST_Graph has already been called on table ";
-    private static  String spatialFieldName;
-
+    
     /**
      * Constructor
      */
@@ -401,14 +400,14 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 st.execute("CREATE SPATIAL INDEX ON PTS(AREA);");
             } else {
                 // Putting all points and their envelopes together...
-                st.execute("CREATE TEMPORARY TABLE PTS( "
-                        + "ID SERIAL PRIMARY KEY, "
+                st.execute("CREATE TEMPORARY TABLE PTS( ID SERIAL PRIMARY KEY, "
                         + "THE_GEOM GEOMETRY(POINT,"+srid+"),"
                         + "AREA GEOMETRY(POLYGON, "+srid+")"
-                        + ") AS "
-                        + "SELECT NULL, START_POINT, START_POINT_EXP FROM COORDS "
+                        + ") ");
+                 st.execute("INSERT INTO PTS (SELECT (row_number() over())::int , a.THE_GEOM, A.AREA FROM  "
+                        + "(SELECT  START_POINT AS THE_GEOM, START_POINT_EXP as AREA FROM COORDS "
                         + "UNION ALL "
-                        + "SELECT NULL, END_POINT, END_POINT_EXP FROM COORDS;");
+                        + "SELECT  END_POINT AS THE_GEOM, END_POINT_EXP as AREA FROM COORDS) as a);");
                 // Putting a spatial index on the envelopes...
                 st.execute("CREATE INDEX ON PTS USING GIST(AREA);");
             }
@@ -417,7 +416,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             if (isH2) {
                 // If the tolerance is zero, we just put all points together
                 st.execute("CREATE TEMPORARY TABLE PTS( "
-                        + "ID INT SERIAL PRIMARY KEY, "
+                        + "ID SERIAL PRIMARY KEY, "
                         + "THE_GEOM POINT"
                         + ") AS "
                         + "SELECT NULL, START_POINT FROM COORDS "
@@ -428,12 +427,13 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             } else {
                 // If the tolerance is zero, we just put all points together
                 st.execute("CREATE TEMPORARY TABLE PTS( "
-                        + "ID INT SERIAL PRIMARY KEY, "
+                        + "ID SERIAL PRIMARY KEY, "
                         + "THE_GEOM GEOMETRY(POINT,"+srid+")"
-                        + ") AS "
-                        + "SELECT NULL, START_POINT FROM COORDS "
+                        + ")");
+                st.execute("INSERT INTO PTS (SELECT (row_number() over())::int , a.the_geom FROM "
+                        + "(SELECT  START_POINT as THE_GEOM FROM COORDS "
                         + "UNION ALL "
-                        + "SELECT NULL, END_POINT FROM COORDS;");
+                        + "SELECT  END_POINT as THE_GEOM FROM COORDS) as a);");
                 // Putting a spatial index on the points themselves...
                 st.execute("CREATE INDEX ON PTS USING GIST(THE_GEOM);");
             }            
@@ -465,11 +465,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     "NODE_ID SERIAL PRIMARY KEY, " +
                     "THE_GEOM GEOMETRY(POINT, " + srid+"), "+
                     "EXP GEOMETRY(POLYGON" +srid+")"+
-                    ") AS " +
-                    "SELECT NULL, A.THE_GEOM, A.AREA FROM PTS A, PTS B " +
+                    ") " );
+                st.execute( "INSERT INTO "+nodesName +" (SELECT (row_number() over())::int , c.the_geom, c.area FROM (SELECT  A.THE_GEOM, A.AREA FROM PTS A, PTS B " +
                     "WHERE A.AREA && B.AREA " +
                     "GROUP BY A.ID " +
-                    "HAVING A.ID=MIN(B.ID);"); 
+                    "HAVING A.ID=MIN(B.ID)) as c);"); 
             }
         } else {
             
@@ -491,11 +491,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
                     "THE_GEOM GEOMETRY(POINT, "+srid+")" +
-                    ") AS " +
-                    "SELECT NULL, A.THE_GEOM FROM PTS A, PTS B " +
+                    ") " );            
+            st.execute("INSERT INTO "+nodesName +" (SELECT (row_number() over())::int , c.the_geom FROM (SELECT A.THE_GEOM FROM PTS A, PTS B " +
                     "WHERE A.THE_GEOM && B.THE_GEOM AND A.THE_GEOM=B.THE_GEOM " +
                     "GROUP BY A.ID " +
-                    "HAVING A.ID=MIN(B.ID);");
+                    "HAVING A.ID=MIN(B.ID)) as c);");
             }
         }
     }
@@ -532,9 +532,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 st.execute("CREATE SPATIAL INDEX ON COORDS(START_POINT);");
                 st.execute("CREATE SPATIAL INDEX ON COORDS(END_POINT);");
             } else {
-                st.execute("CREATE SPATIAL INDEX ON " + nodesName + " USING GIST(THE_GEOM);");
-                st.execute("CREATE SPATIAL INDEX ON COORDS USING GIST(START_POINT);");
-                st.execute("CREATE SPATIAL INDEX ON COORDS USING GIST(END_POINT);");
+                st.execute("CREATE INDEX ON " + nodesName + " USING GIST(THE_GEOM);");
+                st.execute("CREATE INDEX ON COORDS USING GIST(START_POINT);");
+                st.execute("CREATE INDEX ON COORDS USING GIST(END_POINT);");
             }
             // If the tolerance is zero, then we can use = on the geometries
             // instead of && on the envelopes.
