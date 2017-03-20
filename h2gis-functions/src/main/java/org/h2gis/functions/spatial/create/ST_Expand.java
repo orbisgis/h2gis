@@ -32,7 +32,7 @@ import org.h2gis.api.DeterministicScalarFunction;
 public class ST_Expand extends DeterministicScalarFunction {
 
     public ST_Expand() {
-        addProperty(PROP_REMARKS, "Expands a geometry's envelope in both X and or X directions.\n Both"
+        addProperty(PROP_REMARKS, "Expands a geometry's envelope in both X and or Y directions.\n Both"
                 + " positive and negative distances are supported.");
     }
 
