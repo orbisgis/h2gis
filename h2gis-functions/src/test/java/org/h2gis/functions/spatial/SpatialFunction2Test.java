@@ -729,4 +729,13 @@ public class SpatialFunction2Test {
         rs.close();
     }
     
+    
+    @Test
+    public void test_ST_MakeValid13() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POLYGON ((353851 7684917, 353851 7684918 136.1, 353853 7684918, 353852 7684918 135.6, 353851 7684917))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("POLYGON ((353851 7684917, 353851 7684918 136.1, 353852 7684918 135.6, 353851 7684917))", rs.getString(1));
+        rs.close();
+    }
+    
 }
