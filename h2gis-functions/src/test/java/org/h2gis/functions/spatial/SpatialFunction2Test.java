@@ -648,4 +648,94 @@ public class SpatialFunction2Test {
         rs.close();
     }
     
+    @Test
+    public void test_ST_MakeValid1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POINT(0 0)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("POINT(0 0)", rs.getString(1));
+        rs.close();
+    }
+        
+    
+    @Test
+    public void test_ST_MakeValid4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POINT(0 1 2)'::GEOMETRY);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).getCoordinate().z == 2);
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakeValid5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakeValid6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)'::GEOMETRY, true,false);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(0 0, 10 0, 20 0, 30 0)", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakeValid7() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)'::GEOMETRY, true,false);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(0 0, 10 0, 20 0, 30 0)", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakeValid8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('LINESTRING(0 0 1, 10 0 2, 20 0 1, 20 0 1, 30 0)'::GEOMETRY, true,false);");
+        rs.next();
+        assertGeometryEquals("LINESTRING(0 0 1, 10 0 2, 20 0 1, 30 0)", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakeValid9() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POLYGON (( 322 354, 322 348, 325 351, 328 351, 331 348, 331 354, 328 351, 325 351, 322 354 ))'::GEOMETRY, false);");
+        rs.next();
+        assertGeometryEquals("MULTIPOLYGON (((322 348, 322 354, 325 351, 322 348)), ((328 351, 331 354, 331 348, 328 351)))", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakeValid10() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POLYGON (( 322 354, 322 348, 322 354, 322 348, 325 351, 328 351, 331 348, 331 354, 328 351, 325 351, 322 354 ))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTIPOLYGON (((322 348, 322 354, 325 351, 322 348)), ((328 351, 331 354, 331 348, 328 351)))", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakeValid11() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POLYGON (( 322 354, 322 348, 322 354, 322 348, 325 351, 328 351, 331 348, 331 354, 328 351, 325 351, 322 354 ))'::GEOMETRY, false);");
+        rs.next();
+        assertGeometryEquals("MULTIPOLYGON (((322 348, 322 354, 325 351, 322 348)), ((328 351, 331 354, 331 348, 328 351)))", rs.getString(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakeValid12() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('MULTIPOLYGON (((0 0, 10 0, 10 10, 0 10, 0 0)), ((10 0, 20 0, 20 10, 10 10, 10 0)))'::GEOMETRY, false);");
+        rs.next();
+        assertGeometryEquals("MULTIPOLYGON (((0 0, 0 10, 10 10, 20 10, 20 0, 10 0, 0 0)))", rs.getString(1));
+        rs.close();
+    }
+    
+    
+    @Test
+    public void test_ST_MakeValid13() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POLYGON ((353851 7684917, 353851 7684918 136.1, 353853 7684918, 353852 7684918 135.6, 353851 7684917))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("POLYGON ((353851 7684917, 353851 7684918 136.1, 353852 7684918 135.6, 353851 7684917))", rs.getString(1));
+        rs.close();
+    }
+    
 }

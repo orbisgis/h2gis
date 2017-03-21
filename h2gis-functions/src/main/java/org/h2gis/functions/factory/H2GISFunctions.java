@@ -59,6 +59,7 @@ import org.h2gis.functions.spatial.buffer.ST_Buffer;
 import org.h2gis.functions.spatial.buffer.ST_OffSetCurve;
 import org.h2gis.functions.spatial.buffer.ST_RingSideBuffer;
 import org.h2gis.functions.spatial.buffer.ST_SideBuffer;
+import org.h2gis.functions.spatial.clean.ST_MakeValid;
 import org.h2gis.functions.spatial.convert.ST_AsBinary;
 import org.h2gis.functions.spatial.convert.ST_AsGML;
 import org.h2gis.functions.spatial.convert.ST_AsText;
@@ -425,7 +426,8 @@ public class H2GISFunctions {
                 new ST_Graph(),
                 new H2GISversion(),
                 new ST_Collect(),
-                new ST_RemoveDuplicatedCoordinates()};
+                new ST_RemoveDuplicatedCoordinates(),
+                new ST_MakeValid()};
     }
 
     /**
