@@ -170,6 +170,14 @@ public class CreateFunctionTest {
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (90 150, 110 150)")));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Expand5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 10);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((90 140, 90 160, 110 160, 110 140, 90 140))")));
+        rs.close();
+    }
 
     @Test
     public void test_ST_ExtrudeLineString() throws Exception {
