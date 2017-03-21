@@ -519,40 +519,7 @@ public class ST_GraphTest {
             throw e.getOriginalCause();
         }
     }
-
-    @Test
-    public void test_ST_Graph_MULTILINESTRING() throws Exception {
-        // This test shows that the coordinate (1 2) is not considered to be
-        // a node, even though it would be if we had used ST_Explode to split
-        // the MULTILINESTRINGs into LINESTRINGs.
-        // Note also that the last coordinate of the first LINESTRING of road2 (1 2)
-        // is not equal to the first coordinate of the second LINESTRING of road2 (4 3),
-        // so this MULTILINESTRING is considered to be an edge from node 2=(4 3) to
-        // node 3=(5 2).
-        st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road MULTILINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES "
-                + "('MULTILINESTRING ((0 0, 1 2), (1 2, 2 3, 4 3))', 'road1', DEFAULT),"
-                + "('MULTILINESTRING ((4 3, 4 4, 1 4, 1 2), (4 3, 5 2))', 'road2', DEFAULT);");
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST')");
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
-        assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
-        checkNode(nodesResult, 1, "POINT (0 0)");
-        checkNode(nodesResult, 2, "POINT (4 3)");
-        checkNode(nodesResult, 3, "POINT (5 2)");
-        assertFalse(nodesResult.next());
-        nodesResult.close();
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
-        assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
-        checkEdge(edgesResult, 1, 1, 2);
-        checkEdge(edgesResult, 2, 2, 3);
-        assertFalse(edgesResult.next());
-        edgesResult.close();
-        rs.close();
-    }
+    
 
     @Test(expected = IllegalStateException.class)
     public void test_ST_Graph_ErrorWithNullEdgeEndpoints() throws Throwable {
@@ -572,36 +539,20 @@ public class ST_GraphTest {
         }
     }
 
-    @Test
+    @Test(expected = IllegalArgumentException.class)
     public void test_ST_GraphMixedLINESTRINGSandMULTILINESTRINGS() throws Throwable {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road GEOMETRY, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
                 + "('MULTILINESTRING((1 2, 2 3, 4 3))', 'road2', DEFAULT);");
-        final ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)");
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
-
-        // Test nodes table.
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
-        assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
-        checkNode(nodesResult, 1, "POINT (0 0)");
-        checkNode(nodesResult, 2, "POINT (1 2)");
-        checkNode(nodesResult, 3, "POINT (4 3)");
-        assertFalse(nodesResult.next());
-        nodesResult.close();
-
-        // Test edges table.
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
-        // This is a copy of the original table with three columns added.
-        assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
-        checkEdge(edgesResult, 1, 1, 2);
-        checkEdge(edgesResult, 2, 2, 3);
-        assertFalse(edgesResult.next());
-        edgesResult.close();
-        rs.close();
+        try {
+            st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)");
+        } catch (JdbcSQLException e) {
+            final Throwable originalCause = e.getOriginalCause();
+            assertTrue(originalCause.getMessage().equals(ST_Graph.TYPE_ERROR + "GEOMETRY"));
+            throw originalCause;
+        }
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -619,7 +570,7 @@ public class ST_GraphTest {
             st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)");
         } catch (JdbcSQLException e) {
             final Throwable originalCause = e.getOriginalCause();
-            assertTrue(originalCause.getMessage().equals(ST_Graph.TYPE_ERROR + "POINT"));
+            assertTrue(originalCause.getMessage().equals(ST_Graph.TYPE_ERROR + "GEOMETRY"));
             throw originalCause;
         }
     }
@@ -642,10 +593,10 @@ public class ST_GraphTest {
     @Test
     public void test_ST_Graph_DeleteTables() throws Throwable {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
+        st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
                 "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
-                + "('MULTILINESTRING((1 2, 2 3, 4 3))', 'road2', DEFAULT);");
+                + "('LINESTRING(1 2, 2 3, 4 3)', 'road2', DEFAULT);");
         st.execute("SELECT ST_Graph('TEST', 'road', 0.1, false)");
         final ResultSet rs  = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false, true)");
         assertTrue(rs.next());
