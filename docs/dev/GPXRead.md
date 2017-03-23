@@ -20,7 +20,7 @@ GPXRead(VARCHAR path, VARCHAR tableName, BOOLEAN deleteTables);
 ### Description
 
 Reads a [GPX][wiki] file from `path` and creates several tables
-prefixed by `tableName` representing the file's contents. If `deleteTables` is equal to `1`, existing tables (with the same prefix) are removed.
+prefixed by `tableName` representing the file's contents. If `deleteTables` is equal to `true`, existing tables (with the same prefix) are removed.
 
 
 Tables are produced depending on the content of the GPX file,
@@ -52,7 +52,7 @@ CALL GPXRead('/home/user/route.gpx');
 CALL GPXRead('/home/user/route.gpx', 'GPXDATA');
 
 -- Existing tables starting with 'GPXDATA' will be removed
-CALL GPXRead('/home/user/route.gpx', 'GPXDATA', 1);
+CALL GPXRead('/home/user/route.gpx', 'GPXDATA', true);
 
 -- Produces STATION_WAYPOINT.
 CALL GPXRead('/home/user/station.gpx');

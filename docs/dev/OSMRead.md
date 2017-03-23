@@ -19,7 +19,7 @@ OSMRead(VARCHAR path, VARCHAR tableName, BOOLEAN deleteTables);
 
 ### Description
 
-Reads a [OSM][wiki] file from `path` and creates several tables prefixed by `tableName` representing the file's contents. If `deleteTables` is equal to `1`, existing tables (with the same prefix) are removed.
+Reads a [OSM][wiki] file from `path` and creates several tables prefixed by `tableName` representing the file's contents. If `deleteTables` is equal to `true`, existing tables (with the same prefix) are removed.
 
 11 tables are produced.
 
@@ -58,7 +58,7 @@ CALL OSMRead('/home/user/bretagne.osm.bz2', 'OSM_BRETAGNE');
 
 -- Uses the given table name 
 -- and remove existing tables prefixed with 'OSM_BRETAGNE'
-CALL OSMRead('/home/user/bretagne.osm', 'OSM_BRETAGNE', 1);
+CALL OSMRead('/home/user/bretagne.osm', 'OSM_BRETAGNE', true);
 
 {% endhighlight %}
 
