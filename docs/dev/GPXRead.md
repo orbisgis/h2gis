@@ -14,13 +14,16 @@ permalink: /docs/dev/GPXRead/
 {% highlight mysql %}
 GPXRead(VARCHAR path);
 GPXRead(VARCHAR path, VARCHAR tableName);
+GPXRead(VARCHAR path, VARCHAR tableName, BOOLEAN deleteTables);
 {% endhighlight %}
 
 ### Description
 
 Reads a [GPX][wiki] file from `path` and creates several tables
-prefixed by `tableName` representing the file's contents.
-Which tables are produced depends on the content of the GPX file,
+prefixed by `tableName` representing the file's contents. If `deleteTables` is equal to `true`, existing tables (with the same prefix) are removed.
+
+
+Tables are produced depending on the content of the GPX file,
 and may include:
 
 * `TABLENAME_WAYPOINT`
@@ -47,6 +50,9 @@ CALL GPXRead('/home/user/route.gpx');
 -- * GPXDATA_TRACKPOINT
 -- * GPXDATA_TRACKSEGMENT
 CALL GPXRead('/home/user/route.gpx', 'GPXDATA');
+
+-- Existing tables starting with 'GPXDATA' will be removed
+CALL GPXRead('/home/user/route.gpx', 'GPXDATA', true);
 
 -- Produces STATION_WAYPOINT.
 CALL GPXRead('/home/user/station.gpx');

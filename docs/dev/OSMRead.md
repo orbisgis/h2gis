@@ -14,11 +14,12 @@ permalink: /docs/dev/OSMRead/
 {% highlight mysql %}
 OSMRead(VARCHAR path);
 OSMRead(VARCHAR path, VARCHAR tableName);
+OSMRead(VARCHAR path, VARCHAR tableName, BOOLEAN deleteTables);
 {% endhighlight %}
 
 ### Description
 
-Reads a [OSM][wiki] file from `path` and creates several tables prefixed by `tableName` representing the file's contents.
+Reads a [OSM][wiki] file from `path` and creates several tables prefixed by `tableName` representing the file's contents. If `deleteTables` is equal to `true`, existing tables (with the same prefix) are removed.
 
 11 tables are produced.
 
@@ -54,6 +55,10 @@ CALL OSMRead('/home/user/bretagne.osm.gz', 'OSM_BRETAGNE');
 
 -- Uses another zipped file
 CALL OSMRead('/home/user/bretagne.osm.bz2', 'OSM_BRETAGNE');
+
+-- Uses the given table name 
+-- and remove existing tables prefixed with 'OSM_BRETAGNE'
+CALL OSMRead('/home/user/bretagne.osm', 'OSM_BRETAGNE', true);
 
 {% endhighlight %}
 

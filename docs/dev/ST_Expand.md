@@ -12,15 +12,26 @@ permalink: /docs/dev/ST_Expand/
 ### Signature
 
 {% highlight mysql %}
+GEOMETRY ST_Expand(GEOMETRY geom, DOUBLE distance);
 GEOMETRY ST_Expand(GEOMETRY geom, DOUBLE deltaX, DOUBLE deltaY);
 {% endhighlight %}
 
 ### Description
 
-Returns a Geometry's envelope expanded by `delta X` and `delta Y`.
+Returns a Geometry's envelope expanded by a `distance` or `delta X` and `delta Y`.
 Both positive and negative distances are supported.
+In case of `distance`, the same value is applied in `delta X` and `delta Y`.
 
 ### Examples
+
+##### With `distance`
+
+{% highlight mysql %}
+SELECT ST_Expand('POINT(4 4)', 2);
+-- Answer: POLYGON ((2 2, 2 6, 6 6, 6 2, 2 2)) 
+{% endhighlight %}
+
+##### With `deltaX` and `deltaY`
 
 {% highlight mysql %}
 SELECT ST_Expand('POINT(4 4)', 5, 2);

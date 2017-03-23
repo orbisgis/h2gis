@@ -13,11 +13,14 @@ permalink: /docs/dev/ST_RemoveRepeatedPoints/
 
 {% highlight mysql %}
 GEOMETRY ST_RemoveRepeatedPoints(GEOMETRY geom);
+GEOMETRY ST_RemoveRepeatedPoints(GEOMETRY geom, DOUBLE tolerance);
 {% endhighlight %}
 
 ### Description
 
-Removes repeated points from `geom`.
+Removes repeated points from `geom`. 
+
+If the distance between a vertex `a` and its next `b` is less or equal to the `tolerance`, then the vertice `b` is removed and the link (segment) is made between vertices `a` and `c`.
 
 ### Examples
 
@@ -27,6 +30,10 @@ SELECT ST_RemoveRepeatedPoints(
                         3 3, 3 3, 5 2, 5 2, 5 1)');
 -- Answer:   LINESTRING(1 1, 2 2,      1 3,
 --                      3 3,      5 2,      5 1)
+
+SELECT ST_RemoveRepeatedPoints(
+            'LINESTRING(1 1, 1 3, 2 3, 2 6, 3 8)', 2);
+-- Answer:   LINESTRING(1 1,      2 3, 2 6, 3 8)
 
 SELECT ST_RemoveRepeatedPoints(
             'POLYGON((2 4, 1 3, 2 1, 2 1, 6 1,
