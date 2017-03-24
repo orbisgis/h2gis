@@ -5,7 +5,7 @@ category: geom2D/process-geometries
 is_function: true
 description: Merges a collection of linear components to form maximal-length <code>LINESTRING</code>
 prev_section: ST_LineIntersector
-next_section: ST_Polygonize
+next_section: ST_MakeValid
 permalink: /docs/dev/ST_LineMerge/
 ---
 

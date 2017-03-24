@@ -2,7 +2,7 @@
 layout: docs
 title: Applications
 category: applications
-prev_section: geom3D/triangulation
+prev_section: system
 next_section: h2network
 permalink: /docs/1.2/applications/
 ---

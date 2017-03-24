@@ -2,7 +2,8 @@
 layout: docs
 title: Raster functions
 category: raster
-prev_section: h2network
+prev_section: geom3D
+next_section: system
 permalink: /docs/1.2/raster/
 ---
 

@@ -5,7 +5,7 @@ category: geom2D/edit-geometries
 is_function: true
 description: Return a Geometry with a normal form
 prev_section: ST_FlipCoordinates
-next_section: ST_RemoveHoles
+next_section: ST_RemoveDuplicatedCoordinates
 permalink: /docs/dev/ST_Normalize/
 ---
 

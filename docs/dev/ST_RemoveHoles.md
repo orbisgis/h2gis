@@ -4,7 +4,7 @@ title: ST_RemoveHoles
 category: geom2D/edit-geometries
 is_function: true
 description: Remove a Geometry's holes
-prev_section: ST_Normalize
+prev_section: ST_RemoveDuplicatedCoordinates
 next_section: ST_RemovePoints
 permalink: /docs/dev/ST_RemoveHoles/
 ---

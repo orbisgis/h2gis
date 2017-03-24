@@ -3,7 +3,7 @@ layout: docs
 title: Triangulation
 category: geom3D/triangulation
 prev_section: geom3D/topography
-next_section: applications
+next_section: raster
 permalink: /docs/1.2/geom3D/triangulation/
 ---
 

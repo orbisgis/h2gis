@@ -2,8 +2,7 @@
 layout: docs
 title: H2Network
 category: applications/h2network
-prev_section: applications
-next_section: raster
+prev_section: system
 permalink: /docs/dev/h2network/
 ---
 
