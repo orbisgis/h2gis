@@ -24,7 +24,7 @@
         <module>h2gis-test-utilities</module>
         <module>h2gis-ext</module>
         <module>h2gis-ext-osgi</module>
-	    <module>h2gis-network</module>
+	<module>h2gis-network</module>
         <module>h2gis-functions</module>
         <module>h2gis-functions-osgi</module>
     </modules>
