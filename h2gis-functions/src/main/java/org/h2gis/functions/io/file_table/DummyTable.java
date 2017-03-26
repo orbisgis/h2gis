@@ -29,6 +29,7 @@ import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
 
 import java.util.ArrayList;
+import org.h2.table.TableType;
 
 /**
  * When linked files are not available, this table defines an empty table
@@ -74,8 +75,8 @@ public class DummyTable extends TableBase {
     }
 
     @Override
-    public String getTableType() {
-        return TableBase.EXTERNAL_TABLE_ENGINE;
+    public TableType getTableType() {
+        return TableType.EXTERNAL_TABLE_ENGINE;
     }
 
     @Override
