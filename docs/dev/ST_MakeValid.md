@@ -24,11 +24,6 @@ GEOMETRY ST_MakeValid(GEOMETRY geom,
                       BOOLEAN preserveCoordDim);
 {% endhighlight %}
 
-<div class="note info">
-  <p>This function has initially been written by Michaël Michaud, alias <a href="https://github.com/mukoki" target="blank">Mukoki</a>.</p>
-</div>
-
-
 ### Description
 
 Repair an invalid `geometry`. 
