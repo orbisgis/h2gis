@@ -69,7 +69,11 @@ Note that:
 | `false` | Preserves third ordinates but not fourth one |  |
 
 <div class="note warning">
-  <p>Note that the fourth dimension is not yet supported in H2GIS. So for the moment, <code>preserveCoordDim</code> has no impact since third ordinates <i>(z)</i> will always be preserved.</p>
+  <p>Note that the fourth dimension is not yet supported in H2GIS. So for the moment, <code>preserveCoordDim</code> has no impact since third ordinates (<code>z</code>) will always be preserved.</p>
+</div>
+
+<div class="note warning">
+    <p>ST_MakeValid may add new points to node the original set of lines <i>(especially to make polygons valid)</i>. New points just have <code>x</code> and <code>y</code>. No interpolation is performed if original geometry is in <code>3D</code> or <code>4D</code>.</p>
 </div>
 
 ### Examples
@@ -103,6 +107,18 @@ SELECT ST_MakeValid('
            LINESTRING(0 0 1, 10 0 2, 20 0 1, 20 0 1, 30 0 1)', 
            true,false);
 -- Answer: LINESTRING(0 0 1, 10 0 2, 20 0 1, 30 0 1)
+
+-- --------------------------------------------------------
+-- Example with 'preserveGeomDim'
+-- True
+SELECT ST_MakeValid('
+           LINESTRING(1 1, 1 1)', true);
+-- Answer: LINESTRING EMPTY 
+
+-- False
+SELECT ST_MakeValid('
+           LINESTRING(1 1, 1 1)', false);
+-- Answer: POINT (1 1)
 {% endhighlight %}
 
 ##### With Polygon
@@ -141,6 +157,15 @@ SELECT ST_MakeValid('
 --         ((1 2.33, 1 1.66, 0 2, 1 2.33)), 
 --         ((1 1.66, 3 1, 1 1, 1 1.66)), 
 --         ((1 2.33, 1 3, 3 3, 1 2.33))) 
+
+-- Same example but with z coordinates. 
+-- Here, created nodes have no z information.
+SELECT ST_MakeValid('
+           POLYGON ((1 1 0, 3 1 1, 0 2 1, 3 3 0, 1 3 1, 1 1 0))');
+-- Answer: MULTIPOLYGON (
+--         ((1 2.33, 1 1.66, 0 2 1, 1 2.33)), 
+--         ((1 1.66, 3 1 1, 1 1 0, 1 1.66)), 
+--         ((1 2.33, 1 3 1, 3 3 0, 1 2.33))) 
 {% endhighlight %}
 
 <img class="displayed" src="../ST_MakeValid_4.png"/>
@@ -194,27 +219,6 @@ SELECT ST_MakeValid('
 {% endhighlight %}
 
 <img class="displayed" src="../ST_MakeValid_7.png"/>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 ##### See also
