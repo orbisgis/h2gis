@@ -4,7 +4,7 @@ title: ST_RemoveRepeatedPoints
 category: geom2D/edit-geometries
 is_function: true
 description: Remove repeated points from a Geometry
-prev_section: ST_RemovePoint
+prev_section: ST_RemovePoints
 next_section: ST_Reverse
 permalink: /docs/dev/ST_RemoveRepeatedPoints/
 ---
@@ -58,5 +58,5 @@ SELECT ST_RemoveRepeatedPoints(
 
 ##### See also
 
-* [`ST_RemovePoints`](../ST_RemovePoints)
+* [`ST_RemovePoints`](../ST_RemovePoints), [`ST_RemoveDuplicatedCoordinates`](../ST_RemoveDuplicatedCoordinates)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/edit/ST_RemoveRepeatedPoints.java" target="_blank">Source code</a>
