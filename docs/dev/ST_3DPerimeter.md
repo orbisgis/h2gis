@@ -23,7 +23,8 @@ Returns the 3D perimeter of a `polygon` or a `multipolygon`.
 
 Perimeter is measured in the units of the spatial reference system.
 
-Remarks
+Remarks:
+
 *  In the case of a 2D geometry, `ST_3DPerimeter` returns the same value as `ST_Perimeter`,
 *  `Polygons` and `multipolygons` within `geometrycollection` are accepted.
 
