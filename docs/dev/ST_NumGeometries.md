@@ -4,7 +4,7 @@ title: ST_NumGeometries
 category: geom2D/properties
 is_function: true
 description: Return the number of Geometries in a <code>GEOMETRYCOLLECTION</code>
-prev_section: ST_IsValidReason
+prev_section: ST_NPoints
 next_section: ST_NumInteriorRing
 permalink: /docs/dev/ST_NumGeometries/
 ---
