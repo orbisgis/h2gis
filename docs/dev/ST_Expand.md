@@ -4,7 +4,7 @@ title: ST_Expand
 category: geom2D/geometry-creation
 is_function: true
 description: Expand a Geometry's envelope
-prev_section: ST_BoundingCircle
+prev_section: ST_Collect
 next_section: ST_MakeEllipse
 permalink: /docs/dev/ST_Expand/
 ---
