@@ -5,7 +5,7 @@ category: geom2D/geometry-creation
 is_function: true
 description: Return the minimum bounding circle of a Geometry
 prev_section: ST_Accum
-next_section: ST_Expand
+next_section: ST_Collect
 permalink: /docs/dev/ST_BoundingCircle/
 ---
 
