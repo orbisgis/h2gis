@@ -106,6 +106,7 @@ Many thanks for those who reported bugs or provide patches...
 
 * Steve Hruda aka shruda [PR #453] (https://github.com/irstv/H2GIS/pull/453)
 * Ivo Šmíd aka bedla [PR #556] (https://github.com/orbisgis/h2gis/pull/556), [PR #695] (https://github.com/orbisgis/h2gis/pull/695)
+* Michaël Michaud [PR #778] (https://github.com/orbisgis/h2gis/pull/778)
 
 
 #### Team
