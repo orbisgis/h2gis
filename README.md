@@ -84,11 +84,11 @@ CALL SHPWRITE('/home/user/newshapefile.shp', 'tablename');
 #### Contributing
 
 For legal reasons, contributors are asked to provide a contributor license agreement. 
-We invite each contributor to send a mail to the [H2GIS developer] (http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html) mailing list.
+We invite each contributor to send a mail to the [H2GIS developer](http://h2gis.1099522.n5.nabble.com/H2GIS-developers-f3.html) mailing list.
 
 The mail need to include the following statement:
 
-"I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the [LGPL 3.0] (http://www.gnu.org/copyleft/lgpl.html)." 
+"I wrote the code, it's mine, and I'm contributing it to H2GIS for distribution licensed under the [LGPL 3.0](http://www.gnu.org/copyleft/lgpl.html)." 
 
 For a significant contribution, send a PR on GitHub and refer it in your message. For a single contribution join a patch to your mail.
 
@@ -97,24 +97,25 @@ For a significant contribution, send a PR on GitHub and refer it in your message
 
 The H2GIS team utilizes open source software. Specifically, we would like to thank  :
 
-* Thomas Mueller and Noel Grandin from the [H2 database community] (http://www.h2database.com).
-* Martin Davis from the [JTS Topology Suite community] (https://github.com/locationtech/jts).
+* Thomas Mueller and Noel Grandin from the [H2 database community](http://www.h2database.com).
+* Martin Davis from the [JTS Topology Suite community](https://github.com/locationtech/jts).
 
 #### Supporters
 
 Many thanks for those who reported bugs or provide patches...  
 
-* Steve Hruda aka shruda [PR #453] (https://github.com/irstv/H2GIS/pull/453)
-* Ivo Šmíd aka bedla [PR #556] (https://github.com/orbisgis/h2gis/pull/556), [PR #695] (https://github.com/orbisgis/h2gis/pull/695)
+* Steve Hruda aka shruda [PR #453](https://github.com/irstv/H2GIS/pull/453)
+* Ivo Šmíd aka bedla [PR #556](https://github.com/orbisgis/h2gis/pull/556), [PR #695](https://github.com/orbisgis/h2gis/pull/695)
+* Michaël Michaud [PR #778](https://github.com/orbisgis/h2gis/pull/778)
 
 
 #### Team
 
 H2GIS is composed of four qualified professionals in GIS and informatic sciences.
-Erwan Bocher leads the project.
-Nicolas Fortin is the lead programmer. 
-Sylvain Palominos is the lead programmer of the OrbisGIS platform.
-Gwendall Petit is in charge of the documentation and manages all public relations with the community users.
+* Erwan Bocher leads the project.
+* Nicolas Fortin is the lead programmer. 
+* Sylvain Palominos is the lead programmer of the OrbisGIS platform.
+* Gwendall Petit is in charge of the documentation and manages all public relations with the community users.
 
 
 
