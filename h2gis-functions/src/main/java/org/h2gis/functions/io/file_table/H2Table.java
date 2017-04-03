@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import org.h2.table.TableType;
 
 /**
  * A table linked with a {@link org.h2gis.drivers.FileDriver}
@@ -212,8 +213,8 @@ public class H2Table extends TableBase {
     }
 
     @Override
-    public String getTableType() {
-        return TableBase.EXTERNAL_TABLE_ENGINE;
+    public TableType getTableType() {
+        return TableType.EXTERNAL_TABLE_ENGINE;
     }
 
     @Override
