@@ -27,7 +27,7 @@ import java.io.IOException;
 
 /**
  * Returns the OGC SFS {@link org.h2gis.utilities.GeometryTypeCodes} of a Geometry. This function does not take account of Z nor M.
- * This function is not part of SFS; see {@link org.h2gis.h2spatial.internal.function.spatial.properties.ST_GeometryType}
+ * This function is not part of SFS; see {@link org.h2gis.functions.spatial.properties.ST_GeometryType}
  * It is used in constraints.
  * @author Nicolas Fortin
  */

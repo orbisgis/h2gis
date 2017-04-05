@@ -10,7 +10,7 @@
     <name>h2gis-utilities</name>
     <artifactId>h2gis-utilities</artifactId>
     <packaging>bundle</packaging>
-    <description>Collection of methods to fetch spatial metadata in SFS database like PostGIS or H2Spatial.
+    <description>Collection of methods to fetch spatial metadata in SFS database like PostGIS or H2GIS.
         Theses functions can be commonly used either in PostGIS or in H2.
         Spatial utilities publish also a DataSourceFactory wrapper that provide JDBC Wrapper for spatial functionality.</description>
     <organization>
