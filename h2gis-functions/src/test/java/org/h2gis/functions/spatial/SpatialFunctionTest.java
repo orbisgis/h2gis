@@ -1231,7 +1231,24 @@ public class SpatialFunctionTest {
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (0 0,  10 0, 100 0)")));
         rs.close();
-    }    
+    }  
+    
+    @Test
+    public void test_ST_RemoveRepeatedPointsTolerance5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('MULTIPOLYGON (((373849.6 6743072.4, 373848.8 6743092.4, 373852.8 6743092.5, 373853.6 6743072.5, 373851 6743072.5, 373849.6 6743072.4)))'::GEOMETRY, 2);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON (((373849.6 6743072.4, 373848.8 6743092.4, 373852.8 6743092.5, 373853.6 6743072.5, 373851 6743072.5, 373849.6 6743072.4)))")));
+        rs.close();
+    }
+    
+     @Test
+    public void test_ST_RemoveRepeatedPointsTolerance6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('MULTIPOLYGON (((373849.6 6743072.4, 373848.8 6743092.4, 373852.8 6743092.5, 373853.6 6743072.5, 373851.95 6743072.5, 373851 6743072.5, 373849.6 6743072.4)))'::GEOMETRY, 2);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON (((373849.6 6743072.4, 373848.8 6743092.4, 373852.8 6743092.5, 373853.6 6743072.5, 373851 6743072.5, 373849.6 6743072.4)))")));
+        rs.close();
+    }
+    
     
 
     @Test

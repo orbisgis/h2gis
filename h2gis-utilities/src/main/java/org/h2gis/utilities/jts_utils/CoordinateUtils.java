@@ -179,7 +179,7 @@ public final class CoordinateUtils {
      * 
      * @param coords the input coordinates
      * @param tolerance to delete the coordinates
-     * @param duplicateFirstLast false to delete the first and last coordinates 
+     * @param duplicateFirstLast false to delete the last coordinate 
      * if there are equals
      * @return 
      */
@@ -187,10 +187,7 @@ public final class CoordinateUtils {
         ArrayList<Coordinate> finalCoords = new ArrayList<Coordinate>();        
         Coordinate prevCoord = coords[0];
         finalCoords.add(prevCoord);
-        Coordinate firstCoord = null ;
-        if (!duplicateFirstLast) {
-            firstCoord = prevCoord;
-        }
+        Coordinate firstCoord =prevCoord;        
         int nbCoords = coords.length;
         for (int i = 1; i < nbCoords; i++) {
             Coordinate currentCoord = coords[i];
@@ -205,6 +202,9 @@ public final class CoordinateUtils {
             if (firstCoord.distance(prevCoord) <= tolerance) {
                 finalCoords.remove(finalCoords.size()-1);
             }
+        }
+        else{
+            finalCoords.add(firstCoord);
         }
         return finalCoords.toArray(new Coordinate[finalCoords.size()]);
         }
