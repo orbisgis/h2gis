@@ -9,7 +9,7 @@
     </parent>
     <artifactId>jts-core-osgi</artifactId>
     <name>jts-core-osgi</name>
-    <version>1.14</version>
+    <version>${jts-core-version}</version>
     <packaging>bundle</packaging>
     <description>A jar with additional information in the jar MANIFEST in order to comply with OSGi environment</description>
     <build>
