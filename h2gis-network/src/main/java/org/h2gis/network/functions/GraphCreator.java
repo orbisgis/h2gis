@@ -35,7 +35,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Creates a JGraphT graph from an edges table produced by {@link
- * org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}. The graph has the
+ * org.h2gis.functions.spatial.topology.ST_Graph}. The graph has the
  * vertex and edge classes passed to the constructor. Its global and edge
  * orientations and weights are specified by the strings passed to the
  * constructor.
@@ -69,7 +69,7 @@ public class GraphCreator<V extends VId, E extends Edge> {
      * Constructor.
      *
      * @param connection                Connection
-     * @param inputTable                Name of edges table from {@link org.h2gis.h2spatialext.function.spatial.graph.ST_Graph}.
+     * @param inputTable                Name of edges table from {@link org.h2gis.functions.spatial.topology.ST_Graph}.
      * @param globalOrientation         Global orientation
      * @param edgeOrientationColumnName Edge orientation
      * @param weightColumn              Weight column name

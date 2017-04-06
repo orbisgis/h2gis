@@ -25,7 +25,7 @@ import java.sql.SQLException;
 
 
 /**
- * Registers the SQL functions contained in h2spatial-functions and h2-network.
+ * Registers the SQL functions contained in h2sgis-functions and h2-network.
  *
  * @author Nicolas Fortin
  * @author Erwan Bocher

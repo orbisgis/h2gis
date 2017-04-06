@@ -32,7 +32,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Keep connection open and track arrival and departure of h2spatial OSGi functions
+ * Keep connection open and track arrival and departure of h2gis OSGi functions
  * @author Nicolas Fortin
  */
 public class FunctionTracker extends ServiceTracker<Function, Function> {
@@ -57,7 +57,7 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
 
     @Override
     public Function addingService(ServiceReference<Function> reference) {
-        // Do not register system functions (h2spatial functions) because it should already be done through initialisation.
+        // Do not register system functions (h2gis functions) because it should already be done through initialisation.
         if(reference.getBundle().getBundleId() != context.getBundle().getBundleId()) {
             Function function = super.addingService(reference);
             try {
@@ -78,7 +78,7 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
 
     @Override
     public void removedService(ServiceReference<Function> reference, Function service) {
-        // Do not unregister system functions (h2spatial functions)
+        // Do not unregister system functions (h2gis functions)
         if(reference.getBundle().getBundleId() != context.getBundle().getBundleId()) {
             try {
                 Connection connection = dataSource.getConnection();

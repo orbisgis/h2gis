@@ -29,7 +29,7 @@ import org.h2gis.api.DeterministicScalarFunction;
 import java.sql.SQLException;
 
 /**
- * Returns a LinearRing instance or Null if parameter is not a Polygon. {@link org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumInteriorRings}
+ * Returns a LinearRing instance or Null if parameter is not a Polygon. {@link org.h2gis.functions.spatial.properties.ST_NumInteriorRings}
  *
  * @author Nicolas Fortin
  */
