@@ -81,6 +81,12 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>jts-core-osgi</artifactId>
+            <version>${jts-core-version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.vividsolutions</groupId>
             <artifactId>jts-io</artifactId>
             <version>${jts-io-version}</version>
