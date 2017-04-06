@@ -19,12 +19,6 @@
  */
 package org.h2gis.network.functions;
 
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-
 /**
  * A helper class for parsing String arguments to h2network graph functions.
  *

@@ -27,7 +27,7 @@ import java.sql.SQLException;
 
 /**
  * Return Geometry number n from the given GeometryCollection. Use {@link
- * org.h2gis.h2spatial.internal.function.spatial.properties.ST_NumGeometries}
+ * org.h2gis.functions.spatial.properties.ST_NumGeometries}
  * to retrieve the total number of Geometries.
  *
  * @author Nicolas Fortin

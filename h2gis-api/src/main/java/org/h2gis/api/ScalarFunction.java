@@ -24,7 +24,7 @@ package org.h2gis.api;
  * Scalar function interface.
  * Scalar function in H2 can be defined through CREATE ALIAS, but in an OSGi context the class java name is not sufficient.
  * The full declaration of java name in H2 through osgi is BundleSymbolicName:BundleVersion:BinaryJavaName
- * Registering this interface as an OSGi service will add this function in h2spatial linked with a DataSource service.
+ * Registering this interface as an OSGi service will add this function in h2sgis linked with a DataSource service.
  * @author Nicolas Fortin
  */
 public interface ScalarFunction extends Function {

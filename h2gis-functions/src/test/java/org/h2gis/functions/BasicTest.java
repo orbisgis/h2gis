@@ -101,7 +101,7 @@ public class BasicTest {
         }
 
         /**
-         * Test if H2 recognize the Geometry class used by h2spatial
+         * Test if H2 recognize the Geometry class used by h2gis
          */
         @Test
         public void testSameClass() {
