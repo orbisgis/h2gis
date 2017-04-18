@@ -4,8 +4,8 @@ title: H2GISversion
 category: system/version
 is_function: true
 description: Return H2GIS version
-prev_section: system
-next_section: applications
+prev_section: DoubleRange
+next_section: IntegerRange
 permalink: /docs/dev/H2GISversion/
 ---
 
