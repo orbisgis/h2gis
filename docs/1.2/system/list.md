@@ -7,6 +7,6 @@ next_section: applications
 permalink: /docs/1.2/system/
 ---
 
-Sorry, there is no system functions available in the v1.2 of H2GIS.
+The following system functions are available:
 
-Please refers to the documentation under [development](../../dev/system).
+{% include all_system_functions.html %}
