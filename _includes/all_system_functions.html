@@ -10,7 +10,8 @@
 {% assign pages = site.pages | sort: 'name' %}
 {% assign version = page.url | replace_first:'/docs/','' | split:"/" | first %}
 {% for p in pages %}
-    {% if p.url contains version %}
+  {% assign pageversion = p.url | replace_first:'/docs/','' | split:"/" | first %}
+    {% if pageversion == version %}
 	    {% if p.category contains 'system' %}
 		{% unless p.permalink contains 'system' %}
 		    {% if p.description %}
