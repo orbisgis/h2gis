@@ -10,7 +10,8 @@
 {% assign pages = site.pages | sort: 'name' %}
 {% assign version = page.url | replace_first:'/docs/','' | split:"/" | first %}
 {% for p in pages %}
-    {% if p.url contains version %}
+  {% assign pageversion = p.url | replace_first:'/docs/','' | split:"/" | first %}
+    {% if pageversion == version %}
 	    {% if p.category == page.category and p != page %}
 		<tr>
 		<td><a href="{{ p.url }}"><code>{{ p.title }}</code></a></td>
