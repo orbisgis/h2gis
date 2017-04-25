@@ -71,7 +71,7 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         if (b instanceof Point) {
             bX = ((Point) b).getX();
             bY = ((Point) b).getY();
-        } else if (b instanceof LineString || a instanceof Polygon) {
+        } else if (b instanceof LineString || b instanceof Polygon) {
             bX = b.getCentroid().getX();
             bY = b.getCentroid().getY();
         }
