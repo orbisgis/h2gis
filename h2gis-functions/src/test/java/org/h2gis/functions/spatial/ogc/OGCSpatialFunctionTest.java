@@ -632,4 +632,42 @@ public class OGCSpatialFunctionTest {
         assertFalse(rs.next());
         rs.close();
     }
+
+    @Test
+    public void test_ST_DistanceSpherePointToPoint() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere(buildings.position, bridges.position) " +
+            "FROM buildings, bridges " +
+            "WHERE buildings.address = '215 Main Street' AND bridges.name = 'Cam Bridge'");
+        assertTrue(rs.next());
+        assertEquals(1896135.5064393785, rs.getDouble(1),1e-9);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePointToPolygon() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere(position, boundary) FROM bridges, named_places " +
+            "WHERE bridges.name = 'Cam Bridge' AND named_places.name = 'Ashton'");
+        assertTrue(rs.next());
+        assertEquals(2602664.8897789125, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_Distance_SpherePointToPoint() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Distance_Sphere(buildings.position, bridges.position) " +
+            "FROM buildings, bridges " +
+            "WHERE buildings.address = '215 Main Street' AND bridges.name = 'Cam Bridge'");
+        assertTrue(rs.next());
+        assertEquals(1896135.5064393785, rs.getDouble(1),1e-9);
+    }
+
+    @Test
+    public void test_ST_Distance_SpherePointToPolygon() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Distance_Sphere(position, boundary) FROM bridges, named_places " +
+            "WHERE bridges.name = 'Cam Bridge' AND named_places.name = 'Ashton'");
+        assertTrue(rs.next());
+        assertEquals(2602664.8897789125, rs.getDouble(1),1e-12);
+    }
 }
