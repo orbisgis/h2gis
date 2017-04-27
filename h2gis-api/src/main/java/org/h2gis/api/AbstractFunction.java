@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Function that handle properties in a map
+ * Functions that handle properties in a map
  * @author Nicolas Fortin
  */
 public abstract class AbstractFunction implements Function {

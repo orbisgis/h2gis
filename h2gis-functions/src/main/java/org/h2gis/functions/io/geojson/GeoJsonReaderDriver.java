@@ -87,7 +87,7 @@ public class GeoJsonReaderDriver {
     private static final int AVERAGE_NODE_SIZE = 500;
     boolean hasGeometryField = false;
     private static final Logger log = LoggerFactory.getLogger(GeoJsonReaderDriver.class);
-    private int parsedSRID =0;
+    private int parsedSRID = 0;
     private boolean isH2;
     private TableLocation tableLocation;
     private Map<String, String> cachedColumnNames;
@@ -189,7 +189,7 @@ public class GeoJsonReaderDriver {
             readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
             nodeCountProgress = 0;
             cachedColumnNames = new LinkedHashMap<String, String>();
-            finalGeometryTypes=new HashSet<String>();
+            finalGeometryTypes = new HashSet<String>();
             
             JsonParser jp = jsFactory.createParser(fis);           
 
@@ -265,9 +265,9 @@ public class GeoJsonReaderDriver {
     private void parseFeaturesMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME features
         //String firstParam = jp.getText();
-        if(jp.getText().equalsIgnoreCase(GeoJsonField.CRS)){
-            parsedSRID = readCRS(jp);
-        }
+        // if(jp.getText().equalsIgnoreCase(GeoJsonField.CRS)){
+           // parsedSRID = readCRS(jp);
+        //}
         if (jp.getText().equalsIgnoreCase(GeoJsonField.FEATURES)) {
             jp.nextToken(); // START_ARRAY [
             JsonToken token = jp.nextToken(); // START_OBJECT {
@@ -439,13 +439,13 @@ public class GeoJsonReaderDriver {
     
     /**
      *
-     * Parse a LineString and check if it's wellformated
+     * Parse a LineString and check if it's well formated
      *
      * Syntax:
      *
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param jsParser
+     * @param jp
      */
     private void parseLinestringMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -465,7 +465,7 @@ public class GeoJsonReaderDriver {
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
      *
-     * @param jsParser
+     * @param jp
      */
     private void parseMultiLinestringMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -511,7 +511,7 @@ public class GeoJsonReaderDriver {
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
-            jp.nextToken(); //Start the RING
+            jp.nextToken(); // Start the RING
             int linesIndex = 0;
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
                 if (linesIndex == 0) {
@@ -716,7 +716,7 @@ public class GeoJsonReaderDriver {
     private Object[] parseFeature(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME geometry
         String firstField = jp.getText();
-        Object[] values= new Object[cachedColumnIndex.size()+1];
+        Object[] values = new Object[cachedColumnIndex.size()+1];
         if (firstField.equalsIgnoreCase(GeoJsonField.GEOMETRY)) {
             setGeometry(jp, values);
         } else if (firstField.equalsIgnoreCase(GeoJsonField.PROPERTIES)) {
@@ -826,9 +826,9 @@ public class GeoJsonReaderDriver {
     private void parseFeatures(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME features
         String firstParam = jp.getText();
-        if(firstParam.equalsIgnoreCase(GeoJsonField.CRS)){
-            firstParam = skipCRS(jp);
-        }
+        // if(firstParam.equalsIgnoreCase(GeoJsonField.CRS)){
+           // firstParam = skipCRS(jp);
+        //}
         if (firstParam.equalsIgnoreCase(GeoJsonField.FEATURES)) {
             jp.nextToken(); // START_ARRAY [
             JsonToken token = jp.nextToken(); // START_OBJECT {
@@ -1218,7 +1218,7 @@ public class GeoJsonReaderDriver {
      * 
      * @param jp
      * @return 
-     */
+     *
     private int readCRS(JsonParser jp) throws IOException, SQLException {
         int srid = 0;
         jp.nextToken(); //START_OBJECT {
@@ -1254,20 +1254,20 @@ public class GeoJsonReaderDriver {
         }
         
         return srid;
-    }
+    }/
 
     /**
      * We skip the CRS because it has been already parsed.
      * 
      *
      * @param jp
-     */
+     *
     private String skipCRS(JsonParser jp) throws IOException {
         jp.nextToken(); //START_OBJECT {
         jp.skipChildren();
         jp.nextToken(); //Go to features
         return jp.getText();
-    }
+    }/
 
     
 

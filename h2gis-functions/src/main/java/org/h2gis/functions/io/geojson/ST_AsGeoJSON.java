@@ -33,7 +33,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**
- * Transform a JTS geometry to a GeoJSON geometry representation.
+ * Transforms a JTS geometry to a GeoJSON geometry representation.
  *
  * @author Erwan Bocher
  */
@@ -250,7 +250,7 @@ public class ST_AsGeoJSON extends DeterministicScalarFunction {
      * which represents a collection of geometry objects.
      *
      * A geometry collection must have a member with the name "geometries". The
-     * value corresponding to "geometries"is an array. Each element in this
+     * value corresponding to "geometries" is an array. Each element in this
      * array is a GeoJSON geometry object.
      *
      * Syntax:

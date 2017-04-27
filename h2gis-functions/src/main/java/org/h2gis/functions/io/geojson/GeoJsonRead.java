@@ -30,7 +30,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * SQL function to read a GeoJSON file an creates the corresponding spatial
+ * SQL function to read a GeoJSON file and create the corresponding spatial
  * table.
  *
  * @author Erwan Bocher

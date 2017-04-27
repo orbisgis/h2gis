@@ -87,13 +87,13 @@ public class GJGeometryReader {
     }
     
     /**
-     * Parses one position
+     * Parses one point on the map.
      *
      * Syntax:
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
-     * @param jsParser
+     * @param jp reads and parses a JSON object
      * @throws IOException
      * @return Point
      */
@@ -117,7 +117,7 @@ public class GJGeometryReader {
      *
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param jsParser
+     * @param jp reads and parses a JSON object
      * @throws IOException
      * @return MultiPoint
      */
@@ -214,7 +214,7 @@ public class GJGeometryReader {
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
-            jp.nextToken(); //Start the RING
+            jp.nextToken(); // Start the RING
             int linesIndex = 0;
             LinearRing linearRing = null;
             ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
