@@ -21,21 +21,26 @@
 package org.h2gis.functions.spatial;
 
 
-import com.vividsolutions.jts.geom.Geometry;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import static junit.framework.Assert.assertTrue;
+
+import com.vividsolutions.jts.geom.Geometry;
+
 import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
-import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  *
@@ -737,5 +742,108 @@ public class SpatialFunction2Test {
         assertGeometryEquals("POLYGON ((353851 7684917, 353851 7684918 136.1, 353852 7684918 135.6, 353851 7684917))", rs.getString(1));
         rs.close();
     }
-    
+
+    @Test
+    public void test_ST_DistanceSpherePointToPointEpsg4326() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT(0 0)'::GEOMETRY, 'POINT(-118 38)'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(12421874.764417205, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePointToPointEpsg4008() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere(ST_SetSRID('POINT(0 0)'::GEOMETRY, 4008), ST_SetSRID('POINT(-118 38)'::GEOMETRY, 4008))");
+        Assert.assertTrue(rs.next());
+        assertEquals(12421855.452633386, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePointToLineString() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT(0 0)'::GEOMETRY, 'LINESTRING (10 5, 10 10)'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(1241932.5985221416, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSphereLineStringToPoint() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('LINESTRING (10 5, 10 10)'::GEOMETRY, 'POINT(0 0)'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(1241932.5985221416, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSphereLineStringToLineString() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('LINESTRING (10 5, 10 10)'::GEOMETRY, 'LINESTRING(0 0, 1 1)'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(1093701.742472634, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePointToPolygon() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT(0 0)'::GEOMETRY, 'POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(157249.5977685051, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePolygonToPoint() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY, 'POINT(0 0)'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(157249.5977685051, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePointInPolygon() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT(1 1)'::GEOMETRY, 'POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSphereLineStringToPolygon() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('LINESTRING (100 50, 50 50)'::GEOMETRY, 'POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(5763657.991914633, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePolygonToLineString() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY, 'LINESTRING (100 50, 50 50)'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(5763657.991914633, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePolygonToLineStringDistanceZero() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY, 'LINESTRING (1 10, 10 10)'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePolygonToPolygon() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POLYGON ((130 390, 280 390, 280 210, 130 210, 130 390))'::GEOMETRY, 'POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(8496739.27764427, rs.getDouble(1),1e-12);
+    }
+
+    @Test
+    public void test_ST_DistanceSpherePointToMultiPolygon() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT (130 210)'::GEOMETRY, 'MULTIPOLYGON (((50 400, 50 350, 50 300, 70 290, 80 280, 90 260, 99 254, 109 253, 120 252, 130 252, 140 255, 150 259, 159 264, 168 270, 172 280, 174 290, 175 300, 173 310, 167 320, 158 325, 148 325, 138 323, 129 316, 124 306, 114 312, 108 321, 105 332, 106 342, 112 351, 121 357, 132 359, 143 359, 153 359, 163 360, 173 359, 183 357, 193 355, 203 355, 216 355, 227 355, 238 357, 247 362, 256 369, 264 378, 269 387, 275 396, 273 406, 267 414, 259 421, 250 426, 240 426, 230 426, 220 425, 210 420, 199 418, 189 419, 179 419, 169 419, 158 419, 148 419, 138 419, 126 419, 116 419, 101 419, 83 419, 70 421, 60 427, 52 433, 44 441, 40 440, 50 400),(80 400, 100 400, 100 390, 80 390, 80 400),(177 395, 200 395, 200 380, 177 380, 177 395), (74 344, 80 344, 80 310, 74 310, 74 344)))'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertEquals(1074360.2834168628, rs.getDouble(1),1e-12);
+    }
 }
