@@ -27,6 +27,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 import org.cts.CRSFactory;
+import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.crs.SpatialRefRegistry;
@@ -72,7 +73,6 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         }
         srr.setConnection(connection);
         try {
-            srr.getParameters(String.valueOf(a.getSRID()));
             int srid = a.getSRID();
             if (srid <= 0) {
                 srid = 4326;
@@ -80,7 +80,7 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
             CoordinateReferenceSystem crs = crsf.getCRS(srr.getRegistryName() + ":" + String.valueOf(srid));
 
             if (!CoordinateReferenceSystem.Type.GEOGRAPHIC2D.equals(crs.getType())) {
-                return null;
+                throw new SQLException("ERROR: only lon/lag coordinate system are supported in geography");
             }
 
             Double radius =   (2.0 * crs.getDatum().getEllipsoid().getSemiMajorAxis() + crs.getDatum().getEllipsoid().getSemiMinorAxis()) / 3.0;
@@ -91,7 +91,7 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
             }
 
             return distance * radius;
-        } catch (Exception e) {
+        } catch (CRSException e) {
             throw new SQLException("Cannot find SRID", e);
         } finally {
             srr.setConnection(null);

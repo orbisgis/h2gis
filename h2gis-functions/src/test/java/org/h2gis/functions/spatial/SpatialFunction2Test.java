@@ -40,6 +40,7 @@ import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
@@ -757,6 +758,13 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere(ST_SetSRID('POINT(0 0)'::GEOMETRY, 4008), ST_SetSRID('POINT(-118 38)'::GEOMETRY, 4008))");
         Assert.assertTrue(rs.next());
         assertEquals(12421855.452633386, rs.getDouble(1),1e-12);
+    }
+
+    @Test(expected = SQLException.class)
+    public void test_ST_DistanceSpherePointToPointEpsg2375() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere(ST_SetSRID('POINT(0 0)'::GEOMETRY, 2375), ST_SetSRID('POINT(-118 38)'::GEOMETRY, 2375))");
+        Assert.assertTrue(rs.next());
     }
 
     @Test
