@@ -111,7 +111,7 @@ Many thanks for those who reported bugs or provide patches...
 
 #### Team
 
-H2GIS is composed of four qualified professionals in GIS and informatic sciences.
+H2GIS is composed of four qualified professionals in GIS and computer sciences.
 * Erwan Bocher leads the project.
 * Nicolas Fortin is the lead programmer. 
 * Sylvain Palominos is the lead programmer of the OrbisGIS platform.

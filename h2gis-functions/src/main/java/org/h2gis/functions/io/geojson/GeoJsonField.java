@@ -47,6 +47,4 @@ public class GeoJsonField {
     static String CRS_URN_OGC="urn:ogc:def:crs:ogc:1.3:"; // Only for geojson file of 2008 specification version.
     static String LINK="link"; // Only for geojson file of 2008 specification version. Link object doesn't exist in RFC 7946.
     static String BBOX="bbox";
-        
-    
 }
