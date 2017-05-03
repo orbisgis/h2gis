@@ -1208,7 +1208,7 @@ public class GeoJsonReaderDriver {
      * 
      * @param jp
      * @return 
-     *
+     */
     private int readCRS(JsonParser jp) throws IOException, SQLException {
         int srid = 0;
         jp.nextToken(); //START_OBJECT {
@@ -1244,7 +1244,7 @@ public class GeoJsonReaderDriver {
         }
         
         return srid;
-    }/
+    }
 
     /**
      * Only used for geojson file of 2008 specification version.
@@ -1253,13 +1253,13 @@ public class GeoJsonReaderDriver {
      * 
      *
      * @param jp
-     *
+     */
     private String skipCRS(JsonParser jp) throws IOException {
         jp.nextToken(); //START_OBJECT {
         jp.skipChildren();
         jp.nextToken(); //Go to features
         return jp.getText();
-    }/
+    }
 
     
 

@@ -506,7 +506,7 @@ public class GeoJsonWriteDriver {
      * @param jsonGenerator
      * @param authorityAndSRID
      * @throws IOException
-     *
+     */
     private void writeCRS(JsonGenerator jsonGenerator, String[] authorityAndSRID) throws IOException {
         if (authorityAndSRID[1] != null) {
             jsonGenerator.writeObjectFieldStart("crs");
@@ -518,6 +518,6 @@ public class GeoJsonWriteDriver {
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }
-    }*/
+    }
     
 }
