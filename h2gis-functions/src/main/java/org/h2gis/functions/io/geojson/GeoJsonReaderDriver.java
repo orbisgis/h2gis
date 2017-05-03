@@ -229,7 +229,7 @@ public class GeoJsonReaderDriver {
              } else {
                  createTable.append("THE_GEOM GEOMETRY(geometry,").append(parsedSRID).append(")");
              }
-            
+
              cachedColumnIndex = new HashMap<String, Integer>();
              StringBuilder insertTable = new StringBuilder("INSERT INTO ");
              insertTable.append(tableLocation).append(" VALUES(?");
@@ -273,14 +273,17 @@ public class GeoJsonReaderDriver {
             JsonToken token = jp.nextToken(); // START_OBJECT {
             while (token != JsonToken.END_ARRAY) {
                 jp.nextToken(); // FIELD_NAME type
+                System.out.println("1: " + jp.getText());
                 jp.nextToken(); // VALUE_STRING Feature
                 String geomType = jp.getText();
+                System.out.println("2: " + geomType);
                 if (geomType.equalsIgnoreCase(GeoJsonField.FEATURE)) {         
                     if (progress.isCanceled()) {
                         throw new SQLException("Canceled by user");
                     }
                     parseFeatureMetadata(jp);
-                    token = jp.nextToken(); //START_OBJECT new feature                   
+                    token = jp.nextToken(); //START_OBJECT new feature
+                    System.out.println("3: " + jp.getText());
                     featureCounter++;
                     
                     if (nodeCountProgress++ % readFileSizeEachNode == 0) {
@@ -333,6 +336,7 @@ public class GeoJsonReaderDriver {
                 parsePropertiesMetadata(jp);
             }
             jp.nextToken(); //END_OBJECT } feature
+            System.out.println("4: " + jp.getText());
         }
        
     }
@@ -346,7 +350,7 @@ public class GeoJsonReaderDriver {
      * @throws SQLException 
      */
     private void parseParentGeometryMetadata(JsonParser jp) throws IOException, SQLException {
-        if(jp.nextToken()!=JsonToken.VALUE_NULL){//START_OBJECT { in case of null geometry
+        if(jp.nextToken()!=JsonToken.VALUE_NULL){//START_OBJECT { instead of null geometry
         jp.nextToken(); // FIELD_NAME type     
         jp.nextToken(); //VALUE_STRING Point
         String geometryType = jp.getText();        
@@ -511,22 +515,14 @@ public class GeoJsonReaderDriver {
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
-            jp.nextToken(); //Start the RING
+            jp.nextToken(); // Start the RING
             int linesIndex = 0;
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                if (linesIndex == 0) {
-                    parseCoordinatesMetadata(jp);
-                } else {
-                    parseCoordinatesMetadata(jp);
-                }
-                jp.nextToken();//END RING
+                parseCoordinatesMetadata(jp);
+                jp.nextToken(); // END RING
                 linesIndex++;
             }
-            if (linesIndex > 1) {
-                jp.nextToken();//END_OBJECT } geometry                
-            } else {
-                jp.nextToken();//END_OBJECT } geometry
-            }
+            jp.nextToken(); // END_OBJECT } geometry
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
@@ -555,19 +551,11 @@ public class GeoJsonReaderDriver {
                 jp.nextToken(); //Start the RING
                 int linesIndex = 0;
                 while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                    if (linesIndex == 0) {
-                        parseCoordinatesMetadata(jp);
-                    } else {
-                        parseCoordinatesMetadata(jp);
-                    }
+                    parseCoordinatesMetadata(jp);
                     jp.nextToken();//END RING
                     linesIndex++;
                 }
-                if (linesIndex > 1) {
-                    jp.nextToken();//END_OBJECT
-                } else {
-                    jp.nextToken();//END_OBJECT
-                }
+                jp.nextToken();//END_OBJECT
             }
             jp.nextToken();//END_OBJECT } geometry
 
@@ -628,8 +616,7 @@ public class GeoJsonReaderDriver {
         jp.nextToken(); // second value
         //We look for a z value
         jp.nextToken();
-        if (jp.getCurrentToken() == JsonToken.END_ARRAY) {
-        } else {
+        if (jp.getCurrentToken() != JsonToken.END_ARRAY) {
             jp.nextToken(); // exit array
         }
         jp.nextToken();
@@ -667,8 +654,10 @@ public class GeoJsonReaderDriver {
     private void parsePropertiesMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
         while (jp.nextToken() != JsonToken.END_OBJECT) {
-            String fieldName = TableLocation.quoteIdentifier(jp.getText().toUpperCase(), isH2); //FIELD_NAME columnName 
+            String fieldName = TableLocation.quoteIdentifier(jp.getText().toUpperCase(), isH2); //FIELD_NAME columnName
+            System.out.println(jp.getText());
             JsonToken value = jp.nextToken();
+            System.out.println("property: " + jp.getText());
             if (null != value) switch (value) {
                 case VALUE_STRING:
                     cachedColumnNames.put(fieldName, "VARCHAR");
@@ -739,7 +728,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Set the parsed geometry to the table     * 
+     * Set the parsed geometry to the table
      * 
      * @param jp
      * @throws IOException
@@ -809,9 +798,8 @@ public class GeoJsonReaderDriver {
                 values[cachedColumnIndex.get(fieldName)] =  jp.getValueAsDouble();
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
                 values[cachedColumnIndex.get(fieldName)] =  jp.getBigIntegerValue();
-            } else {
-                //ignore other value
             }
+            //ignore other value
         }
 
     }
@@ -1205,6 +1193,8 @@ public class GeoJsonReaderDriver {
     }
 
     /**
+     * Only used for geojson file of 2008 specification version.
+     * RFC 7946 uses WGS 84 by default.
      * Read the CRS element and return the database SRID.
      * 
      * Parsed syntax:
@@ -1257,6 +1247,8 @@ public class GeoJsonReaderDriver {
     }
 
     /**
+     * Only used for geojson file of 2008 specification version.
+     * RFC 7946 uses WGS 84 by default.
      * We skip the CRS because it has been already parsed.
      * 
      *

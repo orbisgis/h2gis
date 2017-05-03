@@ -494,6 +494,8 @@ public class GeoJsonWriteDriver {
     }
 
     /**
+     * Only used for geojson file of 2008 specification version.
+     * RFC 7946 uses WGS 84 by default.
      * Write the CRS in the geojson
      *
      * @param jsonGenerator
