@@ -98,6 +98,12 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         }
     }
 
+    /**
+     *
+     *  @param g1 Geometry instance or null
+     *  @param g2 Geometry instance or null
+     *  @return minimum distance in meters between two geometries
+     */
     private static Double distanceBetweenTwoGeometries(Geometry g1,  Geometry g2) {
 
         if ((g1 instanceof Point) && (g2 instanceof Point)) {
@@ -138,6 +144,12 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         return -1.0;
     }
 
+    /**
+     *
+     *  @param g1 Geometry instance or null
+     *  @param g2 Geometry instance or null
+     *  @return minimum distance in meters between two geometries
+     */
     private static Double distanceLineLine(Geometry g1, Geometry g2) {
         Double distance = Double.MAX_VALUE;
         Double distancePoint;
@@ -153,6 +165,12 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         return distance;
     }
 
+    /**
+     *
+     *  @param g1 Geometry instance or null
+     *  @param g2 Geometry instance or null
+     *  @return minimum distance in meters between two geometries
+     */
     private static Double distancePointPolygon(Geometry g1, Geometry g2) {
         Double distance = Double.MAX_VALUE;
         Double ringDistance;
@@ -180,6 +198,12 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         return distance;
     }
 
+    /**
+     *
+     *  @param g1 Geometry instance or null
+     *  @param g2 Geometry instance or null
+     *  @return minimum distance in meters between two geometries
+     */
     private static Double distancePolygonPolygon(Geometry g1, Geometry g2) {
         Double distance = Double.MAX_VALUE;
         Double ringDistance;
@@ -197,6 +221,12 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         return distance;
     }
 
+    /**
+     *
+     *  @param g1 Geometry instance or null
+     *  @param g2 Geometry instance or null
+     *  @return minimum distance in meters between two geometries
+     */
     private static Double distanceGeometryCollection(Geometry g1, Geometry g2) {
         Double distance = Double.MAX_VALUE;
         Double geomDistance;
@@ -209,6 +239,12 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         return distance;
     }
 
+    /**
+     *
+     *  @param g1 Geometry instance or null
+     *  @param g2 Geometry instance or null
+     *  @return minimum distance in meters between two geometries
+     */
     private static Double distancePolygonLineString(Geometry g1, Geometry g2) {
         Double distance = Double.MAX_VALUE;
         Double ringDistance;
@@ -231,6 +267,12 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         return distance;
     }
 
+    /**
+     *
+     *  @param g1 Geometry instance or null
+     *  @param g2 Geometry instance or null
+     *  @return minimum distance in meters between two geometries
+     */
     private static Double distancePointLine(Geometry g1, Geometry g2) {
         Double distance = Double.MAX_VALUE;
         Double distancePoint;
@@ -253,6 +295,12 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         return distance;
     }
 
+    /**
+     *
+     *  @param p1 Point instance
+     *  @param p2 Point instance
+     *  @return minimum distance between two points
+     */
     private static Double distancePointToPoint(Point p1, Point p2) {
         Double p1X = longitudeRadiansNormalize(Math.toRadians(p1.getX()));
         Double p1Y = latitudeRadiansNormalize(Math.toRadians(p1.getY()));
@@ -273,6 +321,11 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         return Math.atan2(a, b);
     }
 
+    /**
+     *
+     *  @param lon Double instance
+     *  @return normalized longitude
+     */
     private static double longitudeRadiansNormalize(Double lon) {
         if ( lon == -1.0 * Math.PI ) {
             lon = Math.PI;
@@ -298,6 +351,11 @@ public class ST_DistanceSphere extends DeterministicScalarFunction {
         return lon;
     }
 
+    /**
+     *
+     *  @param lat Double instance
+     *  @return normalized latitude
+     */
 	private static double latitudeRadiansNormalize(double lat) {
 		if ( lat > 2.0 * Math.PI ) {
 			lat = lat % (2.0 * Math.PI);
