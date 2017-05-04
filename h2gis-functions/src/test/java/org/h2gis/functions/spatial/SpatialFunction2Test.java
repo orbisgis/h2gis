@@ -701,7 +701,7 @@ public class SpatialFunction2Test {
     public void test_ST_MakeValid9() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POLYGON (( 322 354, 322 348, 325 351, 328 351, 331 348, 331 354, 328 351, 325 351, 322 354 ))'::GEOMETRY, false);");
         rs.next();
-        assertGeometryEquals("MULTIPOLYGON (((322 348, 322 354, 325 351, 322 348)), ((328 351, 331 354, 331 348, 328 351)))", rs.getString(1));
+        assertGeometryEquals("GEOMETRYCOLLECTION (LINESTRING (325 351, 328 351), POLYGON ((322 348, 322 354, 325 351, 322 348)), POLYGON ((328 351, 331 354, 331 348, 328 351)))", rs.getString(1));
         rs.close();
     }
     
@@ -715,7 +715,7 @@ public class SpatialFunction2Test {
     
     @Test
     public void test_ST_MakeValid11() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POLYGON (( 322 354, 322 348, 322 354, 322 348, 325 351, 328 351, 331 348, 331 354, 328 351, 325 351, 322 354 ))'::GEOMETRY, false);");
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POLYGON (( 322 354, 322 348, 322 354, 322 348, 325 351, 328 351, 331 348, 331 354, 328 351, 325 351, 322 354 ))'::GEOMETRY, true);");
         rs.next();
         assertGeometryEquals("MULTIPOLYGON (((322 348, 322 354, 325 351, 322 348)), ((328 351, 331 354, 331 348, 328 351)))", rs.getString(1));
         rs.close();

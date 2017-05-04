@@ -71,7 +71,7 @@ public class ST_GeomFromText extends DeterministicScalarFunction {
      * @param wkt Well known text
      * @param srid Geometry SRID
      * @return Geometry instance
-     * @throws ParseException If wkt is invalid
+     * @throws SQLException If wkt is invalid
      */
     public static Geometry toGeometry(String wkt, int srid) throws SQLException {
         if(wkt == null) {
