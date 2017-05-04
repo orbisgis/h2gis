@@ -114,7 +114,7 @@ public class GeoJsonWriteDriver {
                 // header of the GeoJSON file
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
-                // writeCRS(jsonGenerator,SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
+                writeCRS(jsonGenerator,SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
                 jsonGenerator.writeArrayFieldStart("features");
                 
                 ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
@@ -499,12 +499,15 @@ public class GeoJsonWriteDriver {
     }
 
     /**
+     * Only used for geojson file of 2008 specification version.
+     * RFC 7946 uses WGS 84 by default.
      * Write the CRS in the geojson
      *
      * @param jsonGenerator
      * @param authorityAndSRID
      * @throws IOException
-     *
+     */
+
     private void writeCRS(JsonGenerator jsonGenerator, String[] authorityAndSRID) throws IOException {
         if (authorityAndSRID[1] != null) {
             jsonGenerator.writeObjectFieldStart("crs");
@@ -516,6 +519,6 @@ public class GeoJsonWriteDriver {
             jsonGenerator.writeEndObject();
             jsonGenerator.writeEndObject();
         }
-    }*/
+    }
     
 }
