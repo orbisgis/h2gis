@@ -62,5 +62,5 @@ public class GeoJsonField {
     static String CRS_URN_OGC="urn:ogc:def:crs:ogc:1.3:"; // 2008
     static String LINK="link"; // 2008
     static String BBOX="bbox";
-    
+
 }
