@@ -22,6 +22,9 @@ package org.h2gis.functions.io.geojson;
 
 /**
  * GeoJson fields used by the standard.
+ * Some of theme will only be used by the 2008
+ * specification of GeoJSON (like the field CRS
+ * because RFC 7946 uses WGS 84 by default).
  * 
  * @author Erwan Bocher
  */
