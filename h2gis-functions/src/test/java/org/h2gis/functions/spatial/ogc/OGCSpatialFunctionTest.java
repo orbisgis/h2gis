@@ -20,13 +20,19 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import org.h2gis.functions.spatial.ogc.OGCConformance1Test;
-import org.h2gis.functions.factory.H2GISFunctions;
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
+import org.h2gis.functions.DummyFunction;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.spatial.convert.ST_GeomFromText;
 import org.h2gis.functions.spatial.convert.ST_PointFromText;
-import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -36,10 +42,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.functions.DummyFunction;
-
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.*;
 
 /**
  *
