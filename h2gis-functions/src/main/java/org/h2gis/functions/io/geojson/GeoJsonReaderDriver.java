@@ -683,6 +683,14 @@ public class GeoJsonReaderDriver {
                 case VALUE_NUMBER_INT:
                     cachedColumnNames.put(fieldName, "BIGINT");
                     break;
+                case START_ARRAY:
+                    cachedColumnNames.put(fieldName, "VARCHAR");
+                    parseArrayMetadata(jp);
+                    break;
+                case START_OBJECT:
+                    cachedColumnNames.put(fieldName, "VARCHAR");
+                    parseObjectMetadata(jp);
+                    break;
                 //ignore other value
                 default:
                     break;
@@ -1269,8 +1277,6 @@ public class GeoJsonReaderDriver {
         return jp.getText();
     }
 
-    
-
      /**
      * Add the geometry type constraint and the SRID
      */
@@ -1286,5 +1292,80 @@ public class GeoJsonReaderDriver {
         else{
             connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom SET DATA TYPE geometry(%s,%d)", tableLocation.toString(), finalGeometryType, parsedSRID));
         }
+    }
+
+
+    /**
+     * Parses Json Array.
+     * Syntax:
+     * Json Array:
+     * {"member1": value1}, value2, value3, {"member4": value4}]
+     * @author Pham Hai Trung
+     * @param jp the json parser
+     * @return the array but written like a String
+     */
+    private void parseArrayMetadata(JsonParser jp) throws IOException {
+        JsonToken value = jp.nextToken();
+        while(value != JsonToken.END_ARRAY) {
+            if (value == JsonToken.START_OBJECT) {
+                parseObjectMetadata(jp);
+            } else if (value == JsonToken.START_ARRAY) {
+                parseArrayMetadata(jp);
+            }
+            value = jp.nextToken();
+        }
+    }
+
+    /**
+     * Parses Json Object.
+     * Syntax:
+     * Json Object:
+     * {"member1": value1}, {"member2": value2}}
+     * @author Pham Hai Trung
+     * @param jp the json parser
+     * @return the object but written like a String
+     */
+    private void parseObjectMetadata(JsonParser jp) throws IOException {
+        JsonToken value = jp.nextToken();
+        while(value != JsonToken.END_OBJECT) {
+            if (value == JsonToken.START_OBJECT) {
+                parseObjectMetadata(jp);
+            } else if (value == JsonToken.START_ARRAY) {
+                parseArrayMetadata(jp);
+            }
+            value = jp.nextToken();
+        }
+    }
+
+    /**
+     * Parses Json Array. Since their elements could be
+     * anything and H2GIS doesn't support such complicated
+     * structure, this parser will just put their values
+     * into an ordinary String object which is also GeoJson.
+     * Syntax:
+     * Json Array:
+     * {"member1": value1}, value2, value3, {"member4": value4}]
+     * @author Pham Hai Trung
+     * @param jp the json parser
+     * @return the array but written like a String
+     */
+    private void parseArray(JsonParser jp) throws IOException {
+
+    }
+
+    /**
+     * Parses Json Object. Since their elements could be
+     * anything and H2GIS doesn't support such complicated
+     * structure, this parser will just put their values
+     * into an ordinary String object which is also GeoJson.
+     * Syntax:
+     * Json Object:
+     * {"member1": value1}, {"member2": value2}}
+     * @author Pham Hai Trung
+     * @param jp the json parser
+     * @return the object but written like a String
+     */
+    private void parseObject(JsonParser jp) throws IOException {
+
     }
 }
