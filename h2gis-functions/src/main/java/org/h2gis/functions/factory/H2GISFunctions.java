@@ -163,7 +163,6 @@ import org.h2gis.functions.spatial.properties.ST_CoordDim;
 import org.h2gis.functions.spatial.properties.ST_Dimension;
 import org.h2gis.functions.spatial.properties.ST_Distance;
 import org.h2gis.functions.spatial.properties.ST_DistanceSphere;
-import org.h2gis.functions.spatial.properties.ST_Distance_Sphere;
 import org.h2gis.functions.spatial.properties.ST_EndPoint;
 import org.h2gis.functions.spatial.properties.ST_Envelope;
 import org.h2gis.functions.spatial.properties.ST_Explode;
@@ -298,7 +297,6 @@ public class H2GISFunctions {
                 new ST_Relate(),
                 new ST_Distance(),
                 new ST_DistanceSphere(),
-                new ST_Distance_Sphere(),
                 new ST_Intersection(),
                 new ST_Difference(),
                 new ST_Union(),
