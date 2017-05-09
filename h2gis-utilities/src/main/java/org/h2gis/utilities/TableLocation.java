@@ -28,7 +28,7 @@ import java.util.StringTokenizer;
 import java.util.regex.Pattern;
 
 /**
- * Just a class used to split Catalog Schema and Table. Theses components are a unique table identifier.
+ * Just a class used to split Catalog Schema and Table. These components are a unique table identifier.
  * @author Nicolas Fortin
  */
 public class TableLocation {
@@ -122,7 +122,7 @@ public class TableLocation {
     /**
      * String representation of Table location, for insertion in SQL statement.
      * This function try to do not quote unnecessary components; require database type.
-     * @param isH2 True if H2, false if
+     * @param isH2 True if H2, false if not
      * @return String representation of Table location
      */
     public String toString(boolean isH2) {

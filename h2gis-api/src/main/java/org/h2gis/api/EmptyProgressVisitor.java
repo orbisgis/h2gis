@@ -24,7 +24,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 /**
- * A progress visitor that do nothing.
+ * A progress visitor that does nothing.
  * @author Nicolas Fortin
  */
 public class EmptyProgressVisitor implements ProgressVisitor {

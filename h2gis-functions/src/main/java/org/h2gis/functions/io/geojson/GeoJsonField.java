@@ -28,7 +28,7 @@ package org.h2gis.functions.io.geojson;
 public class GeoJsonField {
     
     static String NAME="name";
-    static String CRS ="crs";
+    static String CRS ="crs"; // Only for geojson file of 2008 specification version. RFC 7946 uses WGS 84.
     static String FEATURES="features";
     static String FEATURECOLLECTION="featurecollection";
     static String FEATURE="feature";
@@ -43,9 +43,8 @@ public class GeoJsonField {
     static String COORDINATES="coordinates";
     static String GEOMETRYCOLLECTION="geometrycollection";
     static String GEOMETRIES="geometries";
-    static String CRS_URN_EPSG="urn:ogc:def:crs:epsg::";
-    static String CRS_URN_OGC="urn:ogc:def:crs:ogc:1.3:";
-    static String LINK="link";
-        
-    
+    static String CRS_URN_EPSG="urn:ogc:def:crs:epsg::"; // Only for geojson file of 2008 specification version.
+    static String CRS_URN_OGC="urn:ogc:def:crs:ogc:1.3:"; // Only for geojson file of 2008 specification version.
+    static String LINK="link"; // Only for geojson file of 2008 specification version. Link object doesn't exist in RFC 7946.
+    static String BBOX="bbox";
 }

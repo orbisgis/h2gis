@@ -237,7 +237,7 @@ public class GeoJsonWriteDriver {
             } else if (geom instanceof GeometryCollection) {
                 write((GeometryCollection) geom, gen);
             } else {
-                throw new RuntimeException("Unsupported Geomery type");
+                throw new RuntimeException("Unsupported Geometry type");
             }
             gen.writeEndObject();
         } else {
@@ -348,7 +348,7 @@ public class GeoJsonWriteDriver {
             } else if (geom instanceof GeometryCollection) {
                 write((GeometryCollection) geom, gen);
             } else {
-                throw new RuntimeException("Unsupported Geomery type");
+                throw new RuntimeException("Unsupported Geometry type");
             }
              gen.writeEndObject();
         }
@@ -359,6 +359,11 @@ public class GeoJsonWriteDriver {
      * Coordinates of a Polygon are an array of LinearRing coordinate arrays.
      * The first element in the array represents the exterior ring. Any
      * subsequent elements represent interior rings (or holes).
+     *
+     * A linear ring MUST follow the right-hand rule with respect to the area
+     * it bounds, i.e, exterior rings are counter-clockwise and holes are
+     * clockwise. (source: https://tools.ietf.org/pdf/rfc7946.pdf [3.1.6:
+     * Polygon]).
      *
      * No holes:
      *
@@ -494,12 +499,15 @@ public class GeoJsonWriteDriver {
     }
 
     /**
+     * Only used for geojson file of 2008 specification version.
+     * RFC 7946 uses WGS 84 by default.
      * Write the CRS in the geojson
      *
      * @param jsonGenerator
      * @param authorityAndSRID
      * @throws IOException
      */
+
     private void writeCRS(JsonGenerator jsonGenerator, String[] authorityAndSRID) throws IOException {
         if (authorityAndSRID[1] != null) {
             jsonGenerator.writeObjectFieldStart("crs");
