@@ -1366,6 +1366,14 @@ public class GeoJsonReaderDriver {
             } else if (value == JsonToken.START_ARRAY) {
                 ArrayList<Object> array = parseArray(jp);
                 ret.add(array);
+            } else if (value == JsonToken.VALUE_FALSE) {
+                ret.add(jp.getValueAsBoolean());
+            } else if (value == JsonToken.VALUE_TRUE) {
+                ret.add(jp.getValueAsBoolean());
+            } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
+                ret.add(jp.getValueAsDouble());
+            } else if (value == JsonToken.VALUE_NUMBER_INT) {
+                ret.add(jp.getBigIntegerValue());
             }
             value = jp.nextToken();
         }
@@ -1385,6 +1393,33 @@ public class GeoJsonReaderDriver {
      * @return the object but written like a String
      */
     private Object parseObject(JsonParser jp) throws IOException {
-       return null;
+        String ret = "{";
+        JsonToken value = jp.nextToken();
+        ret += value;
+        while (value != JsonToken.END_OBJECT) {
+            ret += ",";
+            if (value == JsonToken.START_OBJECT) {
+                ret += (String) parseObject(jp);
+            } else if (value == JsonToken.START_ARRAY) {
+                while (value != JsonToken.END_ARRAY) {
+                    if (value == JsonToken.START_OBJECT) {
+                        ret += (String) parseObject(jp);
+                    }
+                    else if (value == JsonToken.VALUE_FALSE) {
+                        ret += jp.getValueAsBoolean();
+                    } else if (value == JsonToken.VALUE_TRUE) {
+                        ret += jp.getValueAsBoolean();
+                    } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
+                        ret += jp.getValueAsDouble();
+                    } else if (value == JsonToken.VALUE_NUMBER_INT) {
+                        ret += jp.getBigIntegerValue();
+                    }
+                }
+            }
+
+            value = jp.nextToken();
+        }
+        ret += "}";
+        return ret;
     }
 }
