@@ -817,7 +817,14 @@ public class GeoJsonReaderDriver {
                 values[cachedColumnIndex.get(fieldName)] =  jp.getValueAsDouble();
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
                 values[cachedColumnIndex.get(fieldName)] =  jp.getBigIntegerValue();
-            } else {
+            } else if (value == JsonToken.START_ARRAY) {
+                ArrayList<Object> array = parseArray(jp);
+                values[cachedColumnIndex.get(fieldName)] = array;
+            } else if (value == JsonToken.START_OBJECT) {
+                Object obj = parseObject(jp);
+                values[cachedColumnIndex.get(fieldName)] = obj;
+            }
+            else {
                 //ignore other value
             }
         }
@@ -1347,10 +1354,22 @@ public class GeoJsonReaderDriver {
      * {"member1": value1}, value2, value3, {"member4": value4}]
      * @author Pham Hai Trung
      * @param jp the json parser
-     * @return the array but written like a String
+     * @return the array
      */
-    private void parseArray(JsonParser jp) throws IOException {
-
+    private ArrayList<Object> parseArray(JsonParser jp) throws IOException {
+        JsonToken value = jp.nextToken();
+        ArrayList<Object> ret = new ArrayList<>();
+        while(value != JsonToken.END_ARRAY) {
+            if (value == JsonToken.START_OBJECT) {
+                Object object = parseObject(jp);
+                ret.add(object);
+            } else if (value == JsonToken.START_ARRAY) {
+                ArrayList<Object> array = parseArray(jp);
+                ret.add(array);
+            }
+            value = jp.nextToken();
+        }
+        return ret;
     }
 
     /**
@@ -1365,7 +1384,7 @@ public class GeoJsonReaderDriver {
      * @param jp the json parser
      * @return the object but written like a String
      */
-    private void parseObject(JsonParser jp) throws IOException {
-
+    private Object parseObject(JsonParser jp) throws IOException {
+       return null;
     }
 }
