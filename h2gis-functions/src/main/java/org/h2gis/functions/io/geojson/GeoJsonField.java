@@ -22,22 +22,6 @@ package org.h2gis.functions.io.geojson;
 
 /**
  * GeoJson fields used by the standard.
- *
- * Some of them will only be used by GeoJSON
- * files of the 2008 specification.
- * ("CRS", "CRS_URN_EPSG", "CRS_URN_OGC": These
- * fields are no longer useful for the new
- * standard RFC 7946 because it uses WGS 84
- * by default.
- * "LINK": link object doesn't exist in RFC 7946.)
- *
- * Although, these fields will be kept for
- * compatibility reasons and indicated "2008" in
- * comment.
- *
- * New field "BBOX" is added for interoperability
- * reasons.
- * 
  * @author Erwan Bocher
  */
 public class GeoJsonField {
