@@ -684,11 +684,11 @@ public class GeoJsonReaderDriver {
                     cachedColumnNames.put(fieldName, "BIGINT");
                     break;
                 case START_ARRAY:
-                    cachedColumnNames.put(fieldName, "VARCHAR");
+                    cachedColumnNames.put(fieldName, "ARRAY");
                     parseArrayMetadata(jp);
                     break;
                 case START_OBJECT:
-                    cachedColumnNames.put(fieldName, "VARCHAR");
+                    cachedColumnNames.put(fieldName, "OTHER");
                     parseObjectMetadata(jp);
                     break;
                 //ignore other value
