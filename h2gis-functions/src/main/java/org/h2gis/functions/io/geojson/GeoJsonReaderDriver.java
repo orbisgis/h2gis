@@ -339,7 +339,7 @@ public class GeoJsonReaderDriver {
     
     
      /**
-     * Parsed the geometries to return its properties
+     * Parses the geometries to return its properties
      * 
      * @param jp
      * @throws IOException
@@ -393,7 +393,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a point and check if it's wellformated
+     * Parses a point and check if it's wellformated
      *
      * Syntax:
      *
@@ -414,7 +414,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a MultiPoint and check if it's wellformated
+     * Parses a MultiPoint and check if it's wellformated
      *
      * Syntax:
      *
@@ -439,7 +439,7 @@ public class GeoJsonReaderDriver {
     
     /**
      *
-     * Parse a LineString and check if it's wellformated
+     * Parses a LineString and check if it's wellformated
      *
      * Syntax:
      *
@@ -460,7 +460,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse MultiLineString defined as:
+     * Parses MultiLineString defined as:
      *
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
@@ -485,7 +485,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a Polygon as an array of LinearRing coordinate arrays.
+     * Parses a Polygon as an array of LinearRing coordinate arrays.
      * The first element in the array represents the exterior ring. Any
      * subsequent elements represent interior rings (or holes).
      *
@@ -533,7 +533,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a MultiPolygon as an array of Polygon coordinate arrays:
+     * Parses a MultiPolygon as an array of Polygon coordinate arrays:
      *
      * { "type": "MultiPolygon", "coordinates": [ [[[102.0, 2.0], [103.0, 2.0],
      * [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]], [[[100.0, 0.0], [101.0, 0.0],
@@ -551,23 +551,15 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // START_ARRAY [ coordinates             
             jp.nextToken(); //Start the polygon
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                //Parse the polygon
+                //Parses the polygon
                 jp.nextToken(); //Start the RING
                 int linesIndex = 0;
                 while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                    if (linesIndex == 0) {
-                        parseCoordinatesMetadata(jp);
-                    } else {
-                        parseCoordinatesMetadata(jp);
-                    }
+                    parseCoordinatesMetadata(jp);
                     jp.nextToken();//END RING
                     linesIndex++;
                 }
-                if (linesIndex > 1) {
-                    jp.nextToken();//END_OBJECT
-                } else {
-                    jp.nextToken();//END_OBJECT
-                }
+                jp.nextToken();//END_OBJECT
             }
             jp.nextToken();//END_OBJECT } geometry
 
@@ -577,7 +569,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a GeometryCollection
+     * Parses a GeometryCollection
      * the geometry objects are described above:
      *
      * { "type": "GeometryCollection", "geometries": [ { "type": "Point",
@@ -611,7 +603,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a GeoJSON coordinate array and check if it's wellformed. The first
+     * Parses a GeoJSON coordinate array and check if it's wellformed. The first
      * token corresponds to the first X value. The last token correponds to the
      * end of the coordinate array "]".
      *
@@ -628,15 +620,14 @@ public class GeoJsonReaderDriver {
         jp.nextToken(); // second value
         //We look for a z value
         jp.nextToken();
-        if (jp.getCurrentToken() == JsonToken.END_ARRAY) {
-        } else {
+        if (jp.getCurrentToken() != JsonToken.END_ARRAY) {
             jp.nextToken(); // exit array
         }
         jp.nextToken();
     }
     
     /**
-     * Parse a sequence of coordinates array expressed as
+     * Parses a sequence of coordinates array expressed as
      *
      * [ [100.0, 0.0], [101.0, 1.0] ]
      * 
@@ -739,7 +730,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Set the parsed geometry to the table     * 
+     * Sets the parsed geometry to the table     *
      * 
      * @param jp
      * @throws IOException
@@ -928,7 +919,7 @@ public class GeoJsonReaderDriver {
 
     /**
      *
-     * Parse the array of positions.
+     * Parses the array of positions.
      *
      * Syntax:
      *
@@ -1052,7 +1043,7 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // START_ARRAY [ coordinates             
             jp.nextToken(); //Start the polygon
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                //Parse the polygon
+                //Parses the polygon
                 jp.nextToken(); //Start the RING
                 int linesIndex = 0;
                 LinearRing linearRing = null;
@@ -1205,7 +1196,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Read the CRS element and return the database SRID.
+     * Reads the CRS element and return the database SRID.
      * 
      * Parsed syntax:
      * 
@@ -1272,7 +1263,7 @@ public class GeoJsonReaderDriver {
     
 
      /**
-     * Add the geometry type constraint and the SRID
+     * Adds the geometry type constraint and the SRID
      */
     private void setGeometryTypeConstraints() throws SQLException {
         String finalGeometryType = GeoJsonField.GEOMETRY;
