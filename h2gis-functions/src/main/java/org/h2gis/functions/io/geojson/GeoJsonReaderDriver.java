@@ -310,7 +310,7 @@ public class GeoJsonReaderDriver {
      * { "type": "Feature", "geometry":{"type": "Point", "coordinates": [102.0,
      * 0.5]}, "properties": {"prop0": "value0"} }
      *
-     * @param jsParser
+     * @param jp
      */
     private void parseFeatureMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME geometry
@@ -339,7 +339,7 @@ public class GeoJsonReaderDriver {
     
     
      /**
-     * Parsed the geometries to return its properties
+     * Parses the geometries to return its properties
      * 
      * @param jp
      * @throws IOException
@@ -362,30 +362,30 @@ public class GeoJsonReaderDriver {
      *
      * "geometry":{"type": "Point", "coordinates": [102.0,0.5]}
      *
-     * @param jsParser
+     * @param jp
      * @throws IOException
      */
-    private void parseGeometryMetadata(JsonParser jsParser, String geometryType) throws IOException, SQLException {        
+    private void parseGeometryMetadata(JsonParser jp, String geometryType) throws IOException, SQLException {        
         if (geometryType.equalsIgnoreCase(GeoJsonField.POINT)) {
-             parsePointMetadata(jsParser);
+             parsePointMetadata(jp);
              finalGeometryTypes.add(GeoJsonField.POINT);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTIPOINT)) {
-             parseMultiPointMetadata(jsParser);
+             parseMultiPointMetadata(jp);
              finalGeometryTypes.add(GeoJsonField.MULTIPOINT);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.LINESTRING)) {
-             parseLinestringMetadata(jsParser);
+             parseLinestringMetadata(jp);
              finalGeometryTypes.add(GeoJsonField.LINESTRING);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTILINESTRING)) {
-            parseMultiLinestringMetadata(jsParser);
+            parseMultiLinestringMetadata(jp);
             finalGeometryTypes.add(GeoJsonField.MULTILINESTRING);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.POLYGON)) {
-             parsePolygonMetadata(jsParser);
+             parsePolygonMetadata(jp);
              finalGeometryTypes.add(GeoJsonField.POLYGON);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTIPOLYGON)) {
-             parseMultiPolygonMetadata(jsParser);
+             parseMultiPolygonMetadata(jp);
              finalGeometryTypes.add(GeoJsonField.MULTIPOLYGON);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.GEOMETRYCOLLECTION)) {
-             parseGeometryCollectionMetadata(jsParser);
+             parseGeometryCollectionMetadata(jp);
              finalGeometryTypes.add(GeoJsonField.GEOMETRYCOLLECTION);
         } else {
             throw new SQLException("Unsupported geometry : " + geometryType);
@@ -393,13 +393,13 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a point and check if it's wellformated
+     * Parses a point and check if it's wellformated
      *
      * Syntax:
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
-     * @param jsParser
+     * @param jp
      * @throws IOException
      */
     private void parsePointMetadata(JsonParser jp) throws IOException, SQLException {
@@ -414,13 +414,13 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a MultiPoint and check if it's wellformated
+     * Parses a MultiPoint and check if it's wellformated
      *
      * Syntax:
      *
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param jsParser
+     * @param jp
      * @throws IOException
      */
     private void parseMultiPointMetadata(JsonParser jp) throws IOException, SQLException {
@@ -439,13 +439,13 @@ public class GeoJsonReaderDriver {
     
     /**
      *
-     * Parse a LineString and check if it's wellformated
+     * Parses a LineString and check if it's wellformated
      *
      * Syntax:
      *
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param jsParser
+     * @param jp
      */
     private void parseLinestringMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -460,12 +460,12 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse MultiLineString defined as:
+     * Parses MultiLineString defined as:
      *
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
      *
-     * @param jsParser
+     * @param jp
      */
     private void parseMultiLinestringMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -485,7 +485,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a Polygon as an array of LinearRing coordinate arrays.
+     * Parses a Polygon as an array of LinearRing coordinate arrays.
      * The first element in the array represents the exterior ring. Any
      * subsequent elements represent interior rings (or holes).
      *
@@ -533,7 +533,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a MultiPolygon as an array of Polygon coordinate arrays:
+     * Parses a MultiPolygon as an array of Polygon coordinate arrays:
      *
      * { "type": "MultiPolygon", "coordinates": [ [[[102.0, 2.0], [103.0, 2.0],
      * [103.0, 3.0], [102.0, 3.0], [102.0, 2.0]]], [[[100.0, 0.0], [101.0, 0.0],
@@ -551,23 +551,15 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // START_ARRAY [ coordinates             
             jp.nextToken(); //Start the polygon
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                //Parse the polygon
+                //Parses the polygon
                 jp.nextToken(); //Start the RING
                 int linesIndex = 0;
                 while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                    if (linesIndex == 0) {
-                        parseCoordinatesMetadata(jp);
-                    } else {
-                        parseCoordinatesMetadata(jp);
-                    }
+                    parseCoordinatesMetadata(jp);
                     jp.nextToken();//END RING
                     linesIndex++;
                 }
-                if (linesIndex > 1) {
-                    jp.nextToken();//END_OBJECT
-                } else {
-                    jp.nextToken();//END_OBJECT
-                }
+                jp.nextToken();//END_OBJECT
             }
             jp.nextToken();//END_OBJECT } geometry
 
@@ -577,7 +569,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a GeometryCollection
+     * Parses a GeometryCollection
      * the geometry objects are described above:
      *
      * { "type": "GeometryCollection", "geometries": [ { "type": "Point",
@@ -611,7 +603,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Parse a GeoJSON coordinate array and check if it's wellformed. The first
+     * Parses a GeoJSON coordinate array and check if it's wellformed. The first
      * token corresponds to the first X value. The last token correponds to the
      * end of the coordinate array "]".
      *
@@ -628,15 +620,14 @@ public class GeoJsonReaderDriver {
         jp.nextToken(); // second value
         //We look for a z value
         jp.nextToken();
-        if (jp.getCurrentToken() == JsonToken.END_ARRAY) {
-        } else {
+        if (jp.getCurrentToken() != JsonToken.END_ARRAY) {
             jp.nextToken(); // exit array
         }
         jp.nextToken();
     }
     
     /**
-     * Parse a sequence of coordinates array expressed as
+     * Parses a sequence of coordinates array expressed as
      *
      * [ [100.0, 0.0], [101.0, 1.0] ]
      * 
@@ -662,7 +653,7 @@ public class GeoJsonReaderDriver {
      *
      * "properties": {"prop0": "value0"}
      *
-     * @param jsParser
+     * @param jp
      */
     private void parsePropertiesMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
@@ -711,7 +702,7 @@ public class GeoJsonReaderDriver {
      * { "type": "Feature", "geometry":{"type": "Point", "coordinates": [102.0,
      * 0.5]}, "properties": {"prop0": "value0"} }
      *
-     * @param jsParser
+     * @param jp
      */
     private Object[] parseFeature(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME geometry
@@ -739,7 +730,7 @@ public class GeoJsonReaderDriver {
     }
     
     /**
-     * Set the parsed geometry to the table     * 
+     * Sets the parsed geometry to the table     *
      * 
      * @param jp
      * @throws IOException
@@ -761,25 +752,25 @@ public class GeoJsonReaderDriver {
      *
      * "geometry":{"type": "Point", "coordinates": [102.0,0.5]}
      *
-     * @param jsParser
+     * @param jp
      * @throws IOException
      * @return Geometry
      */
-    private Geometry parseGeometry(JsonParser jsParser, String geometryType) throws IOException, SQLException {        
+    private Geometry parseGeometry(JsonParser jp, String geometryType) throws IOException, SQLException {        
         if (geometryType.equalsIgnoreCase(GeoJsonField.POINT)) {
-            return parsePoint(jsParser);
+            return parsePoint(jp);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTIPOINT)) {
-            return parseMultiPoint(jsParser);
+            return parseMultiPoint(jp);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.LINESTRING)) {
-            return parseLinestring(jsParser);
+            return parseLinestring(jp);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTILINESTRING)) {
-            return parseMultiLinestring(jsParser);
+            return parseMultiLinestring(jp);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.POLYGON)) {
-            return parsePolygon(jsParser);
+            return parsePolygon(jp);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.MULTIPOLYGON)) {
-            return parseMultiPolygon(jsParser);
+            return parseMultiPolygon(jp);
         } else if (geometryType.equalsIgnoreCase(GeoJsonField.GEOMETRYCOLLECTION)) {
-            return parseGeometryCollection(jsParser);
+            return parseGeometryCollection(jp);
         } else {
             throw new SQLException("Unsupported geometry : " + geometryType);
         }
@@ -792,7 +783,7 @@ public class GeoJsonReaderDriver {
      *
      * "properties": {"prop0": "value0"}
      *
-     * @param jsParser
+     * @param jp
      */
     private void parseProperties(JsonParser jp, Object[] values) throws IOException, SQLException {
         jp.nextToken();//START_OBJECT {
@@ -886,7 +877,7 @@ public class GeoJsonReaderDriver {
      *
      * { "type": "Point", "coordinates": [100.0, 0.0] }
      *
-     * @param jsParser
+     * @param jp
      * @throws IOException
      * @return Point
      */
@@ -909,7 +900,7 @@ public class GeoJsonReaderDriver {
      *
      * { "type": "MultiPoint", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param jsParser
+     * @param jp
      * @throws IOException
      * @return MultiPoint
      */
@@ -928,13 +919,13 @@ public class GeoJsonReaderDriver {
 
     /**
      *
-     * Parse the array of positions.
+     * Parses the array of positions.
      *
      * Syntax:
      *
      * { "type": "LineString", "coordinates": [ [100.0, 0.0], [101.0, 1.0] ] }
      *
-     * @param jsParser
+     * @param jp
      */
     private LineString parseLinestring(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME coordinates        
@@ -955,7 +946,7 @@ public class GeoJsonReaderDriver {
      * { "type": "MultiLineString", "coordinates": [ [ [100.0, 0.0], [101.0,
      * 1.0] ], [ [102.0, 2.0], [103.0, 3.0] ] ] }
      *
-     * @param jsParser
+     * @param jp
      * @return MultiLineString
      */
     private MultiLineString parseMultiLinestring(JsonParser jp) throws IOException, SQLException {
@@ -1052,7 +1043,7 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // START_ARRAY [ coordinates             
             jp.nextToken(); //Start the polygon
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
-                //Parse the polygon
+                //Parses the polygon
                 jp.nextToken(); //Start the RING
                 int linesIndex = 0;
                 LinearRing linearRing = null;
@@ -1205,7 +1196,7 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Read the CRS element and return the database SRID.
+     * Reads the CRS element and return the database SRID.
      * 
      * Parsed syntax:
      * 
@@ -1272,7 +1263,7 @@ public class GeoJsonReaderDriver {
     
 
      /**
-     * Add the geometry type constraint and the SRID
+     * Adds the geometry type constraint and the SRID
      */
     private void setGeometryTypeConstraints() throws SQLException {
         String finalGeometryType = GeoJsonField.GEOMETRY;
