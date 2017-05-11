@@ -818,11 +818,17 @@ public class GeoJsonReaderDriver {
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
                 values[cachedColumnIndex.get(fieldName)] =  jp.getBigIntegerValue();
             } else if (value == JsonToken.START_ARRAY) {
-                ArrayList<Object> array = parseArray(jp);
+                ArrayList<Object> arrayList = parseArray(jp);
+                Object[] array = new Object[arrayList.size()];
+                int i = 0;
+                for(Object obj: arrayList) {
+                    array[i] = obj;
+                    i++;
+                }
                 values[cachedColumnIndex.get(fieldName)] = array;
             } else if (value == JsonToken.START_OBJECT) {
-                Object obj = parseObject(jp);
-                values[cachedColumnIndex.get(fieldName)] = obj;
+                String str = parseObject(jp);
+                values[cachedColumnIndex.get(fieldName)] = str;
             }
             else {
                 //ignore other value
@@ -1327,28 +1333,25 @@ public class GeoJsonReaderDriver {
      * Parses Json Object.
      * Syntax:
      * Json Object:
-     * {"member1": value1}, {"member2": value2}}
+     * "member1": value1, "member2": value2}
      * @author Pham Hai Trung
      * @param jp the json parser
      * @return the object but written like a String
      */
     private void parseObjectMetadata(JsonParser jp) throws IOException {
-        JsonToken value = jp.nextToken();
-        while(value != JsonToken.END_OBJECT) {
+        JsonToken value;
+        while(jp.nextToken() != JsonToken.END_OBJECT) {
+            value = jp.nextToken();
             if (value == JsonToken.START_OBJECT) {
                 parseObjectMetadata(jp);
             } else if (value == JsonToken.START_ARRAY) {
                 parseArrayMetadata(jp);
             }
-            value = jp.nextToken();
         }
     }
 
     /**
-     * Parses Json Array. Since their elements could be
-     * anything and H2GIS doesn't support such complicated
-     * structure, this parser will just put their values
-     * into an ordinary String object which is also GeoJson.
+     * Parses Json Array and returns an ArrayList
      * Syntax:
      * Json Array:
      * {"member1": value1}, value2, value3, {"member4": value4}]
@@ -1366,14 +1369,8 @@ public class GeoJsonReaderDriver {
             } else if (value == JsonToken.START_ARRAY) {
                 ArrayList<Object> array = parseArray(jp);
                 ret.add(array);
-            } else if (value == JsonToken.VALUE_FALSE) {
-                ret.add(jp.getValueAsBoolean());
-            } else if (value == JsonToken.VALUE_TRUE) {
-                ret.add(jp.getValueAsBoolean());
-            } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
-                ret.add(jp.getValueAsDouble());
-            } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                ret.add(jp.getBigIntegerValue());
+            } else {
+                ret.add(jp.getValueAsString());
             }
             value = jp.nextToken();
         }
@@ -1383,43 +1380,28 @@ public class GeoJsonReaderDriver {
     /**
      * Parses Json Object. Since their elements could be
      * anything and H2GIS doesn't support such complicated
-     * structure, this parser will just put their values
-     * into an ordinary String object which is also GeoJson.
+     * structure, this parser will just write ordinary
+     * String object "{}".
      * Syntax:
      * Json Object:
-     * {"member1": value1}, {"member2": value2}}
+     * "member1": value1, "member2": value2}
      * @author Pham Hai Trung
      * @param jp the json parser
      * @return the object but written like a String
      */
-    private Object parseObject(JsonParser jp) throws IOException {
+    private String parseObject(JsonParser jp) throws IOException {
         String ret = "{";
-        JsonToken value = jp.nextToken();
-        ret += value;
-        while (value != JsonToken.END_OBJECT) {
-            ret += ",";
-            if (value == JsonToken.START_OBJECT) {
-                ret += (String) parseObject(jp);
-            } else if (value == JsonToken.START_ARRAY) {
-                while (value != JsonToken.END_ARRAY) {
-                    if (value == JsonToken.START_OBJECT) {
-                        ret += (String) parseObject(jp);
-                    }
-                    else if (value == JsonToken.VALUE_FALSE) {
-                        ret += jp.getValueAsBoolean();
-                    } else if (value == JsonToken.VALUE_TRUE) {
-                        ret += jp.getValueAsBoolean();
-                    } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
-                        ret += jp.getValueAsDouble();
-                    } else if (value == JsonToken.VALUE_NUMBER_INT) {
-                        ret += jp.getBigIntegerValue();
-                    }
-                }
-            }
-
+        JsonToken value;
+        while (jp.nextToken() != JsonToken.END_OBJECT) {
             value = jp.nextToken();
+            if (value == JsonToken.START_OBJECT) {
+                parseObjectMetadata(jp);
+            } else if (value == JsonToken.START_ARRAY) {
+                parseArrayMetadata(jp);
+            }
         }
         ret += "}";
         return ret;
     }
+
 }
