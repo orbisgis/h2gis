@@ -568,5 +568,17 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.close();
     }
+
+    @Test
+    public void testReadProperties() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES_READ");
+        stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ",'PROPERTIES_READ')");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_PROPERTIES_READ");
+        res.next();
+        assertTrue(res.getObject(1).equals(-105576));
+        res.close();
+        stat.close();
+    }
         
 }
