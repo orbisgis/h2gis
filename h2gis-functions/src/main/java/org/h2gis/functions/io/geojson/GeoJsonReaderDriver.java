@@ -1206,6 +1206,8 @@ public class GeoJsonReaderDriver {
 
     /**
      * Read the CRS element and return the database SRID.
+     * Only used to parse GeoJson files of the 2008
+     * specification.
      * 
      * Parsed syntax:
      * 
@@ -1258,7 +1260,8 @@ public class GeoJsonReaderDriver {
 
     /**
      * We skip the CRS because it has been already parsed.
-     * 
+     * Only used to parse GeoJson files of the 2008
+     * specification.
      *
      * @param jp
      */
