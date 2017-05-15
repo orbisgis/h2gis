@@ -1196,25 +1196,20 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Read the CRS element and return the database SRID.
-     * Only used to parse GeoJson files of the 2008
-     * specification.
      * Reads the CRS element and return the database SRID.
-     *
      * Only used to parse GeoJson files of the 2008
      * specification.
-     * 
      * Parsed syntax:
-     * 
+     *
      * "crs":{
      * "type":"name",
      * "properties":
      * {"name":"urn:ogc:def:crs:EPSG::4326"
      * }
      * }
-     * 
+     *
      * @param jp
-     * @return 
+     * @return
      */
     private int readCRS(JsonParser jp) throws IOException, SQLException {
         int srid = 0;
@@ -1237,7 +1232,7 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); //END_OBJECT }
             jp.nextToken(); //END_OBJECT }
             jp.nextToken(); //Go to features
-        }        
+        }
         else if (firstField.equalsIgnoreCase(GeoJsonField.LINK)) {
             log.warn("Linked CRS is not supported.");
             jp.nextToken();
@@ -1249,7 +1244,7 @@ public class GeoJsonReaderDriver {
         else{
             throw new SQLException("Malformed GeoJSON CRS element.");
         }
-        
+
         return srid;
     }
 
@@ -1267,19 +1262,17 @@ public class GeoJsonReaderDriver {
         return jp.getText();
     }
 
-    
-
-     /**
+    /**
      * Adds the geometry type constraint and the SRID
      */
     private void setGeometryTypeConstraints() throws SQLException {
         String finalGeometryType = GeoJsonField.GEOMETRY;
         if (finalGeometryTypes.size() == 1) {
             finalGeometryType = (String) finalGeometryTypes.iterator().next();
-        }        
+        }
         if(isH2){
-             finalGeometryType = GeoJsonField.GEOMETRY;//workaround for H2
-             connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom %s", tableLocation.toString(), finalGeometryType));        
+            finalGeometryType = GeoJsonField.GEOMETRY;//workaround for H2
+            connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom %s", tableLocation.toString(), finalGeometryType));
         }
         else{
             connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom SET DATA TYPE geometry(%s,%d)", tableLocation.toString(), finalGeometryType, parsedSRID));
