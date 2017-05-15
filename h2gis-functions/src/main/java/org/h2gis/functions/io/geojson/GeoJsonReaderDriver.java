@@ -680,7 +680,11 @@ public class GeoJsonReaderDriver {
                     break;
                 case START_OBJECT:
                     cachedColumnNames.put(fieldName, "OTHER");
-                    parseObjectMetadata(jp);
+                    parseObjectMetadata(jp, true);
+                    break;
+                case VALUE_NULL:
+                    cachedColumnNames.put(fieldName, "OTHER");
+                    parseObjectMetadata(jp, false);
                     break;
                 //ignore other value
                 default:
@@ -818,7 +822,10 @@ public class GeoJsonReaderDriver {
                 }
                 values[cachedColumnIndex.get(fieldName)] = array;
             } else if (value == JsonToken.START_OBJECT) {
-                String str = parseObject(jp);
+                String str = parseObject(jp, true);
+                values[cachedColumnIndex.get(fieldName)] = str;
+            } else if (value == JsonToken.VALUE_NULL) {
+                String str = parseObject(jp, false);
                 values[cachedColumnIndex.get(fieldName)] = str;
             }
             else {
@@ -1312,9 +1319,11 @@ public class GeoJsonReaderDriver {
         JsonToken value = jp.nextToken();
         while(value != JsonToken.END_ARRAY) {
             if (value == JsonToken.START_OBJECT) {
-                parseObjectMetadata(jp);
+                parseObjectMetadata(jp, true);
             } else if (value == JsonToken.START_ARRAY) {
                 parseArrayMetadata(jp);
+            } else if (value != JsonToken.VALUE_NULL) {
+                parseObjectMetadata(jp, false);
             }
             value = jp.nextToken();
         }
@@ -1329,14 +1338,18 @@ public class GeoJsonReaderDriver {
      * @param jp the json parser
      * @return the object but written like a String
      */
-    private void parseObjectMetadata(JsonParser jp) throws IOException {
-        JsonToken value;
-        while(jp.nextToken() != JsonToken.END_OBJECT) {
-            value = jp.nextToken();
-            if (value == JsonToken.START_OBJECT) {
-                parseObjectMetadata(jp);
-            } else if (value == JsonToken.START_ARRAY) {
-                parseArrayMetadata(jp);
+    private void parseObjectMetadata(JsonParser jp, boolean notNull) throws IOException {
+        if (notNull) {
+            JsonToken value;
+            while (jp.nextToken() != JsonToken.END_OBJECT) {
+                value = jp.nextToken();
+                if (value == JsonToken.START_OBJECT) {
+                    parseObjectMetadata(jp, true);
+                } else if (value == JsonToken.START_ARRAY) {
+                    parseArrayMetadata(jp);
+                } else if (value == JsonToken.VALUE_NULL) {
+                    parseObjectMetadata(jp, true);
+                }
             }
         }
     }
@@ -1355,11 +1368,14 @@ public class GeoJsonReaderDriver {
         ArrayList<Object> ret = new ArrayList<>();
         while(value != JsonToken.END_ARRAY) {
             if (value == JsonToken.START_OBJECT) {
-                Object object = parseObject(jp);
+                Object object = parseObject(jp, true);
                 ret.add(object);
             } else if (value == JsonToken.START_ARRAY) {
                 ArrayList<Object> array = parseArray(jp);
                 ret.add(array);
+            } else if (value == JsonToken.VALUE_NULL) {
+                Object obj = parseObject(jp, false);
+                ret.add(obj);
             } else {
                 ret.add(jp.getValueAsString());
             }
@@ -1380,18 +1396,23 @@ public class GeoJsonReaderDriver {
      * @param jp the json parser
      * @return the object but written like a String
      */
-    private String parseObject(JsonParser jp) throws IOException {
-        String ret = "{";
-        JsonToken value;
-        while (jp.nextToken() != JsonToken.END_OBJECT) {
-            value = jp.nextToken();
-            if (value == JsonToken.START_OBJECT) {
-                parseObjectMetadata(jp);
-            } else if (value == JsonToken.START_ARRAY) {
-                parseArrayMetadata(jp);
+    private String parseObject(JsonParser jp, boolean notNull) throws IOException {
+        String ret = null;
+        if (notNull) {
+            ret = "{";
+            JsonToken value;
+            while (jp.nextToken() != JsonToken.END_OBJECT) {
+                value = jp.nextToken();
+                if (value == JsonToken.START_OBJECT) {
+                    parseObjectMetadata(jp, true);
+                } else if (value == JsonToken.START_ARRAY) {
+                    parseArrayMetadata(jp);
+                } else if (value == JsonToken.VALUE_NULL) {
+                    parseObjectMetadata(jp, false);
+                }
             }
+            ret += "}";
         }
-        ret += "}";
         return ret;
     }
 

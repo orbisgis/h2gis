@@ -461,7 +461,14 @@ public class GeoJsonWriteDriver {
             for (Map.Entry<String, Integer> entry : cachedColumnNames.entrySet()) {
                 String string = entry.getKey();
                 Integer fieldId = entry.getValue();
-                jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
+                // System.out.println(rs.getObject(fieldId).getClass().getSimpleName());
+                if (rs.getObject(fieldId) instanceof Array) {
+                    jsonGenerator.writeObjectFieldStart(string);
+                    writeArray(jsonGenerator);
+                    System.out.println("hello");
+                } else {
+                    jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
+                }
             }
             jsonGenerator.writeEndObject();
         }
@@ -487,6 +494,8 @@ public class GeoJsonWriteDriver {
             case Types.VARCHAR:
             case Types.NCHAR:
             case Types.CHAR:
+            case Types.ARRAY:
+            case Types.TIMESTAMP:
                 return true;
             default:
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);
@@ -512,5 +521,17 @@ public class GeoJsonWriteDriver {
             jsonGenerator.writeEndObject();
         }
     }
-    
+
+    /**
+     * Write the array in the geojson
+     *
+     * @param jsonGenerator
+     * @throw IOException
+     * @author Pham Hai Trung
+     */
+    private void writeArray(JsonGenerator jsonGenerator) throws IOException, SQLException {
+        jsonGenerator.writeStartArray();
+        jsonGenerator.writeEndArray();
+    }
+
 }
