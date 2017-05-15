@@ -573,7 +573,7 @@ public class GeojsonImportExportTest {
     public void testReadProperties() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES_READ;");
-        stat.execute("CALL GeoJsonRead('D:\\users\\pham\\Desktop\\data.geojson','TABLE_PROPERTIES_READ');");
+        stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ", 'TABLE_PROPERTIES_READ');");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_PROPERTIES_READ;");
         res.next();
         assertEquals(-105576, res.getDouble(2), 0);
