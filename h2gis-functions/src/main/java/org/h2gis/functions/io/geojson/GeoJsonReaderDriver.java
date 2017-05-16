@@ -68,7 +68,7 @@ import org.slf4j.LoggerFactory;
  * FeatureCollection is parsed. If the GeoJSON format does not contain any
  * properties, a default primary key is added.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, Hai Trung Pham
  */
 public class GeoJsonReaderDriver {
     private final static ArrayList<String> geomTypes;    
@@ -680,11 +680,7 @@ public class GeoJsonReaderDriver {
                     break;
                 case START_OBJECT:
                     cachedColumnNames.put(fieldName, "OTHER");
-                    parseObjectMetadata(jp, true);
-                    break;
-                case VALUE_NULL:
-                    cachedColumnNames.put(fieldName, "OTHER");
-                    parseObjectMetadata(jp, false);
+                    parseObjectMetadata(jp);
                     break;
                 //ignore other value
                 default:
@@ -822,10 +818,7 @@ public class GeoJsonReaderDriver {
                 }
                 values[cachedColumnIndex.get(fieldName)] = array;
             } else if (value == JsonToken.START_OBJECT) {
-                String str = parseObject(jp, true);
-                values[cachedColumnIndex.get(fieldName)] = str;
-            } else if (value == JsonToken.VALUE_NULL) {
-                String str = parseObject(jp, false);
+                String str = parseObject(jp);
                 values[cachedColumnIndex.get(fieldName)] = str;
             }
             else {
@@ -1319,11 +1312,9 @@ public class GeoJsonReaderDriver {
         JsonToken value = jp.nextToken();
         while(value != JsonToken.END_ARRAY) {
             if (value == JsonToken.START_OBJECT) {
-                parseObjectMetadata(jp, true);
+                parseObjectMetadata(jp);
             } else if (value == JsonToken.START_ARRAY) {
                 parseArrayMetadata(jp);
-            } else if (value != JsonToken.VALUE_NULL) {
-                parseObjectMetadata(jp, false);
             }
             value = jp.nextToken();
         }
@@ -1338,18 +1329,14 @@ public class GeoJsonReaderDriver {
      * @param jp the json parser
      * @return the object but written like a String
      */
-    private void parseObjectMetadata(JsonParser jp, boolean notNull) throws IOException {
-        if (notNull) {
-            JsonToken value;
-            while (jp.nextToken() != JsonToken.END_OBJECT) {
-                value = jp.nextToken();
-                if (value == JsonToken.START_OBJECT) {
-                    parseObjectMetadata(jp, true);
-                } else if (value == JsonToken.START_ARRAY) {
-                    parseArrayMetadata(jp);
-                } else if (value == JsonToken.VALUE_NULL) {
-                    parseObjectMetadata(jp, true);
-                }
+    private void parseObjectMetadata(JsonParser jp) throws IOException {
+        JsonToken value;
+        while (jp.nextToken() != JsonToken.END_OBJECT) {
+            value = jp.nextToken();
+            if (value == JsonToken.START_OBJECT) {
+                parseObjectMetadata(jp);
+            } else if (value == JsonToken.START_ARRAY) {
+                parseArrayMetadata(jp);
             }
         }
     }
@@ -1359,7 +1346,6 @@ public class GeoJsonReaderDriver {
      * Syntax:
      * Json Array:
      * {"member1": value1}, value2, value3, {"member4": value4}]
-     * @author Pham Hai Trung
      * @param jp the json parser
      * @return the array
      */
@@ -1368,14 +1354,11 @@ public class GeoJsonReaderDriver {
         ArrayList<Object> ret = new ArrayList<>();
         while(value != JsonToken.END_ARRAY) {
             if (value == JsonToken.START_OBJECT) {
-                Object object = parseObject(jp, true);
+                Object object = parseObject(jp);
                 ret.add(object);
             } else if (value == JsonToken.START_ARRAY) {
                 ArrayList<Object> array = parseArray(jp);
                 ret.add(array);
-            } else if (value == JsonToken.VALUE_NULL) {
-                Object obj = parseObject(jp, false);
-                ret.add(obj);
             } else {
                 ret.add(jp.getValueAsString());
             }
@@ -1392,27 +1375,21 @@ public class GeoJsonReaderDriver {
      * Syntax:
      * Json Object:
      * "member1": value1, "member2": value2}
-     * @author Pham Hai Trung
      * @param jp the json parser
      * @return the object but written like a String
      */
-    private String parseObject(JsonParser jp, boolean notNull) throws IOException {
-        String ret = null;
-        if (notNull) {
-            ret = "{";
-            JsonToken value;
-            while (jp.nextToken() != JsonToken.END_OBJECT) {
-                value = jp.nextToken();
-                if (value == JsonToken.START_OBJECT) {
-                    parseObjectMetadata(jp, true);
-                } else if (value == JsonToken.START_ARRAY) {
-                    parseArrayMetadata(jp);
-                } else if (value == JsonToken.VALUE_NULL) {
-                    parseObjectMetadata(jp, false);
-                }
+    private String parseObject(JsonParser jp) throws IOException {
+        String ret = "{";
+        JsonToken value;
+        while (jp.nextToken() != JsonToken.END_OBJECT) {
+            value = jp.nextToken();
+            if (value == JsonToken.START_OBJECT) {
+                parseObjectMetadata(jp);
+            } else if (value == JsonToken.START_ARRAY) {
+                parseArrayMetadata(jp);
             }
-            ret += "}";
         }
+        ret += "}";
         return ret;
     }
 

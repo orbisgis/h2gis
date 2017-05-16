@@ -50,7 +50,7 @@ import org.h2gis.functions.io.utility.FileUtil;
  * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}, "properties":
  * {"prop0": "value0"} } ]}
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, Hai Trung Pham
  */
 public class GeoJsonWriteDriver {
 
@@ -461,11 +461,9 @@ public class GeoJsonWriteDriver {
             for (Map.Entry<String, Integer> entry : cachedColumnNames.entrySet()) {
                 String string = entry.getKey();
                 Integer fieldId = entry.getValue();
-                // System.out.println(rs.getObject(fieldId).getClass().getSimpleName());
                 if (rs.getObject(fieldId) instanceof Array) {
                     jsonGenerator.writeObjectFieldStart(string);
                     writeArray(jsonGenerator);
-                    System.out.println("hello");
                 } else {
                     jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
                 }
