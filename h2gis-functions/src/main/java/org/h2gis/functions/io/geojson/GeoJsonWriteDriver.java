@@ -50,7 +50,8 @@ import org.h2gis.functions.io.utility.FileUtil;
  * "geometry":{"type": "Point", "coordinates": [102.0, 0.5]}, "properties":
  * {"prop0": "value0"} } ]}
  *
- * @author Erwan Bocher, Hai Trung Pham
+ * @author Erwan Bocher
+ * @author Hai Trung Pham
  */
 public class GeoJsonWriteDriver {
 
@@ -493,7 +494,6 @@ public class GeoJsonWriteDriver {
             case Types.NCHAR:
             case Types.CHAR:
             case Types.ARRAY:
-            case Types.TIMESTAMP:
                 return true;
             default:
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);
@@ -525,7 +525,6 @@ public class GeoJsonWriteDriver {
      *
      * @param jsonGenerator
      * @throw IOException
-     * @author Pham Hai Trung
      */
     private void writeArray(JsonGenerator jsonGenerator) throws IOException, SQLException {
         jsonGenerator.writeStartArray();

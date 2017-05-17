@@ -68,7 +68,8 @@ import org.slf4j.LoggerFactory;
  * FeatureCollection is parsed. If the GeoJSON format does not contain any
  * properties, a default primary key is added.
  *
- * @author Erwan Bocher, Hai Trung Pham
+ * @author Erwan Bocher
+ * @author Hai Trung Pham
  */
 public class GeoJsonReaderDriver {
     private final static ArrayList<String> geomTypes;    
@@ -679,7 +680,7 @@ public class GeoJsonReaderDriver {
                     parseArrayMetadata(jp);
                     break;
                 case START_OBJECT:
-                    cachedColumnNames.put(fieldName, "OTHER");
+                    cachedColumnNames.put(fieldName, "VARCHAR");
                     parseObjectMetadata(jp);
                     break;
                 //ignore other value
@@ -810,13 +811,7 @@ public class GeoJsonReaderDriver {
                 values[cachedColumnIndex.get(fieldName)] =  jp.getBigIntegerValue();
             } else if (value == JsonToken.START_ARRAY) {
                 ArrayList<Object> arrayList = parseArray(jp);
-                Object[] array = new Object[arrayList.size()];
-                int i = 0;
-                for(Object obj: arrayList) {
-                    array[i] = obj;
-                    i++;
-                }
-                values[cachedColumnIndex.get(fieldName)] = array;
+                values[cachedColumnIndex.get(fieldName)] = arrayList.toArray();
             } else if (value == JsonToken.START_OBJECT) {
                 String str = parseObject(jp);
                 values[cachedColumnIndex.get(fieldName)] = str;
@@ -1304,7 +1299,6 @@ public class GeoJsonReaderDriver {
      * Syntax:
      * Json Array:
      * {"member1": value1}, value2, value3, {"member4": value4}]
-     * @author Pham Hai Trung
      * @param jp the json parser
      * @return the array but written like a String
      */
@@ -1325,7 +1319,6 @@ public class GeoJsonReaderDriver {
      * Syntax:
      * Json Object:
      * "member1": value1, "member2": value2}
-     * @author Pham Hai Trung
      * @param jp the json parser
      * @return the object but written like a String
      */
@@ -1357,9 +1350,15 @@ public class GeoJsonReaderDriver {
                 Object object = parseObject(jp);
                 ret.add(object);
             } else if (value == JsonToken.START_ARRAY) {
-                ArrayList<Object> array = parseArray(jp);
-                ret.add(array);
-            } else {
+                ArrayList<Object> arrayList = parseArray(jp);
+                ret.add(arrayList.toArray());
+            } else if (value == JsonToken.VALUE_NUMBER_INT) {
+                ret.add(jp.getValueAsInt());
+            } else if (value == JsonToken.VALUE_FALSE || value == JsonToken.VALUE_TRUE) {
+                ret.add(jp.getValueAsBoolean());
+            } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
+                ret.add(jp.getValueAsDouble());
+            } else if (value == JsonToken.VALUE_STRING) {
                 ret.add(jp.getValueAsString());
             }
             value = jp.nextToken();
