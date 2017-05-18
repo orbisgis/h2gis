@@ -23,19 +23,18 @@ package org.h2gis.functions.io.geojson;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 
-import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.Assert.*;
 
 /**
  *
@@ -590,8 +589,18 @@ public class GeojsonImportExportTest {
         assertTrue(res.getString(10).equals("2017-01-19T18:29:27+01:00"));
         assertTrue(res.getBigDecimal(11).toString().equals("1484846967000"));
         assertTrue(res.getString(12).equals("{}"));
-        //assertTrue((res.getArray(13)).equals());
-        //assertTrue((res.getArray(14)).equals(WKTREADER.read("(58, 47, 58, 57, 58, 49, 58, 51, 58, 58, 49, 57, 58, 58, 49, 58, 57, 56, 57, 58, 59, 58, 57, 58, 49, 47, 48, 57, 48, 58, 57, 57, 51, 56, 52, 57, 51, 57, 49, 58, 55, 58, 50, 48, 48, 52, 56, 57, 48, 58, 52, 48, 53, 50, 57, 54, 57, 47, 58, 57, 54, 54, 53, 56, 57, 55, 58, 58, 57, 58, 57, 57)")));
+        Object[] expectedResult = {(Integer) 49, (Double) 40.0, "{}", "string"};
+        Object[] result = (Object[]) res.getObject(13);
+        assertEquals(expectedResult.length, result.length);
+        for (int i = 0; i < expectedResult.length; i++) {
+            assertEquals("mismatch at " + i, expectedResult[i], result[i]);
+        }
+        expectedResult = new Object[]{58, 47, 58, 57, 58, 49, 58, 51, 58, 58, 49, 57, 58, 58, 49, 58, 57, 56, 57, 58, 59, 58, 57, 58, 49, 47, 48, 57, 48, 58, 57, 57, 51, 56, 52, 57, 51, 57, 49, 58, 55, 58, 50, 48, 48, 52, 56, 57, 48, 58, 52, 48, 53, 50, 57, 54, 57, 47, 58, 57, 54, 54, 53, 56, 57, 55, 58, 58, 57, 58, 57, 57};
+        result = (Object[]) res.getObject(14);
+        assertEquals(expectedResult.length, result.length);
+        for (int i = 0; i < expectedResult.length; i++) {
+            assertEquals("mismatch at " + i, expectedResult[i], result[i]);
+        }
         res.next();
         res.close();
         stat.close();
