@@ -25,6 +25,7 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.vividsolutions.jts.geom.*;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.spatial.crs.ST_Transform;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -114,7 +115,6 @@ public class GeoJsonWriteDriver {
                 // header of the GeoJSON file
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
-                writeCRS(jsonGenerator,SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
                 jsonGenerator.writeArrayFieldStart("features");
                 
                 ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
@@ -219,7 +219,7 @@ public class GeoJsonWriteDriver {
      * @param jsonGenerator
      * @param geometry
      */
-    private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {       
+    private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException, SQLException {
         if (geom != null) {
             gen.writeObjectFieldStart("geometry");
             if (geom instanceof Point) {
@@ -327,7 +327,7 @@ public class GeoJsonWriteDriver {
      * @param gen
      * @throws IOException
      */
-    private void write(GeometryCollection coll, JsonGenerator gen) throws IOException {
+    private void write(GeometryCollection coll, JsonGenerator gen) throws IOException, SQLException {
         gen.writeStringField("type", "GeometryCollection");
         gen.writeArrayFieldStart("geometries");
         for (int i = 0; i < coll.getNumGeometries(); ++i) {
@@ -375,10 +375,12 @@ public class GeoJsonWriteDriver {
      * @param gen
      * @throws IOException
      */
-    private void write(Polygon geom, JsonGenerator gen) throws IOException {
+    private void write(Polygon geom, JsonGenerator gen) throws IOException, SQLException {
         gen.writeStringField("type", "Polygon");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
+        ST_Transform transform = new ST_Transform;
+        geom = (Polygon) transform.ST_Transform(connection, geom, 4326);
         writeCoordinates(geom.getExteriorRing().getCoordinates(), gen);
         for (int i = 0; i < geom.getNumInteriorRing(); ++i) {
             writeCoordinates(geom.getInteriorRingN(i).getCoordinates(), gen);
@@ -490,26 +492,6 @@ public class GeoJsonWriteDriver {
                 return true;
             default:
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);
-        }
-    }
-
-    /**
-     * Write the CRS in the geojson
-     *
-     * @param jsonGenerator
-     * @param authorityAndSRID
-     * @throws IOException
-     */
-    private void writeCRS(JsonGenerator jsonGenerator, String[] authorityAndSRID) throws IOException {
-        if (authorityAndSRID[1] != null) {
-            jsonGenerator.writeObjectFieldStart("crs");
-            jsonGenerator.writeStringField("type", "name");
-            jsonGenerator.writeObjectFieldStart("properties");
-            StringBuilder sb = new StringBuilder("urn:ogc:def:crs:");
-            sb.append(authorityAndSRID[0]).append("::").append(authorityAndSRID[1]);
-            jsonGenerator.writeStringField("name", sb.toString());
-            jsonGenerator.writeEndObject();
-            jsonGenerator.writeEndObject();
         }
     }
 
