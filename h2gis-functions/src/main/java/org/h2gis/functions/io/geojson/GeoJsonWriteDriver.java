@@ -467,7 +467,7 @@ public class GeoJsonWriteDriver {
                 if (rs.getObject(fieldId) instanceof Object[]) {
                     Object[] array = (Object[]) rs.getObject(fieldId);
                     jsonGenerator.writeArrayFieldStart(string);
-                    writeArray(jsonGenerator, array);
+                    writeArray(jsonGenerator, array, true);
                     jsonGenerator.writeEndArray();
                 } else if (rs.getObject(fieldId).equals("{}")){
                     jsonGenerator.writeObjectFieldStart(string);
@@ -534,7 +534,10 @@ public class GeoJsonWriteDriver {
      * @param array
      * @throw IOException
      */
-    private void writeArray(JsonGenerator jsonGenerator, Object[] array) throws IOException, SQLException {
+    private void writeArray(JsonGenerator jsonGenerator, Object[] array, boolean firstInHierarchy) throws IOException, SQLException {
+        if(!firstInHierarchy) {
+            jsonGenerator.writeStartArray();
+        }
         for(int i = 0; i < array.length; i++) {
             if (array[i] instanceof Integer) {
                 jsonGenerator.writeNumber((int) array[i]);
@@ -550,8 +553,11 @@ public class GeoJsonWriteDriver {
             } else if (array[i] instanceof Boolean) {
                 jsonGenerator.writeBoolean((boolean) array[i]);
             } else if (array[i] instanceof Object[]) {
-                writeArray(jsonGenerator, (Object[]) array[i]);
+                writeArray(jsonGenerator, (Object[]) array[i], false);
             }
+        }
+        if(!firstInHierarchy) {
+            jsonGenerator.writeEndArray();
         }
     }
 
