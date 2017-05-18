@@ -601,5 +601,15 @@ public class GeojsonImportExportTest {
         res.close();
         stat.close();
     }
+
+    @Test
+    public void testWriteProperties() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES_READ;");
+        stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ", 'TABLE_PROPERTIES_READ');");
+        stat.execute("CALL GeoJsonWrite('target/properties_read.geojson','TABLE_PROPERTIES_READ')");
+        stat.close();
+    }
+
         
 }
