@@ -22,22 +22,24 @@ package org.h2gis.functions.io.geojson;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
+
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertEquals;
+
+import static org.junit.Assert.*;
 
 /**
  *
  * @author Erwan Bocher
+ * @author Hai Trung Pham
  */
 public class GeojsonImportExportTest {
 
@@ -479,7 +481,7 @@ public class GeojsonImportExportTest {
         stat.close();
     }
     
-    
+    @Test
     public void testReadGeoJSON1() throws Exception {
         Statement stat = connection.createStatement();        
         ResultSet res = stat.executeQuery("SELECT ST_GeomFromGeoJSON('{\"type\":\"Point\",\"coordinates\":[10,1]}')");
@@ -566,6 +568,37 @@ public class GeojsonImportExportTest {
         assertEquals(234.16d, res.getDouble(32), 0);
         res.close();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
+        stat.close();
+    }
+
+    @Test
+    public void testReadProperties() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES_READ;");
+        stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ", 'TABLE_PROPERTIES_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_PROPERTIES_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POLYGON ((7.49587624983838 48.5342070572556, 7.49575955525988 48.5342516702309, 7.49564286068138 48.5342070572556, 7.49564286068138 48.534117831187, 7.49575955525988 48.5340732180938, 7.49587624983838 48.534117831187, 7.49587624983838 48.5342070572556))")));
+        assertEquals(-105576, res.getDouble(2), 0);
+        assertEquals(275386, res.getDouble(3), 0);
+        assertEquals(56.848998452816424, res.getDouble(4), 0);
+        assertEquals(55.87291487481895, res.getDouble(5), 0);
+        assertEquals(0.0, res.getDouble(6), 0);
+        assertEquals(2, res.getDouble(7), 0);
+        assertTrue(res.getString(8).equals("2017-01-19T18:29:26+01:00"));
+        assertTrue(res.getBigDecimal(9).toString().equals("1484846966000"));
+        assertTrue(res.getString(10).equals("2017-01-19T18:29:27+01:00"));
+        assertTrue(res.getBigDecimal(11).toString().equals("1484846967000"));
+        assertTrue(res.getString(12).equals("{}"));
+        Object[] tinyArray = {(Integer) 13, "string", "{}"};
+        Object[] expectedResult = {(Integer) 49, (Double) 40.0, "{}", "string", tinyArray};
+        Object[] result = (Object[]) res.getObject(13);
+        assertArrayEquals(expectedResult, result);
+        expectedResult = new Object[]{58, 47, 58, 57, 58, 49, 58, 51, 58, 58, 49, 57, 58, 58, 49, 58, 57, 56, 57, 58, 59, 58, 57, 58, 49, 47, 48, 57, 48, 58, 57, 57, 51, 56, 52, 57, 51, 57, 49, 58, 55, 58, 50, 48, 48, 52, 56, 57, 48, 58, 52, 48, 53, 50, 57, 54, 57, 47, 58, 57, 54, 54, 53, 56, 57, 55, 58, 58, 57, 58, 57, 57};
+        result = (Object[]) res.getObject(14);
+        assertArrayEquals(expectedResult, result);
+        res.next();
+        res.close();
         stat.close();
     }
         

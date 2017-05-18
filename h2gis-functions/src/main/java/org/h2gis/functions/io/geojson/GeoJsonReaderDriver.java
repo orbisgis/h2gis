@@ -69,6 +69,7 @@ import org.slf4j.LoggerFactory;
  * properties, a default primary key is added.
  *
  * @author Erwan Bocher
+ * @author Hai Trung Pham
  */
 public class GeoJsonReaderDriver {
     private final static ArrayList<String> geomTypes;    
@@ -674,6 +675,14 @@ public class GeoJsonReaderDriver {
                 case VALUE_NUMBER_INT:
                     cachedColumnNames.put(fieldName, "BIGINT");
                     break;
+                case START_ARRAY:
+                    cachedColumnNames.put(fieldName, "ARRAY");
+                    parseArrayMetadata(jp);
+                    break;
+                case START_OBJECT:
+                    cachedColumnNames.put(fieldName, "VARCHAR");
+                    parseObjectMetadata(jp);
+                    break;
                 //ignore other value
                 default:
                     break;
@@ -800,7 +809,14 @@ public class GeoJsonReaderDriver {
                 values[cachedColumnIndex.get(fieldName)] =  jp.getValueAsDouble();
             } else if (value == JsonToken.VALUE_NUMBER_INT) {
                 values[cachedColumnIndex.get(fieldName)] =  jp.getBigIntegerValue();
-            } else {
+            } else if (value == JsonToken.START_ARRAY) {
+                ArrayList<Object> arrayList = parseArray(jp);
+                values[cachedColumnIndex.get(fieldName)] = arrayList.toArray();
+            } else if (value == JsonToken.START_OBJECT) {
+                String str = parseObject(jp);
+                values[cachedColumnIndex.get(fieldName)] = str;
+            }
+            else {
                 //ignore other value
             }
         }
@@ -1260,8 +1276,6 @@ public class GeoJsonReaderDriver {
         return jp.getText();
     }
 
-    
-
      /**
      * Adds the geometry type constraint and the SRID
      */
@@ -1278,4 +1292,104 @@ public class GeoJsonReaderDriver {
             connection.createStatement().execute(String.format("ALTER TABLE %s ALTER COLUMN the_geom SET DATA TYPE geometry(%s,%d)", tableLocation.toString(), finalGeometryType, parsedSRID));
         }
     }
+
+
+    /**
+     * Parses Json Array.
+     * Syntax:
+     * Json Array:
+     * {"member1": value1}, value2, value3, {"member4": value4}]
+     * @param jp the json parser
+     * @return the array but written like a String
+     */
+    private void parseArrayMetadata(JsonParser jp) throws IOException {
+        JsonToken value = jp.nextToken();
+        while(value != JsonToken.END_ARRAY) {
+            if (value == JsonToken.START_OBJECT) {
+                parseObjectMetadata(jp);
+            } else if (value == JsonToken.START_ARRAY) {
+                parseArrayMetadata(jp);
+            }
+            value = jp.nextToken();
+        }
+    }
+
+    /**
+     * Parses Json Object.
+     * Syntax:
+     * Json Object:
+     * "member1": value1, "member2": value2}
+     * @param jp the json parser
+     * @return the object but written like a String
+     */
+    private void parseObjectMetadata(JsonParser jp) throws IOException {
+        JsonToken value;
+        while (jp.nextToken() != JsonToken.END_OBJECT) {
+            value = jp.nextToken();
+            if (value == JsonToken.START_OBJECT) {
+                parseObjectMetadata(jp);
+            } else if (value == JsonToken.START_ARRAY) {
+                parseArrayMetadata(jp);
+            }
+        }
+    }
+
+    /**
+     * Parses Json Array and returns an ArrayList
+     * Syntax:
+     * Json Array:
+     * {"member1": value1}, value2, value3, {"member4": value4}]
+     * @param jp the json parser
+     * @return the array
+     */
+    private ArrayList<Object> parseArray(JsonParser jp) throws IOException {
+        JsonToken value = jp.nextToken();
+        ArrayList<Object> ret = new ArrayList<>();
+        while(value != JsonToken.END_ARRAY) {
+            if (value == JsonToken.START_OBJECT) {
+                Object object = parseObject(jp);
+                ret.add(object);
+            } else if (value == JsonToken.START_ARRAY) {
+                ArrayList<Object> arrayList = parseArray(jp);
+                ret.add(arrayList.toArray());
+            } else if (value == JsonToken.VALUE_NUMBER_INT) {
+                ret.add(jp.getValueAsInt());
+            } else if (value == JsonToken.VALUE_FALSE || value == JsonToken.VALUE_TRUE) {
+                ret.add(jp.getValueAsBoolean());
+            } else if (value == JsonToken.VALUE_NUMBER_FLOAT) {
+                ret.add(jp.getValueAsDouble());
+            } else if (value == JsonToken.VALUE_STRING) {
+                ret.add(jp.getValueAsString());
+            }
+            value = jp.nextToken();
+        }
+        return ret;
+    }
+
+    /**
+     * Parses Json Object. Since their elements could be
+     * anything and H2GIS doesn't support such complicated
+     * structure, this parser will just write ordinary
+     * String object "{}".
+     * Syntax:
+     * Json Object:
+     * "member1": value1, "member2": value2}
+     * @param jp the json parser
+     * @return the object but written like a String
+     */
+    private String parseObject(JsonParser jp) throws IOException {
+        String ret = "{";
+        JsonToken value;
+        while (jp.nextToken() != JsonToken.END_OBJECT) {
+            value = jp.nextToken();
+            if (value == JsonToken.START_OBJECT) {
+                parseObjectMetadata(jp);
+            } else if (value == JsonToken.START_ARRAY) {
+                parseArrayMetadata(jp);
+            }
+        }
+        ret += "}";
+        return ret;
+    }
+
 }
