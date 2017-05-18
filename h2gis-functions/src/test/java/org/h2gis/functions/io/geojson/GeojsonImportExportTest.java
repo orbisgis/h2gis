@@ -38,7 +38,8 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author Erwan Bocher, Hai Trung Pham
+ * @author Erwan Bocher
+ * @author Hai Trung Pham
  */
 public class GeojsonImportExportTest {
 
