@@ -52,6 +52,7 @@ import org.h2gis.functions.io.utility.FileUtil;
  * {"prop0": "value0"} } ]}
  *
  * @author Erwan Bocher
+ * @author Hai Trung Pham
  */
 public class GeoJsonWriteDriver {
 
@@ -463,7 +464,12 @@ public class GeoJsonWriteDriver {
             for (Map.Entry<String, Integer> entry : cachedColumnNames.entrySet()) {
                 String string = entry.getKey();
                 Integer fieldId = entry.getValue();
-                jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
+                if (rs.getObject(fieldId) instanceof Array) {
+                    jsonGenerator.writeObjectFieldStart(string);
+                    writeArray(jsonGenerator);
+                } else {
+                    jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
+                }
             }
             jsonGenerator.writeEndObject();
         }
@@ -489,12 +495,10 @@ public class GeoJsonWriteDriver {
             case Types.VARCHAR:
             case Types.NCHAR:
             case Types.CHAR:
+            case Types.ARRAY:
                 return true;
             default:
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);
         }
     }
-
-
-    
 }
