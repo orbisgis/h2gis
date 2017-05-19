@@ -23,6 +23,7 @@ package org.h2gis.functions.io.geojson;
 /**
  * GeoJson fields used by the standard.
  * @author Erwan Bocher
+ * @author Hai Trung Pham
  */
 public class GeoJsonField {
     
