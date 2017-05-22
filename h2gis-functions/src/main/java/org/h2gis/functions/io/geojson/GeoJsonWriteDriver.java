@@ -34,6 +34,7 @@ import java.sql.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.h2gis.functions.io.utility.FileUtil;
 
 /**
@@ -461,10 +462,16 @@ public class GeoJsonWriteDriver {
             jsonGenerator.writeObjectFieldStart("properties");
             for (Map.Entry<String, Integer> entry : cachedColumnNames.entrySet()) {
                 String string = entry.getKey();
+                string = string.toLowerCase();
                 Integer fieldId = entry.getValue();
-                if (rs.getObject(fieldId) instanceof Array) {
+                if (rs.getObject(fieldId) instanceof Object[]) {
+                    Object[] array = (Object[]) rs.getObject(fieldId);
+                    jsonGenerator.writeArrayFieldStart(string);
+                    writeArray(jsonGenerator, array, true);
+                    jsonGenerator.writeEndArray();
+                } else if (rs.getObject(fieldId).equals("{}")){
                     jsonGenerator.writeObjectFieldStart(string);
-                    writeArray(jsonGenerator);
+                    jsonGenerator.writeEndObject();
                 } else {
                     jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
                 }
@@ -524,11 +531,34 @@ public class GeoJsonWriteDriver {
      * Write the array in the geojson
      *
      * @param jsonGenerator
+     * @param array
      * @throw IOException
      */
-    private void writeArray(JsonGenerator jsonGenerator) throws IOException, SQLException {
-        jsonGenerator.writeStartArray();
-        jsonGenerator.writeEndArray();
+    private void writeArray(JsonGenerator jsonGenerator, Object[] array, boolean firstInHierarchy) throws IOException, SQLException {
+        if(!firstInHierarchy) {
+            jsonGenerator.writeStartArray();
+        }
+        for(int i = 0; i < array.length; i++) {
+            if (array[i] instanceof Integer) {
+                jsonGenerator.writeNumber((int) array[i]);
+            } else if (array[i] instanceof String) {
+                if (array[i].equals("{}")) {
+                    jsonGenerator.writeStartObject();
+                    jsonGenerator.writeEndObject();
+                } else {
+                    jsonGenerator.writeString((String) array[i]);
+                }
+            } else if (array[i] instanceof Double) {
+                jsonGenerator.writeNumber((double) array[i]);
+            } else if (array[i] instanceof Boolean) {
+                jsonGenerator.writeBoolean((boolean) array[i]);
+            } else if (array[i] instanceof Object[]) {
+                writeArray(jsonGenerator, (Object[]) array[i], false);
+            }
+        }
+        if(!firstInHierarchy) {
+            jsonGenerator.writeEndArray();
+        }
     }
 
 }
