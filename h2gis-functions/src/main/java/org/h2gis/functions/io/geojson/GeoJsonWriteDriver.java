@@ -116,7 +116,10 @@ public class GeoJsonWriteDriver {
                 // header of the GeoJSON file
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
-                writeCRS(jsonGenerator,SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
+                String[] authorityAndSRID = SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0));
+                if (authorityAndSRID[0] != "OGC" || authorityAndSRID[1] != "CRS84") {
+                    writeCRS(jsonGenerator, authorityAndSRID);
+                }
                 jsonGenerator.writeArrayFieldStart("features");
 
                 ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
