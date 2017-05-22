@@ -25,7 +25,6 @@ import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.vividsolutions.jts.geom.*;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.spatial.crs.ST_Transform;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -384,8 +383,6 @@ public class GeoJsonWriteDriver {
         gen.writeStringField("type", "Polygon");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
-        ST_Transform transform = new ST_Transform;
-        geom = (Polygon) transform.ST_Transform(connection, geom, 4326);
         writeCoordinates(geom.getExteriorRing().getCoordinates(), gen);
         for (int i = 0; i < geom.getNumInteriorRing(); ++i) {
             writeCoordinates(geom.getInteriorRingN(i).getCoordinates(), gen);
