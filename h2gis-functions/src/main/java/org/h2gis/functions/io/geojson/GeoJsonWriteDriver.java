@@ -35,6 +35,7 @@ import java.sql.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.h2gis.functions.io.utility.FileUtil;
 
 /**
@@ -463,8 +464,23 @@ public class GeoJsonWriteDriver {
             jsonGenerator.writeObjectFieldStart("properties");
             for (Map.Entry<String, Integer> entry : cachedColumnNames.entrySet()) {
                 String string = entry.getKey();
+                string = string.toLowerCase();
                 Integer fieldId = entry.getValue();
+<<<<<<< HEAD
                 jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
+=======
+                if (rs.getObject(fieldId) instanceof Object[]) {
+                    Object[] array = (Object[]) rs.getObject(fieldId);
+                    jsonGenerator.writeArrayFieldStart(string);
+                    writeArray(jsonGenerator, array, true);
+                    jsonGenerator.writeEndArray();
+                } else if (rs.getObject(fieldId).equals("{}")){
+                    jsonGenerator.writeObjectFieldStart(string);
+                    jsonGenerator.writeEndObject();
+                } else {
+                    jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
+                }
+>>>>>>> refs/remotes/orbisgis/master
             }
             jsonGenerator.writeEndObject();
         }
@@ -496,4 +512,61 @@ public class GeoJsonWriteDriver {
         }
     }
 
+<<<<<<< HEAD
+=======
+    /**
+     * Write the CRS in the geojson
+     *
+     * @param jsonGenerator
+     * @param authorityAndSRID
+     * @throws IOException
+     */
+    private void writeCRS(JsonGenerator jsonGenerator, String[] authorityAndSRID) throws IOException {
+        if (authorityAndSRID[1] != null) {
+            jsonGenerator.writeObjectFieldStart("crs");
+            jsonGenerator.writeStringField("type", "name");
+            jsonGenerator.writeObjectFieldStart("properties");
+            StringBuilder sb = new StringBuilder("urn:ogc:def:crs:");
+            sb.append(authorityAndSRID[0]).append("::").append(authorityAndSRID[1]);
+            jsonGenerator.writeStringField("name", sb.toString());
+            jsonGenerator.writeEndObject();
+            jsonGenerator.writeEndObject();
+        }
+    }
+
+    /**
+     * Write the array in the geojson
+     *
+     * @param jsonGenerator
+     * @param array
+     * @throw IOException
+     */
+    private void writeArray(JsonGenerator jsonGenerator, Object[] array, boolean firstInHierarchy) throws IOException, SQLException {
+        if(!firstInHierarchy) {
+            jsonGenerator.writeStartArray();
+        }
+        for(int i = 0; i < array.length; i++) {
+            if (array[i] instanceof Integer) {
+                jsonGenerator.writeNumber((int) array[i]);
+            } else if (array[i] instanceof String) {
+                if (array[i].equals("{}")) {
+                    jsonGenerator.writeStartObject();
+                    jsonGenerator.writeEndObject();
+                } else {
+                    jsonGenerator.writeString((String) array[i]);
+                }
+            } else if (array[i] instanceof Double) {
+                jsonGenerator.writeNumber((double) array[i]);
+            } else if (array[i] instanceof Boolean) {
+                jsonGenerator.writeBoolean((boolean) array[i]);
+            } else if (array[i] instanceof Object[]) {
+                writeArray(jsonGenerator, (Object[]) array[i], false);
+            }
+        }
+        if(!firstInHierarchy) {
+            jsonGenerator.writeEndArray();
+        }
+    }
+
+>>>>>>> refs/remotes/orbisgis/master
 }
