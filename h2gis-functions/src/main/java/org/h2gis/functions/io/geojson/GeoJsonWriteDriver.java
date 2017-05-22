@@ -115,7 +115,7 @@ public class GeoJsonWriteDriver {
                 // header of the GeoJSON file
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
-                writeCRS(jsonGenerator,SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
+
                 jsonGenerator.writeArrayFieldStart("features");
 
                 ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
@@ -496,25 +496,4 @@ public class GeoJsonWriteDriver {
         }
     }
 
-    /**
-     * Write the CRS in the geojson
-     *
-     * @param jsonGenerator
-     * @param authorityAndSRID
-     * @throws IOException
-     */
-    private void writeCRS(JsonGenerator jsonGenerator, String[] authorityAndSRID) throws IOException {
-        if (authorityAndSRID[1] != null) {
-            jsonGenerator.writeObjectFieldStart("crs");
-            jsonGenerator.writeStringField("type", "name");
-            jsonGenerator.writeObjectFieldStart("properties");
-            StringBuilder sb = new StringBuilder("urn:ogc:def:crs:");
-            sb.append(authorityAndSRID[0]).append("::").append(authorityAndSRID[1]);
-            jsonGenerator.writeStringField("name", sb.toString());
-            jsonGenerator.writeEndObject();
-            jsonGenerator.writeEndObject();
-        }
-    }
-
-    
 }
