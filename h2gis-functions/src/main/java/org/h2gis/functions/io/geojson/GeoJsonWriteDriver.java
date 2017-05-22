@@ -116,7 +116,7 @@ public class GeoJsonWriteDriver {
                 // header of the GeoJSON file
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
-
+                writeCRS(jsonGenerator,SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
                 jsonGenerator.writeArrayFieldStart("features");
 
                 ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
