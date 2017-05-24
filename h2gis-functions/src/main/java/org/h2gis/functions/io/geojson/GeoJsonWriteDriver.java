@@ -52,7 +52,6 @@ import org.h2gis.functions.io.utility.FileUtil;
  * {"prop0": "value0"} } ]}
  *
  * @author Erwan Bocher
- * @author Hai Trung Pham
  */
 public class GeoJsonWriteDriver {
 
@@ -116,9 +115,12 @@ public class GeoJsonWriteDriver {
                 // header of the GeoJSON file
                 jsonGenerator.writeStartObject();
                 jsonGenerator.writeStringField("type", "FeatureCollection");
-                writeCRS(jsonGenerator,SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
+                String[] authorityAndSRID = SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0));
+                if (authorityAndSRID[0] != "OGC" || authorityAndSRID[1] != "CRS84") {
+                    writeCRS(jsonGenerator, authorityAndSRID);
+                }
                 jsonGenerator.writeArrayFieldStart("features");
-                
+
                 ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
 
                 try {
@@ -221,7 +223,7 @@ public class GeoJsonWriteDriver {
      * @param jsonGenerator
      * @param geometry
      */
-    private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException {       
+    private void writeGeometry(Geometry geom, JsonGenerator gen) throws IOException, SQLException {
         if (geom != null) {
             gen.writeObjectFieldStart("geometry");
             if (geom instanceof Point) {
@@ -329,7 +331,7 @@ public class GeoJsonWriteDriver {
      * @param gen
      * @throws IOException
      */
-    private void write(GeometryCollection coll, JsonGenerator gen) throws IOException {
+    private void write(GeometryCollection coll, JsonGenerator gen) throws IOException, SQLException {
         gen.writeStringField("type", "GeometryCollection");
         gen.writeArrayFieldStart("geometries");
         for (int i = 0; i < coll.getNumGeometries(); ++i) {
@@ -377,7 +379,7 @@ public class GeoJsonWriteDriver {
      * @param gen
      * @throws IOException
      */
-    private void write(Polygon geom, JsonGenerator gen) throws IOException {
+    private void write(Polygon geom, JsonGenerator gen) throws IOException, SQLException {
         gen.writeStringField("type", "Polygon");
         gen.writeFieldName("coordinates");
         gen.writeStartArray();
@@ -464,6 +466,8 @@ public class GeoJsonWriteDriver {
                 String string = entry.getKey();
                 string = string.toLowerCase();
                 Integer fieldId = entry.getValue();
+
+                jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
                 if (rs.getObject(fieldId) instanceof Object[]) {
                     Object[] array = (Object[]) rs.getObject(fieldId);
                     jsonGenerator.writeArrayFieldStart(string);
@@ -500,7 +504,6 @@ public class GeoJsonWriteDriver {
             case Types.VARCHAR:
             case Types.NCHAR:
             case Types.CHAR:
-            case Types.ARRAY:
                 return true;
             default:
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);
