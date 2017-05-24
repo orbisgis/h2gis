@@ -637,5 +637,19 @@ public class GeojsonImportExportTest {
         stat.close();
     }
 
+    @Test
+    public void testWriteReadNullField() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_NULL;");
+        stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("null.geojson").getPath()) + ", 'TABLE_NULL');");
+        stat.execute("CALL GeoJsonWrite('target/null_read.geojson','TABLE_NULL')");
+        stat.execute("DROP TABLE IF EXISTS TABLE_NULL_READ");
+        stat.execute("CALL GeoJsonRead('target/null_read.geojson', 'TABLE_NULL_READ')");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_NULL_READ;");
+        res.next();
+        res.close();
+        stat.close();
+    }
+
         
 }
