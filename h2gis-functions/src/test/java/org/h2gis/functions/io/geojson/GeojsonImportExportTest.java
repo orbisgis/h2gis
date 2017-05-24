@@ -608,6 +608,7 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES;");
         stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ", 'TABLE_PROPERTIES');");
         stat.execute("CALL GeoJsonWrite('target/properties_read.geojson','TABLE_PROPERTIES')");
+        stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES_READ;");
         stat.execute("CALL GeoJsonRead('target/properties_read.geojson', 'TABLE_PROPERTIES_READ')");
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_PROPERTIES_READ;");
         res.next();
