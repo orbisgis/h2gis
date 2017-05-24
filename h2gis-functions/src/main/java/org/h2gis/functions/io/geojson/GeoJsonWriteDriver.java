@@ -466,9 +466,8 @@ public class GeoJsonWriteDriver {
                 String string = entry.getKey();
                 string = string.toLowerCase();
                 Integer fieldId = entry.getValue();
-<<<<<<< HEAD
+
                 jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
-=======
                 if (rs.getObject(fieldId) instanceof Object[]) {
                     Object[] array = (Object[]) rs.getObject(fieldId);
                     jsonGenerator.writeArrayFieldStart(string);
@@ -480,7 +479,6 @@ public class GeoJsonWriteDriver {
                 } else {
                     jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
                 }
->>>>>>> refs/remotes/orbisgis/master
             }
             jsonGenerator.writeEndObject();
         }
@@ -512,8 +510,6 @@ public class GeoJsonWriteDriver {
         }
     }
 
-<<<<<<< HEAD
-=======
     /**
      * Write the CRS in the geojson
      *
@@ -568,5 +564,4 @@ public class GeoJsonWriteDriver {
         }
     }
 
->>>>>>> refs/remotes/orbisgis/master
 }
