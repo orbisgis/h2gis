@@ -469,7 +469,7 @@ public class GeoJsonWriteDriver {
                     jsonGenerator.writeArrayFieldStart(string);
                     writeArray(jsonGenerator, array, true);
                     jsonGenerator.writeEndArray();
-                } else if (rs.getObject(fieldId).equals("{}")){
+                } else if (rs.getObject(fieldId) != null && rs.getObject(fieldId).equals("{}")){
                     jsonGenerator.writeObjectFieldStart(string);
                     jsonGenerator.writeEndObject();
                 } else {
