@@ -472,6 +472,9 @@ public class GeoJsonWriteDriver {
                 } else if (rs.getObject(fieldId) != null && rs.getObject(fieldId).equals("{}")){
                     jsonGenerator.writeObjectFieldStart(string);
                     jsonGenerator.writeEndObject();
+                } else if (rs.getObject(fieldId) == "null") {
+                    jsonGenerator.writeFieldName(string);
+                    jsonGenerator.writeNull();
                 } else {
                     jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
                 }

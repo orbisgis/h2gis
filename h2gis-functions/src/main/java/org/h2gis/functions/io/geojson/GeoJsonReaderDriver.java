@@ -684,7 +684,7 @@ public class GeoJsonReaderDriver {
                     parseObjectMetadata(jp);
                     break;
                 case VALUE_NULL:
-                    cachedColumnNames.put(fieldName, "OTHER");
+                    cachedColumnNames.put(fieldName, "VARCHAR");
                 //ignore other value
                 default:
                     break;
@@ -818,7 +818,7 @@ public class GeoJsonReaderDriver {
                 String str = parseObject(jp);
                 values[cachedColumnIndex.get(fieldName)] = str;
             } else if (value == JsonToken.VALUE_NULL) {
-                values[cachedColumnIndex.get(fieldName)] = null;
+                values[cachedColumnIndex.get(fieldName)] = "null";
             }
             else {
                 //ignore other value
@@ -1365,7 +1365,7 @@ public class GeoJsonReaderDriver {
             } else if (value == JsonToken.VALUE_STRING) {
                 ret.add(jp.getValueAsString());
             } else if (value == JsonToken.VALUE_NULL) {
-                ret.add(null);
+                ret.add("null");
             }
             value = jp.nextToken();
         }
