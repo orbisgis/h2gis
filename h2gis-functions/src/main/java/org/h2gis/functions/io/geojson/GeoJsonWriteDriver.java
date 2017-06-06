@@ -472,6 +472,9 @@ public class GeoJsonWriteDriver {
                 } else if (rs.getObject(fieldId) != null && rs.getObject(fieldId).equals("{}")){
                     jsonGenerator.writeObjectFieldStart(string);
                     jsonGenerator.writeEndObject();
+                } else if (rs.getObject(fieldId) == "null") {
+                    jsonGenerator.writeFieldName(string);
+                    jsonGenerator.writeNull();
                 } else {
                     jsonGenerator.writeObjectField(string, rs.getObject(fieldId));
                 }
@@ -501,6 +504,7 @@ public class GeoJsonWriteDriver {
             case Types.NCHAR:
             case Types.CHAR:
             case Types.ARRAY:
+            case Types.OTHER:
                 return true;
             default:
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);

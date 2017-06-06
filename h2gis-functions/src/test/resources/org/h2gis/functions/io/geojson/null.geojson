@@ -1,0 +1,47 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+{"type":"Feature",
+ "geometry":null,
+  "properties":{
+                "mean_pleasantness":"string",
+                "testObject":{"member1":1, "member2":{"member21":null,"member22":22}, "member3":null},
+                "testArray":[49, 40.0, {"member1":null, "member2":{"member21":null,"member22":22}}, "string", [13, "string", {"member3":null, "member4":4}, null]]
+                }},
+{"type":"Feature",
+ "geometry":null,
+  "properties":{
+                "mean_pleasantness":true,
+                "testObject":{"member": 1},
+                "testArray": [1,2]
+                }},
+ {"type":"Feature",
+  "geometry":null,
+   "properties":{
+                 "mean_pleasantness":2,
+                 "testObject":{"member": 1},
+                 "testArray":[1,2]
+                 }},
+ {"type":"Feature",
+  "geometry":null,
+   "properties":{
+                 "mean_pleasantness":{"member3":4},
+                 "testObject":{"member": 1},
+                 "testArray":[1,2]
+                 }},
+ {"type":"Feature",
+  "geometry":null,
+   "properties":{
+                 "mean_pleasantness":[5,6,6],
+                 "testObject":{"member": 1},
+                 "testArray":[1,2]
+                 }},
+ {"type":"Feature",
+  "geometry":null,
+   "properties":{
+                 "mean_pleasantness":null,
+                 "testObject":{"member": 1},
+                 "testArray":[1,2]
+                 }}
+
+]}
