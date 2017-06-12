@@ -368,4 +368,22 @@ public class SHPEngineTest {
         rs.close();
         st.execute("drop table shptable");
     }
+
+    /**
+     * About #806
+     * Fix were a pk Index of linked table return a superior cost than spatial index.
+     * @throws SQLException
+     */
+    @Test
+    public void linkedShpSpatialIndexFlatQueryTest() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table if exists shptable");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CREATE SPATIAL INDEX SPATIALINDEX ON PUBLIC.SHPTABLE(THE_GEOM);\n");
+        try (ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM " +
+                "SHPTABLE ORDER BY PK LIMIT 51;")) {
+            assertTrue(rs.next());
+            assertTrue( "Expected contains PK_INDEX but result is " + rs.getString(1) , rs.getString(1).contains("PK_INDEX"));
+        }
+    }
 }

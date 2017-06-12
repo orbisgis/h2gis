@@ -24,7 +24,6 @@ import org.h2.api.ErrorCode;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
-import org.h2.index.IndexCondition;
 import org.h2.index.IndexType;
 import org.h2.message.DbException;
 import org.h2.result.Row;
@@ -160,21 +159,15 @@ public class H2TableIndex extends BaseIndex {
     }
     
     @Override
-    public double getCost(Session session, int[] masks, TableFilter[] filter, int i, SortOrder so, HashSet<Column> hs) {
-        if(masks == null) {
-            return Double.MAX_VALUE;
+    public double getCost(Session session, int[] masks, TableFilter[] filters, int filter, SortOrder so, HashSet<Column> allColumnsSet) {
+        // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L232
+        // Must kept sync with this
+        try {
+            return 10 * getCostRangeIndex(masks, driver.getRowCount(),
+                    filters, filter, so, true, allColumnsSet);
+        } catch (IllegalStateException e) {
+            throw DbException.get(ErrorCode.OBJECT_CLOSED, e);
         }
-        for (Column column : columns) {
-            int index = column.getColumnId();
-            int mask = masks[index];
-            if ((mask & IndexCondition.EQUALITY) != IndexCondition.EQUALITY &&
-                    (mask & IndexCondition.START) != IndexCondition.START &&
-                    (mask & IndexCondition.END) != IndexCondition.END &&
-                    (mask & IndexCondition.RANGE) != IndexCondition.RANGE) {
-                return Double.MAX_VALUE;
-            }
-        }
-        return 2;
     }
 
     @Override
