@@ -160,6 +160,8 @@ public class H2TableIndex extends BaseIndex {
     
     @Override
     public double getCost(Session session, int[] masks, TableFilter[] filters, int filter, SortOrder so, HashSet<Column> allColumnsSet) {
+        // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L232
+        // Must kept sync with this
         try {
             return 10 * getCostRangeIndex(masks, driver.getRowCount(),
                     filters, filter, so, true, allColumnsSet);
