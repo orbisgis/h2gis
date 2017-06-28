@@ -132,16 +132,29 @@ public class PRJUtil {
     
     
     /**
-     * Write a prj file according a given SRID code.
-     * @param connection
-     * @param location
-     * @param geomField
-     * @param fileName
+     * Write a prj file according the SRID code of an input table
+     * @param connection database connection
+     * @param location input table name
+     * @param geomField geometry field name
+     * @param fileName path of the prj file
      * @throws SQLException
      * @throws FileNotFoundException 
      */   
     public static void writePRJ(Connection connection, TableLocation location, String geomField, File fileName) throws SQLException, FileNotFoundException {
         int srid = SFSUtilities.getSRID(connection, location, geomField);
+        writePRJ(connection, srid, fileName);
+    }
+    
+    
+     /**
+     * Write a prj file according a given SRID code.
+     * @param connection database connection
+     * @param srid srid code
+     * @param fileName path of the prj file
+     * @throws SQLException
+     * @throws FileNotFoundException 
+     */   
+    public static void writePRJ(Connection connection, int srid, File fileName) throws SQLException, FileNotFoundException {
         if (srid != 0) {
             StringBuilder sb = new StringBuilder("SELECT SRTEXT FROM ");
             sb.append("PUBLIC.SPATIAL_REF_SYS ").append(" WHERE SRID = ?");

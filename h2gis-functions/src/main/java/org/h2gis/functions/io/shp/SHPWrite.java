@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.io.shp;
 
+import java.io.File;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
@@ -27,13 +28,32 @@ import org.h2gis.utilities.URIUtilities;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.dbf.DBFDriverFunction;
+import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
+import org.h2gis.functions.io.shp.internal.SHPDriver;
+import org.h2gis.functions.io.shp.internal.ShapeType;
+import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.functions.io.utility.PRJUtil;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.jts_utils.GeometryMetaData;
 
 /**
  * SQL Function to read a table and write it into a shape file.
  * @author Nicolas Fortin
  */
-public class SHPWrite extends AbstractFunction implements ScalarFunction {
+public class SHPWrite extends AbstractFunction implements ScalarFunction {    
 
     public SHPWrite() {
         addProperty(PROP_REMARKS, "Transfer the content of a table into a new shape file\nCALL SHPWRITE('FILENAME', 'TABLE'[,'ENCODING'])");
@@ -60,13 +80,22 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
      * Read a table and write it into a shape file.
      * @param connection Active connection
      * @param fileName Shape file name or URI
-     * @param tableReference Table name
+     * @param tableReference Table name or select query
      * @param encoding File encoding
      * @throws IOException
      * @throws SQLException
      */
-    public static void exportTable(Connection connection, String fileName, String tableReference,String encoding) throws IOException, SQLException {
+    public static void exportTable(Connection connection, String fileName, String tableReference, String encoding) throws IOException, SQLException {
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tableReference);
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        shpDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
+        if (matcher.find()) {
+            shpDriverFunction.exportResultset(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
+        } else {
+            shpDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
+        }
     }
+    
+   
 }

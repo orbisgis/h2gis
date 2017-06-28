@@ -36,6 +36,7 @@ import org.h2gis.functions.io.shp.internal.ShapefileHeader;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.functions.io.utility.PRJUtil;
 import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
@@ -138,6 +139,90 @@ public class SHPDriverFunction implements DriverFunction {
             throw new SQLException("Only .shp extension is supported");
         }
     }
+    
+     /**
+     * Method to export a resulset into a shapefile
+     * @param connection Active connection, do not close this connection.
+     * @param selectQuery the select query to export
+     * @param fileName File path to write, if exists it may be replaced
+     * @param progress to display the IO progress
+     * @param encoding File encoding, null will use default encoding
+     * @throws java.sql.SQLException 
+     */
+    public void exportResultset(Connection connection, String selectQuery, File fileName, EmptyProgressVisitor progress, String encoding) throws SQLException, IOException {
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        if (FileUtil.isExtensionWellFormated(fileName, "shp")) {
+            PreparedStatement ps = connection.prepareStatement(selectQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+            ResultSet resultSet = ps.executeQuery();
+            int recordCount = 0;
+            resultSet.last();
+            recordCount = resultSet.getRow();
+            resultSet.beforeFirst();
+            ProgressVisitor copyProgress = progress.subProcess(recordCount);
+            List<String> spatialFieldNames = SFSUtilities.getGeometryFields(resultSet);
+            int srid = 0;
+            try {
+                // Read Geometry Index and type            
+                if (spatialFieldNames.isEmpty()) {
+                    throw new SQLException(String.format("The query %s does not contain a geometry field", selectQuery));
+                }
+                ShapeType shapeType = null;
+                try {
+                    ResultSetMetaData resultSetMetaData = resultSet.getMetaData();
+                    int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
+                    ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
+                    DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
+                    columnIndexes.add(0, geoFieldIndex);
+                    if (encoding != null) {
+                        header.setEncoding(encoding);
+                    }
+                    header.setNumRecords(recordCount);
+                    SHPDriver shpDriver = null;
+                    Object[] row = new Object[header.getNumFields() + 1];
+                    while (resultSet.next()) {
+                        int i = 0;
+                        for (Integer index : columnIndexes) {
+                            row[i++] = resultSet.getObject(index);
+                        }
+                        if (shpDriver == null) {
+                            // If there is not shape type constraint read the first geometry and use the same type
+                            byte[] wkb = resultSet.getBytes(geoFieldIndex);
+                            if (wkb != null) {
+                                GeometryMetaData geomMetadata = GeometryMetaData.getMetaDataFromWKB(wkb);
+                                srid = geomMetadata.SRID;
+                                shapeType = getShapeTypeFromGeometryMetaData(geomMetadata);
+                            }
+                            if (shapeType != null) {
+                                shpDriver = new SHPDriver();
+                                shpDriver.setGeometryFieldIndex(0);
+                                shpDriver.initDriver(fileName, shapeType, header);
+                            } else {
+                                throw new SQLException("Unsupported geometry type.");
+                            }
+                        }
+                        if (shpDriver != null) {
+                            shpDriver.insertRow(row);
+                        }
+                        copyProgress.endStep();
+                    }
+                    if (shpDriver != null) {
+                        shpDriver.close();
+                    }
+                } finally {
+                    resultSet.close();
+                }
+            } finally {
+                ps.close();
+            }
+            String path = fileName.getAbsolutePath();
+            String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
+            PRJUtil.writePRJ(connection, srid, new File(nameWithoutExt + ".prj"));
+            copyProgress.endOfProgress();
+        } else {
+            throw new SQLException("Only .shp extension is supported");
+        }
+    }
+
 
 
     @Override
