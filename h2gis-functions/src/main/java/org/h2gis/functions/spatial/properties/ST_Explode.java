@@ -43,12 +43,16 @@ import java.sql.Types;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.ScalarFunction;
 
 /**
  * This table function explode Geometry Collection into multiple geometries
  * @author Nicolas Fortin
  */
-public class ST_Explode extends DeterministicScalarFunction {
+public class ST_Explode extends AbstractFunction implements ScalarFunction {
     /** The default field name for explode count, value is [1-n] */
     public static final String EXPLODE_FIELD = "EXPLOD_ID";
 
@@ -66,16 +70,19 @@ public class ST_Explode extends DeterministicScalarFunction {
     /**
      * Explode Geometry Collection into multiple geometries
      * @param connection
-     * @param tableName the name of the input table
+     * @param tableName the name of the input table or select query
      * @return A result set with the same content of specified table but with atomic geometries and duplicate values.
      * @throws java.sql.SQLException
      */
     public static ResultSet explode(Connection connection, String tableName) throws SQLException {
-        if(tableName.toLowerCase().startsWith("select ")){
-            ExplodeResultSetQuery explodeResultSetQuery = new ExplodeResultSetQuery(connection,tableName, null);
-            return explodeResultSetQuery.getResultSet();
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tableName);
+        if (matcher.find()) {
+                ExplodeResultSetQuery explodeResultSetQuery = new ExplodeResultSetQuery(connection, tableName, null);
+                return explodeResultSetQuery.getResultSet();            
         }
-        return explode(connection, tableName,null);
+        return explode(connection, tableName, null);
     }
 
     /**

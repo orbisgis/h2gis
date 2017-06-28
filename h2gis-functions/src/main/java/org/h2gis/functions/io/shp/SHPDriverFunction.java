@@ -150,8 +150,7 @@ public class SHPDriverFunction implements DriverFunction {
      * @throws java.sql.SQLException 
      */
     public void exportResultset(Connection connection, String selectQuery, File fileName, EmptyProgressVisitor progress, String encoding) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        if (FileUtil.isExtensionWellFormated(fileName, "shp")) {
+         if (FileUtil.isExtensionWellFormated(fileName, "shp")) {
             PreparedStatement ps = connection.prepareStatement(selectQuery, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
             ResultSet resultSet = ps.executeQuery();
             int recordCount = 0;

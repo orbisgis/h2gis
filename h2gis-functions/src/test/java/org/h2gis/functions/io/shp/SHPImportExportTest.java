@@ -647,7 +647,7 @@ public class SHPImportExportTest {
         st.execute("DROP TABLE IF EXISTS WATERNETWORK,RIVER");
         final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath());
         st.execute("CALL SHPRead(" + path + ", 'WATERNETWORK');");
-        st.execute("CALL SHPWrite('target/test_river.shp', 'select * from WATERNETWORK')");
+        st.execute("CALL SHPWrite('target/test_river.shp', '(select * from WATERNETWORK)')");
         st.execute("CALL SHPRead('target/test_river.shp', 'RIVER');");
         // Check content
         ResultSet rs = st.executeQuery("SELECT * FROM RIVER");
@@ -670,7 +670,7 @@ public class SHPImportExportTest {
         st.execute("DROP TABLE IF EXISTS WATERNETWORK,RIVER");
         final String path = StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath());
         st.execute("CALL SHPRead(" + path + ", 'WATERNETWORK');");
-        st.execute("CALL SHPWrite('target/test_river.shp', 'select * from WATERNETWORK limit 1')");
+        st.execute("CALL SHPWrite('target/test_river.shp', '(select * from WATERNETWORK limit 1)')");
         st.execute("CALL SHPRead('target/test_river.shp', 'RIVER');");
         // Check content
         ResultSet rs = st.executeQuery("SELECT count(*) FROM RIVER");
