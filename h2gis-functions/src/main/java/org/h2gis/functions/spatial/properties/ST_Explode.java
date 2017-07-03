@@ -29,7 +29,6 @@ import com.vividsolutions.jts.geom.MultiPolygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.utilities.TableUtilities;
-import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -79,8 +78,12 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableName);
         if (matcher.find()) {
+            if (tableName.startsWith("(") && tableName.endsWith(")")) {
                 ExplodeResultSetQuery explodeResultSetQuery = new ExplodeResultSetQuery(connection, tableName, null);
-                return explodeResultSetQuery.getResultSet();            
+                return explodeResultSetQuery.getResultSet();
+            } else {
+                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
+            }
         }
         return explode(connection, tableName, null);
     }
@@ -309,6 +312,8 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
          * @return 
          */
         private String limitQuery(String selectQuery) {
+            //Remove the parentheses
+            selectQuery =  selectQuery.substring(1, selectQuery.lastIndexOf(")"));
             int findLIMIT = selectQuery.lastIndexOf("LIMIT ");
             int comma = selectQuery.lastIndexOf(";");
             if (findLIMIT == -1) {
