@@ -130,7 +130,7 @@ public class SpatialFunctionTest {
                 + " boundary MULTIPOLYGON);"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
-        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('select * from forests limit 1;') WHERE name = 'Green Forest' and explod_id=2");
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('(select * from forests limit 1)') WHERE name = 'Green Forest' and explod_id=2");
         assertTrue(rs.next());
         assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
         st.execute("drop table forests");
@@ -142,7 +142,7 @@ public class SpatialFunctionTest {
                 + " boundary MULTIPOLYGON);"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
-        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('select * from forests limit 1') WHERE name = 'Green Forest' and explod_id=2");
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('(select * from forests limit 1)') WHERE name = 'Green Forest' and explod_id=2");
         assertTrue(rs.next());
         assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
         st.execute("drop table forests");
@@ -154,7 +154,7 @@ public class SpatialFunctionTest {
                 + " boundary MULTIPOLYGON, \"LIMIT\" INTEGER);"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101), 666);");
-        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('select \"LIMIT\", boundary from forests limit 1') WHERE explod_id=2");
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('(select \"LIMIT\", boundary from forests limit 1)') WHERE explod_id=2");
         assertTrue(rs.next());
         assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
         st.execute("drop table forests");
@@ -166,7 +166,7 @@ public class SpatialFunctionTest {
                 + " boundary MULTIPOLYGON);"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
-        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('select * from forests') WHERE name = 'Green Forest' and explod_id=2");
+        ResultSet rs = st.executeQuery("SELECT ST_AsText(boundary) FROM ST_Explode('(select * from forests)') WHERE name = 'Green Forest' and explod_id=2");
         assertTrue(rs.next());
         assertEquals("POLYGON ((59 18, 67 18, 67 13, 59 13, 59 18))", rs.getString(1));
         st.execute("drop table forests");

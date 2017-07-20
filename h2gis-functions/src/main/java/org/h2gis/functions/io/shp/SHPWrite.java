@@ -20,7 +20,6 @@
 
 package org.h2gis.functions.io.shp;
 
-import java.io.File;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
@@ -28,26 +27,9 @@ import org.h2gis.utilities.URIUtilities;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.dbf.DBFDriverFunction;
-import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
-import org.h2gis.functions.io.shp.internal.SHPDriver;
-import org.h2gis.functions.io.shp.internal.ShapeType;
-import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.functions.io.utility.PRJUtil;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.jts_utils.GeometryMetaData;
 
 /**
  * SQL Function to read a table and write it into a shape file.
@@ -81,6 +63,7 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
      * @param connection Active connection
      * @param fileName Shape file name or URI
      * @param tableReference Table name or select query
+     * Note : The select query must be enclosed in parenthesis
      * @param encoding File encoding
      * @throws IOException
      * @throws SQLException
@@ -91,7 +74,12 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
         Matcher matcher = pattern.matcher(tableReference);
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
         if (matcher.find()) {
-            shpDriverFunction.exportResultset(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
+            if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
+                shpDriverFunction.exportResultset(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
+
+            } else {
+                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
+            }
         } else {
             shpDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
         }
