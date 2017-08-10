@@ -50,15 +50,8 @@ Click Connect in the web interface
 
 [Create a database](http://www.h2database.com/html/quickstart.html) and run the following commands to add spatial features (do it only after the creation of a new database):
 
-
 ```sql
-CREATE ALIAS IF NOT EXISTS H2GIS_EXTENSION FOR "org.h2gis.ext.H2GISExtension.load";
-CALL H2GIS_EXTENSION();
-```
-Note : This command load all H2GIS functions : spatial, drivers and network. If you don't want to install the network functions please use :
-
-```sql
-CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR "org.h2gis.functions.H2GISFunctions.load";
+CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR "org.h2gis.functions.factory.H2GISFunctions.load";
 CALL H2GIS_SPATIAL();
 ```
 
