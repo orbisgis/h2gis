@@ -53,7 +53,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-functions</artifactId>
+            <artifactId>h2gis</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

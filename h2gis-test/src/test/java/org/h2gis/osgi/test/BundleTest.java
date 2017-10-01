@@ -86,7 +86,7 @@ public class BundleTest {
                 getBundle("poly2tri-core"),
                 getBundle("h2"),
                 getBundle("jackson-core"),
-                //getBundle("h2gis-functions").noStart(),
+                //getBundle("h2gis").noStart(),
                 getBundle("h2gis-ext").noStart(),
                 getBundle("h2gis-ext-osgi"),
                 getBundle("java-network-analyzer"),
