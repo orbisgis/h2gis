@@ -7,7 +7,7 @@
     <version>1.4.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <artifactId>h2gis-functions</artifactId>
+  <artifactId>h2gis</artifactId>
   <name>h2gis-functions</name>
   <packaging>bundle</packaging>
   <organization>
