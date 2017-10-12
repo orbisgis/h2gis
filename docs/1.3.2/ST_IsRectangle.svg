@@ -1,0 +1,654 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="ST_IsRectangle.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Mend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Mend"
+       style="overflow:visible;">
+      <path
+         id="path3919"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(0.6) rotate(180) translate(0,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path3895"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lstart"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lstart"
+       style="overflow:visible">
+      <path
+         id="path3824"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt"
+         transform="scale(0.8) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lend"
+       style="overflow:visible;">
+      <path
+         id="path3845"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4142136"
+     inkscape:cx="392.90799"
+     inkscape:cy="612.20898"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer6"
+     showgrid="false"
+     inkscape:window-width="1680"
+     inkscape:window-height="1022"
+     inkscape:window-x="1680"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     showguides="true"
+     inkscape:guide-bbox="true" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer6"
+     inkscape:label="Fond"
+     style="display:inline">
+    <rect
+       style="opacity:0.8;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
+       id="rect5041"
+       width="576.00098"
+       height="306.79245"
+       x="55.00256"
+       y="348.02557"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+  </g>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     style="display:inline">
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none"
+       d="m 93.69548,358.98636 0,264.3681"
+       id="path2985"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 72.72817,601.61079 242.76941,0"
+       id="path2987"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2989"
+       d="m 133.7422,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       d="m 173.74918,371.20562 0,230.3593"
+       id="path2991"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2993"
+       d="m 213.75616,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path2999"
+       d="m 93.75595,561.55032 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 93.75595,521.55914 209.84284,0"
+       id="path3001"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3003"
+       d="m 93.75595,481.56797 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3804"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,2.125879,213.92248)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75"><flowRegion
+         id="flowRegion3806"><rect
+           id="rect3808"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3810"
+         style="font-style:italic">x</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.61674087,0,0,0.61674087,-230.63816,-40.067442)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3812"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75"><flowRegion
+         id="flowRegion3814"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect3816" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara3818">y</flowPara></flowRoot>    <flowRoot
+       transform="matrix(0.26110367,0,0,0.26110367,-56.084793,442.21516)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot4814"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75"><flowRegion
+         id="flowRegion4816"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect4818" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4820">0,0</flowPara></flowRoot>    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       d="m 253.7446,371.20562 0,230.3593"
+       id="path3055"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3057"
+       d="m 293.73305,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:connector-curvature="0"
+       id="path3063"
+       d="m 93.75595,441.62801 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 93.75595,401.63683 209.84284,0"
+       id="path3065"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       d="m 113.74135,371.20562 0,230.3593"
+       id="path3888"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:connector-curvature="0"
+       id="path3890"
+       d="m 153.74833,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       d="m 193.75531,371.20562 0,230.3593"
+       id="path3892"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3894"
+       d="m 233.74375,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       d="m 273.7322,371.20562 0,230.3593"
+       id="path3896"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 93.75595,581.55032 209.84284,0"
+       id="path3898"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:connector-curvature="0"
+       id="path3900"
+       d="m 93.75595,541.55914 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 93.75595,501.56797 209.84284,0"
+       id="path3902"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.6;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4,4.8;stroke-dashoffset:0"
+       d="m 93.75595,461.62801 209.84284,0"
+       id="path3904"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3906"
+       d="m 93.75595,421.63683 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 93.75595,381.67126 209.84284,0"
+       id="path3908"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3924"
+       d="m 394.52095,358.98636 0,262.24678"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#Arrow1Lstart);marker-end:none" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       id="path3926"
+       d="m 373.55364,601.61079 242.76941,0"
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 434.58214,371.20562 0,230.3593"
+       id="path3928"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:connector-curvature="0"
+       id="path3930"
+       d="m 474.58912,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 514.5961,371.20562 0,230.3593"
+       id="path3932"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 394.58142,561.55032 209.84284,0"
+       id="path3934"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:connector-curvature="0"
+       id="path3936"
+       d="m 394.58142,521.55914 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 394.58142,481.56797 209.84284,0"
+       id="path3938"
+       inkscape:connector-curvature="0" />
+    <flowRoot
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       transform="matrix(0.61674087,0,0,0.61674087,302.95135,213.92248)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot3940"
+       xml:space="preserve"><flowRegion
+         id="flowRegion3942"><rect
+           y="626.07782"
+           x="487.39859"
+           height="48.487324"
+           width="121.21831"
+           id="rect3944" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara3946">x</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       xml:space="preserve"
+       id="flowRoot3948"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.61674087,0,0,0.61674087,70.18731,-40.067442)"><flowRegion
+         id="flowRegion3950"><rect
+           id="rect3952"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3954"
+         style="font-style:italic">y</flowPara></flowRoot>    <flowRoot
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       xml:space="preserve"
+       id="flowRoot3956"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.26110367,0,0,0.26110367,244.74068,442.21516)"><flowRegion
+         id="flowRegion3958"><rect
+           id="rect3960"
+           width="121.21831"
+           height="48.487324"
+           x="487.39859"
+           y="626.07782" /></flowRegion><flowPara
+         id="flowPara3962"
+         style="font-style:italic">0,0</flowPara></flowRoot>    <path
+       inkscape:connector-curvature="0"
+       id="path3964"
+       d="m 554.58454,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 594.57299,371.20562 0,230.3593"
+       id="path3966"
+       inkscape:connector-curvature="0" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 394.58142,441.62801 209.84284,0"
+       id="path3968"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3970"
+       d="m 394.58142,401.63683 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3974"
+       d="m 414.58129,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 454.58827,371.20562 0,230.3593"
+       id="path3976"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3978"
+       d="m 494.59525,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 534.58369,371.20562 0,230.3593"
+       id="path3980"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3982"
+       d="m 574.57214,371.20562 0,230.3593"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3984"
+       d="m 394.58142,581.55032 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 394.58142,541.55914 209.84284,0"
+       id="path3986"
+       inkscape:connector-curvature="0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3988"
+       d="m 394.58142,501.56797 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:connector-curvature="0"
+       id="path3990"
+       d="m 394.58142,461.62801 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0" />
+    <path
+       inkscape:export-ydpi="93.75"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       d="m 394.58142,421.63683 209.84284,0"
+       id="path3992"
+       inkscape:connector-curvature="0" />
+    <path
+       inkscape:connector-curvature="0"
+       id="path3994"
+       d="m 394.58142,381.67126 209.84284,0"
+       style="fill:none;stroke:#000000;stroke-width:0.60000002;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:2.4, 4.8;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+  </g>
+  <g
+     inkscape:groupmode="layer"
+     id="layer5"
+     inkscape:label="Origine"
+     style="display:inline">
+    <rect
+       style="fill:#b2dcff;fill-opacity:1;stroke:#000000;stroke-width:1.00672363999999992;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       id="rect3910"
+       width="99.841476"
+       height="199.76967"
+       x="93.727257"
+       y="401.71567"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3916"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       transform="matrix(0.66698151,0,0,0.66698151,61.102202,184.91372)"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75"><flowRegion
+         id="flowRegion3918"><rect
+           id="rect3920"
+           width="142.83557"
+           height="59.396984"
+           x="156.2706"
+           y="654.9682" /></flowRegion><flowPara
+         id="flowPara3922"
+         style="font-style:italic">True</flowPara></flowRoot>    <rect
+       y="401.71567"
+       x="394.55273"
+       height="199.76967"
+       width="99.841476"
+       id="rect3996"
+       style="fill:#ffaaaa;fill-opacity:1;stroke:#ff0000;stroke-width:1.00672364;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <path
+       sodipodi:nodetypes="ccccc"
+       inkscape:connector-curvature="0"
+       id="path3998"
+       d="m 394.53856,601.6258 0,-200.50896 140.00715,0 -39.59524,200.24534 z"
+       style="fill:#ffaaaa;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75" />
+    <flowRoot
+       transform="matrix(0.66698151,0,0,0.66698151,361.92767,184.91372)"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       id="flowRoot4000"
+       xml:space="preserve"
+       inkscape:export-filename="/home/gwendall/Documents/OrbisGIS/H2GIS/docs/dev/ST_IsRectangle.png"
+       inkscape:export-xdpi="93.75"
+       inkscape:export-ydpi="93.75"><flowRegion
+         id="flowRegion4002"><rect
+           y="654.9682"
+           x="156.2706"
+           height="59.396984"
+           width="142.83557"
+           id="rect4004" /></flowRegion><flowPara
+         style="font-style:italic"
+         id="flowPara4006">False</flowPara></flowRoot>  </g>
+</svg>
