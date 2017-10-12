@@ -9,7 +9,8 @@ Welcome to the H2GIS documentation. Please choose your version :
 ## Users documentation
 
 * [dev] : version under development / not released
-* [1.3.1] : last release
+* [1.3.2] : last release
+* [1.3.1] : former release
 * [1.3] : former release
 * [1.2] : former release
 
@@ -18,6 +19,7 @@ Welcome to the H2GIS documentation. Please choose your version :
 * The developer doc can be found in the [Github wiki].
 
 [dev]: ../dev/home
+[1.3.2]: ../1.3.2/home
 [1.3.1]: ../1.3.1/home
 [1.3]: ../1.3/home
 [1.2]: ../1.2/home
