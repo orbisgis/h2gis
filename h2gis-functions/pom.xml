@@ -3,16 +3,16 @@
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.orbisgis</groupId>
-    <artifactId>h2gis</artifactId>
-    <version>1.3.2</version>
+    <artifactId>h2gis-parent</artifactId>
+    <version>1.4.0-SNAPSHOT</version>
     <relativePath>../</relativePath>
   </parent>
-  <artifactId>h2gis-functions</artifactId>
+  <artifactId>h2gis</artifactId>
   <name>h2gis-functions</name>
   <packaging>bundle</packaging>
   <organization>
         <name>CNRS</name>
-        <url>http://www.orbisgis.org</url>
+        <url>http://www.h2gis.org</url>
     </organization>
     <url>http://github.com/orbisgis/H2GIS</url>
     <licenses>

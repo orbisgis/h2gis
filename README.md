@@ -52,18 +52,11 @@ Click Connect in the web interface
 
 #### Initialize the H2GIS extension
 
-If the user needs only the basic spatial functions it must apply the SQL syntax:
+To initialize the H2GIS extension apply the SQL syntax:
 
 ```sql
 CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR "org.h2gis.functions.factory.H2GISFunctions.load";
 CALL H2GIS_SPATIAL();
-```
-
-Otherwise please run the command:
-
-```sql
-CREATE ALIAS IF NOT EXISTS H2GIS_EXTENSION FOR "org.h2gis.ext.H2GISExtension.load";
-CALL H2GIS_EXTENSION();
 ```
 
 When the functions are installed you can open a shapefile by calling the following SQL request:

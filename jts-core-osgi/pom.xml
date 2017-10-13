@@ -3,8 +3,8 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.orbisgis</groupId>
-        <artifactId>h2gis</artifactId>
-        <version>1.3.2</version>
+        <artifactId>h2gis-parent</artifactId>
+        <version>1.4.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
     <artifactId>jts-core-osgi</artifactId>
