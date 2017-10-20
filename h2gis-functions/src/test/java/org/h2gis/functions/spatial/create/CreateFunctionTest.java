@@ -253,6 +253,17 @@ public class CreateFunctionTest {
         assertFalse(rs.next());
         rs.close();
     }
+    
+     @Test
+    public void test_ST_Point() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Point(1.4, -3.7), "
+                + "ST_Point(1.4, -3.7, 6.2);");
+        assertTrue(rs.next());
+        assertEquals(WKT_READER.read("POINT(1.4 -3.7)"), rs.getObject(1));
+        assertEquals(WKT_READER.read("POINT(1.4 -3.7 6.2)"), rs.getObject(2));
+        assertFalse(rs.next());
+        rs.close();
+    }
 
     @Test
     public void test_ST_MakeEllipse() throws Exception {

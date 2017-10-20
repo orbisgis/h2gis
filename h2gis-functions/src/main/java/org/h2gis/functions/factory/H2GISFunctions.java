@@ -98,6 +98,7 @@ import org.h2gis.functions.spatial.create.ST_MakePolygon;
 import org.h2gis.functions.spatial.create.ST_MinimumBoundingCircle;
 import org.h2gis.functions.spatial.create.ST_MinimumRectangle;
 import org.h2gis.functions.spatial.create.ST_OctogonalEnvelope;
+import org.h2gis.functions.spatial.create.ST_Point;
 import org.h2gis.functions.spatial.create.ST_RingBuffer;
 import org.h2gis.functions.spatial.crs.ST_SetSRID;
 import org.h2gis.functions.spatial.crs.ST_Transform;
@@ -429,7 +430,8 @@ public class H2GISFunctions {
                 new H2GISversion(),
                 new ST_Collect(),
                 new ST_RemoveDuplicatedCoordinates(),
-                new ST_MakeValid()};
+                new ST_MakeValid(),
+                new ST_Point()};
     }
 
     /**
