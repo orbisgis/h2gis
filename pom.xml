@@ -108,5 +108,6 @@
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-nexus</artifactId>
         <version>3</version>
+        <relativePath></relativePath>
     </parent>
 </project>
