@@ -25,7 +25,7 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.io.WKTReader;
-import org.h2gis.ext.H2GISExtension;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -82,17 +82,15 @@ public class BundleTest {
                 getBundle("h2gis-utilities"),
                 getBundle("cts"),
                 getBundle("jts-core-osgi"),
-		getBundle("jts-io-osgi"),
+		        getBundle("jts-io-osgi"),
                 getBundle("poly2tri-core"),
                 getBundle("h2"),
                 getBundle("jackson-core"),
-                //getBundle("h2gis").noStart(),
-                getBundle("h2gis-ext").noStart(),
-                getBundle("h2gis-ext-osgi"),
+                getBundle("h2gis").noStart(),
                 getBundle("java-network-analyzer"),
                 getBundle("jgrapht-core"),
                 getBundle("commons-compress"),
-                getBundle("h2gis-h2network").noStart(),
+                getBundle("h2gis-network").noStart(),
                 junitBundles()));
         //options.addAll(getBundles());
         return options(options.toArray(new Option[options.size()]));
@@ -137,7 +135,7 @@ public class BundleTest {
             }
             Connection connection = dataSource.getConnection();
             try {
-                H2GISExtension.load(connection);
+                H2GISFunctions.load(connection);
             } finally {
                 connection.close();
             }
