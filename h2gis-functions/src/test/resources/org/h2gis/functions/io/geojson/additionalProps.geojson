@@ -1,0 +1,15 @@
+{
+    "type": "FeatureCollection",
+    "array": [{"prop":"value"}, {"prop":"value"}],
+    "object":{"prop":"value"},
+    "features": [
+        {
+            "type":"Feature",
+            "geometry": {
+                "type":"Point",
+                "coordinates": [100.0, 0.0]
+            },
+            "properties":{"prop":105576}
+        }
+    ]
+}
