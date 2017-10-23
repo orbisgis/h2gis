@@ -2,6 +2,7 @@
     "type": "FeatureCollection",
     "array": [{"prop":"value"}, {"prop":"value"}],
     "object":{"prop":"value"},
+    "prop":"value",
     "features": [
         {
             "type":"Feature",
