@@ -44,12 +44,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
@@ -270,8 +266,8 @@ public class GeoJsonReaderDriver {
             jp.nextToken();
             if(jp.getCurrentToken().equals(JsonToken.START_ARRAY) || jp.getCurrentToken().equals(JsonToken.START_OBJECT)){
                 jp.skipChildren();
-                jp.nextToken();
             }
+            jp.nextToken();
         }
         if(jp.getText().equalsIgnoreCase(GeoJsonField.CRS)){
             parsedSRID = readCRS(jp);
@@ -321,17 +317,43 @@ public class GeoJsonReaderDriver {
      * @param jp
      */
     private void parseFeatureMetadata(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME geometry
-        String firstField = jp.getText();
-        if (firstField.equalsIgnoreCase(GeoJsonField.GEOMETRY)) {
+        jp.nextToken();
+        String field = jp.getText();
+        //Avoid all token which are not 'properties', 'geometry', 'type'
+        while (!field.equalsIgnoreCase(GeoJsonField.GEOMETRY) &&
+                !field.equalsIgnoreCase(GeoJsonField.PROPERTIES) &&
+                !jp.getCurrentToken().equals(JsonToken.END_OBJECT)){
+            jp.nextToken();
+            if(jp.getCurrentToken().equals(JsonToken.START_ARRAY) || jp.getCurrentToken().equals(JsonToken.START_OBJECT)){
+                jp.skipChildren();
+            }
+            jp.nextToken();
+            field = jp.getText();
+        }
+         // FIELD_NAME geometry
+        if (field.equalsIgnoreCase(GeoJsonField.GEOMETRY)) {
             parseParentGeometryMetadata(jp);
             hasGeometryField = true;
-        } else if (firstField.equalsIgnoreCase(GeoJsonField.PROPERTIES)) {
+            jp.nextToken();
+        } else if (field.equalsIgnoreCase(GeoJsonField.PROPERTIES)) {
             parsePropertiesMetadata(jp);
+            jp.nextToken();
         }
         //If there is only one geometry field in the feature them the next
         //token corresponds to the end object of the feature
-        jp.nextToken();
+
+        //Avoid all token which are not 'properties', 'geometry', 'type'
+        field = jp.getText();
+        while (!field.equalsIgnoreCase(GeoJsonField.GEOMETRY) &&
+                !field.equalsIgnoreCase(GeoJsonField.PROPERTIES) &&
+                !jp.getCurrentToken().equals(JsonToken.END_OBJECT)){
+            jp.nextToken();
+            if(jp.getCurrentToken().equals(JsonToken.START_ARRAY) || jp.getCurrentToken().equals(JsonToken.START_OBJECT)){
+                jp.skipChildren();
+            }
+            jp.nextToken();
+            field = jp.getText();
+        }
         if (jp.getCurrentToken() != JsonToken.END_OBJECT) {
             String secondParam = jp.getText();// field name
             if (secondParam.equalsIgnoreCase(GeoJsonField.GEOMETRY)) {
@@ -340,7 +362,7 @@ public class GeoJsonReaderDriver {
             } else if (secondParam.equalsIgnoreCase(GeoJsonField.PROPERTIES)) {
                 parsePropertiesMetadata(jp);
             }
-            jp.nextToken(); //END_OBJECT } feature
+            while (jp.nextToken() != JsonToken.END_OBJECT); //END_OBJECT } feature
         }
        
     }
@@ -723,17 +745,42 @@ public class GeoJsonReaderDriver {
      * @param jp
      */
     private Object[] parseFeature(JsonParser jp) throws IOException, SQLException {
-        jp.nextToken(); // FIELD_NAME geometry
-        String firstField = jp.getText();
+        jp.nextToken();
+        String field = jp.getText();
+        //Avoid all token which are not 'properties', 'geometry', 'type'
+        while (!field.equalsIgnoreCase(GeoJsonField.GEOMETRY) &&
+                !field.equalsIgnoreCase(GeoJsonField.PROPERTIES) &&
+                !jp.getCurrentToken().equals(JsonToken.END_OBJECT)){
+            jp.nextToken();
+            if(jp.getCurrentToken().equals(JsonToken.START_ARRAY) || jp.getCurrentToken().equals(JsonToken.START_OBJECT)){
+                jp.skipChildren();
+            }
+            jp.nextToken();
+            field = jp.getText();
+        }
         Object[] values= new Object[cachedColumnIndex.size()+1];
-        if (firstField.equalsIgnoreCase(GeoJsonField.GEOMETRY)) {
+        if (field.equalsIgnoreCase(GeoJsonField.GEOMETRY)) {
             setGeometry(jp, values);
-        } else if (firstField.equalsIgnoreCase(GeoJsonField.PROPERTIES)) {
+            jp.nextToken();
+        } else if (field.equalsIgnoreCase(GeoJsonField.PROPERTIES)) {
             parseProperties(jp, values);
+            jp.nextToken();
         }
         //If there is only one geometry field in the feature them the next
         //token corresponds to the end object of the feature
-        jp.nextToken();
+
+        //Avoid all token which are not 'properties', 'geometry', 'type'
+        field = jp.getText();
+        while (!field.equalsIgnoreCase(GeoJsonField.GEOMETRY) &&
+                !field.equalsIgnoreCase(GeoJsonField.PROPERTIES) &&
+                !jp.getCurrentToken().equals(JsonToken.END_OBJECT)){
+            jp.nextToken();
+            if(jp.getCurrentToken().equals(JsonToken.START_ARRAY) || jp.getCurrentToken().equals(JsonToken.START_OBJECT)){
+                jp.skipChildren();
+            }
+            jp.nextToken();
+            field = jp.getText();
+        }
         if (jp.getCurrentToken() != JsonToken.END_OBJECT) {
             String secondParam = jp.getText();// field name
             if (secondParam.equalsIgnoreCase(GeoJsonField.GEOMETRY)) {
@@ -741,7 +788,7 @@ public class GeoJsonReaderDriver {
             } else if (secondParam.equalsIgnoreCase(GeoJsonField.PROPERTIES)) {
                 parseProperties(jp, values);
             }
-            jp.nextToken(); //END_OBJECT } feature
+            while (jp.nextToken() != JsonToken.END_OBJECT); //END_OBJECT } feature
         }
         
         return values;
@@ -848,8 +895,8 @@ public class GeoJsonReaderDriver {
             jp.nextToken();
             if(jp.getCurrentToken().equals(JsonToken.START_ARRAY) || jp.getCurrentToken().equals(JsonToken.START_OBJECT)){
                 jp.skipChildren();
-                jp.nextToken();
             }
+            jp.nextToken();
         }
         String firstParam = jp.getText();
         if(firstParam.equalsIgnoreCase(GeoJsonField.CRS)){
