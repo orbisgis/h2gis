@@ -70,7 +70,13 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-ext-osgi</artifactId>
+            <artifactId>h2gis-osgi</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2gis-network</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
@@ -84,6 +90,7 @@
             <groupId>org.orbisgis</groupId>
             <artifactId>jts-core-osgi</artifactId>
             <version>${jts-core-version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.vividsolutions</groupId>
@@ -95,6 +102,7 @@
             <groupId>org.orbisgis</groupId>
             <artifactId>jts-io-osgi</artifactId>
             <version>${jts-io-version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
