@@ -694,5 +694,17 @@ public class GeojsonImportExportTest {
         stat.close();
     }
 
-        
+    @Test
+    public void testReadAdditionalProps() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_ADDITIONALPROPS_READ;");
+        stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("additionalProps.geojson").getPath()) + ", 'TABLE_ADDITIONALPROPS_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_ADDITIONALPROPS_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT (100.0 0.0)")));
+        assertEquals(105576, res.getDouble(2), 0);
+        res.next();
+        res.close();
+        stat.close();
+    }
 }
