@@ -23,6 +23,14 @@ package org.h2gis.functions.osgi;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.Function;
+import org.h2gis.functions.io.csv.CSVDriverFunction;
+import org.h2gis.functions.io.dbf.DBFDriverFunction;
+import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
+import org.h2gis.functions.io.gpx.GPXDriverFunction;
+import org.h2gis.functions.io.kml.KMLDriverFunction;
+import org.h2gis.functions.io.osm.OSMDriverFunction;
+import org.h2gis.functions.io.shp.SHPDriverFunction;
+import org.h2gis.functions.io.tsv.TSVDriverFunction;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -50,6 +58,17 @@ public class Activator implements BundleActivator {
                         null);
             }
         }
+
+        //Driver registering
+        bc.registerService(DriverFunction.class, new DBFDriverFunction(), null);
+        bc.registerService(DriverFunction.class, new SHPDriverFunction(), null);
+        bc.registerService(DriverFunction.class, new GPXDriverFunction(), null);
+        bc.registerService(DriverFunction.class, new GeoJsonDriverFunction(), null);
+        bc.registerService(DriverFunction.class, new OSMDriverFunction(), null);
+        bc.registerService(DriverFunction.class, new KMLDriverFunction(), null);
+        bc.registerService(DriverFunction.class, new CSVDriverFunction(), null);
+        bc.registerService(DriverFunction.class, new TSVDriverFunction(), null);
+
         DataSourceTracker dataSourceTracker = new DataSourceTracker(bc);
         databaseTracker = new ServiceTracker<DataSource, FunctionTracker>(bc,DataSource.class,dataSourceTracker);
         databaseTracker.open();
