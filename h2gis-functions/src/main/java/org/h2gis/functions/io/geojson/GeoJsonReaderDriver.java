@@ -262,7 +262,8 @@ public class GeoJsonReaderDriver {
     private void parseFeaturesMetadata(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME features
         // Passes all the properties until "Feature" object is found
-        while(!jp.getText().equalsIgnoreCase(GeoJsonField.FEATURES)){
+        while(!jp.getText().equalsIgnoreCase(GeoJsonField.FEATURES) &&
+                !jp.getText().equalsIgnoreCase(GeoJsonField.CRS)){
             jp.nextToken();
             if(jp.getCurrentToken().equals(JsonToken.START_ARRAY) || jp.getCurrentToken().equals(JsonToken.START_OBJECT)){
                 jp.skipChildren();
@@ -891,7 +892,8 @@ public class GeoJsonReaderDriver {
     private void parseFeatures(JsonParser jp) throws IOException, SQLException {
         jp.nextToken(); // FIELD_NAME features
         // Passes all the properties until "Feature" object is found
-        while(!jp.getText().equalsIgnoreCase(GeoJsonField.FEATURES)){
+        while(!jp.getText().equalsIgnoreCase(GeoJsonField.FEATURES) &&
+                !jp.getText().equalsIgnoreCase(GeoJsonField.CRS)){
             jp.nextToken();
             if(jp.getCurrentToken().equals(JsonToken.START_ARRAY) || jp.getCurrentToken().equals(JsonToken.START_OBJECT)){
                 jp.skipChildren();
