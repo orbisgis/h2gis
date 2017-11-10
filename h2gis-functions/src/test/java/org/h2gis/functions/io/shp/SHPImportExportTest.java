@@ -679,4 +679,28 @@ public class SHPImportExportTest {
         rs.close();
     }   
     
+    
+    @Test
+    public void exportImportCharacters() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/area_export_characters.shp");
+        stat.execute("DROP TABLE IF EXISTS AREA, table_characters");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key, cover varchar)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1, 'Forêt')");
+        stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))',2, 'Zone arborée')");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/area_export_characters.shp', 'AREA')");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        
+        stat.execute("CALL SHPRead('target/area_export_characters.shp', 'table_characters')");
+        // Check content
+        ResultSet rs = stat.executeQuery("SELECT * FROM table_characters");
+        assertTrue(rs.next());
+        assertEquals("Forêt", rs.getString("cover"));
+        assertTrue(rs.next());
+        assertEquals("Zone arborée", rs.getString("cover"));
+        rs.close();
+    }
+    
 }
