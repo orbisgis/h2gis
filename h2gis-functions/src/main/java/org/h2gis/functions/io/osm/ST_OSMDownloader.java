@@ -28,8 +28,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.api.AbstractFunction;
@@ -91,7 +93,7 @@ public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction
         if (file.getName().toLowerCase().endsWith(".osm")) {
             if (area != null) {
                 int srid = area.getSRID();
-                if (srid != 4326) {
+                if (srid!=0) {
                     downloadOSMFile(file, ST_Transform.ST_Transform(con, area, 4326).getEnvelopeInternal());
                 } else {
                     downloadOSMFile(file, area.getEnvelopeInternal());
@@ -112,20 +114,30 @@ public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction
      * @throws IOException
      */
     public static void downloadOSMFile(File file, Envelope geometryEnvelope) throws IOException {
-        InputStream in = createOsmUrl(geometryEnvelope).openStream();
-        OutputStream out = new FileOutputStream(file);
-        try {
-            byte[] data = new byte[4096];
-            while (true) {
-                int numBytes = in.read(data);
-                if (numBytes == -1) {
-                    break;
-                }
-                out.write(data, 0, numBytes);
-            }
-        } finally {
-            out.close();
-            in.close();
+        HttpURLConnection urlCon = (HttpURLConnection) createOsmUrl(geometryEnvelope).openConnection();
+        urlCon.setRequestMethod("GET");
+        urlCon.connect();
+        switch (urlCon.getResponseCode()) {
+            case 400:
+                throw new IOException("Error : Cannot query the OSM API with the following bounding box");
+            case 509:
+                throw new IOException("Error: You have downloaded too much data. Please try again later");
+            default:
+                InputStream in = urlCon.getInputStream();
+                OutputStream out = new FileOutputStream(file);
+                try {
+                    byte[] data = new byte[4096];
+                    while (true) {
+                        int numBytes = in.read(data);
+                        if (numBytes == -1) {
+                            break;
+                        }
+                        out.write(data, 0, numBytes);
+                    }
+                } finally {
+                    out.close();
+                    in.close();
+                }       break;
         }
     }
 
