@@ -21,9 +21,9 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

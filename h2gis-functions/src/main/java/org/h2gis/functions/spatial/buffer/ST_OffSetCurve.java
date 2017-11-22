@@ -20,12 +20,12 @@
 
 package org.h2gis.functions.spatial.buffer;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.noding.SegmentString;
-import com.vividsolutions.jts.operation.buffer.BufferParameters;
-import com.vividsolutions.jts.operation.buffer.OffsetCurveBuilder;
-import com.vividsolutions.jts.operation.buffer.OffsetCurveSetBuilder;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.noding.SegmentString;
+import org.locationtech.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
+import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;

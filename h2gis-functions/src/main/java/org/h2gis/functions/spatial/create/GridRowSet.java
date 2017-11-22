@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.create;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.utilities.JDBCUtilities;

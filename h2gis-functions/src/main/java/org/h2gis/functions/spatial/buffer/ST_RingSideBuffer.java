@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.buffer;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.operation.buffer.BufferParameters;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.operation.buffer.BufferParameters;
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.create.ST_RingBuffer;

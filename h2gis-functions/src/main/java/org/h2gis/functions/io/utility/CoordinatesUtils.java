@@ -20,14 +20,14 @@
 
 package org.h2gis.drivers.utility;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
 
 /**
- * This utility class provides some useful methods related to JTS {@link com.vividsolutions.jts.geom.Coordinate} objects.
+ * This utility class provides some useful methods related to JTS {@link org.locationtech.jts.geom.Coordinate} objects.
  *
  * @author Erwan Bocher
  */

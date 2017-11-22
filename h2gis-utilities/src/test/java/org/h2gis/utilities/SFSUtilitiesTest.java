@@ -20,8 +20,8 @@
 
 package org.h2gis.utilities;
 
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.junit.Test;
 import static junit.framework.Assert.assertEquals;
 

@@ -21,7 +21,7 @@
 package org.h2gis.functions;
 
 import org.h2gis.functions.factory.H2GISFunctions;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -37,10 +37,10 @@ import java.sql.Statement;
 import java.util.List;
 
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 import org.h2gis.utilities.trigger.UpdateTrigger;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;

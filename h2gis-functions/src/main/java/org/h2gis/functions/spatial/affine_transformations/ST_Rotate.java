@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.affine_transformations;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.util.AffineTransformation;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.util.AffineTransformation;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

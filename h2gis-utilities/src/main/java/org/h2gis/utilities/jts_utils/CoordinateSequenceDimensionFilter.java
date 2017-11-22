@@ -20,9 +20,9 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Filter on the dimension of each coordinate of the CoordinateSequence to determine

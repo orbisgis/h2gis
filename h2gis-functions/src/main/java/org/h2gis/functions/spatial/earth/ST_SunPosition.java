@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.earth;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
 import java.util.Date;
 import org.h2gis.api.DeterministicScalarFunction;
 

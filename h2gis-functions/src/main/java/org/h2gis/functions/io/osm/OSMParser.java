@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.io.osm;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.h2.api.ErrorCode;
 import org.h2gis.api.EmptyProgressVisitor;

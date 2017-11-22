@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.predicates;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
 
 

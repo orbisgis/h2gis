@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.h2.api.Aggregate;
 import org.h2.value.Value;
 import org.h2gis.api.AbstractFunction;
@@ -31,7 +31,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * ST_Extent returns an {@link com.vividsolutions.jts.geom.Envelope} that cover all aggregated geometries.
+ * ST_Extent returns an {@link org.locationtech.jts.geom.Envelope} that cover all aggregated geometries.
  * @author Nicolas Fortin
  */
 public class ST_Extent extends AbstractFunction implements Aggregate {

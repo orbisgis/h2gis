@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.edit;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.Point;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

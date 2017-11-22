@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.aggregate;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.h2gis.api.DeterministicScalarFunction;
 
 import java.sql.SQLException;

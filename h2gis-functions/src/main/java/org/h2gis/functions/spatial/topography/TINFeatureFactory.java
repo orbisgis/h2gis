@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.topography;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Triangle;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Triangle;
 
 /**
  * A factory used to create jDelaunay objects from JTS geometries.

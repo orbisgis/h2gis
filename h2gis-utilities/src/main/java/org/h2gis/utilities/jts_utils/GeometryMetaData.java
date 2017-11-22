@@ -20,16 +20,16 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.io.ByteArrayInStream;
-import com.vividsolutions.jts.io.ByteOrderDataInStream;
-import com.vividsolutions.jts.io.ByteOrderValues;
-import com.vividsolutions.jts.io.WKBConstants;
+import org.locationtech.jts.io.ByteArrayInStream;
+import org.locationtech.jts.io.ByteOrderDataInStream;
+import org.locationtech.jts.io.ByteOrderValues;
+import org.locationtech.jts.io.WKBConstants;
 
 import java.io.IOException;
 
 /**
  * Extract Geometry MetaData from WKB.
- * WKB Conversion source from {@link com.vividsolutions.jts.io.WKBReader}
+ * WKB Conversion source from {@link org.locationtech.jts.io.WKBReader}
  */
 public class GeometryMetaData {
     /** If SRID is available */

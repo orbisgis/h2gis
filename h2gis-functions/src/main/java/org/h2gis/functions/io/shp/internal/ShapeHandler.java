@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.io.shp.internal;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.functions.io.utility.ReadBufferManager;
 import org.h2gis.functions.io.utility.WriteBufferManager;
 

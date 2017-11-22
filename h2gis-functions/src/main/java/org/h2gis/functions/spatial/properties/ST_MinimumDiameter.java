@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import com.vividsolutions.jts.algorithm.MinimumDiameter;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
+import org.locationtech.jts.algorithm.MinimumDiameter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

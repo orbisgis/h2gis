@@ -20,12 +20,12 @@
 
 package org.h2gis.functions.spatial.edit;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.io.ParseException;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.ParseException;
 import java.util.ArrayList;
 import org.h2gis.api.DeterministicScalarFunction;
 
@@ -57,7 +57,7 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
      * @param geometry
      * @param dimension
      * @return 
-     * @throws com.vividsolutions.jts.io.ParseException 
+     * @throws org.locationtech.jts.io.ParseException 
      */
     public static Geometry collectionExtract(Geometry geometry, int dimension) throws ParseException {
         if(geometry == null){

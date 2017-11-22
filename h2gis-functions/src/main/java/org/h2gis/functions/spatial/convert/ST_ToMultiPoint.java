@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.MultiPoint;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

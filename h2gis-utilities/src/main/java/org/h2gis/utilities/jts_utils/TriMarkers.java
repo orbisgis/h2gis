@@ -20,11 +20,11 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Triangle;
-import com.vividsolutions.jts.math.Vector2D;
-import com.vividsolutions.jts.math.Vector3D;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Triangle;
+import org.locationtech.jts.math.Vector2D;
+import org.locationtech.jts.math.Vector3D;
 
 /**
  * Used by TriangleContouring.

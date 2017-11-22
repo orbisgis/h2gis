@@ -20,12 +20,12 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.index.ItemVisitor;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
-import com.vividsolutions.jts.math.Vector2D;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.index.ItemVisitor;
+import org.locationtech.jts.index.quadtree.Quadtree;
+import org.locationtech.jts.math.Vector2D;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 import java.util.*;
 
 
@@ -318,7 +318,7 @@ public class Voronoi {
     }
 
     /**
-     * Generate Voronoi using the graph of triangle computed by {@link #generateTriangleNeighbors(com.vividsolutions.jts.geom.Geometry)}
+     * Generate Voronoi using the graph of triangle computed by {@link #generateTriangleNeighbors(org.locationtech.jts.geom.Geometry)}
      * @return Collection of LineString (edges of Voronoi)
      */
     public GeometryCollection generateVoronoi(int outputDimension) throws TopologyException {

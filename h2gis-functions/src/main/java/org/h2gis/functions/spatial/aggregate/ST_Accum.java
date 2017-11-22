@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.aggregate;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import org.h2.api.Aggregate;
 import org.h2.value.Value;
 import org.h2gis.api.AbstractFunction;

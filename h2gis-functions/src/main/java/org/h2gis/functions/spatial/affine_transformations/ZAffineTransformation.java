@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.affine_transformations;
 
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
 
 /**
  * Applies a 3D affine transformation to a geometry. 

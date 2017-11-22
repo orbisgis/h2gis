@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.io.shp;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTWriter;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTWriter;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.file_table.H2TableIndex;

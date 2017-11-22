@@ -50,7 +50,7 @@
             <version>${h2-version}</version>
         </dependency>
         <dependency>
-            <groupId>com.vividsolutions</groupId>
+            <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
             <version>${jts-core-version}</version>
         </dependency>

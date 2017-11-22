@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.topography;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.math.Vector3D;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.math.Vector3D;
 import org.h2gis.api.DeterministicScalarFunction;
 
 import org.h2gis.utilities.jts_utils.CoordinateUtils;

@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.ParseException;
-import com.vividsolutions.jts.io.WKBReader;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;

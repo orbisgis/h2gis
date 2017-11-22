@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.io.gpx.model;
 
-import com.vividsolutions.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Coordinate;
 import org.xml.sax.Attributes;
 
 /**
