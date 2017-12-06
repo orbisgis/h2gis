@@ -221,6 +221,30 @@ public class JDBCUtilities {
         return isTemporary;
     }
 
+    /**
+     * Read INFORMATION_SCHEMA.TABLES in order to see if the provided table reference is a linked table.
+     * @param connection Active connection not closed by this method
+     * @param tableReference Table reference
+     * @return True if the provided table is linked.
+     * @throws SQLException If the table does not exists.
+     */
+    public static boolean isLinkedTable(Connection connection, String tableReference) throws SQLException {
+        TableLocation location = TableLocation.parse(tableReference);
+        ResultSet rs = getTablesView(connection, location.getCatalog(), location.getSchema(), location.getTable());
+        boolean isLinked;
+        try {
+            if(rs.next()) {
+                String tableType = rs.getString("TABLE_TYPE");
+                isLinked = tableType.contains("TABLE LINK");
+            } else {
+                throw new SQLException("The table "+location+" does not exists");
+            }
+        } finally {
+            rs.close();
+        }
+        return isLinked;
+    }
+
 
 
     /**
