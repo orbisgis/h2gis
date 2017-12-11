@@ -31,7 +31,6 @@ import org.cts.op.CoordinateOperationFactory;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
