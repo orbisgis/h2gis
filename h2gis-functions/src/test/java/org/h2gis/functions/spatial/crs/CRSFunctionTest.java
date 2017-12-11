@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.spatial.crs;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.*;
@@ -33,6 +35,7 @@ import org.h2.jdbc.JdbcSQLException;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -170,6 +173,34 @@ public class CRSFunctionTest {
         } catch (JdbcSQLException e) {
             throw e.getOriginalCause();
         }
+    }
+
+    @Test
+    public void test_ST_Transform_envelope() throws Exception {
+        st.execute("DROP TABLE IF EXISTS L93, L2E;");
+        st.execute("CREATE TABLE L93(the_geom MULTIPOLYGON);");
+        st.execute("INSERT INTO L93(THE_GEOM) VALUES (ST_MPOLYFROMTEXT('MULTIPOLYGON (((854602 6625825, 853779 6628650, 855453 6627756, 854602 6625825)))'));");
+        st.execute("UPDATE L93 SET THE_GEOM = ST_SETSRID(THE_GEOM, 2154);");
+        st.execute("CREATE TABLE L2E AS SELECT ST_TRANSFORM(THE_GEOM, 27582) as THE_GEOM FROM L93;");
+
+        ResultSet rsL93 = st.executeQuery("select ST_Extent(THE_GEOM) EXTL93 from L93;");
+        Assert.assertTrue(rsL93.next());
+        Object resultObjL93 = rsL93.getObject("EXTL93");
+        Assert.assertTrue(resultObjL93 instanceof Geometry);
+        Envelope resultL93 = ((Geometry) resultObjL93).getEnvelopeInternal();
+
+        ResultSet rsL2e = st.executeQuery("select ST_Extent(THE_GEOM) EXTL2E from L2E;");
+        Assert.assertTrue(rsL2e.next());
+        Object resultObjL2e = rsL2e.getObject("EXTL2E");
+        Assert.assertTrue(resultObjL2e instanceof Geometry);
+        Envelope resultL2e = ((Geometry) resultObjL2e).getEnvelopeInternal();
+
+        assertNotEquals("Values should be different : "+resultL93.getMinX()+" and "+resultL2e.getMinX(), resultL93.getMinX(), resultL2e.getMinX(), 1);
+        assertNotEquals("Values should be different : "+resultL93.getMaxX()+" and "+resultL2e.getMaxX(), resultL93.getMaxX(), resultL2e.getMaxX(), 1);
+        assertNotEquals("Values should be different : "+resultL93.getMinY()+" and "+resultL2e.getMinY(), resultL93.getMinY(), resultL2e.getMinY(), 1);
+        assertNotEquals("Values should be different : "+resultL93.getMaxY()+" and "+resultL2e.getMaxY(), resultL93.getMaxY(), resultL2e.getMaxY(), 1);
+
+        st.execute("DROP TABLE IF EXISTS BASE_L93, BASE_L2E, BASE;");
     }
     
         
