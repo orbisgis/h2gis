@@ -209,6 +209,7 @@ import org.h2gis.functions.spatial.topography.ST_TriangleContouring;
 import org.h2gis.functions.spatial.topography.ST_TriangleDirection;
 import org.h2gis.functions.spatial.topography.ST_TriangleSlope;
 import org.h2gis.functions.spatial.topology.ST_Graph;
+import org.h2gis.functions.spatial.topology.ST_Node;
 import org.h2gis.functions.spatial.topology.ST_Polygonize;
 import org.h2gis.functions.spatial.trigonometry.ST_Azimuth;
 import org.h2gis.functions.spatial.type.DimensionFromConstraint;
@@ -431,7 +432,8 @@ public class H2GISFunctions {
                 new ST_Collect(),
                 new ST_RemoveDuplicatedCoordinates(),
                 new ST_MakeValid(),
-                new ST_Point()};
+                new ST_Point(),
+                new ST_Node()};
     }
 
     /**

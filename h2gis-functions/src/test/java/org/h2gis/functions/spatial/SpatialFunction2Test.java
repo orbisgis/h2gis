@@ -854,4 +854,20 @@ public class SpatialFunction2Test {
         Assert.assertTrue(rs.next());
         assertEquals(1074360.2834168628, rs.getDouble(1),1e-12);
     }
+    
+    @Test
+    public void test_ST_Node1() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Node('MULTILINESTRING ((100 300, 200 200), (100 200, 200 300))'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertGeometryEquals("MULTILINESTRING ((100 300, 150 250), (150 250, 200 200), (100 200, 150 250),(150 250, 200 300))" , rs.getObject(1));
+    }
+    
+    @Test
+    public void test_ST_Node2() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Node('MULTIPOLYGON (((100 200, 200 200, 200 100, 100 100, 100 200)), ((151 225, 300 225, 300 70, 151 70, 151 225)))'::GEOMETRY)");
+        Assert.assertTrue(rs.next());
+        assertGeometryEquals("MULTILINESTRING ((100 200, 151 200), (151 200, 200 200, 200 100, 151 100), (151 100, 100 100, 100 200), (151 225, 300 225, 300 70, 151 70, 151 100), (151 100, 151 200), (151 200, 151 225))" , rs.getObject(1));
+    }
 }
