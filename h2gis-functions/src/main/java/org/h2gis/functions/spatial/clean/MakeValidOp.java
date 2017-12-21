@@ -37,7 +37,6 @@ import java.util.*;
 import static org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory.*;
 import org.locationtech.jts.geom.util.LineStringExtracter;
 import org.locationtech.jts.geom.util.PointExtracter;
-import java.sql.SQLException;
 
 /**
  * Operator to make a geometry valid.
