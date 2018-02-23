@@ -279,8 +279,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             if (orientBySlope) {
                 orientBySlope(st, nodesName, edgesName);
             }
+        } finally {            
             st.execute("DROP TABLE IF EXISTS "+ PTS_TABLE+ ","+ COORDS_TABLE);
-        } finally {
             st.close();
         }
         return true;
