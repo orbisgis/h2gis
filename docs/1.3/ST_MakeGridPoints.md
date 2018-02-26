@@ -46,7 +46,7 @@ SELECT * FROM grid;
 CREATE TABLE TEST(THE_GEOM GEOMETRY);
 INSERT INTO TEST VALUES ('POLYGON((0 0, 2 0, 2 2, 0 0))');
 CREATE TABLE grid AS SELECT * FROM
-    ST_MakeGridPoints('TEST'::GEOMETRY, 1, 1);
+    ST_MakeGridPoints('TEST', 1, 1);
 SELECT * FROM grid;
 --Answer:
 -- |    NODE_GEOM    |  ID | ID_COL | ID_ROW |
