@@ -37,6 +37,8 @@ import com.vividsolutions.jts.math.Vector3D;
  */
 public class TriMarkers extends Triangle {
 
+    private static double epsilon = 1e-12;
+
     /**
      * Default constructor
      */
@@ -219,5 +221,37 @@ public class TriMarkers extends Triangle {
         } else {
             return (Math.abs(vector.getZ()) / new Vector2D(vector.getX(), vector.getY()).length()) * 100;
         }
-    }   
+    }
+    
+    /**
+     * Test if a coordinate intersects the triangle
+     * <p/>
+     * {@see http://www.blackpawn.com/texts/pointinpoly/default.html}
+     *
+     * @param p Coordinate of the point
+     * @param t input triangle
+     * @return True if the coordinate is in triangle
+     */
+    public static boolean intersects(Coordinate p, Triangle t) {
+        Vector2D v0 = new Vector2D(t.p0.x - t.p2.x, t.p0.y - t.p2.y);
+        Vector2D v1 = new Vector2D(t.p1.x - t.p2.x, t.p1.y - t.p2.y);
+        Vector2D v2 = new Vector2D(p.x - t.p2.x, p.y - t.p2.y);
+
+        // Compute dot products
+        double dot00 = v0.dot(v0);
+        double dot01 = v0.dot(v1);
+        double dot02 = v0.dot(v2);
+        double dot11 = v1.dot(v1);
+        double dot12 = v1.dot(v2);
+
+        // Compute barycentric coordinates
+        double invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+        double u = (dot11 * dot02 - dot01 * dot12) * invDenom;
+        double v = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+        // Check if point is in triangle
+        return (u > (0. - epsilon)) && (v > (0. - epsilon))
+                && (u + v < (1. + epsilon));
+
+}
 }

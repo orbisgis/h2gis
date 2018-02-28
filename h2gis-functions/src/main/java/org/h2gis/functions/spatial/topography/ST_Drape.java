@@ -115,11 +115,11 @@ public class ST_Drape extends DeterministicScalarFunction{
         GeometryFactory factory = p.getFactory();
         //Split the triangles in lines to perform all intersections
         Geometry triangleLines = LinearComponentExtracter.getGeometry(triangles, true);
-        Geometry diffExt = triangleLines.difference(p.getExteriorRing());
+        Geometry diffExt = p.getExteriorRing().difference(triangleLines);
         final int nbOfHoles = p.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
-            holes[i] = factory.createLinearRing(lineMerge(triangleLines.difference(p.getInteriorRingN(i)), factory).getCoordinates());
+            holes[i] = factory.createLinearRing(lineMerge(p.getInteriorRingN(i).difference(triangleLines), factory).getCoordinates());
         }
         Polygon splittedP = factory.createPolygon(factory.createLinearRing(lineMerge(diffExt, factory).getCoordinates()), holes);
         CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
