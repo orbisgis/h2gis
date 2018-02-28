@@ -25,7 +25,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Triangle;
 
 /**
- * A factory used to create jDelaunay objects from JTS geometries.
+ * A factory used to create triangles from JTS geometries.
  *
  * @author Erwan Bocher
  */
