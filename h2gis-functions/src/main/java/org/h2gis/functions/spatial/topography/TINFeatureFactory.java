@@ -43,13 +43,10 @@ public final class TINFeatureFactory {
          *
          * @param geom
          * @return
-         * @throws DelaunayError
-         * If the triangle can't be generated
          * @throws IllegalArgumentException
          * If there are not exactly 3 coordinates in geom.
          */
         public static Triangle createTriangle(Geometry geom) throws IllegalArgumentException {
-
                 Coordinate[] coordinates = geom.getCoordinates();
                 if (coordinates.length != 4) {
                         throw new IllegalArgumentException("The geometry must be a triangle");
