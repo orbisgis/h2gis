@@ -37,8 +37,8 @@ public class ST_Drape extends DeterministicScalarFunction{
     public ST_Drape(){
         addProperty(PROP_REMARKS, "This function drapes an input geometry to a set of triangles.\n"
                 + "Notes : The supported input geometry types are POINT, MULTIPOINT, LINESTRING and POLYGON \n"
-                + "In case of linestring or polygon, the input geometry is intersected with the triangles to perform a full drapping.\n"
-                + "If a point lies on two triangles the z value of the first triangle is keeped.");
+                + "In case of linestring or polygon, the input geometry is intersected with the triangles to perform a full draping.\n"
+                + "If a point lies on two triangles the z value of the first triangle is kept.");
     }
     @Override
     public String getJavaStaticMethod() {
