@@ -367,7 +367,7 @@ public class TopographyTest {
         try {
             ResultSet rs = st.executeQuery("select st_drape('LINESTRING (-5 5, 15 5)'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();
-            assertGeometryEquals("LINESTRING (-5 5, 5 5 5, 10 5 5, 15 5 5)", rs.getObject(1));
+            assertGeometryEquals("LINESTRING (-5 5, 5 5 5, 10 5 5, 15 5)", rs.getObject(1));
         } finally {
             st.close();
         }
