@@ -27,6 +27,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.Triangle;
 import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
@@ -47,8 +49,8 @@ public class ST_Drape extends DeterministicScalarFunction{
     
     public ST_Drape(){
         addProperty(PROP_REMARKS, "This function drapes an input geometry to a set of triangles.\n"
-                + "Notes : The supported input geometry types are POINT, MULTIPOINT, LINESTRING and POLYGON \n"
-                + "In case of linestring or polygon, the input geometry is intersected with the triangles to perform a full draping.\n"
+                + "Notes : The supported input geometry types are POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON and MULTIPOLYGON \n"
+                + "In case of 1 or 2 dimension, the input geometry is intersected with the triangles to perform a full draping.\n"
                 + "If a point lies on two triangles the z value of the first triangle is kept.");
     }
     @Override
@@ -71,9 +73,14 @@ public class ST_Drape extends DeterministicScalarFunction{
             Geometry geom = triangles.getGeometryN(i);
             sTRtree.insert(geom.getEnvelopeInternal(), TINFeatureFactory.createTriangle(geom));
         }        
-        
-        if(geomToDrape.getDimension()==0){            
-            return  drapePoints(geomToDrape, triangles, sTRtree);
+      
+        if (geomToDrape.getDimension() == 0) {
+            return drapePoints(geomToDrape, triangles, sTRtree);
+        } else if (geomToDrape instanceof MultiLineString) {
+            return drapeMultiLineString((MultiLineString) geomToDrape, triangles, sTRtree);
+        } else if (geomToDrape instanceof MultiPolygon) {
+            return drapeMultiPolygon((MultiPolygon) geomToDrape, triangles, sTRtree);
+
         }
         else if (geomToDrape instanceof Polygon) {
             return drapePolygon((Polygon) geomToDrape, triangles, sTRtree);
@@ -96,6 +103,51 @@ public class ST_Drape extends DeterministicScalarFunction{
         CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
         geomDrapped.apply(drapeFilter);
         return geomDrapped;
+    }
+    
+    
+    /**
+     * Drape a multilinestring to a set of triangles
+     * @param polygons
+     * @param triangles
+     * @param sTRtree
+     * @return 
+     */
+    public static Geometry drapeMultiPolygon(MultiPolygon polygons, Geometry triangles, STRtree sTRtree) {
+        GeometryFactory factory = polygons.getFactory();         
+        //Split the triangles in lines to perform all intersections
+        Geometry triangleLines = LinearComponentExtracter.getGeometry(triangles, true);
+        int nbPolygons = polygons.getNumGeometries();
+        Polygon[] polygonsDiff = new Polygon[nbPolygons];
+        for (int i = 0; i < nbPolygons; i++) {
+            polygonsDiff[i] = processPolygon((Polygon) polygons.getGeometryN(i), triangleLines, factory);
+        }
+        Geometry diffExt = factory.createMultiPolygon(polygonsDiff);
+        CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
+        diffExt.apply(drapeFilter);
+        return diffExt;
+    }
+    
+    /**
+     * Drape a multilinestring to a set of triangles
+     * @param lines
+     * @param triangles
+     * @param sTRtree
+     * @return 
+     */
+    public static Geometry drapeMultiLineString(MultiLineString lines, Geometry triangles, STRtree sTRtree) {
+        GeometryFactory factory = lines.getFactory();         
+        //Split the triangles in lines to perform all intersections
+        Geometry triangleLines = LinearComponentExtracter.getGeometry(triangles, true);
+        int nbLines = lines.getNumGeometries();
+        LineString[] lineStrings = new LineString[nbLines];
+        for (int i = 0; i < nbLines; i++) {
+            lineStrings[i] = (LineString) lineMerge(lines.getGeometryN(i).difference(triangleLines), factory);
+        }
+        Geometry diffExt = factory.createMultiLineString(lineStrings);
+        CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
+        diffExt.apply(drapeFilter);
+        return diffExt;
     }
     
     /**
@@ -125,17 +177,29 @@ public class ST_Drape extends DeterministicScalarFunction{
     public static Geometry drapePolygon(Polygon p, Geometry triangles, STRtree sTRtree) {
         GeometryFactory factory = p.getFactory();
         //Split the triangles in lines to perform all intersections
-        Geometry triangleLines = LinearComponentExtracter.getGeometry(triangles, true);
+        Geometry triangleLines = LinearComponentExtracter.getGeometry(triangles, true);        
+        Polygon splittedP = processPolygon(p, triangleLines, factory);
+        CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
+        splittedP.apply(drapeFilter);
+        return splittedP;
+    }
+    
+    /**
+     * Cut the lines of the polygon with the triangles
+     * @param p
+     * @param triangleLines
+     * @param factory
+     * @return 
+     */
+    private static Polygon processPolygon(Polygon p, Geometry triangleLines, GeometryFactory factory) {
         Geometry diffExt = p.getExteriorRing().difference(triangleLines);
         final int nbOfHoles = p.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
             holes[i] = factory.createLinearRing(lineMerge(p.getInteriorRingN(i).difference(triangleLines), factory).getCoordinates());
         }
-        Polygon splittedP = factory.createPolygon(factory.createLinearRing(lineMerge(diffExt, factory).getCoordinates()), holes);
-        CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
-        splittedP.apply(drapeFilter);
-        return splittedP;
+        return factory.createPolygon(factory.createLinearRing(lineMerge(diffExt, factory).getCoordinates()), holes);
+
     }
     
     /**
