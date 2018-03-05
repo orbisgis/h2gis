@@ -204,6 +204,7 @@ import org.h2gis.functions.spatial.properties.ST_Z;
 import org.h2gis.functions.spatial.properties.ST_ZMax;
 import org.h2gis.functions.spatial.properties.ST_ZMin;
 import org.h2gis.functions.spatial.snap.ST_Snap;
+import org.h2gis.functions.spatial.topography.ST_Drape;
 import org.h2gis.functions.spatial.topography.ST_TriangleAspect;
 import org.h2gis.functions.spatial.topography.ST_TriangleContouring;
 import org.h2gis.functions.spatial.topography.ST_TriangleDirection;
@@ -433,7 +434,8 @@ public class H2GISFunctions {
                 new ST_RemoveDuplicatedCoordinates(),
                 new ST_MakeValid(),
                 new ST_Point(),
-                new ST_Node()};
+                new ST_Node(),
+                new ST_Drape()};
     }
 
     /**
