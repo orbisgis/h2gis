@@ -34,9 +34,9 @@ import org.h2gis.utilities.jts_utils.CoordinateUtils;
 
 /**
  * This function will be used to compute the Sky View Factor based on geometries
- * @author Erwan Bocher
- * @author Jérémy Bernard
- * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
+ * @author Jérémy Bernard, CNRS
+ * @author Nicolas Fortin, IFSTTAR
  */
 public class ST_Svf extends DeterministicScalarFunction{
 
