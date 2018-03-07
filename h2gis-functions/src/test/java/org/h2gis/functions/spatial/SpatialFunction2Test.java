@@ -882,7 +882,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF2() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 100,45, 'POLYGON ((10 -1 10, 20 -1 10, 20 20 10, 10 20 10, 10 -1 10))'::GEOMETRY) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 20,8, 'POLYGON ((10 -1 10, 20 -1 10, 20 20 10, 10 20 10, 10 -1 10))'::GEOMETRY) as result");
         Assert.assertTrue(rs.next());
         double svfTest = 1-(Math.atan(10/Math.sqrt(200))*Math.sin(Math.toRadians(45))+Math.atan(1)*Math.sin(Math.toRadians(45)))/(2*Math.PI);
         assertEquals(svfTest, rs.getDouble(1), 0.01);

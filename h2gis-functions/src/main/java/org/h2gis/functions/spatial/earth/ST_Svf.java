@@ -36,11 +36,16 @@ import org.h2gis.utilities.jts_utils.CoordinateUtils;
  * This function will be used to compute the Sky View Factor based on geometries
  * @author Erwan Bocher
  * @author Jérémy Bernard
+ * @author Nicolas Fortin
  */
 public class ST_Svf extends DeterministicScalarFunction{
 
     //target step length m
     private static int TARGET_STEP_LENGTH = 10;
+    
+    public ST_Svf(){
+        addProperty(PROP_REMARKS, "Complete the doc here");
+    }
 
     @Override
     public String getJavaStaticMethod() {
@@ -51,11 +56,11 @@ public class ST_Svf extends DeterministicScalarFunction{
      * The method to compute the Sky View Factor
      * @param pt
      * @param distance
-     * @param angle
+     * @param rayCount number of rays
      * @param geoms
      * @return 
      */
-    public static double computeSvf(Point pt, double distance, int angle, Geometry geoms){
+    public static double computeSvf(Point pt, double distance, int rayCount, Geometry geoms){
         double svf = -1;
         if(pt ==null){
             return svf;
@@ -67,8 +72,8 @@ public class ST_Svf extends DeterministicScalarFunction{
             throw new IllegalArgumentException("The distance value must be greater than 0");
         }
         
-        if(angle <=0 || angle >360){
-            throw new IllegalArgumentException("The angle value must be included between 0 and 360°");
+        if(rayCount < 4 ){
+            throw new IllegalArgumentException("The number of rays must be greater than or equal to 4");
         }
 
         if (geoms.getDimension() > 0) {            
@@ -92,13 +97,13 @@ public class ST_Svf extends DeterministicScalarFunction{
             Coordinate startCoordinate = pt.getCoordinate();
             double startZ = Double.isNaN(startCoordinate.z)?0:startCoordinate.z;
             double sumArea = 2*Math.PI; 
-            double angleToRadians = Math.toRadians(angle);
-            //Compute the  SVF for each ray according an angle            
-            for (int i = 0; i < 360; i+=angle) {             
-                //To limit the number of geometries in the query with create a progressive ray  
+            double elementaryAngle = sumArea / rayCount;
+            //Compute the  SVF for each ray according an angle  
+            for (int i = 0; i < rayCount; i+=1) {             
+                //To limit the number of geometries in the query with create a progressive ray
                 Vector2D vStart = new Vector2D(startCoordinate);
-                Vector2D v = Vector2D.create(0, 1);
-                v.rotate(Math.toRadians(i));
+                double angleRad = elementaryAngle * i;
+                Vector2D v = Vector2D.create(Math.cos(angleRad), Math.sin(angleRad));
                 // Normalize the vector (length=1), we keep only the direction
                 v.normalize();
                 int stepCount = (int) Math.round(distance / TARGET_STEP_LENGTH);
@@ -123,9 +128,8 @@ public class ST_Svf extends DeterministicScalarFunction{
                             }
                         }
                     }
-
                 }
-                sumArea -= Math.atan(max) * Math.sin(angleToRadians);
+                sumArea -= Math.atan(max) * Math.sin(elementaryAngle);
             }
             svf = sumArea / (2 * Math.PI);
         }        
