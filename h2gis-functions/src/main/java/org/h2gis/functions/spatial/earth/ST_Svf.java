@@ -41,7 +41,7 @@ import org.h2gis.utilities.jts_utils.CoordinateUtils;
 public class ST_Svf extends DeterministicScalarFunction{
 
     //target step length m
-    private static int TARGET_STEP_LENGTH = 20;
+    private static int RAY_STEP_LENGTH = 10;
     
     public ST_Svf(){
         addProperty(PROP_REMARKS, "Complete the doc here");
@@ -54,13 +54,28 @@ public class ST_Svf extends DeterministicScalarFunction{
     
     /**
      * The method to compute the Sky View Factor
+     *
      * @param pt
      * @param distance
      * @param rayCount number of rays
      * @param geoms
+     * @return
+     */
+    public static double computeSvf(Point pt, double distance, int rayCount, Geometry geoms) {
+        return computeSvf(pt, distance, rayCount, RAY_STEP_LENGTH, geoms);
+    }   
+  
+    
+    /**
+     * The method to compute the Sky View Factor
+     * @param pt
+     * @param distance
+     * @param rayCount number of rays
+     * @param stepRayLength length of sub ray used to limit the number of geometries when requested
+     * @param geoms
      * @return 
      */
-    public static double computeSvf(Point pt, double distance, int rayCount, Geometry geoms){
+    public static double computeSvf(Point pt, double distance, int rayCount, int stepRayLength, Geometry geoms){   
         double svf = -1;
         if(pt ==null){
             return svf;
@@ -75,6 +90,12 @@ public class ST_Svf extends DeterministicScalarFunction{
         if(rayCount < 4 ){
             throw new IllegalArgumentException("The number of rays must be greater than or equal to 4");
         }
+        
+        if(stepRayLength<=0){
+            throw new IllegalArgumentException("The ray length parameter must be greater than 0");
+        }
+        
+        RAY_STEP_LENGTH = stepRayLength;
 
         if (geoms.getDimension() > 0) {            
             GeometryFactory factory = pt.getFactory();
@@ -104,7 +125,7 @@ public class ST_Svf extends DeterministicScalarFunction{
                 Vector2D vStart = new Vector2D(startCoordinate);
                 double angleRad = elementaryAngle * i;
                 Vector2D v = Vector2D.create(Math.cos(angleRad), Math.sin(angleRad));
-                int stepCount = (int) Math.round(distance / TARGET_STEP_LENGTH);
+                int stepCount = (int) Math.round(distance / RAY_STEP_LENGTH);
                 double stepLength = distance / stepCount;
                 // This is the translation vector
                 v = v.multiply(stepLength);
