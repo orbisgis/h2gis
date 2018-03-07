@@ -20,7 +20,6 @@
 package org.h2gis.functions.spatial.earth;
 
 import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateArrays;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
@@ -36,6 +35,7 @@ import org.h2gis.utilities.jts_utils.CoordinateUtils;
 /**
  * This function will be used to compute the Sky View Factor based on geometries
  * @author Erwan Bocher
+ * @author Jérémy Bernard
  */
 public class ST_Svf extends DeterministicScalarFunction{
 
