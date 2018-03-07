@@ -41,7 +41,7 @@ import org.h2gis.utilities.jts_utils.CoordinateUtils;
 public class ST_Svf extends DeterministicScalarFunction{
 
     //target step length m
-    private static int TARGET_STEP_LENGTH = 10;
+    private static int TARGET_STEP_LENGTH = 20;
     
     public ST_Svf(){
         addProperty(PROP_REMARKS, "Complete the doc here");
@@ -104,8 +104,6 @@ public class ST_Svf extends DeterministicScalarFunction{
                 Vector2D vStart = new Vector2D(startCoordinate);
                 double angleRad = elementaryAngle * i;
                 Vector2D v = Vector2D.create(Math.cos(angleRad), Math.sin(angleRad));
-                // Normalize the vector (length=1), we keep only the direction
-                v.normalize();
                 int stepCount = (int) Math.round(distance / TARGET_STEP_LENGTH);
                 double stepLength = distance / stepCount;
                 // This is the translation vector
