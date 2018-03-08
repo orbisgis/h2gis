@@ -119,14 +119,14 @@ public class ST_Svf extends DeterministicScalarFunction{
             double startZ = Double.isNaN(startCoordinate.z)?0:startCoordinate.z;
             double sumArea = 2*Math.PI; 
             double elementaryAngle = sumArea / rayCount;
+            int stepCount = (int) Math.round(distance / RAY_STEP_LENGTH);
+            double stepLength = distance / stepCount;
             //Compute the  SVF for each ray according an angle  
             for (int i = 0; i < rayCount; i+=1) {             
                 //To limit the number of geometries in the query with create a progressive ray
                 Vector2D vStart = new Vector2D(startCoordinate);
                 double angleRad = elementaryAngle * i;
                 Vector2D v = Vector2D.create(Math.cos(angleRad), Math.sin(angleRad));
-                int stepCount = (int) Math.round(distance / RAY_STEP_LENGTH);
-                double stepLength = distance / stepCount;
                 // This is the translation vector
                 v = v.multiply(stepLength);
                 double max = 0;
@@ -136,7 +136,10 @@ public class ST_Svf extends DeterministicScalarFunction{
                     List<LineString> interEnv = sTRtree.query(rayStep.getEnvelopeInternal());
                     if (!interEnv.isEmpty()) {
                         for (LineString lineGeoms : interEnv) {
-                            if (lineGeoms.intersects(rayStep)) {
+                            Coordinate[] coords = lineGeoms.getCoordinates();
+                            Coordinate coordsStart = coords[0];
+                            Coordinate coordsEnd = coords[1];
+                            if ((lineGeoms.intersects(rayStep)) && (Math.max(coordsStart.z, coordsEnd.z) > max * j * stepLength)) {
                                 Point ptsIntersect = (Point) lineGeoms.intersection(rayStep);
                                 double coordWithZ = CoordinateUtils.interpolate(lineGeoms.getCoordinateN(0), lineGeoms.getCoordinateN(1), ptsIntersect.getCoordinate());
                                 double distancePoint = ptsIntersect.distance(pt);
