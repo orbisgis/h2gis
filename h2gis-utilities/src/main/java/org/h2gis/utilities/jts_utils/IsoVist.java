@@ -1,6 +1,7 @@
 package org.h2gis.utilities.jts_utils;
 
 
+import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -19,13 +20,19 @@ public class IsoVist {
     private TreeSet<Limit> limits = new TreeSet<>(new LimitComparator());
     private double maxDistance;
     private Coordinate viewPoint;
+    private Vector2D viewVector;
+    private double epsilon = 1e-6;
 
     public IsoVist(double maxDistance, Coordinate viewPoint) {
         this.maxDistance = maxDistance;
         this.viewPoint = viewPoint;
+        this.viewVector = Vector2D.create(viewPoint);
     }
 
     public void addSegment(Coordinate p0, Coordinate p1) {
+        if(p0.distance(p1) < epsilon) {
+            return;
+        }
         // Before adding a segment into the limits
         // The segment must be cut on the following conditions
         // The segment is crossing the angle pi (we will start from -pi looking for the first limit start)
@@ -41,9 +48,13 @@ public class IsoVist {
             // Check if segment cross Pi -Pi
             if(angle2 - angle1 > Math.PI) {
                 // Split into two segments
-
+                double distance = CGAlgorithms.distancePointLine(viewPoint, p0, p1);
+                Coordinate p = viewVector.add(Vector2D.create(-distance, 0)).toCoordinate();
+                addSegment(p, p0);
+                addSegment(p1, p);
             } else {
                 // Now check if this segment is crossing existing limits
+                
             }
         }
     }
@@ -53,6 +64,14 @@ public class IsoVist {
 
         // Construct polygon
 
+    }
+
+    public double getEpsilon() {
+        return epsilon;
+    }
+
+    public void setEpsilon(double epsilon) {
+        this.epsilon = epsilon;
     }
 
     public void addLineString(LineString lineString) {
