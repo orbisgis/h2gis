@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 public class IsoVistTest {
 
     @Test
-    public void InterpolateTest() {
+    public void InterpolateTest1() {
         Coordinate origin = new Coordinate(10, 10);
         LineSegment segment = new LineSegment(new Coordinate(14, 6), new Coordinate(14,14));
         Coordinate projPoint = segment.closestPoint(origin);
@@ -22,4 +22,28 @@ public class IsoVistTest {
         assertEquals(projPoint.distance(origin), limit.interpolate(new Vector2D(origin, projPoint).angle()), 1e-6);
     }
 
+    @Test
+    public void InterpolateTest2() {
+        Coordinate origin = new Coordinate(10, 10);
+        LineSegment segment = new LineSegment(new Coordinate(15, 6), new Coordinate(14,14));
+        Coordinate projPoint = segment.closestPoint(origin);
+        Vector2D v1 = new Vector2D(origin, segment.p0);
+        Vector2D v2 = new Vector2D(origin, segment.p1);
+
+        IsoVist.Limit limit = new IsoVist.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
+        assertEquals(projPoint.distance(origin), limit.interpolate(new Vector2D(origin, projPoint).angle()), 1e-6);
+    }
+
+
+    @Test
+    public void InterpolateTest3() {
+        Coordinate origin = new Coordinate(10, 10);
+        LineSegment segment = new LineSegment(new Coordinate(14, 6), new Coordinate(15,14));
+        Coordinate projPoint = segment.closestPoint(origin);
+        Vector2D v1 = new Vector2D(origin, segment.p0);
+        Vector2D v2 = new Vector2D(origin, segment.p1);
+
+        IsoVist.Limit limit = new IsoVist.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
+        assertEquals(projPoint.distance(origin), limit.interpolate(new Vector2D(origin, projPoint).angle()), 1e-6);
+    }
 }

@@ -153,7 +153,7 @@ public class IsoVist {
             // https://en.wikipedia.org/wiki/Law_of_sines
             final double phi1 = angle - angleStart;
             final double gamma = angleEnd - angleStart;
-            final double phi2 = PI_DIV2 - (gamma / 2.) - Math.atan(((distanceEnd - distanceStart)/
+            final double phi2 = PI_DIV2 - (gamma / 2.) - Math.atan(((distanceStart - distanceEnd)/
                     (distanceEnd + distanceStart)) * (1.0 / Math.tan(gamma / 2.)));
             return (distanceStart * Math.sin(phi2))/(Math.sin(phi1 + phi2));
         }
