@@ -1,21 +1,23 @@
 package org.h2gis.utilities.jts_utils;
 
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.math.Vector2D;
 
 import java.util.Comparator;
+import java.util.Objects;
 import java.util.TreeSet;
 
 /**
  * This class compute an IsoVist from a coordinate and a set of segments
  */
 public class IsoVist {
+    private static final double PI_DIV2 = Math.PI / 2.;
     // maintain the list of limits sorted by angle
     private TreeSet<Limit> limits = new TreeSet<>(new LimitComparator());
     private double maxDistance;
@@ -30,7 +32,7 @@ public class IsoVist {
     }
 
     public void addSegment(Coordinate p0, Coordinate p1) {
-        if(p0.distance(p1) < epsilon) {
+        if(p0.distance(p1) < epsilon || p0.distance(viewPoint) < epsilon || p1.distance(viewPoint) < epsilon) {
             return;
         }
         // Before adding a segment into the limits
@@ -45,16 +47,27 @@ public class IsoVist {
             // Reverse points
             addSegment(p1, p0);
         } else {
+            Limit insertedLimit = new Limit(angle1, v1.length(), angle2, v2.length());
             // Check if segment cross Pi -Pi
             if(angle2 - angle1 > Math.PI) {
                 // Split into two segments
-                double distance = CGAlgorithms.distancePointLine(viewPoint, p0, p1);
-                Coordinate p = viewVector.add(Vector2D.create(-distance, 0)).toCoordinate();
+                double distance = insertedLimit.interpolate(Math.PI);
+                Coordinate p = new Coordinate(viewPoint.x - distance, viewPoint.y);
                 addSegment(p, p0);
                 addSegment(p1, p);
             } else {
+                double v1Len = v1.length();
+                double v2Len = v2.length();
                 // Now check if this segment is crossing existing limits
-                
+                for(Limit limit : limits) {
+                    final boolean angleCrossing = !((angle1 < limit.angleStart &&  angle2 < limit.angleStart) ||
+                            (angle1 > limit.angleEnd && angle2 > limit.angleEnd));
+                    final double minDist = Math.min(limit.distanceStart, limit.distanceEnd);
+                    final double maxDist = Math.max(limit.distanceStart, limit.distanceEnd);
+                    if(angleCrossing && !((v1Len < minDist && v2Len < minDist) || (v2Len > maxDist && v1Len > maxDist))) {
+                        // Segments may crossing
+                    }
+                }
             }
         }
     }
@@ -63,7 +76,7 @@ public class IsoVist {
         // Fill holes using max distance
 
         // Construct polygon
-
+        return null;
     }
 
     public double getEpsilon() {
@@ -117,6 +130,50 @@ public class IsoVist {
             this.distanceEnd = distanceEnd;
         }
 
+        /**
+         * Create a segment with the local coordinate system using viewPoint as center of the unit circle
+         * @param viewPoint
+         * @return
+         */
+        public LineSegment createSegment(Vector2D viewPoint) {
+            return new LineSegment(viewPoint.add(Vector2D.create(Math.cos(angleStart),
+                    Math.sin(angleStart)).multiply(distanceStart)).toCoordinate(),
+                    viewPoint.add(Vector2D.create(Math.cos(angleEnd),
+                            Math.sin(angleEnd)).multiply(distanceEnd)).toCoordinate());
+        }
+
+        /**
+         * Interpolate distance for an angle
+         * @param angle Angle in radians
+         * @return Distance of a point projected to this segment
+         */
+        double interpolate(double angle) {
+            // https://en.wikipedia.org/wiki/Solution_of_triangles#Solving_plane_triangles
+            // https://en.wikipedia.org/wiki/Law_of_cosines
+            // https://en.wikipedia.org/wiki/Law_of_sines
+            final double phi1 = angle - angleStart;
+            final double gamma = angleEnd - angleStart;
+            final double phi2 = PI_DIV2 - (gamma / 2.) - Math.atan(((distanceEnd - distanceStart)/
+                    (distanceEnd + distanceStart)) * (1.0 / Math.tan(gamma / 2.)));
+            return (distanceStart * Math.sin(phi2))/(Math.sin(phi1 + phi2));
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            Limit limit = (Limit) o;
+            return Double.compare(limit.angleStart, angleStart) == 0 &&
+                    Double.compare(limit.distanceStart, distanceStart) == 0 &&
+                    Double.compare(limit.angleEnd, angleEnd) == 0 &&
+                    Double.compare(limit.distanceEnd, distanceEnd) == 0;
+        }
+
+        @Override
+        public int hashCode() {
+
+            return Objects.hash(angleStart, distanceStart, angleEnd, distanceEnd);
+        }
     }
 
     public static final class LimitComparator implements Comparator<Limit> {
