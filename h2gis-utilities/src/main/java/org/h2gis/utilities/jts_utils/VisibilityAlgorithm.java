@@ -9,14 +9,18 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.math.Vector2D;
 
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 /**
  * This class compute an IsoVist from a coordinate and a set of segments
  */
-public class IsoVist {
+public class VisibilityAlgorithm {
     private static final double PI_DIV2 = Math.PI / 2.;
     // maintain the list of limits sorted by angle
     private TreeSet<Limit> limits = new TreeSet<>(new LimitComparator());
@@ -25,7 +29,7 @@ public class IsoVist {
     private Vector2D viewVector;
     private double epsilon = 1e-6;
 
-    public IsoVist(double maxDistance, Coordinate viewPoint) {
+    public VisibilityAlgorithm(double maxDistance, Coordinate viewPoint) {
         this.maxDistance = maxDistance;
         this.viewPoint = viewPoint;
         this.viewVector = Vector2D.create(viewPoint);
@@ -56,20 +60,38 @@ public class IsoVist {
                 addSegment(p, p0);
                 addSegment(p1, p);
             } else {
-                double v1Len = v1.length();
-                double v2Len = v2.length();
                 // Now check if this segment is crossing existing limits
+                Set<Limit> limitToRemove = new HashSet<>();
+                Set<Limit> limitToInsert = new HashSet<>();
+                // Todo Get all limits within the bounds of start angle->end angle
+                // limits.subSet(insertedLimit, new Limit(insertedLimit.angleEnd, Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE))
                 for(Limit limit : limits) {
-                    final boolean angleCrossing = !((angle1 < limit.angleStart &&  angle2 < limit.angleStart) ||
-                            (angle1 > limit.angleEnd && angle2 > limit.angleEnd));
-                    final double minDist = Math.min(limit.distanceStart, limit.distanceEnd);
-                    final double maxDist = Math.max(limit.distanceStart, limit.distanceEnd);
-                    if(angleCrossing && !((v1Len < minDist && v2Len < minDist) || (v2Len > maxDist && v1Len > maxDist))) {
-                        // Segments may crossing
+                    if(insertedLimit.angleEnd < limit.angleStart) {
+                        break;
+                    } else {
+                        Double intersectionAngle = insertedLimit.getIntersectionAngle(limit);
+                        if(intersectionAngle != null && intersectionAngle > insertedLimit.angleStart && intersectionAngle < insertedLimit.angleEnd) {
+                            // Cut the two limits
+                            Limit otherLimitBegin = new Limit(limit.angleStart, limit.distanceStart, intersectionAngle, limit.interpolate(intersectionAngle));
+                            Limit otherLimitEnd = new Limit(otherLimitBegin.angleEnd, otherLimitBegin.distanceEnd, limit.angleEnd, limit.distanceEnd);
+                            Limit newLimitBegin = new Limit(insertedLimit.angleStart, insertedLimit.distanceStart, limit.angleStart, limit.angleEnd);
+                            insertedLimit = new Limit(otherLimitBegin.angleEnd, otherLimitBegin.distanceEnd, insertedLimit.angleEnd, insertedLimit.distanceEnd);
+                            limitToRemove.add(limit);
+                            limitToInsert.add(otherLimitBegin);
+                            limitToInsert.add(otherLimitEnd);
+                            limitToInsert.add(newLimitBegin);
+                        }
                     }
                 }
+                limits.removeAll(limitToRemove);
+                limits.addAll(limitToInsert);
+                limits.add(insertedLimit);
             }
         }
+    }
+
+    public SortedSet<Limit> getLimits() {
+        return Collections.unmodifiableSortedSet(limits);
     }
 
     public Polygon GetIsoVist() {
@@ -160,12 +182,17 @@ public class IsoVist {
          * @param other Other limit
          * @return The angle of the intersection point with other limit. May be outside of limit angles.
          */
-        double getIntersectionAngle(Limit other) {
-            //Limit cross = new Limit(angleStart, distanceStart, other.angleEnd, other.distanceEnd);
-            double phiC  = other.getStartPointAngle();
-            double phiA = getStartPointAngle();
-
-            return 0;
+        Double getIntersectionAngle(Limit other) {
+            // TODO use simple approach (do no transform into linesegment)
+            Vector2D viewPoint = new Vector2D();
+            LineSegment s1 = other.createSegment(viewPoint);
+            LineSegment s2 = createSegment(viewPoint);
+            Coordinate i = s1.lineIntersection(s2);
+            if(i != null) {
+                return new Vector2D(new Coordinate(), i).angle();
+            } else {
+                return null;
+            }
         }
 
         /**
@@ -198,7 +225,19 @@ public class IsoVist {
     public static final class LimitComparator implements Comparator<Limit> {
         @Override
         public int compare(Limit o1, Limit o2) {
-            return Double.compare(o1.angleStart, o2.angleStart);
+            int res = Double.compare(o1.angleStart, o2.angleStart);
+            if(res != 0) {
+                return res;
+            }
+            res = Double.compare(o1.distanceStart, o2.distanceStart);
+            if(res != 0) {
+                return res;
+            }
+            res = Double.compare(o1.angleEnd, o2.angleEnd);
+            if(res != 0) {
+                return res;
+            }
+            return Double.compare(o1.distanceEnd, o2.distanceEnd);
         }
     }
 }

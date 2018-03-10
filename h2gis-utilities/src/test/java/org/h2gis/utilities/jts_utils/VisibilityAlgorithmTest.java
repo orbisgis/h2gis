@@ -5,9 +5,13 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.math.Vector2D;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import static org.junit.Assert.*;
 
-public class IsoVistTest {
+public class VisibilityAlgorithmTest {
 
     @Test
     public void InterpolateTest1() {
@@ -17,7 +21,7 @@ public class IsoVistTest {
         Vector2D v1 = new Vector2D(origin, segment.p0);
         Vector2D v2 = new Vector2D(origin, segment.p1);
 
-        IsoVist.Limit limit = new IsoVist.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
+        VisibilityAlgorithm.Limit limit = new VisibilityAlgorithm.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
         assertEquals(projPoint.distance(origin), limit.interpolate(new Vector2D(origin, projPoint).angle()), 1e-6);
     }
 
@@ -29,7 +33,7 @@ public class IsoVistTest {
         Vector2D v1 = new Vector2D(origin, segment.p0);
         Vector2D v2 = new Vector2D(origin, segment.p1);
 
-        IsoVist.Limit limit = new IsoVist.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
+        VisibilityAlgorithm.Limit limit = new VisibilityAlgorithm.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
         assertEquals(projPoint.distance(origin), limit.interpolate(new Vector2D(origin, projPoint).angle()), 1e-6);
     }
 
@@ -42,7 +46,7 @@ public class IsoVistTest {
         Vector2D v1 = new Vector2D(origin, segment.p0);
         Vector2D v2 = new Vector2D(origin, segment.p1);
 
-        IsoVist.Limit limit = new IsoVist.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
+        VisibilityAlgorithm.Limit limit = new VisibilityAlgorithm.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
         assertEquals(projPoint.distance(origin), limit.interpolate(new Vector2D(origin, projPoint).angle()), 1e-6);
     }
 
@@ -55,7 +59,7 @@ public class IsoVistTest {
         Vector2D v1 = new Vector2D(origin, segment.p0);
         Vector2D v2 = new Vector2D(origin, segment.p1);
 
-        IsoVist.Limit limit = new IsoVist.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
+        VisibilityAlgorithm.Limit limit = new VisibilityAlgorithm.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
         assertEquals(projPoint.distance(origin), limit.interpolate(new Vector2D(origin, projPoint).angle()), 1e-6);
     }
 
@@ -70,7 +74,57 @@ public class IsoVistTest {
         Vector2D v1 = new Vector2D(origin, segment.p0);
         Vector2D v2 = new Vector2D(origin, segment.p1);
 
-        IsoVist.Limit limit = new IsoVist.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
+        VisibilityAlgorithm.Limit limit = new VisibilityAlgorithm.Limit(v1.angle(), v1.length(), v2.angle(), v2.length());
         assertEquals(4, limit.interpolate(0), 1e-6);
+    }
+
+    @Test
+    public void testIsoVist1() {
+        VisibilityAlgorithm c = new VisibilityAlgorithm(50, new Coordinate(0, 0));
+
+        c.addSegment(new Coordinate(1, 2), new Coordinate(1, 4));
+        c.addSegment(new Coordinate(3, 1), new Coordinate(-1, 5));
+
+        Set<VisibilityAlgorithm.Limit> limits = c.getLimits();
+
+        assertEquals(4, limits.size());
+    }
+
+    @Test
+    public void testIsoVist2() {
+        VisibilityAlgorithm c = new VisibilityAlgorithm(50, new Coordinate(0, 0));
+
+        c.addSegment(new Coordinate(1, 3), new Coordinate(1, 5));
+        c.addSegment(new Coordinate(1, 5), new Coordinate(3, 5));
+
+        List<VisibilityAlgorithm.Limit> limits = new ArrayList<>(c.getLimits());
+
+        assertEquals(2, limits.size());
+
+        assertEquals(new LineSegment() ,limits.get(0).createSegment(new Vector2D()));
+
+    }
+
+    @Test
+    public void testIsoVist3() {
+        VisibilityAlgorithm c = new VisibilityAlgorithm(50, new Coordinate(0, 0));
+
+        c.addSegment(new Coordinate(1, 3), new Coordinate(1, 5));
+        c.addSegment(new Coordinate(1, 5), new Coordinate(3, 5));
+        c.addSegment(new Coordinate(0, 3), new Coordinate(4, 6));
+
+        List<LineSegment> limits = new ArrayList<>();
+        for(VisibilityAlgorithm.Limit limit : c.getLimits()) {
+            limits.add(limit.createSegment(new Vector2D()));
+        }
+
+        assertEquals(7, limits.size());
+
+        assertEquals(limits.get(0).toString(),0 ,limits.get(0).p0.distance(new Coordinate(4,6)), 1e-6);
+        assertEquals(limits.get(0).toString(),0 ,limits.get(0).p1.distance(new Coordinate(0.7066088650941201, 1.1776814418235337)), 1e-6);
+
+        assertEquals(limits.get(1).toString(), 0 ,limits.get(1).p0.distance(new Coordinate(3.0, 5.0)), 1e-6);
+        assertEquals(limits.get(1).toString(),0 ,limits.get(1).p1.distance(new Coordinate(2.666666666666668, 5)), 1e-6);
+
     }
 }
