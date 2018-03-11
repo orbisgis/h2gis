@@ -97,11 +97,17 @@ public class VisibilityAlgorithmTest {
         c.addSegment(new Coordinate(1, 3), new Coordinate(1, 5));
         c.addSegment(new Coordinate(1, 5), new Coordinate(3, 5));
 
-        List<VisibilityAlgorithm.Limit> limits = new ArrayList<>(c.getLimits());
-
+        List<LineSegment> limits = new ArrayList<>();
+        for(VisibilityAlgorithm.Limit limit : c.getLimits()) {
+            limits.add(limit.createSegment(new Vector2D()));
+        }
         assertEquals(2, limits.size());
 
-        assertEquals(new LineSegment() ,limits.get(0).createSegment(new Vector2D()));
+        assertEquals(limits.get(0).toString(),0 ,limits.get(0).p0.distance(new Coordinate(3,5)), 1e-6);
+        assertEquals(limits.get(0).toString(),0 ,limits.get(0).p1.distance(new Coordinate(1 , 5)), 1e-6);
+
+        assertEquals(limits.get(1).toString(), 0 ,limits.get(1).p0.distance(new Coordinate(1.0, 3.0)), 1e-6);
+        assertEquals(limits.get(1).toString(),0 ,limits.get(1).p1.distance(new Coordinate(1, 5)), 1e-6);
 
     }
 
@@ -121,10 +127,46 @@ public class VisibilityAlgorithmTest {
         assertEquals(7, limits.size());
 
         assertEquals(limits.get(0).toString(),0 ,limits.get(0).p0.distance(new Coordinate(4,6)), 1e-6);
-        assertEquals(limits.get(0).toString(),0 ,limits.get(0).p1.distance(new Coordinate(0.7066088650941201, 1.1776814418235337)), 1e-6);
+        assertEquals(limits.get(0).toString(),0 ,limits.get(0).p1.distance(new Coordinate(2.666666666666668 , 5)), 1e-6);
 
         assertEquals(limits.get(1).toString(), 0 ,limits.get(1).p0.distance(new Coordinate(3.0, 5.0)), 1e-6);
         assertEquals(limits.get(1).toString(),0 ,limits.get(1).p1.distance(new Coordinate(2.666666666666668, 5)), 1e-6);
+
+        assertEquals(limits.get(2).toString(), 0 ,limits.get(2).p0.distance(new Coordinate(2.666666666666668, 5.0)), 1e-6);
+        assertEquals(limits.get(2).toString(),0 ,limits.get(2).p1.distance(new Coordinate(1, 3.75)), 1e-6);
+
+        assertEquals(limits.get(3).toString(), 0 ,limits.get(3).p0.distance(new Coordinate(2.666666666666668, 5.0)), 1e-6);
+        assertEquals(limits.get(3).toString(),0 ,limits.get(3).p1.distance(new Coordinate(1, 5)), 1e-6);
+
+        assertEquals(limits.get(4).toString(), 0 ,limits.get(4).p0.distance(new Coordinate(1, 3.0)), 1e-6);
+        assertEquals(limits.get(4).toString(),0 ,limits.get(4).p1.distance(new Coordinate(1, 3.75)), 1e-6);
+
+        assertEquals(limits.get(5).toString(), 0 ,limits.get(5).p0.distance(new Coordinate(1, 3.75)), 1e-6);
+        assertEquals(limits.get(5).toString(),0 ,limits.get(5).p1.distance(new Coordinate(1, 5)), 1e-6);
+
+        assertEquals(limits.get(6).toString(), 0 ,limits.get(6).p0.distance(new Coordinate(1, 3.75)), 1e-6);
+        assertEquals(limits.get(6).toString(),0 ,limits.get(6).p1.distance(new Coordinate(0, 3)), 1e-6);
+
+    }
+
+    @Test
+    public void testIsoVistCrossPi() {
+        VisibilityAlgorithm c = new VisibilityAlgorithm(50, new Coordinate(0, 0));
+
+        c.addSegment(new Coordinate(-2, -1), new Coordinate(3, 4));
+
+        List<LineSegment> limits = new ArrayList<>();
+        for(VisibilityAlgorithm.Limit limit : c.getLimits()) {
+            limits.add(limit.createSegment(new Vector2D()));
+        }
+
+        assertEquals(2, limits.size());
+
+        assertEquals(limits.get(0).toString(),0 ,limits.get(0).p0.distance(new Coordinate(-1,0)), 1e-6);
+        assertEquals(limits.get(0).toString(),0 ,limits.get(0).p1.distance(new Coordinate(-2 , -1)), 1e-6);
+
+        assertEquals(limits.get(1).toString(), 0 ,limits.get(1).p0.distance(new Coordinate(3, 4)), 1e-6);
+        assertEquals(limits.get(1).toString(),0 ,limits.get(1).p1.distance(new Coordinate(-1, 0)), 1e-6);
 
     }
 }

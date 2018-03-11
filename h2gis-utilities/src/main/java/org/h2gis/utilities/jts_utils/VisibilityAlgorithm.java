@@ -56,25 +56,24 @@ public class VisibilityAlgorithm {
             if(angle2 - angle1 > Math.PI) {
                 // Split into two segments
                 double distance = insertedLimit.interpolate(Math.PI);
-                Coordinate p = new Coordinate(viewPoint.x - distance, viewPoint.y);
-                addSegment(p, p0);
-                addSegment(p1, p);
+                addSegment(new Coordinate(viewPoint.x - distance, viewPoint.y - epsilon), p0);
+                addSegment(p1, new Coordinate(viewPoint.x - distance, viewPoint.y + epsilon));
             } else {
                 // Now check if this segment is crossing existing limits
                 Set<Limit> limitToRemove = new HashSet<>();
                 Set<Limit> limitToInsert = new HashSet<>();
                 // Todo Get all limits within the bounds of start angle->end angle
                 // limits.subSet(insertedLimit, new Limit(insertedLimit.angleEnd, Double.MAX_VALUE, Double.MAX_VALUE, Double.MAX_VALUE))
-                for(Limit limit : limits) {
-                    if(insertedLimit.angleEnd < limit.angleStart) {
+                for (Limit limit : limits) {
+                    if (insertedLimit.angleEnd < limit.angleStart) {
                         break;
                     } else {
                         Double intersectionAngle = insertedLimit.getIntersectionAngle(limit);
-                        if(intersectionAngle != null && intersectionAngle > insertedLimit.angleStart && intersectionAngle < insertedLimit.angleEnd) {
+                        if (intersectionAngle != null && intersectionAngle > insertedLimit.angleStart && intersectionAngle < insertedLimit.angleEnd) {
                             // Cut the two limits
                             Limit otherLimitBegin = new Limit(limit.angleStart, limit.distanceStart, intersectionAngle, limit.interpolate(intersectionAngle));
                             Limit otherLimitEnd = new Limit(otherLimitBegin.angleEnd, otherLimitBegin.distanceEnd, limit.angleEnd, limit.distanceEnd);
-                            Limit newLimitBegin = new Limit(insertedLimit.angleStart, insertedLimit.distanceStart, limit.angleStart, limit.angleEnd);
+                            Limit newLimitBegin = new Limit(insertedLimit.angleStart, insertedLimit.distanceStart, otherLimitBegin.angleEnd, otherLimitBegin.distanceEnd);
                             insertedLimit = new Limit(otherLimitBegin.angleEnd, otherLimitBegin.distanceEnd, insertedLimit.angleEnd, insertedLimit.distanceEnd);
                             limitToRemove.add(limit);
                             limitToInsert.add(otherLimitBegin);
