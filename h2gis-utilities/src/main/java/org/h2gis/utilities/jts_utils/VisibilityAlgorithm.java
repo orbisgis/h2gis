@@ -9,13 +9,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.math.Vector2D;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * This class compute an IsoVist from a coordinate and a set of segments
@@ -28,6 +22,7 @@ public class VisibilityAlgorithm {
     private Coordinate viewPoint;
     private Vector2D viewVector;
     private double epsilon = 1e-6;
+    private int maxDistanceResolution = 100; // Maximum coordinates placed at maxDistance (circle not composed by limits coordinates)
 
     public VisibilityAlgorithm(double maxDistance, Coordinate viewPoint) {
         this.maxDistance = maxDistance;
@@ -94,9 +89,37 @@ public class VisibilityAlgorithm {
     }
 
     public Polygon GetIsoVist() {
-        // Fill holes using max distance
-
         // Construct polygon
+        double curAngle = - Math.PI;
+        double curDistance = -1;
+        Limit curLimit = null;
+
+        List<Limit> lineString = new ArrayList<>();
+        for (Limit limit : limits) {
+            if(limit.distanceStart < curDistance || curDistance < epsilon) {
+                if(limit.angleStart > curAngle) {
+                    // Get closer to pi
+                    if(curDistance < epsilon) {
+                        curDistance = maxDistance;
+                        double resolutionAngle = (2 * Math.PI) / (double) maxDistanceResolution;
+                        while (curDistance < limit.angleStart - resolutionAngle) {
+                            lineString.add(new Limit(curAngle, curDistance, curAngle + resolutionAngle, curDistance));
+                            curAngle += resolutionAngle;
+                        }
+                    }
+                    if(curLimit == null) {
+                        lineString.add(new Limit(limit.angleStart, curDistance, limit.angleStart, limit.distanceStart));
+                    } else {
+                        lineString.add(new Limit(limit.angleStart, curLimit.interpolate(limit.angleStart), limit.angleStart, limit.distanceStart));
+                    }
+                    curAngle = limit.angleStart;
+                    curDistance = limit.distanceStart;
+                    curLimit = limit;
+                }
+            }
+
+        }
+
         return null;
     }
 
