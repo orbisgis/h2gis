@@ -915,7 +915,7 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTIPOLYGON(((10 -5 2, 10 5 2, 15 5 2, 15 -5 2, 10 -5 2)), ((15 -5 20, 15 5 20, 20 5 20, 20 -5 20, 15 -5 20)))'::GEOMETRY, 100, 8) as result");
         Assert.assertTrue(rs.next());
         double dTheta = Math.toRadians(45);
-        double sinGamma = Math.sin(Math.atan(20 / 15));
+        double sinGamma = Math.sin(Math.atan2(20, 15));
         double svfTest = 1 - (dTheta * sinGamma * sinGamma) / (2 * Math.PI);
         assertEquals(svfTest, rs.getDouble(1), 0.01);
     }
