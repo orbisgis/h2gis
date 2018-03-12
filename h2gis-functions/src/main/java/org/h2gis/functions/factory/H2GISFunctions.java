@@ -111,6 +111,7 @@ import org.h2gis.functions.spatial.distance.ST_MaxDistance;
 import org.h2gis.functions.spatial.distance.ST_ProjectPoint;
 import org.h2gis.functions.spatial.earth.ST_GeometryShadow;
 import org.h2gis.functions.spatial.earth.ST_SunPosition;
+import org.h2gis.functions.spatial.earth.ST_Svf;
 import org.h2gis.functions.spatial.edit.ST_AddPoint;
 import org.h2gis.functions.spatial.edit.ST_AddZ;
 import org.h2gis.functions.spatial.edit.ST_CollectionExtract;
@@ -435,7 +436,8 @@ public class H2GISFunctions {
                 new ST_MakeValid(),
                 new ST_Point(),
                 new ST_Node(),
-                new ST_Drape()};
+                new ST_Drape(),
+                new ST_Svf()};
     }
 
     /**
