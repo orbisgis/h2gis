@@ -874,7 +874,7 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF1() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf(null, 1,0, null)");
+        ResultSet rs = st.executeQuery("SELECT ST_svf(null, null, 1,0)");
         Assert.assertTrue(rs.next());
         assertEquals(-1, rs.getDouble(1), 0);
     }
@@ -882,17 +882,19 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF2() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 50, 8, 'POLYGON ((10 -1 10, 20 -1 10, 20 20 10, 10 20 10, 10 -1 10))'::GEOMETRY) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'POLYGON ((10 -1 10, 20 -1 10, 20 20 10, 10 20 10, 10 -1 10))'::GEOMETRY, 50, 8) as result");
         Assert.assertTrue(rs.next());
-        double mathTheta = Math.sin(Math.toRadians(45));
-        double svfTest = 1-(Math.atan(10/Math.sqrt(200))*mathTheta*mathTheta+Math.atan(1)*mathTheta*mathTheta)/(2*Math.PI);
+        double dTheta = Math.toRadians(45);
+        double sinGamma0 = Math.sin(Math.atan(10/Math.sqrt(200)));
+        double sinGamma1 = Math.sin(Math.atan(1));
+        double svfTest = 1-(dTheta*(sinGamma0*sinGamma0 + sinGamma1*sinGamma1))/(2*Math.PI);
         assertEquals(svfTest, rs.getDouble(1), 0.01);
     }
     
     @Test
     public void test_ST_SVF3() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 50, 8, 10, SELECT ST_UPDATEZ(ST_buffer('POINT(0 0)'::GEOMETRY, 10, 120), 12)) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, ST_UPDATEZ(ST_buffer('POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
         Assert.assertTrue(rs.next());
         double svfTest = 0.4098;
         assertEquals(svfTest, rs.getDouble(1), 0.01);
@@ -901,9 +903,20 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_SVF4() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 100, 120, 10, SELECT 'MULTILINESTRING((-10 -1000 12, -10 1000 12), (10 -1000 12, 10 1000 12))'::GEOMETRY) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTILINESTRING((-10 -1000 12, -10 1000 12), (10 -1000 12, 10 1000 12))'::GEOMETRY, 100, 120) as result");
         Assert.assertTrue(rs.next());
         double svfTest = 0.6402;
+        assertEquals(svfTest, rs.getDouble(1), 0.01);
+    }
+    
+    @Test
+    public void test_ST_SVF5() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTIPOLYGON(((10 -5 2, 10 5 2, 15 5 2, 15 -5 2, 10 -5 2)), ((15 -5 20, 15 5 20, 20 5 20, 20 -5 20, 15 -5 20)))'::GEOMETRY, 100, 8) as result");
+        Assert.assertTrue(rs.next());
+        double dTheta = Math.toRadians(45);
+        double sinGamma = Math.sin(Math.atan(20 / 15));
+        double svfTest = 1 - (dTheta * sinGamma * sinGamma) / (2 * Math.PI);
         assertEquals(svfTest, rs.getDouble(1), 0.01);
     }
 }

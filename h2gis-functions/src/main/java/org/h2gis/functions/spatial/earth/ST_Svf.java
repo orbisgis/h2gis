@@ -26,7 +26,6 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.math.Vector2D;
 import java.util.List;
@@ -45,7 +44,14 @@ public class ST_Svf extends DeterministicScalarFunction{
     private static int RAY_STEP_LENGTH = 10;
     
     public ST_Svf(){
-        addProperty(PROP_REMARKS, "Complete the doc here/n ");
+        addProperty(PROP_REMARKS, "Return the Sky View Factor (SVF) for a point located outside the obstacles (Building, trees)\n"
+                + "pt = Point coordinates (x, y, z) - the SVF is calculated from this point\n"
+                + "geoms = Geometries used as sky obstacles (z coordinates should be given)\n"
+                + "distance = Only obstacles located within this distance from pt are considered in the calculation (double - in meters)\n"
+                + "rayCount = Number of ray considered for the calculation (integer - number of direction of calculation)\n"
+                + "An optional argument may be passed:\n"
+                + "RAY_STEP_LENGTH = 10 (default) Each ray is subdivided to make the calculation faster. This argument set\n"
+                + "the length of each subdivision");
     }
 
     @Override
@@ -62,8 +68,8 @@ public class ST_Svf extends DeterministicScalarFunction{
      * @param geoms
      * @return
      */
-    public static double computeSvf(Point pt, double distance, int rayCount, Geometry geoms) {
-        return computeSvf(pt, distance, rayCount, RAY_STEP_LENGTH, geoms);
+    public static double computeSvf(Point pt, Geometry geoms, double distance, int rayCount) {
+        return computeSvf(pt, geoms, distance, rayCount, RAY_STEP_LENGTH);
     }   
   
     
@@ -76,7 +82,7 @@ public class ST_Svf extends DeterministicScalarFunction{
      * @param geoms
      * @return 
      */
-    public static double computeSvf(Point pt, double distance, int rayCount, int stepRayLength, Geometry geoms){   
+    public static double computeSvf(Point pt, Geometry geoms, double distance, int rayCount, int stepRayLength){   
         double svf = -1;
         if(pt ==null){
             return svf;
