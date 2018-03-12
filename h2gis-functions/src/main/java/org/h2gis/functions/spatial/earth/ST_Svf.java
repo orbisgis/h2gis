@@ -99,7 +99,7 @@ public class ST_Svf extends DeterministicScalarFunction{
         RAY_STEP_LENGTH = stepRayLength;
 
         if (geoms.getDimension() > 0) {            
-            GeometryFactory factory = new GeometryFactory(new PrecisionModel(Math.pow(10.0, 12)));
+            GeometryFactory factory = pt.getFactory();
             //Convert input geoms to a set of linestring
             STRtree sTRtree = new STRtree();
             int nbGeoms = geoms.getNumGeometries();
@@ -141,8 +141,8 @@ public class ST_Svf extends DeterministicScalarFunction{
                             Coordinate coordsStart = coords[0];
                             Coordinate coordsEnd = coords[1];
                             if (Math.max(coordsStart.z, coordsEnd.z) > max * j * stepLength){
-                                if (lineGeoms.intersects(rayStep)) {
-                                    Point ptsIntersect = (Point) lineGeoms.intersection(rayStep);
+                                Geometry ptsIntersect =  lineGeoms.intersection(rayStep);
+                                if (ptsIntersect instanceof Point && ptsIntersect!=null) {
                                     double coordWithZ = CoordinateUtils.interpolate(lineGeoms.getCoordinateN(0), lineGeoms.getCoordinateN(1), ptsIntersect.getCoordinate());
                                     double distancePoint = ptsIntersect.distance(pt);
                                     double ratio = (coordWithZ - startZ) / distancePoint;
