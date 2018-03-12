@@ -26,6 +26,7 @@ import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.math.Vector2D;
 import java.util.List;
@@ -44,7 +45,7 @@ public class ST_Svf extends DeterministicScalarFunction{
     private static int RAY_STEP_LENGTH = 10;
     
     public ST_Svf(){
-        addProperty(PROP_REMARKS, "Complete the doc here");
+        addProperty(PROP_REMARKS, "Complete the doc here/n ");
     }
 
     @Override
@@ -98,7 +99,7 @@ public class ST_Svf extends DeterministicScalarFunction{
         RAY_STEP_LENGTH = stepRayLength;
 
         if (geoms.getDimension() > 0) {            
-            GeometryFactory factory = pt.getFactory();
+            GeometryFactory factory = new GeometryFactory(new PrecisionModel(Math.pow(10.0, 12)));
             //Convert input geoms to a set of linestring
             STRtree sTRtree = new STRtree();
             int nbGeoms = geoms.getNumGeometries();
@@ -139,19 +140,22 @@ public class ST_Svf extends DeterministicScalarFunction{
                             Coordinate[] coords = lineGeoms.getCoordinates();
                             Coordinate coordsStart = coords[0];
                             Coordinate coordsEnd = coords[1];
-                            if ((lineGeoms.intersects(rayStep)) && (Math.max(coordsStart.z, coordsEnd.z) > max * j * stepLength)) {
-                                Point ptsIntersect = (Point) lineGeoms.intersection(rayStep);
-                                double coordWithZ = CoordinateUtils.interpolate(lineGeoms.getCoordinateN(0), lineGeoms.getCoordinateN(1), ptsIntersect.getCoordinate());
-                                double distancePoint = ptsIntersect.distance(pt);
-                                double ratio = (coordWithZ - startZ) / distancePoint;
-                                if (ratio > max) {
-                                    max = ratio;
+                            if (Math.max(coordsStart.z, coordsEnd.z) > max * j * stepLength){
+                                if (lineGeoms.intersects(rayStep)) {
+                                    Point ptsIntersect = (Point) lineGeoms.intersection(rayStep);
+                                    double coordWithZ = CoordinateUtils.interpolate(lineGeoms.getCoordinateN(0), lineGeoms.getCoordinateN(1), ptsIntersect.getCoordinate());
+                                    double distancePoint = ptsIntersect.distance(pt);
+                                    double ratio = (coordWithZ - startZ) / distancePoint;
+                                    if (ratio > max) {
+                                        max = ratio;
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                sumArea -= Math.atan(max) * Math.sin(elementaryAngle);
+                double sinTheta = Math.sin(Math.atan(max));
+                sumArea -= elementaryAngle * sinTheta * sinTheta;
             }
             svf = sumArea / (2 * Math.PI);
         }        
