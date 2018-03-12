@@ -44,9 +44,9 @@ public class ST_Svf extends DeterministicScalarFunction{
     private static int RAY_STEP_LENGTH = 10;
     
     public ST_Svf(){
-        addProperty(PROP_REMARKS, "Return the Sky View Factor (SVF) for a point located outside the obstacles (Building, trees)\n"
+        addProperty(PROP_REMARKS, "Return the Sky View Factor (SVF) for a given point.\n"
                 + "pt = Point coordinates (x, y, z) - the SVF is calculated from this point\n"
-                + "geoms = Geometries used as sky obstacles (z coordinates should be given)\n"
+                + "geoms = Geometries used as sky obstacles (z coordinates should be given and not NaN)\n"
                 + "distance = Only obstacles located within this distance from pt are considered in the calculation (double - in meters)\n"
                 + "rayCount = Number of ray considered for the calculation (integer - number of direction of calculation)\n"
                 + "An optional argument may be passed:\n"
