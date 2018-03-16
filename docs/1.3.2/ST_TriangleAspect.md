@@ -4,7 +4,7 @@ title: ST_TriangleAspect
 category: geom3D/topography
 is_function: true
 description: Return the aspect of a triangle
-prev_section: geom3D/topography
+prev_section: ST_Drape
 next_section: ST_TriangleContouring
 permalink: /docs/1.3.2/ST_TriangleAspect/
 ---
