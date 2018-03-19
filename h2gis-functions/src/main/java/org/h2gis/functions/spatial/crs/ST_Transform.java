@@ -101,7 +101,8 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                 EPSGTuple epsg = new EPSGTuple(inputSRID, codeEpsg);
                 CoordinateOperation op = copPool.get(epsg);
                 if (op != null) {
-                    Geometry outPutGeom = (Geometry) geom.clone();
+                    Geometry outPutGeom = geom.copy();
+                    outPutGeom.geometryChanged();
                     outPutGeom.apply(new CRSTransformFilter(op));
                     outPutGeom.setSRID(codeEpsg);
                     return outPutGeom;
@@ -112,6 +113,7 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                         if (!ops.isEmpty()) {
                             op = ops.get(0);
                             Geometry outPutGeom = (Geometry) geom.clone();
+                            outPutGeom.geometryChanged();
                             outPutGeom.apply(new CRSTransformFilter(op));
                             copPool.put(epsg, op);
                             outPutGeom.setSRID(codeEpsg);

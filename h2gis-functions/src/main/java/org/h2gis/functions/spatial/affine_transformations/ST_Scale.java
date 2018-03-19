@@ -67,7 +67,7 @@ public class ST_Scale extends DeterministicScalarFunction {
      */
     public static Geometry scale(Geometry geom, double xFactor, double yFactor, double zFactor) {
         if (geom != null) {
-            Geometry scaledGeom = (Geometry) geom.clone();
+            Geometry scaledGeom = geom.copy();
             for (Coordinate c : scaledGeom.getCoordinates()) {
                 c.setOrdinate(Coordinate.X, c.getOrdinate(Coordinate.X) * xFactor);
                 c.setOrdinate(Coordinate.Y, c.getOrdinate(Coordinate.Y) * yFactor);

@@ -360,4 +360,101 @@ public class TopographyTest {
             st.close();
         }
     }
+    
+    @Test
+    public void testST_Drape1() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("select st_drape('LINESTRING (-5 5, 15 5)'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            rs.next();
+            assertGeometryEquals("LINESTRING (-5 5, 5 5 5, 10 5 5, 15 5)", rs.getObject(1));
+        } finally {
+            st.close();
+        }
+    }
+
+    @Test
+    public void testST_Drape2() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("select st_drape('LINESTRING (-5 5, 15 5)'::GEOMETRY, 'MULTIPOLYGON (((0 0 0, 10 0 0, 10 10 10, 0 0 0)), ((10 10 10, 10 0 0, 15 0 0, 10 10 0)))'::geometry)");
+            rs.next();
+            assertGeometryEquals("LINESTRING (-5 5, 5 5 5, 10 5 5, 12.5 5 5, 15 5)", rs.getObject(1));
+        } finally {
+            st.close();
+        }
+    }
+
+    @Test
+    public void testST_Drape3() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("select st_drape('POLYGON ((1 8, 8 8, 8 2, 1 2, 1 8))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            rs.next();
+            assertGeometryEquals("POLYGON ((1 2, 1 8, 8 8 8, 8 2 2, 2 2 2, 1 2))", rs.getObject(1));
+        } finally {
+            st.close();
+        }
+    }
+
+    @Test
+    public void testST_Drape4() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("select st_drape('POLYGON ((1 2, 1 8, 8 8, 8 2, 1 2),(3 6, 7 6, 7 4, 3 4, 3 6))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            rs.next();
+            assertGeometryEquals("POLYGON ((1 2, 1 8, 8 8 8, 8 2 2, 2 2 2, 1 2), (3 4, 4 4 4, 7 4 4, 7 6 6, 6 6 6, 3 6, 3 4))", rs.getObject(1));
+        } finally {
+            st.close();
+        }
+    }
+    
+    @Test
+    public void testST_Drape5() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("select st_drape('MULTIPOINT ((8 5.1), (5 2), (9 2), (6.1 4), (3 9), (0.3 7.2), (3.8 6.7), (11.5 7.4), (12.1 3), (0 0))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            rs.next();
+            assertGeometryEquals("MULTIPOINT ((0 0 0), (0.3 7.2), (3 9), (3.8 6.7), (5 2 2), (6.1 4 4), (8 5.1 5.1), (9 2 2), (11.5 7.4), (12.1 3))", rs.getObject(1));
+        } finally {
+            st.close();
+        }
+    }
+    
+    @Test
+    public void testST_Drape6() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("select st_drape('MULTILINESTRING ((-5 5, 15 5), (2 8, 15 8))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            rs.next();
+            assertGeometryEquals("MULTILINESTRING ((-5 5, 5 5 5, 10 5 5, 15 5), (2 8, 8 8 8, 10 8 8, 15 8))", rs.getObject(1));
+        } finally {
+            st.close();
+        }
+    }
+    
+    @Test
+    public void testST_Drape7() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("select st_drape('MULTILINESTRING ((-5 5, 15 5), (15 5.1, 5 8, 2 3, 12.9 3))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            rs.next();
+            assertGeometryEquals("MULTILINESTRING ((-5 5, 5 5 5, 10 5 5, 15 5), (12.9 3, 10 3 3, 3 3 3, 2 3, 5 8, 7.325581395348837 7.325581395348837 7.325581395348837, 10 6.55 6.550000000000001, 15 5.1))", rs.getObject(1));
+        } finally {
+            st.close();
+        }
+    }
+    
+    
+    @Test
+    public void testST_Drape8() throws SQLException {
+        Statement st = connection.createStatement();
+        try {
+            ResultSet rs = st.executeQuery("select st_drape('MULTIPOLYGON (((1 5, 6 5, 6 2, 1 2, 1 5)), ((9 8, 11 8, 11 5, 9 5, 9 8)))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            rs.next();
+            assertGeometryEquals("MULTIPOLYGON (((1 2, 1 5, 5 5 5, 6 5 5, 6 2 2, 2 2 2, 1 2)), ((9 5 5, 9 8 8, 10 8 8, 11 8, 11 5, 10 5 5, 9 5 5)))", rs.getObject(1));
+        } finally {
+            st.close();
+        }
+    }
 }

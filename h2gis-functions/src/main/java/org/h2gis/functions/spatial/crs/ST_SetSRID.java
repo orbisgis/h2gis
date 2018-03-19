@@ -55,7 +55,7 @@ public class ST_SetSRID  extends AbstractFunction implements ScalarFunction {
         if (srid == null) {
             throw new IllegalArgumentException("The SRID code cannot be null.");
         }
-        Geometry geom = (Geometry) geometry.clone();
+        Geometry geom = geometry.copy();
         geom.setSRID(srid);
         return geom;
     }

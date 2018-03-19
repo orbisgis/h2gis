@@ -129,7 +129,7 @@ public class H2Table extends TableBase {
                 Cursor cursor = scan.find(session, null, null);
                 long i = 0;
                 int bufferSize = (int) Math.min(getRowCount(session), database.getMaxMemoryRows());
-                ArrayList<Row> buffer = New.arrayList(bufferSize);
+                ArrayList<Row> buffer = new ArrayList<Row>(bufferSize);
                 String n = getName() + ":" + index.getName();
                 int t = MathUtils.convertLongToInt(total);
                 while (cursor.next()) {

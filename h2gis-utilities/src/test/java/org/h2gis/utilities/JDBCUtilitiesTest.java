@@ -210,4 +210,26 @@ public class JDBCUtilitiesTest {
             pm.cancel();
         }
     }
+
+    @Test
+    public void testIsLinkedTable() throws ClassNotFoundException, SQLException {
+        String dataBaseLocation = new File("target/JDBCUtilitiesTest2").getAbsolutePath();
+        String databasePath = "jdbc:h2:"+dataBaseLocation;
+        File dbFile = new File(dataBaseLocation+".mv.db");
+        Class.forName("org.h2.Driver");
+        if(dbFile.exists()) {
+            dbFile.delete();
+        }
+        // Keep a connection alive to not close the DataBase on each unit test
+        Connection con = DriverManager.getConnection(databasePath, "sa", "");
+
+        Statement st = con.createStatement();
+        st.execute("DROP TABLE IF EXISTS TEMPTABLE");
+        st.execute("CREATE TABLE TEMPTABLE(id integer, name varchar)");
+
+        Statement statement = connection.createStatement();
+        statement.execute("DROP TABLE IF EXISTS LINKEDTABLE");
+        statement.execute("CREATE LINKED TABLE LINKEDTABLE('org.h2.Driver', '"+databasePath+"', 'sa', '', 'TEMPTABLE');");
+        assertTrue(JDBCUtilities.isLinkedTable(connection, "LINKEDTABLE"));
+    }
 }

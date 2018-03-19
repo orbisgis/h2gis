@@ -86,7 +86,7 @@ public class ST_Translate extends DeterministicScalarFunction {
         if (filter.is2D()) {
             return AffineTransformation.translationInstance(x, y).transform(geom);
         } else {
-            final Geometry clone = (Geometry) geom.clone();
+            final Geometry clone = geom.copy();
             clone.apply(new ZAffineTransformation(x, y, z));
             return clone;
         }

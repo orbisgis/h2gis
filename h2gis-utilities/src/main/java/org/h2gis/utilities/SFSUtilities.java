@@ -339,6 +339,25 @@ public class SFSUtilities {
         }
         return -1;
     }
+    
+    /**
+     * Find the first geometry field name of a resultSet. 
+     * Return -1 if there is no geometry column
+     *
+     * @param resultSet
+     * @return The name of first geometry field
+     * @throws SQLException
+     */
+    public static String getFirstGeometryFieldName(ResultSet resultSet) throws SQLException {
+        ResultSetMetaData meta = resultSet.getMetaData();
+        int columnCount = meta.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                return meta.getColumnName(i);
+            }
+        }
+        throw new SQLException("The query doesn't contain any geometry field");
+    }
 
     /**
      * Check if the resultset contains a geometry field
