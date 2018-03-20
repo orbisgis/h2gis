@@ -5,7 +5,7 @@ category: geom3D/distance-functions
 is_function: true
 description: Return the 3D perimeter of a (multi)polygon
 prev_section: ST_3DLength
-next_section: ST_SunPosition
+next_section: ST_SVF
 permalink: /docs/1.3/ST_3DPerimeter/
 ---
 
