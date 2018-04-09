@@ -22,7 +22,6 @@ package org.h2gis.functions.io.geojson;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -67,11 +66,9 @@ public class GeoJsonDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-        ProgressVisitor copyProgress = progress.subProcess(recordCount);       
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException{
         GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection, tableReference, fileName);
-        geoJsonDriver.write(copyProgress);
+        geoJsonDriver.write(progress);
     }
 
     @Override
