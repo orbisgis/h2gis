@@ -181,6 +181,10 @@ public class GeoJsonReaderDriver {
             fis = new FileInputStream(fileName);
             this.fc = fis.getChannel();
             this.fileSize = fc.size();
+            if (fileSize == 0) {
+                throw new SQLException("Cannot read the file " + fileName);
+            }
+                
             // Given the file size and an average node file size.
             // Skip how many nodes in order to update progression at a step of 1%
             readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
@@ -201,6 +205,7 @@ public class GeoJsonReaderDriver {
                 throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
             }
             jp.close();
+            
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
 
