@@ -60,11 +60,12 @@ public class DBFDriverFunction implements DriverFunction {
         if (FileUtil.isExtensionWellFormated(fileName, "dbf")) {
             int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            String tableName = TableLocation.parse(tableReference, isH2).toString(isH2);
             // Read table content
             Statement st = connection.createStatement();
             ProgressVisitor lineProgress = null;
             if (!(progress instanceof EmptyProgressVisitor)) {
-                ResultSet rs = st.executeQuery(String.format("select count(*) from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
+                ResultSet rs = st.executeQuery(String.format("select count(*) from %s", tableName));
                 try {
                     if (rs.next()) {
                         lineProgress = progress.subProcess(rs.getInt(1));
@@ -74,9 +75,9 @@ public class DBFDriverFunction implements DriverFunction {
                 }
             }
             try {
-                ResultSet rs = st.executeQuery(String.format("select * from %s", TableLocation.parse(tableReference, isH2).toString(isH2)));
+                ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
                 try {
-                    ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                    ResultSetMetaData resultSetMetaData = rs.getMetaData();                    
                     ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
                     DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
                     if (encoding != null) {
@@ -96,7 +97,7 @@ public class DBFDriverFunction implements DriverFunction {
                             lineProgress.endStep();
                         }
                     }
-                    dbfDriver.close();
+                    dbfDriver.close();                    
                 } finally {
                     rs.close();
                 }
@@ -158,52 +159,56 @@ public class DBFDriverFunction implements DriverFunction {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
-            ProgressVisitor copyProgress = progress.subProcess((int)(dbfDriver.getRowCount() / BATCH_MAX_SIZE));
-            try {       
-                // Build CREATE TABLE sql request
-                Statement st = connection.createStatement();
-                List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
-                for (int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
-                    otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
-                }
-                String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
-                st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
-                        getSQLColumnTypes(dbfHeader, isH2)));
-                st.close();
+            ProgressVisitor copyProgress = progress.subProcess((int) (dbfDriver.getRowCount() / BATCH_MAX_SIZE));
+            if (dbfHeader.getNumFields() == 0) {
+                JDBCUtilities.createEmptyTable(connection, parsedTable);
+            } else {
                 try {
-                    PreparedStatement preparedStatement = connection.prepareStatement(
-                            String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
-                                    getQuestionMark(dbfHeader.getNumFields()+1)));
+                    // Build CREATE TABLE sql request
+                    Statement st = connection.createStatement();
+                    List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
+                    for (int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
+                        otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
+                    }
+                    String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
+                    st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
+                            getSQLColumnTypes(dbfHeader, isH2)));
+                    st.close();
                     try {
-                        long batchSize = 0;
-                        for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
-                            preparedStatement.setObject(1, rowId+1);
-                            Object[] values = dbfDriver.getRow(rowId);
-                            for (int columnId = 0; columnId < values.length; columnId++) {
-                                preparedStatement.setObject(columnId + 2, values[columnId]);
+                        PreparedStatement preparedStatement = connection.prepareStatement(
+                                String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
+                                        getQuestionMark(dbfHeader.getNumFields() + 1)));
+                        try {
+                            long batchSize = 0;
+                            for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
+                                preparedStatement.setObject(1, rowId + 1);
+                                Object[] values = dbfDriver.getRow(rowId);
+                                for (int columnId = 0; columnId < values.length; columnId++) {
+                                    preparedStatement.setObject(columnId + 2, values[columnId]);
+                                }
+                                preparedStatement.addBatch();
+                                batchSize++;
+                                if (batchSize >= BATCH_MAX_SIZE) {
+                                    preparedStatement.executeBatch();
+                                    preparedStatement.clearBatch();
+                                    batchSize = 0;
+                                    copyProgress.endStep();
+                                }
                             }
-                            preparedStatement.addBatch();
-                            batchSize++;
-                            if (batchSize >= BATCH_MAX_SIZE) {
+                            if (batchSize > 0) {
                                 preparedStatement.executeBatch();
-                                preparedStatement.clearBatch();
-                                batchSize = 0;
-                                copyProgress.endStep();
                             }
+                        } finally {
+                            preparedStatement.close();
                         }
-                        if (batchSize > 0) {
-                            preparedStatement.executeBatch();
-                        }
-                    } finally {
-                        preparedStatement.close();
-                    }                 
-                } catch (Exception ex) {
-                    connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);
-                    throw new SQLException(ex.getLocalizedMessage(), ex);
+                    } catch (Exception ex) {
+                        connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);
+                        throw new SQLException(ex.getLocalizedMessage(), ex);
+                    }
+                } finally {
+                    dbfDriver.close();
+                    copyProgress.endOfProgress();
                 }
-            } finally {
-                dbfDriver.close();
-                copyProgress.endOfProgress();
             }
         }
     }

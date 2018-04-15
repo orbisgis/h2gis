@@ -129,9 +129,7 @@ public class GeoJsonReaderDriver {
             if (fileName.length() > 0) {
                 parseGeoJson(progress);
             } else {
-                try (Statement stmt = connection.createStatement()) {
-                    stmt.execute("create table " + tableLocation + "()");
-                }
+                JDBCUtilities.createEmptyTable(connection, tableLocation.toString());
             }
         }
     }

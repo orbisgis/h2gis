@@ -720,7 +720,7 @@ public class GeojsonImportExportTest {
         ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
         ResultSetMetaData rsmd = res.getMetaData();
         assertTrue(rsmd.getColumnCount()==0);
-        res.next();
+        assertTrue(!res.next());
         stat.close();
     }
 }
