@@ -122,12 +122,18 @@ public class GeoJsonReaderDriver {
      * @throws java.sql.SQLException
      * @throws java.io.IOException
      */
-    public void read(ProgressVisitor progress,String tableReference) throws SQLException, IOException {
-        if (FileUtil.isFileImportable(fileName, "geojson")) {            
-            this.isH2 =JDBCUtilities.isH2DataBase(connection.getMetaData()); 
+    public void read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
+        if (FileUtil.isFileImportable(fileName, "geojson")) {
+            this.isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             this.tableLocation = TableLocation.parse(tableReference, isH2);
-            parseGeoJson(progress);
-        } 
+            if (fileName.length() > 0) {
+                parseGeoJson(progress);
+            } else {
+                try (Statement stmt = connection.createStatement()) {
+                    stmt.execute("create table " + tableLocation + "()");
+                }
+            }
+        }
     }
 
     /**
@@ -175,15 +181,11 @@ public class GeoJsonReaderDriver {
      * @throws IOException
      */
     private boolean parseMetadata() throws SQLException, IOException {
-        FileInputStream fis = null;
-        
+        FileInputStream fis = null;        
         try {
             fis = new FileInputStream(fileName);
             this.fc = fis.getChannel();
-            this.fileSize = fc.size();
-            if (fileSize == 0) {
-                throw new SQLException("Cannot read the file " + fileName);
-            }
+            this.fileSize = fc.size();           
                 
             // Given the file size and an average node file size.
             // Skip how many nodes in order to update progression at a step of 1%
@@ -589,11 +591,9 @@ public class GeoJsonReaderDriver {
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
                 //Parses the polygon
                 jp.nextToken(); //Start the RING
-                int linesIndex = 0;
                 while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
                     parseCoordinatesMetadata(jp);
                     jp.nextToken();//END RING
-                    linesIndex++;
                 }
                 jp.nextToken();//END_OBJECT
             }

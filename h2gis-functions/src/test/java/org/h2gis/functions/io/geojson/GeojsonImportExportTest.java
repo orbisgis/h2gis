@@ -25,9 +25,9 @@ import com.vividsolutions.jts.io.WKTReader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
 
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -710,17 +710,17 @@ public class GeojsonImportExportTest {
         stat.close();
     }
     
-    @Test(expected = SQLException.class)
-    public void testWriteReadEmptyTable() throws Throwable {
+    @Test
+    public void testWriteReadEmptyTable() throws SQLException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
         stat.execute("create table TABLE_POINTS(the_geom POINT)");
         stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS');");
-        try {
-            stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");
-        } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
-        }
+        stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_POINTS_READ;");
+        ResultSetMetaData rsmd = res.getMetaData();
+        assertTrue(rsmd.getColumnCount()==0);
+        res.next();
         stat.close();
     }
 }
