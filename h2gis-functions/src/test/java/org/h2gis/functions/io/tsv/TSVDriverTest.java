@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2gis.functions.factory.H2GISFunctions;
@@ -115,6 +116,18 @@ public class TSVDriverTest {
 
     }
     
-    
+    @Test
+    public void testWriteReadEmptyTable() throws SQLException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS empty_table");
+        stat.execute("create table empty_table()");
+        stat.execute("CALL TSVWrite('target/empty_table.tsv', 'empty_table');");
+        stat.execute("CALL TSVRead('target/empty_table.tsv', 'empty_table_read');");
+        ResultSet res = stat.executeQuery("SELECT * FROM empty_table_read;");
+        ResultSetMetaData rsmd = res.getMetaData();
+        assertTrue(rsmd.getColumnCount()==0);
+        assertTrue(!res.next());
+        stat.close();
+    }
     
 }
