@@ -21,6 +21,8 @@
 package org.h2gis.functions.io.file_table;
 
 import java.util.HashSet;
+
+import org.h2.command.dml.AllColumnsForPlan;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
@@ -71,7 +73,8 @@ public class DummyIndex extends BaseIndex {
     }
 
     @Override
-    public double getCost(Session sn, int[] ints, TableFilter[] tfs, int i, SortOrder so, HashSet<Column> hs) {
+    public double getCost(Session session, int[] ints, TableFilter[] tableFilters, int i, SortOrder sortOrder,
+                          AllColumnsForPlan allColumnsForPlan) {
         return 0;
     }
 

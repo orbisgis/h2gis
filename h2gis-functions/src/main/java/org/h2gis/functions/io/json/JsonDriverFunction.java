@@ -17,24 +17,20 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
-package org.h2gis.functions.io.geojson;
-
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.ProgressVisitor;
+package org.h2gis.functions.io.json;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.ProgressVisitor;
 
 /**
- * GeoJSON driver to import a GeoJSON file and export a spatial table in a
- * GeoJSON 1.0 file.
- * 
- * @author Erwan Bocher
+ *
+ * @author Erwan Bocher (CNRS)
  */
-public class GeoJsonDriverFunction implements DriverFunction {
+public class  JsonDriverFunction implements DriverFunction{
 
     @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
@@ -43,18 +39,18 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public String[] getImportFormats() {
-        return new String[]{"geojson"};
+        return new String[0];
     }
 
     @Override
     public String[] getExportFormats() {
-        return new String[]{"geojson"};
+        return new String[]{"json"};
     }
 
     @Override
     public String getFormatDescription(String format) {
-        if (format.equalsIgnoreCase("geojson")) {
-            return "GeoJSON 1.0";
+        if (format.equalsIgnoreCase("json")) {
+            return "JSON";
         } else {
             return "";
         }
@@ -62,18 +58,18 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public boolean isSpatialFormat(String extension) {
-        return extension.equals("geojson");
+        return false;
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException{
-        GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection, tableReference, fileName);
-        geoJsonDriver.write(progress);
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        JsonWriteDriver jsonDriver = new JsonWriteDriver(connection, tableReference, fileName);
+        jsonDriver.write(progress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, fileName);
-        geoJsonReaderDriver.read(progress, tableReference);
+        throw new UnsupportedOperationException("Not supported yet.");
     }
+    
 }
