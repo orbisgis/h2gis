@@ -70,15 +70,16 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException 
      */
     public static void readOSM(Connection connection, String fileName, String tableReference, boolean deleteTables) throws FileNotFoundException, SQLException, IOException {
-        if(deleteTables){
+        if (deleteTables) {
             OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection.getMetaData()), tableReference);
-        }        
+        }
         File file = URIUtilities.fileFromString(fileName);
         if (!file.exists()) {
             throw new FileNotFoundException("The following file does not exists:\n" + fileName);
         }
         OSMDriverFunction osmdf = new OSMDriverFunction();
         osmdf.importFile(connection, tableReference, file, new EmptyProgressVisitor(), deleteTables);
+ 
     }
 
     /**

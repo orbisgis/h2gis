@@ -28,6 +28,8 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -231,5 +233,16 @@ public class JDBCUtilitiesTest {
         statement.execute("DROP TABLE IF EXISTS LINKEDTABLE");
         statement.execute("CREATE LINKED TABLE LINKEDTABLE('org.h2.Driver', '"+databasePath+"', 'sa', '', 'TEMPTABLE');");
         assertTrue(JDBCUtilities.isLinkedTable(connection, "LINKEDTABLE"));
+    }
+    
+    @Test
+    public void testCreateEmptyTable() throws SQLException {
+        st.execute("drop table if exists emptytable");
+        JDBCUtilities.createEmptyTable(connection, "emptytable");
+        ResultSet res = st.executeQuery("SELECT * FROM emptytable;");
+        ResultSetMetaData rsmd = res.getMetaData();
+        assertTrue(rsmd.getColumnCount()==0);
+        assertTrue(!res.next());
+        st.execute("DROP TABLE emptytable");
     }
 }

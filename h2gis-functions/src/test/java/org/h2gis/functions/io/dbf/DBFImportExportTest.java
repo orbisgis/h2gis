@@ -228,7 +228,7 @@ public class DBFImportExportTest {
         assertFalse(rs.next());
         rs.close();
     }
-    
+
     @Test
     public void testWriteReadEmptyTable1() throws SQLException {
         Statement stat = connection.createStatement();

@@ -41,6 +41,7 @@ import org.h2gis.functions.io.geojson.GeoJsonWrite;
 import org.h2gis.functions.io.geojson.ST_AsGeoJSON;
 import org.h2gis.functions.io.geojson.ST_GeomFromGeoJSON;
 import org.h2gis.functions.io.gpx.GPXRead;
+import org.h2gis.functions.io.json.JsonWrite;
 import org.h2gis.functions.io.kml.KMLWrite;
 import org.h2gis.functions.io.kml.ST_AsKml;
 import org.h2gis.functions.io.osm.OSMRead;
@@ -437,7 +438,8 @@ public class H2GISFunctions {
                 new ST_Point(),
                 new ST_Node(),
                 new ST_Drape(),
-                new ST_Svf()};
+                new ST_Svf(),
+                new JsonWrite()};
     }
 
     /**
