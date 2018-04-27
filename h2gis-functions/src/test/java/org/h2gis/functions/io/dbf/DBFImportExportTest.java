@@ -228,9 +228,6 @@ public class DBFImportExportTest {
         assertFalse(rs.next());
         rs.close();
     }
-<<<<<<< Updated upstream
-=======
-    
     
     @Test
     public void testWriteReadEmptyTable1() throws SQLException {
@@ -261,5 +258,4 @@ public class DBFImportExportTest {
         assertTrue(!res.next());
         stat.close();
     }
->>>>>>> Stashed changes
 }

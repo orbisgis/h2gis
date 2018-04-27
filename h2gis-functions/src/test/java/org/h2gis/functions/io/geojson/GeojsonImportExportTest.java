@@ -23,9 +23,7 @@ package org.h2gis.functions.io.geojson;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -708,8 +706,6 @@ public class GeojsonImportExportTest {
         res.close();
         stat.close();
     }
-<<<<<<< Updated upstream
-=======
     
     @Test
     public void testWriteReadEmptyTable() throws SQLException {
@@ -725,5 +721,4 @@ public class GeojsonImportExportTest {
         assertTrue(!res.next());
         stat.close();
     }
->>>>>>> Stashed changes
 }
