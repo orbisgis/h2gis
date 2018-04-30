@@ -198,6 +198,7 @@ public class GeojsonImportExportTest {
     public void testWriteReadGeojsonPoint() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.execute("create table TABLE_POINTS(the_geom POINT)");
         stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)')");
         stat.execute("insert into TABLE_POINTS values( 'POINT(10 200)')");
@@ -714,6 +715,7 @@ public class GeojsonImportExportTest {
     public void testWriteReadEmptyTable() throws SQLException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+        stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         stat.execute("create table TABLE_POINTS(the_geom POINT)");
         stat.execute("CALL GeoJsonWrite('target/points.geojson', 'TABLE_POINTS');");
         stat.execute("CALL GeoJsonRead('target/points.geojson', 'TABLE_POINTS_READ');");
