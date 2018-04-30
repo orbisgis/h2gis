@@ -234,6 +234,7 @@ public class DBFImportExportTest {
     public void testWriteReadEmptyTable1() throws SQLException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
         stat.execute("create table TABLE_EMPTY(id INTEGER)");
         stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
         stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
@@ -248,6 +249,7 @@ public class DBFImportExportTest {
     public void testWriteReadEmptyTable2() throws SQLException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
         stat.execute("create table TABLE_EMPTY()");
         stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
         stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
