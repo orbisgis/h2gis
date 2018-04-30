@@ -14,7 +14,7 @@
                         </includes>
                 </fileSet>
                 <fileSet>
-                    <directory>${project.parent.basedir}/</directory>
+                    <directory>${project.basedir}/../</directory>
                     <outputDirectory>/</outputDirectory>
                     <includes>
                         <include>README.md</include>

@@ -89,23 +89,33 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
             <version>${sl4j-version}</version>
-        </dependency>	
-	<dependency>
-	    <groupId>org.orbisgis</groupId>
-	    <artifactId>postgis-jts-osgi</artifactId>
-	    <version>5.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis-osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis-network</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>postgis-jts-osgi</artifactId>
+            <version>5.0.1</version>
 	    <exclusions>
 	      <exclusion>
-		<groupId>org.postgis</groupId>
-		<artifactId>postgis-jdbc</artifactId>
+            <groupId>org.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
 	      </exclusion>
 	      <exclusion>
-		<groupId>org.postgis</groupId>
-		<artifactId>postgis-jdbc-jtsparser</artifactId>
+            <groupId>org.postgis</groupId>
+            <artifactId>postgis-jdbc-jtsparser</artifactId>
 	      </exclusion>
 	      <exclusion>
-		<groupId>postgresql</groupId>
-		<artifactId>postgresql</artifactId>
+            <groupId>postgresql</groupId>
+            <artifactId>postgresql</artifactId>
 	      </exclusion>
 	    </exclusions> 	    
 	</dependency>
