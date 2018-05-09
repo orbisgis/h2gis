@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.generalize;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.simplify.DouglasPeuckerSimplifier;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

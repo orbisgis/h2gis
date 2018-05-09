@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**
@@ -43,7 +43,7 @@ public class ST_GeometryType extends DeterministicScalarFunction {
 
     /**
      * @param geometry Geometry instance
-     * @return Geometry type equivalent to {@link com.vividsolutions.jts.geom.Geometry#getGeometryType()}
+     * @return Geometry type equivalent to {@link org.locationtech.jts.geom.Geometry#getGeometryType()}
      */
     public static String getGeometryType(Geometry geometry) {
         if(geometry==null) {

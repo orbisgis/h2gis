@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.snap;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.operation.overlay.snap.GeometrySnapper;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.overlay.snap.GeometrySnapper;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

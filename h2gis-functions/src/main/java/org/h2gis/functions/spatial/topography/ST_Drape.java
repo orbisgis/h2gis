@@ -19,21 +19,21 @@
  */
 package org.h2gis.functions.spatial.topography;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.Triangle;
-import com.vividsolutions.jts.geom.util.LinearComponentExtracter;
-import com.vividsolutions.jts.index.strtree.STRtree;
-import com.vividsolutions.jts.operation.linemerge.LineMerger;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.Triangle;
+import org.locationtech.jts.geom.util.LinearComponentExtracter;
+import org.locationtech.jts.index.strtree.STRtree;
+import org.locationtech.jts.operation.linemerge.LineMerger;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
@@ -99,7 +99,7 @@ public class ST_Drape extends DeterministicScalarFunction{
      * @return 
      */
     public static Geometry drapePoints(Geometry pts, Geometry triangles, STRtree sTRtree) {
-        Geometry geomDrapped = (Geometry) pts.clone();
+        Geometry geomDrapped = pts.copy();
         CoordinateSequenceFilter drapeFilter = new DrapeFilter(sTRtree);
         geomDrapped.apply(drapeFilter);
         return geomDrapped;

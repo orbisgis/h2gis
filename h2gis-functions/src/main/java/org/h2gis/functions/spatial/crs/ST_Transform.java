@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.crs;
 
-import com.vividsolutions.jts.geom.*;
+import org.locationtech.jts.geom.*;
 import org.cts.CRSFactory;
 import org.cts.IllegalCoordinateException;
 import org.cts.crs.CRSException;
@@ -101,7 +101,7 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                 EPSGTuple epsg = new EPSGTuple(inputSRID, codeEpsg);
                 CoordinateOperation op = copPool.get(epsg);
                 if (op != null) {
-                    Geometry outPutGeom = (Geometry) geom.clone();
+                    Geometry outPutGeom = geom.copy();
                     outPutGeom.geometryChanged();
                     outPutGeom.apply(new CRSTransformFilter(op));
                     outPutGeom.setSRID(codeEpsg);

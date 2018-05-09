@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.affine_transformations;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**
@@ -67,7 +67,7 @@ public class ST_Scale extends DeterministicScalarFunction {
      */
     public static Geometry scale(Geometry geom, double xFactor, double yFactor, double zFactor) {
         if (geom != null) {
-            Geometry scaledGeom = (Geometry) geom.clone();
+            Geometry scaledGeom = geom.copy();
             for (Coordinate c : scaledGeom.getCoordinates()) {
                 c.setOrdinate(Coordinate.X, c.getOrdinate(Coordinate.X) * xFactor);
                 c.setOrdinate(Coordinate.Y, c.getOrdinate(Coordinate.Y) * yFactor);

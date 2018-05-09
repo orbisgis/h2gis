@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.spatial.crs;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 
@@ -55,7 +55,7 @@ public class ST_SetSRID  extends AbstractFunction implements ScalarFunction {
         if (srid == null) {
             throw new IllegalArgumentException("The SRID code cannot be null.");
         }
-        Geometry geom = (Geometry) geometry.clone();
+        Geometry geom = geometry.copy();
         geom.setSRID(srid);
         return geom;
     }

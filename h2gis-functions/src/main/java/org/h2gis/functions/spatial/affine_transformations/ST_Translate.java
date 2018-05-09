@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.affine_transformations;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.util.AffineTransformation;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.AffineTransformation;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
 
@@ -86,7 +86,7 @@ public class ST_Translate extends DeterministicScalarFunction {
         if (filter.is2D()) {
             return AffineTransformation.translationInstance(x, y).transform(geom);
         } else {
-            final Geometry clone = (Geometry) geom.clone();
+            final Geometry clone = geom.copy();
             clone.apply(new ZAffineTransformation(x, y, z));
             return clone;
         }

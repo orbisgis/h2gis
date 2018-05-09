@@ -20,9 +20,9 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Triangle;
-import com.vividsolutions.jts.math.Vector3D;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Triangle;
+import org.locationtech.jts.math.Vector3D;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

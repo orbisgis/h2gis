@@ -20,17 +20,17 @@
 
 package org.h2gis.functions.spatial.volume;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Polygon;
 import java.util.ArrayList;
 import org.h2gis.functions.spatial.edit.ST_UpdateZ.UpdateZCoordinateSequenceFilter;
 
@@ -113,7 +113,7 @@ public class GeometryExtrude {
      * @return
      */
     public static Geometry extractRoof(LineString lineString, double height) {
-        LineString result = (LineString) lineString.clone();
+        LineString result = lineString.copy();
         result.apply(new TranslateCoordinateSequenceFilter(height));
         return result;
     }
@@ -157,7 +157,7 @@ public class GeometryExtrude {
      */
     public static Polygon extractRoof(Polygon polygon, double height) {
         GeometryFactory factory = polygon.getFactory();
-        Polygon roofP = (Polygon) polygon.clone();
+        Polygon roofP =  polygon.copy();
         roofP.apply(new TranslateCoordinateSequenceFilter(height));
         final LinearRing shell = factory.createLinearRing(getCounterClockWise(roofP.getExteriorRing()).getCoordinates());
         final int nbOfHoles = roofP.getNumInteriorRing();

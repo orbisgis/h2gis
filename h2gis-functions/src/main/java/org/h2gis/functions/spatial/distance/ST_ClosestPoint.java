@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.distance;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.operation.distance.DistanceOp;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

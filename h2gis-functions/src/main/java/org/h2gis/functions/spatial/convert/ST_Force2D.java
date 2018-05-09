@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**
@@ -53,7 +53,7 @@ public class ST_Force2D extends DeterministicScalarFunction {
         if (geom == null) {
             return null;
         }
-        Geometry outPut = (Geometry) geom.clone();
+        Geometry outPut = geom.copy();
         outPut.apply(new CoordinateSequenceFilter() {
             private boolean done = false;
 

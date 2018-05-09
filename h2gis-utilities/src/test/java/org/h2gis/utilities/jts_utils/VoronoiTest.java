@@ -20,8 +20,8 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.triangulate.DelaunayTriangulationBuilder;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,9 +37,7 @@ import org.junit.Test;
 public class VoronoiTest {
     private GeometryFactory gf = new GeometryFactory();
 
-    private Polygon tri(Triangle triangle) {
-        return gf.createPolygon(new Coordinate[]{triangle.p0, triangle.p1, triangle.p2, triangle.p0});
-    }
+    
 
     private Geometry getTestDelaunayA() {
         Collection<Coordinate> coords = Arrays.asList(

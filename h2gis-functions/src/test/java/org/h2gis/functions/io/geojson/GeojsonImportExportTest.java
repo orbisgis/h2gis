@@ -20,14 +20,10 @@
 
 package org.h2gis.functions.io.geojson;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;

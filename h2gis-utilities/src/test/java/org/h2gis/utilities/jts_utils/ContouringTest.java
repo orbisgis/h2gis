@@ -20,8 +20,8 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.TopologyException;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.TopologyException;
 import org.junit.Test;
 
 import java.util.ArrayList;

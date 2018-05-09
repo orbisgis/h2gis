@@ -4,7 +4,7 @@
     <groupId>org.orbisgis</groupId>
     <artifactId>h2gis-parent</artifactId>
     <packaging>pom</packaging>
-    <version>1.4.0</version>
+    <version>1.5.0-SNAPSHOT</version>
     <name>H2GIS</name>
     <description>H2GIS is a spatial extension of the H2 database engine in the spirit of PostGIS.  It adds support for the Open Geospatial Consortium (OGC) Simple Features for SQL (SFSQL) functions.</description>
     <organization>
@@ -32,11 +32,10 @@
         <!-- Dependency versions -->
         <maven-bundle-plugin-version>2.3.7</maven-bundle-plugin-version>
         <osgi-core-version>4.3.1</osgi-core-version>
-        <h2-version>1.4.196</h2-version>
-        <h2-package>com.h2database</h2-package>
+        <h2-version>1.4.198</h2-version>
+        <h2-package>org.orbisgis</h2-package>
         <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
-        <jts-core-version>1.14.0</jts-core-version>
-        <jts-io-version>1.14.0</jts-io-version>
+        <jts-core-version>1.15.1-SNAPSHOT</jts-core-version>
         <sl4j-version>1.6.0</sl4j-version>
         <cts-version>1.4.0</cts-version>
         <junit-version>4.12</junit-version>
@@ -50,8 +49,6 @@
         <profile>
             <id>osgi</id>
             <modules>
-                <module>jts-core-osgi</module>
-                <module>jts-io-osgi</module>
                 <module>h2gis-test</module>
             </modules>
         </profile>
@@ -110,4 +107,26 @@
         <version>3</version>
         <relativePath></relativePath>
     </parent>
+    <repositories>
+        <repository>
+            <id>locationtech-releases</id>
+            <url>https://repo.locationtech.org/content/groups/releases</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <id>repo2.maven.org</id>
+            <name>Maven2 repository 2</name>
+            <url>http://repo2.maven.org/maven2</url>
+        </repository>
+        <repository>
+            <id>osgi-maven-5.1</id>
+            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-5.1</url>
+        </repository>
+        <repository>
+            <id>osgi-maven-5.1-snapshot</id>
+            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-5.1-snapshot</url>
+        </repository>
+    </repositories>
 </project>

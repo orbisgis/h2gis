@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.operators;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

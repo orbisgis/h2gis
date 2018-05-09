@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.io.gpx.model;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.GeometryFactory;
 import java.sql.PreparedStatement;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;

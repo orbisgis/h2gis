@@ -72,7 +72,11 @@ public class UpdateTrigger implements Trigger {
                     preparedStatement.setString(2, schemaName);
                     preparedStatement.setString(3, tableName);
                     preparedStatement.execute();
-                    ResultSet resultSet = preparedStatement.getGeneratedKeys();
+
+                    preparedStatement.close();
+                    preparedStatement = conn.prepareStatement("select idtrigger, trigger_name from "+triggerTable+" where trigger_name = ?");
+                    preparedStatement.setString(1, triggerName);
+                    ResultSet resultSet = preparedStatement.executeQuery();
                     try {
                         if(resultSet.next()) {
                             idTrigger = resultSet.getInt(1);

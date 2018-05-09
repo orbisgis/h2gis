@@ -21,6 +21,7 @@
 package org.h2gis.functions.io.file_table;
 
 import org.h2.api.ErrorCode;
+import org.h2.command.dml.AllColumnsForPlan;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
@@ -149,22 +150,13 @@ public class H2TableIndex extends BaseIndex {
     }
 
     @Override
-    public boolean canScan() {
-        return true;
-    }
-
-    @Override
-    public boolean canFindNext() {
-        return true;
-    }
-    
-    @Override
-    public double getCost(Session session, int[] masks, TableFilter[] filters, int filter, SortOrder so, HashSet<Column> allColumnsSet) {
-        // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L232
+    public double getCost(Session session, int[] masks, TableFilter[] tableFilters, int filter, SortOrder sortOrder,
+                          AllColumnsForPlan allColumnsSet) {
+        // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L210
         // Must kept sync with this
         try {
             return 10 * getCostRangeIndex(masks, driver.getRowCount(),
-                    filters, filter, so, true, allColumnsSet);
+                    tableFilters, filter, sortOrder, true, allColumnsSet);
         } catch (IllegalStateException e) {
             throw DbException.get(ErrorCode.OBJECT_CLOSED, e);
         }

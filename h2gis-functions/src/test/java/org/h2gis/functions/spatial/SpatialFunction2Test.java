@@ -27,7 +27,7 @@ import static org.junit.Assert.assertNull;
 
 import static junit.framework.Assert.assertTrue;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.functions.factory.H2GISDBFactory;
