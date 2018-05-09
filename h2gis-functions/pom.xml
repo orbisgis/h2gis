@@ -121,6 +121,9 @@
             <Bundle-Vendor>CNRS</Bundle-Vendor>
             <Bundle-Category>JDBC</Bundle-Category>
               <Import-Package>
+                  org.h2.api,
+                  org.h2.tools,
+                  org.h2.util,
                   !org.h2.command,
                   !org.h2.command.ddl,
                   !org.h2.engine,
@@ -129,7 +132,8 @@
                   !org.h2.message,
                   !org.h2.result,
                   !org.h2.schema,
-                  !org.h2.table,*
+                  !org.h2.table,
+                  !org.h2.*,*
               </Import-Package>
           </instructions>
         </configuration>
