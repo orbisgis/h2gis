@@ -29,13 +29,14 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <stagingDirectory>${project.build.directory}/staging/${project.version}</stagingDirectory>
+
         <!-- Dependency versions -->
         <maven-bundle-plugin-version>2.3.7</maven-bundle-plugin-version>
         <osgi-core-version>4.3.1</osgi-core-version>
         <h2-version>1.4.198</h2-version>
         <h2-package>org.orbisgis</h2-package>
         <org.osgi.compendium-version>4.3.1</org.osgi.compendium-version>
-        <jts-core-version>1.15.1-SNAPSHOT</jts-core-version>
+        <jts-core-version>1.15.1</jts-core-version>
         <sl4j-version>1.6.0</sl4j-version>
         <cts-version>1.4.0</cts-version>
         <junit-version>4.12</junit-version>
