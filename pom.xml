@@ -48,12 +48,6 @@
     </scm>
     <profiles>
         <profile>
-            <id>osgi</id>
-            <modules>
-                <module>h2gis-test</module>
-            </modules>
-        </profile>
-        <profile>
             <id>standalone</id>
             <modules>
                 <module>h2gis-dist</module>
