@@ -31,6 +31,7 @@ import org.h2.api.Aggregate;
 import org.h2.tools.RunScript;
 import org.h2gis.api.Function;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.spatial.split.ST_LineIntersector;
 import org.h2gis.functions.spatial.split.ST_Split;
 import org.h2gis.functions.io.DriverManager;
