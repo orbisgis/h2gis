@@ -227,16 +227,8 @@
         <module>h2gis-functions</module>
         <module>h2gis-network</module>
         <module>h2gis-functions-osgi</module>
+        <module>h2gis-dist</module>
     </modules>
-
-    <profiles>
-        <profile>
-            <id>standalone</id>
-            <modules>
-                <module>h2gis-dist</module>
-            </modules>
-        </profile>
-    </profiles>
 
     <build>
         <pluginManagement>
