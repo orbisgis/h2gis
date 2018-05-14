@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -25,16 +25,18 @@ import java.beans.PropertyChangeSupport;
 
 /**
  * A progress visitor that do nothing.
+ *
  * @author Nicolas Fortin
  */
 public class EmptyProgressVisitor implements ProgressVisitor {
+
+    /** Indicate if the the ProgressVisitor has been cancelled or not. */
     private boolean canceled = false;
+
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     @Override
-    public void endOfProgress() {
-
-    }
+    public void endOfProgress() {}
 
     @Override
     public ProgressVisitor subProcess(int stepCount) {
@@ -42,14 +44,10 @@ public class EmptyProgressVisitor implements ProgressVisitor {
     }
 
     @Override
-    public void endStep() {
-
-    }
+    public void endStep() {}
 
     @Override
-    public void setStep(int idStep) {
-
-    }
+    public void setStep(int idStep) { }
 
     @Override
     public int getStepCount() {

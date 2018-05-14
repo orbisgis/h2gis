@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -21,10 +21,15 @@
 package org.h2gis.api;
 
 /**
- * Extended by Scalar function whose return always the same value for the same arguments.
+ * Extended by Scalar function which return always the same value for the same arguments.
+ *
  * @author Nicolas Fortin
  */
 public abstract class DeterministicScalarFunction extends AbstractFunction implements ScalarFunction {
+
+    /**
+     * Default empty constructor.
+     */
     public DeterministicScalarFunction() {
         addProperty(ScalarFunction.PROP_DETERMINISTIC,true);
     }
