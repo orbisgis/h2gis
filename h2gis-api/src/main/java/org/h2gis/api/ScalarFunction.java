@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -22,22 +22,27 @@ package org.h2gis.api;
 
 /**
  * Scalar function interface.
- * Scalar function in H2 can be defined through CREATE ALIAS, but in an OSGi context the class java name is not sufficient.
+ * Scalar function in H2 can be defined through CREATE ALIAS, but in an OSGi context the class java name is not
+ * sufficient.
  * The full declaration of java name in H2 through osgi is BundleSymbolicName:BundleVersion:BinaryJavaName
  * Registering this interface as an OSGi service will add this function in h2sgis linked with a DataSource service.
+ *
  * @author Nicolas Fortin
  */
 public interface ScalarFunction extends Function {
+
     /** Boolean, Deterministic functions must always return the same value for the same parameters.
      *  The result of such functions is cached if possible. */
-    static final String PROP_DETERMINISTIC = "deterministic";
+    String PROP_DETERMINISTIC = "deterministic";
+
     /** Boolean, if nobuffer is true then this function will be called more often but will not cache the results in
      *  memory nor files */
-    static final String PROP_NOBUFFER = "nobuffer";
+    String PROP_NOBUFFER = "nobuffer";
 
     /**
      * Returns Java name of static methods in this class to expose in database,
      * theses methods are under the same alias but with different number of arguments.
+     *
      * @return The Java name of static methods or null if it has not be loaded
      */
     String getJavaStaticMethod();

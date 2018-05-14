@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -22,18 +22,24 @@ package org.h2gis.api;
 
 /**
  * Main interface for SQL Functions services.
+ *
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS (UBS 2018)
  */
 public interface Function {
+
     /** SQL function name, take class name by default */
     String PROP_NAME = "name";
+
     /** SQL Function description */
     String PROP_REMARKS = "remarks";
 
     /**
-     * Optional function properties
-     * @param propertyName
-     * @return The value or null if not exists
+     * Return the value of optional function property with the specified name
+     *
+     * @param propertyName Name of the property which value is returned
+     *
+     * @return The value or null if the property doesn't not exists
      */
     Object getProperty(String propertyName);
 }

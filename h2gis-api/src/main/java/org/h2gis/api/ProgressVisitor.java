@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -24,11 +24,13 @@ import java.beans.PropertyChangeListener;
 
 /**
  * Progression information.
+ *
  * @author Nicolas Fortin
  */
 public interface ProgressVisitor {
 
-    public static String PROPERTY_CANCELED = "CANCELED";
+
+    String PROPERTY_CANCELED = "CANCELED";
 
     /***
      * Create a sub process. When this sub process finish it will count as a single step in this process.
@@ -58,30 +60,36 @@ public interface ProgressVisitor {
     void endOfProgress();
 
     /**
+     * Get the step progression which belong to [0,1]
+     *
      * @return This step progression [O-1], take account sub process progression.
      */
     double getProgression();
 
     /**
-     * @return True if the process has been canceled
+     * Return true if the process hes been canceled, false otherwise.
+     *
+     * @return True if the process has been canceled.
      */
     boolean isCanceled();
 
     /**
-     * Call this method to cancel the operation
+     * Call this method to cancel the operation.
      */
     void cancel();
 
     /**
-     * Listen for this visitor properties
-     * @param property Property name one of {@link #PROPERTY_CANCELED}
-     * @param listener Listener instance
+     * Add the specified PropertyChangeListener for this visitor specified property.
+     *
+     * @param property Property name one of {@link #PROPERTY_CANCELED}.
+     * @param listener PropertyChangeListener instance.
      */
     void addPropertyChangeListener(String property, PropertyChangeListener listener);
 
     /**
+     * Remove the specified PropertyChangeListener.
      *
-     * @param listener Listener instance
+     * @param listener PropertyChangeListener instance.
      */
     void removePropertyChangeListener(PropertyChangeListener listener);
 }
