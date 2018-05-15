@@ -721,4 +721,24 @@ public class GeojsonImportExportTest {
         assertTrue(!res.next());
         stat.close();
     }
+    
+    @Test
+    public void testWriteReadGeojsonProperties() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MIXED_PROPS");
+        stat.execute("create table TABLE_MIXED_PROPS(the_geom GEOMETRY, decimal_field DECIMAL(4, 2), numeric_field NUMERIC(4,2), real_field REAL)");
+        stat.execute("insert into TABLE_MIXED_PROPS values( 'MULTIPOINT ((140 260), (246 284))', 12.12, 14.23, 23)");
+        stat.execute("CALL GeoJsonWrite('target/mixedgeomprops.geojson', 'TABLE_MIXED_PROPS');");
+        stat.execute("CALL GeoJsonRead('target/mixedgeomprops.geojson', 'TABLE_MIXED_PROPS_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_MIXED_PROPS_READ;");
+        res.next();
+        assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("MULTIPOINT ((140 260), (246 284))")));
+        assertEquals(12.12, res.getDouble(2), 0);
+        assertEquals(14.23, res.getDouble(3), 0);
+        assertEquals(23, res.getDouble(4), 0);
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS TABLE_MIXED_PROPS_READ");
+        stat.close();
+    }
+
 }

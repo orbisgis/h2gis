@@ -131,6 +131,10 @@
     <!-- Dependencies -->
     <repositories>
         <repository>
+            <id>osgi-maven</id>
+            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-snapshot</url>
+        </repository>               
+        <repository>
             <id>osgi-maven-5.1</id>
             <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-5.1</url>
         </repository>
