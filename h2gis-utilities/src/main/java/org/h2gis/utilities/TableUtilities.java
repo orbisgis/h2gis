@@ -43,9 +43,11 @@ public class TableUtilities {
 
     /**
      * Copy fields from table into a {@link org.h2.tools.SimpleResultSet}
+     *
      * @param connection Active connection
      * @param rs Result set that will receive columns
      * @param tableLocation Import columns from this table
+     *
      * @throws SQLException Error
      */
     public static void copyFields(Connection connection, SimpleResultSet rs, TableLocation tableLocation) throws SQLException {
@@ -80,7 +82,9 @@ public class TableUtilities {
      * This is a hack. See: https://groups.google.com/forum/#!topic/h2-database/NHH0rDeU258
      *
      * @param connection Connection
+     *
      * @return True if this connection only wants the list of columns
+     *
      * @throws java.sql.SQLException
      */
     public static boolean isColumnListConnection(Connection connection) throws SQLException {
@@ -92,7 +96,9 @@ public class TableUtilities {
      *
      * @param connection Connection
      * @param inputTable Input table
+     *
      * @return corresponding TableLocation
+     *
      * @throws SQLException
      */
     public static TableLocation parseInputTable(Connection connection,
@@ -106,6 +112,7 @@ public class TableUtilities {
      *
      * @param inputTable Input table
      * @param suffix     Suffix
+     *
      * @return suffixed TableLocation
      */
     public static TableLocation suffixTableLocation(TableLocation inputTable,
@@ -120,6 +127,7 @@ public class TableUtilities {
      * @param requestedTable Catalog and schema used
      * @param tableName Table without quotes
      * @param isH2 True if H2, false if PostGRES
+     *
      * @return Find table identifier
      */
     public static String caseIdentifier(TableLocation requestedTable, String tableName, boolean isH2) {

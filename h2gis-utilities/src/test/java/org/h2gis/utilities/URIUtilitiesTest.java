@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -24,14 +24,20 @@ import org.junit.Test;
 
 import java.io.File;
 import java.net.URI;
+import java.util.HashMap;
 import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Unit test of URI utilities
+ *
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS (UBS 2018)
  */
-public class URIUtilityTest {
+public class URIUtilitiesTest {
+
     @Test
     public void testGetQueryKeyValuePairs() throws Exception {
         URI uri = URI.create("http://services.orbisgis.org/wms/wms?REQUEST=GetMap&SERVICE=WMS&VERSION=1.3.0" +
@@ -59,6 +65,9 @@ public class URIUtilityTest {
         assertEquals("",query.get("catalog"));
         assertEquals("PUBLIC",query.get("schema"));
         assertEquals("LANDCOVER2000",query.get("table"));
+        URI uriNoParam = URI.create("h2:target/test-resources/dbH2OwsMapContextTest");
+        query = URIUtilities.getQueryKeyValuePairs(uriNoParam);
+        assertTrue(query.isEmpty());
     }
 
     @Test
@@ -90,13 +99,25 @@ public class URIUtilityTest {
     public void testRelativizeSpace() throws Exception {
         URI rel = new URI("file:///home/user/OrbisGIS/maps/landcover/bla%20bla/text.txt");
         URI folder = new URI("file:///home/user/OrbisGIS/maps/landcover/folder/");
+        URI wrongFolder = new URI("badscheme:///home/user/OrbisGIS/maps/landcover/folder/");
         assertEquals("../bla%20bla/text.txt", URIUtilities.relativize(folder, rel).toString());
+        assertEquals(rel.toString(), URIUtilities.relativize(wrongFolder, rel).toString());
     }
 
     @Test
-    public void testFileFromURI() throws Exception {
-        assertEquals(new File("/mnt/stock/hello.png"), URIUtilities.fileFromString("/mnt/stock/hello.png"));
+    public void testFileFromURI() {
         assertEquals(new File("/mnt/stock/hello.png"),
                 URIUtilities.fileFromString(new File("/mnt/stock/hello.png").toString()));
+        assertEquals(new File("/mnt/stock/hello world.png"),
+                URIUtilities.fileFromString("/mnt/stock/hello world.png"));
+    }
+
+    @Test
+    public void testConcatenatedParameters() {
+        Map<String, String> map = new HashMap<>();
+        map.put("query", "GetCapabilities");
+        map.put("lang", "en");
+        map.put("version", "1.0.0");
+        assertEquals("QUERY=GetCapabilities&VERSION=1.0.0", URIUtilities.getConcatenatedParameters(map, "QuerY", "VeRsIoN"));
     }
 }
