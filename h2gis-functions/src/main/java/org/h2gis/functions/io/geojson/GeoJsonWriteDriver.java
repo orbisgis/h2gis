@@ -506,6 +506,11 @@ public class GeoJsonWriteDriver {
             case Types.CHAR:
             case Types.ARRAY:
             case Types.OTHER:
+            case Types.DECIMAL:
+            case Types.REAL:  
+            case Types.TINYINT: 
+            case Types.NUMERIC: 
+            case Types.NULL:
                 return true;
             default:
                 throw new SQLException("Field type not supported by GeoJSON driver: " + sqlTypeName);
