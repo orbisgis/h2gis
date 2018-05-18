@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -44,18 +44,13 @@ import org.h2gis.functions.factory.H2GISFunctions;
  */
 public class Activator implements BundleActivator {
     private ServiceTracker<DataSource,FunctionTracker> databaseTracker;
-    //private PermanentFunctionClassLoader classLoader;
 
     @Override
-    public void start(BundleContext bc) throws Exception {
+    public void start(BundleContext bc) {
         for(Function function : H2GISFunctions.getBuiltInsFunctions()) {
-            bc.registerService(Function.class,
-                    function,
-                    null);
+            bc.registerService(Function.class, function, null);
             if(function instanceof DriverFunction) {
-                bc.registerService(DriverFunction.class,
-                        (DriverFunction) function,
-                        null);
+                bc.registerService(DriverFunction.class, (DriverFunction) function, null);
             }
         }
 
@@ -70,12 +65,12 @@ public class Activator implements BundleActivator {
         bc.registerService(DriverFunction.class, new TSVDriverFunction(), null);
 
         DataSourceTracker dataSourceTracker = new DataSourceTracker(bc);
-        databaseTracker = new ServiceTracker<DataSource, FunctionTracker>(bc,DataSource.class,dataSourceTracker);
+        databaseTracker = new ServiceTracker<>(bc,DataSource.class,dataSourceTracker);
         databaseTracker.open();
     }
 
     @Override
-    public void stop(BundleContext bundleContext) throws Exception {
+    public void stop(BundleContext bundleContext) {
         databaseTracker.close();
     }
 }

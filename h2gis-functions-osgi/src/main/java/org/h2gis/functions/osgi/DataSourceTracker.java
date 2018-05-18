@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -31,10 +31,14 @@ import java.sql.SQLException;
 
 /**
  * When a new data source is registered this tracker add spatial features to the linked database.
+ *
  * @author Nicolas Fortin
  */
 public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,FunctionTracker> {
+
+    /** BundleContext instance */
     private BundleContext bundleContext;
+
     /**
      * Constructor
      * @param bundleContext BundleContext instance
@@ -47,40 +51,35 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
     public FunctionTracker addingService(ServiceReference<DataSource> dataSourceServiceReference) {
         DataSource dataSource = bundleContext.getService(dataSourceServiceReference);
         try {
-            Connection connection = dataSource.getConnection();
-            try {
+            try (Connection connection = dataSource.getConnection()) {
                 DatabaseMetaData meta = connection.getMetaData();
                 // If not H2 or in client mode, does not register H2 spatial functions.
-                if(!JDBCUtilities.H2_DRIVER_NAME.equals(meta.getDriverName())
+                if (!JDBCUtilities.H2_DRIVER_NAME.equals(meta.getDriverName())
                         || (meta.getURL() != null && meta.getURL().toLowerCase().startsWith("jdbc:h2:tcp://"))) {
                     return null;
                 }
                 // Check if the database has been properly initialised by the DataSource service provider
-                if(!JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
+                if (!JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
                     return null;
                 }
-            } finally {
-                connection.close();
             }
         } catch (SQLException ex) {
             System.err.print(ex.toString());
         }
-        try {
-            FunctionTracker functionTracker = new FunctionTracker(dataSource,bundleContext);
-            functionTracker.open();
-            return functionTracker;
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+        FunctionTracker functionTracker = new FunctionTracker(dataSource,bundleContext);
+        functionTracker.open();
+        return functionTracker;
     }
 
     @Override
-    public void modifiedService(ServiceReference<DataSource> dataSourceServiceReference, FunctionTracker functionTracker) {
+    public void modifiedService(ServiceReference<DataSource> dataSourceServiceReference,
+                                FunctionTracker functionTracker) {
 
     }
 
     @Override
-    public void removedService(ServiceReference<DataSource> dataSourceServiceReference, FunctionTracker functionTracker) {
+    public void removedService(ServiceReference<DataSource> dataSourceServiceReference,
+                               FunctionTracker functionTracker) {
         if(functionTracker!=null) {
             functionTracker.close();
         }

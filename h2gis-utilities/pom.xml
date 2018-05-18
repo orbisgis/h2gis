@@ -111,8 +111,8 @@
                         <branchRate>0</branchRate>
                         <lineRate>0</lineRate>
                         <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>50</totalBranchRate>
-                        <totalLineRate>30</totalLineRate>
+                        <totalBranchRate>57</totalBranchRate>
+                        <totalLineRate>42</totalLineRate>
                         <regexes>
                             <regex>
                                 <pattern>org.h2gis.utilities.jts_utils.Contouring</pattern>
