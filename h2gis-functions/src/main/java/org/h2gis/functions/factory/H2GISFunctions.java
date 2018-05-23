@@ -111,6 +111,7 @@ import org.h2gis.functions.spatial.distance.ST_LocateAlong;
 import org.h2gis.functions.spatial.distance.ST_LongestLine;
 import org.h2gis.functions.spatial.distance.ST_MaxDistance;
 import org.h2gis.functions.spatial.distance.ST_ProjectPoint;
+import org.h2gis.functions.spatial.distance.ST_ShortestLine;
 import org.h2gis.functions.spatial.earth.ST_GeometryShadow;
 import org.h2gis.functions.spatial.earth.ST_SunPosition;
 import org.h2gis.functions.spatial.earth.ST_Svf;
@@ -440,7 +441,8 @@ public class H2GISFunctions {
                 new ST_Node(),
                 new ST_Drape(),
                 new ST_Svf(),
-                new JsonWrite()};
+                new JsonWrite(),
+                new ST_ShortestLine()};
     }
 
     /**

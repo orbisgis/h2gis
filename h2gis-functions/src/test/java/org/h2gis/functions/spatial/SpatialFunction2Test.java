@@ -919,4 +919,36 @@ public class SpatialFunction2Test {
         double svfTest = 1 - (dTheta * sinGamma * sinGamma) / (2 * Math.PI);
         assertEquals(svfTest, rs.getDouble(1), 0.01);
     }
+    
+    @Test
+    public void test_ST_ShortestLine1() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT st_length(ST_ShortestLine('POINT(0 0 0)'::GEOMETRY, 'LINESTRING(0 0, 10 10)'::GEOMETRY)) as result");
+        Assert.assertTrue(rs.next());
+        assertEquals(0, rs.getDouble(1), 0.1);
+    }
+    
+    @Test
+    public void test_ST_ShortestLine2() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_ShortestLine('POINT(10 0 )'::GEOMETRY, 'LINESTRING(5 5, 10 10)'::GEOMETRY) as result");
+        Assert.assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING (10 0, 5 5)", rs.getObject(1));
+    }
+    
+    @Test
+    public void test_ST_ShortestLine3() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_ShortestLine('POINT(10 0 )'::GEOMETRY, 'LINESTRING(1 10, 5 5, 10 10)'::GEOMETRY) as result");
+        Assert.assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING (10 0, 5 5)", rs.getObject(1));
+    }
+    
+    @Test
+    public void test_ST_ShortestLine4() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_ShortestLine('POLYGON ((0 4, 8 4, 8 0, 0 0, 0 4))'::GEOMETRY, 'POLYGON ((2 10.1, 9 10.1, 9 4.9, 2 4.9, 2 10.1))'::GEOMETRY) as result");
+        Assert.assertTrue(rs.next());
+        assertGeometryEquals("LINESTRING (2 4, 2 4.9)", rs.getObject(1));
+    }
 }
