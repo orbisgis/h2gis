@@ -21,7 +21,6 @@
 package org.h2gis.utilities;
 
 import org.junit.Test;
-import org.locationtech.jts.util.Assert;
 
 import java.io.File;
 import java.sql.Connection;
