@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -25,25 +25,30 @@ import java.sql.SQLException;
 
 /**
  * In order to provide a common API with H2 Spatial and PostGIS this MetaData give type information on Geometry fields.
+ *
  * @author Nicolas Fortin
  */
 public interface SpatialResultSetMetaData extends ResultSetMetaData {
 
     /**
      * @param column
+     *
      * @return {@link GeometryTypeCodes} of the provided column.
+     *
      * @throws SQLException
      */
     int getGeometryType(int column) throws SQLException;
 
     /**
      * @return {@link GeometryTypeCodes} of the first geometry column.
+     *
      * @throws SQLException if this meta data does not contains a geometry field.
      */
     int getGeometryType() throws SQLException;
 
     /**
      * @return Column index of the first geometry in this result set.
+     *
      * @throws SQLException
      */
     public int getFirstGeometryFieldIndex() throws SQLException;
