@@ -112,7 +112,7 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                                 .createCoordinateOperations((GeodeticCRS) inputCRS, (GeodeticCRS) targetCRS);
                         if (!ops.isEmpty()) {
                             op = ops.get(0);
-                            Geometry outPutGeom = (Geometry) geom.clone();
+                            Geometry outPutGeom = (Geometry) geom.copy();
                             outPutGeom.geometryChanged();
                             outPutGeom.apply(new CRSTransformFilter(op));
                             copPool.put(epsg, op);
