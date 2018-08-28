@@ -113,7 +113,7 @@ public class GeometryExtrude {
      * @return
      */
     public static Geometry extractRoof(LineString lineString, double height) {
-        LineString result = lineString.copy();
+        LineString result = (LineString)lineString.copy();
         result.apply(new TranslateCoordinateSequenceFilter(height));
         return result;
     }
@@ -157,7 +157,7 @@ public class GeometryExtrude {
      */
     public static Polygon extractRoof(Polygon polygon, double height) {
         GeometryFactory factory = polygon.getFactory();
-        Polygon roofP =  polygon.copy();
+        Polygon roofP =  (Polygon)polygon.copy();
         roofP.apply(new TranslateCoordinateSequenceFilter(height));
         final LinearRing shell = factory.createLinearRing(getCounterClockWise(roofP.getExteriorRing()).getCoordinates());
         final int nbOfHoles = roofP.getNumInteriorRing();
