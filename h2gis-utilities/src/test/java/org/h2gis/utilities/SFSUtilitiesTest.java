@@ -21,6 +21,7 @@
 package org.h2gis.utilities;
 
 import org.h2.api.Aggregate;
+import org.h2.util.StringUtils;
 import org.h2.value.Value;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.DeterministicScalarFunction;
@@ -46,6 +47,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.locationtech.jts.util.Assert.shouldNeverReachHere;
 
@@ -73,6 +75,7 @@ public class SFSUtilitiesTest {
                 "sa", "");
 
         Statement st = connection.createStatement();
+
         String functionAlias = "_GeometryTypeFromConstraint";
         ScalarFunction scalarFunction = new GeometryTypeFromConstraint();
         try {
@@ -84,6 +87,14 @@ public class SFSUtilitiesTest {
         st.execute("DROP AGGREGATE IF EXISTS " + ST_Extent.class.getSimpleName().toUpperCase());
         st.execute("CREATE FORCE AGGREGATE IF NOT EXISTS " + ST_Extent.class.getSimpleName().toUpperCase() +
                 " FOR \"" + ST_Extent.class.getName() + "\"");
+
+        functionAlias = "_ColumnSRID";
+        scalarFunction = new ColumnSRID();
+        try {
+            st.execute("DROP ALIAS IF EXISTS " + functionAlias);
+        } catch (SQLException ignored) {}
+        st.execute("CREATE FORCE ALIAS IF NOT EXISTS _ColumnSRID DETERMINISTIC NOBUFFER FOR \"" +
+                ColumnSRID.class.getName() + "." + scalarFunction.getJavaStaticMethod() + "\"");
 
         //registerGeometryType
         st = connection.createStatement();
@@ -98,8 +109,12 @@ public class SFSUtilitiesTest {
         //registerSpatialTables
         st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
-        st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
+        /*st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
                 "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) geometry_type" +
+                " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");*/
+        st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
+                "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) geometry_type," +
+                "_ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         /*st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
                 "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) geometry_type," +
@@ -325,6 +340,153 @@ public class SFSUtilitiesTest {
         shouldNeverReachHere();
     }
 
+    // getGeometryTypes(Connection connection, TableLocation location)
+    @Test
+    public void testGeometryTypes() throws SQLException {
+        TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
+        Map<String, Integer> map = SFSUtilities.getGeometryTypes(connection, tableLocation);
+        assertTrue(map.containsKey("GEOM"));
+        assertEquals(GeometryTypeCodes.GEOMETRY, map.get("GEOM").intValue());
+        assertTrue(map.containsKey("PT"));
+        assertEquals(GeometryTypeCodes.POINT,
+                SFSUtilities.getGeometryType(connection, tableLocation, "pt"));
+        assertTrue(map.containsKey("LINESTR"));
+        assertEquals(GeometryTypeCodes.LINESTRING,
+                SFSUtilities.getGeometryType(connection, tableLocation, "linestr"));
+        assertTrue(map.containsKey("PLGN"));
+        assertEquals(GeometryTypeCodes.POLYGON,
+                SFSUtilities.getGeometryType(connection, tableLocation, "plgn"));
+        assertTrue(map.containsKey("PLGN"));
+        assertEquals(GeometryTypeCodes.MULTIPOINT,
+                SFSUtilities.getGeometryType(connection, tableLocation, "multipt"));
+        assertTrue(map.containsKey("MULTILINESTR"));
+        assertEquals(GeometryTypeCodes.MULTILINESTRING,
+                SFSUtilities.getGeometryType(connection, tableLocation, "multilinestr"));
+        assertTrue(map.containsKey("MULTIPLGN"));
+        assertEquals(GeometryTypeCodes.MULTIPOLYGON,
+                SFSUtilities.getGeometryType(connection, tableLocation, "multiplgn"));
+        assertTrue(map.containsKey("GEOMCOLLECTION"));
+        assertEquals(GeometryTypeCodes.GEOMCOLLECTION,
+                SFSUtilities.getGeometryType(connection, tableLocation, "geomcollection"));
+    }
+
+    // wrapSpatialDataSource(DataSource dataSource)
+    @Test
+    public void testWrapSpatialDataSource(){
+        assertTrue(SFSUtilities.wrapSpatialDataSource(new CustomDataSource()) instanceof CustomDataSource);
+        assertTrue(SFSUtilities.wrapSpatialDataSource(new CustomDataSource1()) instanceof DataSourceWrapper);
+        assertTrue(SFSUtilities.wrapSpatialDataSource(new CustomDataSource2()) instanceof DataSourceWrapper);
+    }
+
+    // wrapConnection(Connection connection)
+    @Test
+    public void testWrapConnection(){
+        assertTrue(SFSUtilities.wrapConnection(connection) instanceof ConnectionWrapper);
+        assertTrue(SFSUtilities.wrapConnection(new CustomConnection1(connection)) instanceof ConnectionWrapper);
+        assertTrue(SFSUtilities.wrapConnection(new CustomConnection(connection)) instanceof ConnectionWrapper);
+    }
+
+    // getTableEnvelope(Connection connection, TableLocation location, String geometryField)
+    @Test
+    public void testTableEnvelope() throws SQLException {
+        TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
+        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
+                SFSUtilities.getTableEnvelope(connection, tableLocation, ""));
+        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
+                SFSUtilities.getTableEnvelope(connection, tableLocation, "GEOM"));
+        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
+                SFSUtilities.getTableEnvelope(connection, tableLocation, "PT"));
+        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
+                SFSUtilities.getTableEnvelope(connection, tableLocation, "LINESTR"));
+        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
+                SFSUtilities.getTableEnvelope(connection, tableLocation, "PLGN"));
+        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
+                SFSUtilities.getTableEnvelope(connection, tableLocation, "MULTIPT"));
+        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
+                SFSUtilities.getTableEnvelope(connection, tableLocation, "MULTILINESTR"));
+        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
+                SFSUtilities.getTableEnvelope(connection, tableLocation, "MULTIPLGN"));
+        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
+                SFSUtilities.getTableEnvelope(connection, tableLocation, "GEOMCOLLECTION"));
+    }
+
+    @Test(expected = SQLException.class)
+    public void testBadTableEnvelope() throws SQLException {
+        TableLocation tableLocation = TableLocation.parse("NOGEOM");
+        SFSUtilities.getTableEnvelope(connection, tableLocation, "");
+        shouldNeverReachHere();
+    }
+
+    // getGeometryFields(Connection connection,String catalog, String schema, String table)
+    @Test
+    public void testGeometryFields1() throws SQLException {
+        List<String> list = SFSUtilities.getGeometryFields(connection, "", "", "GEOMTABLE");
+        assertEquals(8, list.size());
+        assertTrue(list.contains("GEOM"));
+        assertTrue(list.contains("PT"));
+        assertTrue(list.contains("LINESTR"));
+        assertTrue(list.contains("PLGN"));
+        assertTrue(list.contains("MULTIPT"));
+        assertTrue(list.contains("MULTILINESTR"));
+        assertTrue(list.contains("MULTIPLGN"));
+        assertTrue(list.contains("GEOMCOLLECTION"));
+    }
+
+    // prepareInformationSchemaStatement(Connection connection,String catalog, String schema, String table,
+    //                                String informationSchemaTable, String endQuery, String catalog_field,
+    //                                String schema_field, String table_field)
+    @Test
+    public void testPrepareInformationSchemaStatement() throws SQLException {
+        PreparedStatement ps = SFSUtilities.prepareInformationSchemaStatement(connection, "cat", "sch", "tab",
+                "INFORMATION_SCHEMA.CONSTRAINTS", "limit 1", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
+        assertEquals(ps.toString().substring(ps.toString().indexOf(": ")+2), "SELECT * from INFORMATION_SCHEMA.CONSTRAINTS where UPPER(TABLE_CATALOG) " +
+                "= ? AND UPPER(TABLE_SCHEMA) = ? AND UPPER(TABLE_NAME) = ? limit 1 {1: 'CAT', 2: 'SCH', 3: 'TAB'}");
+    }
+
+    // prepareInformationSchemaStatement(Connection connection,String catalog, String schema, String table,
+    //                                   String informationSchemaTable, String endQuery)
+    @Test
+    public void testPrepareInformationSchemaStatement2() throws SQLException {
+        PreparedStatement ps = SFSUtilities.prepareInformationSchemaStatement(connection, "cat", "sch", "tab",
+                "geometry_columns", "limit 1");
+        assertEquals(ps.toString().substring(ps.toString().indexOf(": ")+2), "SELECT * from geometry_columns where UPPER(f_table_catalog) " +
+                "= ? AND UPPER(f_table_schema) = ? AND UPPER(f_table_name) = ? limit 1 {1: 'CAT', 2: 'SCH', 3: 'TAB'}");
+    }
+
+    // getGeometryFields(Connection connection,String catalog, String schema, String table)
+    @Test
+    public void testGeometryFields2() throws SQLException {
+        List<String> list = SFSUtilities.getGeometryFields(connection, TableLocation.parse("GEOMTABLE"));
+        assertEquals(8, list.size());
+        assertTrue(list.contains("GEOM"));
+        assertTrue(list.contains("PT"));
+        assertTrue(list.contains("LINESTR"));
+        assertTrue(list.contains("PLGN"));
+        assertTrue(list.contains("MULTIPT"));
+        assertTrue(list.contains("MULTILINESTR"));
+        assertTrue(list.contains("MULTIPLGN"));
+        assertTrue(list.contains("GEOMCOLLECTION"));
+    }
+
+    // getGeometryFields(ResultSet resultSet)
+    @Test
+    public void testGeometryFields() throws SQLException {
+        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
+        List<String> list = SFSUtilities.getGeometryFields(rs);
+        assertEquals(8, list.size());
+        assertTrue(list.contains("GEOM"));
+        assertTrue(list.contains("PT"));
+        assertTrue(list.contains("LINESTR"));
+        assertTrue(list.contains("PLGN"));
+        assertTrue(list.contains("MULTIPT"));
+        assertTrue(list.contains("MULTILINESTR"));
+        assertTrue(list.contains("MULTIPLGN"));
+        assertTrue(list.contains("GEOMCOLLECTION"));
+        rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
+        list = SFSUtilities.getGeometryFields(rs);
+        assertEquals(0, list.size());
+    }
+
     // getFirstGeometryFieldIndex(ResultSet resultSet)
     @Test
     public void testGeometryFieldIndex() throws SQLException {
@@ -332,6 +494,66 @@ public class SFSUtilitiesTest {
         assertEquals(1, SFSUtilities.getFirstGeometryFieldIndex(rs));
         rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
         assertEquals(-1, SFSUtilities.getFirstGeometryFieldIndex(rs));
+    }
+
+    // getFirstGeometryFieldName(ResultSet resultSet)
+    @Test
+    public void testFirstGeometryFieldName1() throws SQLException {
+        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
+        assertEquals("GEOM", SFSUtilities.getFirstGeometryFieldName(rs));
+    }
+
+    @Test(expected = SQLException.class)
+    public void testFirstGeometryFieldName2() throws SQLException {
+        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
+        SFSUtilities.getFirstGeometryFieldName(rs);
+        shouldNeverReachHere();
+    }
+
+    // hasGeometryField(ResultSet resultSet)
+    @Test
+    public void testHasGeometryField() throws SQLException {
+        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
+        assertTrue(SFSUtilities.hasGeometryField(rs));
+        rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
+        assertFalse(SFSUtilities.hasGeometryField(rs));
+    }
+
+    // getResultSetEnvelope(ResultSet resultSet)
+    @Test
+    public void testResultSetEnvelope1() throws SQLException {
+        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
+        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0), SFSUtilities.getResultSetEnvelope(rs));
+    }
+
+    @Test(expected = SQLException.class)
+    public void testResultSetEnvelope2() throws SQLException {
+        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
+        SFSUtilities.getResultSetEnvelope(rs);
+        shouldNeverReachHere();
+    }
+
+    // getResultSetEnvelope(ResultSet resultSet, String fieldName)
+    @Test
+    public void testResultSetEnvelope3() throws SQLException {
+        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
+        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0), SFSUtilities.getResultSetEnvelope(rs, "GEOM"));
+        rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
+        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0), SFSUtilities.getResultSetEnvelope(rs, "MULTILINESTR"));
+    }
+
+    @Test(expected = SQLException.class)
+    public void testResultSetEnvelope4() throws SQLException {
+        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
+        SFSUtilities.getResultSetEnvelope(rs, "GEOM");
+        shouldNeverReachHere();
+    }
+
+    // getSRID(Connection connection, TableLocation table)
+    @Test
+    public void testGetSRID() throws SQLException {
+        assertEquals(0, SFSUtilities.getSRID(connection, TableLocation.parse("GEOMTABLE")));
+        assertEquals(0, SFSUtilities.getSRID(connection, TableLocation.parse("NOGEOM")));
     }
 
     /**
@@ -407,6 +629,83 @@ public class SFSUtilitiesTest {
                 return null;
             } else {
                 return new GeometryFactory().toGeometry(aggregatedEnvelope);
+            }
+        }
+    }
+
+    public static class ColumnSRID extends AbstractFunction implements ScalarFunction {
+        private static final String SRID_FUNC = "ST_SRID";
+        private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("ST_SRID\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+
+        public ColumnSRID() {
+            addProperty(PROP_REMARKS, "Get the column SRID from constraints and data.");
+            addProperty(PROP_NAME, "_ColumnSRID");
+        }
+
+        @Override
+        public String getJavaStaticMethod() {
+            return "getSRID";
+        }
+
+        public static int getSRIDFromConstraint(String constraint, String columnName) {
+            int srid = 0;
+            Matcher matcher = SRID_CONSTRAINT_PATTERN.matcher(constraint);
+            while (matcher.find()) {
+                String extractedColumnName = matcher.group(1).replace("\"","").replace("`","");
+                int sridConstr = Integer.valueOf(matcher.group(5));
+                if (extractedColumnName.equalsIgnoreCase(columnName)) {
+                    if(srid != 0 && srid != sridConstr) {
+                        // Two srid constraint on the same column
+                        return 0;
+                    }
+                    srid = sridConstr;
+                }
+            }
+            return srid;
+        }
+
+        public static String fetchConstraint(Connection connection, String catalogName, String schemaName, String tableName) throws SQLException {
+            // Merge column constraint and table constraint
+            PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection, catalogName, schemaName,
+                    tableName, "INFORMATION_SCHEMA.CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
+            ResultSet rsConstraint = pst.executeQuery();
+            try {
+                StringBuilder constraint = new StringBuilder();
+                while (rsConstraint.next()) {
+                    String tableConstr = rsConstraint.getString("CHECK_EXPRESSION");
+                    if(tableConstr != null) {
+                        constraint.append(tableConstr);
+                    }
+                }
+                return constraint.toString();
+            } finally {
+                rsConstraint.close();
+                pst.close();
+            }
+        }
+
+        public static int getSRID(Connection connection, String catalogName, String schemaName, String tableName, String columnName,String constraint) {
+            try {
+                Statement st = connection.createStatement();
+                constraint+=fetchConstraint(connection, catalogName, schemaName,tableName);
+                if(constraint.toUpperCase().contains(SRID_FUNC)) {
+                    int srid = getSRIDFromConstraint(constraint, columnName);
+                    if(srid > 0) {
+                        return srid;
+                    }
+                }
+                ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
+                        StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)));
+                if(rs.next()) {
+                    int srid = rs.getInt(1);
+                    if(srid > 0) {
+                        return srid;
+                    }
+                }
+                rs.close();
+                return 0;
+            } catch (SQLException ex) {
+                return 0;
             }
         }
     }
