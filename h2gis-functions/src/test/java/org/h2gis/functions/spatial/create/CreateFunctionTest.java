@@ -645,7 +645,7 @@ public class CreateFunctionTest {
             st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY, "
                     + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -654,7 +654,7 @@ public class CreateFunctionTest {
         try {
             st.execute("SELECT ST_MakePolygon('POINT (100 250)'::GEOMETRY );");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -663,7 +663,7 @@ public class CreateFunctionTest {
         try {
             st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 

@@ -42,6 +42,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 
 /**
  *
@@ -209,13 +210,13 @@ public class OGCSpatialFunctionTest {
         rs.close();
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void testSetSRIDNullSRID() throws Throwable {
         try {
             Statement st = connection.createStatement();
             st.execute("SELECT ST_SETSRID('POINT(12 13)',null)");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -483,7 +484,7 @@ public class OGCSpatialFunctionTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_Buffer7() throws Throwable {
         Statement st = connection.createStatement();
         try {
@@ -491,11 +492,11 @@ public class OGCSpatialFunctionTest {
                 + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
                 + " 10, 'quad_segs=2 endcap=flated');");
         }catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_Buffer8() throws Throwable {
         Statement st = connection.createStatement();
         try {
@@ -503,7 +504,7 @@ public class OGCSpatialFunctionTest {
                     + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
                     + " 10, 'quad_segments=2 endcap=flated');");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
     
@@ -573,7 +574,7 @@ public class OGCSpatialFunctionTest {
         try {
             st.executeQuery("SELECT ST_PointFromText('LINESTRING(0 0, 1 0)', 2154);");
         } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
+            final Throwable originalCause = e.getCause();
             assertTrue(e.getMessage().contains(ST_PointFromText.TYPE_ERROR + "LineString"));
             throw originalCause;
         }

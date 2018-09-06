@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -96,12 +97,12 @@ public class SystemFunctionTest {
         rs.close();
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_DoubleRange3() throws Throwable {
         try {
             st.execute("SELECT DoubleRange(10, 1, 0.5);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
     
@@ -120,12 +121,12 @@ public class SystemFunctionTest {
         rs.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_IntegerRange2() throws Throwable {
         try {
             st.execute("SELECT IntegerRange(10, 1, 0.5);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
     

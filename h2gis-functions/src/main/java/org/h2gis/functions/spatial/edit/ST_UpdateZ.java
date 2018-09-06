@@ -113,22 +113,29 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
 
         @Override
         public void filter(CoordinateSequence seq, int i) {
-            if (condition == 1) {
-                seq.setOrdinate(i, 2, z);
-            } else if (condition == 2) {
-                Coordinate coord = seq.getCoordinate(i);
-                double currentZ = coord.z;
-                if (!Double.isNaN(currentZ)) {
+            switch (condition) {
+                case 1:
                     seq.setOrdinate(i, 2, z);
-                }
-            } else if (condition == 3) {
-                Coordinate coord = seq.getCoordinate(i);
-                double currentZ = coord.z;
-                if (Double.isNaN(currentZ)) {
-                    seq.setOrdinate(i, 2, z);
-                } 
-            } else {
-                done = true;
+                    break;
+                case 2:
+                    {
+                        Coordinate coord = seq.getCoordinate(i);
+                        double currentZ = coord.z;
+                        if (!Double.isNaN(currentZ)) {
+                            seq.setOrdinate(i, 2, z);
+                        }       break;
+                    }
+                case 3:
+                    {
+                        Coordinate coord = seq.getCoordinate(i);
+                        double currentZ = coord.z;
+                        if (Double.isNaN(currentZ)) {
+                            seq.setOrdinate(i, 2, z);
+                        }       break;
+                    }
+                default:
+                    done = true;
+                    break;
             }
             if (i == seq.size()) {
                 done = true;

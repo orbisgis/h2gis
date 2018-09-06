@@ -84,7 +84,7 @@ public class GPXImportTest {
         // Check content
         rs = st.executeQuery("SELECT * FROM GPXDATA_WAYPOINT");
         assertTrue(rs.next());
-        assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-71.119277 42.438878)", rs.getString("the_geom"));
         assertEquals(4326, ((Geometry)rs.getObject("the_geom")).getSRID());
         rs.close();
     }
@@ -96,7 +96,7 @@ public class GPXImportTest {
         try {
             st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA');");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -122,7 +122,7 @@ public class GPXImportTest {
         // Check content
         rs = st.executeQuery("SELECT * FROM GPXDATA_ROUTE");
         assertTrue(rs.next());
-        assertEquals("LINESTRING (-71.107628 42.43095, -71.109236 42.43124, -71.109942 42.43498, -71.119676 42.456592, -71.119845 42.457388)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;LINESTRING (-71.107628 42.43095, -71.109236 42.43124, -71.109942 42.43498, -71.119676 42.456592, -71.119845 42.457388)", rs.getString("the_geom"));
         rs.close();
     }
     
@@ -133,7 +133,7 @@ public class GPXImportTest {
         try {
             st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("route.gpx").getPath()) + ", 'GPXDATA');");
         } catch (JdbcSQLException e) {
-            assertTrue(e.getOriginalCause().getMessage().equals("The table " + "\"GPXDATA_ROUTE\"" + " already exists."));
+            assertTrue(e.getCause().getMessage().equals("The table " + "\"GPXDATA_ROUTE\"" + " already exists."));
         }
     }
 
@@ -163,7 +163,7 @@ public class GPXImportTest {
         // Check content
         rs = st.executeQuery("SELECT * FROM GPXDATA_TRACK");
         assertTrue(rs.next());
-        assertEquals("MULTILINESTRING ((-71.09622 42.210009, -71.09622 42.210031), (-71.102335 42.209129, -71.1024 42.208958))"
+        assertEquals("SRID=4326;MULTILINESTRING ((-71.09622 42.210009, -71.09622 42.210031), (-71.102335 42.209129, -71.1024 42.208958))"
                 , rs.getString("the_geom"));
         rs.close();
     }
@@ -184,7 +184,7 @@ public class GPXImportTest {
         // Check content
         rs = st.executeQuery("SELECT * FROM WAYPOINT_WAYPOINT");
         assertTrue(rs.next());
-        assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-71.119277 42.438878)", rs.getString("the_geom"));
         rs.close();
     }
     
@@ -220,7 +220,7 @@ public class GPXImportTest {
         // Check content
         rs = st.executeQuery("SELECT * FROM GPXDATA_WAYPOINT");
         assertTrue(rs.next());
-        assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-71.119277 42.438878)", rs.getString("the_geom"));
         assertEquals(4326, ((Geometry)rs.getObject("the_geom")).getSRID());
         rs.close();
     }

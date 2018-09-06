@@ -415,7 +415,7 @@ public class ST_GraphTest {
             st.executeQuery("SELECT ST_Graph('\"TeST\"')");
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains("Table TeST not found"));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -467,9 +467,9 @@ public class ST_GraphTest {
         try {
             st.executeQuery("SELECT ST_Graph('TEST')");
         } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
+            final Throwable originalCause = e.getCause();
             assertTrue(originalCause.getMessage().equals(ST_Graph.TYPE_ERROR + "POINT"));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -484,7 +484,7 @@ public class ST_GraphTest {
             st.executeQuery("SELECT ST_Graph('TEST', 'road', -1.0)");
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains("Only positive tolerances are allowed."));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -499,7 +499,7 @@ public class ST_GraphTest {
             st.executeQuery("SELECT ST_Graph('TEST')");
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains("must contain a single integer primary key"));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -516,7 +516,7 @@ public class ST_GraphTest {
             st.executeQuery("SELECT ST_Graph('TEST')");
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains("must contain a single integer primary key"));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
     
@@ -535,7 +535,7 @@ public class ST_GraphTest {
             st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.5)");
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains("Try using a slightly smaller tolerance."));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -549,7 +549,7 @@ public class ST_GraphTest {
         try {
             st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)");
         } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
+            final Throwable originalCause = e.getCause();
             assertTrue(originalCause.getMessage().equals(ST_Graph.TYPE_ERROR + "GEOMETRY"));
             throw originalCause;
         }
@@ -569,7 +569,7 @@ public class ST_GraphTest {
         try {
             st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)");
         } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
+            final Throwable originalCause = e.getCause();
             assertTrue(originalCause.getMessage().equals(ST_Graph.TYPE_ERROR + "GEOMETRY"));
             throw originalCause;
         }
@@ -583,7 +583,7 @@ public class ST_GraphTest {
             st.executeQuery("CALL ST_Graph('TEST', 'road', 0.1, false)");
             st.executeQuery("CALL ST_Graph('TEST', 'road', 0.1, false)");
         } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
+            final Throwable originalCause = e.getCause();
             assertTrue(originalCause.getMessage().equals(ST_Graph.ALREADY_RUN_ERROR + "TEST"));
             throw originalCause;
         }

@@ -41,6 +41,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2.value.Value;
 import org.h2gis.functions.io.dbf.DBFRead;
 import org.h2gis.functions.io.dbf.DBFWrite;
 
@@ -87,13 +88,13 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(1);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[0]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[0].getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", ((Geometry)row[1]).toText());
+        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))",row[1].getObject().toString());
         row = shpDriver.getRow(1);
-        assertEquals(2, row[0]);
-        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", ((Geometry)row[1]).toText());
+        assertEquals(2, row[0].getInt());
+        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", row[1].getObject().toString());
     }
 
     @Test
@@ -113,13 +114,13 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(0);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[1]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[1].getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", ((Geometry)row[0]).toText());
+        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", row[0].getObject().toString());
         row = shpDriver.getRow(1);
-        assertEquals(2, row[1]);
-        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", ((Geometry)row[0]).toText());
+        assertEquals(2, row[1].getInt());
+        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", row[0].getObject().toString());
     }
 
     @Test
@@ -200,13 +201,13 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(0);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[1]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[1].getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", ((Geometry)row[0]).toText());
+        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))",row[0].getObject().toString());
         row = shpDriver.getRow(1);
-        assertEquals(2, row[1]);
-        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", ((Geometry)row[0]).toText());
+        assertEquals(2, row[1].getInt());
+        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", row[0].getObject().toString());
     }
 
     @Test(expected = SQLException.class)
@@ -271,13 +272,13 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(1);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[0]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[0].getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTILINESTRING ((-10 109, 90 109, 90 9, -10 9))", ((Geometry)row[1]).toText());
+        assertEquals("MULTILINESTRING ((-10 109, 90 109, 90 9, -10 9))",row[1].getObject().toString());
         row = shpDriver.getRow(1);
-        assertEquals(2, row[0]);
-        assertEquals("MULTILINESTRING ((90 109, 190 109, 190 9, 90 9))", ((Geometry)row[1]).toText());
+        assertEquals(2, row[0].getInt());
+        assertEquals("MULTILINESTRING ((90 109, 190 109, 190 9, 90 9))", row[1].getObject().toString());
     }
 
     @Test
@@ -358,14 +359,14 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(1);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[0]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[0].getInt());
         // The driver can not create POLYGON
         WKTWriter toText = new WKTWriter(3);
-        assertEquals("MULTIPOLYGON (((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", toText.write((Geometry)row[1]));
+        assertEquals("MULTIPOLYGON (((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", toText.write((Geometry) row[1].getObject()));
         row = shpDriver.getRow(1);
-        assertEquals(2, row[0]);
-        assertEquals("MULTIPOLYGON (((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", toText.write((Geometry)row[1]));
+        assertEquals(2, row[0].getInt());
+        assertEquals("MULTIPOLYGON (((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", toText.write((Geometry)row[1].getObject()));
     }
     
     @Test

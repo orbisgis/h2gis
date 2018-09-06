@@ -109,7 +109,7 @@ public class BasicTest {
             GeometryFactory geometryFactory = new GeometryFactory();
             Geometry geometry = geometryFactory.createPoint(new Coordinate(0,0));
             assertEquals("H2 does not use the same JTS ! Expected:\n" + Geometry.class.getName() + "\n but got:\n"
-                    + DataType.getTypeClassName(DataType.getTypeFromClass(geometry.getClass())) + "\n", Value.GEOMETRY,
+                    + DataType.getTypeClassName(DataType.getTypeFromClass(geometry.getClass()), true) + "\n", Value.GEOMETRY,
                     DataType.getTypeFromClass(geometry.getClass()));
         }
 
@@ -193,7 +193,7 @@ public class BasicTest {
         ResultSet rs = stat.executeQuery("SELECT * from POINT3D;");
         SFSUtilities.getFirstGeometryFieldName(rs);
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 }

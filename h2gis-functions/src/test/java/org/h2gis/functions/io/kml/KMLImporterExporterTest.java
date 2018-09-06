@@ -29,6 +29,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.AfterClass;
@@ -294,7 +295,7 @@ public class KMLImporterExporterTest {
     }
 
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void testST_AsKml7() throws Throwable {
         Statement stat = connection.createStatement();
         try {
@@ -302,7 +303,7 @@ public class KMLImporterExporterTest {
                     + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                     + "                -1.49 47.17 100)',4326), true, 666);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getNextException();
         } finally {
             stat.close();
         }

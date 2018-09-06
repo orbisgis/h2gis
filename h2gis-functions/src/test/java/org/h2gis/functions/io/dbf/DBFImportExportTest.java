@@ -37,6 +37,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2.value.Value;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 
@@ -80,14 +81,14 @@ public class DBFImportExportTest {
         dbfDriver.initDriverFromFile(dbfFile);
         assertEquals(3, dbfDriver.getFieldCount());
         assertEquals(2, dbfDriver.getRowCount());
-        Object[] row = dbfDriver.getRow(0);
-        assertEquals(1, row[0]);
-        assertEquals(4.9406564584124654, (Double) row[1], 1e-12);
-        assertEquals("main area", row[2]);
+        Value[] row = dbfDriver.getRow(0);
+        assertEquals(1, row[0].getInt());
+        assertEquals(4.9406564584124654, row[1].getDouble(), 1e-12);
+        assertEquals("main area", row[2].getString());
         row = dbfDriver.getRow(1);
-        assertEquals(2, row[0]);
-        assertEquals(2.2250738585072009, (Double) row[1], 1e-12);
-        assertEquals("second area", row[2]);
+        assertEquals(2, row[0].getInt());
+        assertEquals(2.2250738585072009,  row[1].getDouble(), 1e-12);
+        assertEquals("second area", row[2].getString());
     }
 
     @Test

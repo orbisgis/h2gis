@@ -39,6 +39,7 @@ import java.sql.Statement;
 import java.util.Map;
 
 import static junit.framework.Assert.assertTrue;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.*;
 
@@ -181,7 +182,7 @@ public class SpatialFunctionTest {
                     + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
             st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('select ') WHERE name = 'Green Forest' and explod_id=2");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         } finally {
             st.execute("drop table forests");
         }
@@ -196,7 +197,7 @@ public class SpatialFunctionTest {
                     + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
             st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('select *') WHERE name = 'Green Forest' and explod_id=2");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         } finally {
             st.execute("drop table forests");
         }
@@ -222,7 +223,7 @@ public class SpatialFunctionTest {
                     + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
             st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('forests', 'the_geom') WHERE name = 'Green Forest' and explod_id=2");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         } finally {
             st.execute("drop table forests");
         }
@@ -1213,7 +1214,7 @@ public class SpatialFunctionTest {
         try {
             st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0)'::GEOMETRY, 3);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
     
@@ -1491,7 +1492,7 @@ public class SpatialFunctionTest {
             st.executeQuery("SELECT " +
                     "ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2);");
         } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
+            final Throwable originalCause = e.getCause();
             assertEquals(ST_Translate.MIXED_DIM_ERROR,
                     originalCause.getMessage());
             throw originalCause;
@@ -1504,7 +1505,7 @@ public class SpatialFunctionTest {
             st.executeQuery("SELECT " +
                     "ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2, 3);");
         } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
+            final Throwable originalCause = e.getCause();
             assertEquals(ST_Translate.MIXED_DIM_ERROR,
                     originalCause.getMessage());
             throw originalCause;
@@ -1901,7 +1902,7 @@ public class SpatialFunctionTest {
         try {
             st.execute("SELECT ST_IsvalidReason('LINESTRING (80 240, 330 330, 280 240, 190 360)'::GEOMETRY, 199);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -1962,12 +1963,12 @@ public class SpatialFunctionTest {
         rs.close();
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_IsValidRDetail6() throws Throwable {
         try {
             st.execute("SELECT ST_IsvalidDetail('LINESTRING (80 240, 330 330, 280 240, 190 360)'::GEOMETRY, 199);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
     

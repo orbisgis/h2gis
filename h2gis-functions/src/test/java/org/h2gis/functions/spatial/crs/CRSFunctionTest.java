@@ -171,7 +171,7 @@ public class CRSFunctionTest {
             st.execute("SELECT ST_TRANSFORM("
                     + "ST_GeomFromText('MULTIPOLYGON (((2 40, 3 40, 3 3, 2 3, 2 40)))',  4326 ), null);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 

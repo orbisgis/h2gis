@@ -33,6 +33,8 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
 
 /**
  * Merge ShapeFileReader and DBFReader.
@@ -229,23 +231,21 @@ public class SHPDriver implements FileDriver {
     }
 
     @Override
-    public Object[] getRow(long rowId) throws IOException {
+    public Value[] getRow(long rowId) throws IOException {
         final int fieldCount = getFieldCount();
-        Object[] values = new Object[fieldCount];
-        // Copy dbf values
-        Object[] dbfValues = dbfDriver.getRow(rowId);
-        // Copy dbf values before geometryFieldIndex
-        if(geometryFieldIndex > 0) {
-            System.arraycopy(dbfValues, 0, values, 0, geometryFieldIndex);
-        }
-        Geometry geom = shapefileReader.geomAt(shxFileReader.getOffset((int)rowId));
-        if(geom!=null){
-        geom.setSRID(getSrid());
-        }
-        values[geometryFieldIndex] = geom;
-        // Copy dbf values after geometryFieldIndex
-        if(geometryFieldIndex < dbfValues.length) {
-            System.arraycopy(dbfValues, geometryFieldIndex, values, geometryFieldIndex + 1, dbfValues.length);
+        Value[] values = new Value[fieldCount];
+        int deltaDBF = 0;
+        for (int i = 0; i < fieldCount; i++) {
+            if (i == geometryFieldIndex) {
+                Geometry geom = shapefileReader.geomAt(shxFileReader.getOffset((int) rowId));
+                if (geom != null) {
+                    geom.setSRID(getSrid());
+                }
+                values[i] = ValueGeometry.getFromGeometry(geom);  
+            } else {
+                values[i] = dbfDriver.getDbaseFileReader().getFieldValue((int) rowId, deltaDBF);
+                deltaDBF++;
+            }
         }
         return values;
     }

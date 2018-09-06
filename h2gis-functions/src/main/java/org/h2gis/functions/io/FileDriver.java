@@ -21,6 +21,8 @@
 package org.h2gis.functions.io;
 
 import java.io.IOException;
+import org.h2.result.Row;
+import org.h2.value.Value;
 
 /**
  * Implement this interface in order to create a {@link org.h2gis.drivers.file_table.H2Table} in your
@@ -51,7 +53,7 @@ public interface FileDriver {
      * @return The row content
      * @throws java.io.IOException Read error
      */
-    public Object[] getRow(long rowId) throws IOException;
+    public Value[] getRow(long rowId) throws IOException;
    
     /**
      * Insert values to the current row

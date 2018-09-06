@@ -34,13 +34,11 @@ import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.Table;
 import org.h2.table.TableFilter;
-import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2.value.ValueLong;
 import org.h2gis.functions.io.FileDriver;
 
 import java.io.IOException;
-import java.util.HashSet;
 
 /**
  * ScanIndex of {@link org.h2gis.drivers.FileDriver}, the key is the row index [1-n].
@@ -57,14 +55,12 @@ public class H2TableIndex extends BaseIndex {
      * @param driver Linked file driver
      * @param table Linked table
      * @param id Index identifier
+     * @param indexColumn Column to index
      */
-    public H2TableIndex(FileDriver driver, Table table, int id) {
+    public H2TableIndex(FileDriver driver, Table table, int id,  IndexColumn indexColumn) {  
+        super(table, id, table.getName() + "_ROWID_", new IndexColumn[]{indexColumn}, IndexType.createScan(true));
         this.isScanIndex = true;
         this.driver = driver;
-        IndexColumn indexColumn = new IndexColumn();
-        indexColumn.columnName = "key";
-        indexColumn.column = new Column("key", Value.LONG);
-        initBaseIndex(table, id, table.getName() + "_ROWID_", new IndexColumn[]{indexColumn}, IndexType.createScan(true));
     }
 
     /**
@@ -72,17 +68,13 @@ public class H2TableIndex extends BaseIndex {
      * @param driver Linked file driver
      * @param table Linked table
      * @param id Index identifier
-     * @param PKColumn Primary key column declaration
      * @param indexName Unique index name
+     * @param indexColumn Column to index
      */
-    public H2TableIndex(FileDriver driver, Table table, int id, Column PKColumn, String indexName) {
+    public H2TableIndex(FileDriver driver, Table table, int id, String indexName, IndexColumn indexColumn) {
+            super(table, id, indexName, new IndexColumn[]{indexColumn}, IndexType.createPrimaryKey(true, false));
             this.isScanIndex = false;
             this.driver = driver;
-            IndexColumn indexColumn = new IndexColumn();
-            indexColumn.columnName = PK_COLUMN_NAME;
-            indexColumn.column = PKColumn;
-            indexColumn.sortType = SortOrder.ASCENDING;
-            initBaseIndex(table, id, indexName, new IndexColumn[]{indexColumn}, IndexType.createPrimaryKey(true, false));
     }
 
     @Override
@@ -97,14 +89,10 @@ public class H2TableIndex extends BaseIndex {
     @Override
     public Row getRow(Session session, long key) {
         try {
-            Object[] driverRow = driver.getRow(key - 1);
+            Value[] driverRow = driver.getRow(key - 1);
             Value[] values = new Value[driverRow.length + 1];
-            Column[] columns = table.getColumns();
+            System.arraycopy(driverRow, 0, values, 1, driverRow.length);
             values[0] = ValueLong.get(key);
-            for(int idField=1;idField<=driverRow.length;idField++) {
-                // TODO in H2, switch on type parameter instead of if elseif
-                values[idField] = DataType.convertToValue(session, driverRow[idField - 1], columns[idField - 1].getType());
-            }
             Row row = session.createRow(values, Row.MEMORY_CALCULATE);
             row.setKey(key);
             return row;

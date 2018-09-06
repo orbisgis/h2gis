@@ -33,6 +33,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
@@ -145,13 +146,13 @@ public class ProcessingFunctionTest {
         rs.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_LineIntersector4()  throws Throwable {
         try {
             st.execute("SELECT ST_LineIntersector( 'MULTIPOLYGON (((0.9 2.3, 4.2 2.3, 4.2 -1.8, 0.9 -1.8, 0.9 2.3)),((6 2, 8.5 2, 8.5 -1.6, 6 -1.6, 6 2)))'::GEOMETRY,"
                     + "'LINESTRING (0 0 0, 10 0 0)'::GEOMETRY);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -333,7 +334,7 @@ public class ProcessingFunctionTest {
             st.execute("SELECT ST_RingSideBuffer('MULTIPOLYGON (((10 20, 20 20, 20 10, 10 10, 10 20)),"
                     + "  ((0 29, 10 29, 10 20, 0 20, 0 29)))'::GEOMETRY, -1, 3);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -342,7 +343,7 @@ public class ProcessingFunctionTest {
         try {
             st.execute("SELECT ST_RingSideBuffer('POINT(10 20)'::GEOMETRY, -1, 3);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
@@ -375,12 +376,12 @@ public class ProcessingFunctionTest {
         rs.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_SideBuffer3()  throws Throwable {
         try {
             st.execute("SELECT ST_SideBuffer('LINESTRING (120 150, 180 270)', 10, 'endcap=square');");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
