@@ -1682,6 +1682,15 @@ public class SpatialFunctionTest {
             st.close();
         }
     }
+    
+    @Test
+    public void test_ST_UpdateZ6() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_UPDATEZ(ST_buffer('POINT(0 0)'::GEOMETRY, 10), 120);");
+        Assert.assertTrue(rs.next());
+        System.out.println(((Geometry)rs.getObject(1)).getCoordinates()[0].z);
+        //assertEquals(svfTest, rs.getDouble(1), 0.01);
+    }
 
     @Test
     public void test_ST_AddZ1() throws Exception {

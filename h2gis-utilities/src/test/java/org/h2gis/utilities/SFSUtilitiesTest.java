@@ -84,9 +84,9 @@ public class SFSUtilitiesTest {
         st.execute("CREATE FORCE ALIAS IF NOT EXISTS _GeometryTypeFromConstraint DETERMINISTIC NOBUFFER FOR \"" +
                 GeometryTypeFromConstraint.class.getName() + "." + scalarFunction.getJavaStaticMethod() + "\"");
 
-        //st.execute("DROP AGGREGATE IF EXISTS " + ST_Extent.class.getSimpleName().toUpperCase());
-        //st.execute("CREATE FORCE AGGREGATE IF NOT EXISTS " + ST_Extent.class.getSimpleName().toUpperCase() +
-        //        " FOR \"" + ST_Extent.class.getName() + "\"");
+        st.execute("DROP AGGREGATE IF EXISTS " + ST_Extent.class.getSimpleName().toUpperCase());
+        st.execute("CREATE FORCE AGGREGATE IF NOT EXISTS " + ST_Extent.class.getSimpleName().toUpperCase() +
+                " FOR \"" + ST_Extent.class.getName() + "\"");
 
         functionAlias = "_ColumnSRID";
         scalarFunction = new ColumnSRID();

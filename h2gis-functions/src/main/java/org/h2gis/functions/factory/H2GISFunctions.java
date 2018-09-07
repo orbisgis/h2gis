@@ -169,6 +169,7 @@ import org.h2gis.functions.spatial.properties.ST_Distance;
 import org.h2gis.functions.spatial.properties.ST_DistanceSphere;
 import org.h2gis.functions.spatial.properties.ST_EndPoint;
 import org.h2gis.functions.spatial.properties.ST_Envelope;
+import org.h2gis.functions.spatial.properties.ST_EstimatedExtent;
 import org.h2gis.functions.spatial.properties.ST_Explode;
 import org.h2gis.functions.spatial.properties.ST_Extent;
 import org.h2gis.functions.spatial.properties.ST_ExteriorRing;
@@ -347,7 +348,7 @@ public class H2GISFunctions {
                 new ST_Densify(),
                 new ST_Expand(),
                 new ST_Explode(),
-                //new ST_Extent(),
+                new ST_Extent(),
                 new ST_Extrude(),
                 new ST_FurthestCoordinate(),
                 new ST_Holes(),
@@ -441,7 +442,8 @@ public class H2GISFunctions {
                 new ST_Drape(),
                 new ST_Svf(),
                 new JsonWrite(),
-                new ST_ShortestLine()};
+                new ST_ShortestLine(),
+                new ST_EstimatedExtent()};
     }
 
     /**

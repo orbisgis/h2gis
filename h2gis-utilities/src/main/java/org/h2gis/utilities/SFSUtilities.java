@@ -227,6 +227,28 @@ public class SFSUtilities {
         }
         throw new SQLException("Unable to get the table extent it may be empty");
     }
+    
+    /**
+     * Compute eturn the 'estimated' extent of the given spatial table. 
+     * In case of POSTGIS : the estimated is taken from the geometry column's statistics.
+     * In case of H2GIS : the estimated is taken from the spatial index of the geometry column.
+     * If the estimated extend is null the extent is computed.
+     * @param connection
+     * @param tableLocation
+     * @param geometryField
+     * @return 
+     */
+    public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryField) throws SQLException {
+
+        StringBuilder query = new StringBuilder("SELECT  ESTIMATED_ENVELOPE('");
+        query.append(tableLocation.getTable()).append("','").append(geometryField).append("')");
+
+        PreparedStatement ps = connection.prepareStatement(query.toString());
+        ResultSet res = ps.executeQuery();
+        res.next();
+        res.getObject(1);
+        return null;
+    }
 
     /**
      * Find geometry fields name of a table.
