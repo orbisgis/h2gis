@@ -31,6 +31,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
@@ -165,7 +166,7 @@ public class CRSFunctionTest {
         rs.close();
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void testST_TransformOnNullSRID() throws Throwable {
         try {
             st.execute("SELECT ST_TRANSFORM("

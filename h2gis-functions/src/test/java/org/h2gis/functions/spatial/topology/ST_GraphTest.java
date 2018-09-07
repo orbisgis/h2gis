@@ -25,6 +25,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
@@ -457,7 +458,7 @@ public class ST_GraphTest {
         rs.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_Graph_ErrorWithNoLINESTRINGOrMULTILINESTRING() throws Throwable {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
@@ -473,7 +474,7 @@ public class ST_GraphTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_Graph_ErrorWithNegativeTolerance() throws Throwable {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
@@ -488,7 +489,7 @@ public class ST_GraphTest {
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_Graph_ErrorWithNoPrimaryKey() throws Throwable {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
@@ -503,7 +504,7 @@ public class ST_GraphTest {
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_Graph_ErrorWithCompositePrimaryKey() throws Throwable {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
@@ -521,7 +522,7 @@ public class ST_GraphTest {
     }
     
 
-    @Test(expected = IllegalStateException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_Graph_ErrorWithNullEdgeEndpoints() throws Throwable {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
@@ -539,7 +540,7 @@ public class ST_GraphTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_GraphMixedLINESTRINGSandMULTILINESTRINGS() throws Throwable {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
         st.execute("CREATE TABLE test(road GEOMETRY, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
@@ -555,7 +556,7 @@ public class ST_GraphTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_GraphErrorWithNonLINESTRINGSandMULTILINESTRINGS() throws Throwable {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
@@ -575,7 +576,7 @@ public class ST_GraphTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_GraphErrorWhenCalledTwice() throws Throwable {
         // Prepare the input table.
         multiTestPrep();
