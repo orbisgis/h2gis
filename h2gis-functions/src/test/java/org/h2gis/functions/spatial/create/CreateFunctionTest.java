@@ -31,6 +31,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
@@ -639,7 +640,7 @@ public class CreateFunctionTest {
         rs.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_MakePolygon3() throws Throwable {
         try {
             st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY, "
@@ -649,7 +650,7 @@ public class CreateFunctionTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_MakePolygon4() throws Throwable {
         try {
             st.execute("SELECT ST_MakePolygon('POINT (100 250)'::GEOMETRY );");
@@ -658,7 +659,7 @@ public class CreateFunctionTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_ST_MakePolygon5() throws Throwable {
         try {
             st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY);");
