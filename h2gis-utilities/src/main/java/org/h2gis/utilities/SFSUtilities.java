@@ -229,7 +229,7 @@ public class SFSUtilities {
     }
     
     /**
-     * Compute eturn the 'estimated' extent of the given spatial table. 
+     * Compute the 'estimated' extent of the given spatial table. 
      * In case of POSTGIS : the estimated is taken from the geometry column's statistics.
      * In case of H2GIS : the estimated is taken from the spatial index of the geometry column.
      * If the estimated extend is null the extent is computed.
@@ -237,18 +237,33 @@ public class SFSUtilities {
      * @param tableLocation
      * @param geometryField
      * @return 
+     * @throws java.sql.SQLException 
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryField) throws SQLException {
-
+        Geometry result;
         StringBuilder query = new StringBuilder("SELECT  ESTIMATED_ENVELOPE('");
         query.append(tableLocation.getTable()).append("','").append(geometryField).append("')");
-
-        PreparedStatement ps = connection.prepareStatement(query.toString());
-        ResultSet res = ps.executeQuery();
-        res.next();
-        res.getObject(1);
-        return null;
+        ResultSet rs = connection.createStatement().executeQuery(query.toString());
+        if (rs.next()) {
+            result = (Geometry) rs.getObject(1);
+            if (result != null) {
+                return result;
+            } else {
+                query = new StringBuilder("SELECT  ENVELOPE(");
+                query.append(TableLocation.quoteIdentifier(geometryField)).append(") FROM ").append(tableLocation.getTable());
+                rs = connection.createStatement().executeQuery(query.toString());
+                if (rs.next()) {
+                    result = (Geometry) rs.getObject(1);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
+        }
+        throw new SQLException("Unable to compute the estimated extent");
     }
+    
+    
 
     /**
      * Find geometry fields name of a table.

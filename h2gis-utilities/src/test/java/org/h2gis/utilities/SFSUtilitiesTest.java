@@ -386,7 +386,7 @@ public class SFSUtilitiesTest {
         assertTrue(SFSUtilities.wrapConnection(new CustomConnection(connection)) instanceof ConnectionWrapper);
     }
 
-    // getTableEnvelope(Connection connection, TableLocation location, String geometryField)
+    
     @Test
     public void testTableEnvelope() throws SQLException {
         TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
@@ -738,5 +738,22 @@ public class SFSUtilitiesTest {
     private class CustomConnection extends ConnectionWrapper {
         public CustomConnection(Connection connection) {super(connection);}
         @Override public boolean isWrapperFor(Class<?> var1) throws SQLException{return true;}
+    }
+    
+    @Test
+    public void testEstimatedExtentWithoutIndex() throws SQLException {
+        TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
+        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
+                SFSUtilities.getEstimatedExtent(connection, tableLocation, "GEOM").getEnvelopeInternal());
+    }
+    @Test
+    public void testEstimatedExtentWithIndex() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS GEOMTABLE_INDEX; CREATE TABLE GEOMTABLE_INDEX (THE_GEOM GEOMETRY);");
+        st.execute("INSERT INTO GEOMTABLE_INDEX VALUES ('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))'),('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))' )");
+        st.execute("CREATE SPATIAL INDEX ON GEOMTABLE_INDEX(THE_GEOM)");
+        TableLocation tableLocation = TableLocation.parse("GEOMTABLE_INDEX");
+        assertEquals(new Envelope(150.0 , 240.0, 250.0 , 360.0),
+                SFSUtilities.getEstimatedExtent(connection, tableLocation, "THE_GEOM").getEnvelopeInternal());
     }
 }
