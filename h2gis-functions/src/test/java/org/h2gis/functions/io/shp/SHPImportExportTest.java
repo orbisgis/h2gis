@@ -424,7 +424,7 @@ public class SHPImportExportTest {
         File shpFile = new File("target/lineal_export.shp");
         stat.execute("DROP TABLE IF EXISTS LINEAL");
         stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6 0)')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/lineal_export.shp', 'LINEAL')");
         // Read this shape file to check values

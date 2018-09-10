@@ -365,7 +365,7 @@ public class TopographyTest {
     public void testST_Drape1() throws SQLException {
         Statement st = connection.createStatement();
         try {
-            ResultSet rs = st.executeQuery("select st_drape('LINESTRING (-5 5, 15 5)'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            ResultSet rs = st.executeQuery("select st_drape('LINESTRING (-5 5, 15 5)'::GEOMETRY, 'POLYGONZ ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();
             assertGeometryEquals("LINESTRING (-5 5, 5 5 5, 10 5 5, 15 5)", rs.getObject(1));
         } finally {

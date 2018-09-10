@@ -91,7 +91,7 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
      *
      */
     public static class UpdateZCoordinateSequenceFilter implements CoordinateSequenceFilter {
-
+        
         private boolean done = false;
         private final double z;
         private final int condition;
