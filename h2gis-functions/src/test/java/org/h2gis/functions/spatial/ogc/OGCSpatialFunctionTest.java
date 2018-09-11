@@ -225,8 +225,8 @@ public class OGCSpatialFunctionTest {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
-                + "INSERT INTO input_table VALUES ('POINT(1 2)'),('LINESTRING(0 0, 1 1 2)'),"
-                + "('LINESTRING (1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)'),('MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))');");
+                + "INSERT INTO input_table VALUES ('POINT(1 2)'),('LINESTRING Z(0 0 1, 1 1 2)'),"
+                + "('LINESTRING Z(1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)'),('MULTIPOLYGON Z(((0 0 0, 1 1 0, 0 1 0, 0 0 0)))');");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_CoordDim(geom) FROM input_table;");
         assertTrue(rs.next());
@@ -236,7 +236,7 @@ public class OGCSpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals(3, rs.getInt(1));
         assertTrue(rs.next());
-        assertEquals(2, rs.getInt(1));
+        assertEquals(3, rs.getInt(1));
         st.execute("DROP TABLE input_table;");
     }
     
@@ -245,8 +245,8 @@ public class OGCSpatialFunctionTest {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS input_table;"
                 + "CREATE TABLE input_table(geom Geometry);"
-                + "INSERT INTO input_table VALUES ('POINT(1 2)'),('LINESTRING(0 0, 1 1 2)'),"
-                + "('LINESTRING (1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)'),('MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))');");
+                + "INSERT INTO input_table VALUES ('POINT(1 2)'),('LINESTRING Z(0 0 2, 1 1 2)'),"
+                + "('LINESTRING Z(1 1 1, 2 1 2, 2 2 3, 1 2 4, 1 1 5)'),('MULTIPOLYGON Z(((0 0 0, 1 1 0, 0 1 0, 0 0 1)))');");
         ResultSet rs = st.executeQuery(
                 "SELECT ST_Is3D(geom) FROM input_table;");
         assertTrue(rs.next());
@@ -256,7 +256,7 @@ public class OGCSpatialFunctionTest {
         assertTrue(rs.next());
         assertEquals(1, rs.getInt(1));
         assertTrue(rs.next());
-        assertEquals(0, rs.getInt(1));
+        assertEquals(1, rs.getInt(1));
         st.execute("DROP TABLE input_table;");
     }
 
@@ -541,7 +541,7 @@ public class OGCSpatialFunctionTest {
      @Test
     public void test_ST_OrderingEquals4() throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING(0 0 1, 0 0, 10 10)'::GEOMETRY,"
+        ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING(0 0, 10 10)'::GEOMETRY,"
                 + "'LINESTRING(0 0, 0 0, 10 10)'::GEOMETRY);");
         rs.next();
         assertTrue(!rs.getBoolean(1));
@@ -551,8 +551,8 @@ public class OGCSpatialFunctionTest {
     @Test
     public void test_ST_OrderingEquals5() throws SQLException {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING(0 0 1, 0 0, 10 10 3)'::GEOMETRY,"
-                + "'LINESTRING(0 0 1, 0 0, 10 10 3)'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_OrderingEquals('LINESTRING Z(0 0 1, 0 0 2, 10 10 3)'::GEOMETRY,"
+                + "'LINESTRING Z(0 0 1, 0 0 2, 10 10 3)'::GEOMETRY);");
         rs.next();
         assertTrue(rs.getBoolean(1));
         rs.close();
