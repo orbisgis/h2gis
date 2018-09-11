@@ -195,15 +195,14 @@ public class CreateFunctionTest {
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
-        assertGeometryEquals("POLYGON ((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(0)).getBytes());
+        assertGeometryEquals("POLYGON Z((0 0 0, 0 1 0, 1 1 0, 1 0 0, 0 0 0))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(0)).getBytes());
 
+        System.out.println(ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getString());
         //Test if the walls are created
-        assertGeometryEquals("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), "
-                + "((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), "
-                + "((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0))))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getBytes());
+        assertGeometryEquals("MULTIPOLYGON Z (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), ((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), ((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0)))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(1)).getBytes());
 
         //Test the roof
-        assertGeometryEquals("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(2)).getBytes());
+        assertGeometryEquals("POLYGON Z((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))", ValueGeometry.getFromGeometry(outputGeom.getGeometryN(2)).getBytes());
 
         rs.close();
     }
@@ -828,7 +827,7 @@ public class CreateFunctionTest {
     public void test_ST_RingBufferComplex3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RingBuffer('LINESTRING (-10 10, 10 10)'::GEOMETRY, -10, 3,'endcap=ROUND');");
         assertTrue(rs.next());
-        assertTrue(rs.getString(1).equalsIgnoreCase("MULTIPOLYGON EMPTY"));
+        assertTrue(rs.getString(1).equalsIgnoreCase("MULTIPOLYGON (EMPTY, EMPTY, EMPTY)"));
         rs.close();
     }
 
