@@ -51,7 +51,9 @@ public class ST_Drape extends DeterministicScalarFunction{
         addProperty(PROP_REMARKS, "This function drapes an input geometry to a set of triangles.\n"
                 + "Notes : The supported input geometry types are POINT, MULTIPOINT, LINESTRING, MULTILINESTRING, POLYGON and MULTIPOLYGON \n"
                 + "In case of 1 or 2 dimension, the input geometry is intersected with the triangles to perform a full draping.\n"
-                + "If a point lies on two triangles the z value of the first triangle is kept.");
+                + "If a point lies on two triangles the z value of the first triangle is kept.\n"
+                + "A zero value is set to the z ordinate when the point is outside a triangle.\n" 
+                + "Input triangles must be passed using a POLYGON Z form.");
     }
     @Override
     public String getJavaStaticMethod() {
@@ -233,7 +235,7 @@ public class ST_Drape extends DeterministicScalarFunction{
             Coordinate coord = seq.getCoordinate(i);
             List<Triangle> result = q.query(new Envelope(coord));
             if (!result.isEmpty()) {
-                double z = Double.NaN;
+                double z = 0;
                 for (Triangle triangle : result) {
                     if (TriMarkers.intersects(coord, triangle)) {
                         z = triangle.interpolateZ(coord);
@@ -242,6 +244,9 @@ public class ST_Drape extends DeterministicScalarFunction{
                 }
                 seq.setOrdinate(i, 2, z );
 
+            }
+            else{
+                seq.setOrdinate(i, 2, 0 );
             }
             if (i == seq.size()) {
                 done = true;
