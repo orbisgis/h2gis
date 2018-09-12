@@ -28,6 +28,7 @@ import java.util.HashMap;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
@@ -710,7 +711,7 @@ public class ST_ShortestPathTreeTest {
         );
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void unrecognizedArg4() throws Throwable {
         // The source vertex must be given as an INT and not a DOUBLE.
         try {
@@ -719,11 +720,11 @@ public class ST_ShortestPathTreeTest {
                         DO + ", 1.0, 1)");
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "1.0"));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void unrecognizedArg5() throws Throwable {
         // The radius must be given as a DOUBLE and not an INT.
         try {
@@ -732,11 +733,11 @@ public class ST_ShortestPathTreeTest {
                         DO + ", 1, 5)");
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "5"));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void otherUnrecognizedArg5() throws Throwable {
         // The source vertex must be given as an INT and not a DOUBLE.
         try {
@@ -745,7 +746,7 @@ public class ST_ShortestPathTreeTest {
                         DO + ", " + W + ", 1.0)");
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "1.0"));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 

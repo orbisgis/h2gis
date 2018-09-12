@@ -27,9 +27,11 @@ import java.sql.Statement;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.unitTest.GeometryAsserts;
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -103,21 +105,18 @@ public class GeometryFormsTest {
         sb.append(actual).append("'::GEOMETRY");
         ResultSet rs = st.executeQuery(sb.toString());
         rs.next();
-        Object geom = rs.getObject(1);
-        GeometryAsserts.assertGeometryEquals(expected, geom);
+        GeometryAsserts.assertGeometryEquals(expected, rs.getObject(1));
     }
     
     @Test
     public void testDummySpatialFunction() throws SQLException{
         ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('POINT (0 0 3)'::GEOMETRY)");
         rs.next();
-        Object geom = rs.getObject(1);
-        GeometryAsserts.assertGeometryEquals("POINT Z(0 0 3)", geom);
+        GeometryAsserts.assertGeometryEquals("POINT Z(0 0 3)", rs.getObject(1));
         
         rs = st.executeQuery("SELECT DummySpatialFunction('POINT (0 0 3)'::GEOMETRY)");
         rs.next();
-        geom = rs.getObject(1);
-        GeometryAsserts.assertGeometryEquals("POINT (0 0 3)", geom);
+        GeometryAsserts.assertGeometryEquals("POINT (0 0 3)", rs.getObject(1));
     }
     
     
@@ -125,15 +124,17 @@ public class GeometryFormsTest {
     public void testDummySpatialFunctionZNaN() throws SQLException{
         ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('POINT (0 0 3)'::GEOMETRY, true)");
         rs.next();
-        Object geom = rs.getObject(1);
-        GeometryAsserts.assertGeometryEquals("POINT(0 0)", geom);
+        GeometryAsserts.assertGeometryEquals("POINT(0 0)", rs.getObject(1));
     }
     
-    @Test
-    public void testDummySpatialFunctionOneZNaN() throws SQLException{
-        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('MULTIPOINT ((160 220 0), (180 200 0))'::GEOMETRY, false)");
-        rs.next();
-        Object geom = rs.getObject(1);
-        GeometryAsserts.assertGeometryEquals("MULTIPOINT ((160 220), (180 200 0))", geom);
+    @Test(expected = SQLException.class)
+    public void testDummySpatialFunctionOneZNaNInvalid() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('LINESTRING (160 220 0, 180 200 0)'::GEOMETRY, false)");
+        try {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("MULTIPOINT ((160 220), (180 200 0))", rs.getObject(1));
+        } finally {
+            rs.close();
+        }
     }
 }

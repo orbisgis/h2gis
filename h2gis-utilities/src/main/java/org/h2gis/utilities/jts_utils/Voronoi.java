@@ -402,12 +402,15 @@ public class Voronoi {
                 voronoiBorderLines.add(((Polygon)geometryFactory.toGeometry(envelope)).getExteriorRing());
                 MultiLineString env = (MultiLineString)geometryFactory.createMultiLineString(voronoiBorderLines.
                         toArray(new LineString[voronoiBorderLines.size()])).union();
-                for (int i = 0; i < env.getNumGeometries(); i++) {
+                for (int i = 0; i < env.getNumGeometries(); i++) {                    
                     lineStrings.add((LineString) env.getGeometryN(i));
                 }
             }
             if(outputDimension == 1) {
-                return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+                MultiLineString g = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+                ReplaceZ replacez = new ReplaceZ();
+                g.apply(replacez);
+                return g;
             } else {
                 Polygonizer polygonizer = new Polygonizer();
                 MultiLineString voronoiSegs = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
@@ -553,6 +556,39 @@ public class Voronoi {
                     nearest = idx;
                     nearestDistance = itemDistance;
                 }
+            }
+        }
+    }
+    
+     /**
+     * Replaces the z value to each vertex of the Geometry.
+     *
+     */
+    public static class ReplaceZ implements CoordinateSequenceFilter {
+        
+        private boolean done = false;
+
+        public ReplaceZ() {
+        }
+
+        @Override
+        public boolean isGeometryChanged() {
+            return true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return done;
+        }
+
+        @Override
+        public void filter(CoordinateSequence seq, int i) {
+            if(Double.isNaN(seq.getOrdinate(i, 2))){
+                seq.setOrdinate(i, 2, 0);
+                //done =true;
+            }
+            if (i == seq.size()) {
+                done = true;
             }
         }
     }
