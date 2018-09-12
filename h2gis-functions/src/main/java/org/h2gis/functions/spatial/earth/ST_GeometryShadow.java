@@ -144,7 +144,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
             if (!shadows.isEmpty()) {
                 CascadedPolygonUnion union = new CascadedPolygonUnion(shadows);
                 Geometry result = union.union();
-                result.apply(new UpdateZCoordinateSequenceFilter(0, 1));
+                result.apply(new UpdateZCoordinateSequenceFilter(0));
                 return result;
             }
             return null;
@@ -168,7 +168,8 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
             createShadowPolygons(shadows, polygon.getInteriorRingN(i).getCoordinates(), shadowOffset, factory);
         }
         if (!doUnion) {
-            return factory.buildGeometry(shadows);
+            Geometry geom = factory.buildGeometry(shadows);            
+            return geom;
         } else {
             if (!shadows.isEmpty()) {
                 Collection<Geometry> shadowParts = new ArrayList<Geometry>();
@@ -177,7 +178,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
                 }
                 Geometry allShadowParts = factory.buildGeometry(shadowParts);
                 Geometry union = allShadowParts.buffer(0);
-                union.apply(new UpdateZCoordinateSequenceFilter(0, 1));
+                union.apply(new UpdateZCoordinateSequenceFilter(0));
                 return union;
             }
             return null;
@@ -240,6 +241,13 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
         for (int i = 1; i < coordinates.length; i++) {
             Coordinate startCoord = coordinates[i - 1];
             Coordinate endCoord = coordinates[i];
+            if(Double.isNaN(startCoord.z)){
+                startCoord.z=0;
+            }            
+            if(Double.isNaN(endCoord.z)){
+                endCoord.z=0;
+            }
+            
             Coordinate nextEnd = moveCoordinate(endCoord, shadow);
             Coordinate nextStart = moveCoordinate(startCoord, shadow);
             Polygon polygon = factory.createPolygon(new Coordinate[]{startCoord,
