@@ -22,6 +22,8 @@ package org.h2gis.functions.spatial.geometry;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import static org.h2gis.api.Function.PROP_REMARKS;
+import org.locationtech.jts.geom.CoordinateSequence;
+import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -43,5 +45,57 @@ public class DummySpatialFunction extends DeterministicScalarFunction {
 
     public static Geometry returnGeom(Geometry geom) {
         return geom;
+    }
+    
+    /**
+     * If true all z are replaced by Double.NaN
+     * If false only the first z
+     * @param geom
+     * @param setZtoNaN
+     * @return 
+     */
+    public static Geometry returnGeom(Geometry geom, boolean setZtoNaN) {
+        UpdateZCoordinateSequenceFilter updateZCoordinateSequenceFilter = new UpdateZCoordinateSequenceFilter(Double.NaN, setZtoNaN);
+        geom.apply(updateZCoordinateSequenceFilter);
+
+        return geom;
+    }
+    
+    
+     /**
+     * Replaces the z value to each vertex of the Geometry.
+     *
+     */
+    public static class UpdateZCoordinateSequenceFilter implements CoordinateSequenceFilter {
+        
+        private boolean done = false;
+        private final double z;
+        private final boolean zCondition;
+
+        public UpdateZCoordinateSequenceFilter(double z, boolean zCondition) {
+            this.z = z;
+            this.zCondition = zCondition;
+        }
+
+        @Override
+        public boolean isGeometryChanged() {
+            return true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return done;
+        }
+
+        @Override
+        public void filter(CoordinateSequence seq, int i) {            
+            seq.setOrdinate(i, 2, z);
+            if(!zCondition){
+                done =true;
+            }
+            if (i == seq.size()) {
+                done = true;
+            }
+        }
     }
 }

@@ -69,13 +69,33 @@ public class GeometryFormsTest {
     public void testOGCWKTForms() throws SQLException{     
         checkFormAndResult("POINT (0 0)", "POINT (0 0)");
         checkFormAndResult("LINESTRING (0 0, 1 1)", "LINESTRING (0 0, 1 1)");    
+        checkFormAndResult("POLYGON ((140 250, 176 250, 176 214, 140 214, 140 250))", "POLYGON ((140 250, 176 250, 176 214, 140 214, 140 250))"); 
+        
+        checkFormAndResult("MULTIPOINT ((160 220), (180 200))", "MULTIPOINT ((160 220), (180 200))");
+        checkFormAndResult("MULTILINESTRING ((125 195, 190 220), (176 176, 160 230))", "MULTILINESTRING ((125 195, 190 220), (176 176, 160 230))");
+        checkFormAndResult("MULTIPOLYGON (((150 250, 210 250, 210 210, 150 210, 150 250)), ((220 220, 240 220, 240 180, 220 180, 220 220)))", "MULTIPOLYGON (((150 250, 210 250, 210 210, 150 210, 150 250)), ((220 220, 240 220, 240 180, 220 180, 220 220)))");
+        checkFormAndResult("GEOMETRYCOLLECTION (LINESTRING (125 195, 190 220), LINESTRING (176 176, 160 230), POINT (200 200))", "GEOMETRYCOLLECTION (LINESTRING (125 195, 190 220), LINESTRING (176 176, 160 230), POINT (200 200))");
     }
     
     @Test
     public void testJTSWKTForms() throws SQLException{     
         checkFormAndResult("POINT (0 0 3)", "POINT Z (0 0 3)");    
         checkFormAndResult("POINT (0 0 3 4)", "POINT ZM (0 0 3 4)");
-    }
+        checkFormAndResult("LINESTRING (0 0 1, 1 1 1)", "LINESTRING Z (0 0 1, 1 1 1)"); 
+        checkFormAndResult("LINESTRING (0 0 1 2, 1 1 1 2)", "LINESTRING ZM (0 0 1 2, 1 1 1 2)"); 
+        checkFormAndResult("POLYGON ((140 250 1, 176 250 1, 176 214 1, 140 214 1, 140 250 1))", "POLYGON Z((140 250 1, 176 250 1, 176 214 1, 140 214 1, 140 250 1))"); 
+        checkFormAndResult("POLYGON ((140 250 1 1, 176 250 1 1, 176 214 1 1, 140 214 1 1, 140 250 1 1))", "POLYGON ZM((140 250 1 1, 176 250 1 1, 176 214 1 1, 140 214 1 1, 140 250 1 1))"); 
+   }
+    
+    @Test
+    public void testEWKTForms() throws SQLException{   
+        checkFormAndResult("POINT Z(0 0 3)", "POINT Z (0 0 3)");    
+        checkFormAndResult("POINT ZM(0 0 3 4)", "POINT ZM (0 0 3 4)");
+        checkFormAndResult("LINESTRING Z(0 0 1, 1 1 1)", "LINESTRING Z (0 0 1, 1 1 1)"); 
+        checkFormAndResult("LINESTRING ZM(0 0 1 2, 1 1 1 2)", "LINESTRING ZM (0 0 1 2, 1 1 1 2)"); 
+        checkFormAndResult("POLYGON Z((140 250 1, 176 250 1, 176 214 1, 140 214 1, 140 250 1))", "POLYGON Z((140 250 1, 176 250 1, 176 214 1, 140 214 1, 140 250 1))"); 
+        checkFormAndResult("POLYGON ZM((140 250 1 1, 176 250 1 1, 176 214 1 1, 140 214 1 1, 140 250 1 1))", "POLYGON ZM((140 250 1 1, 176 250 1 1, 176 214 1 1, 140 214 1 1, 140 250 1 1))"); 
+   }
 
 
     private void checkFormAndResult(String actual, String expected) throws SQLException {    
@@ -85,5 +105,35 @@ public class GeometryFormsTest {
         rs.next();
         Object geom = rs.getObject(1);
         GeometryAsserts.assertGeometryEquals(expected, geom);
+    }
+    
+    @Test
+    public void testDummySpatialFunction() throws SQLException{
+        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('POINT (0 0 3)'::GEOMETRY)");
+        rs.next();
+        Object geom = rs.getObject(1);
+        GeometryAsserts.assertGeometryEquals("POINT Z(0 0 3)", geom);
+        
+        rs = st.executeQuery("SELECT DummySpatialFunction('POINT (0 0 3)'::GEOMETRY)");
+        rs.next();
+        geom = rs.getObject(1);
+        GeometryAsserts.assertGeometryEquals("POINT (0 0 3)", geom);
+    }
+    
+    
+    @Test
+    public void testDummySpatialFunctionZNaN() throws SQLException{
+        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('POINT (0 0 3)'::GEOMETRY, true)");
+        rs.next();
+        Object geom = rs.getObject(1);
+        GeometryAsserts.assertGeometryEquals("POINT(0 0)", geom);
+    }
+    
+    @Test
+    public void testDummySpatialFunctionOneZNaN() throws SQLException{
+        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('MULTIPOINT ((160 220 0), (180 200 0))'::GEOMETRY, false)");
+        rs.next();
+        Object geom = rs.getObject(1);
+        GeometryAsserts.assertGeometryEquals("MULTIPOINT ((160 220), (180 200 0))", geom);
     }
 }
