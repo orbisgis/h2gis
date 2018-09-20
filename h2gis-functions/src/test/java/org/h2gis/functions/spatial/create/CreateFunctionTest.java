@@ -727,6 +727,24 @@ public class CreateFunctionTest {
                 + "152.91764705882352 74.87058823529412, 270 170, 125.65411764705883 347.6564705882353))")));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_OrientedEnvelope1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_OrientedEnvelope('MULTIPOINT ((230 220), (193 205))'::GEOMETRY);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (230 220, 193 205)")));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_OrientedEnvelope2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_OrientedEnvelope('POLYGON ((150 290, 110 210, 280 130, 280 250, 235 221, 150 290))'::GEOMETRY);");
+        rs.next();
+        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((279.99999999999693 129.99999999999395, "
+                + "326.23229461756006 228.24362606231597, 156.23229461756213 308.24362606231944, "
+                + "109.99999999999888 209.99999999999753, 279.99999999999693 129.99999999999395))")));
+        rs.close();
+    }
 
 
     @Test

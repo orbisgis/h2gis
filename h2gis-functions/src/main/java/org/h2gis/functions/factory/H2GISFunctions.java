@@ -31,7 +31,6 @@ import org.h2.api.Aggregate;
 import org.h2.tools.RunScript;
 import org.h2gis.api.Function;
 import org.h2gis.api.ScalarFunction;
-import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.spatial.split.ST_LineIntersector;
 import org.h2gis.functions.spatial.split.ST_Split;
 import org.h2gis.functions.io.DriverManager;
@@ -100,6 +99,7 @@ import org.h2gis.functions.spatial.create.ST_MakePolygon;
 import org.h2gis.functions.spatial.create.ST_MinimumBoundingCircle;
 import org.h2gis.functions.spatial.create.ST_MinimumRectangle;
 import org.h2gis.functions.spatial.create.ST_OctogonalEnvelope;
+import org.h2gis.functions.spatial.create.ST_OrientedEnvelope;
 import org.h2gis.functions.spatial.create.ST_Point;
 import org.h2gis.functions.spatial.create.ST_RingBuffer;
 import org.h2gis.functions.spatial.crs.ST_SetSRID;
@@ -442,7 +442,8 @@ public class H2GISFunctions {
                 new ST_Drape(),
                 new ST_Svf(),
                 new JsonWrite(),
-                new ST_ShortestLine()};
+                new ST_ShortestLine(),
+                new ST_OrientedEnvelope()};
     }
 
     /**
