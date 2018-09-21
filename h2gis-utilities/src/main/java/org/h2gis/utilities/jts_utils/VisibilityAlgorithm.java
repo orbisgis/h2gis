@@ -76,10 +76,10 @@ public class VisibilityAlgorithm {
     List<SegmentString> bounded = new ArrayList<>(originalSegments);
     GeometricShapeFactory geometricShapeFactory = new GeometricShapeFactory();
     geometricShapeFactory.setCentre(position);
-    geometricShapeFactory.setWidth(maxDistance / 2);
-    geometricShapeFactory.setHeight(maxDistance / 2);
+    geometricShapeFactory.setWidth(maxDistance * 2);
+    geometricShapeFactory.setHeight(maxDistance * 2);
     geometricShapeFactory.setNumPoints(numPoints);
-    addGeometry(bounded, geometricShapeFactory.createEllipse());
+    addPolygon(bounded, geometricShapeFactory.createEllipse());
 
     // Intersection with bounding circle
     bounded = fixSegments(bounded);
@@ -299,28 +299,35 @@ public class VisibilityAlgorithm {
     }
   }
 
-  private static void addGeometry(List<SegmentString> segments, Geometry geometry) {
-    if (geometry instanceof GeometryCollection) {
+  private static void addPolygon(List<SegmentString> segments, Polygon poly) {
+    addLineString(segments, poly.getExteriorRing());
+    final int ringCount = poly.getNumInteriorRing();
+    // Keep interior ring if the viewpoint is inside the polygon
+    for (int nr = 0; nr < ringCount; nr++) {
+      addLineString(segments, poly.getInteriorRingN(nr));
+    }
+  }
+
+  private static void addGeometry(List<SegmentString> segments, GeometryCollection geometry) {
       int geoCount = geometry.getNumGeometries();
       for (int n = 0; n < geoCount; n++) {
         Geometry simpleGeom = geometry.getGeometryN(n);
         if (simpleGeom instanceof LineString) {
           addLineString(segments, (LineString) simpleGeom);
         } else if (simpleGeom instanceof Polygon) {
-          Polygon poly = ((Polygon) simpleGeom);
-          addLineString(segments, poly.getExteriorRing());
-          final int ringCount = poly.getNumInteriorRing();
-          // Keep interior ring if the viewpoint is inside the polygon
-          for (int nr = 0; nr < ringCount; nr++) {
-            addLineString(segments, poly.getInteriorRingN(nr));
-          }
+          addPolygon(segments, (Polygon)simpleGeom);
         }
       }
-    }
   }
 
   public void addGeometry(Geometry geometry) {
-    addGeometry(originalSegments, geometry);
+    if (geometry instanceof LineString) {
+      addLineString(originalSegments, (LineString) geometry);
+    } else if (geometry instanceof Polygon) {
+      addPolygon(originalSegments, (Polygon) geometry);
+    } else if(geometry instanceof GeometryCollection) {
+      addGeometry(originalSegments, (GeometryCollection) geometry);
+    }
   }
 
   /**
@@ -340,15 +347,15 @@ public class VisibilityAlgorithm {
 
     @Override
     public int compareTo(Vertex o) {
-      int res = Double.compare(o.angle, this.angle);
+      int res = Double.compare(angle, o.angle);
       if (res != 0) {
         return res;
       }
-      res = Integer.compare(o.idSegment, idSegment);
+      res = Integer.compare(idSegment, o.idSegment);
       if (res != 0) {
         return res;
       }
-      return Integer.compare(o.vertexIndex, vertexIndex);
+      return Integer.compare(vertexIndex, o.vertexIndex);
     }
   }
 }
