@@ -162,10 +162,6 @@ public class H2GISDBFactory {
         // Keep a connection alive to not close the DataBase on each unit test
         Connection connection = DriverManager.getConnection(databasePath,
                 "sa", "sa");
-        Statement st = connection.createStatement();
-        //Create one row table for tests
-        st.execute("CREATE TABLE dummy(id INTEGER);");
-        st.execute("INSERT INTO dummy values (1)");
         // Init spatial ext
         if(initSpatial) {
             H2GISFunctions.load(connection);
