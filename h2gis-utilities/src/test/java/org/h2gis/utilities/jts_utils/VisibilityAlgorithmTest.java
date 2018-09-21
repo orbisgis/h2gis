@@ -18,7 +18,7 @@ public class VisibilityAlgorithmTest {
 
         Polygon poly = c.getIsoVist(new Coordinate(0, 0));
 
-        assertEquals(100, poly.getNumPoints());
+        assertEquals(101, poly.getNumPoints());
     }
 
 }

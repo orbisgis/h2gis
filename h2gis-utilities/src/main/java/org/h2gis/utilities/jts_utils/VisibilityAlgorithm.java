@@ -18,10 +18,10 @@ import java.util.*;
 public class VisibilityAlgorithm {
   private static final double M_PI_DIV2 = Math.PI / 2.;
   private static final double M_2PI = Math.PI * 2.;
+  private static final Coordinate NAN_COORDINATE = new Coordinate(Coordinate.NULL_ORDINATE, Coordinate.NULL_ORDINATE);
   // maintain the list of limits sorted by angle
   private double maxDistance;
   private List<SegmentString> originalSegments = new ArrayList<>();
-  private RobustLineIntersector robustLineIntersector = new RobustLineIntersector();
   private double epsilon = 1e-6;
   private int numPoints = 100;
 
@@ -85,11 +85,13 @@ public class VisibilityAlgorithm {
     bounded = fixSegments(bounded);
 
     List<Vertex> sorted = new ArrayList<>(bounded.size() * 2);
-    for (SegmentString segment : bounded) {
+
+    for (int idSegment = 0; idSegment < bounded.size(); idSegment++) {
+      SegmentString segment = bounded.get(idSegment);
       // Convert segment to angle relative to viewPoint
       for(int j=0; j < 2; j++) {
         final Coordinate pt = segment.getCoordinate(j);
-        sorted.add(new Vertex((Integer)segment.getData(), j, angle(pt, position)));
+        sorted.add(new Vertex(idSegment, j, angle(pt, position)));
       }
     }
     Collections.sort(sorted);
@@ -146,20 +148,34 @@ public class VisibilityAlgorithm {
 
       if(extend) {
         polygon.add(vertex);
-        robustLineIntersector.computeIntersection(bounded.get(heap.get(0)).getCoordinate(0), bounded.get(heap.get(0)).getCoordinate(1), position, vertex);
-        Coordinate cur = robustLineIntersector.getIntersection(0);
-        if(!cur.equals2D(vertex)) {
+        Coordinate cur = intersectLines(bounded.get(heap.get(0)), position, vertex);
+        if(cur != null && !cur.equals2D(vertex)) {
           polygon.add(vertex);
         }
       } else if(shorten) {
-        robustLineIntersector.computeIntersection(bounded.get(oldSegment).getCoordinate(0), bounded.get(oldSegment).getCoordinate(1), position, vertex);
-        polygon.add(robustLineIntersector.getIntersection(0));
-        robustLineIntersector.computeIntersection(bounded.get(heap.get(0)).getCoordinate(0), bounded.get(heap.get(0)).getCoordinate(1), position, vertex);
-        polygon.add(robustLineIntersector.getIntersection(0));
+        polygon.add(intersectLines(bounded.get(oldSegment), position, vertex));
+        polygon.add(intersectLines(bounded.get(heap.get(0)), position, vertex));
       }
     }
+    polygon.add(polygon.get(0));
     GeometryFactory geometryFactory = new GeometryFactory();
     return geometryFactory.createPolygon(polygon.toArray(new Coordinate[polygon.size()]));
+  }
+
+  private static Coordinate intersectLines(SegmentString a, Coordinate b1,  Coordinate b2) {
+    final Coordinate a1 = a.getCoordinate(0);
+    final Coordinate a2 = a.getCoordinate(1);
+    double dbx = b2.x - b1.x;
+    double dby = b2.y - b1.y;
+    double dax = a2.x - a1.x;
+    double day = a2.y - a1.y;
+
+    double u_b  = dby * dax - dbx * day;
+    if (u_b != 0) {
+      double ua = (dbx * (a1.y - b1.y) - dby * (a1.x - b1.x)) / u_b;
+      return new Coordinate(a1.x - ua * -dax, a1.y - ua * -day);
+    }
+    return NAN_COORDINATE;
   }
 
   private static int getChild(int index) {
@@ -184,10 +200,8 @@ public class VisibilityAlgorithm {
   }
 
   private boolean lessThan(int index1,int index2,Coordinate position, List<SegmentString> segments, Coordinate destination) {
-    robustLineIntersector.computeIntersection(segments.get(index1).getCoordinate(0),segments.get(index1).getCoordinate(1), position, destination );
-    Coordinate inter1 = robustLineIntersector.getIntersection(0);
-    robustLineIntersector.computeIntersection(segments.get(index2).getCoordinate(0),segments.get(index2).getCoordinate(1), position, destination );
-    Coordinate inter2 = robustLineIntersector.getIntersection(0);
+    Coordinate inter1 = intersectLines(segments.get(index1), position, destination);
+    Coordinate inter2 = intersectLines(segments.get(index2), position, destination);
     if (!inter1.equals2D(inter2)) {
       double d1 = inter1.distance(position);
       double d2 = inter2.distance(position);
@@ -259,8 +273,8 @@ public class VisibilityAlgorithm {
   }
 
   private void insert(int index, List<Integer> heap, Coordinate position, List<SegmentString> segments, Coordinate destination, List<Integer> map) {
-    robustLineIntersector.computeIntersection(segments.get(index).getCoordinate(0),segments.get(index).getCoordinate(1), position, destination);
-    if (!robustLineIntersector.hasIntersection()) {
+    Coordinate inter = intersectLines(segments.get(index), position, destination);
+    if (NAN_COORDINATE.equals2D(inter)) {
       return;
     }
     int cur = heap.size();
