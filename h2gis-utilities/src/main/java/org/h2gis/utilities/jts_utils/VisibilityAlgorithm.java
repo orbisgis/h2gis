@@ -151,7 +151,6 @@ public class VisibilityAlgorithm {
         }
       } while (sorted.get(i).angle < sorted.get(orig).angle + epsilon);
 
-      //System.out.println(String.format("a:%.1f seg:%d ext:%b short:%b", sorted.get(i).angle, sorted.get(i).idSegment, extend, shorten));
       if(extend) {
         polygon.add(vertex);
         Coordinate cur = intersectLines(bounded.get(heap.get(0)), position, vertex);
@@ -206,13 +205,12 @@ public class VisibilityAlgorithm {
   }
 
   private boolean lessThan(int index1,int index2,Coordinate position, List<SegmentString> segments, Coordinate destination) {
-    System.out.println(String.format("lessThan %d %d", index1, index2));
+
     Coordinate inter1 = intersectLines(segments.get(index1), position, destination);
     Coordinate inter2 = intersectLines(segments.get(index2), position, destination);
     if (!inter1.equals2D(inter2, epsilon)) {
       double d1 = inter1.distance(position);
       double d2 = inter2.distance(position);
-      System.out.println(String.format("d1 < d2 = %b", d1 < d2));
       return d1 < d2;
     }
     int end1 = 0;
@@ -233,7 +231,6 @@ public class VisibilityAlgorithm {
   }
 
   private void remove(int index, List<Integer> heap, Coordinate position, List<SegmentString> segments, Coordinate destination, List<Integer> map) {
-    System.out.println(String.format("remove %d", index));
     map.set(heap.get(index), -1);
     if(index == heap.size() -1) {
       heap.remove(heap.size() - 1);
@@ -282,7 +279,6 @@ public class VisibilityAlgorithm {
   }
 
   private void insert(int index, List<Integer> heap, Coordinate position, List<SegmentString> segments, Coordinate destination, List<Integer> map) {
-    System.out.println(String.format("insert %d", index));
     Coordinate inter = intersectLines(segments.get(index), position, destination);
     if (NAN_COORDINATE.equals2D(inter, epsilon)) {
       return;
