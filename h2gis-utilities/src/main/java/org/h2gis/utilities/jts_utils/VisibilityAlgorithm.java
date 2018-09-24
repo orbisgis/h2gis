@@ -22,7 +22,7 @@ public class VisibilityAlgorithm {
   private double maxDistance;
   private List<SegmentString> originalSegments = new ArrayList<>();
   private double epsilon = 1e-6;
-  private int numPoints = 100;
+  private int numPoints = 32;
 
   public VisibilityAlgorithm(double maxDistance) {
     this.maxDistance = maxDistance;
@@ -92,6 +92,7 @@ public class VisibilityAlgorithm {
 
     for (int idSegment = 0; idSegment < bounded.size(); idSegment++) {
       SegmentString segment = bounded.get(idSegment);
+      System.out.println(String.format(Locale.ROOT,"segments.push([[%g, %g],[%g, %g]]);", segment.getCoordinate(0).x, segment.getCoordinate(0).y, segment.getCoordinate(1).x, segment.getCoordinate(1).y));
       // Convert segment to angle relative to viewPoint
       for(int j=0; j < 2; ++j) {
         final Coordinate pt = segment.getCoordinate(j);
@@ -156,7 +157,7 @@ public class VisibilityAlgorithm {
         polygon.add(vertex);
         Coordinate cur = intersectLines(bounded.get(heap.get(0)), position, vertex);
         if(cur != null && !cur.equals2D(vertex, epsilon)) {
-          polygon.add(vertex);
+          polygon.add(cur);
         }
       } else if(shorten) {
         polygon.add(intersectLines(bounded.get(oldSegment), position, vertex));
@@ -266,7 +267,7 @@ public class VisibilityAlgorithm {
           heap.set(cur, temp);
           cur = left;
         } else if(right < heap.size() && lessThan(heap.get(right), heap.get(cur), position, segments, destination)) {
-          map.set(heap.get(left), cur);
+          map.set(heap.get(right), cur);
           map.set(heap.get(cur), right);
           int temp = heap.get(right);
           heap.set(right, heap.get(cur));
