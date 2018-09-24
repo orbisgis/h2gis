@@ -77,7 +77,26 @@ public class VisibilityAlgorithmTest {
     c.addGeometry(poly);
     Polygon isoVist = c.getIsoVist(new Coordinate(3.5, 2.5), true);
 
-    System.out.println(isoVist.toText());
+    assertFalse(isoVist.contains(poly.getGeometryN(0).getCentroid()));
+    assertFalse(isoVist.contains(poly.getGeometryN(1).getCentroid()));
+  }
 
+  @Test
+  public void testIsoVistIntersections() throws ParseException {
+    WKTReader wktReader = new WKTReader();
+
+    VisibilityAlgorithm c = new VisibilityAlgorithm(10);
+    Geometry poly = wktReader.read("MULTIPOLYGON(((1 2, 3 2, 2 3, 1 2)),((2 4, 5 2, 5 5, 2 4)),((1 1 0, 4 1 0, 4 4 5, 1 1 0)))");
+    c.addGeometry(poly);
+    Polygon isoVist = c.getIsoVist(new Coordinate(2.5, 3), true);
+    assertFalse(isoVist.contains(poly.getGeometryN(0).getCentroid()));
+    assertFalse(isoVist.contains(poly.getGeometryN(1).getCentroid()));
+    assertFalse(isoVist.contains(poly.getGeometryN(2).getCentroid()));
+
+    // Put view point inside geom 2 part
+
+    isoVist = c.getIsoVist(new Coordinate(1.8, 2.4), true);
+
+    assertEquals(wktReader.read("POLYGON ((2.5 2.5, 2 3, 1 2, 2 2, 2.5 2.5))"), isoVist);
   }
 }

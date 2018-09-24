@@ -92,7 +92,6 @@ public class VisibilityAlgorithm {
 
     for (int idSegment = 0; idSegment < bounded.size(); idSegment++) {
       SegmentString segment = bounded.get(idSegment);
-      System.out.println(String.format(Locale.ROOT,"segments.push([[%g, %g],[%g, %g]]);", segment.getCoordinate(0).x, segment.getCoordinate(0).y, segment.getCoordinate(1).x, segment.getCoordinate(1).y));
       // Convert segment to angle relative to viewPoint
       for(int j=0; j < 2; ++j) {
         final Coordinate pt = segment.getCoordinate(j);
