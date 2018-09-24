@@ -16,7 +16,6 @@ import java.util.*;
  * This code is adapted from Byron Knoll javascript library https://github.com/byronknoll/visibility-polygon-js
  */
 public class VisibilityAlgorithm {
-  private static final double M_PI_DIV2 = Math.PI / 2.;
   private static final double M_2PI = Math.PI * 2.;
   private static final Coordinate NAN_COORDINATE = new Coordinate(Coordinate.NULL_ORDINATE, Coordinate.NULL_ORDINATE);
   // maintain the list of limits sorted by angle
@@ -108,6 +107,7 @@ public class VisibilityAlgorithm {
     List<Integer> heap = new ArrayList<>(bounded.size());
     Coordinate start = new Coordinate(position.x + 1, position.y);
 
+    // Init heap and map lists
     for(int i=0; i < bounded.size(); i++) {
       SegmentString seg = bounded.get(i);
       double a1 = angle(seg.getCoordinate(0), position);
@@ -126,6 +126,7 @@ public class VisibilityAlgorithm {
 
     List<Coordinate> polygon = new ArrayList<>();
 
+    // Iterate over vertices using the anticlockwise order
     for(int i=0; i < sorted.size();) {
       boolean extend = false;
       boolean shorten = false;

@@ -13,6 +13,9 @@ import static org.junit.Assert.*;
 
 public class VisibilityAlgorithmTest {
 
+    /**
+     * Test without geometries
+     */
     @Test
     public void testIsoVistEmpty() {
         VisibilityAlgorithm c = new VisibilityAlgorithm(50);
@@ -22,6 +25,10 @@ public class VisibilityAlgorithmTest {
         assertEquals(101, poly.getNumPoints());
     }
 
+    /**
+     * Test with geometry crossing 0 coordinates
+     * @throws ParseException
+     */
     @Test
     public void testIsoVistCross0() throws ParseException {
         WKTReader wktReader = new WKTReader();
@@ -39,6 +46,10 @@ public class VisibilityAlgorithmTest {
         System.out.println(isoVist.toText());
     }
 
+    /**
+     * Test with geometry with only positive values
+     * @throws ParseException
+     */
     @Test
     public void testIsoVistNoCross() throws ParseException {
         WKTReader wktReader = new WKTReader();
