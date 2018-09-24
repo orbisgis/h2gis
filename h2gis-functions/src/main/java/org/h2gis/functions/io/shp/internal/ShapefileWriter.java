@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.io.shp.internal;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.functions.io.utility.WriteBufferManager;
 
 import java.io.IOException;

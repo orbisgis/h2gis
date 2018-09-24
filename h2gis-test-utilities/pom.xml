@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Maven Coordinates -->
     <parent>
         <artifactId>h2gis-parent</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>1.4.0-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
+
     <artifactId>h2gis-test-utilities</artifactId>
+    <packaging>jar</packaging>
+
+    <!-- Project Information -->
     <name>h2gis-test-utilities</name>
     <description>Common class for Spatial JUnit Test</description>
-    <packaging>jar</packaging>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
+
     <organization>
         <name>CNRS</name>
         <url>http://www.h2gis.org</url>
@@ -25,34 +30,36 @@
             <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
         </license>
     </licenses>
+
+    <!-- Properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- Dependencies -->
+    <dependencies>
+        <dependency>
+            <groupId>${junit-groupId}</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${h2-groupId}</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${jts-core-groupId}</groupId>
+            <artifactId>jts-core</artifactId>
+        </dependency>
+    </dependencies>
+
+    <!-- Build Settings -->
     <build>
         <plugins>
+            <!-- Plugin for the compilation -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>${maven-compiler-plugin-groupId}</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
             </plugin>
         </plugins>
     </build>
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${h2-package}</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts-core</artifactId>
-            <version>${jts-core-version}</version>
-        </dependency>
-    </dependencies>
 </project>

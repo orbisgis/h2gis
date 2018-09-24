@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.edit;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.operation.distance.DistanceOp;
-import com.vividsolutions.jts.operation.distance.GeometryLocation;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.operation.distance.DistanceOp;
+import org.locationtech.jts.operation.distance.GeometryLocation;
 
 /**
  * Common utilities used by the edit functions

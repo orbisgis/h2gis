@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -30,15 +30,21 @@ import java.util.StringTokenizer;
 
 /**
  * Utility class in order to manage URI
+ *
  * @author Nicolas Fortin
  */
 public class URIUtilities {
+
+    /** Encoding */
     public static final String ENCODING = "UTF-8";
 
     /**
      * Read the Query part of an URI.
+     *
      * @param uri URI to split
+     *
      * @return Key/Value pairs of query, the key is lowercase and value may be null
+     *
      * @throws java.io.UnsupportedEncodingException
      */
     public static Map<String,String> getQueryKeyValuePairs(URI uri) throws UnsupportedEncodingException {
@@ -78,11 +84,13 @@ public class URIUtilities {
 
     /**
      * Create the Query part of an URI
+     *
      * @param parameters Parameters to read
      * @param keys map property to read
+     *
      * @return Query part of an URI
      */
-    public static String getConcatenatedParameters(Map<String,String> parameters, String... keys) {
+    public static String getConcatenatedParameters(Map<String, String> parameters, String... keys) {
         StringBuilder keyValues = new StringBuilder();
         for(String key : keys) {
             String value = parameters.get(key.toLowerCase().trim());
@@ -100,10 +108,11 @@ public class URIUtilities {
 
     /**
      * Enhanced version of URI.relativize, the target can now be in parent folder of base URI.
+     *
      * @param base Base uri, location from where to relativize.
      * @param target Target uri, final destination of returned URI.
+     *
      * @return Non-absolute URI, or target if target scheme is different than base scheme.
-     * @throws IllegalArgumentException
      */
     public static URI relativize(URI base,URI target) {
         if(!base.getScheme().equals(target.getScheme())) {
@@ -127,9 +136,6 @@ public class URIUtilities {
                 // Has a / after this folder name
                 baseTokenizer.nextToken(); // return separator
                 if(!basePart.isEmpty()) {
-                    while(targetPart.isEmpty() && tokenizer.hasMoreTokens()) {
-                        targetPart = tokenizer.nextToken();
-                    }
                     if(!basePart.equals(targetPart)) {
                         rel.append("..");
                         rel.append(separator);
@@ -154,7 +160,10 @@ public class URIUtilities {
     }
 
     /**
+     * Get a File from the specified file name.
+     *
      * @param fileName File name using Path or URI
+     *
      * @return File path
      */
     public static File fileFromString(String fileName) {

@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.io.osm;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.h2.api.ErrorCode;
 import org.h2gis.api.EmptyProgressVisitor;
@@ -130,22 +130,23 @@ public class OSMParser extends DefaultHandler {
             fs = new FileInputStream(inputFile);
             this.fc = fs.getChannel();
             this.fileSize = fc.size();
-            // Given the file size and an average node file size.
-            // Skip how many nodes in order to update progression at a step of 1%
-            readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
-            nodeCountProgress = 0;
-            XMLReader parser = XMLReaderFactory.createXMLReader();
-            parser.setErrorHandler(this);
-            parser.setContentHandler(this);
-            if(inputFile.getName().endsWith(".osm")) {
-                parser.parse(new InputSource(fs));
-            } else if(inputFile.getName().endsWith(".osm.gz")) {
-                parser.parse(new InputSource(new GZIPInputStream(fs)));
-            } else if(inputFile.getName().endsWith(".osm.bz2")) {
-                parser.parse(new InputSource(new BZip2CompressorInputStream(fs)));
-            }
-            else{
-                throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
+            if (fileSize > 0) {
+                // Given the file size and an average node file size.
+                // Skip how many nodes in order to update progression at a step of 1%
+                readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
+                nodeCountProgress = 0;
+                XMLReader parser = XMLReaderFactory.createXMLReader();
+                parser.setErrorHandler(this);
+                parser.setContentHandler(this);
+                if (inputFile.getName().endsWith(".osm")) {
+                    parser.parse(new InputSource(fs));
+                } else if (inputFile.getName().endsWith(".osm.gz")) {
+                    parser.parse(new InputSource(new GZIPInputStream(fs)));
+                } else if (inputFile.getName().endsWith(".osm.bz2")) {
+                    parser.parse(new InputSource(new BZip2CompressorInputStream(fs)));
+                } else {
+                    throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
+                }
             }
             success = true;
         } catch (SAXException ex) {

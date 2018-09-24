@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.io.gpx.model;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Point;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 

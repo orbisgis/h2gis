@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.io.osm;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

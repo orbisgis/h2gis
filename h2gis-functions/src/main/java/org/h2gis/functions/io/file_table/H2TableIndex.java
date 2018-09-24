@@ -147,24 +147,15 @@ public class H2TableIndex extends BaseIndex {
         }
         return new SHPCursor(this, first, last, session);
     }
-
-    @Override
-    public boolean canScan() {
-        return true;
-    }
-
-    @Override
-    public boolean canFindNext() {
-        return true;
-    }
+    
     
     @Override
-    public double getCost(Session session, int[] masks, TableFilter[] filters, int filter, SortOrder so, HashSet<Column> allColumnsSet) {
-        // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L232
+    public double getCost(Session session, int[] masks, TableFilter[] tableFilters, int filter, SortOrder sortOrder, HashSet<Column> allColumnsSet) {
+        // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L210
         // Must kept sync with this
         try {
             return 10 * getCostRangeIndex(masks, driver.getRowCount(),
-                    filters, filter, so, true, allColumnsSet);
+                    tableFilters, filter, sortOrder, true, allColumnsSet);
         } catch (IllegalStateException e) {
             throw DbException.get(ErrorCode.OBJECT_CLOSED, e);
         }
@@ -214,6 +205,7 @@ public class H2TableIndex extends BaseIndex {
     public boolean isRowIdIndex() {
         return isScanIndex;
     }
+
 
     
 

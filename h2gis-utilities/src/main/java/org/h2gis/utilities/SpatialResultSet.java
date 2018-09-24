@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -20,7 +20,7 @@
 
 package org.h2gis.utilities;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -30,44 +30,57 @@ import java.sql.SQLException;
  * this result set manage the conversion of column to JTS geometry.
  * Usage:
  * SpatialResultSet rs = myStatement.executeQuery().unwrap(SpatialResultSet.class);
+ *
  * @author Nicolas Fortin
  */
 public interface SpatialResultSet extends ResultSet {
     /**
      * Retrieves Geometry value of the specified column.
+     *
      * @param columnIndex Column index [1-n]
+     *
      * @return Geometry value or null
+     *
      * @throws SQLException If the specified column is not a Geometry.
      */
     Geometry getGeometry(int columnIndex) throws SQLException;
 
     /**
      * Retrieves Geometry value of the specified column.
+     *
      * @param columnLabel Column label
+     *
      * @return Geometry value or null
+     *
      * @throws SQLException If the specified column is not a Geometry.
      */
     Geometry getGeometry(String columnLabel) throws SQLException;
 
     /**
      * Retrieves Geometry value of the first geometry column.
+     *
      * @return Geometry value or null
+     *
      * @throws SQLException If there is no Geometry columns.
      */
     Geometry getGeometry() throws SQLException;
 
     /**
      * Update the geometry value
+     *
      * @param columnIndex Field index
      * @param geometry Geometry instance
+     *
      * @throws SQLException
      */
     void updateGeometry(int columnIndex, Geometry geometry) throws SQLException;
 
     /**
      * Update the geometry value
+     *
      * @param columnLabel Field name
      * @param geometry Geometry instance
+     *
      * @throws SQLException
      */
     void updateGeometry(String columnLabel, Geometry geometry) throws SQLException;

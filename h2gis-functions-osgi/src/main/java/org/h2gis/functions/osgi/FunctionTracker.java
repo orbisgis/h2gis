@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -33,19 +33,23 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Keep connection open and track arrival and departure of h2gis OSGi functions
+ *
  * @author Nicolas Fortin
  */
 public class FunctionTracker extends ServiceTracker<Function, Function> {
+
+    /** DataSource */
     private DataSource dataSource;
+    /** Logger */
     private static final Logger LOGGER = LoggerFactory.getLogger(FunctionTracker.class);
 
     /**
      * Constructor
+     *
      * @param dataSource Active datasource
      * @param bundleContext BundleContext
-     * @throws SQLException
      */
-    public FunctionTracker(DataSource dataSource, BundleContext bundleContext) throws SQLException {
+    public FunctionTracker(DataSource dataSource, BundleContext bundleContext) {
         super(bundleContext,Function.class,null);
         this.dataSource = dataSource;
     }
@@ -61,11 +65,8 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
         if(reference.getBundle().getBundleId() != context.getBundle().getBundleId()) {
             Function function = super.addingService(reference);
             try {
-                Connection connection = dataSource.getConnection();
-                try {
-                    H2GISFunctions.registerFunction(connection.createStatement(), function, ""); //bundle.getSymbolicName() + ":" + bundle.getVersion().toString() + ":"
-                } finally {
-                    connection.close();
+                try (Connection connection = dataSource.getConnection()) {
+                    H2GISFunctions.registerFunction(connection.createStatement(), function, "");
                 }
             } catch (SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);
@@ -81,11 +82,8 @@ public class FunctionTracker extends ServiceTracker<Function, Function> {
         // Do not unregister system functions (h2gis functions)
         if(reference.getBundle().getBundleId() != context.getBundle().getBundleId()) {
             try {
-                Connection connection = dataSource.getConnection();
-                try {
+                try (Connection connection = dataSource.getConnection()) {
                     H2GISFunctions.unRegisterFunction(connection.createStatement(), service);
-                } finally {
-                    connection.close();
                 }
             } catch (SQLException ex) {
                 LOGGER.error(ex.getLocalizedMessage(), ex);

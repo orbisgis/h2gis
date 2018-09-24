@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- Maven Coordinates -->
     <parent>
         <artifactId>h2gis-parent</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>1.4.0-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
+
     <artifactId>h2gis-api</artifactId>
-    <name>h2gis-api</name>
     <packaging>bundle</packaging>
+
+    <!-- Project Information -->
+    <name>h2gis-api</name>
     <description>H2GIS API define extension point of H2GIS</description>
+
     <organization>
         <name>CNRS</name>
         <url>http://www.h2gis.org</url>
@@ -22,31 +30,33 @@
             <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
         </license>
     </licenses>
+
+    <!-- Properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- Build Settings -->
     <build>
         <plugins>
+            <!-- Plugin for the bundle packaging -->
             <plugin>
-                <groupId>org.apache.felix</groupId>
+                <groupId>${maven-bundle-plugin-groupId}</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>${maven-bundle-plugin-version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
                         <Public-Package>org.h2gis.api.*</Public-Package>
+                        <Bundle-Vendor>CNRS</Bundle-Vendor>
+                        <Bundle-Category>JDBC</Bundle-Category>
                     </instructions>
                 </configuration>
             </plugin>
+            <!-- Plugin for the compilation -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>${maven-compiler-plugin-groupId}</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>2.3.2</version>
-                <configuration>
-                    <source>1.7</source>
-                    <target>1.7</target>
-                </configuration>
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
 </project>

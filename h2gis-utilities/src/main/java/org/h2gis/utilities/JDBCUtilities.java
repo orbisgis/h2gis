@@ -43,6 +43,7 @@ import java.util.List;
  * @author Adam Gouge
  */
 public class JDBCUtilities {
+
     public enum FUNCTION_TYPE { ALL, BUILT_IN, ALIAS}
     public static final String H2_DRIVER_NAME = "H2 JDBC Driver";
 
@@ -315,14 +316,11 @@ public class JDBCUtilities {
      * @throws java.sql.SQLException
      */
     public static boolean tableExists(Connection connection, String tableName) throws SQLException {
-        final Statement statement = connection.createStatement();
-        try {
+        try (Statement statement = connection.createStatement()) {
             statement.execute("SELECT * FROM " + TableLocation.parse(tableName) + " LIMIT 0;");
             return true;
         } catch (SQLException ex) {
             return false;
-        } finally {
-            statement.close();
         }
     }
 
@@ -377,6 +375,18 @@ public class JDBCUtilities {
             statement.close();
         }
         return fieldValues;
+    }
+    
+    /**
+     * A method to create an empty table (no columns)
+     * @param connection Connection
+     * @param tableReference Table name
+     * @throws java.sql.SQLException
+     */
+    public static void createEmptyTable(Connection connection, String tableReference) throws SQLException {
+        try (Statement statement = connection.createStatement()) {
+            statement.execute("CREATE TABLE "+ tableReference+ " ()");
+        }
     }
 
     /**

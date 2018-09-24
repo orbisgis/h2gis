@@ -19,12 +19,12 @@
  */
 package org.h2gis.functions.spatial.topology;
 
-import com.vividsolutions.jts.algorithm.RobustLineIntersector;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.noding.IntersectionAdder;
-import com.vividsolutions.jts.noding.MCIndexNoder;
-import com.vividsolutions.jts.noding.Noder;
-import com.vividsolutions.jts.noding.SegmentStringUtil;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.Noder;
+import org.locationtech.jts.noding.SegmentStringUtil;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**

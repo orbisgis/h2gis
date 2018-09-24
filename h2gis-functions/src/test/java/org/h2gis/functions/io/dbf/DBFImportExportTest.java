@@ -228,4 +228,34 @@ public class DBFImportExportTest {
         assertFalse(rs.next());
         rs.close();
     }
+
+    @Test
+    public void testWriteReadEmptyTable1() throws SQLException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
+        stat.execute("create table TABLE_EMPTY(id INTEGER)");
+        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
+        stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
+        ResultSetMetaData rsmd = res.getMetaData();
+        assertTrue(rsmd.getColumnCount()==2);
+        assertTrue(!res.next());
+        stat.close();
+    }
+    
+    @Test
+    public void testWriteReadEmptyTable2() throws SQLException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
+        stat.execute("create table TABLE_EMPTY()");
+        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
+        stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
+        ResultSetMetaData rsmd = res.getMetaData();
+        assertTrue(rsmd.getColumnCount()==0);
+        assertTrue(!res.next());
+        stat.close();
+    }
 }

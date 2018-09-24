@@ -23,18 +23,18 @@ package org.h2gis.functions.io.geojson;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.PrecisionModel;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.LinearRing;
+import org.locationtech.jts.geom.MultiLineString;
+import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.MultiPolygon;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.PrecisionModel;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -122,12 +122,16 @@ public class GeoJsonReaderDriver {
      * @throws java.sql.SQLException
      * @throws java.io.IOException
      */
-    public void read(ProgressVisitor progress,String tableReference) throws SQLException, IOException {
-        if (FileUtil.isFileImportable(fileName, "geojson")) {            
-            this.isH2 =JDBCUtilities.isH2DataBase(connection.getMetaData()); 
+    public void read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
+        if (FileUtil.isFileImportable(fileName, "geojson")) {
+            this.isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             this.tableLocation = TableLocation.parse(tableReference, isH2);
-            parseGeoJson(progress);
-        } 
+            if (fileName.length() > 0) {
+                parseGeoJson(progress);
+            } else {
+                JDBCUtilities.createEmptyTable(connection, tableLocation.toString());
+            }
+        }
     }
 
     /**
@@ -175,12 +179,12 @@ public class GeoJsonReaderDriver {
      * @throws IOException
      */
     private boolean parseMetadata() throws SQLException, IOException {
-        FileInputStream fis = null;
-        
+        FileInputStream fis = null;        
         try {
             fis = new FileInputStream(fileName);
             this.fc = fis.getChannel();
-            this.fileSize = fc.size();
+            this.fileSize = fc.size();           
+                
             // Given the file size and an average node file size.
             // Skip how many nodes in order to update progression at a step of 1%
             readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
@@ -201,6 +205,7 @@ public class GeoJsonReaderDriver {
                 throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
             }
             jp.close();
+            
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
 
@@ -584,11 +589,9 @@ public class GeoJsonReaderDriver {
             while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
                 //Parses the polygon
                 jp.nextToken(); //Start the RING
-                int linesIndex = 0;
                 while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
                     parseCoordinatesMetadata(jp);
                     jp.nextToken();//END RING
-                    linesIndex++;
                 }
                 jp.nextToken();//END_OBJECT
             }

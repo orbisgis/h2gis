@@ -20,14 +20,14 @@
 
 package org.h2gis.functions.spatial.edit;
 
-import com.vividsolutions.jts.densify.Densifier;
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.densify.Densifier;
+import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Densifies a geometry using the given distance tolerance.
  *
- * @see com.vividsolutions.jts.densify.Densifier
+ * @see org.locationtech.jts.densify.Densifier
  * @author Erwan Bocher
  */
 public class ST_Densify extends DeterministicScalarFunction {

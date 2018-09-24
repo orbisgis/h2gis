@@ -28,6 +28,8 @@ import org.h2gis.functions.io.gpx.model.GpxParser;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.gpx.model.GPXTablesFactory;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 
 /**
  * This class is used to read a GPX file
@@ -88,10 +90,15 @@ public class GPXDriverFunction implements DriverFunction {
      * @throws IOException File read error
      */
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, boolean deleteTables) throws SQLException, IOException {
-        if(deleteTables){
-            GPXTablesFactory.dropOSMTables(connection, deleteTables, tableReference);
-        }        
-        GpxParser gpd = new GpxParser();
-        gpd.read(fileName, tableReference, connection);
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        if (fileName.length() == 0) {
+            JDBCUtilities.createEmptyTable(connection, TableLocation.parse(tableReference, isH2).toString());
+        } else {
+            if (deleteTables) {
+                GPXTablesFactory.dropOSMTables(connection, isH2, tableReference);
+            }
+            GpxParser gpd = new GpxParser();
+            gpd.read(fileName, tableReference, connection);
+        }
     }
 }

@@ -64,7 +64,7 @@ public class PRJUtil {
     public static int getSRID(File prjFile) throws IOException {
         int srid = 0;
         if (prjFile == null) {
-            log.warn("This prj file is null. \n A default srid equals to 0 will be added.");
+            log.debug("This prj file is null. \n A default srid equals to 0 will be added.");
         } else {
             PrjParser parser = new PrjParser();
             String prjString = readPRJFile(prjFile);
@@ -77,7 +77,7 @@ public class PRJUtil {
                 }
             }
             else{
-                log.warn("The prj is empty. \n A default srid equals to 0 will be added.");
+                log.debug("The prj is empty. \n A default srid equals to 0 will be added.");
             }
         }
         return srid;

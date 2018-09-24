@@ -20,13 +20,11 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateArrays;
-import com.vividsolutions.jts.geom.LineSegment;
-import com.vividsolutions.jts.math.Vector3D;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.LineSegment;
+import org.locationtech.jts.math.Vector3D;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 
 
@@ -73,7 +71,6 @@ public final class CoordinateUtils {
                 }
             }
         }
-
         result[0] = (zmin);
         result[1] = (zmax);
         return result;

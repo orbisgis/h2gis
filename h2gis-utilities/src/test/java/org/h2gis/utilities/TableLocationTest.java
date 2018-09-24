@@ -21,8 +21,14 @@
 package org.h2gis.utilities;
 
 import org.junit.Test;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotSame;
+
+import java.io.File;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+
+import static org.junit.Assert.*;
+import static org.locationtech.jts.util.Assert.shouldNeverReachHere;
 
 /**
  * Test TableLocation
@@ -142,5 +148,59 @@ public class TableLocationTest {
         assertEquals("\"2015mytable\"", new TableLocation("2015mytable").toString(false));
         assertEquals("MY2015TABLE", new TableLocation("MY2015TABLE").toString(true));
         assertEquals("my2015table", new TableLocation("my2015table").toString(false));
+    }
+
+    @Test
+    public void testDefaultSchema(){
+        TableLocation tableLocation = new TableLocation("tata");
+        assertEquals("dflt", tableLocation.getSchema("dflt"));
+        TableLocation tableLocation2 = new TableLocation("schema", "tata");
+        assertNotEquals(tableLocation, tableLocation2);
+        tableLocation.setDefaultSchema("schema");
+        assertEquals(tableLocation, tableLocation2);
+    }
+
+    @Test
+    public void testCstrResultSet() throws Exception {
+        String dataBaseLocation = new File("target/JDBCUtilitiesTest").getAbsolutePath();
+        String databasePath = "jdbc:h2:"+dataBaseLocation;
+        File dbFile = new File(dataBaseLocation+".mv.db");
+        Class.forName("org.h2.Driver");
+        if(dbFile.exists()) {dbFile.delete();}
+        // Keep a connection alive to not close the DataBase on each unit test
+        Connection connection = DriverManager.getConnection(databasePath,"sa", "");
+        connection.createStatement().execute("DROP TABLE IF EXISTS TATA");
+        connection.createStatement().execute("CREATE TABLE TATA (id INT, str VARCHAR(100))");
+        connection.createStatement().execute("INSERT INTO TATA VALUES (25, 'twenty five')");
+        connection.createStatement().execute("INSERT INTO TATA VALUES (6, 'six')");
+
+        ResultSet rs = connection.getMetaData().getTables(null, null, "TATA" , null);
+        rs.next();
+        TableLocation tableLocation = new TableLocation(rs);
+        assertEquals("\"JDBCUTILITIESTEST\".\"PUBLIC\".\"TATA\"", tableLocation.toString());
+    }
+
+    @Test
+    public void testDefaultCatalog(){
+        TableLocation tableLocation = new TableLocation("tata");
+        assertEquals("dflt", tableLocation.getCatalog("dflt"));
+    }
+
+    @Test
+    public void testCapsIdentifier(){
+        assertEquals("IDENTIFIER", TableLocation.capsIdentifier("identifier", true));
+        assertEquals("identifier", TableLocation.capsIdentifier("identifier", false));
+        assertEquals("identifier", TableLocation.capsIdentifier("identifier", null));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testNoTableCstr(){
+        new TableLocation("catalog", "schema", null);
+        shouldNeverReachHere();
+    }
+
+    @Test
+    public void testHashCode(){
+        assertEquals(-811763674, new TableLocation("catalog", "schema", "table").hashCode());
     }
 }

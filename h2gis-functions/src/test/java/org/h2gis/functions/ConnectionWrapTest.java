@@ -20,7 +20,7 @@
 
 package org.h2gis.functions;
 
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTReader;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

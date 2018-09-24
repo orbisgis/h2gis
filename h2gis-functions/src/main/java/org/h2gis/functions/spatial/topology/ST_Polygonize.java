@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.topology;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
 import org.h2gis.api.DeterministicScalarFunction;
 
 import java.util.Collection;

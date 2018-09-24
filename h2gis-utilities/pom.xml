@@ -1,18 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- Maven Coordinates -->
     <parent>
         <artifactId>h2gis-parent</artifactId>
         <groupId>org.orbisgis</groupId>
-        <version>1.4.0-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
+
     <name>h2gis-utilities</name>
-    <artifactId>h2gis-utilities</artifactId>
     <packaging>bundle</packaging>
+
+    <!-- Project Information -->
+    <artifactId>h2gis-utilities</artifactId>
     <description>Collection of methods to fetch spatial metadata in SFS database like PostGIS or H2GIS.
         Theses functions can be commonly used either in PostGIS or in H2.
-        Spatial utilities publish also a DataSourceFactory wrapper that provide JDBC Wrapper for spatial functionality.</description>
+        Spatial utilities publish also a DataSourceFactory wrapper that provide JDBC Wrapper for spatial
+        functionality.
+    </description>
+
     <organization>
         <name>CNRS</name>
         <url>http://www.h2gis.org</url>
@@ -24,12 +34,65 @@
             <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
         </license>
     </licenses>
-        <build>
+
+    <!-- Properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- Dependencies -->
+    <dependencies>
+        <dependency>
+            <groupId>${jts-core-groupId}</groupId>
+            <artifactId>jts-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${h2-groupId}</groupId>
+            <artifactId>h2</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2gis-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${slf4j-groupId}</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+
+        <!-- Provided dependencies -->
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Test dependencies -->
+        <dependency>
+            <groupId>${junit-groupId}</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2gis-test-utilities</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <!-- Build Settings -->
+    <build>
         <plugins>
+            <!-- Plugin for the bundle packaging -->
             <plugin>
-                <groupId>org.apache.felix</groupId>
+                <groupId>${maven-bundle-plugin-groupId}</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -38,18 +101,18 @@
                     </instructions>
                 </configuration>
             </plugin>
+            <!-- Plugin for the test coverage check -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>${cobertura-maven-plugin-groupId}</groupId>
                 <artifactId>cobertura-maven-plugin</artifactId>
-                <version>2.6</version>
                 <configuration>
                     <check>
                         <!-- TODO Raise Coverage constraint -->
                         <branchRate>0</branchRate>
                         <lineRate>0</lineRate>
                         <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>50</totalBranchRate>
-                        <totalLineRate>30</totalLineRate>
+                        <totalBranchRate>57</totalBranchRate>
+                        <totalLineRate>42</totalLineRate>
                         <regexes>
                             <regex>
                                 <pattern>org.h2gis.utilities.jts_utils.Contouring</pattern>
@@ -72,55 +135,11 @@
                     </execution>
                 </executions>
             </plugin>
+            <!-- Plugin for test running -->
+            <plugin>
+                <groupId>${maven-surefire-plugin-groupId}</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-test-utilities</artifactId>
-            <version>${project.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>${junit-version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.vividsolutions</groupId>
-            <artifactId>jts-core</artifactId>
-            <version>${jts-core-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>h2gis-api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>${org.osgi.compendium-version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>${h2-package}</groupId>
-            <artifactId>h2</artifactId>
-            <version>${h2-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${sl4j-version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${sl4j-version}</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
 </project>

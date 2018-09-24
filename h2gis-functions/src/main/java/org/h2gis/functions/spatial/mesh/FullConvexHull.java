@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.mesh;
 
-import com.vividsolutions.jts.algorithm.CGAlgorithms;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.util.Assert;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.util.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,7 +30,7 @@ import java.util.Comparator;
 import java.util.Stack;
 import java.util.TreeSet;
 
-import com.vividsolutions.jts.util.UniqueCoordinateArrayFilter;
+import org.locationtech.jts.util.UniqueCoordinateArrayFilter;
 
 /**
  * Computes the convex hull of a {@link Geometry}.

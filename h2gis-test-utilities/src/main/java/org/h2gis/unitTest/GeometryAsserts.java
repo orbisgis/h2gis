@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -20,12 +20,10 @@
 
 package org.h2gis.unitTest;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
 import org.h2.value.ValueGeometry;
-
-import java.sql.SQLException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -47,9 +45,8 @@ public class GeometryAsserts {
      *
      * @param expectedWKT Expected value, in WKT
      * @param valueWKB    Test value, in WKB ex rs.getBytes()
-     * @throws SQLException If WKT or WKB is not valid
      */
-    public static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) throws SQLException {
+    public static void assertGeometryEquals(String expectedWKT, byte[] valueWKB) {
         if (expectedWKT == null) {
             assertNull(valueWKB);
         } else {
@@ -62,9 +59,8 @@ public class GeometryAsserts {
      *
      * @param expectedWKT Expected value, in WKT
      * @param valueObject Test value geometry ex rs.getObject(i)
-     * @throws SQLException If WKT or WKB is not valid
      */
-    public static void assertGeometryEquals(String expectedWKT, Object valueObject) throws SQLException {
+    public static void assertGeometryEquals(String expectedWKT, Object valueObject) {
         assertGeometryEquals(expectedWKT, 0, valueObject);
     }
 
@@ -75,9 +71,8 @@ public class GeometryAsserts {
      * @param expectedWKT Expected value, in WKT
      * @param expectedSRID Expected SRID code,
      * @param valueObject Test value geometry ex rs.getObject(i)
-     * @throws SQLException If WKT or WKB is not valid
      */
-    public static void assertGeometryEquals(String expectedWKT,int expectedSRID, Object valueObject) throws SQLException {
+    public static void assertGeometryEquals(String expectedWKT,int expectedSRID, Object valueObject) {
         if (expectedWKT == null) {
             assertNull(valueObject);
         } else {
@@ -100,9 +95,8 @@ public class GeometryAsserts {
      *
      * @param expectedWKT Expected value, in WKT
      * @param valueWKT    Test value, in WKT ex rs.getString()
-     * @throws SQLException
      */
-    public static void assertGeometryEquals(String expectedWKT, String valueWKT) throws SQLException {
+    public static void assertGeometryEquals(String expectedWKT, String valueWKT) {
         assertGeometryEquals(expectedWKT, ValueGeometry.get(valueWKT).getBytes());
     }
 
@@ -118,6 +112,7 @@ public class GeometryAsserts {
 
     /**
      * Equals test with epsilon error acceptance.
+     *
      * @param expectedWKT Expected value, in WKT
      * @param resultSetObject Geometry, rs.getObject(i)
      * @param epsilon epsilon error acceptance
@@ -128,6 +123,7 @@ public class GeometryAsserts {
 
     /**
      * Equals test with epsilon error acceptance and SRID.
+     *
      * @param expectedWKT Expected value, in WKT
      * @param expectedSRID Expected SRID Value
      * @param resultSetObject

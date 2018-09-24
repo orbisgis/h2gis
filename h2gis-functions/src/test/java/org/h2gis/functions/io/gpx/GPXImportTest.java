@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.io.gpx;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.io.shp;
 
-import com.vividsolutions.jts.geom.Geometry;
+import org.locationtech.jts.geom.Geometry;
 import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.io.DriverManager;

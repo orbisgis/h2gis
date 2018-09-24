@@ -20,7 +20,7 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.io.WKTReader;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertFalse;

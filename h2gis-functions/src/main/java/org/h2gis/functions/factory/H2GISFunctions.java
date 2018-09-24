@@ -41,6 +41,7 @@ import org.h2gis.functions.io.geojson.GeoJsonWrite;
 import org.h2gis.functions.io.geojson.ST_AsGeoJSON;
 import org.h2gis.functions.io.geojson.ST_GeomFromGeoJSON;
 import org.h2gis.functions.io.gpx.GPXRead;
+import org.h2gis.functions.io.json.JsonWrite;
 import org.h2gis.functions.io.kml.KMLWrite;
 import org.h2gis.functions.io.kml.ST_AsKml;
 import org.h2gis.functions.io.osm.OSMRead;
@@ -98,6 +99,7 @@ import org.h2gis.functions.spatial.create.ST_MakePolygon;
 import org.h2gis.functions.spatial.create.ST_MinimumBoundingCircle;
 import org.h2gis.functions.spatial.create.ST_MinimumRectangle;
 import org.h2gis.functions.spatial.create.ST_OctogonalEnvelope;
+import org.h2gis.functions.spatial.create.ST_OrientedEnvelope;
 import org.h2gis.functions.spatial.create.ST_Point;
 import org.h2gis.functions.spatial.create.ST_RingBuffer;
 import org.h2gis.functions.spatial.crs.ST_SetSRID;
@@ -109,8 +111,10 @@ import org.h2gis.functions.spatial.distance.ST_LocateAlong;
 import org.h2gis.functions.spatial.distance.ST_LongestLine;
 import org.h2gis.functions.spatial.distance.ST_MaxDistance;
 import org.h2gis.functions.spatial.distance.ST_ProjectPoint;
+import org.h2gis.functions.spatial.distance.ST_ShortestLine;
 import org.h2gis.functions.spatial.earth.ST_GeometryShadow;
 import org.h2gis.functions.spatial.earth.ST_SunPosition;
+import org.h2gis.functions.spatial.earth.ST_Svf;
 import org.h2gis.functions.spatial.edit.ST_AddPoint;
 import org.h2gis.functions.spatial.edit.ST_AddZ;
 import org.h2gis.functions.spatial.edit.ST_CollectionExtract;
@@ -435,7 +439,11 @@ public class H2GISFunctions {
                 new ST_MakeValid(),
                 new ST_Point(),
                 new ST_Node(),
-                new ST_Drape()};
+                new ST_Drape(),
+                new ST_Svf(),
+                new JsonWrite(),
+                new ST_ShortestLine(),
+                new ST_OrientedEnvelope()};
     }
 
     /**

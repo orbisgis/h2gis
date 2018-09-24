@@ -1,14 +1,24 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
+
+    <!-- Maven Coordinates -->
     <parent>
         <groupId>org.orbisgis</groupId>
         <artifactId>h2gis-parent</artifactId>
-        <version>1.4.0-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
+
     <artifactId>h2gis-dist</artifactId>
+
+    <!-- Project Information -->
     <name>h2gis-dist</name>
+    <description>Generate a jar file containing the whole H2GIS project.</description>
+
     <organization>
         <name>CNRS</name>
         <url>http://www.h2gis.org</url>
@@ -20,20 +30,65 @@
             <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
         </license>
     </licenses>
+
+    <!-- Properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- Dependencies -->
+    <dependencies>
+        <!-- Simple Logging Facade for Java -->
+        <dependency>
+            <groupId>${slf4j-groupId}</groupId>
+            <artifactId>slf4j-simple</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2gis-osgi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>h2gis-network</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>postgis-jts-osgi</artifactId>
+            <version>5.1.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.postgis</groupId>
+                    <artifactId>postgis-jdbc</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.postgis</groupId>
+                    <artifactId>postgis-jdbc-jtsparser</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>postgresql</groupId>
+                    <artifactId>postgresql</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+    </dependencies>
+
+    <!-- Build Settings -->
     <build>
         <plugins>
+            <!-- Plugin for test running -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>${maven-surefire-plugin-groupId}</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>2.14</version>
                 <configuration>
                     <workingDirectory>target/</workingDirectory>
                 </configuration>
             </plugin>
+            <!-- Plugin for the execution of a Java program -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>${exec-maven-plugin-groupId}</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
-                <version>1.2.1</version>
                 <configuration>
                     <executable>java</executable>
                     <classpathScope>runtime</classpathScope>
@@ -45,10 +100,10 @@
                     </arguments>
                 </configuration>
             </plugin>
+            <!-- Create a JAR from the project -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
+                <groupId>${maven-jar-plugin-groupId}</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>2.4</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -59,9 +114,10 @@
                     </archive>
                 </configuration>
             </plugin>
+            <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files  -->
             <plugin>
+                <groupId>${maven-assembly-plugin-groupId}</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.3</version>
                 <executions>
                     <execution>
                         <id>make-assembly</id> <!-- this is used for inheritance merges -->
@@ -81,33 +137,4 @@
             </plugin>
         </plugins>
     </build>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-simple</artifactId>
-            <version>${sl4j-version}</version>
-        </dependency>	
-	<dependency>
-	    <groupId>org.orbisgis</groupId>
-	    <artifactId>postgis-jts-osgi</artifactId>
-	    <version>5.0.1</version>
-	    <exclusions>
-	      <exclusion>
-		<groupId>org.postgis</groupId>
-		<artifactId>postgis-jdbc</artifactId>
-	      </exclusion>
-	      <exclusion>
-		<groupId>org.postgis</groupId>
-		<artifactId>postgis-jdbc-jtsparser</artifactId>
-	      </exclusion>
-	      <exclusion>
-		<groupId>postgresql</groupId>
-		<artifactId>postgresql</artifactId>
-	      </exclusion>
-	    </exclusions> 	    
-	</dependency>
-    </dependencies>
 </project>

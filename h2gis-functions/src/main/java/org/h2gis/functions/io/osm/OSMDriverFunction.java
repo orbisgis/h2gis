@@ -99,7 +99,7 @@ public class OSMDriverFunction implements DriverFunction {
         }
         OSMParser osmp = new OSMParser();
         osmp.read(connection, tableReference, fileName, progress);
-    }
+        }
 
     @Override
     public String[] getImportFormats() {

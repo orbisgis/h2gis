@@ -1,58 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.orbisgis</groupId>
-		<artifactId>h2gis-parent</artifactId>
-		<version>1.4.0-SNAPSHOT</version>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Maven Coordinates -->
+    <parent>
+        <groupId>org.orbisgis</groupId>
+        <artifactId>h2gis-parent</artifactId>
+        <version>1.5.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
-	</parent>
-	<artifactId>h2gis-osgi</artifactId>
-        <name>h2gis-functions-osgi</name>
-        <description>Register H2GIS functions when a DataSource is declared as OSGi services</description>
-        <packaging>bundle</packaging>
-        <organization>
-            <name>CNRS</name>
-            <url>http://www.h2gis.org</url>
-        </organization>
-        <url>http://github.com/orbisgis/H2GIS</url>
-        <licenses>
-            <license>
-                <name>GNU Lesser General Public License (LGPLV3+)</name>
-                <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
-            </license>
-        </licenses>
-	<dependencies>
+    </parent>
+
+    <artifactId>h2gis-osgi</artifactId>
+    <packaging>bundle</packaging>
+
+    <!-- Project Information -->
+    <name>h2gis-functions-osgi</name>
+    <description>Register H2GIS functions when a DataSource is declared as OSGi services</description>
+
+    <organization>
+        <name>CNRS</name>
+        <url>http://www.h2gis.org</url>
+    </organization>
+    <url>http://github.com/orbisgis/H2GIS</url>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License (LGPLV3+)</name>
+            <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
+        </license>
+    </licenses>
+
+    <!-- Dependencies -->
+    <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>h2gis</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- Provided dependencies -->
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.enterprise</artifactId>
-            <version>5.0.0</version>
+            <artifactId>org.osgi.compendium</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <version>${osgi-core-version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
-            <artifactId>org.osgi.compendium</artifactId>
-            <version>${org.osgi.compendium-version}</version>
+            <artifactId>org.osgi.enterprise</artifactId>
             <scope>provided</scope>
         </dependency>
-	</dependencies>
-	<build>
-		<plugins>
+    </dependencies>
+
+    <!-- Build Settings -->
+    <build>
+        <plugins>
+            <!-- Plugin for the bundle packaging -->
             <plugin>
-                <groupId>org.apache.felix</groupId>
+                <groupId>${maven-bundle-plugin-groupId}</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
-                <version>2.3.7</version>
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
@@ -63,21 +74,11 @@
                     </instructions>
                 </configuration>
             </plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-		</plugins>
-		<extensions>
-			<extension>
-				<groupId>org.apache.maven.wagon</groupId> 
-				<artifactId>wagon-ssh</artifactId> 
-				<version>2.2</version> 
-			</extension> 
-		</extensions>
-	</build>
+            <!-- Plugin for the compilation -->
+            <plugin>
+                <groupId>${maven-compiler-plugin-groupId}</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
 </project>

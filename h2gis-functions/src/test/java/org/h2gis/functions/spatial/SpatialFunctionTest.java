@@ -21,8 +21,8 @@
 package org.h2gis.functions.spatial;
 
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.WKTReader;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
