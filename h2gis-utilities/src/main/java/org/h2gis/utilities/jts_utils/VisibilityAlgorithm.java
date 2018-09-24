@@ -71,25 +71,30 @@ public class VisibilityAlgorithm {
     return Math.atan2(b.y - a.y, b.x - a.x);
   }
 
-  public Polygon getIsoVist(Coordinate position) {
+  public Polygon getIsoVist(Coordinate position, boolean addEnvelope) {
     // Add bounding circle
-    List<SegmentString> bounded = new ArrayList<>(originalSegments);
-    GeometricShapeFactory geometricShapeFactory = new GeometricShapeFactory();
-    geometricShapeFactory.setCentre(position);
-    geometricShapeFactory.setWidth(maxDistance * 2);
-    geometricShapeFactory.setHeight(maxDistance * 2);
-    geometricShapeFactory.setNumPoints(numPoints);
-    addPolygon(bounded, geometricShapeFactory.createEllipse());
+    List<SegmentString> bounded;
+    if(addEnvelope) {
+      bounded = new ArrayList<>(originalSegments);
+      GeometricShapeFactory geometricShapeFactory = new GeometricShapeFactory();
+      geometricShapeFactory.setCentre(position);
+      geometricShapeFactory.setWidth(maxDistance * 2);
+      geometricShapeFactory.setHeight(maxDistance * 2);
+      geometricShapeFactory.setNumPoints(numPoints);
+      addPolygon(bounded, geometricShapeFactory.createEllipse());
 
-    // Intersection with bounding circle
-    bounded = fixSegments(bounded);
+      // Intersection with bounding circle
+      bounded = fixSegments(bounded);
+    } else {
+      bounded = originalSegments;
+    }
 
     List<Vertex> sorted = new ArrayList<>(bounded.size() * 2);
 
     for (int idSegment = 0; idSegment < bounded.size(); idSegment++) {
       SegmentString segment = bounded.get(idSegment);
       // Convert segment to angle relative to viewPoint
-      for(int j=0; j < 2; j++) {
+      for(int j=0; j < 2; ++j) {
         final Coordinate pt = segment.getCoordinate(j);
         sorted.add(new Vertex(idSegment, j, angle(pt, position)));
       }
@@ -146,10 +151,11 @@ public class VisibilityAlgorithm {
         }
       } while (sorted.get(i).angle < sorted.get(orig).angle + epsilon);
 
+      //System.out.println(String.format("a:%.1f seg:%d ext:%b short:%b", sorted.get(i).angle, sorted.get(i).idSegment, extend, shorten));
       if(extend) {
         polygon.add(vertex);
         Coordinate cur = intersectLines(bounded.get(heap.get(0)), position, vertex);
-        if(cur != null && !cur.equals2D(vertex)) {
+        if(cur != null && !cur.equals2D(vertex, epsilon)) {
           polygon.add(vertex);
         }
       } else if(shorten) {
@@ -200,19 +206,21 @@ public class VisibilityAlgorithm {
   }
 
   private boolean lessThan(int index1,int index2,Coordinate position, List<SegmentString> segments, Coordinate destination) {
+    System.out.println(String.format("lessThan %d %d", index1, index2));
     Coordinate inter1 = intersectLines(segments.get(index1), position, destination);
     Coordinate inter2 = intersectLines(segments.get(index2), position, destination);
-    if (!inter1.equals2D(inter2)) {
+    if (!inter1.equals2D(inter2, epsilon)) {
       double d1 = inter1.distance(position);
       double d2 = inter2.distance(position);
+      System.out.println(String.format("d1 < d2 = %b", d1 < d2));
       return d1 < d2;
     }
     int end1 = 0;
-    if (inter1.equals2D(segments.get(index1).getCoordinate(0))) {
+    if (inter1.equals2D(segments.get(index1).getCoordinate(0), epsilon)) {
       end1 = 1;
     }
     int end2 = 0;
-    if (inter2.equals2D(segments.get(index2).getCoordinate(0))) {
+    if (inter2.equals2D(segments.get(index2).getCoordinate(0), epsilon)) {
       end2 = 1;
     }
     double a1 = angle2(segments.get(index1).getCoordinate(end1), inter1, position);
@@ -225,6 +233,7 @@ public class VisibilityAlgorithm {
   }
 
   private void remove(int index, List<Integer> heap, Coordinate position, List<SegmentString> segments, Coordinate destination, List<Integer> map) {
+    System.out.println(String.format("remove %d", index));
     map.set(heap.get(index), -1);
     if(index == heap.size() -1) {
       heap.remove(heap.size() - 1);
@@ -273,8 +282,9 @@ public class VisibilityAlgorithm {
   }
 
   private void insert(int index, List<Integer> heap, Coordinate position, List<SegmentString> segments, Coordinate destination, List<Integer> map) {
+    System.out.println(String.format("insert %d", index));
     Coordinate inter = intersectLines(segments.get(index), position, destination);
-    if (NAN_COORDINATE.equals2D(inter)) {
+    if (NAN_COORDINATE.equals2D(inter, epsilon)) {
       return;
     }
     int cur = heap.size();
