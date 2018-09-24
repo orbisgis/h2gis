@@ -32,6 +32,9 @@ public class VisibilityAlgorithm {
   private double epsilon = 1e-6;
   private int numPoints = 32;
 
+  /**
+   * @param maxDistance maximum distance constraint for visibility polygon, from view point
+   */
   public VisibilityAlgorithm(double maxDistance) {
     this.maxDistance = maxDistance;
   }
@@ -67,6 +70,11 @@ public class VisibilityAlgorithm {
     this.numPoints = numPoints;
   }
 
+  /**
+   * Add occlusion segment in isovist
+   * @param p0 segment origin
+   * @param p1 segment destination
+   */
   public void addSegment(Coordinate p0, Coordinate p1) {
     if (p0.distance(p1) < epsilon) {
       return;
@@ -78,6 +86,13 @@ public class VisibilityAlgorithm {
     return Math.atan2(b.y - a.y, b.x - a.x);
   }
 
+  /**
+   * Compute isovist polygon
+   * @param position View coordinate
+   * @param addEnvelope If true add circle bounding box. This function does not work properly if the view point is not
+   *                    enclosed by segments
+   * @return Visibility polygon
+   */
   public Polygon getIsoVist(Coordinate position, boolean addEnvelope) {
     // Add bounding circle
     List<SegmentString> bounded;
@@ -136,8 +151,8 @@ public class VisibilityAlgorithm {
 
     // Iterate over vertices using the anticlockwise order
     for(int i=0; i < sorted.size();) {
-      boolean extend = false;
-      boolean shorten = false;
+      boolean extend = false;       // Use existing vertex
+      boolean shorten = false;      // Compute intersection with two vertices
       int orig = i;
       Coordinate vertex = bounded.get(sorted.get(i).idSegment).getCoordinate(sorted.get(i).vertexIndex);
       int oldSegment = heap.get(0);
@@ -171,6 +186,7 @@ public class VisibilityAlgorithm {
         polygon.add(intersectLines(bounded.get(heap.get(0)), position, vertex));
       }
     }
+    // Finish polygon
     polygon.add(polygon.get(0));
     GeometryFactory geometryFactory = new GeometryFactory();
     return geometryFactory.createPolygon(polygon.toArray(new Coordinate[polygon.size()]));
@@ -321,7 +337,7 @@ public class VisibilityAlgorithm {
     addLineString(originalSegments, lineString);
   }
 
-  public static void addLineString(List<SegmentString> segments, LineString lineString) {
+  private static void addLineString(List<SegmentString> segments, LineString lineString) {
     int nPoint = lineString.getNumPoints();
     for (int idPoint = 0; idPoint < nPoint - 1; idPoint++) {
       addSegment(segments, lineString.getCoordinateN(idPoint), lineString.getCoordinateN(idPoint + 1));
@@ -349,6 +365,10 @@ public class VisibilityAlgorithm {
       }
   }
 
+  /**
+   * Explode geometry and add occlusion segments in isovist
+   * @param geometry Geometry collection, LineString or Polygon instance
+   */
   public void addGeometry(Geometry geometry) {
     if (geometry instanceof LineString) {
       addLineString(originalSegments, (LineString) geometry);
@@ -362,7 +382,7 @@ public class VisibilityAlgorithm {
   /**
    * Define segment vertices
    */
-  public static final class Vertex implements Comparable<Vertex> {
+  private static final class Vertex implements Comparable<Vertex> {
     final int idSegment;
     final int vertexIndex; // 0 or 1
     final double angle; //vertex angle with position of view point
