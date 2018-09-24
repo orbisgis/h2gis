@@ -1,16 +1,14 @@
 package org.h2gis.utilities.jts_utils;
 
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.io.*;
-import com.vividsolutions.jts.math.Vector2D;
-import com.vividsolutions.jts.util.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 import org.junit.Test;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 public class VisibilityAlgorithmTest {
 

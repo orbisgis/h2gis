@@ -1,15 +1,23 @@
 package org.h2gis.utilities.jts_utils;
 
 
-import com.vividsolutions.jts.algorithm.*;
-import com.vividsolutions.jts.geom.*;
-import com.vividsolutions.jts.noding.IntersectionAdder;
-import com.vividsolutions.jts.noding.MCIndexNoder;
-import com.vividsolutions.jts.noding.NodedSegmentString;
-import com.vividsolutions.jts.noding.SegmentString;
-import com.vividsolutions.jts.util.*;
+import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.noding.IntersectionAdder;
+import org.locationtech.jts.noding.MCIndexNoder;
+import org.locationtech.jts.noding.NodedSegmentString;
+import org.locationtech.jts.noding.SegmentString;
+import org.locationtech.jts.util.GeometricShapeFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class compute an IsoVist from a coordinate and a set of originalSegments
