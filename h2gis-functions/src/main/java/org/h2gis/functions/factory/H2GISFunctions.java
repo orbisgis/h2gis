@@ -31,6 +31,10 @@ import org.h2.api.Aggregate;
 import org.h2.tools.RunScript;
 import org.h2gis.api.Function;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.spatial.earth.ST_GeometryShadow;
+import org.h2gis.functions.spatial.earth.ST_Isovist;
+import org.h2gis.functions.spatial.earth.ST_SunPosition;
+import org.h2gis.functions.spatial.earth.ST_Svf;
 import org.h2gis.functions.spatial.split.ST_LineIntersector;
 import org.h2gis.functions.spatial.split.ST_Split;
 import org.h2gis.functions.io.DriverManager;
@@ -112,9 +116,6 @@ import org.h2gis.functions.spatial.distance.ST_LongestLine;
 import org.h2gis.functions.spatial.distance.ST_MaxDistance;
 import org.h2gis.functions.spatial.distance.ST_ProjectPoint;
 import org.h2gis.functions.spatial.distance.ST_ShortestLine;
-import org.h2gis.functions.spatial.earth.ST_GeometryShadow;
-import org.h2gis.functions.spatial.earth.ST_SunPosition;
-import org.h2gis.functions.spatial.earth.ST_Svf;
 import org.h2gis.functions.spatial.edit.ST_AddPoint;
 import org.h2gis.functions.spatial.edit.ST_AddZ;
 import org.h2gis.functions.spatial.edit.ST_CollectionExtract;
@@ -443,7 +444,8 @@ public class H2GISFunctions {
                 new ST_Svf(),
                 new JsonWrite(),
                 new ST_ShortestLine(),
-                new ST_OrientedEnvelope()};
+                new ST_OrientedEnvelope(),
+                new ST_Isovist()};
     }
 
     /**

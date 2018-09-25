@@ -951,4 +951,20 @@ public class SpatialFunction2Test {
         Assert.assertTrue(rs.next());
         assertGeometryEquals("LINESTRING (2 4, 2 4.9)", rs.getObject(1));
     }
+
+    @Test
+    public void test_ST_Isovist() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Isovist('POINT (1.8 2.4)'::GEOMETRY, 'MULTIPOLYGON(((1 2, 3 2, 2 3, 1 2)),((2 4, 5 2, 5 5, 2 4)),((1 1 0, 4 1 0, 4 4 5, 1 1 0)))'::GEOMETRY, 10) as result");
+        Assert.assertTrue(rs.next());
+        assertGeometryEquals("POLYGON ((2.5 2.5, 2 3, 1 2, 2 2, 2.5 2.5))", rs.getObject(1));
+    }
+
+    @Test
+    public void test_ST_IsovistConstraint() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Isovist('POINT (2 2.5)'::GEOMETRY, 'MULTIPOLYGON(((1 2, 3 2, 2 3, 1 2)),((2 4, 5 2, 5 5, 2 4)),((1 1 0, 4 1 0, 4 4 5, 1 1 0)))'::GEOMETRY, 10, 0, PI() / 2) as result");
+        Assert.assertTrue(rs.next());
+        assertGeometryEquals("POLYGON ((2 2.5, 2 3, 2.5 2.5, 2 2.5))", rs.getObject(1));
+    }
 }
