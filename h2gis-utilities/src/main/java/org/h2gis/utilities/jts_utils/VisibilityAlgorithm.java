@@ -2,22 +2,15 @@ package org.h2gis.utilities.jts_utils;
 
 
 import org.locationtech.jts.algorithm.RobustLineIntersector;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.util.*;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.util.GeometricShapeFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * This class compute an IsoVist from a coordinate and a set of originalSegments
@@ -86,6 +79,14 @@ public class VisibilityAlgorithm {
     return Math.atan2(b.y - a.y, b.x - a.x);
   }
 
+  private static int sum(List<Integer> values) {
+    int tot = 0;
+    for(int val : values) {
+      tot += val;
+    }
+    return tot;
+  }
+
   /**
    * Compute isovist polygon
    * @param position View coordinate
@@ -95,26 +96,52 @@ public class VisibilityAlgorithm {
    */
   public Polygon getIsoVist(Coordinate position, boolean addEnvelope) {
     // Add bounding circle
-    List<SegmentString> bounded;
+    List<SegmentString> bounded = new ArrayList<>(originalSegments.size() + numPoints);
+
+    // Compute envelope
+    Envelope env = new Envelope();
+    for(SegmentString segment : originalSegments) {
+      env.expandToInclude(segment.getCoordinate(0));
+      env.expandToInclude(segment.getCoordinate(1));
+    }
     if(addEnvelope) {
-      bounded = new ArrayList<>(originalSegments);
+      // Add bounding geom in envelope
+      env.expandToInclude(new Coordinate(position.x-maxDistance, position.y-maxDistance));
+      env.expandToInclude(new Coordinate(position.x+maxDistance, position.y+position.x));
       GeometricShapeFactory geometricShapeFactory = new GeometricShapeFactory();
-      geometricShapeFactory.setCentre(position);
+      geometricShapeFactory.setCentre(new Coordinate(position.x - env.getMinX(), position.y - env.getMinY()));
       geometricShapeFactory.setWidth(maxDistance * 2);
       geometricShapeFactory.setHeight(maxDistance * 2);
       geometricShapeFactory.setNumPoints(numPoints);
       addPolygon(bounded, geometricShapeFactory.createEllipse());
-
+      for(SegmentString segment : originalSegments) {
+        final Coordinate a = segment.getCoordinate(0);
+        final Coordinate b = segment.getCoordinate(1);
+        addSegment(bounded, new Coordinate(a.x - env.getMinX(), a.y - env.getMinY()),
+                new Coordinate(b.x - env.getMinX(), b.y - env.getMinY()));
+      }
       // Intersection with bounding circle
       bounded = fixSegments(bounded);
     } else {
-      bounded = originalSegments;
+      for(SegmentString segment : originalSegments) {
+        final Coordinate a = segment.getCoordinate(0);
+        final Coordinate b = segment.getCoordinate(1);
+        addSegment(bounded, new Coordinate(a.x - env.getMinX(), a.y - env.getMinY()),
+                new Coordinate(b.x - env.getMinX(), b.y - env.getMinY()));
+      }
     }
+
+    position = new Coordinate(position.x - env.getMinX(), position.y - env.getMinY());
 
     List<Vertex> sorted = new ArrayList<>(bounded.size() * 2);
 
+    //System.out.println(String.format(Locale.ROOT, "var observer_x = %.4f;", position.x));
+    //System.out.println(String.format(Locale.ROOT, "var observer_y = %.4f;", position.y));
+
     for (int idSegment = 0; idSegment < bounded.size(); idSegment++) {
       SegmentString segment = bounded.get(idSegment);
+
+      //System.out.println(String.format(Locale.ROOT,"segments.push([[%.2f, %.2f],[%.2f, %.2f]]);", segment.getCoordinate(0).x,segment.getCoordinate(0).y,segment.getCoordinate(1).x,segment.getCoordinate(1).y));
       // Convert segment to angle relative to viewPoint
       for(int j=0; j < 2; ++j) {
         final Coordinate pt = segment.getCoordinate(j);
@@ -157,13 +184,20 @@ public class VisibilityAlgorithm {
       Coordinate vertex = bounded.get(sorted.get(i).idSegment).getCoordinate(sorted.get(i).vertexIndex);
       int oldSegment = heap.get(0);
       do {
+        int hash = 0;
+        for(int hashi = 0; hashi < heap.size(); hashi++) {
+          hash+=hashi*heap.get(hashi);
+        }
+        System.out.println(String.format("%d,%d",i,hash));
         if(map.get(sorted.get(i).idSegment) != -1) {
           if(sorted.get(i).idSegment == oldSegment) {
             extend = true;
             vertex = bounded.get(sorted.get(i).idSegment).getCoordinate(sorted.get(i).vertexIndex);
           }
+          //System.out.println(String.format("%d,remove,%d", i,map.get(sorted.get(i).idSegment)));
           remove(map.get(sorted.get(i).idSegment), heap, position, bounded, vertex, map);
         } else {
+          //System.out.println(String.format("%d,insert,%d", i,sorted.get(i).idSegment));
           insert(sorted.get(i).idSegment, heap, position, bounded, vertex, map);
           if(heap.get(0) != oldSegment) {
             shorten = true;
@@ -176,14 +210,16 @@ public class VisibilityAlgorithm {
       } while (sorted.get(i).angle < sorted.get(orig).angle + epsilon);
 
       if(extend) {
-        polygon.add(vertex);
+        polygon.add(new Coordinate(vertex.x + env.getMinX(), vertex.y + env.getMinY()));
         Coordinate cur = intersectLines(bounded.get(heap.get(0)), position, vertex);
         if(cur != null && !cur.equals2D(vertex, epsilon)) {
-          polygon.add(cur);
+          polygon.add(new Coordinate(cur.x + env.getMinX(), cur.y + env.getMinY()));
         }
       } else if(shorten) {
-        polygon.add(intersectLines(bounded.get(oldSegment), position, vertex));
-        polygon.add(intersectLines(bounded.get(heap.get(0)), position, vertex));
+        final Coordinate i1 = intersectLines(bounded.get(oldSegment), position, vertex);
+        final Coordinate i2 = intersectLines(bounded.get(heap.get(0)), position, vertex);
+        polygon.add(new Coordinate(i1.x + env.getMinX(), i1.y + env.getMinY()));
+        polygon.add(new Coordinate(i2.x + env.getMinX(), i2.y + env.getMinY()));
       }
     }
     // Finish polygon
@@ -267,7 +303,7 @@ public class VisibilityAlgorithm {
     if(cur != 0 && lessThan(heap.get(cur), heap.get(getParent(cur)), position, segments, destination)) {
       while(cur > 0) {
         int parent = getParent(cur);
-        if(lessThan(heap.get(cur), heap.get(parent), position, segments, destination)) {
+        if(!lessThan(heap.get(cur), heap.get(parent), position, segments, destination)) {
           break;
         }
         map.set(heap.get(parent), cur);
