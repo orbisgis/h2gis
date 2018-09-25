@@ -30,6 +30,10 @@ import org.locationtech.jts.io.WKTReader;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 
+/**
+ * Test isovist algorithm
+ * @author Nicolas Fortin, Ifsttar UMRAE
+ */
 public class VisibilityAlgorithmTest {
 
   /**

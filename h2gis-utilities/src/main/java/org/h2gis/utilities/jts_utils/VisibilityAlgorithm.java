@@ -34,7 +34,32 @@ import java.util.*;
 
 /**
  * This class compute an IsoVist from a coordinate and a set of originalSegments
- * This code is adapted from Byron Knoll javascript library https://github.com/byronknoll/visibility-polygon-js
+ * This code is adapted from Byron Knoll byron-at-byronknoll.com javascript library:
+ *
+ * https://github.com/byronknoll/visibility-polygon-js
+ *
+ * First, sort all vertices according to their angle to the observer.
+ * Now iterate (angle sweep) through the sorted vertices.
+ * For each vertex imagine a ray projecting outwards from the observer towards that vertex
+ * compute the closest "active" line segment in order to construct the visibility polygon.
+ * The closest active line segment must be computed in O(log n) time (for each vertex).
+ * A special type of heap accomplish this:
+ * The heap keeps track of all active line segments (arranged by distance to the observer).
+ * The closest line segment is at the root of the heap.
+ * Since line segments don't intersect (a constraint in the problem definition), the heap remains consistent.
+ * This property is essential - if the distance ordering between two line segments could change depending on the angle,
+ * then a heap would no longer work.
+ * So, we can find the closest segment in O(1) time and insert new segments in O(log n) time.
+ * The reason the heap I used is "special" is because it also allows removing line segments
+ * (when they are no longer active) in O(log n) time.
+ * Inactive line segments can't just be ignored and left in the heap.
+ * they need to be removed to maintain a consistent distance ordering.
+ * In a standard heap, removing an arbitrary element takes O(n) time
+ * (since it takes linear time just to find the element).
+ * Heap contains an additional map structure from element value to heap index, so elements can be found in O(1) time.
+ * Once an element is found, we swap in the last element in the tree and propagate it either up or down
+ * (which takes O(log n) time) to maintain heap correctness.
+ * @author Nicolas Fortin, Ifsttar UMRAE
  */
 public class VisibilityAlgorithm {
   private static final double M_2PI = Math.PI * 2.;
