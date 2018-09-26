@@ -422,6 +422,8 @@ public class VisibilityAlgorithm {
         addLineString(segments, (LineString) simpleGeom);
       } else if (simpleGeom instanceof Polygon) {
         addPolygon(segments, (Polygon) simpleGeom);
+      } else if(simpleGeom instanceof GeometryCollection) {
+        addGeometry(segments, (GeometryCollection) simpleGeom);
       }
     }
   }

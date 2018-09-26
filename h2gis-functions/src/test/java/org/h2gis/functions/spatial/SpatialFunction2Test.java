@@ -23,6 +23,7 @@ package org.h2gis.functions.spatial;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 
 import static junit.framework.Assert.assertTrue;
@@ -37,6 +38,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.WKTReader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -966,5 +969,15 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_Isovist('POINT (2 2.5)'::GEOMETRY, 'MULTIPOLYGON(((1 2, 3 2, 2 3, 1 2)),((2 4, 5 2, 5 5, 2 4)),((1 1 0, 4 1 0, 4 4 5, 1 1 0)))'::GEOMETRY, 10, 0, PI() / 2) as result");
         Assert.assertTrue(rs.next());
         assertGeometryEquals("POLYGON ((2 2.5, 2 3, 2.5 2.5, 2 2.5))", rs.getObject(1));
+    }
+
+    @Test
+    public void test_ST_IsovistMulti() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Intersects(ST_Isovist('POINT (28.20 59.11)'::GEOMETRY, 'GEOMETRYCOLLECTION(\n" +
+                "MULTIPOLYGON (((87.1 39 0, 90.8 28.8 0, 80.8 25.3 0, 75.4 40.7 0, 83.1 43.5 0, 87.1 39 0)), ((70.3 67.2 0, 76.3 51.9 0, 79.2 53.1 0, 81.9 46.1 0, 75.3 43.6 0, 72.6 50.5 0, 68 48.6 0, 61.9 63.9 0, 70.3 67.2 0)), ((68 33.6 0, 64.8 32.5 0, 62.3 39 0, 69.1 41.4 0, 70.7 34.8 0, 68 33.6 0)), ((65.4 31.2 0, 69 21.9 0, 55.1 16.3 0, 51.5 25.7 0, 65.4 31.2 0)), ((59.6 85.6 0, 63.4 75.6 0, 54.8 72.5 0, 51.1 82.2 0, 59.6 85.6 0)), ((62 38.3 0, 62.9 36.1 0, 58.8 34.5 0, 57.9 36.7 0, 62 38.3 0))), MULTILINESTRING ((55.8 87.4 0, 32.5 78 0), (32.5 78 0, 30.4 82.9 0), (45.7 48.2 0, 38.7 63.1 0), (13.8 77.7 0, 17.7 67.4 0), (14.9 48.4 0, 9.6 46.6 0), (9.6 46.6 0, 12.1 39.1 0))\n" +
+                ")'::GEOMETRY, 50), ' POINT (37.66 83.82)'::geometry) as result");
+        Assert.assertTrue(rs.next());
+        assertFalse(rs.getBoolean(1));
     }
 }
