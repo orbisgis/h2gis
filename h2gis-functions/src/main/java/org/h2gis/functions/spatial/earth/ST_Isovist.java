@@ -56,7 +56,7 @@ public class ST_Isovist extends DeterministicScalarFunction {
      * @return The visibility polygon
      * @throws SQLException In case of wrong parameters
      */
-    public static Polygon isovist(Geometry viewPoint, Geometry lineSegments, double maxDistance) throws SQLException {
+    public static Geometry isovist(Geometry viewPoint, Geometry lineSegments, double maxDistance) throws SQLException {
         if (!(viewPoint instanceof Point) || viewPoint.isEmpty()) {
             throw new SQLException("First parameter of ST_Isovist must be a Point");
         }
@@ -74,11 +74,15 @@ public class ST_Isovist extends DeterministicScalarFunction {
      * @param lineSegments Occlusion segments. Geometry collection or polygon or linestring
      * @param maxDistance Maximum distance of view from viewPoint (spatial ref units)
      * @param radBegin Constraint view angle start in radian
-     * @param radEnd Constraint view angle end in radian
+     * @param radSize Constraint view angle size in radian
      * @return The visibility polygon
      * @throws SQLException In case of wrong parameters
      */
-    public static Geometry isovist(Geometry viewPoint, Geometry lineSegments, double maxDistance, double radBegin, double radEnd) throws SQLException {
+    public static Geometry isovist(Geometry viewPoint, Geometry lineSegments, double maxDistance, double radBegin, double radSize) throws SQLException {
+        if(radSize <=0 ) {
+            throw new SQLException("Angle size must be superior than 0 rad");
+        }
+
         Geometry isopoly = isovist(viewPoint, lineSegments, maxDistance);
 
         // Intersects with view constrain
@@ -86,6 +90,6 @@ public class ST_Isovist extends DeterministicScalarFunction {
         geometricShapeFactory.setCentre(viewPoint.getCoordinate());
         geometricShapeFactory.setWidth(maxDistance * 2);
         geometricShapeFactory.setHeight(maxDistance * 2);
-        return geometricShapeFactory.createArcPolygon(radBegin, radEnd).intersection(isopoly);
+        return geometricShapeFactory.createArcPolygon(radBegin, radSize).intersection(isopoly);
     }
 }
