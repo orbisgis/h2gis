@@ -9,7 +9,7 @@ Welcome to the H2GIS documentation. Please choose your version :
 ## Users documentation
 
 * [dev] : version under development / not released
-* [1.4.0] : last release
+* [1.4.0] : latest release
 * [1.3.2] : former release
 * [1.3.1] : former release
 * [1.3] : former release
