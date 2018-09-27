@@ -8,10 +8,10 @@ fi
 cd "$(dirname "$0")/docs"
 oldVersion=""
 while IFS='' read -r line || [[ -n "$line" ]]; do
-	if [[ $line == *"last release" ]] && [[ $line != "* [$1] : last release" ]]; then
+	if [[ $line == *"latest release" ]] && [[ $line != "* [$1] : latest release" ]]; then
 		oldVersion=$(echo $line| cut -d'[' -f 2| cut -d']' -f 1)
-		echo "* [$1] : last release" >> "Home.md.new"
-		echo "${line/last release/former release}" >> "Home.md.new"
+		echo "* [$1] : latest release" >> "Home.md.new"
+		echo "${line/latest release/former release}" >> "Home.md.new"
 	elif [[ $line == "[dev]: ../dev/home" ]]; then
 		echo "$line" >> "Home.md.new"
 		echo "[$1]: ../$1/home" >> "Home.md.new"
