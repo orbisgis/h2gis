@@ -11,4 +11,4 @@ permalink: /docs/1.3.1/ST_Drape/
 
 Sorry, this function is not avalaible for this release of H2GIS. 
 
-Please refer to the documentation under [development](../../dev/ST_Drape).
+This function is available from version [1.4.0](../../1.4.0/ST_Drape) of H2GIS.

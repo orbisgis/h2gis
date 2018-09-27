@@ -5,7 +5,7 @@ category: geom2D/process-geometries
 is_function: true
 description: Make a Geometry valid
 prev_section: ST_LineMerge
-next_section: ST_Polygonize
+next_section: ST_Node
 permalink: /docs/dev/ST_MakeValid/
 ---
 

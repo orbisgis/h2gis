@@ -5,7 +5,7 @@ category: geom2D/geometry-creation
 is_function: true
 description: Return the octogonal envelope of a Geometry
 prev_section: ST_MinimumRectangle
-next_section: ST_RingBuffer
+next_section: ST_Point
 permalink: /docs/dev/ST_OctogonalEnvelope/
 ---
 

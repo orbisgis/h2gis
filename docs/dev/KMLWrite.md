@@ -4,7 +4,7 @@ title: KMLWrite
 category: h2drivers
 is_function: true
 description: KML, KMZ &rarr; Table
-prev_section: GeoJsonWrite
+prev_section: JsonWrite
 next_section: SHPRead
 permalink: /docs/dev/KMLWrite/
 ---
