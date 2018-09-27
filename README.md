@@ -1,4 +1,4 @@
-# H2GIS [![Build Status](https://travis-ci.org/orbisgis/h2gis.png?branch=master)](https://travis-ci.org/orbisgis/h2gis)
+# H2GIS [![GitHub](https://img.shields.io/github/license/orbisgis/h2gis.svg)](https://github.com/orbisgis/h2gis/blob/master/LICENSE)[![Build Status](https://img.shields.io/jenkins/t/http/jenkins.orbisgis.org/job/H2GIS.svg)](http://jenkins.orbisgis.org/job/H2GIS/)[![Build Status](https://img.shields.io/jenkins/s/http/jenkins.orbisgis.org/job/H2GIS.svg)](http://jenkins.orbisgis.org/job/H2GIS/)[![GitHub release](https://img.shields.io/github/release/orbisgis/h2gis.svg)](https://github.com/orbisgis/h2gis/releases)
 
 H2GIS is a spatial extension of the [H2](http://www.h2database.com/) database
 engine in the spirit of [PostGIS](http://postgis.net/). It adds support for
