@@ -4,7 +4,7 @@ title: ST_RingBuffer
 category: geom2D/geometry-creation
 is_function: true
 description: Return a <code>MULTIPOLYGON</code> of buffers centered at a Geometry and of increasing buffer Size
-prev_section: ST_OctogonalEnvelope
+prev_section: ST_Point
 next_section: geom2D/edit-geometries
 permalink: /docs/dev/ST_RingBuffer/
 ---

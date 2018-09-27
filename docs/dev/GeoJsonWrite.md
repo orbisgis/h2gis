@@ -5,7 +5,7 @@ category: h2drivers
 is_function: true
 description: Table &rarr; GeoJSON
 prev_section: GeoJsonRead
-next_section: KMLWrite
+next_section: JsonWrite
 permalink: /docs/dev/GeoJsonWrite/
 ---
 

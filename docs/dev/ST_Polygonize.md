@@ -4,7 +4,7 @@ title: ST_Polygonize
 category: geom2D/process-geometries
 is_function: true
 description: Create a <code>MULTIPOLYGON</code> from edges of Geometries
-prev_section: ST_MakeValid
+prev_section: ST_Node
 next_section: ST_PrecisionReducer
 permalink: /docs/dev/ST_Polygonize/
 ---
