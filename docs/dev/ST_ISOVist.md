@@ -31,7 +31,7 @@ Resulting polygon will be enclosed by a circle defined by the maximum distance (
 * `point` : Point coordinates (x, y, (z)) from which the visibility will be calculated,
 * `obstacles` : Geometry or set of geometries grouped into a simple or complex geometry, used as obstacles,
 * `maxDistance` : Only obstacles located within this distance from the `point` are considered in the calculation *(only cartesian distance is accepted - depends on your spatial ref)*,
-* `angleStart` : Starting angle from which visibility will be calculated *(exprimed in radian - to convert into degree, use the H2 database [PI()](http://h2database.com/html/functions.html#pi) function)*,
+* `angleStart` : Starting angle from which visibility will be calculated *(exprimed in radian - to convert from degree, use the H2 database [PI()](http://h2database.com/html/functions.html#pi) function)*,
 * `angleStop` : Ending angle from which visibility will be calculated *(exprimed in radian)*.
 
 
