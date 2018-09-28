@@ -71,7 +71,7 @@ CREATE TABLE geomcollection AS SELECT ST_GEOMFROMTEXT('GEOMETRYCOLLECTION(
 	(13.8 77.7 0, 17.7 67.4 0), (14.9 48.4 0, 9.6 46.6 0), (9.6 46.6 0, 12.1 39.1 0)))') as the_geom;
 {% endhighlight %}
 
-#### Case with just a distance
+#### Example with a distance
 
 ##### Using ```polygon```
 
@@ -136,7 +136,7 @@ CREATE TABLE isovist AS
 Legend : ```polygon``` in grey /  ```walls``` in black /  ```point``` in red / ```resulting ISOVist layer``` in orange
 <img class="displayed" src="../st_isovist_p1_50m_geomcollection.png"/>
 
-#### Case with starting and ending angles
+#### Example with starting and ending angles
 
 Compute the visibility using buildings (```poygon``` layer) with a distance of 50m, starting at 0 rad and ending at 3 rad. 
 
@@ -162,7 +162,7 @@ CREATE TABLE isovist AS
 
 -----
 
-#### Showcase : Compute visibilty along a path 
+#### Application : Compute visibilty along a path 
 
 ##### Aim 
 Compute visibilities in the city center of [Vannes](https://www.openstreetmap.org/#map=17/47.65908/-2.75922) (France), every 10m, with a 100m maximum distance of visibility and export results into an animated .gif file.
@@ -178,7 +178,7 @@ To do so, just follow these steps:
 
 * 1- Prepare input data
 * 2- Run the Groovy script
-* 3- Convert all the images into a .gif
+* 3- Convert all the images into an animated .gif
 
 ##### 1- Prepare input data
 
@@ -264,7 +264,7 @@ Where
 * `src` and `iso` are respectively the output table names for the point where the visibility is calculated and the resulting visibility polygon. 
 
 
-##### 3- Convert all the images into a gif
+##### 3- Convert all the images into an animated gif
 
 Once the script ran, you obtain many .png files *(in this example we have 200 files)*.
 <img class="displayed" src="../st_isovist_png_files.png"/>
