@@ -122,5 +122,5 @@ CREATE TABLE SVF AS SELECT a.THE_GEOM, a.ID,
 
 ##### See also
 
-* [`ST_SunPosition`](../ST_SunPosition)
+* [`ST_SunPosition`](../ST_SunPosition), [`ST_ISOVist`](../ST_ISOVist)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/earth/ST_Svf.java" target="_blank">Source code</a>

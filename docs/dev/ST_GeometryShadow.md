@@ -136,5 +136,5 @@ A specific use case, using `ST_SunPosition` and `ST_GeometryShadow` is avalaible
 
 ##### See also
 
-* [`ST_SunPosition`](../ST_SunPosition)
+* [`ST_SunPosition`](../ST_SunPosition),  [`ST_ISOVist`](../ST_ISOVist)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/earth/ST_GeometryShadow.java" target="_blank">Source code</a>
