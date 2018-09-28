@@ -4,7 +4,7 @@ title: ST_LineIntersector
 category: geom2D/process-geometries
 is_function: true
 description: Split an input <code>LINESTRING</code> with another geometry
-prev_section: geom2D/process-geometries
+prev_section: ST_ISOVist
 next_section: ST_LineMerge
 permalink: /docs/dev/ST_LineIntersector/
 ---
