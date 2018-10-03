@@ -83,7 +83,7 @@
         <jackson-core-version>2.3.1</jackson-core-version>
 
         <java-network-analyzer-groupId>org.orbisgis</java-network-analyzer-groupId>
-        <java-network-analyzer-version>0.1.6</java-network-analyzer-version>
+        <java-network-analyzer-version>0.1.7</java-network-analyzer-version>
 
         <jts-core-groupId>org.locationtech.jts</jts-core-groupId>
         <jts-core-version>1.15.1</jts-core-version>
