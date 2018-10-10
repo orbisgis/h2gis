@@ -54,6 +54,24 @@ SELECT * FROM AREA2;
 -- | MULTIPOLYGON(((90 109, 190 109, 90 9, 90 109)))  |      2 |
 {% endhighlight %}
 
+
+### Export with the .prj file
+
+If you want to export your shapefile with it's projection (.prj) file, you have first to force the SRID associated to the geometry. To do so, just execute the two following instructions.
+
+{% highlight mysql %}
+UPDATE mytable SET the_geom = ST_SetSRID(the_geom, EPSG_CODE);
+ALTER TABLE mytable ADD CHECK ST_SRID(the_geom) = EPSG_CODE;
+{% endhighlight %}
+
+Where:
+
+* `mytable` is the table name to update
+* `the_geom` is the geometric field name
+* `EPSG_CODE` is the EPSG id corresponding to your system (e.g `4326` for `WGS84` or `2154` for the french `Lambert 93`).
+
+Once done, just export your shapefile as seen before.
+
 ##### See also
 
 * [`SHPRead`](../SHPRead)
