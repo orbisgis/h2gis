@@ -3,7 +3,7 @@ layout: docs
 title: ST_ShortestLine
 category: geom2D/distance-functions
 is_function: true
-description: Returns the 2-dimensional shortest `LINESTRING` between two geometries
+description: Returns the 2-dimensional shortest <code>LINESTRING</code> between two geometries
 prev_section: ST_ProjectPoint
 next_section: geom2D/operators
 permalink: /docs/1.3.2/ST_ShortestLine/
