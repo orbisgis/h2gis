@@ -55,9 +55,11 @@ SELECT * FROM AREA2;
 {% endhighlight %}
 
 
-### Export with the .prj file
+### Export the .prj file
 
-If you want to export your shapefile with it's projection (.prj) file, you have first to force the SRID associated to the geometry. To do so, just execute the two following instructions.
+If you want to export your shapefile with it's projection, stored in a .prj file, you must assume that the table contains a SRID constraint value  greater than 0. 
+
+If not the SRID must be enforced using the following commands:
 
 {% highlight mysql %}
 UPDATE mytable SET the_geom = ST_SetSRID(the_geom, EPSG_CODE);
@@ -70,7 +72,7 @@ Where:
 * `the_geom` is the geometric field name
 * `EPSG_CODE` is the EPSG id corresponding to your system (e.g `4326` for `WGS84` or `2154` for the french `Lambert 93`).
 
-Once done, just export your shapefile as seen before.
+Then export your shapefile as seen before.
 
 ##### See also
 
