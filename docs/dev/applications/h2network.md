@@ -10,13 +10,13 @@ permalink: /docs/dev/h2network/
 
 `H2Network` extends the `H2` / `H2GIS` geospatial database to provide graph routing functionalities. 
 
-`H2Network` is based on the [Java Network Analyzer](https://github.com/orbisgis/java-network-analyzer) (`JNA`) library. 
+`H2Network` offers a collection of SQL functions on top of the [Java Network Analyzer](https://github.com/orbisgis/java-network-analyzer) (`JNA`) library. 
 
 JNA provides a collection of graph theory and social network analysis algorithms. These algorithms are implemented on mathematical graphs using the [JGraphT](https://jgrapht.org/) library.
 
 ### Install H2Network
 
-To install `H2Network` execute the two following instructions.
+`H2Network` is delivered with the `H2GIS` binaries. So to install `H2Network` just run the following instructions.
 
 {% highlight mysql %}
 CREATE ALIAS IF NOT EXISTS H2GIS_NETWORK FOR "org.h2gis.network.functions.NetworkFunctions.load";
@@ -26,7 +26,7 @@ CALL H2GIS_NETWORK();
 
 ### H2Network functions
 
-The following H2Network functions are available:
+The following SQL functions are available:
 
 {% include table_of_functions.html %}
 
