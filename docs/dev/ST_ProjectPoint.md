@@ -5,7 +5,7 @@ category: geom2D/distance-functions
 is_function: true
 description: Project a <code>POINT</code> on a <code>(MULTI)LINESTRING</code>
 prev_section: ST_Perimeter
-next_section: geom2D/operators
+next_section: ST_ShortestLine
 permalink: /docs/dev/ST_ProjectPoint/
 ---
 
@@ -53,5 +53,5 @@ SELECT ST_PROJECTPOINT('POINT(4 3)',
 
 ##### See also
 
-* [`ST_LocateAlong`](../ST_LocateAlong), [`ST_ClosestPoint`](../ST_ClosestPoint)
+* [`ST_ShortestLine`](../ST_ShortestLine), [`ST_LocateAlong`](../ST_LocateAlong), [`ST_ClosestPoint`](../ST_ClosestPoint)
 * <a href="https://github.com/orbisgis/h2gis/blob/master/h2gis-functions/src/main/java/org/h2gis/functions/spatial/distance/ST_ProjectPoint.java" target="_blank">Source code</a>
