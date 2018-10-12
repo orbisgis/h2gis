@@ -34,8 +34,11 @@ import org.h2gis.api.ScalarFunction;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.cts.op.CoordinateOperationException;
 
 
 /**
@@ -74,7 +77,7 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
      * @return
      * @throws SQLException 
      */
-    public static Geometry ST_Transform(Connection connection, Geometry geom, Integer codeEpsg) throws SQLException {
+    public static Geometry ST_Transform(Connection connection, Geometry geom, Integer codeEpsg) throws SQLException, CoordinateOperationException {
         if (geom == null) {
             return null;
         }
@@ -108,10 +111,10 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                     return outPutGeom;
                 } else {
                     if (inputCRS instanceof GeodeticCRS && targetCRS instanceof GeodeticCRS) {
-                        List<CoordinateOperation> ops = CoordinateOperationFactory
+                        Set<CoordinateOperation> ops = CoordinateOperationFactory
                                 .createCoordinateOperations((GeodeticCRS) inputCRS, (GeodeticCRS) targetCRS);
                         if (!ops.isEmpty()) {
-                            op = ops.get(0);
+                            op = CoordinateOperationFactory.getMostPrecise(ops);
                             Geometry outPutGeom = (Geometry) geom.copy();
                             outPutGeom.geometryChanged();
                             outPutGeom.apply(new CRSTransformFilter(op));
@@ -162,8 +165,8 @@ public class ST_Transform extends AbstractFunction implements ScalarFunction {
                 } else {
                     coord.z = Double.NaN;
                 }
-            } catch (IllegalCoordinateException ice) {
-                throw new RuntimeException("Cannot transform the coordinate" + coord.toString(), ice);
+            } catch (CoordinateOperationException |IllegalCoordinateException ex) {
+                Logger.getLogger(ST_Transform.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         }
