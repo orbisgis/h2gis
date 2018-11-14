@@ -83,6 +83,6 @@ public class ST_ClosestCoordinate extends DeterministicScalarFunction {
             return GEOMETRY_FACTORY.createPoint(closestCoordinates.iterator().next());
         }
         return GEOMETRY_FACTORY.createMultiPoint(
-                closestCoordinates.toArray(new Coordinate[closestCoordinates.size()]));
+                closestCoordinates.toArray(new Coordinate[0]));
     }
 }

@@ -69,7 +69,7 @@ public class ST_Tessellate extends DeterministicScalarFunction {
                     polygons.add((Polygon)triangles.getGeometryN(idTri));
                 }
             }
-            return geometry.getFactory().createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+            return geometry.getFactory().createMultiPolygon(polygons.toArray(new Polygon[0]));
         } else {
             throw new IllegalArgumentException("ST_Tessellate accept only Polygon and MultiPolygon types not instance" +
                     " of "+geometry.getClass().getSimpleName());

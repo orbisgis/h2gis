@@ -61,7 +61,7 @@ public class ST_ToMultiLine extends DeterministicScalarFunction {
                 final List<LineString> lineStrings = new LinkedList<LineString>();
                 toMultiLineString(geom, lineStrings);
                 return GEOMETRY_FACTORY.createMultiLineString(
-                        lineStrings.toArray(new LineString[lineStrings.size()]));
+                        lineStrings.toArray(new LineString[0]));
             } else {
                 return GEOMETRY_FACTORY.createMultiLineString(null);
             }

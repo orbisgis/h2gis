@@ -82,7 +82,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
      */
     public static ResultSet triangleContouring(Connection connection, String tableName, Value... varArgs) throws SQLException {
         if (connection.getMetaData().getURL().equals(HACK_URL)) {
-            return new ExplodeResultSet(connection,tableName, Arrays.asList(0.0)).getResultSet();
+            return new ExplodeResultSet(connection,tableName, Collections.singletonList(0.0)).getResultSet();
         }
         ExplodeResultSet rowSource = null;
         if(varArgs.length > 3) {

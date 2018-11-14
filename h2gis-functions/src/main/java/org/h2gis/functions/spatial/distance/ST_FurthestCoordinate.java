@@ -83,6 +83,6 @@ public class ST_FurthestCoordinate extends DeterministicScalarFunction {
             return GEOMETRY_FACTORY.createPoint(furthestCoordinates.iterator().next());
         }
         return GEOMETRY_FACTORY.createMultiPoint(
-                furthestCoordinates.toArray(new Coordinate[furthestCoordinates.size()]));
+                furthestCoordinates.toArray(new Coordinate[0]));
     }
 }

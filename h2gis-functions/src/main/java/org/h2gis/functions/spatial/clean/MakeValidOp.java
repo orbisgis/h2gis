@@ -456,7 +456,7 @@ public class MakeValidOp {
                 // seq.size == 0
             }
             Polygon poly = factory.createPolygon(factory.createLinearRing(outerRingSeq),
-                    innerRings.toArray(new LinearRing[innerRings.size()]));
+                    innerRings.toArray(new LinearRing[0]));
             if (degeneratedRings.isEmpty()) {
                 return poly;
             } else {

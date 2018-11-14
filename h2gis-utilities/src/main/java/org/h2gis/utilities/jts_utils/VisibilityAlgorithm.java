@@ -23,7 +23,6 @@ package org.h2gis.utilities.jts_utils;
 
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.geom.util.*;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.NodedSegmentString;
@@ -251,7 +250,7 @@ public class VisibilityAlgorithm {
     // Finish polygon
     polygon.add(polygon.get(0));
     GeometryFactory geometryFactory = new GeometryFactory();
-    return geometryFactory.createPolygon(polygon.toArray(new Coordinate[polygon.size()]));
+    return geometryFactory.createPolygon(polygon.toArray(new Coordinate[0]));
   }
 
   private static Coordinate intersectLines(SegmentString a, Coordinate b1, Coordinate b2) {

@@ -101,7 +101,7 @@ public class ST_Voronoi extends DeterministicScalarFunction {
                 QuadEdgeSubdivision subdivision = diagramBuilder.getSubdivision();
                 List<Coordinate> circumcenter = new ArrayList<Coordinate>(geomCollection.getNumGeometries());
                 subdivision.visitTriangles(new TriangleVisitorCircumCenter(circumcenter), false);
-                return geomCollection.getFactory().createMultiPoint(circumcenter.toArray(new Coordinate[circumcenter.size()]));
+                return geomCollection.getFactory().createMultiPoint(circumcenter.toArray(new Coordinate[0]));
             }
         } else {
             if(Double.compare(geomCollection.getEnvelopeInternal().getArea(), 0d) == 0) {

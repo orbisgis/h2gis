@@ -50,8 +50,7 @@ public class MaxDistanceOp {
      * Compute the max distance
      */
     private void computeMaxDistance() {
-        HashSet<Coordinate> coordinatesA = new HashSet<Coordinate>();
-        coordinatesA.addAll(Arrays.asList(geomA.convexHull().getCoordinates()));
+        HashSet<Coordinate> coordinatesA = new HashSet<Coordinate>(Arrays.asList(geomA.convexHull().getCoordinates()));
         Geometry fullHull = geomA.getFactory().createGeometryCollection(new Geometry[]{geomA, geomB}).convexHull();
         maxDistanceFilter = new MaxDistanceFilter(coordinatesA);
         fullHull.apply(maxDistanceFilter);

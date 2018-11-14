@@ -86,7 +86,7 @@ public class ST_LocateAlong extends DeterministicScalarFunction {
             }
         }
         return geom.getFactory().createMultiPoint(
-                result.toArray(new Coordinate[result.size()]));
+                result.toArray(new Coordinate[0]));
     }
 
     private static Set<Coordinate> computePoints(Coordinate[] coords,

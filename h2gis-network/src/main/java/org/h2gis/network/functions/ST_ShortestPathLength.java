@@ -169,21 +169,19 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         } else if (arg3 instanceof ValueString) {
             final String arg3String = arg3.getString();
             if (JDBCUtilities.hasField(connection, inputTable, arg3String)) {
-                final String weight = arg3String;
                 if (arg4 instanceof ValueInt) {
                     int source = arg4.getInt();
-                    return oneToAll(connection, inputTable, orientation, weight, source);
+                    return oneToAll(connection, inputTable, orientation, arg3String, source);
                 } else if (arg4 instanceof ValueString) {
                     String table = arg4.getString();
-                    return manyToMany(connection, inputTable, orientation, weight, table);
+                    return manyToMany(connection, inputTable, orientation, arg3String, table);
                 } else {
                     throw new IllegalArgumentException(ARG_ERROR + arg4);
                 }
             } else {
-                final String sourceTable = arg3String;
                 if (arg4 instanceof ValueString) {
                     final String destTable = arg4.getString();
-                    return manyToManySeparateTables(connection, inputTable, orientation, null, sourceTable, destTable);
+                    return manyToManySeparateTables(connection, inputTable, orientation, null, arg3String, destTable);
                 } else {
                     throw new IllegalArgumentException(ARG_ERROR + arg4);
                 }

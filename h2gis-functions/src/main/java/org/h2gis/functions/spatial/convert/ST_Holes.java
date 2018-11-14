@@ -74,7 +74,7 @@ public class ST_Holes extends DeterministicScalarFunction {
                     }
                 }
                 return GEOMETRY_FACTORY.createGeometryCollection(
-                        holes.toArray(new Geometry[holes.size()]));
+                        holes.toArray(new Geometry[0]));
             } else {
                 return GEOMETRY_FACTORY.createGeometryCollection(null);
             }

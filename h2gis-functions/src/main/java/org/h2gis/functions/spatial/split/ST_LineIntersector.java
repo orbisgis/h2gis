@@ -86,7 +86,7 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
         if (linestrings.isEmpty()) {
             return inputLines;
         } else {
-            return gf.createMultiLineString(linestrings.toArray(new LineString[linestrings.size()]));
+            return gf.createMultiLineString(linestrings.toArray(new LineString[0]));
         }}
         throw new IllegalArgumentException("Split a " + inputLines.getGeometryType() + " by a " + clipper.getGeometryType() + " is not supported.");
     }

@@ -54,6 +54,6 @@ public class ST_LineMerge extends DeterministicScalarFunction {
         LineMerger lineMerger = new LineMerger();
         lineMerger.add(geometry);
         Collection coll = lineMerger.getMergedLineStrings();
-        return geometry.getFactory().createMultiLineString((LineString[])coll.toArray(new LineString[coll.size()]));
+        return geometry.getFactory().createMultiLineString((LineString[])coll.toArray(new LineString[0]));
     }
 }

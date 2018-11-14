@@ -132,7 +132,7 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
             if (lineStrings.size() == 1) {
                 return lineStrings.get(0);
             } else {
-                return geometry.getFactory().createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+                return geometry.getFactory().createMultiLineString(lineStrings.toArray(new LineString[0]));
             }
         }
         return null;

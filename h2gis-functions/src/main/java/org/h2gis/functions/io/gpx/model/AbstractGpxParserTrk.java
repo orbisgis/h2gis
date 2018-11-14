@@ -139,7 +139,7 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
             //parent.setTrksegID(getTrksegID());
             //parent.setTrkptID(getTrkptID());
             // Set the track geometry.
-            MultiLineString geometry = getGeometryFactory().createMultiLineString(trkList.toArray(new LineString[trkList.size()]));
+            MultiLineString geometry = getGeometryFactory().createMultiLineString(trkList.toArray(new LineString[0]));
             geometry.setSRID(4326);
             getCurrentLine().setGeometry(geometry);
             // if </trk> markup is found, the currentLine is added in the table rtedbd and the default contentHandler is setted.
@@ -158,7 +158,7 @@ public abstract class AbstractGpxParserTrk extends AbstractGpxParser {
             getReader().setContentHandler(parent);
 
         } else if (getCurrentElement().compareToIgnoreCase("trkseg") == 0) {
-            Coordinate[] trksegArray = trksegList.toArray(new Coordinate[trksegList.size()]);
+            Coordinate[] trksegArray = trksegList.toArray(new Coordinate[0]);
             // If there are more than one trackpoint, we can set a geometry to the track segment
             if (trksegList.size() > 1) {
                 LineString geometry = getGeometryFactory().createLineString(trksegArray);

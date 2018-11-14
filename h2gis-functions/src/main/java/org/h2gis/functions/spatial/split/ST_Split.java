@@ -178,8 +178,8 @@ public class ST_Split extends DeterministicScalarFunction {
                         secondLine.add(coords[i]);
                     }
                 }
-                LineString lineString1 = FACTORY.createLineString(firstLine.toArray(new Coordinate[firstLine.size()]));
-                LineString lineString2 = FACTORY.createLineString(secondLine.toArray(new Coordinate[secondLine.size()]));
+                LineString lineString1 = FACTORY.createLineString(firstLine.toArray(new Coordinate[0]));
+                LineString lineString2 = FACTORY.createLineString(secondLine.toArray(new Coordinate[0]));
                 return new LineString[]{lineString1, lineString2};
             }
         }
@@ -209,7 +209,7 @@ public class ST_Split extends DeterministicScalarFunction {
             }
         }
         if (!notChanged) {
-            return FACTORY.createMultiLineString(linestrings.toArray(new LineString[linestrings.size()]));
+            return FACTORY.createMultiLineString(linestrings.toArray(new LineString[0]));
         }
         return null;
     }

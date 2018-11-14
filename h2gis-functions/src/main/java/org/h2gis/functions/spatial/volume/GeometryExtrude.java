@@ -69,7 +69,7 @@ public class GeometryExtrude {
         }
         
         geometries[0]= factory.createPolygon(factory.createLinearRing(shell.getCoordinateSequence()), holes);
-        geometries[1]= factory.createMultiPolygon(walls.toArray(new Polygon[walls.size()]));
+        geometries[1]= factory.createMultiPolygon(walls.toArray(new Polygon[0]));
         geometries[2]= extractRoof(polygon, height);
         return polygon.getFactory().createGeometryCollection(geometries);
     }
@@ -137,7 +137,7 @@ public class GeometryExtrude {
                         hole.getCoordinateN(j), height, factory));
             }
         }
-        return polygon.getFactory().createMultiPolygon(walls.toArray(new Polygon[walls.size()]));
+        return polygon.getFactory().createMultiPolygon(walls.toArray(new Polygon[0]));
     }
     
     /**

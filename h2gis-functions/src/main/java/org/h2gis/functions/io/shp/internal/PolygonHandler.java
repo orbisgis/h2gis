@@ -352,7 +352,7 @@ public class PolygonHandler implements ShapeHandler {
                 for (int i = 0; i < shells.size(); i++) {
                         final List<LinearRing> hole = holesForShells.get(i);
                         polygons[i] = geometryFactory.createPolygon(shells.get(i),
-                                hole.toArray(new LinearRing[hole.size()]));
+                                hole.toArray(new LinearRing[0]));
                 }
 
                 // this will take care of the "only holes case"
@@ -435,7 +435,7 @@ public class PolygonHandler implements ShapeHandler {
         }
 
         private MultiPolygon createMulti(LinearRing single, List<LinearRing> holes) {
-                return geometryFactory.createMultiPolygon(new Polygon[]{geometryFactory.createPolygon(single, holes.toArray(new LinearRing[holes.size()]))});
+                return geometryFactory.createMultiPolygon(new Polygon[]{geometryFactory.createPolygon(single, holes.toArray(new LinearRing[0]))});
         }
 
         @Override
