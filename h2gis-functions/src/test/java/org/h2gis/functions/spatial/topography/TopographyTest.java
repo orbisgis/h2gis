@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.topography;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.*;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -33,9 +33,7 @@ import java.util.Set;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Nicolas Fortin

@@ -20,36 +20,25 @@
 
 package org.h2gis.functions;
 
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-import org.h2.jdbc.JdbcSQLException;
-
-
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
-import org.h2gis.utilities.trigger.UpdateTrigger;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.junit.After;
+import org.h2gis.utilities.trigger.UpdateTrigger;
+import org.junit.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+
+import java.sql.*;
+import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
 
 /**
  * 

@@ -24,7 +24,6 @@ import org.h2.util.OsgiDataSourceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
-
 import java.io.File;
 import java.net.URI;
 import java.sql.Connection;

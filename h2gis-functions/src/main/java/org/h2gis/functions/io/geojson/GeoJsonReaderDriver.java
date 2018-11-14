@@ -23,18 +23,15 @@ package org.h2gis.functions.io.geojson;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.locationtech.jts.geom.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,14 +42,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-
-import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Driver to import a GeoJSON file into a spatial table.
@@ -972,8 +961,7 @@ public class GeoJsonReaderDriver {
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ to parse the coordinate
-            Point point = GF.createPoint(parseCoordinate(jp));
-            return point;
+            return GF.createPoint(parseCoordinate(jp));
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");
         }

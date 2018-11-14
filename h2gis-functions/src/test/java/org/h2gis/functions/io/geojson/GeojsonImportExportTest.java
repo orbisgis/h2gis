@@ -20,17 +20,16 @@
 
 package org.h2gis.functions.io.geojson;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKTReader;
-
-import java.sql.*;
-
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTReader;
+
+import java.sql.*;
 
 import static org.junit.Assert.*;
 

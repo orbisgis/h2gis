@@ -19,12 +19,13 @@
  */
 package org.h2gis.functions.system;
 
+import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.functions.factory.H2GISFunctions;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.functions.factory.H2GISFunctions;
 
 /**
  * Return the current version of H2GIS stored in the manifest

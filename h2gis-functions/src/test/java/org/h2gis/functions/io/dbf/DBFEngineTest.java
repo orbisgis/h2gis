@@ -22,6 +22,8 @@ package org.h2gis.functions.io.dbf;
 
 import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.SHPEngineTest;
@@ -31,13 +33,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.sql.*;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Nicolas Fortin

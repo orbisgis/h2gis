@@ -20,16 +20,17 @@
 
 package org.h2gis.functions.spatial.topology;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import org.junit.*;
 
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.*;
 
 /**

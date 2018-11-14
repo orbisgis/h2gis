@@ -23,11 +23,12 @@ package org.h2gis.functions.io.geojson;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
+
 import java.io.IOException;
 import java.sql.SQLException;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  *

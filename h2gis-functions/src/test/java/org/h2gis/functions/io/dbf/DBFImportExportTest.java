@@ -21,28 +21,22 @@
 package org.h2gis.functions.io.dbf;
 
 import org.h2.util.StringUtils;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.SHPEngineTest;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.EmptyProgressVisitor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
+import java.sql.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Nicolas Fortin

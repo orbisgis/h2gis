@@ -20,24 +20,21 @@
 
 package org.h2gis.functions.spatial.type;
 
-import org.h2gis.functions.spatial.properties.ColumnSRID;
-import org.h2gis.functions.spatial.type.DimensionFromConstraint;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.spatial.properties.ColumnSRID;
 import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 /**
  * Test constraints functions
  * @author Nicolas Fortin

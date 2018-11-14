@@ -20,32 +20,10 @@
 
 package org.h2gis.functions.spatial.mesh;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateFilter;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineSegment;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import org.h2gis.functions.spatial.aggregate.ST_Accum;
 import org.h2gis.functions.spatial.convert.ST_ToMultiLine;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
+import org.locationtech.jts.geom.*;
 import org.poly2tri.Poly2Tri;
 import org.poly2tri.geometry.polygon.PolygonPoint;
 import org.poly2tri.triangulation.Triangulatable;
@@ -56,6 +34,12 @@ import org.poly2tri.triangulation.point.TPoint;
 import org.poly2tri.triangulation.sets.ConstrainedPointSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.sql.SQLException;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This class is used to collect all data used to compute a mesh based on a

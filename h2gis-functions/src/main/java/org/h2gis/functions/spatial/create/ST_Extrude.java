@@ -20,12 +20,12 @@
 
 package org.h2gis.functions.spatial.create;
 
+import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.functions.spatial.volume.GeometryExtrude;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Polygon;
-import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.functions.spatial.volume.GeometryExtrude;
 
 import java.sql.SQLException;
 

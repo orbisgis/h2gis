@@ -23,6 +23,7 @@ package org.h2gis.functions.spatial.distance;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateFilter;
 import org.locationtech.jts.geom.Geometry;
+
 import java.util.Arrays;
 import java.util.HashSet;
 

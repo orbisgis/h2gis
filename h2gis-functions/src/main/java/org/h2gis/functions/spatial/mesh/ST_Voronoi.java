@@ -20,16 +20,19 @@
 
 package org.h2gis.functions.spatial.mesh;
 
+import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.utilities.jts_utils.Voronoi;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.triangulate.VoronoiDiagramBuilder;
 import org.locationtech.jts.triangulate.quadedge.QuadEdge;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import org.locationtech.jts.triangulate.quadedge.TriangleVisitor;
-import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.Voronoi;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Nicolas Fortin

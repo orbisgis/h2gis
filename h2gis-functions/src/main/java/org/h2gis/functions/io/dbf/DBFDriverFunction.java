@@ -21,29 +21,23 @@
 package org.h2gis.functions.io.dbf;
 
 import org.h2.table.Column;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.dbf.internal.DbaseFileException;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 import org.h2gis.functions.io.file_table.FileEngine;
 import org.h2gis.functions.io.file_table.H2TableIndex;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import org.h2gis.functions.io.utility.FileUtil;
 
 /**
  * @author Nicolas Fortin

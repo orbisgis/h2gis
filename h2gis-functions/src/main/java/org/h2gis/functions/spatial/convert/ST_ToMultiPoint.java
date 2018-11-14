@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.MultiPoint;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * ST_ToMultiPoint constructs a MultiPoint from the given geometry's coordinates.

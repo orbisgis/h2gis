@@ -20,23 +20,19 @@
 
 package org.h2gis.functions.io.osm;
 
+import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.spatial.crs.ST_Transform;
+import org.h2gis.utilities.URIUtilities;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.api.AbstractFunction;
-import org.h2gis.api.ScalarFunction;
-import org.h2gis.functions.spatial.crs.ST_Transform;
-import org.h2gis.utilities.URIUtilities;
 
 /**
  * This function is used to download data from the osm api using a bounding box.

@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.create;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Expands a geometry's envelope by the given delta X and delta Y.

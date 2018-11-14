@@ -23,19 +23,18 @@ package org.h2gis.functions.io.geojson;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import org.locationtech.jts.geom.*;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.locationtech.jts.geom.*;
 
 import java.io.*;
 import java.sql.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.h2gis.functions.io.utility.FileUtil;
 
 /**
  * A simple GeoJSON driver to write a spatial table to a GeoJSON file.

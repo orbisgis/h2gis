@@ -20,24 +20,16 @@
 
 package org.h2gis.functions.io.csv;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.channels.FileChannel;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import org.h2.tools.Csv;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.sql.*;
 
 /**
  * Basic CSV importer and exporter

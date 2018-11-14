@@ -20,12 +20,12 @@
 
 package org.h2gis.functions.spatial.create;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTReader;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -35,7 +35,6 @@ import java.sql.Statement;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertNull;
 
 /**
  * @author Nicolas Fortin

@@ -20,11 +20,12 @@
 
 package org.h2gis.functions.io.gpx.model;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 /**
  * Abstract class of the parsers dedicated to waypoints. A specific parser for

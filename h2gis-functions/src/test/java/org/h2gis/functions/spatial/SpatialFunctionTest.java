@@ -21,8 +21,6 @@
 package org.h2gis.functions.spatial;
 
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTReader;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -31,6 +29,8 @@ import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

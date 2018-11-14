@@ -20,12 +20,10 @@
 
 package org.h2gis.functions.io.shp;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import org.h2.table.Column;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 import org.h2gis.functions.io.file_table.FileEngine;
@@ -35,14 +33,17 @@ import org.h2gis.functions.io.shp.internal.ShapeType;
 import org.h2gis.functions.io.shp.internal.ShapefileHeader;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.functions.io.utility.PRJUtil;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Read/Write Shape files

@@ -20,19 +20,16 @@
 
 package org.h2gis.functions.spatial.crs;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import org.cts.parser.proj.ProjKeyParameters;
+import org.cts.registry.Registry;
+import org.cts.registry.RegistryException;
+
+import java.sql.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import org.cts.parser.proj.ProjKeyParameters;
-import org.cts.registry.Registry;
-import org.cts.registry.RegistryException;
 
 /**
  * This class builds a registry based on a spatial_ref_sys table stored in the

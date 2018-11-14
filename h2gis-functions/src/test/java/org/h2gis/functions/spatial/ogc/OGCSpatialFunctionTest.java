@@ -20,12 +20,6 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.DummyFunction;
@@ -42,6 +36,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import static org.junit.Assert.*;
 
 /**
  *

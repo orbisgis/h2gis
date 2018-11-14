@@ -20,20 +20,22 @@
 
 package org.h2gis.functions.io.shp;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.WKTWriter;
 import org.h2.util.StringUtils;
-import org.h2gis.functions.io.DriverManager;
-import org.h2gis.functions.io.file_table.H2TableIndex;
-import org.h2gis.functions.io.shp.internal.SHPDriver;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.functions.io.DriverManager;
+import org.h2gis.functions.io.dbf.DBFRead;
+import org.h2gis.functions.io.dbf.DBFWrite;
+import org.h2gis.functions.io.file_table.H2TableIndex;
+import org.h2gis.functions.io.shp.internal.SHPDriver;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.WKTWriter;
 
 import java.io.File;
 import java.io.IOException;
@@ -41,8 +43,6 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.functions.io.dbf.DBFRead;
-import org.h2gis.functions.io.dbf.DBFWrite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

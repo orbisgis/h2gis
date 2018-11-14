@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.distance;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.linearref.LengthIndexedLine;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  *
@@ -56,8 +56,7 @@ public class ST_ProjectPoint extends DeterministicScalarFunction{
         if (point.getDimension()==0 && geometry.getDimension() == 1) {
             LengthIndexedLine ll = new LengthIndexedLine(geometry);
             double index = ll.project(point.getCoordinate());
-            Point result = geometry.getFactory().createPoint(ll.extractPoint(index));
-            return result;
+            return geometry.getFactory().createPoint(ll.extractPoint(index));
         } else {
             return null;
         }

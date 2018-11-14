@@ -21,7 +21,6 @@
 package org.h2gis.functions.io.file_table;
 
 
-import java.util.HashSet;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
@@ -34,6 +33,8 @@ import org.h2.table.IndexColumn;
 import org.h2.table.Table;
 import org.h2.table.TableFilter;
 import org.h2.value.Value;
+
+import java.util.HashSet;
 
 /**
  * When linked files are not available, this table index defines an empty table

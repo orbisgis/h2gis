@@ -21,11 +21,7 @@
 package org.h2gis.functions.spatial.mesh;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

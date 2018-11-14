@@ -20,16 +20,18 @@
 
 package org.h2gis.functions.spatial.crs;
 
+import org.cts.parser.proj.ProjKeyParameters;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.utilities.SFSUtilities;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
 import java.sql.Connection;
 import java.util.Map;
 import java.util.Set;
-import org.cts.parser.proj.ProjKeyParameters;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.AfterClass;
+
 import static org.junit.Assert.assertTrue;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.h2gis.utilities.SFSUtilities;
 
 /**
  *

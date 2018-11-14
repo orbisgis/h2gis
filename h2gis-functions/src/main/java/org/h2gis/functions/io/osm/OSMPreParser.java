@@ -20,9 +20,6 @@
 
 package org.h2gis.functions.io.osm;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import org.h2gis.functions.io.gpx.model.GPXTags;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
@@ -30,6 +27,10 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * OSMPreParser class just reads the document. It says what type of elements

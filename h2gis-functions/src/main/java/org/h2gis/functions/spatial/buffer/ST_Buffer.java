@@ -20,13 +20,13 @@
 
 package org.h2gis.functions.spatial.buffer;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.operation.buffer.BufferOp;
-import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.h2.value.Value;
 import org.h2.value.ValueInt;
 import org.h2.value.ValueString;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.operation.buffer.BufferOp;
+import org.locationtech.jts.operation.buffer.BufferParameters;
 
 /**
  * ST_Buffer computes a buffer around a Geometry.  Circular arcs are

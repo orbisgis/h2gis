@@ -20,12 +20,12 @@
 
 package org.h2gis.functions.spatial.create;
 
-import org.locationtech.jts.geom.*;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.locationtech.jts.geom.*;
 
 import java.sql.*;
 import java.util.List;

@@ -21,19 +21,16 @@
 package org.h2gis.functions.system;
 
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.junit.*;
+
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
+
 import static org.junit.Assert.assertNotEquals;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *

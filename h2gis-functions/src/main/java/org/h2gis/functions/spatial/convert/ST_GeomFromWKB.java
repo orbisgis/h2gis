@@ -20,11 +20,12 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
+
 import java.sql.SQLException;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Convert a WKB object to a geometry

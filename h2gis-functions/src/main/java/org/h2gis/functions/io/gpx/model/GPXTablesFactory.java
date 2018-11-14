@@ -20,12 +20,13 @@
 
 package org.h2gis.functions.io.gpx.model;
 
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.TableUtilities;
 
 /**
  * A factory to create the tables that are used to import GPX data

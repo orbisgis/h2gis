@@ -21,28 +21,19 @@
 package org.h2gis.functions.spatial;
 
 
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-
-import static junit.framework.Assert.assertTrue;
-
-import org.locationtech.jts.geom.Geometry;
-
 import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import static junit.framework.Assert.assertTrue;
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import static org.junit.Assert.*;
 
 /**
  *

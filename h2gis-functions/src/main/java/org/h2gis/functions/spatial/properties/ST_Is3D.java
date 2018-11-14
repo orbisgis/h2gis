@@ -20,9 +20,10 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import java.io.IOException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;
+
+import java.io.IOException;
 
 /**
  * Returns 1 if a geometry has a z-coordinate, otherwise 0.

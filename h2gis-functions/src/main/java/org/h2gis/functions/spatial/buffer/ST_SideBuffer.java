@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.buffer;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Compute a single buffer on one side.

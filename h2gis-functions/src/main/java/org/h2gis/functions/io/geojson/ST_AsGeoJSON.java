@@ -20,17 +20,8 @@
 
 package org.h2gis.functions.io.geojson;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.*;
 
 /**
  * Transform a JTS geometry to a GeoJSON geometry representation.

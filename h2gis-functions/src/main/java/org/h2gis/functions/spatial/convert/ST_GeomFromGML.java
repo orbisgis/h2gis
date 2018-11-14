@@ -20,14 +20,15 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.gml2.GMLReader;
-import java.io.IOException;
-import javax.xml.parsers.ParserConfigurationException;
-import org.h2gis.api.DeterministicScalarFunction;
 import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 
 /**
  * Read a GML representation and convert it to a geometry.

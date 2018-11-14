@@ -20,8 +20,11 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import org.locationtech.jts.geom.*;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 
 import java.sql.SQLException;
 import java.util.ArrayList;

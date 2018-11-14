@@ -20,14 +20,14 @@
 package org.h2gis.functions.spatial.topology;
 
 
-import java.sql.*;
-import java.util.List;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
-
 import org.h2gis.utilities.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+import java.util.List;
 
 /**
  * Assigns integer node and edge ids to LINESTRING or MULTILINESTRING

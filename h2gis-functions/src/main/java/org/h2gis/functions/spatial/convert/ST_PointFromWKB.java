@@ -20,14 +20,15 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKBReader;
-import java.io.IOException;
-import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKBReader;
+
+import java.io.IOException;
+import java.sql.SQLException;
 
 /**
  * Convert Well Known Binary into a POINT.

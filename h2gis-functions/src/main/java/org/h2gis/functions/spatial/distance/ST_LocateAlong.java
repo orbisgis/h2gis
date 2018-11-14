@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.distance;
 
-import org.locationtech.jts.geom.*;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.*;
 
 import java.util.HashSet;
 import java.util.Set;

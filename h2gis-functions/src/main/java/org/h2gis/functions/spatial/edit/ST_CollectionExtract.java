@@ -20,14 +20,11 @@
 
 package org.h2gis.functions.spatial.edit;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.ParseException;
-import java.util.ArrayList;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+
+import java.util.ArrayList;
 
 /**
  *

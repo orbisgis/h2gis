@@ -20,12 +20,13 @@
 
 package org.h2gis.functions.io.osm;
 
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.TableUtilities;
 
 /**
  * Class to create the tables to import osm data

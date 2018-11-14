@@ -20,11 +20,12 @@
 
 package org.h2gis.functions.spatial.earth;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
+
 import java.util.Date;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Compute the sun position and return a new coordinate with x = azimuth and y = altitude

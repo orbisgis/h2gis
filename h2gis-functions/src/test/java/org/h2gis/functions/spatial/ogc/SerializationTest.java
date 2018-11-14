@@ -20,7 +20,6 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import org.h2gis.functions.spatial.ogc.OGCConformance1Test;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -33,9 +32,7 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Geometry fields serialization tests.

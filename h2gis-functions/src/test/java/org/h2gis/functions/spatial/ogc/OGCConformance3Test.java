@@ -20,9 +20,11 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.h2.value.ValueGeometry;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -30,11 +32,7 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.h2.value.ValueGeometry;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
  * Final OGC Conformance test with spatial capabilities.

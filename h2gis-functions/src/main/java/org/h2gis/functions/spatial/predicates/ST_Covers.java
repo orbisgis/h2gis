@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.predicates;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * ST_Covers returns true if no point in geometry B is outside geometry A.

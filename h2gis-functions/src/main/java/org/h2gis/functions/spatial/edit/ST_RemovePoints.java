@@ -20,16 +20,12 @@
 
 package org.h2gis.functions.spatial.edit;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateArrays;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.Polygon;
+import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.prep.PreparedPolygon;
 import org.locationtech.jts.geom.util.GeometryEditor;
+
 import java.sql.SQLException;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Remove all points on a geometry that are located within a polygon.

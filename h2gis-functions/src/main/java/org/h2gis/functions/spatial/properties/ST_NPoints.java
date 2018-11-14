@@ -21,9 +21,8 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
-import static org.h2gis.api.Function.PROP_REMARKS;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  *

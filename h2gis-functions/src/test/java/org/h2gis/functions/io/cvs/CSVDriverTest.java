@@ -20,23 +20,21 @@
 
 package org.h2gis.functions.io.cvs;
 
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.io.csv.CSVDriverFunction;
+import org.junit.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.functions.io.csv.CSVDriverFunction;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.After;
-import org.junit.AfterClass;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *

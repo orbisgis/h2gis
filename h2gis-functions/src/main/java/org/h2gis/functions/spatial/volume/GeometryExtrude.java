@@ -20,19 +20,11 @@
 
 package org.h2gis.functions.spatial.volume;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequenceFilter;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Polygon;
-import java.util.ArrayList;
 import org.h2gis.functions.spatial.edit.ST_UpdateZ.UpdateZCoordinateSequenceFilter;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.geom.*;
+
+import java.util.ArrayList;
 
 /**
  * This class is used to extrude a polygon or a linestring to a set of walls,
