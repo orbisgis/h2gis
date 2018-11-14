@@ -86,9 +86,8 @@ public class JsonWriteDriver {
             fos = new FileOutputStream(fileName);
             int recordCount = JDBCUtilities.getRowCount(connection, tableName);
             if (recordCount > 0) {
-                // Read table content
-                Statement st = connection.createStatement();
-                try {
+                try ( // Read table content
+                        Statement st = connection.createStatement()) {
                     JsonFactory jsonFactory = new JsonFactory();
                     JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
                     ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
@@ -217,8 +216,6 @@ public class JsonWriteDriver {
                     } finally {
                         rs.close();
                     }
-                } finally {
-                    st.close();
                 }
             }
         } catch (FileNotFoundException ex) {

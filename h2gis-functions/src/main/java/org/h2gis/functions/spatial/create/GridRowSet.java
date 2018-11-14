@@ -115,8 +115,7 @@ public class GridRowSet implements SimpleRowSource {
         //We compute the extend according the first input value
         if (isTable) {
             Statement statement = connection.createStatement();
-            ResultSet rs = statement.executeQuery("select ST_Extent(" + getFirstGeometryField(tableName, connection) + ")  from " + tableName);
-            try {
+            try (ResultSet rs = statement.executeQuery("select ST_Extent(" + getFirstGeometryField(tableName, connection) + ")  from " + tableName)) {
                 rs.next();
                 Geometry geomExtend = (Geometry) rs.getObject(1);
                 if (geomExtend == null) {
@@ -126,8 +125,6 @@ public class GridRowSet implements SimpleRowSource {
                     initParameters();
                 }
 
-            } finally {
-                rs.close();
             }
         } else {
             if (envelope == null) {

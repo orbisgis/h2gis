@@ -149,20 +149,20 @@ public class CRSFunctionTest {
     
     @Test
     public void testST_TransformOnNullGeometry() throws Exception {
-        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
-                + "null, 2154);");
-        rs.next();
-        Assert.assertNull(rs.getObject(1));
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "null, 2154);")) {
+            rs.next();
+            Assert.assertNull(rs.getObject(1));
+        }
     }
     
     @Test
     public void testST_TransformOnNulls() throws Exception {
-        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
-                + "null, null);");
-        rs.next();
-        Assert.assertNull(rs.getObject(1));
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "null, null);")) {
+            rs.next();
+            Assert.assertNull(rs.getObject(1));
+        }
     }
     
     @Test(expected = IllegalArgumentException.class)

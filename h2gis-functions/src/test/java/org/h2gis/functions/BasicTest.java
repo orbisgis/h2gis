@@ -102,13 +102,10 @@ public class BasicTest {
                    st.execute("create table test as select 1, 'POINT(1 2)'::geometry");
                    st.execute("create trigger updatetrigger AFTER INSERT, UPDATE, DELETE ON test CALL \""+UpdateTrigger.class.getName()+"\"");
                    st.execute("insert into test values(2, 'POINT(5 5)') , (3, 'POINT(1 1)')");
-                   ResultSet rs = st.executeQuery("select * from "+new TableLocation(UpdateTrigger.TRIGGER_SCHEMA, UpdateTrigger.NOTIFICATION_TABLE));
-                   try {
+                   try (ResultSet rs = st.executeQuery("select * from "+new TableLocation(UpdateTrigger.TRIGGER_SCHEMA, UpdateTrigger.NOTIFICATION_TABLE))) {
                        assertTrue(rs.next());
                        assertEquals(1,rs.getInt(2));
                        assertFalse(rs.next());
-                   } finally {
-                       rs.close();
                    }
                } finally {
                    st.execute("drop trigger if exists updatetrigger");

@@ -61,12 +61,12 @@ public class ConnectionWrapTest {
         stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
         stat.execute("insert into area values(2, 'POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))')");
-        SpatialResultSet rs = stat.executeQuery("select idarea, the_geom  from area").unwrap(SpatialResultSet.class);
-        assertTrue(rs.next());
-        assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry("the_geom").toText());
-        assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry(2).toText());
-        assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry().toText());
-        rs.close();
+        try (SpatialResultSet rs = stat.executeQuery("select idarea, the_geom  from area").unwrap(SpatialResultSet.class)) {
+            assertTrue(rs.next());
+            assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry("the_geom").toText());
+            assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry(2).toText());
+            assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry().toText());
+        }
         stat.execute("DROP TABLE AREA");
     }
 

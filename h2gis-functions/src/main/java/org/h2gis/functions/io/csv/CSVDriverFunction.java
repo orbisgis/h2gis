@@ -97,19 +97,13 @@ public class CSVDriverFunction implements DriverFunction{
         if(FileUtil.isExtensionWellFormated(fileName, "csv")){
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         TableLocation location = TableLocation.parse(tableReference, isH2);
-        Statement st = null;
-        try {
-            st = connection.createStatement();
+        try (Statement st = connection.createStatement()) {
             JDBCUtilities.attachCancelResultSet(st, progress);
             Csv csv = new Csv();
             if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
                 csv.setOptions(csvOptions);
             }  
             csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
-        } finally {
-            if (st != null) {
-                st.close();
-            }
         }
         }
         else{
@@ -171,9 +165,9 @@ public class CSVDriverFunction implements DriverFunction{
             createTable.append(")");
             insertTable.append(")");
 
-            Statement stmt = connection.createStatement();
-            stmt.execute(createTable.toString());
-            stmt.close();
+            try (Statement stmt = connection.createStatement()) {
+                stmt.execute(createTable.toString());
+            }
 
             PreparedStatement pst = connection.prepareStatement(insertTable.toString());
             long batchSize = 0;

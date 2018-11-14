@@ -90,11 +90,11 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
-                Statement st = connection.createStatement();
-                st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
-                        TableLocation.parse(tableName, isH2).toString(isH2),StringUtils.quoteStringSQL(fileName),
-                        StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
-                st.close();
+                try (Statement st = connection.createStatement()) {
+                    st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
+                            TableLocation.parse(tableName, isH2).toString(isH2),StringUtils.quoteStringSQL(fileName),
+                            StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
+                }
                 return;
             }
         }

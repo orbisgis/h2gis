@@ -192,19 +192,18 @@ public class GeoJsonReaderDriver {
             cachedColumnNames = new LinkedHashMap<String, String>();
             finalGeometryTypes=new HashSet<String>();
             
-            JsonParser jp = jsFactory.createParser(fis);           
-
-            jp.nextToken();//START_OBJECT
-            jp.nextToken(); // field_name (type)
-            jp.nextToken(); // value_string (FeatureCollection)
-            String geomType = jp.getText();      
-            
-            if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {                
-                parseFeaturesMetadata(jp);
-            } else {
-                throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
-            }
-            jp.close();
+            try (JsonParser jp = jsFactory.createParser(fis)) {
+                jp.nextToken();//START_OBJECT
+                jp.nextToken(); // field_name (type)
+                jp.nextToken(); // value_string (FeatureCollection)
+                String geomType = jp.getText();
+                
+                if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
+                    parseFeaturesMetadata(jp);
+                } else {
+                    throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
+                }
+            } //START_OBJECT
             
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
@@ -1257,17 +1256,17 @@ public class GeoJsonReaderDriver {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(fileName);
-            JsonParser jp = jsFactory.createParser(fis);
-            jp.nextToken();//START_OBJECT
-            jp.nextToken(); // field_name (type)
-            jp.nextToken(); // value_string (FeatureCollection)
-            String geomType = jp.getText();
-            if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {                
-                parseFeatures(jp);
-            } else {
-                throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
-            }
-            jp.close();
+            try (JsonParser jp = jsFactory.createParser(fis)) {
+                jp.nextToken();//START_OBJECT
+                jp.nextToken(); // field_name (type)
+                jp.nextToken(); // value_string (FeatureCollection)
+                String geomType = jp.getText();
+                if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
+                    parseFeatures(jp);
+                } else {
+                    throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
+                }
+            } //START_OBJECT
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
 

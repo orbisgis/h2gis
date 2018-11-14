@@ -65,18 +65,14 @@ public class DBFDriverFunction implements DriverFunction {
             Statement st = connection.createStatement();
             ProgressVisitor lineProgress = null;
             if (!(progress instanceof EmptyProgressVisitor)) {
-                ResultSet rs = st.executeQuery(String.format("select count(*) from %s", tableName));
-                try {
+                try (ResultSet rs = st.executeQuery(String.format("select count(*) from %s", tableName))) {
                     if (rs.next()) {
                         lineProgress = progress.subProcess(rs.getInt(1));
                     }
-                } finally {
-                    rs.close();
                 }
             }
             try {
-                ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
-                try {
+                try (ResultSet rs = st.executeQuery(String.format("select * from %s", tableName))) {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();                    
                     ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
                     DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
@@ -98,8 +94,6 @@ public class DBFDriverFunction implements DriverFunction {
                         }
                     }
                     dbfDriver.close();                    
-                } finally {
-                    rs.close();
                 }
             } finally {
                 st.close();
@@ -164,21 +158,20 @@ public class DBFDriverFunction implements DriverFunction {
                 JDBCUtilities.createEmptyTable(connection, parsedTable);
             } else {
                 try {
-                    // Build CREATE TABLE sql request
-                    Statement st = connection.createStatement();
-                    List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
-                    for (int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
-                        otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
+                    try ( // Build CREATE TABLE sql request
+                            Statement st = connection.createStatement()) {
+                        List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
+                        for (int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
+                            otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
+                        }
+                        String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
+                        st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
+                                getSQLColumnTypes(dbfHeader, isH2)));
                     }
-                    String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
-                    st.execute(String.format("CREATE TABLE %s (" + pkColName + " SERIAL PRIMARY KEY, %s)", parsedTable,
-                            getSQLColumnTypes(dbfHeader, isH2)));
-                    st.close();
                     try {
-                        PreparedStatement preparedStatement = connection.prepareStatement(
+                        try (PreparedStatement preparedStatement = connection.prepareStatement(
                                 String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
-                                        getQuestionMark(dbfHeader.getNumFields() + 1)));
-                        try {
+                                        getQuestionMark(dbfHeader.getNumFields() + 1)))) {
                             long batchSize = 0;
                             for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
                                 preparedStatement.setObject(1, rowId + 1);
@@ -198,8 +191,6 @@ public class DBFDriverFunction implements DriverFunction {
                             if (batchSize > 0) {
                                 preparedStatement.executeBatch();
                             }
-                        } finally {
-                            preparedStatement.close();
                         }
                     } catch (Exception ex) {
                         connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);

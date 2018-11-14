@@ -64,24 +64,24 @@ public class  DBFEngineTest {
     public void readDBFMetaTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
-        assertTrue(rs.next());
-        assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-        assertTrue(rs.next());
-        assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("CHAR",rs.getString("TYPE_NAME"));
-        assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
-        assertTrue(rs.next());
-        assertEquals("GID",rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-        assertEquals(18,rs.getInt("NUMERIC_PRECISION"));
-        assertTrue(rs.next());
-        assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
-        assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
+            assertTrue(rs.next());
+            assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
+            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertTrue(rs.next());
+            assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
+            assertEquals("CHAR",rs.getString("TYPE_NAME"));
+            assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+            assertTrue(rs.next());
+            assertEquals("GID",rs.getString("COLUMN_NAME"));
+            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals(18,rs.getInt("NUMERIC_PRECISION"));
+            assertTrue(rs.next());
+            assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
+            assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+            assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+        }
         st.execute("drop table dbftable");
     }
 
@@ -90,12 +90,12 @@ public class  DBFEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
-        assertTrue(rs.next());
-        assertEquals(1, rs.getInt("gid"));
-        assertEquals("river",rs.getString("type_axe"));
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("gid"));
+            assertEquals("river",rs.getString("type_axe"));
+        }
         st.execute("drop table dbftable");
     }
 
@@ -135,27 +135,27 @@ public class  DBFEngineTest {
     public void readDBFEncodingTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("encoding_test.dbf").getPath())+", 'DBFTABLE');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
-        assertTrue(rs.next());
-        assertEquals(2, rs.getInt("RIVERTYPE"));
-        assertEquals("松柏坑溪",rs.getString("RIVERNAME"));
-        assertTrue(rs.next());
-        assertEquals(1, rs.getInt("RIVERTYPE"));
-        assertEquals("劍潭湖",rs.getString("RIVERNAME"));
-        assertTrue(rs.next());
-        assertEquals(2, rs.getInt("RIVERTYPE"));
-        assertEquals("竹篙水溪",rs.getString("RIVERNAME"));
-        assertTrue(rs.next());
-        assertEquals(2, rs.getInt("RIVERTYPE"));
-        assertEquals("霞苞蓮幹線",rs.getString("RIVERNAME"));
-        assertTrue(rs.next());
-        assertEquals(2, rs.getInt("RIVERTYPE"));
-        assertEquals("延潭大排水溝",rs.getString("RIVERNAME"));
-        assertTrue(rs.next());
-        assertEquals(2, rs.getInt("RIVERTYPE"));
-        assertEquals("林內圳幹線",rs.getString("RIVERNAME"));
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("RIVERTYPE"));
+            assertEquals("松柏坑溪",rs.getString("RIVERNAME"));
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("RIVERTYPE"));
+            assertEquals("劍潭湖",rs.getString("RIVERNAME"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("RIVERTYPE"));
+            assertEquals("竹篙水溪",rs.getString("RIVERNAME"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("RIVERTYPE"));
+            assertEquals("霞苞蓮幹線",rs.getString("RIVERNAME"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("RIVERTYPE"));
+            assertEquals("延潭大排水溝",rs.getString("RIVERNAME"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("RIVERTYPE"));
+            assertEquals("林內圳幹線",rs.getString("RIVERNAME"));
+        }
         st.execute("drop table dbftable");
     }
 
@@ -181,13 +181,10 @@ public class  DBFEngineTest {
             connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
             st = connection.createStatement();
         }
-        ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt FROM dbftable");
-        try {
+        try (ResultSet rs = st.executeQuery("SELECT COUNT(*) cpt FROM dbftable")) {
             assertTrue(rs.next());
             // The new table should be empty
             assertEquals(0,rs.getInt("cpt"));
-        } finally {
-            rs.close();
         }
         st.execute("drop table if exists dbftable");
     }
@@ -207,27 +204,28 @@ public class  DBFEngineTest {
         st.execute("CALL DBFWRITE('target/sotchi.dbf', 'SOTCHI', 'cp1251');");
         st.execute("drop table if exists sotchi");
         st.execute("CALL FILE_TABLE('target/sotchi.dbf', 'SOTCHI_GOODHEADER');");
-        ResultSet rs = st.executeQuery("SELECT * FROM SOTCHI_GOODHEADER");
         // Check if fields name are OK
-        ResultSetMetaData meta = rs.getMetaData();
-        assertEquals("B_ДНА",meta.getColumnName(6));
-        assertEquals("ИМЕНА_УЧАС",meta.getColumnName(9));
-        assertEquals("ДЛИНА_КАНА",meta.getColumnName(10));
-        assertEquals("ДЛИНА_КАН_",meta.getColumnName(11));
-        assertEquals("ИМЯ_МУООС",meta.getColumnName(12));
-        assertTrue(rs.next());
-        assertEquals("ВП-2", rs.getString("NAMESHEME"));
-        assertEquals("Дубовский канал",rs.getString("NAME10000"));
-        assertTrue(rs.next());
-        assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
-        assertTrue(rs.next());
-        assertEquals("ВП-1", rs.getString("NAMESHEME"));
-        assertTrue(rs.next());
-        assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
-        assertTrue(rs.next());
-        assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
-        assertFalse(rs.next());
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT * FROM SOTCHI_GOODHEADER")) {
+            // Check if fields name are OK
+            ResultSetMetaData meta = rs.getMetaData();
+            assertEquals("B_ДНА",meta.getColumnName(6));
+            assertEquals("ИМЕНА_УЧАС",meta.getColumnName(9));
+            assertEquals("ДЛИНА_КАНА",meta.getColumnName(10));
+            assertEquals("ДЛИНА_КАН_",meta.getColumnName(11));
+            assertEquals("ИМЯ_МУООС",meta.getColumnName(12));
+            assertTrue(rs.next());
+            assertEquals("ВП-2", rs.getString("NAMESHEME"));
+            assertEquals("Дубовский канал",rs.getString("NAME10000"));
+            assertTrue(rs.next());
+            assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
+            assertTrue(rs.next());
+            assertEquals("ВП-1", rs.getString("NAMESHEME"));
+            assertTrue(rs.next());
+            assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
+            assertTrue(rs.next());
+            assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
+            assertFalse(rs.next());
+        }
         st.execute("drop table SOTCHI_GOODHEADER");
     }
 
@@ -240,21 +238,21 @@ public class  DBFEngineTest {
         st.execute("SHUTDOWN");
         connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
         st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'");
-        assertTrue(rs.next());
-        assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-        assertTrue(rs.next());
-        assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("CHAR",rs.getString("TYPE_NAME"));
-        assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
-        assertTrue(rs.next());
-        assertEquals("GID",rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-        assertTrue(rs.next());
-        assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
+            assertTrue(rs.next());
+            assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
+            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertTrue(rs.next());
+            assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
+            assertEquals("CHAR",rs.getString("TYPE_NAME"));
+            assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+            assertTrue(rs.next());
+            assertEquals("GID",rs.getString("COLUMN_NAME"));
+            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertTrue(rs.next());
+            assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
+            assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+        }
         st.execute("drop table dbftable");
     }
 
@@ -264,21 +262,21 @@ public class  DBFEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("null_values.dbf").getPath())+", 'DBFTABLE');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
-        assertTrue(rs.next());
-        assertNull(rs.getObject("MAXSPEED"));
-        assertTrue(rs.next());
-        assertEquals(130, rs.getObject("MAXSPEED"));
-        assertTrue(rs.next());
-        assertEquals(130, rs.getObject("MAXSPEED"));
-        assertTrue(rs.next());
-        assertEquals(130, rs.getObject("MAXSPEED"));
-        assertTrue(rs.next());
-        assertEquals(90, rs.getObject("MAXSPEED"));
-        assertTrue(rs.next());
-        assertNull(rs.getObject("MAXSPEED"));
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
+            assertTrue(rs.next());
+            assertNull(rs.getObject("MAXSPEED"));
+            assertTrue(rs.next());
+            assertEquals(130, rs.getObject("MAXSPEED"));
+            assertTrue(rs.next());
+            assertEquals(130, rs.getObject("MAXSPEED"));
+            assertTrue(rs.next());
+            assertEquals(130, rs.getObject("MAXSPEED"));
+            assertTrue(rs.next());
+            assertEquals(90, rs.getObject("MAXSPEED"));
+            assertTrue(rs.next());
+            assertNull(rs.getObject("MAXSPEED"));
+        }
         st.execute("drop table dbftable");
     }
 
@@ -288,11 +286,11 @@ public class  DBFEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists dbftable");
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("comma_separator.dbf").getPath())+", 'DBFTABLE');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM dbftable");
-        assertTrue(rs.next());
-        assertEquals(1.,rs.getDouble("PREC_PLANI"),1e-12);
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT * FROM dbftable")) {
+            assertTrue(rs.next());
+            assertEquals(1.,rs.getDouble("PREC_PLANI"),1e-12);
+        }
         st.execute("drop table dbftable");
     }
 

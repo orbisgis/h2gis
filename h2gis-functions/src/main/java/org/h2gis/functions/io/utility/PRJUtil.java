@@ -114,19 +114,13 @@ public class PRJUtil {
      * @throws IOException
      */
     private static String readPRJFile(File prjFile) throws FileNotFoundException, IOException {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(prjFile);
+        try (FileInputStream fis = new FileInputStream(prjFile)) {
             BufferedReader r = new BufferedReader(new InputStreamReader(fis, Charset.defaultCharset()));
             StringBuilder b = new StringBuilder();
             while (r.ready()) {
                 b.append(r.readLine());
             }
             return b.toString();
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
         }
     }
     

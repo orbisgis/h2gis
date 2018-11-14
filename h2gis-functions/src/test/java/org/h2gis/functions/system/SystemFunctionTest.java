@@ -68,32 +68,32 @@ public class SystemFunctionTest {
     
     @Test
     public void test_DoubleRange1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT DoubleRange(0, 5, 1);");
-        rs.next();
-        Array data = rs.getArray(1);
-        Object[] valueArray = (Object[]) data.getArray();
-        double[] actuals = new double[valueArray.length];
-        for (int i = 0; i < valueArray.length; i++) {
-            actuals[i] = (Double) valueArray[i];
+        try (ResultSet rs = st.executeQuery("SELECT DoubleRange(0, 5, 1);")) {
+            rs.next();
+            Array data = rs.getArray(1);
+            Object[] valueArray = (Object[]) data.getArray();
+            double[] actuals = new double[valueArray.length];
+            for (int i = 0; i < valueArray.length; i++) {
+                actuals[i] = (Double) valueArray[i];
+            }
+            double[] expecteds = new double[]{0, 1, 2, 3, 4};
+            Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
         }
-        double[] expecteds = new double[]{0, 1, 2, 3, 4};
-        Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
-        rs.close();
     }
     
     @Test
     public void test_DoubleRange2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT DoubleRange(0, 1, 0.5);");
-        rs.next();
-        Array data = rs.getArray(1);
-        Object[] valueArray = (Object[]) data.getArray();
-        double[] actuals = new double[valueArray.length];
-        for (int i = 0; i < valueArray.length; i++) {
-            actuals[i] = (Double) valueArray[i];
+        try (ResultSet rs = st.executeQuery("SELECT DoubleRange(0, 1, 0.5);")) {
+            rs.next();
+            Array data = rs.getArray(1);
+            Object[] valueArray = (Object[]) data.getArray();
+            double[] actuals = new double[valueArray.length];
+            for (int i = 0; i < valueArray.length; i++) {
+                actuals[i] = (Double) valueArray[i];
+            }
+            double[] expecteds = new double[]{0, 0.5};
+            Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
         }
-        double[] expecteds = new double[]{0, 0.5};
-        Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
-        rs.close();
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -107,17 +107,17 @@ public class SystemFunctionTest {
     
     @Test
     public void test_IntegerRange1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT IntegerRange(0, 5, 1);");
-        rs.next();
-        Array data = rs.getArray(1);
-        Object[] valueArray = (Object[]) data.getArray();
-        int[] actuals = new int[valueArray.length];
-        for (int i = 0; i < valueArray.length; i++) {
-            actuals[i] = (Integer) valueArray[i];
+        try (ResultSet rs = st.executeQuery("SELECT IntegerRange(0, 5, 1);")) {
+            rs.next();
+            Array data = rs.getArray(1);
+            Object[] valueArray = (Object[]) data.getArray();
+            int[] actuals = new int[valueArray.length];
+            for (int i = 0; i < valueArray.length; i++) {
+                actuals[i] = (Integer) valueArray[i];
+            }
+            int[] expecteds = new int[]{0, 1, 2, 3, 4};
+            Assert.assertArrayEquals(expecteds, actuals);
         }
-        int[] expecteds = new int[]{0, 1, 2, 3, 4};
-        Assert.assertArrayEquals(expecteds, actuals);
-        rs.close();
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -131,10 +131,10 @@ public class SystemFunctionTest {
     
     @Test
     public void test_H2GISVersion() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT H2GISVersion();");
-        rs.next();
-        assertNotEquals("unknown", rs.getString(1));
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT H2GISVersion();")) {
+            rs.next();
+            assertNotEquals("unknown", rs.getString(1));
+        }
     }
 
 }

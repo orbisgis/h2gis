@@ -110,9 +110,8 @@ public class GeoJsonWriteDriver {
                     throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
                 }
 
-                // Read table content
-                Statement st = connection.createStatement();
-                try {
+                try ( // Read table content
+                        Statement st = connection.createStatement()) {
                     JsonFactory jsonFactory = new JsonFactory();
                     JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
 
@@ -142,8 +141,6 @@ public class GeoJsonWriteDriver {
                     } finally {
                         rs.close();
                     }
-                } finally {
-                    st.close();
                 }
             }
         } catch (FileNotFoundException ex) {

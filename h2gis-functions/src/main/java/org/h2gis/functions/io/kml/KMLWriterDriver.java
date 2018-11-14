@@ -177,9 +177,8 @@ public class KMLWriterDriver {
 
             xmlOut.writeStartElement("Document");
 
-            // Read table content
-            Statement st = connection.createStatement();
-            try {
+            try ( // Read table content
+                    Statement st = connection.createStatement()) {
                 ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
                 try {
                     int recordCount = JDBCUtilities.getRowCount(connection, tableName);
@@ -200,8 +199,6 @@ public class KMLWriterDriver {
                 } finally {
                     rs.close();
                 }
-            } finally {
-                st.close();
             }
             xmlOut.writeEndElement();//Folder
             xmlOut.writeEndElement();//KML

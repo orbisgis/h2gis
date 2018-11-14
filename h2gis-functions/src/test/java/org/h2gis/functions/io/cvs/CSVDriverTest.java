@@ -82,12 +82,9 @@ public class CSVDriverTest {
         exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS mycsv");
         exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor());
-        ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv");
-        try {
+        try (ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv")) {
             assertTrue(rs.next());
             assertEquals(3,rs.getDouble(1),1e-2);
-        } finally {
-            rs.close();
         }
     }   
     
@@ -104,12 +101,9 @@ public class CSVDriverTest {
         exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
         stat.execute("DROP TABLE IF EXISTS mycsv");
         exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
-        ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv");
-        try {
+        try (ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv")) {
             assertTrue(rs.next());
             assertEquals(3,rs.getDouble(1),1e-2);
-        } finally {
-            rs.close();
         }
     }   
     

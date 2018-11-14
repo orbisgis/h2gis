@@ -99,17 +99,11 @@ public class TSVDriverFunction implements DriverFunction{
         if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             TableLocation location = TableLocation.parse(tableReference, isH2);
-            Statement st = null;
-            try {
-                st = connection.createStatement();
+            try (Statement st = connection.createStatement()) {
                 Csv csv = new Csv();
                 csv.setFieldDelimiter('\t');
                 csv.setFieldSeparatorWrite("\t");
                 csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
-            } finally {
-                if (st != null) {
-                    st.close();
-                }
             }
         } else {
             throw new SQLException("Only .tsv extension is supported");
@@ -153,9 +147,9 @@ public class TSVDriverFunction implements DriverFunction{
             createTable.append(")");
             insertTable.append(")");
 
-            Statement stmt = connection.createStatement();
-            stmt.execute(createTable.toString());
-            stmt.close();
+            try (Statement stmt = connection.createStatement()) {
+                stmt.execute(createTable.toString());
+            }
 
             PreparedStatement pst = connection.prepareStatement(insertTable.toString());
             long batchSize = 0;

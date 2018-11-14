@@ -129,13 +129,10 @@ public class SerializationTest {
         st.execute("DROP VIEW IF EXISTS lakes_view");
         st.execute("CREATE VIEW lakes_view as select * from lakes");
         try {
-            ResultSet rs = st.executeQuery("SELECT * FROM geometry_columns where F_TABLE_NAME = 'LAKES_VIEW';");
-            try {
+            try (ResultSet rs = st.executeQuery("SELECT * FROM geometry_columns where F_TABLE_NAME = 'LAKES_VIEW';")) {
                 assertTrue(rs.next());
                 assertEquals("POLYGON", rs.getString("TYPE"));
                 assertFalse(rs.next());
-            } finally {
-                rs.close();
             }
         } finally {
             st.execute("DROP VIEW IF EXISTS lakes_view");

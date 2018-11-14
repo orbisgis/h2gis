@@ -86,12 +86,9 @@ public class TSVDriverTest {
         exp.exportTable(connection, "AREA", tsvFile, new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS mytsv");
         exp.importFile(connection, "MYTSV", tsvFile, new EmptyProgressVisitor());
-        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from mytsv");
-        try {
+        try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from mytsv")) {
             assertTrue(rs.next());
             assertEquals(20000, rs.getDouble(1), 1e-6);
-        } finally {
-            rs.close();
         }
     }
     
@@ -106,28 +103,25 @@ public class TSVDriverTest {
         stat.execute("CALL TSVWrite('target/mytsv_export.tsv', 'myTSV')");
         assertTrue(tsvFile.exists());
         stat.execute("CALL TSVRead('target/mytsv_export.tsv', 'TSV_IMPORT');");
-        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from TSV_IMPORT");
-        try {
+        try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from TSV_IMPORT")) {
             assertTrue(rs.next());
             assertEquals(20000, rs.getDouble(1), 1e-6);
-        } finally {
-            rs.close();
         }
 
     }
     
     @Test
     public void testWriteReadEmptyTable() throws SQLException {
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS empty_table");
-        stat.execute("create table empty_table()");
-        stat.execute("CALL TSVWrite('target/empty_table.tsv', 'empty_table');");
-        stat.execute("CALL TSVRead('target/empty_table.tsv', 'empty_table_read');");
-        ResultSet res = stat.executeQuery("SELECT * FROM empty_table_read;");
-        ResultSetMetaData rsmd = res.getMetaData();
-        assertTrue(rsmd.getColumnCount()==0);
-        assertTrue(!res.next());
-        stat.close();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS empty_table");
+            stat.execute("create table empty_table()");
+            stat.execute("CALL TSVWrite('target/empty_table.tsv', 'empty_table');");
+            stat.execute("CALL TSVRead('target/empty_table.tsv', 'empty_table_read');");
+            ResultSet res = stat.executeQuery("SELECT * FROM empty_table_read;");
+            ResultSetMetaData rsmd = res.getMetaData();
+            assertTrue(rsmd.getColumnCount()==0);
+            assertTrue(!res.next());
+        }
     }
     
 }

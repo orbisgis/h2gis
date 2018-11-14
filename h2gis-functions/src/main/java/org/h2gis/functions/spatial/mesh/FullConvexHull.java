@@ -162,9 +162,7 @@ public class FullConvexHull
 
         // add points defining polygon
         TreeSet reducedSet = new TreeSet();
-        for (int i = 0; i < polyPts.length; i++) {
-            reducedSet.add(polyPts[i]);
-        }
+        reducedSet.addAll(Arrays.asList(polyPts));
         /**
          * Add all unique points not in the interior poly.
          * CGAlgorithms.isPointInRing is not defined for points actually on the ring,

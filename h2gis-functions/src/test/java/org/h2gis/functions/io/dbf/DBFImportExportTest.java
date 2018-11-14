@@ -141,28 +141,29 @@ public class DBFImportExportTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists sotchi");
         st.execute("CALL DBFREAD("+ StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("sotchi.dbf").getPath())+", 'SOTCHI', 'cp1251');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM sotchi");
         // Check if fields name are OK
-        ResultSetMetaData meta = rs.getMetaData();
-        assertEquals("B_ДНА",meta.getColumnName(5));
-        assertEquals("ИМЕНА_УЧАС",meta.getColumnName(8));
-        assertEquals("ДЛИНА_КАНА",meta.getColumnName(9));
-        assertEquals("ДЛИНА_КАН_",meta.getColumnName(10));
-        assertEquals("ИМЯ_МУООС",meta.getColumnName(11));
-        assertTrue(rs.next());
-        assertEquals("ВП-2", rs.getString("NAMESHEME"));
-        assertEquals("Дубовский канал",rs.getString("NAME10000"));
-        assertTrue(rs.next());
-        assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
-        assertTrue(rs.next());
-        assertEquals("ВП-1", rs.getString("NAMESHEME"));
-        assertTrue(rs.next());
-        assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
-        assertTrue(rs.next());
-        assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
-        assertFalse(rs.next());
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT * FROM sotchi")) {
+            // Check if fields name are OK
+            ResultSetMetaData meta = rs.getMetaData();
+            assertEquals("B_ДНА",meta.getColumnName(5));
+            assertEquals("ИМЕНА_УЧАС",meta.getColumnName(8));
+            assertEquals("ДЛИНА_КАНА",meta.getColumnName(9));
+            assertEquals("ДЛИНА_КАН_",meta.getColumnName(10));
+            assertEquals("ИМЯ_МУООС",meta.getColumnName(11));
+            assertTrue(rs.next());
+            assertEquals("ВП-2", rs.getString("NAMESHEME"));
+            assertEquals("Дубовский канал",rs.getString("NAME10000"));
+            assertTrue(rs.next());
+            assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
+            assertTrue(rs.next());
+            assertEquals("ВП-1", rs.getString("NAMESHEME"));
+            assertTrue(rs.next());
+            assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
+            assertTrue(rs.next());
+            assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
+            assertFalse(rs.next());
+        }
         st.execute("drop table sotchi");
     }
 
@@ -197,13 +198,13 @@ public class DBFImportExportTest {
         stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
         // Read this shape file to check values
         stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
-        ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id");
-        assertTrue(rs.next());
-        assertEquals(v1, rs.getDouble(1), 1e-12);
-        assertTrue(rs.next());
-        assertEquals(v2, rs.getDouble(1), 1e-12);
-        assertFalse(rs.next());
-        rs.close();
+        try (ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id")) {
+            assertTrue(rs.next());
+            assertEquals(v1, rs.getDouble(1), 1e-12);
+            assertTrue(rs.next());
+            assertEquals(v2, rs.getDouble(1), 1e-12);
+            assertFalse(rs.next());
+        }
     }
 
     @Test
@@ -220,42 +221,42 @@ public class DBFImportExportTest {
         stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
         // Read this shape file to check values
         stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
-        ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id");
-        assertTrue(rs.next());
-        assertEquals(v1, rs.getDouble(1), 1e-2);
-        assertTrue(rs.next());
-        assertEquals(v2, rs.getDouble(1), 1e-2);
-        assertFalse(rs.next());
-        rs.close();
+        try (ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id")) {
+            assertTrue(rs.next());
+            assertEquals(v1, rs.getDouble(1), 1e-2);
+            assertTrue(rs.next());
+            assertEquals(v2, rs.getDouble(1), 1e-2);
+            assertFalse(rs.next());
+        }
     }
 
     @Test
     public void testWriteReadEmptyTable1() throws SQLException {
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
-        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
-        stat.execute("create table TABLE_EMPTY(id INTEGER)");
-        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
-        stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
-        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
-        ResultSetMetaData rsmd = res.getMetaData();
-        assertTrue(rsmd.getColumnCount()==2);
-        assertTrue(!res.next());
-        stat.close();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
+            stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
+            stat.execute("create table TABLE_EMPTY(id INTEGER)");
+            stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
+            stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
+            ResultSetMetaData rsmd = res.getMetaData();
+            assertTrue(rsmd.getColumnCount()==2);
+            assertTrue(!res.next());
+        }
     }
     
     @Test
     public void testWriteReadEmptyTable2() throws SQLException {
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
-        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
-        stat.execute("create table TABLE_EMPTY()");
-        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
-        stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
-        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
-        ResultSetMetaData rsmd = res.getMetaData();
-        assertTrue(rsmd.getColumnCount()==0);
-        assertTrue(!res.next());
-        stat.close();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
+            stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
+            stat.execute("create table TABLE_EMPTY()");
+            stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
+            stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
+            ResultSetMetaData rsmd = res.getMetaData();
+            assertTrue(rsmd.getColumnCount()==0);
+            assertTrue(!res.next());
+        }
     }
 }

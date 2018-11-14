@@ -240,11 +240,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGES_SUFFIX); 
         boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         if(deleteTables){            
-            Statement stmt = connection.createStatement();
-            StringBuilder sb = new StringBuilder("drop table if exists ");
-            sb.append(nodesName.toString(isH2)).append(",").append(edgesName.toString(isH2));
-            stmt.execute(sb.toString());
-            stmt.close();
+            try (Statement stmt = connection.createStatement()) {
+                StringBuilder sb = new StringBuilder("drop table if exists ");
+                sb.append(nodesName.toString(isH2)).append(",").append(edgesName.toString(isH2));
+                stmt.execute(sb.toString());
+            }
         }
         // Check if ST_Graph has already been run on this table.
         else if (JDBCUtilities.tableExists(connection, nodesName.getTable()) ||
@@ -577,9 +577,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
     private static void checkForNullEdgeEndpoints(Statement st,
                                                   TableLocation edgesName) throws SQLException {
         LOGGER.info("Checking for null edge endpoints...");
-        final ResultSet nullEdges = st.executeQuery("SELECT COUNT(*) FROM " + edgesName + " WHERE " +
-                "START_NODE IS NULL OR END_NODE IS NULL;");
-        try {
+        try (ResultSet nullEdges = st.executeQuery("SELECT COUNT(*) FROM " + edgesName + " WHERE " +
+                "START_NODE IS NULL OR END_NODE IS NULL;")) {
             nullEdges.next();
             final int n = nullEdges.getInt(1);
             if (n > 0) {
@@ -587,8 +586,6 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 throw new IllegalStateException(msg + "with a null start node or end node. " +
                         "Try using a slightly smaller tolerance.");
             }
-        } finally {
-            nullEdges.close();
         }
     }
 }
