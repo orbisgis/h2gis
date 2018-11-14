@@ -139,7 +139,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             sets = new ConnectivityInspector<VUCent, Edge>(
                     (UndirectedGraph<VUCent, Edge>) graph).connectedSets();
         } else {
-            sets = new StrongConnectivityInspector<VUCent, Edge>(
+            sets = new GabowStrongConnectivityInspector<VUCent, Edge>(
                     (DirectedGraph) graph).stronglyConnectedSets();
         }
         logTime(LOGGER, start);
