@@ -161,12 +161,12 @@ public final class CoordinateUtils {
             prevCoord = currentCoord;
         }
         if (closeRing) {
-            Coordinate[] coordsFinal = finalCoords.toArray(new Coordinate[finalCoords.size()]);
+            Coordinate[] coordsFinal = finalCoords.toArray(new Coordinate[0]);
             Coordinate[] closedCoords = Arrays.copyOf(coordsFinal, coordsFinal.length + 1);
             closedCoords[closedCoords.length-1] = firstCoord;
             return closedCoords;
         }
-        return finalCoords.toArray(new Coordinate[finalCoords.size()]);
+        return finalCoords.toArray(new Coordinate[0]);
 
     }
     
@@ -203,7 +203,7 @@ public final class CoordinateUtils {
         else{
             finalCoords.add(firstCoord);
         }
-        return finalCoords.toArray(new Coordinate[finalCoords.size()]);
+        return finalCoords.toArray(new Coordinate[0]);
         }
 
     /**

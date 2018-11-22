@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.affine_transformations;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.util.AffineTransformation;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.CoordinateSequenceDimensionFilter;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.util.AffineTransformation;
 
 /**
  * Translates a geometry using X, Y (and possibly Z) offsets.

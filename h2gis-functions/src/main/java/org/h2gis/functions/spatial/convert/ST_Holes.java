@@ -20,8 +20,11 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import org.locationtech.jts.geom.*;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryCollection;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -71,7 +74,7 @@ public class ST_Holes extends DeterministicScalarFunction {
                     }
                 }
                 return GEOMETRY_FACTORY.createGeometryCollection(
-                        holes.toArray(new Geometry[holes.size()]));
+                        holes.toArray(new Geometry[0]));
             } else {
                 return GEOMETRY_FACTORY.createGeometryCollection(null);
             }

@@ -20,36 +20,25 @@
 
 package org.h2gis.functions;
 
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.locationtech.jts.geom.GeometryFactory;
+import org.h2.jdbc.JdbcSQLException;
 import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-import org.h2.jdbc.JdbcSQLException;
-
-
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.io.ParseException;
-import org.locationtech.jts.io.WKTReader;
-import org.h2gis.utilities.trigger.UpdateTrigger;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.junit.After;
+import org.h2gis.utilities.trigger.UpdateTrigger;
+import org.junit.*;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.io.ParseException;
+import org.locationtech.jts.io.WKTReader;
+
+import java.sql.*;
+import java.util.List;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
-import org.junit.Before;
 
 /**
  * 
@@ -102,13 +91,10 @@ public class BasicTest {
                    st.execute("create table test as select 1, 'POINT(1 2)'::geometry");
                    st.execute("create trigger updatetrigger AFTER INSERT, UPDATE, DELETE ON test CALL \""+UpdateTrigger.class.getName()+"\"");
                    st.execute("insert into test values(2, 'POINT(5 5)') , (3, 'POINT(1 1)')");
-                   ResultSet rs = st.executeQuery("select * from "+new TableLocation(UpdateTrigger.TRIGGER_SCHEMA, UpdateTrigger.NOTIFICATION_TABLE));
-                   try {
+                   try (ResultSet rs = st.executeQuery("select * from "+new TableLocation(UpdateTrigger.TRIGGER_SCHEMA, UpdateTrigger.NOTIFICATION_TABLE))) {
                        assertTrue(rs.next());
                        assertEquals(1,rs.getInt(2));
                        assertFalse(rs.next());
-                   } finally {
-                       rs.close();
                    }
                } finally {
                    st.execute("drop trigger if exists updatetrigger");

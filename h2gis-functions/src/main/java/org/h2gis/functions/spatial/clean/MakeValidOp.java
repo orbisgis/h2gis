@@ -24,6 +24,8 @@ import org.locationtech.jts.algorithm.RayCrossingCounter;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory;
+import org.locationtech.jts.geom.util.LineStringExtracter;
+import org.locationtech.jts.geom.util.PointExtracter;
 import org.locationtech.jts.geom.util.PolygonExtracter;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
@@ -34,9 +36,7 @@ import org.locationtech.jts.operation.union.UnaryUnionOp;
 
 import java.util.*;
 
-import static org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory.*;
-import org.locationtech.jts.geom.util.LineStringExtracter;
-import org.locationtech.jts.geom.util.PointExtracter;
+import static org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory.DOUBLE;
 
 /**
  * Operator to make a geometry valid.
@@ -456,7 +456,7 @@ public class MakeValidOp {
                 // seq.size == 0
             }
             Polygon poly = factory.createPolygon(factory.createLinearRing(outerRingSeq),
-                    innerRings.toArray(new LinearRing[innerRings.size()]));
+                    innerRings.toArray(new LinearRing[0]));
             if (degeneratedRings.isEmpty()) {
                 return poly;
             } else {

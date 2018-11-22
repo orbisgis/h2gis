@@ -20,16 +20,17 @@
 
 package org.h2gis.functions.io.osm;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.URIUtilities;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * SQL Function to copy OSM File data into a set of tables.

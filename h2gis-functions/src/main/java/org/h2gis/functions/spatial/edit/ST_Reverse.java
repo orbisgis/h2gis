@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.edit;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.MultiPoint;
 import org.locationtech.jts.geom.Point;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Returns the geometry with vertex order reversed.

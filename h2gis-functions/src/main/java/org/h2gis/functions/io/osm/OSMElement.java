@@ -20,11 +20,12 @@
 
 package org.h2gis.functions.io.osm;
 
+import org.xml.sax.SAXException;
+
 import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import org.xml.sax.SAXException;
 
 /**
  * A class to manage all common element properties.

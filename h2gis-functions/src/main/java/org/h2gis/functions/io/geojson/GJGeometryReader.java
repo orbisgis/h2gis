@@ -23,17 +23,8 @@ package org.h2gis.functions.io.geojson;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -177,7 +168,7 @@ public class GJGeometryReader {
                 lineStrings.add(GF.createLineString(parseCoordinates(jp)));
                 jp.nextToken();
             }
-            MultiLineString line = GF.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+            MultiLineString line = GF.createMultiLineString(lineStrings.toArray(new LineString[0]));
             jp.nextToken();//END_OBJECT } geometry
             return line;
         } else {
@@ -229,7 +220,7 @@ public class GJGeometryReader {
             }
             if (linesIndex > 1) {
                 jp.nextToken();//END_OBJECT } geometry
-                return GF.createPolygon(linearRing, holes.toArray(new LinearRing[holes.size()]));
+                return GF.createPolygon(linearRing, holes.toArray(new LinearRing[0]));
             } else {
                 jp.nextToken();//END_OBJECT } geometry
                 return GF.createPolygon(linearRing, null);
@@ -276,14 +267,14 @@ public class GJGeometryReader {
                 }
                 if (linesIndex > 1) {
                     jp.nextToken();//END_OBJECT
-                    polygons.add(GF.createPolygon(linearRing, holes.toArray(new LinearRing[holes.size()])));
+                    polygons.add(GF.createPolygon(linearRing, holes.toArray(new LinearRing[0])));
                 } else {
                     jp.nextToken();//END_OBJECT
                     polygons.add(GF.createPolygon(linearRing, null));
                 }
             }
             jp.nextToken();//END_OBJECT } geometry
-            return GF.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+            return GF.createMultiPolygon(polygons.toArray(new Polygon[0]));
 
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");
@@ -315,7 +306,7 @@ public class GJGeometryReader {
                 geometries.add(parseGeometry(jp));
             }
             jp.nextToken();//END_OBJECT } geometry
-            return GF.createGeometryCollection(geometries.toArray(new Geometry[geometries.size()]));
+            return GF.createGeometryCollection(geometries.toArray(new Geometry[0]));
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'geometries', found '" + coordinatesField + "'");
         }
@@ -338,7 +329,7 @@ public class GJGeometryReader {
         while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
             coords.add(parseCoordinate(jp));
         }
-        return coords.toArray(new Coordinate[coords.size()]);
+        return coords.toArray(new Coordinate[0]);
     }
 
     /**

@@ -23,14 +23,9 @@ package org.h2gis.functions.spatial.mesh;
 import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.util.Assert;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Stack;
-import java.util.TreeSet;
-
 import org.locationtech.jts.util.UniqueCoordinateArrayFilter;
+
+import java.util.*;
 
 /**
  * Computes the convex hull of a {@link Geometry}.
@@ -161,19 +156,16 @@ public class FullConvexHull
 //    System.out.println(ring);
 
         // add points defining polygon
-        TreeSet reducedSet = new TreeSet();
-        for (int i = 0; i < polyPts.length; i++) {
-            reducedSet.add(polyPts[i]);
-        }
+        TreeSet reducedSet = new TreeSet(Arrays.asList(polyPts));
         /**
          * Add all unique points not in the interior poly.
          * CGAlgorithms.isPointInRing is not defined for points actually on the ring,
          * but this doesn't matter since the points of the interior polygon
          * are forced to be in the reduced set.
          */
-        for (int i = 0; i < inputPts.length; i++) {
-            if (! CGAlgorithms.isPointInRing(inputPts[i], polyPts)) {
-                reducedSet.add(inputPts[i]);
+        for (Coordinate inputPt : inputPts) {
+            if (!CGAlgorithms.isPointInRing(inputPt, polyPts)) {
+                reducedSet.add(inputPt);
             }
         }
         Coordinate[] reducedPts = CoordinateArrays.toCoordinateArray(reducedSet);

@@ -20,17 +20,12 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-
 import org.cts.CRSFactory;
 import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.crs.SpatialRefRegistry;
+import org.locationtech.jts.geom.*;
 
 import java.sql.Connection;
 import java.sql.SQLException;

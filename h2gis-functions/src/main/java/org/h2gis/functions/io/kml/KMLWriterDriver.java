@@ -20,32 +20,23 @@
 
 package org.h2gis.functions.io.kml;
 
+import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+
+import javax.xml.stream.XMLOutputFactory;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import java.io.*;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 
 /**
  *
@@ -177,9 +168,8 @@ public class KMLWriterDriver {
 
             xmlOut.writeStartElement("Document");
 
-            // Read table content
-            Statement st = connection.createStatement();
-            try {
+            try ( // Read table content
+                    Statement st = connection.createStatement()) {
                 ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
                 try {
                     int recordCount = JDBCUtilities.getRowCount(connection, tableName);
@@ -200,8 +190,6 @@ public class KMLWriterDriver {
                 } finally {
                     rs.close();
                 }
-            } finally {
-                st.close();
             }
             xmlOut.writeEndElement();//Folder
             xmlOut.writeEndElement();//KML

@@ -20,15 +20,16 @@
 
 package org.h2gis.functions.io.gpx.model;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.helpers.XMLReaderFactory;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 /**
  * GpxPreparser class just reads the document. It says what type of elements
@@ -73,18 +74,12 @@ public final class GpxPreparser extends DefaultHandler {
      */
     public boolean read(File inputFile) throws SAXException, IOException {
         boolean success = false;
-        FileInputStream fs = null;
-        try {
-            fs = new FileInputStream(inputFile);
+        try (FileInputStream fs = new FileInputStream(inputFile)) {
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setErrorHandler(this);
             parser.setContentHandler(this);
             parser.parse(new InputSource(fs));
             success = true;
-        } finally {
-            if (fs != null) {
-                fs.close();
-            }
         }
         return success;
     }

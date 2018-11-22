@@ -20,21 +20,20 @@
 
 package org.h2gis.functions;
 
-import org.locationtech.jts.io.WKTReader;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.SpatialResultSet;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.SpatialResultSet;
+import org.locationtech.jts.io.WKTReader;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * Test spatial wrapper of Connection
@@ -61,12 +60,12 @@ public class ConnectionWrapTest {
         stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
         stat.execute("insert into area values(2, 'POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))')");
-        SpatialResultSet rs = stat.executeQuery("select idarea, the_geom  from area").unwrap(SpatialResultSet.class);
-        assertTrue(rs.next());
-        assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry("the_geom").toText());
-        assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry(2).toText());
-        assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry().toText());
-        rs.close();
+        try (SpatialResultSet rs = stat.executeQuery("select idarea, the_geom  from area").unwrap(SpatialResultSet.class)) {
+            assertTrue(rs.next());
+            assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry("the_geom").toText());
+            assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry(2).toText());
+            assertEquals("POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))", rs.getGeometry().toText());
+        }
         stat.execute("DROP TABLE AREA");
     }
 

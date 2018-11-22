@@ -20,8 +20,11 @@
 
 package org.h2gis.functions.spatial.distance;
 
-import org.locationtech.jts.geom.*;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -80,6 +83,6 @@ public class ST_FurthestCoordinate extends DeterministicScalarFunction {
             return GEOMETRY_FACTORY.createPoint(furthestCoordinates.iterator().next());
         }
         return GEOMETRY_FACTORY.createMultiPoint(
-                furthestCoordinates.toArray(new Coordinate[furthestCoordinates.size()]));
+                furthestCoordinates.toArray(new Coordinate[0]));
     }
 }

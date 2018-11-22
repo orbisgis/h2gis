@@ -20,23 +20,21 @@
 
 package org.h2gis.functions.spatial.crs;
 
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
+import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -149,20 +147,20 @@ public class CRSFunctionTest {
     
     @Test
     public void testST_TransformOnNullGeometry() throws Exception {
-        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
-                + "null, 2154);");
-        rs.next();
-        Assert.assertNull(rs.getObject(1));
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "null, 2154);")) {
+            rs.next();
+            Assert.assertNull(rs.getObject(1));
+        }
     }
     
     @Test
     public void testST_TransformOnNulls() throws Exception {
-        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
-                + "null, null);");
-        rs.next();
-        Assert.assertNull(rs.getObject(1));
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "null, null);")) {
+            rs.next();
+            Assert.assertNull(rs.getObject(1));
+        }
     }
     
     @Test(expected = IllegalArgumentException.class)

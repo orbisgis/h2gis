@@ -20,12 +20,12 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.h2.api.Aggregate;
 import org.h2.value.Value;
 import org.h2gis.api.AbstractFunction;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;

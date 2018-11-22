@@ -20,7 +20,6 @@
 
 package org.h2gis.functions.spatial.crs;
 
-import org.locationtech.jts.geom.*;
 import org.cts.CRSFactory;
 import org.cts.IllegalCoordinateException;
 import org.cts.crs.CRSException;
@@ -30,6 +29,9 @@ import org.cts.op.CoordinateOperation;
 import org.cts.op.CoordinateOperationFactory;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.CoordinateFilter;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.algorithm.MinimumDiameter;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Compute a minimum diameter for a given geometry

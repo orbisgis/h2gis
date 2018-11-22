@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.generalize;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  *

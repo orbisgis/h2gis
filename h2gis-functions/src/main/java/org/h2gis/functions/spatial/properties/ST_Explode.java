@@ -20,32 +20,22 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPolygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
-import org.h2gis.utilities.TableUtilities;
+import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
+import org.locationtech.jts.geom.*;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
+import java.sql.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.api.AbstractFunction;
-import org.h2gis.api.ScalarFunction;
 
 /**
  * This table function explode Geometry Collection into multiple geometries

@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.gml2.GMLWriter;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Store a geometry as a GML representation

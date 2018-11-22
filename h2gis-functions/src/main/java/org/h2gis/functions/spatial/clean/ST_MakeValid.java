@@ -19,9 +19,10 @@
  */
 package org.h2gis.functions.spatial.clean;
 
-import org.locationtech.jts.geom.Geometry;
-import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
+
+import java.sql.SQLException;
 
 /**
  * Function to make a geometry valid.

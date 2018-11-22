@@ -21,10 +21,10 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * This class is used to generate an OSM map link URL from a geometry.

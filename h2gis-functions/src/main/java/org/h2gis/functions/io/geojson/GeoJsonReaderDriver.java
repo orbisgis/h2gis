@@ -23,18 +23,15 @@ package org.h2gis.functions.io.geojson;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPoint;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.PrecisionModel;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
+import org.locationtech.jts.geom.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -45,14 +42,6 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-
-import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.api.ProgressVisitor;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.TableLocation;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Driver to import a GeoJSON file into a spatial table.
@@ -192,19 +181,18 @@ public class GeoJsonReaderDriver {
             cachedColumnNames = new LinkedHashMap<String, String>();
             finalGeometryTypes=new HashSet<String>();
             
-            JsonParser jp = jsFactory.createParser(fis);           
-
-            jp.nextToken();//START_OBJECT
-            jp.nextToken(); // field_name (type)
-            jp.nextToken(); // value_string (FeatureCollection)
-            String geomType = jp.getText();      
-            
-            if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {                
-                parseFeaturesMetadata(jp);
-            } else {
-                throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
-            }
-            jp.close();
+            try (JsonParser jp = jsFactory.createParser(fis)) {
+                jp.nextToken();//START_OBJECT
+                jp.nextToken(); // field_name (type)
+                jp.nextToken(); // value_string (FeatureCollection)
+                String geomType = jp.getText();
+                
+                if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
+                    parseFeaturesMetadata(jp);
+                } else {
+                    throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
+                }
+            } //START_OBJECT
             
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
@@ -973,8 +961,7 @@ public class GeoJsonReaderDriver {
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ to parse the coordinate
-            Point point = GF.createPoint(parseCoordinate(jp));
-            return point;
+            return GF.createPoint(parseCoordinate(jp));
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");
         }
@@ -1047,7 +1034,7 @@ public class GeoJsonReaderDriver {
                 lineStrings.add(GF.createLineString(parseCoordinates(jp)));
                 jp.nextToken();
             }
-            MultiLineString line = GF.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+            MultiLineString line = GF.createMultiLineString(lineStrings.toArray(new LineString[0]));
             jp.nextToken();//END_OBJECT } geometry
             return line;
         } else {
@@ -1099,7 +1086,7 @@ public class GeoJsonReaderDriver {
             }
             if (linesIndex > 1) {
                 jp.nextToken();//END_OBJECT } geometry
-                return GF.createPolygon(linearRing, holes.toArray(new LinearRing[holes.size()]));
+                return GF.createPolygon(linearRing, holes.toArray(new LinearRing[0]));
             } else {
                 jp.nextToken();//END_OBJECT } geometry
                 return GF.createPolygon(linearRing, null);
@@ -1146,14 +1133,14 @@ public class GeoJsonReaderDriver {
                 }
                 if (linesIndex > 1) {
                     jp.nextToken();//END_OBJECT
-                    polygons.add(GF.createPolygon(linearRing, holes.toArray(new LinearRing[holes.size()])));
+                    polygons.add(GF.createPolygon(linearRing, holes.toArray(new LinearRing[0])));
                 } else {
                     jp.nextToken();//END_OBJECT
                     polygons.add(GF.createPolygon(linearRing, null));
                 }
             }
             jp.nextToken();//END_OBJECT } geometry
-            return GF.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
+            return GF.createMultiPolygon(polygons.toArray(new Polygon[0]));
 
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'coordinates', found '" + coordinatesField + "'");
@@ -1189,7 +1176,7 @@ public class GeoJsonReaderDriver {
                 jp.nextToken();
             }
             jp.nextToken();//END_OBJECT } geometry
-            return GF.createGeometryCollection(geometries.toArray(new Geometry[geometries.size()]));
+            return GF.createGeometryCollection(geometries.toArray(new Geometry[0]));
         } else {
             throw new SQLException("Malformed GeoJSON file. Expected 'geometries', found '" + coordinatesField + "'");
         }
@@ -1212,7 +1199,7 @@ public class GeoJsonReaderDriver {
         while (jp.getCurrentToken() != JsonToken.END_ARRAY) {
             coords.add(parseCoordinate(jp));
         }
-        return coords.toArray(new Coordinate[coords.size()]);
+        return coords.toArray(new Coordinate[0]);
     }
 
     /**
@@ -1257,17 +1244,17 @@ public class GeoJsonReaderDriver {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(fileName);
-            JsonParser jp = jsFactory.createParser(fis);
-            jp.nextToken();//START_OBJECT
-            jp.nextToken(); // field_name (type)
-            jp.nextToken(); // value_string (FeatureCollection)
-            String geomType = jp.getText();
-            if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {                
-                parseFeatures(jp);
-            } else {
-                throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
-            }
-            jp.close();
+            try (JsonParser jp = jsFactory.createParser(fis)) {
+                jp.nextToken();//START_OBJECT
+                jp.nextToken(); // field_name (type)
+                jp.nextToken(); // value_string (FeatureCollection)
+                String geomType = jp.getText();
+                if (geomType.equalsIgnoreCase(GeoJsonField.FEATURECOLLECTION)) {
+                    parseFeatures(jp);
+                } else {
+                    throw new SQLException("Malformed GeoJSON file. Expected 'FeatureCollection', found '" + geomType + "'");
+                }
+            } //START_OBJECT
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
 

@@ -20,13 +20,8 @@
 
 package org.h2gis.functions.spatial.edit;
 
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequences;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.*;
 
 /**
  * Returns a 1 dimension geometry with vertex order reversed according the start

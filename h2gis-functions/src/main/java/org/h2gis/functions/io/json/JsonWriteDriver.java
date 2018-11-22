@@ -22,19 +22,12 @@ package org.h2gis.functions.io.json;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
+
+import java.io.*;
+import java.sql.*;
 
 /**
  * JSON class to write a table or a resultset to a file
@@ -86,9 +79,8 @@ public class JsonWriteDriver {
             fos = new FileOutputStream(fileName);
             int recordCount = JDBCUtilities.getRowCount(connection, tableName);
             if (recordCount > 0) {
-                // Read table content
-                Statement st = connection.createStatement();
-                try {
+                try ( // Read table content
+                        Statement st = connection.createStatement()) {
                     JsonFactory jsonFactory = new JsonFactory();
                     JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
                     ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
@@ -217,8 +209,6 @@ public class JsonWriteDriver {
                     } finally {
                         rs.close();
                     }
-                } finally {
-                    st.close();
                 }
             }
         } catch (FileNotFoundException ex) {

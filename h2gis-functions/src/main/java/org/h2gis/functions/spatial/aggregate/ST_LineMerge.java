@@ -20,9 +20,10 @@
 
 package org.h2gis.functions.spatial.aggregate;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.operation.linemerge.LineMerger;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.LineString;
+import org.locationtech.jts.operation.linemerge.LineMerger;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -53,6 +54,6 @@ public class ST_LineMerge extends DeterministicScalarFunction {
         LineMerger lineMerger = new LineMerger();
         lineMerger.add(geometry);
         Collection coll = lineMerger.getMergedLineStrings();
-        return geometry.getFactory().createMultiLineString((LineString[])coll.toArray(new LineString[coll.size()]));
+        return geometry.getFactory().createMultiLineString((LineString[])coll.toArray(new LineString[0]));
     }
 }

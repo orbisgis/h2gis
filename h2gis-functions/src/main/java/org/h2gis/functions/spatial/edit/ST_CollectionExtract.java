@@ -20,14 +20,11 @@
 
 package org.h2gis.functions.spatial.edit;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryCollection;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.io.ParseException;
-import java.util.ArrayList;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.ParseException;
+
+import java.util.ArrayList;
 
 /**
  *
@@ -75,7 +72,7 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
             } else if (points.size() == 1) {
                 return points.get(0);
             } else {
-                return geometry.getFactory().createMultiPoint(points.toArray(new Point[points.size()]));
+                return geometry.getFactory().createMultiPoint(points.toArray(new Point[0]));
             }
         } else if (dimension == 2) {
             ArrayList<LineString> lines = new ArrayList<LineString>();
@@ -85,7 +82,7 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
             } else if (lines.size() == 1) {
                 return lines.get(0);
             } else {
-                return geometry.getFactory().createMultiLineString(lines.toArray(new LineString[lines.size()]));
+                return geometry.getFactory().createMultiLineString(lines.toArray(new LineString[0]));
             }
         } else if (dimension == 3) {
             ArrayList<Polygon> polygones = new ArrayList<Polygon>();
@@ -95,7 +92,7 @@ public class ST_CollectionExtract extends DeterministicScalarFunction{
             } else if (polygones.size() == 1) {
                 return polygones.get(0);
             } else {
-                return geometry.getFactory().createMultiPolygon(polygones.toArray(new Polygon[polygones.size()]));
+                return geometry.getFactory().createMultiPolygon(polygones.toArray(new Polygon[0]));
             }
         }
         return null;

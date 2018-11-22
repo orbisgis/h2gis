@@ -20,14 +20,15 @@
 
 package org.h2gis.functions.io.osm;
 
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.h2.api.ErrorCode;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.PrecisionModel;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -49,7 +50,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.zip.GZIPInputStream;
-import org.h2gis.utilities.TableUtilities;
 
 /**
  * Parse an OSM file and store the elements into a database. The database model

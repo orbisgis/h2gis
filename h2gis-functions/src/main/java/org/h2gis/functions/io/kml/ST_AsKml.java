@@ -20,9 +20,10 @@
 
 package org.h2gis.functions.io.kml;
 
-import org.locationtech.jts.geom.Geometry;
-import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
+
+import java.sql.SQLException;
 
 /**
  * Convert a JTS geometry to a KML geometry representation.

@@ -23,6 +23,7 @@ package org.h2gis.functions.io.shp;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.URIUtilities;
 
@@ -30,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.functions.io.utility.FileUtil;
 
 /**
  * SQL Function to copy Shape File data into a Table.

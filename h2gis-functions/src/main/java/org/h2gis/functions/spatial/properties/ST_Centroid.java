@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Computes the centroid of this Geometry. The centroid is equal to the centroid of the set of component Geometries of

@@ -19,12 +19,13 @@
  */
 package org.h2gis.functions.spatial.earth;
 
-import org.h2gis.api.*;
-import org.h2gis.utilities.jts_utils.*;
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.util.*;
+import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.utilities.jts_utils.VisibilityAlgorithm;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.util.GeometricShapeFactory;
 
-import java.sql.*;
+import java.sql.SQLException;
 
 
 /**

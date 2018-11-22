@@ -20,16 +20,19 @@
 
 package org.h2gis.functions.spatial.mesh;
 
+import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.utilities.jts_utils.Voronoi;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.triangulate.VoronoiDiagramBuilder;
 import org.locationtech.jts.triangulate.quadedge.QuadEdge;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
 import org.locationtech.jts.triangulate.quadedge.TriangleVisitor;
-import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.Voronoi;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author Nicolas Fortin
@@ -98,7 +101,7 @@ public class ST_Voronoi extends DeterministicScalarFunction {
                 QuadEdgeSubdivision subdivision = diagramBuilder.getSubdivision();
                 List<Coordinate> circumcenter = new ArrayList<Coordinate>(geomCollection.getNumGeometries());
                 subdivision.visitTriangles(new TriangleVisitorCircumCenter(circumcenter), false);
-                return geomCollection.getFactory().createMultiPoint(circumcenter.toArray(new Coordinate[circumcenter.size()]));
+                return geomCollection.getFactory().createMultiPoint(circumcenter.toArray(new Coordinate[0]));
             }
         } else {
             if(Double.compare(geomCollection.getEnvelopeInternal().getArea(), 0d) == 0) {

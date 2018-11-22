@@ -20,17 +20,13 @@
 
 package org.h2gis.functions.io.shp.internal;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.impl.PackedCoordinateSequence;
-import java.io.IOException;
 import org.h2gis.functions.io.utility.ReadBufferManager;
 import org.h2gis.functions.io.utility.WriteBufferManager;
 import org.h2gis.utilities.jts_utils.CoordinateUtils;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequence;
+
+import java.io.IOException;
 
 /*
  * $Id: MultiLineHandler.java 20881 2006-08-07 13:24:35Z jgarnett $ @author

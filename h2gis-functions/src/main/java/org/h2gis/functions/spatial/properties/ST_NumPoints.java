@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Get the number of points inside a geometry

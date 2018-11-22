@@ -20,12 +20,12 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
-import org.h2gis.api.DeterministicScalarFunction;
 
 import java.sql.SQLException;
 
@@ -79,8 +79,7 @@ public class ST_GeomFromText extends DeterministicScalarFunction {
         }
         try {
             WKTReader wktReaderSRID = new WKTReader(new GeometryFactory(new PrecisionModel(),srid));
-            Geometry geometry = wktReaderSRID.read(wkt);
-            return geometry;
+            return wktReaderSRID.read(wkt);
         } catch (ParseException ex) {
             throw new SQLException(ex);
         }

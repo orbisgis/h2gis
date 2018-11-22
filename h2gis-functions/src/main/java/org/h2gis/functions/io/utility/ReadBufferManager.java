@@ -68,11 +68,10 @@ public final class ReadBufferManager {
          * @throws java.io.IOException
          */
         private int getWindowOffset(long bytePos, int length) throws IOException {
-                long desiredMin = bytePos;
-                long desiredMax = desiredMin + length - 1;
-                if ((desiredMin >= windowStart)
+                long desiredMax = bytePos + length - 1;
+                if ((bytePos >= windowStart)
                         && (desiredMax < windowStart + buffer.capacity())) {
-                        long res = desiredMin - windowStart;
+                        long res = bytePos - windowStart;
                         if (res < Integer.MAX_VALUE) {
                                 return (int) res;
                         } else {
@@ -98,7 +97,7 @@ public final class ReadBufferManager {
                         }
                         channel.read(buffer);
                         buffer.flip();
-                        return (int) (desiredMin - windowStart);
+                        return (int) (bytePos - windowStart);
                 }
         }
 

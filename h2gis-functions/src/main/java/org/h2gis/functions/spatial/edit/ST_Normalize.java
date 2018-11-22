@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.edit;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Converts this Geometry to normal form (canonical form)

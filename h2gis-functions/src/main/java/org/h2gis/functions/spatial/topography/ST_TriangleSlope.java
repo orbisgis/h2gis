@@ -20,10 +20,9 @@
 
 package org.h2gis.functions.spatial.topography;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
-
 import org.h2gis.utilities.jts_utils.TriMarkers;
+import org.locationtech.jts.geom.Geometry;
 
 /**
 * This function is used to compute the slope direction of a triangle.

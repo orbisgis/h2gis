@@ -22,6 +22,7 @@ package org.h2gis.functions.io.gpx.model;
 
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -32,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.utilities.TableUtilities;
 
 /**
  * Main class to parse the GPX file
