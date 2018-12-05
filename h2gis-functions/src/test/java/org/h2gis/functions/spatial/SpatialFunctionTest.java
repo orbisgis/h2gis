@@ -2180,4 +2180,13 @@ public class SpatialFunctionTest {
         assertTrue(resultMap.get("GEOMCOLLECTION_FIELD").equals(GeometryTypeCodes.GEOMCOLLECTION));
         assertFalse(resultMap.containsKey("ID"));
     }
+    
+    @Test
+    public void testST_XMinCollect() throws SQLException {
+        try (ResultSet rs = st.executeQuery("SELECT ST_XMIN(ST_COLLECT(the_geom)) FROM (select ST_MakePoint(A.X , B.X) the_geom FROM SYSTEM_RANGE(12,50) A,SYSTEM_RANGE(30,50) B)")) {
+            rs.next();
+            assertEquals(12, rs.getInt(1));
+        }
+    }
+    
 }
