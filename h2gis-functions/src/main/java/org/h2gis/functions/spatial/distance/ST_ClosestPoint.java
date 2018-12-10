@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.distance;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.operation.distance.DistanceOp;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * ST_ClosestPoint returns the 2D point on geometry A that is closest to

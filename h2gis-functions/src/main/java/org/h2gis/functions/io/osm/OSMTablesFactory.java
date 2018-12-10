@@ -20,12 +20,13 @@
 
 package org.h2gis.functions.io.osm;
 
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.TableUtilities;
 
 /**
  * Class to create the tables to import osm data
@@ -76,10 +77,11 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createTagTable(Connection connection, String tagTableName) throws SQLException {
-        Statement stmt = connection.createStatement();
         // PostgreSQL and H2 will automatically create an index on TAG_KEY,TAG_VALUE when UNIQUE constraint is set
-        stmt.execute("CREATE TABLE " + tagTableName + "(ID_TAG SERIAL PRIMARY KEY, TAG_KEY VARCHAR UNIQUE);");
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            // PostgreSQL and H2 will automatically create an index on TAG_KEY,TAG_VALUE when UNIQUE constraint is set
+            stmt.execute("CREATE TABLE " + tagTableName + "(ID_TAG SERIAL PRIMARY KEY, TAG_KEY VARCHAR UNIQUE);");
+        }
         //We return the prepared statement of the tag table
         return connection.prepareStatement("INSERT INTO " + tagTableName + " (TAG_KEY) VALUES (?)");
     }
@@ -98,25 +100,25 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createNodeTable(Connection connection, String nodeTableName, boolean isH2) throws SQLException {
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(nodeTableName);
-        sb.append("(ID_NODE BIGINT PRIMARY KEY,  THE_GEOM ");
-        if(isH2) {
-            sb.append("POINT CHECK ST_SRID(THE_GEOM)=4326");
-        } else {
-            sb.append("GEOMETRY(POINT, 4326)");
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(nodeTableName);
+            sb.append("(ID_NODE BIGINT PRIMARY KEY,  THE_GEOM ");
+            if(isH2) {
+                sb.append("POINT CHECK ST_SRID(THE_GEOM)=4326");
+            } else {
+                sb.append("GEOMETRY(POINT, 4326)");
+            }
+            sb.append(",ELE DOUBLE PRECISION,"
+                    + "USER_NAME VARCHAR,"
+                    + "UID BIGINT,"
+                    + "VISIBLE BOOLEAN,"
+                    + "VERSION INTEGER,"
+                    + "CHANGESET INTEGER,"
+                    + "LAST_UPDATE TIMESTAMP,"
+                    + "NAME VARCHAR);");
+            stmt.execute(sb.toString());
         }
-        sb.append(",ELE DOUBLE PRECISION,"
-                + "USER_NAME VARCHAR,"
-                + "UID BIGINT,"
-                + "VISIBLE BOOLEAN,"
-                + "VERSION INTEGER,"
-                + "CHANGESET INTEGER,"
-                + "LAST_UPDATE TIMESTAMP,"
-                + "NAME VARCHAR);");
-        stmt.execute(sb.toString());
-        stmt.close();
         return connection.prepareStatement("INSERT INTO " + nodeTableName + " VALUES (?,?,?,?,?,?,?,?,?,?);");
     }
     
@@ -131,12 +133,12 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createNodeTagTable(Connection connection, String nodeTagTableName, String tagTableName) throws SQLException {
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(nodeTagTableName);
-        sb.append("(ID_NODE BIGINT, ID_TAG BIGINT,TAG_VALUE VARCHAR); ");
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(nodeTagTableName);
+            sb.append("(ID_NODE BIGINT, ID_TAG BIGINT,TAG_VALUE VARCHAR); ");
+            stmt.execute(sb.toString());
+        }
         //We return the preparedstatement of the tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(nodeTagTableName);
@@ -158,12 +160,12 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createWayTable(Connection connection, String wayTableName, boolean isH2) throws SQLException {
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(wayTableName);
-        sb.append("(ID_WAY BIGINT PRIMARY KEY, USER_NAME VARCHAR, UID BIGINT, VISIBLE BOOLEAN, VERSION INTEGER, CHANGESET INTEGER, LAST_UPDATE TIMESTAMP, NAME VARCHAR);");
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(wayTableName);
+            sb.append("(ID_WAY BIGINT PRIMARY KEY, USER_NAME VARCHAR, UID BIGINT, VISIBLE BOOLEAN, VERSION INTEGER, CHANGESET INTEGER, LAST_UPDATE TIMESTAMP, NAME VARCHAR);");
+            stmt.execute(sb.toString());
+        }
         return connection.prepareStatement("INSERT INTO " + wayTableName + " VALUES (?,?,?,?,?,?,?,?);");
     }
 
@@ -177,12 +179,12 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createWayTagTable(Connection connection, String wayTagTableName, String tagTableName) throws SQLException {
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(wayTagTableName);
-        sb.append("(ID_WAY BIGINT, ID_TAG BIGINT, VALUE VARCHAR);");
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(wayTagTableName);
+            sb.append("(ID_WAY BIGINT, ID_TAG BIGINT, VALUE VARCHAR);");
+            stmt.execute(sb.toString());
+        }
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(wayTagTableName);
@@ -201,12 +203,12 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createWayNodeTable(Connection connection, String wayNodeTableName) throws SQLException{
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(wayNodeTableName);
-        sb.append("(ID_WAY BIGINT, ID_NODE BIGINT, NODE_ORDER INT);");
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(wayNodeTableName);
+            sb.append("(ID_WAY BIGINT, ID_NODE BIGINT, NODE_ORDER INT);");
+            stmt.execute(sb.toString());
+        }
         return connection.prepareStatement("INSERT INTO " + wayNodeTableName + " VALUES ( ?, ?,?);");
     }
 
@@ -219,18 +221,18 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createRelationTable(Connection connection, String relationTable) throws SQLException {
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(relationTable);
-        sb.append("(ID_RELATION BIGINT PRIMARY KEY,"
-                + "USER_NAME VARCHAR,"
-                + "UID BIGINT,"
-                + "VISIBLE BOOLEAN,"
-                + "VERSION INTEGER,"
-                + "CHANGESET INTEGER,"
-                + "LAST_UPDATE TIMESTAMP);");
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(relationTable);
+            sb.append("(ID_RELATION BIGINT PRIMARY KEY,"
+                    + "USER_NAME VARCHAR,"
+                    + "UID BIGINT,"
+                    + "VISIBLE BOOLEAN,"
+                    + "VERSION INTEGER,"
+                    + "CHANGESET INTEGER,"
+                    + "LAST_UPDATE TIMESTAMP);");
+            stmt.execute(sb.toString());
+        }
         return connection.prepareStatement("INSERT INTO " + relationTable + " VALUES ( ?,?,?,?,?,?,?);");
     }
 
@@ -244,12 +246,12 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createRelationTagTable(Connection connection, String relationTagTable, String tagTableName) throws SQLException {
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(relationTagTable);
-        sb.append("(ID_RELATION BIGINT, ID_TAG BIGINT, TAG_VALUE VARCHAR);");
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(relationTagTable);
+            sb.append("(ID_RELATION BIGINT, ID_TAG BIGINT, TAG_VALUE VARCHAR);");
+            stmt.execute(sb.toString());
+        }
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(relationTagTable);
@@ -268,12 +270,12 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createNodeMemberTable(Connection connection, String nodeMemberTable) throws SQLException {
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(nodeMemberTable);
-        sb.append("(ID_RELATION BIGINT,ID_NODE BIGINT, ROLE VARCHAR, NODE_ORDER INT);");
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(nodeMemberTable);
+            sb.append("(ID_RELATION BIGINT,ID_NODE BIGINT, ROLE VARCHAR, NODE_ORDER INT);");
+            stmt.execute(sb.toString());
+        }
         return connection.prepareStatement("INSERT INTO " + nodeMemberTable + " VALUES ( ?,?,?,?);");
     }
 
@@ -286,12 +288,12 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createWayMemberTable(Connection connection, String wayMemberTable) throws SQLException {
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(wayMemberTable);
-        sb.append("(ID_RELATION BIGINT, ID_WAY BIGINT, ROLE VARCHAR, WAY_ORDER INT);");
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(wayMemberTable);
+            sb.append("(ID_RELATION BIGINT, ID_WAY BIGINT, ROLE VARCHAR, WAY_ORDER INT);");
+            stmt.execute(sb.toString());
+        }
         return connection.prepareStatement("INSERT INTO " + wayMemberTable + " VALUES ( ?,?,?,?);");
     }
 
@@ -304,12 +306,12 @@ public class OSMTablesFactory {
      * @throws SQLException
      */
     public static PreparedStatement createRelationMemberTable(Connection connection, String relationMemberTable) throws SQLException {
-        Statement stmt = connection.createStatement();
-        StringBuilder sb = new StringBuilder("CREATE TABLE ");
-        sb.append(relationMemberTable);
-        sb.append("(ID_RELATION BIGINT, ID_SUB_RELATION BIGINT, ROLE VARCHAR, RELATION_ORDER INT);");
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            StringBuilder sb = new StringBuilder("CREATE TABLE ");
+            sb.append(relationMemberTable);
+            sb.append("(ID_RELATION BIGINT, ID_SUB_RELATION BIGINT, ROLE VARCHAR, RELATION_ORDER INT);");
+            stmt.execute(sb.toString());
+        }
         return connection.prepareStatement("INSERT INTO " + relationMemberTable + " VALUES ( ?,?,?,?);");
     }
     
@@ -335,8 +337,8 @@ public class OSMTablesFactory {
             osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);
             sb.append(",").append(osmTable);
         }        
-        Statement stmt = connection.createStatement();
-        stmt.execute(sb.toString());
-        stmt.close();
+        try (Statement stmt = connection.createStatement()) {
+            stmt.execute(sb.toString());
+        }
     }
 }

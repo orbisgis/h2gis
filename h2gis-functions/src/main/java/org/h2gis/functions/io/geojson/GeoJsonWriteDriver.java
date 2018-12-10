@@ -23,19 +23,18 @@ package org.h2gis.functions.io.geojson;
 import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonGenerator;
-import org.locationtech.jts.geom.*;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.locationtech.jts.geom.*;
 
 import java.io.*;
 import java.sql.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.h2gis.functions.io.utility.FileUtil;
 
 /**
  * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -110,9 +109,8 @@ public class GeoJsonWriteDriver {
                     throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
                 }
 
-                // Read table content
-                Statement st = connection.createStatement();
-                try {
+                try ( // Read table content
+                        Statement st = connection.createStatement()) {
                     JsonFactory jsonFactory = new JsonFactory();
                     JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
 
@@ -142,8 +140,6 @@ public class GeoJsonWriteDriver {
                     } finally {
                         rs.close();
                     }
-                } finally {
-                    st.close();
                 }
             }
         } catch (FileNotFoundException ex) {

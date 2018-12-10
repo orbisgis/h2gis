@@ -20,11 +20,11 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import org.locationtech.jts.operation.valid.TopologyValidationError;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Returns a valid_detail (valid,reason,location) as an array of objects.

@@ -20,16 +20,15 @@
 
 package org.h2gis.functions.spatial.create;
 
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
 import org.h2.value.ValueString;
 import org.h2gis.api.AbstractFunction;
-import static org.h2gis.api.Function.PROP_REMARKS;
 import org.h2gis.api.ScalarFunction;
-import static org.h2gis.api.ScalarFunction.PROP_NOBUFFER;
+
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
  * Create a regular grid based on a table or a geometry envelope. The geometry

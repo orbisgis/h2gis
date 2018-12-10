@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.topography;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.*;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -33,9 +33,7 @@ import java.util.Set;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Nicolas Fortin
@@ -67,18 +65,18 @@ public class TopographyTest {
 
     @Test
     public void test_ST_TriangleAspect1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
-        rs.next();
-        assertTrue(rs.getDouble(1) == 0);
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);")) {
+            rs.next();
+            assertTrue(rs.getDouble(1) == 0);
+        }
     }
 
     @Test
     public void test_ST_TriangleAspect2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 1, 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
-        rs.next();
-        assertTrue(rs.getDouble(1) == 90);
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 1, 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);")) {
+            rs.next();
+            assertTrue(rs.getDouble(1) == 90);
+        }
     }
 
     @Test(expected = SQLException.class)
@@ -102,35 +100,35 @@ public class TopographyTest {
 
     @Test
     public void test_ST_TriangleAspect() throws Exception {
-        ResultSet rs = st.executeQuery(
+        try (ResultSet rs = st.executeQuery(
                 "SELECT " +
                         "ST_TriangleAspect('POLYGON((0 0 0, 3 0 0, 0 3 0, 0 0 0))')," +
                         "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 0 3 1, 0 0 1))')," +
                         "ST_TriangleAspect('POLYGON((0 0 1, 3 0 1, 0 3 0, 0 0 1))')," +
-                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 3 3 1, 0 0 1))');");
-        assertTrue(rs.next());
-        assertEquals(0, rs.getDouble(1), 1e-12);
-        assertEquals(90, rs.getDouble(2), 1e-12);
-        assertEquals(0, rs.getDouble(3), 1e-12);
-        assertEquals(135, rs.getDouble(4), 1e-12);
-        assertFalse(rs.next());
-        rs.close();
+                        "ST_TriangleAspect('POLYGON((0 0 1, 3 0 0, 3 3 1, 0 0 1))');")) {
+            assertTrue(rs.next());
+            assertEquals(0, rs.getDouble(1), 1e-12);
+            assertEquals(90, rs.getDouble(2), 1e-12);
+            assertEquals(0, rs.getDouble(3), 1e-12);
+            assertEquals(135, rs.getDouble(4), 1e-12);
+            assertFalse(rs.next());
+        }
     }
 
     @Test
     public void test_ST_TriangleSlope1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
-        rs.next();
-        assertTrue(rs.getDouble(1) == 0);
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);")) {
+            rs.next();
+            assertTrue(rs.getDouble(1) == 0);
+        }
     }
 
     @Test
     public void test_ST_TriangleSlope2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'::GEOMETRY);");
-        rs.next();
-        assertEquals(127.27, rs.getDouble(1), 10E-2);
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 10, 10 0 1, 5 5 10, 0 0 10))'::GEOMETRY);")) {
+            rs.next();
+            assertEquals(127.27, rs.getDouble(1), 10E-2);
+        }
     }
 
     /**
@@ -139,10 +137,10 @@ public class TopographyTest {
      */
     @Test
     public void test_ST_TriangleSlope3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);");
-        rs.next();
-        assertEquals(10, rs.getDouble(1), 10E-2);
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);")) {
+            rs.next();
+            assertEquals(10, rs.getDouble(1), 10E-2);
+        }
     }
 
     /**
@@ -151,62 +149,61 @@ public class TopographyTest {
      */
     @Test
     public void test_ST_TriangleSlope4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON((0 0 -5, 4 0 -5, 2 3 1, 0 0 -5))');");
-        rs.next();
-        assertEquals(200, rs.getDouble(1), 10E-2);
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleSlope('POLYGON((0 0 -5, 4 0 -5, 2 3 1, 0 0 -5))');")) {
+            rs.next();
+            assertEquals(200, rs.getDouble(1), 10E-2);
+        }
     }
 
     @Test
     public void test_ST_TriangleDirection1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);");
-        rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).isEmpty());
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 2 0 0, 1 1 0, 0 0 0))'::GEOMETRY);")) {
+            rs.next();
+            assertTrue(((Geometry) rs.getObject(1)).isEmpty());
+        }
     }
 
     @Test
     public void test_ST_TriangleDirection2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 4 0 0, 2 3 9, 0 0 0))'::GEOMETRY);");
-        rs.next();
-        assertGeometryEquals("LINESTRING(2 1 3, 2 0 0)", rs.getBytes(1));
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 0, 4 0 0, 2 3 9, 0 0 0))'::GEOMETRY);")) {
+            rs.next();
+            assertGeometryEquals("LINESTRING(2 1 3, 2 0 0)", rs.getBytes(1));
+        }
     }
 
     @Test
     public void test_ST_TriangleDirection3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);");
-        rs.next();
-        assertGeometryBarelyEquals("LINESTRING(5 33.33 96.66, 5 100 90)", rs.getObject(1), 0.01);
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((0 0 100, 10 0 100, 5 100 90, 0 0 100))'::GEOMETRY);")) {
+            rs.next();
+            assertGeometryBarelyEquals("LINESTRING(5 33.33 96.66, 5 100 90)", rs.getObject(1), 0.01);
+        }
     }
 
 
     @Test
     public void test_ST_TriangleDirection4() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((182966.69179438584 2428143.025232138 70, 183059.9584658498 2428116.2361122346 65, 183056.0723545388 2428151.2111140336 65, 182966.69179438584 2428143.025232138 70))'::GEOMETRY);");
-        rs.next();
-        assertGeometryBarelyEquals("LINESTRING (183027.57 2428136.82 66.67, 183057.30 2428140.13 65)", rs.getObject(1), 0.01);
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((182966.69179438584 2428143.025232138 70, 183059.9584658498 2428116.2361122346 65, 183056.0723545388 2428151.2111140336 65, 182966.69179438584 2428143.025232138 70))'::GEOMETRY);")) {
+            rs.next();
+            assertGeometryBarelyEquals("LINESTRING (183027.57 2428136.82 66.67, 183057.30 2428140.13 65)", rs.getObject(1), 0.01);
+        }
     }
 
 
 
     @Test
     public void test_ST_TriangleDirection5() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((184994.93499517522 2428907.874116194" +
+        try (ResultSet rs = st.executeQuery("SELECT ST_TriangleDirection('POLYGON ((184994.93499517522 2428907.874116194" +
                 " 65, 184992.64696198824 2428864.401485642 60, 185015.52729385791 2428882.7057511373 65," +
-                " 184994.93499517522 2428907.874116194 65))'::GEOMETRY);");
-        rs.next();
-        assertGeometryBarelyEquals("LINESTRING (185001.03641700713 2428884.9937843247 63.33333333336688," +
-                " 184993.40201293994 2428878.7474537245 61.65000000004103)", rs.getObject(1), 0.01);
-        rs.close();
+                " 184994.93499517522 2428907.874116194 65))'::GEOMETRY);")) {
+            rs.next();
+            assertGeometryBarelyEquals("LINESTRING (185001.03641700713 2428884.9937843247 63.33333333336688," +
+                    " 184993.40201293994 2428878.7474537245 61.65000000004103)", rs.getObject(1), 0.01);
+        }
     }
 
     @Test
     public void testST_TriangleContouringWithZ() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS TIN");
             st.execute("CREATE TABLE TIN AS SELECT 'POLYGON ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom");
             ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN', 2,3,4,5)");
@@ -242,8 +239,6 @@ public class TopographyTest {
             assertGeometryBarelyEquals("POLYGON ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertFalse(rs.next());
-        } finally {
-            st.close();
         }
     }
 
@@ -251,8 +246,7 @@ public class TopographyTest {
 
     @Test
     public void testST_TriangleContouringWithColumns() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS TIN");
             st.execute("CREATE TABLE TIN AS SELECT 'POLYGON ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom, 1.0 as m1, 4.4 as m2, 4.0 as m3");
             ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN','m1','m2','m3',2,3,4,5)");
@@ -288,16 +282,13 @@ public class TopographyTest {
             assertGeometryBarelyEquals("POLYGON ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertFalse(rs.next());
-        } finally {
-            st.close();
         }
     }
 
 
     @Test
     public void testST_TriangleContouringWithZDoubleRange() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS TIN");
             st.execute("CREATE TABLE TIN AS SELECT 'POLYGON ((-9.19 3.7 1, 0.3 1.41 4.4, -5.7 -4.15 4, -9.19 3.7 1))'::geometry the_geom");
             ResultSet rs = st.executeQuery("select * from ST_TriangleContouring('TIN', DOUBLERANGE(2,6,1))");
@@ -333,8 +324,6 @@ public class TopographyTest {
             assertGeometryBarelyEquals("POLYGON ((-5.7 -4.15 4, 0.3 1.41 4.4, -1.52 0.85 4, -5.7 -4.15 4))", rs.getObject(1));
             assertEquals(3, rs.getInt("idiso"));
             assertFalse(rs.next());
-        } finally {
-            st.close();
         }
     }
 
@@ -343,8 +332,7 @@ public class TopographyTest {
      * Check if an empty contouring does not stop the parsing of input table.
      */
     public void testContouringEmptyRow() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             st.execute("DROP TABLE IF EXISTS TIN");
             st.execute("CREATE TABLE TIN(pk serial, THE_GEOM GEOMETRY);");
             st.execute("INSERT INTO TIN(THE_GEOM) VALUES ('POLYGON((0 0 5, 3 0 5, 3 3 10, 0 0 10))')");
@@ -356,105 +344,79 @@ public class TopographyTest {
             }
             // There is no iso with the first triangle, however there is iso with the second
             assertTrue(pk.contains(2));
-        } finally {
-            st.close();
         }
     }
     
     @Test
     public void testST_Drape1() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery("select st_drape('LINESTRING (-5 5, 15 5)'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();
             assertGeometryEquals("LINESTRING (-5 5, 5 5 5, 10 5 5, 15 5)", rs.getObject(1));
-        } finally {
-            st.close();
         }
     }
 
     @Test
     public void testST_Drape2() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery("select st_drape('LINESTRING (-5 5, 15 5)'::GEOMETRY, 'MULTIPOLYGON (((0 0 0, 10 0 0, 10 10 10, 0 0 0)), ((10 10 10, 10 0 0, 15 0 0, 10 10 0)))'::geometry)");
             rs.next();
             assertGeometryEquals("LINESTRING (-5 5, 5 5 5, 10 5 5, 12.5 5 5, 15 5)", rs.getObject(1));
-        } finally {
-            st.close();
         }
     }
 
     @Test
     public void testST_Drape3() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery("select st_drape('POLYGON ((1 8, 8 8, 8 2, 1 2, 1 8))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();
             assertGeometryEquals("POLYGON ((1 2, 1 8, 8 8 8, 8 2 2, 2 2 2, 1 2))", rs.getObject(1));
-        } finally {
-            st.close();
         }
     }
 
     @Test
     public void testST_Drape4() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery("select st_drape('POLYGON ((1 2, 1 8, 8 8, 8 2, 1 2),(3 6, 7 6, 7 4, 3 4, 3 6))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();
             assertGeometryEquals("POLYGON ((1 2, 1 8, 8 8 8, 8 2 2, 2 2 2, 1 2), (3 4, 4 4 4, 7 4 4, 7 6 6, 6 6 6, 3 6, 3 4))", rs.getObject(1));
-        } finally {
-            st.close();
         }
     }
     
     @Test
     public void testST_Drape5() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery("select st_drape('MULTIPOINT ((8 5.1), (5 2), (9 2), (6.1 4), (3 9), (0.3 7.2), (3.8 6.7), (11.5 7.4), (12.1 3), (0 0))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();
             assertGeometryEquals("MULTIPOINT ((0 0 0), (0.3 7.2), (3 9), (3.8 6.7), (5 2 2), (6.1 4 4), (8 5.1 5.1), (9 2 2), (11.5 7.4), (12.1 3))", rs.getObject(1));
-        } finally {
-            st.close();
         }
     }
     
     @Test
     public void testST_Drape6() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery("select st_drape('MULTILINESTRING ((-5 5, 15 5), (2 8, 15 8))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();
             assertGeometryEquals("MULTILINESTRING ((-5 5, 5 5 5, 10 5 5, 15 5), (2 8, 8 8 8, 10 8 8, 15 8))", rs.getObject(1));
-        } finally {
-            st.close();
         }
     }
     
     @Test
     public void testST_Drape7() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery("select st_drape('MULTILINESTRING ((-5 5, 15 5), (15 5.1, 5 8, 2 3, 12.9 3))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();
             assertGeometryEquals("MULTILINESTRING ((-5 5, 5 5 5, 10 5 5, 15 5), (12.9 3, 10 3 3, 3 3 3, 2 3, 5 8, 7.325581395348837 7.325581395348837 7.325581395348837, 10 6.55 6.550000000000001, 15 5.1))", rs.getObject(1));
-        } finally {
-            st.close();
         }
     }
     
     
     @Test
     public void testST_Drape8() throws SQLException {
-        Statement st = connection.createStatement();
-        try {
+        try (Statement st = connection.createStatement()) {
             ResultSet rs = st.executeQuery("select st_drape('MULTIPOLYGON (((1 5, 6 5, 6 2, 1 2, 1 5)), ((9 8, 11 8, 11 5, 9 5, 9 8)))'::GEOMETRY, 'POLYGON ((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();
             assertGeometryEquals("MULTIPOLYGON (((1 2, 1 5, 5 5 5, 6 5 5, 6 2 2, 2 2 2, 1 2)), ((9 5 5, 9 8 8, 10 8 8, 11 8, 11 5, 10 5 5, 9 5 5)))", rs.getObject(1));
-        } finally {
-            st.close();
         }
     }
 }

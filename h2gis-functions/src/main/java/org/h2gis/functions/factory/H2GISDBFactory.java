@@ -24,13 +24,11 @@ import org.h2.util.OsgiDataSourceFactory;
 import org.osgi.service.jdbc.DataSourceFactory;
 
 import javax.sql.DataSource;
-
 import java.io.File;
 import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.Properties;
 
 /**
@@ -116,11 +114,8 @@ public class H2GISDBFactory {
         DataSource dataSource = dataSourceFactory.createDataSource(properties);
         // Init spatial ext
         if(initSpatial) {
-            Connection connection = dataSource.getConnection();
-            try {
+            try (Connection connection = dataSource.getConnection()) {
                 H2GISFunctions.load(connection);
-            } finally {
-                connection.close();
             }
         }
         return dataSource;

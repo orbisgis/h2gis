@@ -20,13 +20,12 @@
 
 package org.h2gis.functions.io.shp;
 
-import org.locationtech.jts.geom.Geometry;
 import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.file_table.H2TableIndex;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
@@ -35,6 +34,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.locationtech.jts.geom.Geometry;
 
 import java.io.File;
 import java.sql.Connection;
@@ -42,10 +42,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Nicolas Fortin
@@ -70,27 +67,27 @@ public class SHPEngineTest {
     public void readSHPMetaTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'");
-        assertTrue(rs.next());
-        assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-        assertTrue(rs.next());
-        assertEquals("THE_GEOM",rs.getString("COLUMN_NAME"));
-        assertEquals("GEOMETRY",rs.getString("TYPE_NAME"));
-        assertTrue(rs.next());
-        assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("CHAR",rs.getString("TYPE_NAME"));
-        assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
-        assertTrue(rs.next());
-        assertEquals("GID",rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-        assertEquals(18,rs.getInt("NUMERIC_PRECISION"));
-        assertTrue(rs.next());
-        assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
-        assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'")) {
+            assertTrue(rs.next());
+            assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
+            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertTrue(rs.next());
+            assertEquals("THE_GEOM",rs.getString("COLUMN_NAME"));
+            assertEquals("GEOMETRY",rs.getString("TYPE_NAME"));
+            assertTrue(rs.next());
+            assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
+            assertEquals("CHAR",rs.getString("TYPE_NAME"));
+            assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+            assertTrue(rs.next());
+            assertEquals("GID",rs.getString("COLUMN_NAME"));
+            assertEquals("BIGINT",rs.getString("TYPE_NAME"));
+            assertEquals(18,rs.getInt("NUMERIC_PRECISION"));
+            assertTrue(rs.next());
+            assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
+            assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+            assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+        }
         st.execute("drop table shptable");
     }
 
@@ -99,13 +96,13 @@ public class SHPEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM shptable");
-        assertTrue(rs.next());
-        assertEquals(1, rs.getInt("gid"));
-        assertEquals("river",rs.getString("type_axe"));
-        assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))",rs.getObject("the_geom").toString());
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT * FROM shptable")) {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("gid"));
+            assertEquals("river",rs.getString("type_axe"));
+            assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))",rs.getObject("the_geom").toString());
+        }
         st.execute("drop table shptable");
     }
 
@@ -114,13 +111,13 @@ public class SHPEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPtable');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT TYPE_AXE, GID, LENGTH FROM SHPTABLE;");
-        assertTrue(rs.next());
-        assertEquals(1, rs.getInt("gid"));
-        assertEquals("river",rs.getString("type_axe"));
-        assertEquals(9.492402903934545,rs.getDouble("length"), 1e-12);
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT TYPE_AXE, GID, LENGTH FROM SHPTABLE;")) {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("gid"));
+            assertEquals("river",rs.getString("type_axe"));
+            assertEquals(9.492402903934545,rs.getDouble("length"), 1e-12);
+        }
         st.execute("drop table shptable");
     }
 
@@ -177,14 +174,14 @@ public class SHPEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT the_geom FROM shptable");
-        double sumLength = 0;
-        while(rs.next()) {
-            sumLength+=((Geometry)rs.getObject("the_geom")).getLength();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT the_geom FROM shptable")) {
+            double sumLength = 0;
+            while(rs.next()) {
+                sumLength+=((Geometry)rs.getObject("the_geom")).getLength();
+            }
+            assertEquals(28469.778049948833, sumLength, 1e-12);
         }
-        assertEquals(28469.778049948833, sumLength, 1e-12);
-        rs.close();
         st.execute("drop table shptable");
     }
 
@@ -317,25 +314,25 @@ public class SHPEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM shptable order by PK limit 8");
-        assertTrue(rs.next());
-        assertEquals(1, rs.getInt("gid"));
-        assertTrue(rs.next());
-        assertEquals(2, rs.getInt("gid"));
-        assertTrue(rs.next());
-        assertEquals(3, rs.getInt("gid"));
-        assertTrue(rs.next());
-        assertEquals(4, rs.getInt("gid"));
-        assertTrue(rs.next());
-        assertEquals(5, rs.getInt("gid"));
-        assertTrue(rs.next());
-        assertEquals(6, rs.getInt("gid"));
-        assertTrue(rs.next());
-        assertEquals(7, rs.getInt("gid"));
-        assertTrue(rs.next());
-        assertEquals(8, rs.getInt("gid"));
-        rs.close();
+        try ( // Query declared Table columns
+                ResultSet rs = st.executeQuery("SELECT * FROM shptable order by PK limit 8")) {
+            assertTrue(rs.next());
+            assertEquals(1, rs.getInt("gid"));
+            assertTrue(rs.next());
+            assertEquals(2, rs.getInt("gid"));
+            assertTrue(rs.next());
+            assertEquals(3, rs.getInt("gid"));
+            assertTrue(rs.next());
+            assertEquals(4, rs.getInt("gid"));
+            assertTrue(rs.next());
+            assertEquals(5, rs.getInt("gid"));
+            assertTrue(rs.next());
+            assertEquals(6, rs.getInt("gid"));
+            assertTrue(rs.next());
+            assertEquals(7, rs.getInt("gid"));
+            assertTrue(rs.next());
+            assertEquals(8, rs.getInt("gid"));
+        }
         st.execute("drop table shptable");
     }
 

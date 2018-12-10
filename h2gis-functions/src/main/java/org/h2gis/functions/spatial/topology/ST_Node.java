@@ -19,13 +19,13 @@
  */
 package org.h2gis.functions.spatial.topology;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.Noder;
 import org.locationtech.jts.noding.SegmentStringUtil;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  *

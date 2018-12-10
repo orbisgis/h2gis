@@ -83,8 +83,7 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
         // Merge column constraint and table constraint
         PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection, catalogName, schemaName,
                 tableName, "INFORMATION_SCHEMA.CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
-        ResultSet rsConstraint = pst.executeQuery();
-        try {
+        try (ResultSet rsConstraint = pst.executeQuery()) {
             StringBuilder constraint = new StringBuilder();
             while (rsConstraint.next()) {
                 String tableConstr = rsConstraint.getString("CHECK_EXPRESSION");
@@ -94,7 +93,6 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
             }
             return constraint.toString();
         } finally {
-            rsConstraint.close();
             pst.close();
         }
     }
@@ -121,16 +119,16 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
                     return srid;
                 }
             }
-            // Fetch the first geometry to find a stored SRID
-            ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
-                    StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)));
-            if(rs.next()) {
-                int srid = rs.getInt(1);
-                if(srid > 0) {
-                    return srid;
+            try ( // Fetch the first geometry to find a stored SRID
+                    ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
+                            StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)))) {
+                if(rs.next()) {
+                    int srid = rs.getInt(1);
+                    if(srid > 0) {
+                        return srid;
+                    }
                 }
             }
-            rs.close();
             // Unable to find a valid SRID
             return 0;
         } catch (SQLException ex) {

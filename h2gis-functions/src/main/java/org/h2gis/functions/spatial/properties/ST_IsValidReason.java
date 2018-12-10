@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.valid.IsValidOp;
 import org.locationtech.jts.operation.valid.TopologyValidationError;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Returns text stating if a geometry is valid or not an if not valid, a reason why

@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.Polygon;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.mesh.DelaunayData;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.Polygon;
 
 /**
  * Compute the 3D area of a polygon or a multiolygon.

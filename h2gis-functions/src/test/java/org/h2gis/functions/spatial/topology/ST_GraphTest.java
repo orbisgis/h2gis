@@ -20,16 +20,17 @@
 
 package org.h2gis.functions.spatial.topology;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import org.junit.*;
 
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.*;
 
 /**
@@ -92,38 +93,38 @@ public class ST_GraphTest {
                 + "('LINESTRING (4.05 4.1, 7 5)', 'road5', DEFAULT),"
                 + "('LINESTRING (7.1 5, 8 4)', 'road6', DEFAULT);");
 
-        // Make sure everything went OK.
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)");
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
-
-        // Test nodes table.
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
-        assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
-        checkNode(nodesResult, 1, "POINT (0 0)");
-        checkNode(nodesResult, 2, "POINT (1 2)");
-        checkNode(nodesResult, 3, "POINT (4 3)");
-        checkNode(nodesResult, 4, "POINT (4.05 4.1)");
-        checkNode(nodesResult, 5, "POINT (7.1 5)");
-        checkNode(nodesResult, 6, "POINT (5 2)");
-        checkNode(nodesResult, 7, "POINT (8 4)");
-        assertFalse(nodesResult.next());
-        nodesResult.close();
-
-        // Test edges table.
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
-        // This is a copy of the original table with three columns added.
-        assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
-        checkEdge(edgesResult, 1, 1, 2);
-        checkEdge(edgesResult, 2, 2, 3);
-        checkEdge(edgesResult, 3, 3, 2);
-        checkEdge(edgesResult, 4, 3, 6);
-        checkEdge(edgesResult, 5, 4, 5);
-        checkEdge(edgesResult, 6, 5, 7);
-        assertFalse(edgesResult.next());
-        edgesResult.close();
-        rs.close();
+        try ( // Make sure everything went OK.
+                ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false)")) {
+            assertTrue(rs.next());
+            assertTrue(rs.getBoolean(1));
+            assertFalse(rs.next());
+            
+            // Test nodes table.
+            ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
+            assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
+            checkNode(nodesResult, 1, "POINT (0 0)");
+            checkNode(nodesResult, 2, "POINT (1 2)");
+            checkNode(nodesResult, 3, "POINT (4 3)");
+            checkNode(nodesResult, 4, "POINT (4.05 4.1)");
+            checkNode(nodesResult, 5, "POINT (7.1 5)");
+            checkNode(nodesResult, 6, "POINT (5 2)");
+            checkNode(nodesResult, 7, "POINT (8 4)");
+            assertFalse(nodesResult.next());
+            nodesResult.close();
+            
+            // Test edges table.
+            ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
+            // This is a copy of the original table with three columns added.
+            assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
+            checkEdge(edgesResult, 1, 1, 2);
+            checkEdge(edgesResult, 2, 2, 3);
+            checkEdge(edgesResult, 3, 3, 2);
+            checkEdge(edgesResult, 4, 3, 6);
+            checkEdge(edgesResult, 5, 4, 5);
+            checkEdge(edgesResult, 6, 5, 7);
+            assertFalse(edgesResult.next());
+            edgesResult.close();
+        }
     }
 
     @Test
@@ -292,28 +293,28 @@ public class ST_GraphTest {
                 + "('LINESTRING (4 3, 5 2)', 'road4', DEFAULT),"
                 + "('LINESTRING (4.05 4.1, 7 5)', 'road5', DEFAULT),"
                 + "('LINESTRING (7.1 5, 8 4)', 'road6', DEFAULT);");
-        ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 1.1, false)");
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
-        assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
-        checkNode(nodesResult, 1, "POINT (0 0)");
-        checkNode(nodesResult, 2, "POINT (4 3)");
-        checkNode(nodesResult, 3, "POINT (7.1 5)");
-        assertFalse(nodesResult.next());
-        nodesResult.close();
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
-        assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
-        checkEdge(edgesResult, 1, 1, 1);
-        checkEdge(edgesResult, 2, 1, 2);
-        checkEdge(edgesResult, 3, 2, 1);
-        checkEdge(edgesResult, 4, 2, 2);
-        checkEdge(edgesResult, 5, 2, 3);
-        checkEdge(edgesResult, 6, 3, 3);
-        assertFalse(edgesResult.next());
-        edgesResult.close();
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 1.1, false)")) {
+            assertTrue(rs.next());
+            assertTrue(rs.getBoolean(1));
+            assertFalse(rs.next());
+            ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
+            assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
+            checkNode(nodesResult, 1, "POINT (0 0)");
+            checkNode(nodesResult, 2, "POINT (4 3)");
+            checkNode(nodesResult, 3, "POINT (7.1 5)");
+            assertFalse(nodesResult.next());
+            nodesResult.close();
+            ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
+            assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
+            checkEdge(edgesResult, 1, 1, 1);
+            checkEdge(edgesResult, 2, 1, 2);
+            checkEdge(edgesResult, 3, 2, 1);
+            checkEdge(edgesResult, 4, 2, 2);
+            checkEdge(edgesResult, 5, 2, 3);
+            checkEdge(edgesResult, 6, 3, 3);
+            assertFalse(edgesResult.next());
+            edgesResult.close();
+        }
     }
 
     @Test
@@ -433,17 +434,17 @@ public class ST_GraphTest {
         assertTrue(rs.next());
         assertEquals(true, rs.getBoolean(1));
         assertFalse(rs.next());
-        // Test nodes table.
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES ORDER BY NODE_ID");
-        assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
-        checkNode(nodesResult, 1, "POINT (0 0)");
-        checkNode(nodesResult, 2, "POINT (1 0)");
-        checkNode(nodesResult, 3, "POINT (2 0)");
-        checkNode(nodesResult, 4, "POINT (0 2)");
-        checkNode(nodesResult, 5, "POINT (1 2)");
-        checkNode(nodesResult, 6, "POINT (2 2)");
-        assertFalse(nodesResult.next());
-        nodesResult.close();
+        try ( // Test nodes table.
+                ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES ORDER BY NODE_ID")) {
+            assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
+            checkNode(nodesResult, 1, "POINT (0 0)");
+            checkNode(nodesResult, 2, "POINT (1 0)");
+            checkNode(nodesResult, 3, "POINT (2 0)");
+            checkNode(nodesResult, 4, "POINT (0 2)");
+            checkNode(nodesResult, 5, "POINT (1 2)");
+            checkNode(nodesResult, 6, "POINT (2 2)");
+            assertFalse(nodesResult.next());
+        }
 
         // Test edges table.
         ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
@@ -598,29 +599,29 @@ public class ST_GraphTest {
                 + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
                 + "('LINESTRING(1 2, 2 3, 4 3)', 'road2', DEFAULT);");
         st.execute("SELECT ST_Graph('TEST', 'road', 0.1, false)");
-        final ResultSet rs  = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false, true)");
-        assertTrue(rs.next());
-        assertTrue(rs.getBoolean(1));
-        assertFalse(rs.next());
-
-        // Test nodes table.
-        ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
-        assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
-        checkNode(nodesResult, 1, "POINT (0 0)");
-        checkNode(nodesResult, 2, "POINT (1 2)");
-        checkNode(nodesResult, 3, "POINT (4 3)");
-        assertFalse(nodesResult.next());
-        nodesResult.close();
-
-        // Test edges table.
-        ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
-        // This is a copy of the original table with three columns added.
-        assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
-        checkEdge(edgesResult, 1, 1, 2);
-        checkEdge(edgesResult, 2, 2, 3);
-        assertFalse(edgesResult.next());
-        edgesResult.close();
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.1, false, true)")) {
+            assertTrue(rs.next());
+            assertTrue(rs.getBoolean(1));
+            assertFalse(rs.next());
+            
+            // Test nodes table.
+            ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
+            assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
+            checkNode(nodesResult, 1, "POINT (0 0)");
+            checkNode(nodesResult, 2, "POINT (1 2)");
+            checkNode(nodesResult, 3, "POINT (4 3)");
+            assertFalse(nodesResult.next());
+            nodesResult.close();
+            
+            // Test edges table.
+            ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
+            // This is a copy of the original table with three columns added.
+            assertEquals(NUMBER_OF_EDGE_COLS, edgesResult.getMetaData().getColumnCount());
+            checkEdge(edgesResult, 1, 1, 2);
+            checkEdge(edgesResult, 2, 2, 3);
+            assertFalse(edgesResult.next());
+            edgesResult.close();
+        }
     }
     
     

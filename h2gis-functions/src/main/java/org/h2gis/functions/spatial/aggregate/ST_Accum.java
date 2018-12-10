@@ -20,10 +20,11 @@
 
 package org.h2gis.functions.spatial.aggregate;
 
-import org.locationtech.jts.geom.*;
 import org.h2.api.Aggregate;
 import org.h2.value.Value;
 import org.h2gis.api.AbstractFunction;
+import org.locationtech.jts.geom.*;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -103,15 +104,15 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
     public GeometryCollection getResult() throws SQLException {
         GeometryFactory factory = new GeometryFactory();
         if(maxDim != minDim) {
-            return factory.createGeometryCollection(toUnite.toArray(new Geometry[toUnite.size()]));
+            return factory.createGeometryCollection(toUnite.toArray(new Geometry[0]));
         } else {
             switch (maxDim) {
                 case 0:
-                    return factory.createMultiPoint(toUnite.toArray(new Point[toUnite.size()]));
+                    return factory.createMultiPoint(toUnite.toArray(new Point[0]));
                 case 1:
-                    return factory.createMultiLineString(toUnite.toArray(new LineString[toUnite.size()]));
+                    return factory.createMultiLineString(toUnite.toArray(new LineString[0]));
                 default:
-                    return factory.createMultiPolygon(toUnite.toArray(new Polygon[toUnite.size()]));
+                    return factory.createMultiPolygon(toUnite.toArray(new Polygon[0]));
             }
         }
     }

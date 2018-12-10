@@ -20,12 +20,13 @@
 
 package org.h2gis.functions.spatial.buffer;
 
+import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.functions.spatial.create.ST_RingBuffer;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+
 import java.sql.SQLException;
-import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.functions.spatial.create.ST_RingBuffer;
 
 /**
  *Compute a ring buffer on one side

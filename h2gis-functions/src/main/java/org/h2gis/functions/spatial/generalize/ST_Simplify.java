@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.generalize;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Returns a simplified version of the given geometry using the Douglas-Peuker

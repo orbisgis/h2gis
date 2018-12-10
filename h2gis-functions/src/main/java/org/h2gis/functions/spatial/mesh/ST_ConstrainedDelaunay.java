@@ -20,10 +20,11 @@
 
 package org.h2gis.functions.spatial.mesh;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
+
 import java.sql.SQLException;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Returns polygons or lines that represent a Delaunay triangulation constructed

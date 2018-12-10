@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.convert;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Convert a Geometry value into a Well Known Text value.

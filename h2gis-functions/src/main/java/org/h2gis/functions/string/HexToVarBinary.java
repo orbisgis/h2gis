@@ -21,6 +21,7 @@
 package org.h2gis.functions.string;
 
 import org.h2gis.api.DeterministicScalarFunction;
+
 import javax.xml.bind.DatatypeConverter;
 
 /**

@@ -20,14 +20,15 @@
 
 package org.h2gis.functions.spatial.create;
 
+import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.ScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.operation.buffer.BufferOp;
 import org.locationtech.jts.operation.buffer.BufferParameters;
+
 import java.sql.SQLException;
-import org.h2gis.api.AbstractFunction;
-import org.h2gis.api.ScalarFunction;
 
 /**
  * Compute a ring buffer around a geometry.

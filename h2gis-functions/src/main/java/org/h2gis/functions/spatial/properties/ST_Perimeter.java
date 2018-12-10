@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * ST_Perimeter returns the perimeter of a polygon or a multipolygon.

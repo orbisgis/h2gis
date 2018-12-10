@@ -20,7 +20,6 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import org.h2gis.functions.spatial.ogc.OGCConformance1Test;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;

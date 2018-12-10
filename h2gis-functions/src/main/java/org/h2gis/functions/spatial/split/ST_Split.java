@@ -20,27 +20,17 @@
 
 package org.h2gis.functions.spatial.split;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.operation.distance.GeometryLocation;
-import org.locationtech.jts.operation.polygonize.Polygonizer;
-import org.locationtech.jts.operation.union.UnaryUnionOp;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.convert.ST_ToMultiSegments;
 import org.h2gis.functions.spatial.edit.EditUtilities;
 import org.h2gis.utilities.jts_utils.CoordinateUtils;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.distance.GeometryLocation;
+import org.locationtech.jts.operation.polygonize.Polygonizer;
+import org.locationtech.jts.operation.union.UnaryUnionOp;
+
+import java.sql.SQLException;
+import java.util.*;
 
 /**
  * This function split a line by a line a line by a point a polygon by a line
@@ -188,8 +178,8 @@ public class ST_Split extends DeterministicScalarFunction {
                         secondLine.add(coords[i]);
                     }
                 }
-                LineString lineString1 = FACTORY.createLineString(firstLine.toArray(new Coordinate[firstLine.size()]));
-                LineString lineString2 = FACTORY.createLineString(secondLine.toArray(new Coordinate[secondLine.size()]));
+                LineString lineString1 = FACTORY.createLineString(firstLine.toArray(new Coordinate[0]));
+                LineString lineString2 = FACTORY.createLineString(secondLine.toArray(new Coordinate[0]));
                 return new LineString[]{lineString1, lineString2};
             }
         }
@@ -219,7 +209,7 @@ public class ST_Split extends DeterministicScalarFunction {
             }
         }
         if (!notChanged) {
-            return FACTORY.createMultiLineString(linestrings.toArray(new LineString[linestrings.size()]));
+            return FACTORY.createMultiLineString(linestrings.toArray(new LineString[0]));
         }
         return null;
     }

@@ -34,6 +34,7 @@ import org.h2.result.Row;
 import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
+import org.h2.table.TableType;
 import org.h2.util.MathUtils;
 import org.h2.util.New;
 import org.h2.value.Value;
@@ -45,7 +46,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import org.h2.table.TableType;
 
 /**
  * A table linked with a {@link org.h2gis.drivers.FileDriver}

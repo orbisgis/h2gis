@@ -28,12 +28,12 @@ import org.h2gis.functions.io.dbf.DBFEngine;
 import org.h2gis.functions.io.file_table.FileEngine;
 import org.h2gis.functions.io.shp.internal.SHPDriver;
 import org.h2gis.functions.io.shp.internal.ShapeType;
+import org.h2gis.functions.io.utility.PRJUtil;
 import org.h2gis.utilities.GeometryTypeCodes;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
-import org.h2gis.functions.io.utility.PRJUtil;
 
 /**
  * SHP Table factory.

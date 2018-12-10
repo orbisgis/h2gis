@@ -20,12 +20,10 @@
 
 package org.h2gis.functions.io.shp;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 import org.h2.table.Column;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 import org.h2gis.functions.io.file_table.FileEngine;
@@ -35,14 +33,17 @@ import org.h2gis.functions.io.shp.internal.ShapeType;
 import org.h2gis.functions.io.shp.internal.ShapefileHeader;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.functions.io.utility.PRJUtil;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.api.ProgressVisitor;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.jts_utils.GeometryMetaData;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Read/Write Shape files
@@ -80,9 +81,8 @@ public class SHPDriverFunction implements DriverFunction {
                 throw new SQLException(String.format("The table %s does not contain a geometry field", tableReference));
             }
             ShapeType shapeType = null;
-            // Read table content
-            Statement st = connection.createStatement();
-            try {
+            try ( // Read table content
+                    Statement st = connection.createStatement()) {
                 ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
                 try {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
@@ -127,8 +127,6 @@ public class SHPDriverFunction implements DriverFunction {
                 } finally {
                     rs.close();
                 }
-            } finally {
-                st.close();
             }
             String path = fileName.getAbsolutePath();
             String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
@@ -278,37 +276,36 @@ public class SHPDriverFunction implements DriverFunction {
         try {
             DbaseFileHeader dbfHeader = shpDriver.getDbaseFileHeader();
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
-            // Build CREATE TABLE sql request
-            Statement st = connection.createStatement();
-            String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2);
-            if(!types.isEmpty()) {
-                types = ", " + types;
+            final TableLocation parse;
+            int srid;
+            try ( // Build CREATE TABLE sql request
+                    Statement st = connection.createStatement()) {
+                String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2);
+                if(!types.isEmpty()) {
+                    types = ", " + types;
+                }   parse = TableLocation.parse(tableReference, isH2);
+                List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
+                otherCols.add(new Column("THE_GEOM", 0));
+                for(int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
+                    otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
+                }   String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
+                srid = PRJUtil.getSRID(shpDriver.prjFile);
+                shpDriver.setSRID(srid);
+                if(isH2) {
+                    //H2 Syntax
+                    st.execute(String.format("CREATE TABLE %s ("+ pkColName + " SERIAL ,the_geom %s %s)", parse,
+                            getSFSGeometryType(shpHeader), types));
+                } else {
+                    // PostgreSQL Syntax
+                    lastSql = String.format("CREATE TABLE %s ("+ pkColName + " SERIAL PRIMARY KEY, the_geom GEOMETRY(%s, %d) %s)", parse,
+                            getPostGISSFSGeometryType(shpHeader),srid, types);
+                    st.execute(lastSql);
+                }
             }
-            final TableLocation parse = TableLocation.parse(tableReference, isH2);
-            List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
-            otherCols.add(new Column("THE_GEOM", 0));
-            for(int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
-                otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
-            }
-            String pkColName = FileEngine.getUniqueColumnName(H2TableIndex.PK_COLUMN_NAME, otherCols);
-            int srid = PRJUtil.getSRID(shpDriver.prjFile);
-            shpDriver.setSRID(srid);
-            if(isH2) {                
-                //H2 Syntax
-                st.execute(String.format("CREATE TABLE %s ("+ pkColName + " SERIAL ,the_geom %s %s)", parse,
-                    getSFSGeometryType(shpHeader), types));
-            } else {
-                // PostgreSQL Syntax
-                lastSql = String.format("CREATE TABLE %s ("+ pkColName + " SERIAL PRIMARY KEY, the_geom GEOMETRY(%s, %d) %s)", parse,
-                        getPostGISSFSGeometryType(shpHeader),srid, types);
-                st.execute(lastSql);
-            }
-            st.close();
             try {
                         lastSql = String.format("INSERT INTO %s VALUES (DEFAULT, %s )", parse,
                                 DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
-                        PreparedStatement preparedStatement = connection.prepareStatement(lastSql);
-                try {
+                try (PreparedStatement preparedStatement = connection.prepareStatement(lastSql)) {
                     long batchSize = 0;
                     for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
                         Object[] values = shpDriver.getRow(rowId);
@@ -327,8 +324,6 @@ public class SHPDriverFunction implements DriverFunction {
                     if(batchSize > 0) {
                         preparedStatement.executeBatch();
                     }
-                } finally {
-                    preparedStatement.close();
                 }
                 //Alter table to set the SRID constraint
                 if(isH2){

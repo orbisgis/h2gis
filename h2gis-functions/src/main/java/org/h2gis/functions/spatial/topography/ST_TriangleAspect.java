@@ -20,11 +20,11 @@
 
 package org.h2gis.functions.spatial.topography;
 
+import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.utilities.jts_utils.TriMarkers;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.math.Vector2D;
 import org.locationtech.jts.math.Vector3D;
-import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.TriMarkers;
 
 /**
  * This function is used to compute the aspect of a triangle. Aspect represents

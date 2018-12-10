@@ -20,25 +20,25 @@
 
 package org.h2gis.functions.spatial.topography;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.Polygon;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2.value.Value;
+import org.h2.value.ValueArray;
 import org.h2.value.ValueString;
-import org.h2gis.utilities.TableUtilities;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
 import org.h2gis.utilities.jts_utils.Contouring;
 import org.h2gis.utilities.jts_utils.TriMarkers;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Polygon;
 
 import java.sql.*;
 import java.util.*;
-import org.h2.value.ValueArray;
 
 /**
  * Split triangle into area within the specified range values.
@@ -82,7 +82,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
      */
     public static ResultSet triangleContouring(Connection connection, String tableName, Value... varArgs) throws SQLException {
         if (connection.getMetaData().getURL().equals(HACK_URL)) {
-            return new ExplodeResultSet(connection,tableName, Arrays.asList(0.0)).getResultSet();
+            return new ExplodeResultSet(connection,tableName, Collections.singletonList(0.0)).getResultSet();
         }
         ExplodeResultSet rowSource = null;
         if(varArgs.length > 3) {

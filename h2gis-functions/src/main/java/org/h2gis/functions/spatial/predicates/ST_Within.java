@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.predicates;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Return true if the geometry A is within the geometry B

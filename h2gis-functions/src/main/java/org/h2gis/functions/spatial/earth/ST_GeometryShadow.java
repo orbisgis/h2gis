@@ -20,17 +20,13 @@
 
 package org.h2gis.functions.spatial.earth;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.operation.union.CascadedPolygonUnion;
-import java.util.ArrayList;
-import java.util.Collection;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.edit.ST_UpdateZ.UpdateZCoordinateSequenceFilter;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.operation.union.CascadedPolygonUnion;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Compute the shadow footprint for a single geometry. 

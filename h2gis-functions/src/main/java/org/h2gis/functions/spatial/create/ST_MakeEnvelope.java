@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.create;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Creates a rectangular POLYGON formed from the given x and y minima.  The user may specify an SRID; if no SRID is specified the unknown spatial reference system is assumed.

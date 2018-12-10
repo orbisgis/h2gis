@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.operators;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * Compute the intersection of two Geometries.
