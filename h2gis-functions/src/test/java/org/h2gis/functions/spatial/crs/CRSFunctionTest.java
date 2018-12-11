@@ -92,7 +92,6 @@ public class CRSFunctionTest {
 
     @Test
     public void testST_Transform27572to2154WithNadgrid() throws Exception {
-        //This test load a french grid to run the coordinate transformation
         final int outProj = 310024140;
         final ResultSet rs = compute("POINT(565767.906 2669005.730)", 320002120, outProj);
         // Java 6: "POINT(619119.4605077105 7102502.97947694)"
