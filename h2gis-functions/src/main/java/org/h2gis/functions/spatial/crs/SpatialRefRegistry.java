@@ -20,9 +20,6 @@
 
 package org.h2gis.functions.spatial.crs;
 
-import org.cts.parser.proj.ProjKeyParameters;
-import org.cts.registry.Registry;
-import org.cts.registry.RegistryException;
 
 import java.sql.*;
 import java.util.HashMap;
@@ -30,6 +27,11 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import org.cts.parser.proj.ProjKeyParameters;
+import org.cts.registry.AbstractProjRegistry;
+import org.cts.registry.Registry;
+import org.cts.registry.RegistryException;
+
 
 /**
  * This class builds a registry based on a spatial_ref_sys table stored in the
@@ -37,7 +39,7 @@ import java.util.regex.Pattern;
  *
  * @author Erwan Bocher
  */
-public class SpatialRefRegistry implements Registry {
+public class SpatialRefRegistry  extends AbstractProjRegistry implements Registry {
 
     private Connection connection;
     private static final Pattern regex = Pattern.compile("\\s+");

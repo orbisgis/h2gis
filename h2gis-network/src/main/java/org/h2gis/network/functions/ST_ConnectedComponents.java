@@ -19,22 +19,7 @@
  */
 package org.h2gis.network.functions;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.List;
-import java.util.Set;
 import org.h2gis.api.ScalarFunction;
-import static org.h2gis.network.functions.GraphConstants.CONNECTED_COMPONENT;
-import static org.h2gis.network.functions.GraphConstants.EDGE_COMP_SUFFIX;
-import static org.h2gis.network.functions.GraphConstants.EDGE_ID;
-import static org.h2gis.network.functions.GraphConstants.END_NODE;
-import static org.h2gis.network.functions.GraphConstants.NODE_COMP_SUFFIX;
-import static org.h2gis.network.functions.GraphConstants.NODE_ID;
-import static org.h2gis.network.functions.GraphConstants.START_NODE;
-import static org.h2gis.network.functions.GraphFunctionParser.*;
-import static org.h2gis.network.functions.GraphFunctionParser.Orientation.UNDIRECTED;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.data.VUCent;
@@ -44,9 +29,20 @@ import org.jgrapht.DirectedGraph;
 import org.jgrapht.Graph;
 import org.jgrapht.UndirectedGraph;
 import org.jgrapht.alg.ConnectivityInspector;
-import org.jgrapht.alg.StrongConnectivityInspector;
+import org.jgrapht.alg.GabowStrongConnectivityInspector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.List;
+import java.util.Set;
+
+import static org.h2gis.network.functions.GraphConstants.*;
+import static org.h2gis.network.functions.GraphFunctionParser.Orientation.UNDIRECTED;
+import static org.h2gis.network.functions.GraphFunctionParser.parseGlobalOrientation;
 
 /**
  * Calculates the connected components (for undirected graphs) or strongly
@@ -139,7 +135,7 @@ public class ST_ConnectedComponents  extends GraphFunction implements ScalarFunc
             sets = new ConnectivityInspector<VUCent, Edge>(
                     (UndirectedGraph<VUCent, Edge>) graph).connectedSets();
         } else {
-            sets = new StrongConnectivityInspector<VUCent, Edge>(
+            sets = new GabowStrongConnectivityInspector<VUCent, Edge>(
                     (DirectedGraph) graph).stronglyConnectedSets();
         }
         logTime(LOGGER, start);
