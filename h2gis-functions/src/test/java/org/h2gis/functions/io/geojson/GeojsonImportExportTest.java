@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.io.geojson;
 
+import java.io.File;
+import java.io.IOException;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
@@ -738,6 +740,58 @@ public class GeojsonImportExportTest {
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_MIXED_PROPS_READ");
         }
+    }
+    
+    
+    @Test
+    public void exportImportFile() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File fileOut = new File("target/lineal_export.geojson");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL GeoJSONWrite('target/lineal_export.geojson', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(fileOut.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL GeoJSONRead('target/lineal_export.geojson')");
+
+        try (ResultSet res = stat.executeQuery("SELECT IDAREA FROM LINEAL_EXPORT;")) {
+            res.next();
+            assertTrue(res.getInt(1) == 1);
+        }
+    }
+    
+    
+    @Test(expected = SQLException.class)
+    public void exportImportFileWithSpace() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File fileOut = new File("target/lineal export.geojson");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL GeoJSONWrite('target/lineal export.geojson', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(fileOut.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL GeoJSONRead('target/lineal export.geojson')");
+    }
+    
+    @Test(expected = SQLException.class)
+    public void exportImportFileWithDot() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File fileOut = new File("target/lineal.export.geojson");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL GeoJSONWrite('target/lineal.export.geojson', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(fileOut.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL GeoJSONRead('target/lineal.export.geojson')");
     }
 
 }

@@ -257,14 +257,14 @@ public class DBFImportExportTest {
     @Test
     public void exportImportFile() throws SQLException, IOException {
         Statement stat = connection.createStatement();
-        File shpFile = new File("target/lineal_export.dbf");
+        File fileOut = new File("target/lineal_export.dbf");
         stat.execute("DROP TABLE IF EXISTS LINEAL");
         stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
         stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
         // Create a shape file using table area
         stat.execute("CALL DBFWrite('target/lineal_export.dbf', 'LINEAL')");
         // Read this shape file to check values
-        assertTrue(shpFile.exists());
+        assertTrue(fileOut.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
         stat.execute("CALL DBFRead('target/lineal_export.dbf')");
         
@@ -278,14 +278,14 @@ public class DBFImportExportTest {
     @Test(expected = SQLException.class)
     public void exportImportFileWithSpace() throws SQLException, IOException {
         Statement stat = connection.createStatement();
-        File shpFile = new File("target/lineal export.dbf");
+        File fileOut = new File("target/lineal export.dbf");
         stat.execute("DROP TABLE IF EXISTS LINEAL");
         stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
         stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
         // Create a shape file using table area
         stat.execute("CALL DBFWrite('target/lineal export.dbf', 'LINEAL')");
         // Read this shape file to check values
-        assertTrue(shpFile.exists());
+        assertTrue(fileOut.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
         stat.execute("CALL DBFRead('target/lineal export.dbf')");
     }
@@ -293,14 +293,14 @@ public class DBFImportExportTest {
     @Test(expected = SQLException.class)
     public void exportImportFileWithDot() throws SQLException, IOException {
         Statement stat = connection.createStatement();
-        File shpFile = new File("target/lineal.export.dbf");
+        File fileOut = new File("target/lineal.export.dbf");
         stat.execute("DROP TABLE IF EXISTS LINEAL");
         stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
         stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
         // Create a shape file using table area
         stat.execute("CALL DBFWrite('target/lineal.export.dbf', 'LINEAL')");
         // Read this shape file to check values
-        assertTrue(shpFile.exists());
+        assertTrue(fileOut.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
         stat.execute("CALL DBFRead('target/lineal.export.dbf')");
     }
