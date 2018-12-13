@@ -103,6 +103,5 @@ public class CSVDriverTest {
             assertTrue(rs.next());
             assertEquals(3,rs.getDouble(1),1e-2);
         }
-    }   
-    
+    } 
 }

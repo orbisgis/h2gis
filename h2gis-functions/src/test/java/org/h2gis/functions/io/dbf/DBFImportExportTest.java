@@ -253,4 +253,55 @@ public class DBFImportExportTest {
             assertTrue(!res.next());
         }
     }
+    
+    @Test
+    public void exportImportFile() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/lineal_export.dbf");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL DBFWrite('target/lineal_export.dbf', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL DBFRead('target/lineal_export.dbf')");
+        
+         try (ResultSet res = stat.executeQuery("SELECT IDAREA FROM LINEAL_EXPORT;")) {
+            res.next();
+            assertTrue(res.getInt(1)==1);
+        }  
+    }
+    
+    
+    @Test(expected = SQLException.class)
+    public void exportImportFileWithSpace() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/lineal export.dbf");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL DBFWrite('target/lineal export.dbf', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL DBFRead('target/lineal export.dbf')");
+    }
+    
+    @Test(expected = SQLException.class)
+    public void exportImportFileWithDot() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/lineal.export.dbf");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL DBFWrite('target/lineal.export.dbf', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL DBFRead('target/lineal.export.dbf')");
+    }
 }
