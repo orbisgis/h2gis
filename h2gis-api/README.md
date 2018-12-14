@@ -5,11 +5,11 @@ the different kind of functions supported and some utilities classes.
 
 ### Function API
 
-##### Function [![I](https://img.shields.io/badge/type-interface-green.svg)](src/main/java/org/h2gis/api/Function.java)
+##### [![I](https://img.shields.io/badge/Function-Interface-green.svg)](src/main/java/org/h2gis/api/Function.java)
 
 Root interface for the SQL function definition.
 
-##### ScalarFunction [![I](https://img.shields.io/badge/type-interface-green.svg)](src/main/java/org/h2gis/api/ScalarFunction.java)
+##### [![I](https://img.shields.io/badge/ScalarFunction-Interface-green.svg)](src/main/java/org/h2gis/api/ScalarFunction.java)
 
 Scalar function in H2 can be defined through CREATE ALIAS, but in an
 OSGi context the class java name is not sufficient.
@@ -20,16 +20,16 @@ BundleSymbolicName:BundleVersion:BinaryJavaName.
 Registering this interface as an OSGi service will add this function in
 H2GIS linked with a DataSource service.
 
-##### AbstractFunction [![C](https://img.shields.io/badge/type-Class-blue.svg)](src/main/java/org/h2gis/api/AbstractFunction.java)
+##### [![C](https://img.shields.io/badge/AbstractFunction-Class-blue.svg)](src/main/java/org/h2gis/api/AbstractFunction.java)
 
 Abstract implementation of the Function interface which is able to
 handle properties into a map.
 
-##### DeterministicScalarFunction [![C](https://img.shields.io/badge/type-Class-blue.svg)](src/main/java/org/h2gis/api/DeterministicScalarFunction.java)
+##### [![C](https://img.shields.io/badge/DeterministicScalarFunction-Class-blue.svg)](src/main/java/org/h2gis/api/DeterministicScalarFunction.java)
 
 Extended by Scalar function which return always the same value for the same arguments.
 
-##### DriverFunction [![I](https://img.shields.io/badge/type-interface-green.svg)](src/main/java/org/h2gis/api/DriverFunction.java)
+##### [![I](https://img.shields.io/badge/DriverFunction-Interface-green.svg)](src/main/java/org/h2gis/api/DriverFunction.java)
 
 This function can import/export a file into/from a table.
 Connection may be on a remote H2/Postgres database.
@@ -38,17 +38,17 @@ The file can be linked to the database or copied into the database.
 
 ### ProgressVisitor API
 
-##### ProgressVisitor [![I](https://img.shields.io/badge/type-interface-green.svg)](src/main/java/org/h2gis/api/ProgressVisitor.java)
+##### [![I](https://img.shields.io/badge/ProgressVisitor-Interface-green.svg)](src/main/java/org/h2gis/api/ProgressVisitor.java)
 
 Progression information.
 
-##### EmptyProgressVisitor [![C](https://img.shields.io/badge/type-Class-blue.svg)](src/main/java/org/h2gis/api/EmptyProgressVisitor.java)
+##### [![C](https://img.shields.io/badge/EmptyProgressVisitor-Class-blue.svg)](src/main/java/org/h2gis/api/EmptyProgressVisitor.java)
 
 A progress visitor that do nothing.
 
 ### File API
 
-##### FileDriver [![I](https://img.shields.io/badge/type-interface-green.svg)](src/main/java/org/h2gis/api/FileDriver.java)
+##### [![I](https://img.shields.io/badge/FileDriver-Interface-green.svg)](src/main/java/org/h2gis/api/FileDriver.java)
 
 Implement this interface in order to create a `org.h2.table.TableBase` in
  your `org.h2.api.TableEngine` implementation.
