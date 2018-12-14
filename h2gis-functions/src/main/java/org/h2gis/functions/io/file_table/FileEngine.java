@@ -51,12 +51,6 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
             throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
         }
         File filePath = URIUtilities.fileFromString(StringUtils.javaDecode(data.tableEngineParams.get(0)));
-        
-        final String name = filePath.getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (!tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-             throw  DbException.get(ErrorCode.IO_EXCEPTION_1,"The file name contains unsupported characters");
-        }
         if(!filePath.exists()) {
             // Do not throw an exception as it will prevent the user from opening the database
             LOGGER.error("File not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");

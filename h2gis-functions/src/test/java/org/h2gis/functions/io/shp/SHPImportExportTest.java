@@ -227,7 +227,8 @@ public class SHPImportExportTest {
         stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
         stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
         stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
-        File shpFile = new File("target/area_export.shp");
+        // Export in target with special chars
+        File shpFile = new File("target/area éxport.shp");
         DriverFunction exp = new SHPDriverFunction();
         exp.exportTable(connection, "AREA", shpFile,new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS myshp");
