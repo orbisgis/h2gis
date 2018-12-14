@@ -30,8 +30,9 @@ handle properties into a map.
 Extended by Scalar function which return always the same value for the same arguments.
 
 ##### DriverFunction [![I](https://img.shields.io/badge/type-interface-green.svg)](src/main/java/org/h2gis/api/DriverFunction.java)
+
 This function can import/export a file into/from a table.
-Connection may be on a remote H2/Postgre database.
+Connection may be on a remote H2/Postgres database.
 
 The file can be linked to the database or copied into the database.
 
@@ -44,3 +45,15 @@ Progression information.
 ##### EmptyProgressVisitor [![C](https://img.shields.io/badge/type-Class-blue.svg)](src/main/java/org/h2gis/api/EmptyProgressVisitor.java)
 
 A progress visitor that do nothing.
+
+### File API
+
+##### FileDriver [![I](https://img.shields.io/badge/type-interface-green.svg)](src/main/java/org/h2gis/api/FileDriver.java)
+
+Implement this interface in order to create a `org.h2.table.TableBase` in
+ your `org.h2.api.TableEngine` implementation.
+
+How to use:
+ * Implement this interface with your file driver</li>
+ * Implement a FileEngine</li>
+ * Add your FileEngine implementation into the DriverManager</li>

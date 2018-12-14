@@ -26,7 +26,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * This function can import/export a file into/from a table. Connection may be on a remote H2/Postgre database.
+ * This function can import/export a file into/from a table. Connection may be on a remote H2/Postgres database.
  * The file can be linked to the database or copied into the database.
  *
  * @author Nicolas Fortin

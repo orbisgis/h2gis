@@ -36,7 +36,7 @@ import org.h2.table.TableFilter;
 import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2.value.ValueLong;
-import org.h2gis.functions.io.FileDriver;
+import org.h2gis.api.FileDriver;
 
 import java.io.IOException;
 import java.util.HashSet;

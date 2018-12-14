@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.io.dbf.internal;
 
-import org.h2gis.functions.io.FileDriver;
+import org.h2gis.api.FileDriver;
 
 import java.io.File;
 import java.io.FileInputStream;
