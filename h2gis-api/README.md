@@ -1,7 +1,7 @@
 # H2GIS API
 
 This H2GIS module defines the API for the whole project, it describes
-the different kind of functions supported and some utilities classes.
+the different type of functions supported and some utilities classes.
 
 ### Function API
 
