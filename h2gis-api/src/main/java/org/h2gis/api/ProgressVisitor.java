@@ -32,10 +32,12 @@ public interface ProgressVisitor {
 
     String PROPERTY_CANCELED = "CANCELED";
 
-    /***
+    /**
      * Create a sub process. When this sub process finish it will count as a single step in this process.
+     *
      * @param stepCount Number of step into the sub-process.
-     * @return
+     *
+     * @return The sub-process as a {@link ProgressVisitor}
      */
     ProgressVisitor subProcess(int stepCount);
 

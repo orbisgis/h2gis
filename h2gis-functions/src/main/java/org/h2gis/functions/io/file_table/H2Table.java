@@ -38,7 +38,7 @@ import org.h2.table.TableType;
 import org.h2.util.MathUtils;
 import org.h2.util.New;
 import org.h2.value.Value;
-import org.h2gis.functions.io.FileDriver;
+import org.h2gis.api.FileDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,7 +48,7 @@ import java.util.Collections;
 import java.util.Comparator;
 
 /**
- * A table linked with a {@link org.h2gis.drivers.FileDriver}
+ * A table linked with a {@link org.h2gis.api.FileDriver}
  * @author Nicolas Fortin
  */
 public class H2Table extends TableBase {

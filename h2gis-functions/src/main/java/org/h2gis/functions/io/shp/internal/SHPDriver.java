@@ -20,7 +20,7 @@
 
 package org.h2gis.functions.io.shp.internal;
 
-import org.h2gis.functions.io.FileDriver;
+import org.h2gis.api.FileDriver;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 import org.locationtech.jts.geom.Geometry;

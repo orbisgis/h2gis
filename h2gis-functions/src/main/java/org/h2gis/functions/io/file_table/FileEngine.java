@@ -28,7 +28,7 @@ import org.h2.table.Column;
 import org.h2.table.Table;
 import org.h2.util.StringUtils;
 import org.h2.value.Value;
-import org.h2gis.functions.io.FileDriver;
+import org.h2gis.api.FileDriver;
 import org.h2gis.utilities.URIUtilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
