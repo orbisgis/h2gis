@@ -118,4 +118,34 @@ public class TSVDriverTest {
         }
     }
     
+    @Test(expected = SQLException.class)
+    public void exportImportFileWithSpace() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File fileOut = new File("target/lineal export.tsv");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL TSVWrite('target/lineal export.tsv', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(fileOut.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL TSVRead('target/lineal export.tsv')");
+    }
+    
+    @Test(expected = SQLException.class)
+    public void exportImportFileWithDot() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File fileOut = new File("target/lineal.export.tsv");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL TSVWrite('target/lineal.export.tsv', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(fileOut.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL TSVRead('target/lineal.export.tsv')");
+    }
+    
 }
