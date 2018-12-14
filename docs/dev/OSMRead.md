@@ -38,6 +38,11 @@ Reads a [OSM][wiki] file from `path` and creates several tables prefixed by `tab
 By default, the `tableName` is the filename given in `path` without the extension.
 The OSM driver supports the following zipped extension : osm.gz and osm.bz2.
 
+<div class="note">
+  <h5>Warning on the input file name</h5>
+  <p>When a <code>tablename</code> is not specified, special caracters in the input file name are not allowed. The possible caracters are as follow: <code>A to Z</code>, <code>_</code> and <code>0 to 9</code>.</p>
+</div>
+
 ### Examples
 
 Read OSM file:
