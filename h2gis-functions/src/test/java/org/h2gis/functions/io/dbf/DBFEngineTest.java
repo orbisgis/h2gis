@@ -62,7 +62,7 @@ public class  DBFEngineTest {
         Statement st = connection.createStatement();
         st.execute("CALL FILE_TABLE("+StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.dbf").getPath())+", 'DBFTABLE');");
         try ( // Query declared Table columns
-                ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
+            ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'DBFTABLE'")) {
             assertTrue(rs.next());
             assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
             assertEquals("BIGINT",rs.getString("TYPE_NAME"));
