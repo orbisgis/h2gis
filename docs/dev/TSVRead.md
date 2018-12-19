@@ -23,6 +23,11 @@ copies its contents into a new table `tableName` in the database.
 
 If the `tablename` parameter is not specified, then the resulting table has the same name as the TSV file.
 
+<div class="note">
+  <h5>Warning on the input file name</h5>
+  <p>When a <code>tablename</code> is not specified, special caracters in the input file name are not allowed. The possible caracters are as follow: <code>A to Z</code>, <code>_</code> and <code>0 to 9</code>.</p>
+</div>
+
 ### Example
 
 In following example, we have a TSV file, which is stored here : `/home/user/GoT.tsv`. This file is structured as follow.

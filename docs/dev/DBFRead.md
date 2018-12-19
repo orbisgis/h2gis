@@ -12,6 +12,7 @@ permalink: /docs/dev/DBFRead/
 ### Signatures
 
 {% highlight mysql %}
+DBFRead(VARCHAR path);
 DBFRead(VARCHAR path, VARCHAR tableName);
 DBFRead(VARCHAR path, VARCHAR tableName, VARCHAR fileEncoding);
 {% endhighlight %}
@@ -22,6 +23,13 @@ Reads the file specified by `path` as a [dBase][wiki] file and
 copies its contents into a new table `tableName` in the database.
 Define `fileEncoding` to force encoding (useful when the header is
 missing encoding information).
+
+If the `tablename` parameter is not specified, then the resulting table has the same name as the dBase file.
+
+<div class="note">
+  <h5>Warning on the input file name</h5>
+  <p>When a <code>tablename</code> is not specified, special caracters in the input file name are not allowed. The possible caracters are as follow: <code>A to Z</code>, <code>_</code> and <code>0 to 9</code>.</p>
+</div>
 
 ### Examples
 
