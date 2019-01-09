@@ -31,7 +31,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2.util.StringUtils;
 
 /**
  * SQL Function to copy Shape File data into a Table.

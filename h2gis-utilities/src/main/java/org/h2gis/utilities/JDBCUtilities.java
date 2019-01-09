@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -387,6 +388,21 @@ public class JDBCUtilities {
         try (Statement statement = connection.createStatement()) {
             statement.execute("CREATE TABLE "+ tableReference+ " ()");
         }
+    }
+    
+   /**
+     * Fetch the name of columns
+     * @param resultSetMetaData Active result set meta data.
+     * @return An array with all column names
+     * @throws SQLException
+     */
+    public static List<String> getFieldNames(ResultSetMetaData  resultSetMetaData) throws SQLException {
+        List<String> columnNames = new ArrayList<>();
+        int cols = resultSetMetaData.getColumnCount();
+        for (int i = 1; i <= cols; i++) {
+            columnNames.add(resultSetMetaData.getColumnName(i));
+        }
+        return columnNames;
     }
 
     /**
