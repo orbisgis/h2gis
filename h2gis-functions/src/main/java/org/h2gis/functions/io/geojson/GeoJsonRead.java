@@ -28,7 +28,6 @@ import org.h2gis.utilities.URIUtilities;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import static org.h2gis.functions.io.dbf.DBFRead.read;
 
 /**
  * SQL function to read a GeoJSON file an creates the corresponding spatial
