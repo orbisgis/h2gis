@@ -19,6 +19,7 @@
  */
 package org.h2gis.functions.io.json;
 
+import java.io.File;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.AfterClass;
@@ -29,7 +30,9 @@ import org.junit.Test;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.Statement;
+import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  *
@@ -60,6 +63,20 @@ public class JsonImportExportTest {
              stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
              stat.execute("CALL JSONWrite('target/result.json', 'TABLE_POINT');");
+             String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
+             Assert.assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
+         }
+    }
+    
+    @Test
+    public void testWriteResultSetJson() throws Exception {
+         try (Statement stat = connection.createStatement()) {
+             stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
+             stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
+             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINT");
+             JsonWriteDriver jsonWriteDriver = new JsonWriteDriver(connection);
+             jsonWriteDriver.write(new EmptyProgressVisitor(), rs, new File("target/result.json"));
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
              Assert.assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
          }
