@@ -35,6 +35,9 @@ import java.sql.*;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -55,8 +58,7 @@ import java.util.Map;
  */
 public class GeoJsonWriteDriver {
 
-    private final String tableName;
-    private final File fileName;
+    
     private final Connection connection;
     private Map<String, Integer> cachedColumnNames;
     private int columnCountProperties = -1;
@@ -65,94 +67,154 @@ public class GeoJsonWriteDriver {
      * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
      *
      * @param connection
-     * @param tableName
-     * @param fileName
      */
-    public GeoJsonWriteDriver(Connection connection, String tableName, File fileName) {
+    public GeoJsonWriteDriver(Connection connection) {
         this.connection = connection;
-        this.tableName = tableName;
-        this.fileName = fileName;
-    }
-
+    }    
+    
     /**
-     * Write the spatial table to GeoJSON format.
+     * Write a resulset to a geojson file
      *
      * @param progress
+     * @param rs input resulset
+     * @param fileName the output file
      * @throws SQLException
      * @throws java.io.IOException
      */
-    public void write(ProgressVisitor progress) throws SQLException, IOException {        
+    public void write(ProgressVisitor progress, ResultSet rs, File fileName) throws SQLException, IOException {
         if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
-            writeGeoJson(progress);
+            FileOutputStream fos = null;
+            try {
+                
+                fos = new FileOutputStream(fileName);
+                int rowCount = 0;
+                int type = rs.getType();
+                if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
+                    rs.last();
+                    rowCount = rs.getRow();
+                    rs.beforeFirst();
+                }
+                ProgressVisitor copyProgress = progress.subProcess(rowCount);                
+                // Read Geometry Index and type
+                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(rs);
+                if (spatialFieldNames.isEmpty()) {
+                    throw new SQLException("The resulset %s does not contain a geometry field");
+                }
+
+                JsonFactory jsonFactory = new JsonFactory();
+                JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
+
+                // header of the GeoJSON file
+                jsonGenerator.writeStartObject();
+                jsonGenerator.writeStringField("type", "FeatureCollection");
+                jsonGenerator.writeArrayFieldStart("features");
+                try {
+                    ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                    int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
+                    cacheMetadata(resultSetMetaData);
+                    while (rs.next()) {
+                        writeFeature(jsonGenerator, rs, geoFieldIndex);
+                        copyProgress.endStep();
+                    }
+                    copyProgress.endOfProgress();
+                    // footer
+                    jsonGenerator.writeEndArray();
+                    jsonGenerator.writeEndObject();
+                    jsonGenerator.flush();
+                    jsonGenerator.close();
+                } finally {
+                    rs.close();
+                }
+
+            } catch (FileNotFoundException ex) {
+                throw new SQLException(ex);
+
+            } finally {
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (IOException ex) {
+                    throw new SQLException(ex);
+                }
+            }
         } else {
             throw new SQLException("Only .geojson extension is supported");
         }
     }
+    
 
     /**
      * Write the spatial table to GeoJSON format.
      *
      * @param progress
+     * @param tableName
+     * @param fileName
      * @throws SQLException
+     * @throws java.io.IOException
      */
-    private void writeGeoJson(ProgressVisitor progress) throws SQLException, IOException {        
-        FileOutputStream fos = null;
-        try {
-            fos = new FileOutputStream(fileName);
-            int recordCount = JDBCUtilities.getRowCount(connection, tableName);
-            if (recordCount > 0) {
-                ProgressVisitor copyProgress = progress.subProcess(recordCount);
-                // Read Geometry Index and type
-                final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData()));
-                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, parse);
-                if (spatialFieldNames.isEmpty()) {
-                    throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
-                }
+    public void write(ProgressVisitor progress, String tableName, File fileName) throws SQLException, IOException {
+         if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
+            FileOutputStream fos = null;
+            try {
+                fos = new FileOutputStream(fileName);
+                int recordCount = JDBCUtilities.getRowCount(connection, tableName);
+                if (recordCount > 0) {
+                    ProgressVisitor copyProgress = progress.subProcess(recordCount);
+                    // Read Geometry Index and type
+                    final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+                    List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, parse);
+                    if (spatialFieldNames.isEmpty()) {
+                        throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
+                    }
 
-                try ( // Read table content
+                    try ( // Read table content
                         Statement st = connection.createStatement()) {
-                    JsonFactory jsonFactory = new JsonFactory();
-                    JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
+                        JsonFactory jsonFactory = new JsonFactory();
+                        JsonGenerator jsonGenerator = jsonFactory.createGenerator(new BufferedOutputStream(fos), JsonEncoding.UTF8);
 
-                    // header of the GeoJSON file
-                    jsonGenerator.writeStartObject();
-                    jsonGenerator.writeStringField("type", "FeatureCollection");
-                    writeCRS(jsonGenerator, SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
-                    jsonGenerator.writeArrayFieldStart("features");
+                        // header of the GeoJSON file
+                        jsonGenerator.writeStartObject();
+                        jsonGenerator.writeStringField("type", "FeatureCollection");
+                        writeCRS(jsonGenerator, SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
+                        jsonGenerator.writeArrayFieldStart("features");
 
-                    ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
+                        ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
 
-                    try {
-                        ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                        int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
-                        cacheMetadata(resultSetMetaData);
-                        while (rs.next()) {
-                            writeFeature(jsonGenerator, rs, geoFieldIndex);
-                            copyProgress.endStep();
+                        try {
+                            ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                            int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
+                            cacheMetadata(resultSetMetaData);
+                            while (rs.next()) {
+                                writeFeature(jsonGenerator, rs, geoFieldIndex);
+                                copyProgress.endStep();
+                            }
+                            copyProgress.endOfProgress();
+                            // footer
+                            jsonGenerator.writeEndArray();
+                            jsonGenerator.writeEndObject();
+                            jsonGenerator.flush();
+                            jsonGenerator.close();
+
+                        } finally {
+                            rs.close();
                         }
-                        copyProgress.endOfProgress();
-                        // footer
-                        jsonGenerator.writeEndArray();
-                        jsonGenerator.writeEndObject();
-                        jsonGenerator.flush();
-                        jsonGenerator.close();
-
-                    } finally {
-                        rs.close();
                     }
                 }
-            }
-        } catch (FileNotFoundException ex) {
-            throw new SQLException(ex);
-
-        } finally {
-            try {
-                if (fos != null) {
-                    fos.close();
-                }
-            } catch (IOException ex) {
+            } catch (FileNotFoundException ex) {
                 throw new SQLException(ex);
+
+            } finally {
+                try {
+                    if (fos != null) {
+                        fos.close();
+                    }
+                } catch (IOException ex) {
+                    throw new SQLException(ex);
+                }
             }
+        } else {
+            throw new SQLException("Only .geojson extension is supported");
         }
     }
 

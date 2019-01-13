@@ -32,6 +32,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 
 import java.sql.*;
+import org.h2gis.api.EmptyProgressVisitor;
 
 import static org.junit.Assert.*;
 
@@ -792,6 +793,26 @@ public class GeojsonImportExportTest {
         assertTrue(fileOut.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
         stat.execute("CALL GeoJSONRead('target/lineal.export.geojson')");
+    }
+    
+    @Test
+    public void exportImportResultSet() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File fileOut = new File("target/lineal_export.geojson");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        ResultSet resultSet = stat.executeQuery("SELECT * FROM lineal");
+        GeoJsonWriteDriver  gjw = new GeoJsonWriteDriver(connection);
+        gjw.write(new EmptyProgressVisitor(), resultSet, new File("target/lineal_export.geojson"));
+        // Read this geojson file to check values
+        assertTrue(fileOut.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL,LINEAL_EXPORT;");
+        stat.execute("CALL GeoJSONRead('target/lineal_export.geojson')");
+        try (ResultSet res = stat.executeQuery("SELECT IDAREA FROM LINEAL_EXPORT;")) {
+            res.next();
+            assertTrue(res.getInt(1) == 1);
+        }
     }
 
 }
