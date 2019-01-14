@@ -316,7 +316,7 @@ public class DBFImportExportTest {
         stat.execute("CALL DBFWrite('target/lineal_export.dbf', '(SELECT * FROM LINEAL)')");
         // Read this shape file to check values
         assertTrue(fileOut.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL,LINEAL_EXPORT;");
         stat.execute("CALL DBFRead('target/lineal_export.dbf')");
         
          try (ResultSet res = stat.executeQuery("SELECT IDAREA FROM LINEAL_EXPORT;")) {

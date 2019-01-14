@@ -55,8 +55,8 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction{
      * @throws SQLException
      */
     public static void writeGeoJson(Connection connection, String fileName, String tableReference, String encoding) throws IOException, SQLException {
-            JsonWriteDriver jsonDriver = new JsonWriteDriver(connection);
-            jsonDriver.write(new EmptyProgressVisitor(),tableReference, URIUtilities.fileFromString(fileName), encoding);
+            JsonDriverFunction jsonDriver = new JsonDriverFunction();
+            jsonDriver.exportTable(connection,tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(),encoding);
     }
     
      /**

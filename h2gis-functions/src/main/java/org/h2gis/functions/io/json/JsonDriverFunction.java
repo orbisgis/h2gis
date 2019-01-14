@@ -64,8 +64,22 @@ public class  JsonDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection,tableReference, fileName, progress,null);
+    }
+    
+    /**
+     * Save a table or a query to JSON file
+     * @param connection
+     * @param tableReference
+     * @param fileName
+     * @param progress
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException 
+     */
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
         JsonWriteDriver jsonDriver = new JsonWriteDriver(connection);
-        jsonDriver.write(progress,tableReference, fileName, null);
+        jsonDriver.write(progress,tableReference, fileName, encoding);
     }
 
     @Override
