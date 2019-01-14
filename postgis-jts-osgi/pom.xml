@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- Maven Coordinates -->
+    <parent>
+        <artifactId>h2gis-parent</artifactId>
+        <groupId>org.orbisgis</groupId>
+        <version>1.5.0-SNAPSHOT</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <artifactId>postgis-jts-osgi</artifactId>
+    <packaging>bundle</packaging>
+
+    <!-- Project Information -->
+    <name>postgis-jts-osgi</name>
+    <description>OSGI bundle to load a PostGIS datasource factory that uses JTS objets</description>
+
+    <url>http://www.orbisgis.org</url>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License (LGPLV3+)</name>
+            <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
+        </license>
+    </licenses>
+
+    <!-- Properties -->
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+
+    <!-- Build Settings -->
+    <dependencies>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.compendium</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.osgi</groupId>
+            <artifactId>org.osgi.core</artifactId>
+            <version>4.3.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2.1.0SVN</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>postgis-jts</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
+
+    <!-- Build Settings -->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>2.3.7</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <instructions>
+                        <Public-Package>org.orbisgis.postgis_jts_osgi.*</Public-Package>
+                        <Bundle-Activator>org.orbisgis.postgis_jts_osgi.Activator</Bundle-Activator>
+                        <Bundle-Icon>postgis.png;size=32</Bundle-Icon>
+                        <Embed-Dependency>postgresql;postgis-jdbc;postgis-jdbc-jtsparser;scope=compile;inline=true</Embed-Dependency>
+                        <Embed-Transitive>true</Embed-Transitive>
+                        <_exportcontents>org.postgresql.*;org.postgis.*;org.orbisgis.*</_exportcontents>
+                        <OrbisGIS-Version>5.1</OrbisGIS-Version>
+                    </instructions>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
