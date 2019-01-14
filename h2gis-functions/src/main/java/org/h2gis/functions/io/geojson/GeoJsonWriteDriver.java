@@ -37,8 +37,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.utilities.URIUtilities;
 
 /**
  * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -75,15 +73,16 @@ public class GeoJsonWriteDriver {
     
     
     /**
-     *
-     * @param emptyProgressVisitor
+     * Write a resulset to a geojson file
+     * 
+     * @param progress
      * @param resultSet
      * @param file
      * @throws SQLException
      * @throws IOException
      */
-    public void write(EmptyProgressVisitor emptyProgressVisitor, ResultSet resultSet, File file) throws SQLException, IOException {
-        write(emptyProgressVisitor, resultSet, file, null);
+    public void write(ProgressVisitor progress, ResultSet resultSet, File file) throws SQLException, IOException {
+        write(progress, resultSet, file, null);
     }
 
     

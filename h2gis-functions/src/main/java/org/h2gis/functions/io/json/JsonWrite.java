@@ -36,12 +36,27 @@ import java.sql.SQLException;
 public class JsonWrite extends AbstractFunction implements ScalarFunction{
 
     public JsonWrite(){
-         addProperty(PROP_REMARKS, "Export a table to a JSON file.");
+         addProperty(PROP_REMARKS, "Export a table to a JSON file.\n As optional argument an encoding value is supported.");
     }
     
     @Override
     public String getJavaStaticMethod() {
         return "writeGeoJson";
+    }
+    
+    /**
+     * Write the JSON file.
+     *
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param encoding
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void writeGeoJson(Connection connection, String fileName, String tableReference, String encoding) throws IOException, SQLException {
+            JsonWriteDriver jsonDriver = new JsonWriteDriver(connection);
+            jsonDriver.write(new EmptyProgressVisitor(),tableReference, URIUtilities.fileFromString(fileName), encoding);
     }
     
      /**
@@ -54,8 +69,7 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction{
      * @throws SQLException
      */
     public static void writeGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-            JsonDriverFunction jdf = new JsonDriverFunction();
-            jdf.exportTable(connection, tableReference,  URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
+          writeGeoJson(connection, fileName, tableReference,null);
     }
     
 }
