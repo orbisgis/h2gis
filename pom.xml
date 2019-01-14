@@ -123,6 +123,9 @@
         <poly2tri-groupId>org.orbisgis</poly2tri-groupId>
         <poly2tri-version>0.1.2</poly2tri-version>
 
+        <postgis-jdbc-groupId>net.postgis</postgis-jdbc-groupId>
+        <postgis-jdbc-version>2.3.0</postgis-jdbc-version>
+
         <!-- Simple Logging Facade for Java -->
         <slf4j-groupId>org.slf4j</slf4j-groupId>
         <slf4j-version>1.6.0</slf4j-version>
@@ -187,6 +190,11 @@
                 <version>${poly2tri-version}</version>
             </dependency>
             <dependency>
+                <groupId>${postgis-jdbc-groupId}</groupId>
+                <artifactId>postgis-jdbc</artifactId>
+                <version>${postgis-jdbc-version}</version>
+            </dependency>
+            <dependency>
                 <groupId>${slf4j-groupId}</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-version}</version>
@@ -231,6 +239,8 @@
         <module>h2gis-functions</module>
         <module>h2gis-network</module>
         <module>h2gis-functions-osgi</module>
+        <module>postgis-jts</module>
+        <module>postgis-jts-osgi</module>
         <module>h2gis-dist</module>
     </modules>
 
