@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.io.geojson;
 
+import java.io.File;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
@@ -28,6 +29,8 @@ import org.h2gis.utilities.URIUtilities;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * SQL function to write a spatial table to a GeoJSON file.
@@ -38,12 +41,27 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
 
     
     public GeoJsonWrite(){
-        addProperty(PROP_REMARKS, "Export a spatial table to a GeoJSON 1.0 file.");
+        addProperty(PROP_REMARKS, "Export a spatial table to a GeoJSON 1.0 file.\n As optional argument an encoding value is supported.");
     }
     
     @Override
     public String getJavaStaticMethod() {
         return "writeGeoJson";
+    }
+    
+    /**
+     * Write the GeoJSON file.
+     *
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param encoding
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void writeGeoJson(Connection connection, String fileName, String tableReference, String encoding) throws IOException, SQLException {
+        GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection);
+        geoJsonDriver.write(new EmptyProgressVisitor(),tableReference, new File(fileName), encoding);
     }
 
     /**
@@ -56,7 +74,6 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void writeGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-            GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
-            gjdf.exportTable(connection, tableReference,  URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
+        writeGeoJson(connection, fileName, tableReference, null);
     }
 }

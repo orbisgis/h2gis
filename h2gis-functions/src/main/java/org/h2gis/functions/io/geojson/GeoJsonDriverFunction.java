@@ -27,6 +27,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  * GeoJSON driver to import a GeoJSON file and export a spatial table in a
@@ -68,7 +69,7 @@ public class GeoJsonDriverFunction implements DriverFunction {
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException{
         GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection);
-        geoJsonDriver.write(progress,tableReference, fileName);
+        geoJsonDriver.write(progress,tableReference, fileName, null);
     }
 
     @Override
