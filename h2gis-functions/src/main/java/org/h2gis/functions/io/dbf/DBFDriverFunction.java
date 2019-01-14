@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Nicolas Fortin
@@ -50,24 +52,31 @@ public class DBFDriverFunction implements DriverFunction {
         exportTable(connection, tableReference, fileName, progress, null);
     }
 
+    /**
+     * Export a table or a query to a DBF format
+     * @param connection
+     * @param tableReference
+     * @param fileName
+     * @param progress
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException 
+     */
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
-        if (FileUtil.isExtensionWellFormated(fileName, "dbf")) {
-            int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-            String tableName = TableLocation.parse(tableReference, isH2).toString(isH2);
-            // Read table content
-            Statement st = connection.createStatement();
-            ProgressVisitor lineProgress = null;
-            if (!(progress instanceof EmptyProgressVisitor)) {
-                try (ResultSet rs = st.executeQuery(String.format("select count(*) from %s", tableName))) {
-                    if (rs.next()) {
-                        lineProgress = progress.subProcess(rs.getInt(1));
-                    }
-                }
-            }
-            try {
-                try (ResultSet rs = st.executeQuery(String.format("select * from %s", tableName))) {
-                    ResultSetMetaData resultSetMetaData = rs.getMetaData();                    
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tableReference);
+        if (matcher.find()) {
+            if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
+                if (FileUtil.isExtensionWellFormated(fileName, "dbf")) {
+                    PreparedStatement ps = connection.prepareStatement(tableReference, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet rs = ps.executeQuery();
+                    int recordCount = 0;
+                    rs.last();
+                    recordCount = rs.getRow();
+                    rs.beforeFirst();
+                    ProgressVisitor copyProgress = progress.subProcess(recordCount);
+                    ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
                     DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
                     if (encoding != null) {
@@ -83,18 +92,64 @@ public class DBFDriverFunction implements DriverFunction {
                             row[i++] = rs.getObject(index);
                         }
                         dbfDriver.insertRow(row);
-                        if (lineProgress != null) {
-                            lineProgress.endStep();
+                        if (copyProgress != null) {
+                            copyProgress.endStep();
                         }
                     }
-                    dbfDriver.close();                    
+                    dbfDriver.close();
                 }
-            } finally {
-                st.close();
+
+            } else {
+                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
+
         } else {
-            throw new SQLException("Only .dbf extension is supported");
+            if (FileUtil.isExtensionWellFormated(fileName, "dbf")) {
+                int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                String tableName = TableLocation.parse(tableReference, isH2).toString(isH2);
+                // Read table content
+                Statement st = connection.createStatement();
+                ProgressVisitor lineProgress = null;
+                if (!(progress instanceof EmptyProgressVisitor)) {
+                    try (ResultSet rs = st.executeQuery(String.format("select count(*) from %s", tableName))) {
+                        if (rs.next()) {
+                            lineProgress = progress.subProcess(rs.getInt(1));
+                        }
+                    }
+                }
+                try {
+                    try (ResultSet rs = st.executeQuery(String.format("select * from %s", tableName))) {
+                        ResultSetMetaData resultSetMetaData = rs.getMetaData();
+                        ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
+                        DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
+                        if (encoding != null) {
+                            header.setEncoding(encoding);
+                        }
+                        header.setNumRecords(recordCount);
+                        DBFDriver dbfDriver = new DBFDriver();
+                        dbfDriver.initDriver(fileName, header);
+                        Object[] row = new Object[header.getNumFields()];
+                        while (rs.next()) {
+                            int i = 0;
+                            for (Integer index : columnIndexes) {
+                                row[i++] = rs.getObject(index);
+                            }
+                            dbfDriver.insertRow(row);
+                            if (lineProgress != null) {
+                                lineProgress.endStep();
+                            }
+                        }
+                        dbfDriver.close();
+                    }
+                } finally {
+                    st.close();
+                }
+            } else {
+                throw new SQLException("Only .dbf extension is supported");
+            }
         }
+
     }
 
     @Override

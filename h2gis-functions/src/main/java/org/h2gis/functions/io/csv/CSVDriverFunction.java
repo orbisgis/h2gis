@@ -30,6 +30,8 @@ import org.h2gis.utilities.TableLocation;
 import java.io.*;
 import java.nio.channels.FileChannel;
 import java.sql.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Basic CSV importer and exporter
@@ -76,6 +78,7 @@ public class CSVDriverFunction implements DriverFunction{
     }
 
     /**
+     * Export a table or a query to a CSV file
      * 
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
@@ -86,22 +89,39 @@ public class CSVDriverFunction implements DriverFunction{
      * @throws IOException 
      */
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String csvOptions) throws SQLException, IOException {
-        if(FileUtil.isExtensionWellFormated(fileName, "csv")){
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        TableLocation location = TableLocation.parse(tableReference, isH2);
-        try (Statement st = connection.createStatement()) {
-            JDBCUtilities.attachCancelResultSet(st, progress);
-            Csv csv = new Csv();
-            if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
-                csv.setOptions(csvOptions);
-            }  
-            csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tableReference);
+        if (matcher.find()) {
+            if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
+                try (Statement st = connection.createStatement()) {
+                    JDBCUtilities.attachCancelResultSet(st, progress);
+                    Csv csv = new Csv();
+                    if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
+                        csv.setOptions(csvOptions);
+                    }
+                    csv.write(fileName.getPath(), st.executeQuery(tableReference), null);
+                }
+            } else {
+                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
+            }
+
+        } else {
+            if (FileUtil.isExtensionWellFormated(fileName, "csv")) {
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                TableLocation location = TableLocation.parse(tableReference, isH2);
+                try (Statement st = connection.createStatement()) {
+                    JDBCUtilities.attachCancelResultSet(st, progress);
+                    Csv csv = new Csv();
+                    if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
+                        csv.setOptions(csvOptions);
+                    }
+                    csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
+                }
+            } else {
+                throw new SQLException("Only .csv extension is supported");
+            }
         }
-        }
-        else{
-            throw new SQLException("Only .csv extension is supported");
-        }
-        
     }
     
     @Override
