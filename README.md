@@ -90,6 +90,23 @@ The mail need to include the following statement:
 For a significant contribution, send a PR on GitHub and refer it in your message. For a single contribution join a patch to your mail.
 
 
+#### Download
+
+To download the last H2GIS stable release and find documentation please go to [http://www.h2gis.org](http://www.h2gis.org)
+
+You can include H2GIS in your project thanks to Maven repositories.
+
+From maven central, check https://search.maven.org/artifact/org.orbisgis/h2gis/1.4.0/bundle
+
+To use the current snapshot add in the pom
+```xml
+<repository>
+  <id>orbisgis-nexus-snapshot</id>
+  <name>OrbisGIS nexus snapshot repository</name>
+  <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-snapshot</url>
+</repository>
+```
+
 #### Acknowledgements
 
 The H2GIS team utilizes open source software. Specifically, we would like to thank  :
