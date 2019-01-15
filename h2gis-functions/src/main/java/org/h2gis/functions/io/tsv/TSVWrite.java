@@ -55,7 +55,22 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
      * @throws IOException
      */
     public static void writeTSV(Connection connection, String fileName, String tableReference) throws SQLException, IOException {
-        TSVDriverFunction tSVDriverFunction = new TSVDriverFunction();
-        tSVDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
+        writeTSV(connection, fileName, tableReference, null);
     }
+    
+    /**
+     * Export a table into a Tab-separated values file
+     *
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException
+     */
+    public static void writeTSV(Connection connection, String fileName, String tableReference, String encoding) throws SQLException, IOException {       
+        TSVDriverFunction tSVDriverFunction = new TSVDriverFunction();
+        tSVDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
+    }
+
 }

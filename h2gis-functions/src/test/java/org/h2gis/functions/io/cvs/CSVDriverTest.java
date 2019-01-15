@@ -104,4 +104,26 @@ public class CSVDriverTest {
             assertEquals(3,rs.getDouble(1),1e-2);
         }
     } 
+    
+     @Test
+    public void testDriverQueryOptions() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        // Export in target with special chars
+        File csvFile = new File("target/csv_options.csv");
+        CSVDriverFunction exp = new CSVDriverFunction();
+        exp.exportTable(connection, "(SELECT * FROM AREA)", csvFile,new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
+        stat.execute("DROP TABLE IF EXISTS mycsv");
+        exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
+        try (ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv")) {
+            assertTrue(rs.next());
+            assertEquals(3,rs.getDouble(1),1e-2);
+        }
+    } 
+    
+    
+    
 }

@@ -67,8 +67,23 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException{
-        GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection, tableReference, fileName);
-        geoJsonDriver.write(progress);
+        exportTable(connection,tableReference, fileName,progress, null);
+    }
+    
+    /**
+     * Export a table or a query to a geojson file
+     * 
+     * @param connection
+     * @param tableReference
+     * @param fileName
+     * @param progress
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException 
+     */
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException{
+        GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection);
+        geoJsonDriver.write(progress,tableReference, fileName, encoding);
     }
 
     @Override

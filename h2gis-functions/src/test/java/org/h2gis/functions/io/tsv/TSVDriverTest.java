@@ -148,4 +148,23 @@ public class TSVDriverTest {
         stat.execute("CALL TSVRead('target/lineal.export.tsv')");
     }
     
+    
+    @Test
+    public void testWriteQueryRead() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File tsvFile = new File("target/mytsv_export.tsv");
+        stat.execute("DROP TABLE IF EXISTS myTSV");
+        stat.execute("create table myTSV(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into myTSV values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        stat.execute("insert into myTSV values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        stat.execute("CALL TSVWrite('target/mytsv_export.tsv', '(SELECT * FROM myTSV)')");
+        assertTrue(tsvFile.exists());
+        stat.execute("CALL TSVRead('target/mytsv_export.tsv', 'MYTSV_IMPORT');");
+        try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from MYTSV_IMPORT")) {
+            assertTrue(rs.next());
+            assertEquals(20000, rs.getDouble(1), 1e-6);
+        }
+
+    }
+    
 }

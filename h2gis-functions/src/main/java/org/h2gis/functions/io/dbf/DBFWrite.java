@@ -37,7 +37,7 @@ public class DBFWrite  extends AbstractFunction implements ScalarFunction {
 
     public DBFWrite() {
         addProperty(PROP_REMARKS, "Transfer the content of a table into a DBF\n" +
-                "CALL DBFWRITE('FILENAME', 'TABLE'[,'ENCODING'])");
+                "CALL DBFWRITE('FILENAME', 'TABLE'[,'ENCODING']) or CALL DBFWRITE('FILENAME', '(SELECT * FROM TABLE)'[,'ENCODING'])");
     }
 
     @Override
