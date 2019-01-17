@@ -31,6 +31,7 @@ import org.h2gis.utilities.JDBCUtilities;
 /**
  *
  * @author Erwan Bocher
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class OSMDriverFunction implements DriverFunction {
 
@@ -70,17 +71,30 @@ public class OSMDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                            String options) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
         importFile(connection, tableReference, fileName, progress, false);
     }
-    
-    
-     /**
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           String options) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress, false);
+    }
+
+    /**
      *
      * @param connection Active connection, do not close this connection.
      * @param tableReference prefix uses to store the OSM tables
@@ -90,6 +104,7 @@ public class OSMDriverFunction implements DriverFunction {
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
+    @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, boolean deleteTables) throws SQLException, IOException {
         if(fileName == null || !(fileName.getName().endsWith(".osm") || fileName.getName().endsWith("osm.gz") || fileName.getName().endsWith("osm.bz2"))) {
             throw new IOException(new IllegalArgumentException("This driver handle only .osm, .osm.gz and .osm.bz2 files"));

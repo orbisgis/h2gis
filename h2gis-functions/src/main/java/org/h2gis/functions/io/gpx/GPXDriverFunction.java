@@ -24,6 +24,8 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
+
 import org.h2gis.functions.io.gpx.model.GpxParser;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
@@ -35,6 +37,7 @@ import org.h2gis.utilities.TableLocation;
  * This class is used to read a GPX file
  *
  * @author Erwan Bocher
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class GPXDriverFunction implements DriverFunction {
 
@@ -70,16 +73,30 @@ public class GPXDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                            String options) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
         importFile(connection, tableReference, fileName, progress, false);
     }
-    
-     /**
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           String options) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress);
+    }
+
+    /**
      *
      * @param connection Active connection, do not close this connection.
      * @param tableReference prefix uses to store the GPX tables
@@ -89,7 +106,9 @@ public class GPXDriverFunction implements DriverFunction {
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, boolean deleteTables) throws SQLException, IOException {
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           boolean deleteTables) throws SQLException, IOException {
         boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         if (fileName.length() == 0) {
             JDBCUtilities.createEmptyTable(connection, TableLocation.parse(tableReference, isH2).toString());

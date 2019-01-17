@@ -43,6 +43,7 @@ import java.sql.Statement;
  * Manage additional table engines in H2.
  * Use the appropriate driver to open a specified file path.
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class DriverManager extends AbstractFunction implements ScalarFunction, DriverFunction {
 
@@ -129,7 +130,14 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
+        throw new SQLFeatureNotSupportedException("Work in progress..");
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                            String options) throws SQLException, IOException {
         throw new SQLFeatureNotSupportedException("Work in progress..");
     }
 
@@ -153,7 +161,20 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
+        openFile(connection, fileName.getAbsolutePath(), tableReference);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           String options) throws SQLException, IOException {
+        openFile(connection, fileName.getAbsolutePath(), tableReference);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           boolean deleteTables) throws SQLException, IOException {
         openFile(connection, fileName.getAbsolutePath(), tableReference);
     }
 }

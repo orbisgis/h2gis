@@ -132,6 +132,49 @@ public class DBFImportExportTest {
         st.execute("drop table WATERNETWORK");
     }
 
+    @Test
+    public void importTableTestGeomEndWithDelete() throws SQLException, IOException {
+        Statement st = connection.createStatement();
+        final String path = SHPEngineTest.class.getResource("waternetwork.dbf").getPath();
+        DriverFunction driver = new DBFDriverFunction();
+        st.execute("DROP TABLE IF EXISTS waternetwork");
+        st.execute("CREATE TABLE waternetwork");
+        driver.importFile(connection, "WATERNETWORK", new File(path), new EmptyProgressVisitor(), true);
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
+        assertTrue(rs.next());
+        assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
+        assertEquals("INTEGER", rs.getString("TYPE_NAME"));
+        assertTrue(rs.next());
+        assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
+        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
+        assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+        assertTrue(rs.next());
+        assertEquals("GID",rs.getString("COLUMN_NAME"));
+        assertEquals("BIGINT", rs.getString("TYPE_NAME"));
+        assertTrue(rs.next());
+        assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
+        assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
+        rs.close();
+        // Check content
+        rs = st.executeQuery("SELECT * FROM WATERNETWORK");
+        assertTrue(rs.next());
+        assertEquals("river",rs.getString("type_axe"));
+        assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
+        assertEquals(1, rs.getInt("GID"));
+        assertTrue(rs.next());
+        assertEquals("ditch", rs.getString("type_axe"));
+        assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
+        assertEquals(2, rs.getInt("GID"));
+        rs.close();
+        // Computation
+        rs = st.executeQuery("SELECT SUM(length) sumlen FROM WATERNETWORK");
+        assertTrue(rs.next());
+        assertEquals(28469.778049948833, rs.getDouble(1), 1e-12);
+        rs.close();
+        st.execute("drop table WATERNETWORK");
+    }
+
     /**
      * Read a DBF where the encoding is missing in header.
      * @throws SQLException

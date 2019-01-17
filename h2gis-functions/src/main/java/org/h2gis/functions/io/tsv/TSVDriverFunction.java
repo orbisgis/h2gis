@@ -58,6 +58,7 @@ import org.h2gis.utilities.TableLocation;
  * Please read : http://www.cs.tut.fi/~jkorpela/TSV.html
  *
  * @author Erwan Bocher
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class TSVDriverFunction implements DriverFunction{
 
@@ -115,6 +116,12 @@ public class TSVDriverFunction implements DriverFunction{
             throw new SQLException("Only .tsv extension is supported");
         }
 
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                            String options) throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName, progress);
     }
 
     @Override
@@ -192,5 +199,26 @@ public class TSVDriverFunction implements DriverFunction{
                 pst.close();
             }
         }
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           String options) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           boolean deleteTables) throws SQLException, IOException {
+        if(deleteTables) {
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            String table = requestedTable.getTable();
+            Statement stmt = connection.createStatement();
+            stmt.execute("DROP TABLE IF EXISTS " + table);
+            stmt.close();
+        }
+
+        importFile(connection, tableReference, fileName, progress);
     }
 }

@@ -47,6 +47,7 @@ import org.h2gis.utilities.jts_utils.GeometryMetaData;
 /**
  * Read/Write Shape files
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class SHPDriverFunction implements DriverFunction {
     public static String DESCRIPTION = "ESRI shapefile";
@@ -68,6 +69,7 @@ public class SHPDriverFunction implements DriverFunction {
      * @throws SQLException
      * @throws IOException
      */
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         if (FileUtil.isExtensionWellFormated(fileName, "shp")) {
@@ -268,6 +270,7 @@ public class SHPDriverFunction implements DriverFunction {
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
+    @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceEncoding) throws SQLException, IOException {
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         SHPDriver shpDriver = new SHPDriver();
@@ -345,6 +348,21 @@ public class SHPDriverFunction implements DriverFunction {
             shpDriver.close();
             copyProgress.endOfProgress();
         }
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           boolean deleteTables) throws SQLException, IOException {
+        if(deleteTables) {
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            String table = requestedTable.getTable();
+            Statement stmt = connection.createStatement();
+            stmt.execute("DROP TABLE IF EXISTS " + table);
+            stmt.close();
+        }
+
+        importFile(connection, tableReference, fileName, progress);
     }
 
     /**
