@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.create;
 
-import org.locationtech.jts.geom.*;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.*;
 
 import java.sql.SQLException;
 import java.util.Arrays;

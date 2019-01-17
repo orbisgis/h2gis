@@ -21,16 +21,17 @@
 
 package org.h2gis.functions.io.tsv;
 
+import org.h2gis.api.AbstractFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.io.utility.FileUtil;
+import org.h2gis.utilities.URIUtilities;
+
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.api.AbstractFunction;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.api.ScalarFunction;
-import org.h2gis.utilities.URIUtilities;
 
 /**
  * Read a Tab-separated values file
@@ -73,6 +74,11 @@ public class TSVRead  extends AbstractFunction implements ScalarFunction{
      */
     public static void readTSV(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
-        readTSV(connection, fileName, name.substring(0, name.lastIndexOf(".")).toUpperCase());
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            readTSV(connection, fileName, tableName);
+        } else {
+            throw new SQLException("The file name contains unsupported characters");
+        }
     }
 }

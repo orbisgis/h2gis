@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * For geometry type returns the 2-dimensional minimum Cartesian

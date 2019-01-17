@@ -20,16 +20,17 @@
 
 package org.h2gis.functions.spatial.buffer;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.operation.buffer.BufferParameters;
 import org.locationtech.jts.operation.buffer.OffsetCurveBuilder;
 import org.locationtech.jts.operation.buffer.OffsetCurveSetBuilder;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Return an offset line at a given distance and side from an input geometry.
@@ -131,7 +132,7 @@ public class ST_OffSetCurve extends DeterministicScalarFunction {
             if (lineStrings.size() == 1) {
                 return lineStrings.get(0);
             } else {
-                return geometry.getFactory().createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+                return geometry.getFactory().createMultiLineString(lineStrings.toArray(new LineString[0]));
             }
         }
         return null;

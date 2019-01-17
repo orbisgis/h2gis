@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -18,45 +18,56 @@
  * or contact directly: info_at_h2gis.org
  */
 
-package org.h2gis.functions.io;
+package org.h2gis.api;
 
 import java.io.IOException;
 
 /**
- * Implement this interface in order to create a {@link org.h2gis.drivers.file_table.H2Table} in your
+ * Implement this interface in order to create a {@link org.h2.table.TableBase} in your
  * {@link org.h2.api.TableEngine} implementation.
  * How to use:
  * <ul>
  * <li>Implement this interface with your file driver</li>
- * <li>Implement {@link org.h2gis.drivers.file_table.FileEngine}</li>
- * <li>Add your {@link org.h2gis.drivers.file_table.FileEngine} implementation into the {@link org.h2gis.drivers.DriverManager}</li>
+ * <li>Implement a FileEngine</li>
+ * <li>Add your FileEngine implementation into the DriverManager</li>
  * </ul>
+ *
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS (UBS 2018)
  */
 public interface FileDriver {
 
     /**
+     * Get row count
+     *
      * @return Row count
      */
     long getRowCount();
 
     /**
      * Close the file, free resources.
-     * @throws IOException
+     *
+     * @throws IOException Closing error.
      */
     void close() throws IOException;
 
     /**
-     * @param rowId Row index [0-getRowCount()[
-     * @return The row content
-     * @throws java.io.IOException Read error
+     * Return the content of the given row.
+     *
+     * @param rowId Row index [0-getRowCount()]
+     *
+     * @return The row content.
+     *
+     * @throws java.io.IOException Read error.
      */
-    public Object[] getRow(long rowId) throws IOException;
+    Object[] getRow(long rowId) throws IOException;
    
     /**
      * Insert values to the current row
-     * @param values
-     * @throws IOException 
+     *
+     * @param values Values to insert
+     *
+     * @throws IOException  Write error.
      */
-    public void insertRow(Object[] values) throws IOException;
+    void insertRow(Object[] values) throws IOException;
 }

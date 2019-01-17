@@ -45,6 +45,23 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
     public String getJavaStaticMethod() {
         return "readGeoJson";
     }
+    
+    /**
+     * 
+     * @param connection
+     * @param fileName
+     * @throws IOException
+     * @throws SQLException 
+     */
+    public static void readGeoJson(Connection connection, String fileName) throws IOException, SQLException {
+        final String name = URIUtilities.fileFromString(fileName).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            readGeoJson(connection, fileName, tableName);
+        } else {
+            throw new SQLException("The file name contains unsupported characters");
+        }
+    }
 
     /**
      * Read the GeoJSON file.

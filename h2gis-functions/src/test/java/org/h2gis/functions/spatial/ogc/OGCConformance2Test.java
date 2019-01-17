@@ -20,8 +20,10 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -29,10 +31,8 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Second unit test group, use advanced SQL features like foreign key constraint.

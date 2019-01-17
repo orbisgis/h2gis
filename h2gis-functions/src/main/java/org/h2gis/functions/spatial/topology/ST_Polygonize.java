@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.topology;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
-import org.h2gis.api.DeterministicScalarFunction;
 
 import java.util.Collection;
 

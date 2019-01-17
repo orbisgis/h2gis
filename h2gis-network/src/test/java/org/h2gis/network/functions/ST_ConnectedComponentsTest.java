@@ -247,9 +247,7 @@ public class ST_ConnectedComponentsTest {
 
     private Set<Set<Integer>> getPartition(Map<Integer, Set<Integer>> map) {
         Set<Set<Integer>> p = new HashSet<Set<Integer>>();
-        for (Set<Integer> cc : map.values()) {
-            p.add(cc);
-        }
+        p.addAll(map.values());
         return p;
     }
 

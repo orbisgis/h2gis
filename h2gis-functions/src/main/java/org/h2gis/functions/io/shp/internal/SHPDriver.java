@@ -20,16 +20,12 @@
 
 package org.h2gis.functions.io.shp.internal;
 
-import org.locationtech.jts.geom.Geometry;
-import org.h2gis.functions.io.FileDriver;
+import org.h2gis.api.FileDriver;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
+import org.locationtech.jts.geom.Geometry;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;

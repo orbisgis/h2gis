@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.edit;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.densify.Densifier;
 import org.locationtech.jts.geom.Geometry;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Densifies a geometry using the given distance tolerance.

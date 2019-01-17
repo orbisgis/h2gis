@@ -21,24 +21,18 @@
 
 package org.h2gis.functions.io.tsv;
 
-import java.io.File;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
-import org.junit.After;
-import org.junit.AfterClass;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.*;
+
+import java.io.File;
+import java.io.IOException;
+import java.sql.*;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
@@ -86,12 +80,9 @@ public class TSVDriverTest {
         exp.exportTable(connection, "AREA", tsvFile, new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS mytsv");
         exp.importFile(connection, "MYTSV", tsvFile, new EmptyProgressVisitor());
-        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from mytsv");
-        try {
+        try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from mytsv")) {
             assertTrue(rs.next());
             assertEquals(20000, rs.getDouble(1), 1e-6);
-        } finally {
-            rs.close();
         }
     }
     
@@ -106,28 +97,74 @@ public class TSVDriverTest {
         stat.execute("CALL TSVWrite('target/mytsv_export.tsv', 'myTSV')");
         assertTrue(tsvFile.exists());
         stat.execute("CALL TSVRead('target/mytsv_export.tsv', 'TSV_IMPORT');");
-        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from TSV_IMPORT");
-        try {
+        try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from TSV_IMPORT")) {
             assertTrue(rs.next());
             assertEquals(20000, rs.getDouble(1), 1e-6);
-        } finally {
-            rs.close();
         }
 
     }
     
     @Test
     public void testWriteReadEmptyTable() throws SQLException {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS empty_table");
+            stat.execute("create table empty_table()");
+            stat.execute("CALL TSVWrite('target/empty_table.tsv', 'empty_table');");
+            stat.execute("CALL TSVRead('target/empty_table.tsv', 'empty_table_read');");
+            ResultSet res = stat.executeQuery("SELECT * FROM empty_table_read;");
+            ResultSetMetaData rsmd = res.getMetaData();
+            assertTrue(rsmd.getColumnCount()==0);
+            assertTrue(!res.next());
+        }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void exportImportFileWithSpace() throws SQLException, IOException {
         Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS empty_table");
-        stat.execute("create table empty_table()");
-        stat.execute("CALL TSVWrite('target/empty_table.tsv', 'empty_table');");
-        stat.execute("CALL TSVRead('target/empty_table.tsv', 'empty_table_read');");
-        ResultSet res = stat.executeQuery("SELECT * FROM empty_table_read;");
-        ResultSetMetaData rsmd = res.getMetaData();
-        assertTrue(rsmd.getColumnCount()==0);
-        assertTrue(!res.next());
-        stat.close();
+        File fileOut = new File("target/lineal export.tsv");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL TSVWrite('target/lineal export.tsv', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(fileOut.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL TSVRead('target/lineal export.tsv')");
+    }
+    
+    @Test(expected = SQLException.class)
+    public void exportImportFileWithDot() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File fileOut = new File("target/lineal.export.tsv");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        // Create a shape file using table area
+        stat.execute("CALL TSVWrite('target/lineal.export.tsv', 'LINEAL')");
+        // Read this shape file to check values
+        assertTrue(fileOut.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+        stat.execute("CALL TSVRead('target/lineal.export.tsv')");
+    }
+    
+    
+    @Test
+    public void testWriteQueryRead() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File tsvFile = new File("target/mytsv_export.tsv");
+        stat.execute("DROP TABLE IF EXISTS myTSV");
+        stat.execute("create table myTSV(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into myTSV values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        stat.execute("insert into myTSV values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        stat.execute("CALL TSVWrite('target/mytsv_export.tsv', '(SELECT * FROM myTSV)')");
+        assertTrue(tsvFile.exists());
+        stat.execute("CALL TSVRead('target/mytsv_export.tsv', 'MYTSV_IMPORT');");
+        try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from MYTSV_IMPORT")) {
+            assertTrue(rs.next());
+            assertEquals(20000, rs.getDouble(1), 1e-6);
+        }
+
     }
     
 }

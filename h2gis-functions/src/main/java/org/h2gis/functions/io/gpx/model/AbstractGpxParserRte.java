@@ -23,14 +23,14 @@ package org.h2gis.functions.io.gpx.model;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-
-import java.util.ArrayList;
-import java.util.List;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
+
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Abstract class of the parsers dedicated to routes. A specific parser for

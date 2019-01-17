@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.type;
 
-import org.h2gis.functions.spatial.properties.ColumnSRID;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.functions.spatial.properties.ColumnSRID;
 
 import java.sql.Connection;
 import java.sql.SQLException;

@@ -19,26 +19,16 @@
  */
 package org.h2gis.functions.spatial.topography;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequenceFilter;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiLineString;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.geom.Triangle;
+import org.h2gis.api.DeterministicScalarFunction;
+import org.h2gis.utilities.jts_utils.TriMarkers;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.util.LinearComponentExtracter;
 import org.locationtech.jts.index.strtree.STRtree;
 import org.locationtech.jts.operation.linemerge.LineMerger;
+
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
-import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.TriMarkers;
 
 /**
  * This function could be used to drape a geometry to a set of triangles

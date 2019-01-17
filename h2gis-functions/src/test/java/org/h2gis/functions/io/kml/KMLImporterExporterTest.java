@@ -20,20 +20,22 @@
 
 package org.h2gis.functions.io.kml;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 /**
@@ -221,90 +223,87 @@ public class KMLImporterExporterTest {
 
     @Test
     public void testST_AsKml1() throws SQLException {
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS KML_POINTS");
-        stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
-        stat.execute("insert into KML_POINTS values(1, ST_Geomfromtext('POINT (2.19 47.58)',4326), true)");
-        // Create a KMZ file
-        ResultSet res = stat.executeQuery("SELECT ST_AsKml(the_geom) from KML_POINTS");
-        res.next();
-        assertEquals("<Point><coordinates>2.19,47.58</coordinates></Point>", res.getString(1));
-        res.close();
-        stat.close();
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS KML_POINTS");
+            stat.execute("create table KML_POINTS(id int primary key, the_geom POINT, response boolean)");
+            stat.execute("insert into KML_POINTS values(1, ST_Geomfromtext('POINT (2.19 47.58)',4326), true)");
+            // Create a KMZ file
+            ResultSet res = stat.executeQuery("SELECT ST_AsKml(the_geom) from KML_POINTS");
+            res.next();
+            assertEquals("<Point><coordinates>2.19,47.58</coordinates></Point>", res.getString(1));
+            res.close();
+        }
     }
 
     @Test
     public void testST_AsKml2() throws SQLException {
-        Statement stat = connection.createStatement();
-        ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
-                + "                -1.49 47.17 100)',4326), true, 2);");
-        res.next();
-        assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>relativeToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
-        res.close();
-        stat.close();
+        try (Statement stat = connection.createStatement()) {
+            ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
+                    + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                    + "                -1.49 47.17 100)',4326), true, 2);");
+            res.next();
+            assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>relativeToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
+            res.close();
+        }
     }
 
     @Test
     public void testST_AsKml3() throws SQLException {
-        Statement stat = connection.createStatement();
-        ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
-                + "                -1.49 47.17 100)',4326), true, 1);");
-        res.next();
-        assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>clampToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
-        res.close();
-        stat.close();
+        try (Statement stat = connection.createStatement()) {
+            ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
+                    + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                    + "                -1.49 47.17 100)',4326), true, 1);");
+            res.next();
+            assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>clampToGround</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
+            res.close();
+        }
     }
 
     @Test
     public void testST_AsKml4() throws SQLException {
-        Statement stat = connection.createStatement();
-        ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
-                + "                -1.49 47.17 100)',4326), true, 4);");
-        res.next();
-        assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>absolute</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
-        res.close();
-        stat.close();
+        try (Statement stat = connection.createStatement()) {
+            ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
+                    + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                    + "                -1.49 47.17 100)',4326), true, 4);");
+            res.next();
+            assertEquals("<LineString><extrude>1</extrude><kml:altitudeMode>absolute</kml:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
+            res.close();
+        }
     }
 
     @Test
     public void testST_AsKml5() throws SQLException {
-        Statement stat = connection.createStatement();
-        ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
-                + "                -1.49 47.17 100)',4326), true, 8);");
-        res.next();
-        assertEquals("<LineString><extrude>1</extrude><gx:altitudeMode>clampToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
-        res.close();
-        stat.close();
+        try (Statement stat = connection.createStatement()) {
+            ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
+                    + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                    + "                -1.49 47.17 100)',4326), true, 8);");
+            res.next();
+            assertEquals("<LineString><extrude>1</extrude><gx:altitudeMode>clampToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
+            res.close();
+        }
     }
 
     @Test
     public void testST_AsKml6() throws SQLException {
-        Statement stat = connection.createStatement();
-        ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
-                + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
-                + "                -1.49 47.17 100)',4326), true, 16);");
-        res.next();
-        assertEquals("<LineString><extrude>1</extrude><gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
-        res.close();
-        stat.close();
+        try (Statement stat = connection.createStatement()) {
+            ResultSet res = stat.executeQuery("SELECT ST_AsKml(ST_Geomfromtext("
+                    + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                    + "                -1.49 47.17 100)',4326), true, 16);");
+            res.next();
+            assertEquals("<LineString><extrude>1</extrude><gx:altitudeMode>relativeToSeaFloor</gx:altitudeMode><coordinates>-1.53,47.24,100.0 -1.51,47.22,100.0 -1.5,47.19,100.0 -1.49,47.17,100.0</coordinates></LineString>", res.getString(1));
+            res.close();
+        }
     }
 
 
     @Test(expected = IllegalArgumentException.class)
     public void testST_AsKml7() throws Throwable {
-        Statement stat = connection.createStatement();
-        try {
+        try (Statement stat = connection.createStatement()) {
             stat.execute("SELECT ST_AsKml(ST_Geomfromtext("
                     + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
                     + "                -1.49 47.17 100)',4326), true, 666);");
         } catch (JdbcSQLException e) {
             throw e.getOriginalCause();
-        } finally {
-            stat.close();
         }
     }
 

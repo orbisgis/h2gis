@@ -26,7 +26,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * This function can import/export a file into/from a table. Connection may be on a remote H2/Postgre database.
+ * This function can import/export a file into/from a table. Connection may be on a remote H2/Postgres database.
  * The file can be linked to the database or copied into the database.
  *
  * @author Nicolas Fortin
@@ -86,9 +86,9 @@ public interface DriverFunction {
      * Export the specified table from the specified connection into the specified file.
      *
      * @param connection Active connection, do not close this connection.
-     * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path to write, if exists it may be replaced
-     * @param progress
+     * @param tableReference [[catalog.]schema.]table reference.
+     * @param fileName File path to write, if exists it may be replaced.
+     * @param progress Progress visitor following the execution.
      *
      * @throws SQLException Table read error
      * @throws IOException File write error
@@ -116,9 +116,9 @@ public interface DriverFunction {
      * Import the specified file into the specified table in the specified connection.
      *
      * @param connection Active connection, do not close this connection.
-     * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path to read
-     * @param progress
+     * @param tableReference [[catalog.]schema.]table reference.
+     * @param fileName File path to read.
+     * @param progress Progress visitor following the execution.
      *
      * @throws SQLException Table write error
      * @throws IOException File read error

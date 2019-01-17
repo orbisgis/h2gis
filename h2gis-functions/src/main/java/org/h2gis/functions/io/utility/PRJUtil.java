@@ -20,25 +20,20 @@
 
 package org.h2gis.functions.io.utility;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
-import java.nio.charset.Charset;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.Map;
 import org.cts.parser.prj.PrjKeyParameters;
 import org.cts.parser.prj.PrjParser;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.nio.charset.Charset;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.Map;
 
 /**
  * A class to manage PRJ file
@@ -64,7 +59,7 @@ public class PRJUtil {
     public static int getSRID(File prjFile) throws IOException {
         int srid = 0;
         if (prjFile == null) {
-            log.warn("This prj file is null. \n A default srid equals to 0 will be added.");
+            log.debug("This prj file is null. \n A default srid equals to 0 will be added.");
         } else {
             PrjParser parser = new PrjParser();
             String prjString = readPRJFile(prjFile);
@@ -77,7 +72,7 @@ public class PRJUtil {
                 }
             }
             else{
-                log.warn("The prj is empty. \n A default srid equals to 0 will be added.");
+                log.debug("The prj is empty. \n A default srid equals to 0 will be added.");
             }
         }
         return srid;
@@ -114,19 +109,13 @@ public class PRJUtil {
      * @throws IOException
      */
     private static String readPRJFile(File prjFile) throws FileNotFoundException, IOException {
-        FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(prjFile);
+        try (FileInputStream fis = new FileInputStream(prjFile)) {
             BufferedReader r = new BufferedReader(new InputStreamReader(fis, Charset.defaultCharset()));
             StringBuilder b = new StringBuilder();
             while (r.ready()) {
                 b.append(r.readLine());
             }
             return b.toString();
-        } finally {
-            if (fis != null) {
-                fis.close();
-            }
         }
     }
     

@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.operators;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Compute the union of two or more Geometries.

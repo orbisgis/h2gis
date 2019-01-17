@@ -28,8 +28,6 @@ import org.h2gis.utilities.URIUtilities;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * SQL Function to read a table and write it into a shape file.
@@ -69,21 +67,8 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, String encoding) throws IOException, SQLException {
-        String regex = ".*(?i)\\b(select|from)\\b.*";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(tableReference);
         SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        if (matcher.find()) {
-            if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
-                shpDriverFunction.exportResultset(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
-
-            } else {
-                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
-            }
-        } else {
-            shpDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
-        }
+        shpDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
     }
-    
-   
+
 }

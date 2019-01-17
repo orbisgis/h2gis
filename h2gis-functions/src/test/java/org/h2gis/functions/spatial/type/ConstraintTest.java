@@ -20,24 +20,21 @@
 
 package org.h2gis.functions.spatial.type;
 
-import org.h2gis.functions.spatial.properties.ColumnSRID;
-import org.h2gis.functions.spatial.type.DimensionFromConstraint;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.spatial.properties.ColumnSRID;
 import org.h2gis.utilities.GeometryTypeCodes;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 /**
  * Test constraints functions
  * @author Nicolas Fortin
@@ -225,11 +222,11 @@ public class ConstraintTest {
         Statement st = connection.createStatement();
         st.execute("drop table IF EXISTS T_SRID");
         st.execute("create table T_SRID (the_geom GEOMETRY CHECK ST_SRID(the_geom) = 27572)");
-        ResultSet rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'T_SRID'");
-        assertTrue(rs.next());
-        assertEquals(27572, rs.getInt("srid"));
-        assertFalse(rs.next());
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'T_SRID'")) {
+            assertTrue(rs.next());
+            assertEquals(27572, rs.getInt("srid"));
+            assertFalse(rs.next());
+        }
     }
 
     /**
@@ -254,9 +251,8 @@ public class ConstraintTest {
         st.execute("drop table T_MPOLYGON IF EXISTS");
         st.execute("create table T_MPOLYGON (the_geom MULTIPOLYGON)");
 
-        ResultSet rs = st.executeQuery("select * from GEOMETRY_COLUMNS where f_table_name IN ('T_GEOMETRY', 'T_POINT'," +
-                "  'T_LINE', 'T_POLYGON','T_MPOINT','T_MLINE', 'T_MPOLYGON') order by f_table_name");
-        try {
+        try (ResultSet rs = st.executeQuery("select * from GEOMETRY_COLUMNS where f_table_name IN ('T_GEOMETRY', 'T_POINT'," +
+                "  'T_LINE', 'T_POLYGON','T_MPOINT','T_MLINE', 'T_MPOLYGON') order by f_table_name")) {
             assertTrue(rs.next());
             assertEquals("GEOMETRY", rs.getString("type"));
             assertTrue(rs.next());
@@ -272,8 +268,6 @@ public class ConstraintTest {
             assertTrue(rs.next());
             assertEquals("POLYGON", rs.getString("type"));
             assertFalse(rs.next());
-        } finally {
-            rs.close();
         }
 
         st.execute("drop table T_GEOMETRY, T_POINT,  T_LINE, T_POLYGON");
@@ -359,8 +353,7 @@ public class ConstraintTest {
         st.execute("create table T_GEOMETRY2D (the_geom GEOMETRY)");
         st.execute("alter table T_GEOMETRY2D add constraint zconstr CHECK ST_COORDDIM(the_geom) = 2");
         st.execute("create table T_GEOMETRY3D (the_geom GEOMETRY CHECK ST_COORDDIM(the_geom) = 3)");
-        ResultSet rs = st.executeQuery("SELECT * FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME IN ('T_GEOMETRY2D','T_GEOMETRY3D') ORDER BY F_TABLE_NAME");
-        try {
+        try (ResultSet rs = st.executeQuery("SELECT * FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME IN ('T_GEOMETRY2D','T_GEOMETRY3D') ORDER BY F_TABLE_NAME")) {
             assertTrue(rs.next());
             assertEquals("T_GEOMETRY2D", rs.getString("F_TABLE_NAME"));
             assertEquals(2, rs.getInt("COORD_DIMENSION"));
@@ -368,8 +361,6 @@ public class ConstraintTest {
             assertEquals("T_GEOMETRY3D", rs.getString("F_TABLE_NAME"));
             assertEquals(3, rs.getInt("COORD_DIMENSION"));
             assertFalse(rs.next());
-        } finally {
-            rs.close();
         }
     }
 }

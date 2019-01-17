@@ -20,23 +20,21 @@
 
 package org.h2gis.functions.io.cvs;
 
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.io.csv.CSVDriverFunction;
+import org.junit.*;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.functions.io.csv.CSVDriverFunction;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.After;
-import org.junit.AfterClass;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
@@ -83,12 +81,9 @@ public class CSVDriverTest {
         exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor());
         stat.execute("DROP TABLE IF EXISTS mycsv");
         exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor());
-        ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv");
-        try {
+        try (ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv")) {
             assertTrue(rs.next());
             assertEquals(3,rs.getDouble(1),1e-2);
-        } finally {
-            rs.close();
         }
     }   
     
@@ -105,12 +100,9 @@ public class CSVDriverTest {
         exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
         stat.execute("DROP TABLE IF EXISTS mycsv");
         exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
-        ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv");
-        try {
+        try (ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv")) {
             assertTrue(rs.next());
             assertEquals(3,rs.getDouble(1),1e-2);
-        } finally {
-            rs.close();
         }
     }
 
@@ -135,5 +127,23 @@ public class CSVDriverTest {
             rs.close();
         }
     }
-
+    
+     @Test
+    public void testDriverQueryOptions() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        // Export in target with special chars
+        File csvFile = new File("target/csv_options.csv");
+        CSVDriverFunction exp = new CSVDriverFunction();
+        exp.exportTable(connection, "(SELECT * FROM AREA)", csvFile,new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
+        stat.execute("DROP TABLE IF EXISTS mycsv");
+        exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor(), "fieldSeparator=| fieldDelimiter=,");
+        try (ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv")) {
+            assertTrue(rs.next());
+            assertEquals(3,rs.getDouble(1),1e-2);
+        }
+    }
 }

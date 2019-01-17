@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.distance;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Returns the 2-dimensional longest line between the points of two geometries.

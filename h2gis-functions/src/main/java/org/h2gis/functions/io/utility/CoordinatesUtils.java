@@ -20,11 +20,7 @@
 
 package org.h2gis.drivers.utility;
 
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 
 /**
  * This utility class provides some useful methods related to JTS {@link org.locationtech.jts.geom.Coordinate} objects.

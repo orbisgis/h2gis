@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  * ST_IsValid returns true if the given geometry is valid.

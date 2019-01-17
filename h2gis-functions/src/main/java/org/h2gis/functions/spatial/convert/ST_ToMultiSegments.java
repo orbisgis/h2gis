@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import org.locationtech.jts.geom.*;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.*;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
@@ -64,7 +64,7 @@ public class ST_ToMultiSegments extends DeterministicScalarFunction {
                 result = new LinkedList<LineString>();
                 createSegments(geom, result);
                 return GEOMETRY_FACTORY.createMultiLineString(
-                        result.toArray(new LineString[result.size()]));
+                        result.toArray(new LineString[0]));
             } else {
                 return GEOMETRY_FACTORY.createMultiLineString(null);
             }

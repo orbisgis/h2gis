@@ -19,13 +19,14 @@
  */
 package org.h2gis.functions.io.json;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.URIUtilities;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * SQL function to write a table to a JSON file.
@@ -35,12 +36,27 @@ import org.h2gis.utilities.URIUtilities;
 public class JsonWrite extends AbstractFunction implements ScalarFunction{
 
     public JsonWrite(){
-         addProperty(PROP_REMARKS, "Export a table to a JSON file.");
+         addProperty(PROP_REMARKS, "Export a table to a JSON file.\n As optional argument an encoding value is supported.");
     }
     
     @Override
     public String getJavaStaticMethod() {
         return "writeGeoJson";
+    }
+    
+    /**
+     * Write the JSON file.
+     *
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param encoding
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void writeGeoJson(Connection connection, String fileName, String tableReference, String encoding) throws IOException, SQLException {
+            JsonDriverFunction jsonDriver = new JsonDriverFunction();
+            jsonDriver.exportTable(connection,tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(),encoding);
     }
     
      /**
@@ -53,8 +69,7 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction{
      * @throws SQLException
      */
     public static void writeGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-            JsonDriverFunction jdf = new JsonDriverFunction();
-            jdf.exportTable(connection, tableReference,  URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
+          writeGeoJson(connection, fileName, tableReference,null);
     }
     
 }

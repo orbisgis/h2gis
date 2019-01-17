@@ -21,10 +21,11 @@
 package org.h2gis.functions.io.gpx.model;
 
 import org.locationtech.jts.geom.GeometryFactory;
-import java.sql.PreparedStatement;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
+
+import java.sql.PreparedStatement;
 
 /**
  * Abstract class of all Gpx-Parsers. It contains the more general attributes,

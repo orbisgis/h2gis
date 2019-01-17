@@ -20,24 +20,18 @@
 
 package org.h2gis.functions.io.csv;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.channels.FileChannel;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import org.h2.tools.Csv;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.sql.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Basic CSV importer and exporter
@@ -82,11 +76,12 @@ public class CSVDriverFunction implements DriverFunction{
     
      @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
-             throws SQLException {
+             throws SQLException, IOException {
          exportTable(connection, tableReference, fileName, progress, null);
     }
 
     /**
+     * Export a table or a query to a CSV file
      * 
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
@@ -96,31 +91,40 @@ public class CSVDriverFunction implements DriverFunction{
      * @throws SQLException
      * @throws IOException 
      */
-    @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                            String csvOptions) throws SQLException {
-        if(FileUtil.isExtensionWellFormated(fileName, "csv")){
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        TableLocation location = TableLocation.parse(tableReference, isH2);
-        Statement st = null;
-        try {
-            st = connection.createStatement();
-            JDBCUtilities.attachCancelResultSet(st, progress);
-            Csv csv = new Csv();
-            if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
-                csv.setOptions(csvOptions);
-            }  
-            csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
-        } finally {
-            if (st != null) {
-                st.close();
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String csvOptions) throws SQLException, IOException {
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tableReference);
+        if (matcher.find()) {
+            if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
+                try (Statement st = connection.createStatement()) {
+                    JDBCUtilities.attachCancelResultSet(st, progress);
+                    Csv csv = new Csv();
+                    if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
+                        csv.setOptions(csvOptions);
+                    }
+                    csv.write(fileName.getPath(), st.executeQuery(tableReference), null);
+                }
+            } else {
+                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
+            }
+
+        } else {
+            if (FileUtil.isExtensionWellFormated(fileName, "csv")) {
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                TableLocation location = TableLocation.parse(tableReference, isH2);
+                try (Statement st = connection.createStatement()) {
+                    JDBCUtilities.attachCancelResultSet(st, progress);
+                    Csv csv = new Csv();
+                    if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
+                        csv.setOptions(csvOptions);
+                    }
+                    csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
+                }
+            } else {
+                throw new SQLException("Only .csv extension is supported");
             }
         }
-        }
-        else{
-            throw new SQLException("Only .csv extension is supported");
-        }
-        
     }
     
     @Override
@@ -178,9 +182,9 @@ public class CSVDriverFunction implements DriverFunction{
             createTable.append(")");
             insertTable.append(")");
 
-            Statement stmt = connection.createStatement();
-            stmt.execute(createTable.toString());
-            stmt.close();
+            try (Statement stmt = connection.createStatement()) {
+                stmt.execute(createTable.toString());
+            }
 
             PreparedStatement pst = connection.prepareStatement(insertTable.toString());
             long batchSize = 0;

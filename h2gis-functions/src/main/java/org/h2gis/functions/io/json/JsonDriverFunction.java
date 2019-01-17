@@ -19,12 +19,13 @@
  */
 package org.h2gis.functions.io.json;
 
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.ProgressVisitor;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.ProgressVisitor;
 
 /**
  *
@@ -63,16 +64,24 @@ public class  JsonDriverFunction implements DriverFunction{
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
-            throws SQLException, IOException {
-        JsonWriteDriver jsonDriver = new JsonWriteDriver(connection, tableReference, fileName);
-        jsonDriver.write(progress);
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection,tableReference, fileName, progress,null);
     }
-
+    
+    /**
+     * Save a table or a query to JSON file
+     * @param connection
+     * @param tableReference
+     * @param fileName
+     * @param progress
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException 
+     */
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                            String options) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, progress);
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
+        JsonWriteDriver jsonDriver = new JsonWriteDriver(connection);
+        jsonDriver.write(progress,tableReference, fileName, encoding);
     }
 
     @Override

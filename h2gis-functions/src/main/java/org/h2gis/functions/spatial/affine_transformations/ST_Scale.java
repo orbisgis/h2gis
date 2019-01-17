@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.affine_transformations;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * ST_Scale scales the given geometry by multiplying the coordinates by the

@@ -21,14 +21,14 @@
 package org.h2gis.functions.io;
 
 import org.h2.util.StringUtils;
-import org.h2gis.functions.io.dbf.DBFDriverFunction;
-import org.h2gis.functions.io.dbf.DBFEngine;
-import org.h2gis.functions.io.shp.SHPDriverFunction;
-import org.h2gis.functions.io.shp.SHPEngine;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.io.dbf.DBFDriverFunction;
+import org.h2gis.functions.io.dbf.DBFEngine;
+import org.h2gis.functions.io.shp.SHPDriverFunction;
+import org.h2gis.functions.io.shp.SHPEngine;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -91,11 +91,11 @@ public class DriverManager extends AbstractFunction implements ScalarFunction, D
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         for(DriverDef driverDef : DRIVERS) {
             if(driverDef.getFileExt().equalsIgnoreCase(ext)) {
-                Statement st = connection.createStatement();
-                st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
-                        TableLocation.parse(tableName, isH2).toString(isH2),StringUtils.quoteStringSQL(fileName),
-                        StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
-                st.close();
+                try (Statement st = connection.createStatement()) {
+                    st.execute(String.format("CREATE TABLE %s COMMENT %s ENGINE %s WITH %s",
+                            TableLocation.parse(tableName, isH2).toString(isH2),StringUtils.quoteStringSQL(fileName),
+                            StringUtils.quoteJavaString(driverDef.getClassName()),StringUtils.quoteJavaString(fileName)));
+                }
                 return;
             }
         }

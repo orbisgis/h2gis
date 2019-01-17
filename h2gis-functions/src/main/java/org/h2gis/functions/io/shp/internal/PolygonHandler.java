@@ -20,19 +20,12 @@
 
 package org.h2gis.functions.io.shp.internal;
 
-import org.locationtech.jts.algorithm.CGAlgorithms;
-import org.locationtech.jts.algorithm.RobustDeterminant;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LinearRing;
-import org.locationtech.jts.geom.MultiPolygon;
-import org.locationtech.jts.geom.Polygon;
 import org.h2gis.drivers.utility.CoordinatesUtils;
 import org.h2gis.functions.io.utility.ReadBufferManager;
 import org.h2gis.functions.io.utility.WriteBufferManager;
+import org.locationtech.jts.algorithm.CGAlgorithms;
+import org.locationtech.jts.algorithm.RobustDeterminant;
+import org.locationtech.jts.geom.*;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -211,9 +204,7 @@ public class PolygonHandler implements ShapeHandler {
                         // build an association between shells and holes
                         final List<List<LinearRing>> holesForShells = assignHolesToShells(shells, holes);
 
-                        Geometry g = buildGeometries(shells, holes, holesForShells);
-
-                        return g;
+                        return buildGeometries(shells, holes, holesForShells);
                 }
         }
 
@@ -361,7 +352,7 @@ public class PolygonHandler implements ShapeHandler {
                 for (int i = 0; i < shells.size(); i++) {
                         final List<LinearRing> hole = holesForShells.get(i);
                         polygons[i] = geometryFactory.createPolygon(shells.get(i),
-                                hole.toArray(new LinearRing[hole.size()]));
+                                hole.toArray(new LinearRing[0]));
                 }
 
                 // this will take care of the "only holes case"
@@ -373,9 +364,7 @@ public class PolygonHandler implements ShapeHandler {
                         }
                 }
 
-                Geometry g = geometryFactory.createMultiPolygon(polygons);
-
-                return g;
+                return geometryFactory.createMultiPolygon(polygons);
         }
 
         /**
@@ -446,7 +435,7 @@ public class PolygonHandler implements ShapeHandler {
         }
 
         private MultiPolygon createMulti(LinearRing single, List<LinearRing> holes) {
-                return geometryFactory.createMultiPolygon(new Polygon[]{geometryFactory.createPolygon(single, holes.toArray(new LinearRing[holes.size()]))});
+                return geometryFactory.createMultiPolygon(new Polygon[]{geometryFactory.createPolygon(single, holes.toArray(new LinearRing[0]))});
         }
 
         @Override

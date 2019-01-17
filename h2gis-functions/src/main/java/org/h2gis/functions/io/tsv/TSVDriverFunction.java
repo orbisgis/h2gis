@@ -21,24 +21,19 @@
 
 package org.h2gis.functions.io.tsv;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.channels.FileChannel;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
 import org.h2.tools.Csv;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
+
+import java.io.*;
+import java.nio.channels.FileChannel;
+import java.sql.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  * This driver allow to import and export the Tab Separated Values (TSV): a
@@ -97,31 +92,71 @@ public class TSVDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-            TableLocation location = TableLocation.parse(tableReference, isH2);
-            Statement st = null;
-            try {
-                st = connection.createStatement();
-                Csv csv = new Csv();
-                csv.setFieldDelimiter('\t');
-                csv.setFieldSeparatorWrite("\t");
-                csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
-            } finally {
-                if (st != null) {
-                    st.close();
+        exportTable(connection, tableReference, fileName, progress, null);
+    }
+    
+    /**
+     * Export a table or a query to as TSV file
+     * 
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path to read
+     * @param progress
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException 
+     */
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tableReference);
+        if (matcher.find()) {
+            if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
+                if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
+                    try (Statement st = connection.createStatement()) {
+                        JDBCUtilities.attachCancelResultSet(st, progress);
+                        exportFromResultSet(connection, st.executeQuery(tableReference), fileName, new EmptyProgressVisitor(), encoding);
+                    }
+                } else {
+                    throw new SQLException("Only .tsv extension is supported");
                 }
+
+            } else {
+                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-            throw new SQLException("Only .tsv extension is supported");
-        }
-
+            if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                TableLocation location = TableLocation.parse(tableReference, isH2);
+                try (Statement st = connection.createStatement()) {
+                    JDBCUtilities.attachCancelResultSet(st, progress);
+                    exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), fileName,new EmptyProgressVisitor(),encoding);
+                }
+            } else {
+                throw new SQLException("Only .tsv extension is supported");
+            }
+        }        
     }
-
-    @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                            String options) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, progress);
+    
+    /**
+     * Export a resultset to a TSV file
+     *
+     * @param connection
+     * @param res
+     * @param fileName
+     * @param progress
+     * @param encoding
+     * @throws java.sql.SQLException
+     */
+    public void exportFromResultSet(Connection connection, ResultSet res, File fileName, ProgressVisitor progress, String encoding) throws SQLException {
+        Csv csv = new Csv();
+        String csvOptions = "charset=UTF-8 fieldSeparator=\t fieldDelimiter=\t";
+        if (encoding != null) {
+            csvOptions = String.format("charset=%s fieldSeparator=\t fieldDelimiter=\t", encoding);
+        }
+        csv.setOptions(csvOptions);
+        csv.write(fileName.getPath(), res, null);
     }
 
     @Override
@@ -160,9 +195,9 @@ public class TSVDriverFunction implements DriverFunction{
             createTable.append(")");
             insertTable.append(")");
 
-            Statement stmt = connection.createStatement();
-            stmt.execute(createTable.toString());
-            stmt.close();
+            try (Statement stmt = connection.createStatement()) {
+                stmt.execute(createTable.toString());
+            }
 
             PreparedStatement pst = connection.prepareStatement(insertTable.toString());
             long batchSize = 0;

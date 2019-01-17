@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.snap;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.overlay.snap.GeometrySnapper;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * Snaps two geometries together with a given tolerance

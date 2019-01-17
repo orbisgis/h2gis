@@ -20,22 +20,20 @@
 
 package org.h2gis.functions.io.gpx;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.util.StringUtils;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.*;
 import org.locationtech.jts.geom.Geometry;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.util.StringUtils;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.After;
-import org.junit.AfterClass;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
 
 /**
  *
@@ -219,6 +217,28 @@ public class GPXImportTest {
         rs.close();
         // Check content
         rs = st.executeQuery("SELECT * FROM GPXDATA_WAYPOINT");
+        assertTrue(rs.next());
+        assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
+        assertEquals(4326, ((Geometry)rs.getObject("the_geom")).getSRID());
+        rs.close();
+    }
+    
+    
+     @Test
+    public void importGPXFileTableName() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS WAYPOINTWAYPOINT, WAYPOINT_ROUTE, WAYPOINT_ROUTEPOINT,WAYPOINT_TRACK, WAYPOINT_TRACKSEGMENT, WAYPOINT_TRACKPOINT;");
+        st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ");");
+        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WAYPOINT_WAYPOINT'");
+        assertTrue(rs.next());
+        rs.close();
+        
+        // Check number
+        rs = st.executeQuery("SELECT count(id) FROM WAYPOINT_WAYPOINT");
+        rs.next();
+        assertTrue(rs.getInt(1) == 3);
+        rs.close();
+        // Check content
+        rs = st.executeQuery("SELECT * FROM WAYPOINT_WAYPOINT");
         assertTrue(rs.next());
         assertEquals("POINT (-71.119277 42.438878)", rs.getString("the_geom"));
         assertEquals(4326, ((Geometry)rs.getObject("the_geom")).getSRID());

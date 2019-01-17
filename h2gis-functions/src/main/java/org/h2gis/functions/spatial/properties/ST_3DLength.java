@@ -20,8 +20,8 @@
 
 package org.h2gis.functions.spatial.properties;
 
-import org.locationtech.jts.geom.*;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.geom.*;
 
 /**
  * ST_3DLength returns the 3D length (of a LineString) or the 3D perimeter (of a Polygon).

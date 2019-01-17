@@ -21,7 +21,6 @@
 package org.h2gis.functions.io.file_table;
 
 import org.h2.api.ErrorCode;
-import org.h2.command.dml.AllColumnsForPlan;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
@@ -37,7 +36,7 @@ import org.h2.table.TableFilter;
 import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2.value.ValueLong;
-import org.h2gis.functions.io.FileDriver;
+import org.h2gis.api.FileDriver;
 
 import java.io.IOException;
 import java.util.HashSet;
@@ -148,10 +147,10 @@ public class H2TableIndex extends BaseIndex {
         }
         return new SHPCursor(this, first, last, session);
     }
-
+    
+    
     @Override
-    public double getCost(Session session, int[] masks, TableFilter[] tableFilters, int filter, SortOrder sortOrder,
-                          AllColumnsForPlan allColumnsSet) {
+    public double getCost(Session session, int[] masks, TableFilter[] tableFilters, int filter, SortOrder sortOrder, HashSet<Column> allColumnsSet) {
         // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L210
         // Must kept sync with this
         try {
@@ -206,6 +205,7 @@ public class H2TableIndex extends BaseIndex {
     public boolean isRowIdIndex() {
         return isScanIndex;
     }
+
 
     
 

@@ -64,26 +64,26 @@
         <cobertura-maven-plugin-version>2.6</cobertura-maven-plugin-version>
 
         <commons-compress-groupId>org.apache.commons</commons-compress-groupId>
-        <commons-compress-version>1.9</commons-compress-version>
+        <commons-compress-version>1.18</commons-compress-version>
 
         <commons-io-groupId>commons-io</commons-io-groupId>
         <commons-io-version>1.3.2</commons-io-version>
 
         <cts-groupId>org.orbisgis</cts-groupId>
-        <cts-version>1.4.0</cts-version>
+        <cts-version>1.5.2-SNAPSHOT</cts-version>
 
         <!-- Plugin for the execution of a Java program -->
         <exec-maven-plugin-groupId>org.codehaus.mojo</exec-maven-plugin-groupId>
         <exec-maven-plugin-version>1.2.1</exec-maven-plugin-version>
 
-        <h2-groupId>org.orbisgis</h2-groupId>
-        <h2-version>1.4.198</h2-version>
+        <h2-groupId>com.h2database</h2-groupId>
+        <h2-version>1.4.197</h2-version>
 
         <jackson-core-groupId>com.fasterxml.jackson.core</jackson-core-groupId>
         <jackson-core-version>2.3.1</jackson-core-version>
 
         <java-network-analyzer-groupId>org.orbisgis</java-network-analyzer-groupId>
-        <java-network-analyzer-version>0.1.6</java-network-analyzer-version>
+        <java-network-analyzer-version>0.1.7</java-network-analyzer-version>
 
         <jts-core-groupId>org.locationtech.jts</jts-core-groupId>
         <jts-core-version>1.15.1</jts-core-version>
@@ -123,6 +123,9 @@
         <poly2tri-groupId>org.orbisgis</poly2tri-groupId>
         <poly2tri-version>0.1.2</poly2tri-version>
 
+        <postgis-jdbc-groupId>net.postgis</postgis-jdbc-groupId>
+        <postgis-jdbc-version>2.3.0</postgis-jdbc-version>
+
         <!-- Simple Logging Facade for Java -->
         <slf4j-groupId>org.slf4j</slf4j-groupId>
         <slf4j-version>1.6.0</slf4j-version>
@@ -130,6 +133,10 @@
 
     <!-- Dependencies -->
     <repositories>
+        <repository>
+            <id>osgi-maven</id>
+            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-snapshot</url>
+        </repository>               
         <repository>
             <id>osgi-maven-5.1</id>
             <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-5.1</url>
@@ -183,6 +190,11 @@
                 <version>${poly2tri-version}</version>
             </dependency>
             <dependency>
+                <groupId>${postgis-jdbc-groupId}</groupId>
+                <artifactId>postgis-jdbc</artifactId>
+                <version>${postgis-jdbc-version}</version>
+            </dependency>
+            <dependency>
                 <groupId>${slf4j-groupId}</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>${slf4j-version}</version>
@@ -227,6 +239,8 @@
         <module>h2gis-functions</module>
         <module>h2gis-network</module>
         <module>h2gis-functions-osgi</module>
+        <module>postgis-jts</module>
+        <module>postgis-jts-osgi</module>
         <module>h2gis-dist</module>
     </modules>
 

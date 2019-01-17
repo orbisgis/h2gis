@@ -20,23 +20,20 @@
 
 package org.h2gis.functions.spatial.crs;
 
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
+import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  *
@@ -72,25 +69,25 @@ public class CRSFunctionTest {
     @Test
     public void test_ST_Transform27572To4326() throws Exception {
         checkProjectedGeom("POINT(584173.736059813 2594514.82833411)", 27572, 4326,
-                "POINT(2.114551398096724 50.34560979151726)");
+                "POINT(2.114551398096724 50.34560979151726)",10E-3);
     }
 
     @Test
     public void testST_Transform4326to2154() throws Exception {
         checkProjectedGeom("POINT(2.114551393 50.345609791)", 4326, 2154,
-                "POINT(636890.7403226076 7027895.263553156)");
+                "POINT(636890.7403226076 7027895.263553156 0)",10E-3);
     }
 
     @Test
     public void test_ST_Transform27572to3857() throws Exception {
         checkProjectedGeom("POINT(282331 2273699.7)", 27572, 3857,
-                "POINT(-208496.53743537163 6005369.877027287)");
+                "POINT(-208496.53743537163 6005369.877027287)",10E-3);
     }
 
     @Test
     public void testST_Transform27572to2154WithoutNadgrid() throws Exception {
         checkProjectedGeom("POINT(282331 2273699.7)", 27572, 2154,
-                "POINT(332602.9618934966 6709788.264478932)");
+                "POINT(332602.9618934966 6709788.264478932)",10E-3);
     }
 
     @Test
@@ -99,13 +96,13 @@ public class CRSFunctionTest {
         final ResultSet rs = compute("POINT(565767.906 2669005.730)", 320002120, outProj);
         // Java 6: "POINT(619119.4605077105 7102502.97947694)"
         // Java 7: "POINT(619119.4605077105 7102502.979476939)"
-        checkWithTolerance(rs, "POINT(619119.4605077105 7102502.9794769)", outProj, 10E-7);
+        checkWithTolerance(rs, "POINT(619119.4605077105 7102502.9794769)", outProj, 10E-3);
     }
 
     @Test
     public void testST_TransformAsIdentity() throws Exception {
         checkProjectedGeom("POINT(565767.906 2669005.730)", 2154, 2154,
-                "POINT(565767.906 2669005.730)");
+                "POINT(565767.906 2669005.730)",10E-3);
     }
 
     @Test
@@ -114,28 +111,28 @@ public class CRSFunctionTest {
         final int inOutProj = 4326;
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM(ST_TRANSFORM(" +
                 "ST_GeomFromText('" + inGeom + "', " + inOutProj + "), 2154), " + inOutProj + ");");
-        // The actual result is "MULTILINESTRING ((0 0, 0.9999999999999996 0))"
-        checkWithTolerance(rs, inGeom, inOutProj, 10E-15);
+        // The actual result is "MULTILINESTRING ((0 0 0, 0.9999999999999996 0 0))"
+        checkWithTolerance(rs, "MULTILINESTRING ((0 0 0, 1 0 0))", inOutProj, 10E-3);
     }
 
     @Test
     public void testST_TransformOnMULTILINESTRING() throws Exception {
         checkProjectedGeom("MULTILINESTRING ((0 0, 1 0))", 4326, 4326,
-                "MULTILINESTRING ((0 0, 1 0))");
+                "MULTILINESTRING ((0 0, 1 0))",10E-3);
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM(" +
                 "ST_GeomFromText('MULTILINESTRING ((2.11 50.34, 2.15 51))',  4326 ), 2154);");
         checkWithTolerance(rs, 
-                "MULTILINESTRING ((636559.3165826919 7027274.112512174, 640202.1706468144 7100786.438815401))", 2154,10E-15 );
+                "MULTILINESTRING ((636559.3165826919 7027274.112512174 0, 640202.1706468144 7100786.438815401 0))", 2154,10E-3 );
     }
     
     @Test
     public void testST_TransformOnMULTIPOINT() throws Exception {
         checkProjectedGeom("MULTIPOINT ((0 0), (1 0))", 4326, 4326,
-                "MULTIPOINT ((0 0), (1 0))");
+                "MULTIPOINT ((0 0), (1 0))",10E-3);
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
                 + "ST_GeomFromText('MULTIPOINT ((2.11 50.34), (2.11 50.34))',  4326 ), 2154);");
         checkWithTolerance(rs,
-                "MULTIPOINT ((636559.3165826919 7027274.112512174), (636559.3165826919 7027274.112512174))", 2154, 10E-15);
+                "MULTIPOINT ((636559.3165826919 7027274.112512174 0), (636559.3165826919 7027274.112512174 0))", 2154, 10E-3);
     }
     
      @Test
@@ -143,26 +140,26 @@ public class CRSFunctionTest {
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
                 + "ST_GeomFromText('MULTIPOLYGON (((2 40, 3 40, 3 3, 2 3, 2 40)))',  4326 ), 2154);");
         checkWithTolerance(rs,
-                "MULTIPOLYGON (((614156.72100231 5877577.312128516, 700000 5877033.734723133, 700000 1336875.474634381, "
-                        + "556660.5833028702 1337783.1294808295, 614156.72100231 5877577.312128516)))", 2154, 10E-15);
+                "MULTIPOLYGON (((614156.72100231 5877577.312128516 0, 700000 5877033.734723133 0, 700000 1336875.474634381 0, "
+                        + "556660.5833028702 1337783.1294808295 0, 614156.72100231 5877577.312128516 0)))", 2154, 10E-3);
     }
     
     @Test
     public void testST_TransformOnNullGeometry() throws Exception {
-        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
-                + "null, 2154);");
-        rs.next();
-        Assert.assertNull(rs.getObject(1));
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "null, 2154);")) {
+            rs.next();
+            Assert.assertNull(rs.getObject(1));
+        }
     }
     
     @Test
     public void testST_TransformOnNulls() throws Exception {
-        final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
-                + "null, null);");
-        rs.next();
-        Assert.assertNull(rs.getObject(1));
-        rs.close();
+        try (ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
+                + "null, null);")) {
+            rs.next();
+            Assert.assertNull(rs.getObject(1));
+        }
     }
     
     @Test(expected = IllegalArgumentException.class)
@@ -204,8 +201,8 @@ public class CRSFunctionTest {
     }
     
         
-    private void checkProjectedGeom(String inputGeom, int inProj, int outProj, String expectedGeom) throws SQLException {
-        check(compute(inputGeom, inProj, outProj), expectedGeom, outProj);
+    private void checkProjectedGeom(String inputGeom, int inProj, int outProj, String expectedGeom,double  epsilon) throws SQLException {
+        check(compute(inputGeom, inProj, outProj), expectedGeom, outProj, epsilon);
     }
 
     private ResultSet compute(String inputGeom, int inProj, int outProj) throws SQLException {
@@ -213,10 +210,10 @@ public class CRSFunctionTest {
                 "ST_GeomFromText('" + inputGeom + "', " + inProj + "), " + outProj + ");");
     }
 
-    private void check(ResultSet rs, String expectedGeom, int outProj) throws SQLException {
+    private void check(ResultSet rs, String expectedGeom, int outProj, double  epsilon) throws SQLException {
         try {
             assertTrue(rs.next());
-            assertGeometryEquals(expectedGeom, outProj, rs.getObject(1));
+            assertGeometryBarelyEquals(expectedGeom, outProj, rs.getObject(1), epsilon);
             assertFalse(rs.next());
         } finally {
             rs.close();

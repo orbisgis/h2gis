@@ -206,7 +206,7 @@ public class TableLocation {
         if(sb.length() != 0) {
             parts.add(sb.toString());
         }
-        String[] values = parts.toArray(new String[parts.size()]);
+        String[] values = parts.toArray(new String[0]);
         switch (values.length) {
             case 1:
                 table = values[0].trim();

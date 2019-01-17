@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.io.shp.internal;
 
+import org.h2gis.functions.io.utility.WriteBufferManager;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.h2gis.functions.io.utility.WriteBufferManager;
 
 import java.io.IOException;
 import java.nio.ByteOrder;

@@ -41,6 +41,16 @@ public class DBFRead  extends AbstractFunction implements ScalarFunction {
     public String getJavaStaticMethod() {
         return "read";
     }
+    
+    public static void read(Connection connection, String fileName) throws IOException, SQLException {
+        final String name = URIUtilities.fileFromString(fileName).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            read(connection, fileName, tableName);
+        } else {
+            throw new SQLException("The file name contains unsupported characters");
+        }
+    }
 
     public static void read(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();

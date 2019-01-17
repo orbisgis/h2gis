@@ -20,12 +20,12 @@
 
 package org.h2gis.functions.io.shp.internal;
 
+import org.h2gis.functions.io.utility.ReadBufferManager;
+import org.h2gis.functions.io.utility.WriteBufferManager;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
-import org.h2gis.functions.io.utility.ReadBufferManager;
-import org.h2gis.functions.io.utility.WriteBufferManager;
 
 import java.io.IOException;
 

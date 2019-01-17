@@ -19,28 +19,21 @@
  */
 package org.h2gis.functions.io.json;
 
-import com.fasterxml.jackson.core.JsonEncoding;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
-import com.fasterxml.jackson.core.TreeNode;
-import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.sql.Connection;
-import java.sql.Statement;
-import java.util.Map;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  *
@@ -66,14 +59,50 @@ public class JsonImportExportTest {
     
     @Test
     public void testWriteJson() throws Exception {
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
-        stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
-        stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
-        stat.execute("CALL JSONWrite('target/result.json', 'TABLE_POINT');");
-        String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
-        Assert.assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
-        stat.close();
+         try (Statement stat = connection.createStatement()) {
+             stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
+             stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
+             stat.execute("CALL JSONWrite('target/result.json', 'TABLE_POINT');");
+             String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
+             Assert.assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
+         }
+    }
+    
+    @Test
+    public void testWriteResultSetJson() throws Exception {
+         try (Statement stat = connection.createStatement()) {
+             stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
+             stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
+             ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINT");
+             JsonWriteDriver jsonWriteDriver = new JsonWriteDriver(connection);
+             jsonWriteDriver.write(new EmptyProgressVisitor(), rs, new File("target/result.json"));
+             String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
+             Assert.assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
+         }
+    }
+    
+    @Test
+    public void testWriteQueryJson() throws Exception {
+         try (Statement stat = connection.createStatement()) {
+             stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
+             stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000)),(2, 'POINT(12 200)', (10000, 20000, 30000, 10000))");
+             stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)');");
+             String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
+             Assert.assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
+         }
+    }
+    
+    @Test(expected = SQLException.class)
+    public void testWriteBadEncoding() throws Exception {
+         try (Statement stat = connection.createStatement()) {
+             stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
+             stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000)),(2, 'POINT(12 200)', (10000, 20000, 30000, 10000))");
+             stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)', 'CP52');");
+         }
     }
     
 }

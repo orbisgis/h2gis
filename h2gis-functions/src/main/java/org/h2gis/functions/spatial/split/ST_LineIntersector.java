@@ -20,21 +20,17 @@
 
 package org.h2gis.functions.spatial.split;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.CoordinateArrays;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.geom.*;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
 import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * LineIntersector is used to split an input geometry (LineString or MultiLineString) by
@@ -90,7 +86,7 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
         if (linestrings.isEmpty()) {
             return inputLines;
         } else {
-            return gf.createMultiLineString(linestrings.toArray(new LineString[linestrings.size()]));
+            return gf.createMultiLineString(linestrings.toArray(new LineString[0]));
         }}
         throw new IllegalArgumentException("Split a " + inputLines.getGeometryType() + " by a " + clipper.getGeometryType() + " is not supported.");
     }

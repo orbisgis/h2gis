@@ -20,13 +20,13 @@
 
 package org.h2gis.functions.spatial.mesh;
 
-import java.sql.SQLException;
-import java.util.List;
-
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
 import org.locationtech.jts.triangulate.quadedge.QuadEdgeSubdivision;
-import org.h2gis.api.DeterministicScalarFunction;
+
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Returns polygons that represent a Delaunay triangulation constructed from a

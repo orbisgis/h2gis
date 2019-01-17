@@ -32,6 +32,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 import static org.junit.Assert.*;
 
@@ -244,5 +245,17 @@ public class JDBCUtilitiesTest {
         assertTrue(rsmd.getColumnCount()==0);
         assertTrue(!res.next());
         st.execute("DROP TABLE emptytable");
+    }
+    
+    @Test
+    public void testColumnNames() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS temptable");
+        st.execute("CREATE TABLE temptable(id integer, name varchar)");
+        ResultSet rs = st.executeQuery("SELECT * from temptable");
+        ResultSetMetaData md = rs.getMetaData();
+        ArrayList<String> expecteds = new ArrayList<>();
+        expecteds.add("ID");
+        expecteds.add("NAME");
+        Assert.assertEquals(expecteds, JDBCUtilities.getFieldNames(md));
     }
 }

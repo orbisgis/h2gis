@@ -21,13 +21,14 @@
 
 package org.h2gis.functions.io.tsv;
 
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.URIUtilities;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Write a Tab-separated values file
@@ -54,7 +55,22 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
      * @throws IOException
      */
     public static void writeTSV(Connection connection, String fileName, String tableReference) throws SQLException, IOException {
-        TSVDriverFunction tSVDriverFunction = new TSVDriverFunction();
-        tSVDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
+        writeTSV(connection, fileName, tableReference, null);
     }
+    
+    /**
+     * Export a table into a Tab-separated values file
+     *
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException
+     */
+    public static void writeTSV(Connection connection, String fileName, String tableReference, String encoding) throws SQLException, IOException {       
+        TSVDriverFunction tSVDriverFunction = new TSVDriverFunction();
+        tSVDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
+    }
+
 }

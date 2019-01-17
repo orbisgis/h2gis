@@ -20,11 +20,11 @@
 
 package org.h2gis.functions.spatial.create;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.util.GeometricShapeFactory;
-import org.h2gis.api.DeterministicScalarFunction;
 
 import java.sql.SQLException;
 

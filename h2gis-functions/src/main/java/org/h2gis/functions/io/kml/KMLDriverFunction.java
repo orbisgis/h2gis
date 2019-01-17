@@ -20,12 +20,13 @@
 
 package org.h2gis.functions.io.kml;
 
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.ProgressVisitor;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.ProgressVisitor;
 
 /**
  * A driver to export spatial table to kml 2.2 file.

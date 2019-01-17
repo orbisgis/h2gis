@@ -20,24 +20,20 @@
 
 package org.h2gis.functions.io.osm;
 
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.functions.spatial.crs.ST_Transform;
 import org.h2gis.utilities.URIUtilities;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import org.cts.op.CoordinateOperationException;
 
 /**
  * This function is used to download data from the osm api using a bounding box.
@@ -66,8 +62,10 @@ public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction
      * @param fileName The path to save the osm file
      * @throws FileNotFoundException
      * @throws IOException
+     * @throws java.sql.SQLException
+     * @throws org.cts.op.CoordinateOperationException
      */
-    public static void downloadData(Connection con, Geometry area, String fileName) throws FileNotFoundException, IOException, SQLException {
+    public static void downloadData(Connection con, Geometry area, String fileName) throws FileNotFoundException, IOException, SQLException, CoordinateOperationException {
             downloadData(con,area, fileName, false);
     }   
     
@@ -79,8 +77,10 @@ public class ST_OSMDownloader extends AbstractFunction implements ScalarFunction
      * @param deleteFile True to delete the file if exists
      * @throws FileNotFoundException
      * @throws IOException
+     * @throws java.sql.SQLException
+     * @throws org.cts.op.CoordinateOperationException
      */
-    public static void downloadData(Connection con,Geometry area, String fileName, boolean deleteFile) throws FileNotFoundException, IOException, SQLException {
+    public static void downloadData(Connection con,Geometry area, String fileName, boolean deleteFile) throws FileNotFoundException, IOException, SQLException, CoordinateOperationException {
         File file = URIUtilities.fileFromString(fileName);
         if (file.exists()) {
             if(deleteFile){
