@@ -37,11 +37,13 @@ import java.util.regex.Pattern;
  * Basic CSV importer and exporter
  * 
  * @author Erwan Bocher
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class CSVDriverFunction implements DriverFunction{
 
     public static String DESCRIPTION = "CSV file (Comma Separated Values)";
     private static final int BATCH_MAX_SIZE = 100;
+    private static final int AVERAGE_NODE_SIZE = 500;
     
     @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
@@ -73,7 +75,8 @@ public class CSVDriverFunction implements DriverFunction{
     }
     
      @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+             throws SQLException, IOException {
          exportTable(connection, tableReference, fileName, progress, null);
     }
 
@@ -125,7 +128,8 @@ public class CSVDriverFunction implements DriverFunction{
     }
     
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
         importFile(connection, tableReference, fileName, progress, null);
     }
 
@@ -139,12 +143,13 @@ public class CSVDriverFunction implements DriverFunction{
      * @throws SQLException
      * @throws IOException 
      */
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String csvOptions) throws SQLException, IOException {
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           String csvOptions) throws SQLException, IOException {
         if (FileUtil.isFileImportable(fileName, "csv")) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
-            int AVERAGE_NODE_SIZE = 500;
             FileInputStream fis = new FileInputStream(fileName);
             FileChannel fc = fis.getChannel();
             long fileSize = fc.size();
@@ -188,7 +193,7 @@ public class CSVDriverFunction implements DriverFunction{
                     if (progress.isCanceled()) {
                         throw new SQLException("Canceled by user");
                     }
-                    
+
                     for (int i = 0; i < columnCount; i++) {
                         pst.setString(i + 1, reader.getString(i + 1));
                     }
@@ -210,11 +215,26 @@ public class CSVDriverFunction implements DriverFunction{
                 }
                 if (batchSize > 0) {
                     pst.executeBatch();
-                }                
+                }
 
             } finally {
                 pst.close();
             }
         }
-    }    
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           boolean deleteTables) throws SQLException, IOException {
+        if(deleteTables) {
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            String table = requestedTable.getTable();
+            Statement stmt = connection.createStatement();
+            stmt.execute("DROP TABLE IF EXISTS " + table);
+            stmt.close();
+        }
+
+        importFile(connection, tableReference, fileName, progress);
+    }
 }

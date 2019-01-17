@@ -39,6 +39,7 @@ import static org.junit.Assert.assertTrue;
 /**
  *
  * @author Erwan Bocher
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class CSVDriverTest {    
     
@@ -103,7 +104,29 @@ public class CSVDriverTest {
             assertTrue(rs.next());
             assertEquals(3,rs.getDouble(1),1e-2);
         }
-    } 
+    }
+
+    @Test
+    public void testDriverDeleteTable() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS AREA, MYCSV");
+        stat.execute("create table area(the_geom GEOMETRY, idarea int primary key)");
+        stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
+        stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
+        stat.execute("CREATE TABLE MYCSV(the_geom GEOMETRY, idarea int primary key)");
+        // Export in target with special chars
+        File csvFile = new File("target/area éxport.csv");
+        DriverFunction exp = new CSVDriverFunction();
+        exp.exportTable(connection, "AREA", csvFile,new EmptyProgressVisitor());
+        exp.importFile(connection, "MYCSV", csvFile, new EmptyProgressVisitor(), true);
+        ResultSet rs = stat.executeQuery("select SUM(idarea::int) from mycsv");
+        try {
+            assertTrue(rs.next());
+            assertEquals(3,rs.getDouble(1),1e-2);
+        } finally {
+            rs.close();
+        }
+    }
     
      @Test
     public void testDriverQueryOptions() throws SQLException, IOException {
@@ -122,8 +145,5 @@ public class CSVDriverTest {
             assertTrue(rs.next());
             assertEquals(3,rs.getDouble(1),1e-2);
         }
-    } 
-    
-    
-    
+    }
 }

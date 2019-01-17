@@ -30,6 +30,7 @@ import java.sql.SQLException;
 /**
  *
  * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class  JsonDriverFunction implements DriverFunction{
 
@@ -77,14 +78,28 @@ public class  JsonDriverFunction implements DriverFunction{
      * @throws SQLException
      * @throws IOException 
      */
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
         JsonWriteDriver jsonDriver = new JsonWriteDriver(connection);
         jsonDriver.write(progress,tableReference, fileName, encoding);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           String options) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           boolean deleteTables) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
 }

@@ -22,17 +22,21 @@ package org.h2gis.functions.io.geojson;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.TableLocation;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * GeoJSON driver to import a GeoJSON file and export a spatial table in a
  * GeoJSON 1.0 file.
  * 
  * @author Erwan Bocher
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class GeoJsonDriverFunction implements DriverFunction {
 
@@ -81,14 +85,38 @@ public class GeoJsonDriverFunction implements DriverFunction {
      * @throws SQLException
      * @throws IOException 
      */
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException{
         GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection);
         geoJsonDriver.write(progress,tableReference, fileName, encoding);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
         GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, fileName);
         geoJsonReaderDriver.read(progress, tableReference);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           String options) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           boolean deleteTables) throws SQLException, IOException {
+
+        if(deleteTables) {
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            String table = requestedTable.getTable();
+            Statement stmt = connection.createStatement();
+            stmt.execute("DROP TABLE IF EXISTS " + table);
+            stmt.close();
+        }
+
+        importFile(connection, tableReference, fileName, progress);
     }
 }

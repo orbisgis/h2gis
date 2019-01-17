@@ -32,6 +32,7 @@ import java.sql.SQLException;
  * A driver to export spatial table to kml 2.2 file.
  *
  * @author Erwan Bocher
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class KMLDriverFunction implements DriverFunction {
 
@@ -62,14 +63,34 @@ public class KMLDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {        
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
         KMLWriterDriver kMLWriter = new KMLWriterDriver(connection, tableReference, fileName);
         kMLWriter.write(progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                            String options) throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName, progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
+            throws SQLException, IOException {
        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           String options) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           boolean deleteTables) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override

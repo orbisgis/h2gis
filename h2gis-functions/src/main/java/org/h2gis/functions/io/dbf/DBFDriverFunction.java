@@ -43,25 +43,19 @@ import java.util.regex.Pattern;
 
 /**
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class DBFDriverFunction implements DriverFunction {
+
     public static String DESCRIPTION = "dBase III format";
     private static final int BATCH_MAX_SIZE = 100;
+
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         exportTable(connection, tableReference, fileName, progress, null);
     }
 
-    /**
-     * Export a table or a query to a DBF format
-     * @param connection
-     * @param tableReference
-     * @param fileName
-     * @param progress
-     * @param encoding
-     * @throws SQLException
-     * @throws IOException 
-     */
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
@@ -195,6 +189,7 @@ public class DBFDriverFunction implements DriverFunction {
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
+    @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceFileEncoding) throws SQLException, IOException {
         if (FileUtil.isFileImportable(fileName, "dbf")) {
             DBFDriver dbfDriver = new DBFDriver();
@@ -251,6 +246,22 @@ public class DBFDriverFunction implements DriverFunction {
                 }
             }
         }
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
+                           boolean deleteTables) throws SQLException, IOException {
+
+        if(deleteTables) {
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            String table = requestedTable.getTable();
+            Statement stmt = connection.createStatement();
+            stmt.execute("DROP TABLE IF EXISTS " + table);
+            stmt.close();
+        }
+
+        importFile(connection, tableReference, fileName, progress);
     }
 
     private static class DBFType {
