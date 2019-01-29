@@ -24,7 +24,7 @@ located at `path`.
 `tablename` can be either:
 
 * the name of an existing table,
-* the result of a selection (`SELECT` instruction which has to be written between simple quote `' '`).
+* the result of a query (`SELECT` instruction which has to be written between simple quote and parenthesis `'( )'`).
 
 
 The default value of `fileEncoding` is `ISO-8859-1`.
