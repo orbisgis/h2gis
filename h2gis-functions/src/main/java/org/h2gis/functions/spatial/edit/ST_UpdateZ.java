@@ -76,8 +76,9 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
             return null;
         }
         if (updateCondition == 1 || updateCondition == 2 || updateCondition == 3) {
-            geometry.apply(new UpdateZCoordinateSequenceFilter(z, updateCondition));
-            return geometry;
+            Geometry outPut = geometry.copy();
+            outPut.apply(new UpdateZCoordinateSequenceFilter(z, updateCondition));
+            return outPut;
         } else {
             throw new SQLException("Available values are 1, 2 or 3.\n"
                     + "Please read the description of the function to use it.");

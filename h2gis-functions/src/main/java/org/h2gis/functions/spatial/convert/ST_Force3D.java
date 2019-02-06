@@ -55,32 +55,6 @@ public class ST_Force3D extends DeterministicScalarFunction {
         if (geom == null) {
             return null;
         }
-        Geometry outPut = geom.copy();
-        outPut.apply(new CoordinateSequenceFilter() {
-            private boolean done = false;
-
-            @Override
-            public boolean isGeometryChanged() {
-                return true;
-            }
-
-            @Override
-            public boolean isDone() {
-                return done;
-            }
-
-            @Override
-            public void filter(CoordinateSequence seq, int i) {
-                Coordinate coord = seq.getCoordinate(i);
-                double z = coord.z;
-                if (Double.isNaN(z)) {
-                    seq.setOrdinate(i, 2, 0);
-                }
-                if (i == seq.size()) {
-                    done = true;
-                }
-            }
-        });
-        return outPut;
+        return GeometryCoordinateDimension.force(geom, 3); 
     }
 }
