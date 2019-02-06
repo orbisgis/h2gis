@@ -1678,14 +1678,7 @@ public class SpatialFunctionTest {
             st.close();
         }
     }
-    
-    @Test
-    public void test_ST_UpdateZ6() throws Exception {
-        Geometry geom = WKT_READER.read("POINT(0 0)");
-        geom = ST_Force2D.force2D(geom);
-        Geometry geomUpdated = ST_UpdateZ.updateZ(geom, 10);        
-        assertEquals(10, geomUpdated.getCoordinate().z, 0);
-    }
+ 
 
     @Test
     public void test_ST_AddZ1() throws Exception {
