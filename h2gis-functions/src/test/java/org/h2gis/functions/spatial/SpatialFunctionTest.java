@@ -39,8 +39,6 @@ import java.sql.Statement;
 import java.util.Map;
 
 import static junit.framework.Assert.assertTrue;
-import org.h2gis.functions.spatial.convert.ST_Force2D;
-import org.h2gis.functions.spatial.edit.ST_UpdateZ;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 import static org.junit.Assert.*;
 
@@ -2017,8 +2015,8 @@ public class SpatialFunctionTest {
     public void test_ST_Force2D1() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_Force2D('LINESTRING (-10 10 2, 10 10 3)'::GEOMETRY);")) {
             rs.next();
-            Geometry geom = (Geometry)rs.getObject(1);
-            System.out.println("org.h2gis.functions.spatial.SpatialFunctionTest.test_ST_Force2D1()");
+            LineString geom = (LineString)rs.getObject(1);
+            assertEquals(2,geom.getCoordinateSequence().getDimension());
         }
         st.close();
     }
@@ -2027,8 +2025,8 @@ public class SpatialFunctionTest {
     public void test_ST_Force2D2() throws Exception {
         try (ResultSet rs = st.executeQuery("SELECT ST_Force2D('LINESTRING (-10 10, 10 10)'::GEOMETRY);")) {
             rs.next();
-            Geometry geom = (Geometry)rs.getObject(1);
-            System.out.println("org.h2gis.functions.spatial.SpatialFunctionTest.test_ST_Force2D1()");
+            LineString geom = (LineString)rs.getObject(1);
+            assertEquals(2,geom.getCoordinateSequence().getDimension());
         }
         st.close();
     }
