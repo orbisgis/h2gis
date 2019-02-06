@@ -21,8 +21,6 @@
 package org.h2gis.functions.spatial.convert;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.CoordinateSequence;
-import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
 
 /**
@@ -32,7 +30,7 @@ import org.locationtech.jts.geom.Geometry;
  * @author Erwan Bocher
  */
 public class ST_Force2D extends DeterministicScalarFunction {
-
+    
     public ST_Force2D() {
         addProperty(PROP_REMARKS, "Forces the geometries into a \"2-dimensional mode\" \n"
                 + " so that all output representations will only have the X and Y coordinates.");
@@ -52,29 +50,7 @@ public class ST_Force2D extends DeterministicScalarFunction {
     public static Geometry force2D(Geometry geom) {
         if (geom == null) {
             return null;
-        }
-        Geometry outPut = geom.copy();
-        outPut.apply(new CoordinateSequenceFilter() {
-            private boolean done = false;
-
-            @Override
-            public boolean isGeometryChanged() {
-                return true;
-            }
-
-            @Override
-            public boolean isDone() {
-                return done;
-            }
-
-            @Override
-            public void filter(CoordinateSequence seq, int i) {
-                seq.setOrdinate(i, 2, Double.NaN);
-                if (i == seq.size()) {
-                    done = true;
-                }
-            }
-        });
-        return outPut;
+        }        
+        return GeometryCoordinateDimension.force(geom, 2);        
     }
 }
