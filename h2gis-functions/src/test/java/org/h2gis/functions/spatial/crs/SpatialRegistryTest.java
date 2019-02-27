@@ -77,7 +77,7 @@ public class SpatialRegistryTest {
         assertTrue(parameters.get(ProjKeyParameters.zone).equals("36"));
         assertTrue(parameters.get(ProjKeyParameters.south) == null);
         assertTrue(parameters.get(ProjKeyParameters.ellps).equals("clrk66"));
-        assertTrue(parameters.get(ProjKeyParameters.towgs84).equals("219.315,168.975,-166.145,0.198,5.926,-2.356,-57.104"));
+        assertTrue(parameters.get(ProjKeyParameters.towgs84).equals("-80,-100,-228,0,0,0,0"));
         assertTrue(parameters.get(ProjKeyParameters.units).equals("m"));
     }
 
