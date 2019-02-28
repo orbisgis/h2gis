@@ -57,6 +57,10 @@ public class SpatialRefRegistry  extends AbstractProjRegistry implements Registr
             ResultSet rs = prepStmt.executeQuery();
             if (rs.next()) {
                 String proj4Text = rs.getString(1);
+                String authcode = rs.getString(2) + ":" + code;
+                if(proj4Text.isEmpty()){
+                    throw new RegistryException("No translation for "+  authcode +" to PROJ format is known");
+                }
                 String[] tokens = regex.split(proj4Text);
                 Map<String, String> v = new HashMap<String, String>();
                 for (String token : tokens) {
@@ -72,9 +76,10 @@ public class SpatialRefRegistry  extends AbstractProjRegistry implements Registr
                     }
                 }
                 if (!v.containsKey(ProjKeyParameters.title)) {
-                    v.put(ProjKeyParameters.title, rs.getString(2) + ":" + code);
+                    v.put(ProjKeyParameters.title, authcode);
                 }
                 prepStmt.close();
+                
                 return v;
             }
         } catch (SQLException ex) {
