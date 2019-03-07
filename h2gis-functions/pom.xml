@@ -149,7 +149,7 @@
                         <lineRate>0</lineRate>
                         <haltOnFailure>true</haltOnFailure>
                         <totalBranchRate>50</totalBranchRate>
-                        <totalLineRate>77</totalLineRate>
+                        <totalLineRate>70</totalLineRate>
                         <packageLineRate>0</packageLineRate>
                         <packageBranchRate>0</packageBranchRate>
                     </check>
