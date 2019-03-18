@@ -48,9 +48,6 @@ public class SerializationTest {
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
         // Set up test data
         OGCConformance1Test.executeScript(connection, "ogc_conformance_test3.sql");
-        // Close the DataBase then reopen it
-        connection.close();
-        connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
     }
 
     @AfterClass

@@ -46,8 +46,6 @@ public class SpatialIndexTest {
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
         // Set up test data
         OGCConformance1Test.executeScript(connection, "spatial_index_test_data.sql");
-        
-        reopen();
     }
     @AfterClass
     public static void tearDown() throws Exception {
