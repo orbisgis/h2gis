@@ -5,7 +5,7 @@ next_section: quickstart
 permalink: /docs/dev/home/
 ---
 
-You are here in the documentation part dedicated to the "under development" version of H2GIS, the spatial extension
+You are here in the documentation part dedicated to the **under development** version of H2GIS, the spatial extension
 of the [H2][] database engine.
 
 ## What is H2GIS?
