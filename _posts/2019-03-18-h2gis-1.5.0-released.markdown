@@ -1,0 +1,27 @@
+---
+layout: news_item
+title: "H2GIS 1.5.0 Released"
+date: "2019-03-18 10:00:00 +0100"
+author: gpetit
+version: 1.5.0
+categories: [release]
+---
+H2GIS version 1.5.0 use H2 version 1.4.197 and JTS version 1.15.
+
+### Change log ### 
+
+* This release introduces a significant change in package naming. The JTS library has switched from "com.vividsolutions" to "org.locationtech" packages and all H2GIS functions has been updated to follow it.
+
+* This release is aligned with CTS 1.5.2 (<a href="https://github.com/orbisgis/cts/releases" target="_blank">https://github.com/orbisgis/cts/releases)</a>).
+
+
+#### Enhancements ####
+
+For a detailed list of issues go to <a href="https://github.com/orbisgis/h2gis/milestone/6?closed=1" target="_blank">https://github.com/orbisgis/h2gis/milestone/6?closed=1</a>
+
+
+### Download ###
+
+Download H2GIS : <a href="https://github.com/orbisgis/h2gis/releases/tag/v1.5.0" target="_blank">https://github.com/orbisgis/h2gis/releases/tag/v1.5.0</a>
+
+
