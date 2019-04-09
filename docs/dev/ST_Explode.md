@@ -23,6 +23,8 @@ Explodes the `GEOMETRYCOLLECTION`s in the `fieldName` column of table `tableName
 
 If no field name is specified, the first Geometry column is used.
 
+The select `query` must be enclosed in parenthesis `()`.
+
 ### Examples
 
 {% highlight mysql %}
@@ -34,8 +36,8 @@ SELECT * FROM ST_Explode('test_point');
 
 -- or
 -- ST_Explode using a 'query'
-SELECT * FROM ST_Explode('SELECT * FROM test_point 
-                          WHERE ST_Dimension(THE_GEOM)=0');
+SELECT * FROM ST_Explode('(SELECT * FROM test_point 
+                          WHERE ST_Dimension(THE_GEOM)=0)');
 
 -- Answer:
 --    |   THE_GEOM  | EXPLOD_ID |
