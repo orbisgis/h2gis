@@ -43,7 +43,6 @@ import java.sql.Statement;
  * (8) table_prefix + _node_member : table that stores all nodes that are referenced into a relation,
  * (9) table_prefix + _way_member : table that stores all ways that are referenced into a relation,
  * (10) table_prefix + _relation_member : table that stores all relations that are referenced into a relation.
- * (11) table_prefix + _relation_member : table that stores all relations that are referenced into a relation.
  * 
  * @author Erwan Bocher
  */
@@ -51,7 +50,6 @@ public class OSMTablesFactory {
 
     
     //Suffix table names
-    public static final String TAG = "_tag";
     public static final String NODE = "_node";
     public static final String WAY = "_way";
     public static final String NODE_TAG = "_node_tag";
@@ -66,26 +64,9 @@ public class OSMTablesFactory {
 
     private OSMTablesFactory() {
 
-    }
+    }    
     
     
-    /**
-     * Create the tag table to store all key and value
-     * @param connection
-     * @param tagTableName
-     * @return
-     * @throws SQLException
-     */
-    public static PreparedStatement createTagTable(Connection connection, String tagTableName) throws SQLException {
-        // PostgreSQL and H2 will automatically create an index on TAG_KEY,TAG_VALUE when UNIQUE constraint is set
-        try (Statement stmt = connection.createStatement()) {
-            // PostgreSQL and H2 will automatically create an index on TAG_KEY,TAG_VALUE when UNIQUE constraint is set
-            stmt.execute("CREATE TABLE " + tagTableName + "(ID_TAG SERIAL PRIMARY KEY, TAG_KEY VARCHAR UNIQUE);");
-        }
-        //We return the prepared statement of the tag table
-        return connection.prepareStatement("INSERT INTO " + tagTableName + " (TAG_KEY) VALUES (?)");
-    }
-
     /**
      * Create the nodes table that will be used to import OSM nodes 
      * Example :
@@ -128,23 +109,20 @@ public class OSMTablesFactory {
      *
      * @param connection
      * @param nodeTagTableName
-     * @param tagTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createNodeTagTable(Connection connection, String nodeTagTableName, String tagTableName) throws SQLException {
+    public static PreparedStatement createNodeTagTable(Connection connection, String nodeTagTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(nodeTagTableName);
-            sb.append("(ID_NODE BIGINT, ID_TAG BIGINT,TAG_VALUE VARCHAR); ");
+            sb.append("(ID_NODE BIGINT, TAG_KEY VARCHAR,TAG_VALUE VARCHAR); ");
             stmt.execute(sb.toString());
         }
         //We return the preparedstatement of the tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(nodeTagTableName);
-        insert.append("VALUES ( ?, ");
-        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? LIMIT 1)");
-        insert.append(", ?);");
+        insert.append("VALUES ( ?, ?, ?);");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -174,23 +152,20 @@ public class OSMTablesFactory {
      *
      * @param connection
      * @param wayTagTableName
-     * @param tagTableName
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createWayTagTable(Connection connection, String wayTagTableName, String tagTableName) throws SQLException {
+    public static PreparedStatement createWayTagTable(Connection connection, String wayTagTableName) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(wayTagTableName);
-            sb.append("(ID_WAY BIGINT, ID_TAG BIGINT, VALUE VARCHAR);");
+            sb.append("(ID_WAY BIGINT, TAG_KEY VARCHAR,TAG_VALUE VARCHAR);");
             stmt.execute(sb.toString());
         }
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(wayTagTableName);
-        insert.append("VALUES ( ?, ");
-        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? LIMIT 1)");
-        insert.append(", ?);");
+        insert.append("VALUES ( ?, ?, ?);");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -240,24 +215,21 @@ public class OSMTablesFactory {
      * Create the relation tags table
      *
      * @param connection
-     * @param tagTableName
      * @param relationTagTable
      * @return
      * @throws SQLException
      */
-    public static PreparedStatement createRelationTagTable(Connection connection, String relationTagTable, String tagTableName) throws SQLException {
+    public static PreparedStatement createRelationTagTable(Connection connection, String relationTagTable) throws SQLException {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(relationTagTable);
-            sb.append("(ID_RELATION BIGINT, ID_TAG BIGINT, TAG_VALUE VARCHAR);");
+            sb.append("(ID_RELATION BIGINT, TAG_KEY VARCHAR,TAG_VALUE VARCHAR);");
             stmt.execute(sb.toString());
         }
         //We return the preparedstatement of the way tag table
         StringBuilder insert = new StringBuilder("INSERT INTO ");
         insert.append(relationTagTable);
-        insert.append("VALUES ( ?, ");
-        insert.append("(SELECT ID_TAG FROM ").append(tagTableName).append(" WHERE TAG_KEY = ? LIMIT 1)");
-        insert.append(", ?);");
+        insert.append("VALUES ( ?, ?, ?);");
         return connection.prepareStatement(insert.toString());
     }
 
@@ -327,7 +299,7 @@ public class OSMTablesFactory {
     public static void dropOSMTables(Connection connection, boolean isH2, String tablePrefix) throws SQLException {
         TableLocation requestedTable = TableLocation.parse(tablePrefix, isH2);
         String osmTableName = requestedTable.getTable();        
-        String[] omsTables = new String[]{TAG, NODE, NODE_TAG, WAY, WAY_NODE, WAY_TAG, RELATION, RELATION_TAG, NODE_MEMBER, WAY_MEMBER, RELATION_MEMBER};
+        String[] omsTables = new String[]{NODE, NODE_TAG, WAY, WAY_NODE, WAY_TAG, RELATION, RELATION_TAG, NODE_MEMBER, WAY_MEMBER, RELATION_MEMBER};
         StringBuilder sb =  new StringBuilder("drop table if exists ");     
         String omsTableSuffix = omsTables[0];
         String osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);           

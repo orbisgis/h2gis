@@ -96,7 +96,6 @@ public class OSMParser extends DefaultHandler {
     private long fileSize = 0;
     private long readFileSizeEachNode = 1;
     private long nodeCountProgress = 0;
-    private PreparedStatement tagPreparedStmt;
     // For progression information return
     private static final int AVERAGE_NODE_SIZE = 500;
     private static String TAG_DUPLICATE_EXCEPTION = String.valueOf(ErrorCode.DUPLICATE_KEY_1);
@@ -192,9 +191,6 @@ public class OSMParser extends DefaultHandler {
             if (relationMemberPreparedStmt != null) {
                 relationMemberPreparedStmt.close();
             }
-            if(tagPreparedStmt!=null){
-                tagPreparedStmt.close();
-            }
         }
 
         return success;
@@ -210,7 +206,7 @@ public class OSMParser extends DefaultHandler {
      * @throws SQLException
      */
     private void checkOSMTables(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
-        String[] omsTables = new String[]{OSMTablesFactory.TAG, OSMTablesFactory.NODE, OSMTablesFactory.NODE_TAG, OSMTablesFactory.WAY, OSMTablesFactory.WAY_NODE, 
+        String[] omsTables = new String[]{OSMTablesFactory.NODE, OSMTablesFactory.NODE_TAG, OSMTablesFactory.WAY, OSMTablesFactory.WAY_NODE, 
             OSMTablesFactory.WAY_TAG, OSMTablesFactory.RELATION, OSMTablesFactory.RELATION_TAG, OSMTablesFactory.NODE_MEMBER, OSMTablesFactory.WAY_MEMBER, OSMTablesFactory.RELATION_MEMBER};
         for (String omsTableSuffix : omsTables) {
             String osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);
@@ -233,22 +229,20 @@ public class OSMParser extends DefaultHandler {
      * @throws SQLException
      */
     private void createOSMDatabaseModel(Connection connection, boolean isH2, TableLocation requestedTable, String osmTableName) throws SQLException {
-        String tagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.TAG, isH2);
-        tagPreparedStmt =  OSMTablesFactory.createTagTable(connection, tagTableName);
         String nodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE, isH2);
         nodePreparedStmt = OSMTablesFactory.createNodeTable(connection, nodeTableName, isH2);
         String nodeTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE_TAG, isH2);
-        nodeTagPreparedStmt = OSMTablesFactory.createNodeTagTable(connection, nodeTagTableName, tagTableName);
+        nodeTagPreparedStmt = OSMTablesFactory.createNodeTagTable(connection, nodeTagTableName);
         String wayTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY, isH2);
         wayPreparedStmt = OSMTablesFactory.createWayTable(connection, wayTableName, isH2);
         String wayTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY_TAG, isH2);
-        wayTagPreparedStmt = OSMTablesFactory.createWayTagTable(connection, wayTagTableName, tagTableName);
+        wayTagPreparedStmt = OSMTablesFactory.createWayTagTable(connection, wayTagTableName);
         String wayNodeTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY_NODE, isH2);
         wayNodePreparedStmt = OSMTablesFactory.createWayNodeTable(connection, wayNodeTableName);
         String relationTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION, isH2);
         relationPreparedStmt = OSMTablesFactory.createRelationTable(connection, relationTableName);
         String relationTagTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.RELATION_TAG, isH2);
-        relationTagPreparedStmt = OSMTablesFactory.createRelationTagTable(connection, relationTagTableName, tagTableName);
+        relationTagPreparedStmt = OSMTablesFactory.createRelationTagTable(connection, relationTagTableName);
         String nodeMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.NODE_MEMBER, isH2);
         nodeMemberPreparedStmt = OSMTablesFactory.createNodeMemberTable(connection, nodeMemberTableName);
         String wayMemberTableName = TableUtilities.caseIdentifier(requestedTable, osmTableName + OSMTablesFactory.WAY_MEMBER, isH2);
@@ -285,17 +279,6 @@ public class OSMParser extends DefaultHandler {
                 case RELATION:
                     insertTag = relationOSMElement.addTag(key, value);
                     break;
-            }
-            try{
-                if(insertTag && !insertedTagsKeys.contains(key)) {
-                    tagPreparedStmt.setObject(1, key);
-                    tagPreparedStmt.execute();
-                    insertedTagsKeys.add(key);
-                }
-            } catch (SQLException ex) {
-                    if(ex.getErrorCode() != ErrorCode.DUPLICATE_KEY_1 && !TAG_DUPLICATE_EXCEPTION.equals(ex.getSQLState())) {
-                        throw new SAXException("Cannot insert the tag :  {" + key + " , " + value + "}", ex);
-                    }
             }
         } else if (localName.compareToIgnoreCase("nd") == 0) {
             wayOSMElement.addRef(attributes.getValue("ref"));
