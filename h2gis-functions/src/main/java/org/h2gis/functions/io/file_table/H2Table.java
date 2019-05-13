@@ -75,8 +75,8 @@ public class H2Table extends TableBase {
      */
     public void init(Session session) {        
         IndexColumn indexColumn = new IndexColumn();
-        indexColumn.columnName = "key";
-        indexColumn.column = new Column("key", Value.LONG);
+        indexColumn.columnName = "pk";
+        indexColumn.column = new Column("pk", Value.LONG);
         indexes.add(0, new H2TableIndex(driver,this,this.getId(), indexColumn));
     }
 

@@ -157,7 +157,6 @@ import org.h2gis.functions.string.HexToVarBinary;
 import org.h2gis.functions.system.DoubleRange;
 import org.h2gis.functions.system.H2GISversion;
 import org.h2gis.functions.system.IntegerRange;
-import org.h2gis.utilities.GeometryTypeCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
