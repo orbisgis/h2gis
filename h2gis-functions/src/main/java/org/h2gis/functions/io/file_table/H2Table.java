@@ -34,9 +34,7 @@ import org.h2.result.Row;
 import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
-import org.h2.table.TableType;
 import org.h2.util.MathUtils;
-import org.h2.util.New;
 import org.h2.value.Value;
 import org.h2gis.api.FileDriver;
 import org.slf4j.Logger;
@@ -46,6 +44,9 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import org.h2.result.SortOrder;
+import org.h2.table.TableType;
+import static org.h2gis.functions.io.file_table.H2TableIndex.PK_COLUMN_NAME;
 
 /**
  * A table linked with a {@link org.h2gis.api.FileDriver}
@@ -54,22 +55,29 @@ import java.util.Comparator;
 public class H2Table extends TableBase {
     private FileDriver driver;
     private static final Logger LOG = LoggerFactory.getLogger(H2Table.class);
-    private final ArrayList<Index> indexes = New.arrayList();
+    private final ArrayList<Index> indexes = new ArrayList<>();
     private Column rowIdColumn;
 
     public H2Table(FileDriver driver, CreateTableData data) throws IOException {
         super(data);
-        indexes.add(new H2TableIndex(driver,this,this.getId(), data.columns.get(0),
+        IndexColumn indexColumn = new IndexColumn();
+        indexColumn.columnName = PK_COLUMN_NAME;
+        indexColumn.column = data.columns.get(0);
+        indexColumn.sortType = SortOrder.ASCENDING;
+        indexes.add(new H2TableIndex(driver,this,this.getId(),
                 data.schema.getUniqueIndexName(data.session, this,data.tableName + "." +
-                        data.columns.get(0).getName() + "_INDEX_")));
+                        data.columns.get(0).getName() + "_INDEX_"),indexColumn));
         this.driver = driver;
     }
     /**
      * Create row index
      * @param session database session
      */
-    public void init(Session session) {
-        indexes.add(0, new H2TableIndex(driver,this,this.getId()));
+    public void init(Session session) {        
+        IndexColumn indexColumn = new IndexColumn();
+        indexColumn.columnName = "key";
+        indexColumn.column = new Column("key", Value.LONG);
+        indexes.add(0, new H2TableIndex(driver,this,this.getId(), indexColumn));
     }
 
     @Override

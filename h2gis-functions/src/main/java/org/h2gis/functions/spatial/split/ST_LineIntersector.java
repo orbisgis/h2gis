@@ -47,7 +47,8 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
         addProperty(PROP_REMARKS, "Split an input geometry by another geometry. \n"
                 + "This function uses a more robust intersection algorithm than the ST_Split function.\n"
                 + "It computes the intersections between the line segments of the input geometries."
-                + "A collection of LineString is returned.");
+                + "A collection of LineString is returned.\n"
+                + "Note :  This function supports only 2D geometry (XY)");
     }
     
     @Override

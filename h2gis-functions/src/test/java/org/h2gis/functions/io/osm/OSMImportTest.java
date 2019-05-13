@@ -84,7 +84,7 @@ public class OSMImportTest {
         //NODE
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=462020579");
         assertTrue(rs.next());
-        assertEquals("POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
         rs.close();
 
         rs = st.executeQuery("SELECT * FROM OSM_NODE WHERE ID_NODE=670177172");
@@ -103,7 +103,7 @@ public class OSMImportTest {
 
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=3003052969");
         assertTrue(rs.next());
-        assertEquals("POINT (-2.121123 47.635276)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-2.121123 47.635276)", rs.getString("the_geom"));
         rs.close();
 
         rs = st.executeQuery("SELECT count(ID_RELATION) FROM OSM_RELATION");
@@ -130,7 +130,7 @@ public class OSMImportTest {
         //NODE
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=462020579");
         assertTrue(rs.next());
-        assertEquals("POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
         rs.close();
 
         rs = st.executeQuery("SELECT * FROM OSM_NODE WHERE ID_NODE=670177172");
@@ -149,7 +149,7 @@ public class OSMImportTest {
 
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=3003052969");
         assertTrue(rs.next());
-        assertEquals("POINT (-2.121123 47.635276)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-2.121123 47.635276)", rs.getString("the_geom"));
         rs.close();
 
         rs = st.executeQuery("SELECT count(ID_RELATION) FROM OSM_RELATION");
@@ -176,7 +176,7 @@ public class OSMImportTest {
         //NODE
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=462020579");
         assertTrue(rs.next());
-        assertEquals("POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
         rs.close();
 
         rs = st.executeQuery("SELECT * FROM OSM_NODE WHERE ID_NODE=670177172");
@@ -195,7 +195,7 @@ public class OSMImportTest {
 
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=3003052969");
         assertTrue(rs.next());
-        assertEquals("POINT (-2.121123 47.635276)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-2.121123 47.635276)", rs.getString("the_geom"));
         rs.close();
         
         rs = st.executeQuery("SELECT count(ID_RELATION) FROM OSM_RELATION");
@@ -224,7 +224,7 @@ public class OSMImportTest {
         //NODE
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=462020579");
         assertTrue(rs.next());
-        assertEquals("POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-2.1213541 47.6347657)", rs.getString("the_geom"));
         rs.close();
 
         rs = st.executeQuery("SELECT * FROM OSM_NODE WHERE ID_NODE=670177172");
@@ -243,7 +243,7 @@ public class OSMImportTest {
 
         rs = st.executeQuery("SELECT THE_GEOM FROM OSM_NODE WHERE ID_NODE=3003052969");
         assertTrue(rs.next());
-        assertEquals("POINT (-2.121123 47.635276)", rs.getString("the_geom"));
+        assertEquals("SRID=4326;POINT (-2.121123 47.635276)", rs.getString("the_geom"));
         rs.close();
 
         rs = st.executeQuery("SELECT count(ID_RELATION) FROM OSM_RELATION");

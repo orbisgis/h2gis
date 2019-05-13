@@ -32,6 +32,14 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.Calendar;
+import org.h2.value.Value;
+import org.h2.value.ValueBoolean;
+import org.h2.value.ValueDate;
+import org.h2.value.ValueDouble;
+import org.h2.value.ValueInt;
+import org.h2.value.ValueLong;
+import org.h2.value.ValueNull;
+import org.h2.value.ValueString;
 
 /**
  * A DbaseFileReader is used to read a dbase III format file. <br>
@@ -150,7 +158,7 @@ public class DbaseFileReader {
                 return bytes;
         }
 
-        public Object getFieldValue(int row, int column) throws IOException {
+        public Value getFieldValue(int row, int column) throws IOException {
                 int fieldPosition = getPositionFor(row, column);
                 int fieldLength = getLengthFor(column);
                 byte[] fieldBytes = getBytes(fieldPosition, fieldLength);
@@ -179,10 +187,10 @@ public class DbaseFileReader {
                 return fieldOffset + recordOffset;
         }
 
-        private Object readObject(final int fieldOffset, final int fieldNum) throws IOException {
+        private Value readObject(final int fieldOffset, final int fieldNum) throws IOException {
                 final char type = fieldTypes[fieldNum];
                 final int fieldLen = fieldLengths[fieldNum];
-                Object object = null;
+                Value object = null;
 
                 if (fieldLen > 0) {
                         switch (type) {
@@ -195,13 +203,13 @@ public class DbaseFileReader {
                                                 case 'T':
                                                 case 'Y':
                                                 case 'y':
-                                                        object = true;
+                                                        object = ValueBoolean.TRUE;
                                                         break;
                                                 case 'f':
                                                 case 'F':
                                                 case 'N':
                                                 case 'n':
-                                                        object = false;
+                                                        object = ValueBoolean.FALSE;
                                                         break;
                                                 default:
 
@@ -244,13 +252,13 @@ public class DbaseFileReader {
                                         // set up the new indexes for start and end
 
                                         // this prevents one array copy (the one made by String)
-                                        object  = new String(charBuffer.array(), start, end + 1 - start);
+                                        object  = ValueString.get(new String(charBuffer.array(), start, end + 1 - start));
                                         break;
                                 // (D)date (Date)
                                 case 'd':
                                 case 'D':
                                         if (charBuffer.toString().equals("00000000")) {
-                                                object = null;
+                                                object = ValueNull.INSTANCE;
                                         } else {
                                                 try {
                                                         String tempString = charBuffer.subSequence(fieldOffset,
@@ -268,9 +276,9 @@ public class DbaseFileReader {
                                                             cal.set(Calendar.YEAR, tempYear);
                                                             cal.set(Calendar.MONTH, tempMonth);
                                                             cal.set(Calendar.DAY_OF_MONTH, tempDay);
-                                                            object = cal.getTime();
+                                                            object = ValueNull.INSTANCE;//ValueDate.get(cal.getTime());
                                                         } else {
-                                                            object = null;
+                                                            object = ValueNull.INSTANCE;
                                                         }
                                                 } catch (NumberFormatException nfe) {
                                                         // todo: use progresslistener, this isn't a grave error.
@@ -285,7 +293,7 @@ public class DbaseFileReader {
 
                                                     String numberString = extractNumberString(charBuffer, fieldOffset,
                                                             fieldLen);
-                                                        object = Integer.parseInt(numberString);
+                                                        object = ValueInt.get(Integer.parseInt(numberString));
                                                         // parsing successful --> exit
                                                         break;
                                                 }
@@ -304,7 +312,7 @@ public class DbaseFileReader {
 
                                                     String numberString = extractNumberString(charBuffer, fieldOffset,
                                                             fieldLen);
-                                                        object = Long.parseLong(numberString);
+                                                        object = ValueLong.get(Long.parseLong(numberString));
                                                         // parsing successful --> exit
                                                         break;
                                                 } catch (NumberFormatException e2) {
@@ -324,14 +332,14 @@ public class DbaseFileReader {
                                             fieldLen);
                                         try {
                                                 if(!numberString.trim().isEmpty()) {
-                                                    object = Double.parseDouble(numberString);
+                                                    object = ValueDouble.get(Double.parseDouble(numberString));
                                                 } else {
                                                     object = null;
                                                 }
                                         } catch (NumberFormatException e) {
                                             // May be the decimal operator is exotic
                                             if(numberString.contains(",")) {
-                                                object = Double.parseDouble(numberString.replace(",","."));
+                                                object = ValueDouble.get(Double.parseDouble(numberString.replace(",",".")));
                                             }
                                         }
                                         break;

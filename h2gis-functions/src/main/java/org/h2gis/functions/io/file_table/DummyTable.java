@@ -27,9 +27,11 @@ import org.h2.index.IndexType;
 import org.h2.result.Row;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
-import org.h2.table.TableType;
 
 import java.util.ArrayList;
+import org.h2.table.Column;
+import org.h2.table.TableType;
+import org.h2.value.Value;
 
 /**
  * When linked files are not available, this table defines an empty table
@@ -81,12 +83,12 @@ public class DummyTable extends TableBase {
 
     @Override
     public Index getScanIndex(Session session) {
-        return new DummyIndex(this, getId());
+        return createIndex();
     }
 
     @Override
-    public Index getUniqueIndex() {
-        return new DummyIndex(this, getId());
+    public Index getUniqueIndex() { 
+        return createIndex();
     }
 
     @Override
@@ -136,5 +138,16 @@ public class DummyTable extends TableBase {
 
     @Override
     public void checkRename() {
+    }
+    
+    /**
+     * Create 
+     * @return 
+     */
+    private Index createIndex(){
+        IndexColumn indexColumn = new IndexColumn();
+        indexColumn.columnName = "key";
+        indexColumn.column = new Column("key", Value.LONG);
+        return new DummyIndex(this, getId(), indexColumn);
     }
 }

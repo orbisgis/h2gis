@@ -20,22 +20,20 @@
 
 package org.h2gis.functions.io.shp;
 
-import org.h2.util.StringUtils;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.io.DriverManager;
-import org.h2gis.functions.io.dbf.DBFRead;
-import org.h2gis.functions.io.dbf.DBFWrite;
-import org.h2gis.functions.io.file_table.H2TableIndex;
-import org.h2gis.functions.io.shp.internal.SHPDriver;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTWriter;
+import org.h2.util.StringUtils;
+import org.h2gis.functions.io.DriverManager;
+import org.h2gis.functions.io.file_table.H2TableIndex;
+import org.h2gis.functions.io.shp.internal.SHPDriver;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,6 +41,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2.value.Value;
+import org.h2gis.functions.io.dbf.DBFRead;
+import org.h2gis.functions.io.dbf.DBFWrite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -75,7 +76,7 @@ public class SHPImportExportTest {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/area_export.shp");
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
+        stat.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
         stat.execute("insert into area values(2, 'POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))')");
         // Create a shape file using table area
@@ -87,13 +88,13 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(1);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[0]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[0].getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", ((Geometry)row[1]).toText());
+        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))",row[1].getObject().toString());
         row = shpDriver.getRow(1);
-        assertEquals(2, row[0]);
-        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", ((Geometry)row[1]).toText());
+        assertEquals(2, row[0].getInt());
+        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", row[1].getObject().toString());
     }
 
     @Test
@@ -101,7 +102,7 @@ public class SHPImportExportTest {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/area_export1.shp");
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(the_geom POLYGON, idarea int primary key)");
+        stat.execute("create table area(the_geom GEOMETRY(POLYGON), idarea int primary key)");
         stat.execute("insert into area values('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 1)");
         stat.execute("insert into area values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
         // Create a shape file using table area
@@ -113,13 +114,13 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(0);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[1]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[1].getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", ((Geometry)row[0]).toText());
+        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", row[0].getObject().toString());
         row = shpDriver.getRow(1);
-        assertEquals(2, row[1]);
-        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", ((Geometry)row[0]).toText());
+        assertEquals(2, row[1].getInt());
+        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", row[0].getObject().toString());
     }
 
     @Test
@@ -200,13 +201,13 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(0);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[1]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[1].getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))", ((Geometry)row[0]).toText());
+        assertEquals("MULTIPOLYGON (((-10 109, 90 109, 90 9, -10 9, -10 109)))",row[0].getObject().toString());
         row = shpDriver.getRow(1);
-        assertEquals(2, row[1]);
-        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", ((Geometry)row[0]).toText());
+        assertEquals(2, row[1].getInt());
+        assertEquals("MULTIPOLYGON (((90 109, 190 109, 190 9, 90 9, 90 109)))", row[0].getObject().toString());
     }
 
     @Test(expected = SQLException.class)
@@ -234,9 +235,12 @@ public class SHPImportExportTest {
         stat.execute("DROP TABLE IF EXISTS myshp");
         DriverFunction manager = new DriverManager();
         manager.importFile(connection, "MYSHP", shpFile, new EmptyProgressVisitor());
-        try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom)) from myshp")) {
+        ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom)) from myshp");
+        try {
             assertTrue(rs.next());
             assertEquals(20000,rs.getDouble(1),1e-6);
+        } finally {
+            rs.close();
         }
     }
 
@@ -256,7 +260,7 @@ public class SHPImportExportTest {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/line_export.shp");
         stat.execute("DROP TABLE IF EXISTS LINE");
-        stat.execute("create table LINE(idarea int primary key, the_geom LINESTRING)");
+        stat.execute("create table LINE(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
         stat.execute("insert into LINE values(1, 'LINESTRING (-10 109, 90 109, 90 9, -10 9)')");
         stat.execute("insert into LINE values(2, 'LINESTRING (90 109, 190 109, 190 9, 90 9)')");
         // Create a shape file using table area
@@ -268,13 +272,13 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(1);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[0]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[0].getInt());
         // The driver can not create POLYGON
-        assertEquals("MULTILINESTRING ((-10 109, 90 109, 90 9, -10 9))", ((Geometry)row[1]).toText());
+        assertEquals("MULTILINESTRING ((-10 109, 90 109, 90 9, -10 9))",row[1].getObject().toString());
         row = shpDriver.getRow(1);
-        assertEquals(2, row[0]);
-        assertEquals("MULTILINESTRING ((90 109, 190 109, 190 9, 90 9))", ((Geometry)row[1]).toText());
+        assertEquals(2, row[0].getInt());
+        assertEquals("MULTILINESTRING ((90 109, 190 109, 190 9, 90 9))", row[1].getObject().toString());
     }
 
     @Test
@@ -330,8 +334,11 @@ public class SHPImportExportTest {
         stat.execute("DROP TABLE IF EXISTS myshp");
         SHPDriverFunction driverFunction = new SHPDriverFunction();
         driverFunction.importFile(connection, "MYSHP", shpFile, new EmptyProgressVisitor());
-        try (ResultSet rs = stat.executeQuery("select * from myshp")) {
+        ResultSet rs = stat.executeQuery("select * from myshp");
+        try {
             assertEquals(4,rs.findColumn("NATURAL"));
+        } finally {
+            rs.close();
         }
     }
 
@@ -340,7 +347,7 @@ public class SHPImportExportTest {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/area_export5.shp");
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
+        stat.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON Z))");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
         stat.execute("insert into area values(2, 'POLYGON ((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3))')");
         // Create a shape file using table area
@@ -352,14 +359,14 @@ public class SHPImportExportTest {
         shpDriver.setGeometryFieldIndex(1);
         assertEquals(2, shpDriver.getFieldCount());
         assertEquals(2, shpDriver.getRowCount());
-        Object[] row = shpDriver.getRow(0);
-        assertEquals(1, row[0]);
+        Value[] row = shpDriver.getRow(0);
+        assertEquals(1, row[0].getInt());
         // The driver can not create POLYGON
         WKTWriter toText = new WKTWriter(3);
-        assertEquals("MULTIPOLYGON (((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", toText.write((Geometry)row[1]));
+        assertEquals("MULTIPOLYGON (((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", toText.write((Geometry) row[1].getObject()));
         row = shpDriver.getRow(1);
-        assertEquals(2, row[0]);
-        assertEquals("MULTIPOLYGON (((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", toText.write((Geometry)row[1]));
+        assertEquals(2, row[0].getInt());
+        assertEquals("MULTIPOLYGON (((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", toText.write((Geometry)row[1].getObject()));
     }
     
     @Test
@@ -367,7 +374,7 @@ public class SHPImportExportTest {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/area_export6.shp");
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
+        stat.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON Z))");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5))')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export6.shp', 'AREA')");
@@ -375,18 +382,18 @@ public class SHPImportExportTest {
         assertTrue(shpFile.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_AREA;");
         stat.execute("CALL SHPRead('target/area_export6.shp', 'IMPORT_AREA')");
-        try (ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_AREA;")) {
-            res.next();
-            Geometry geom = (Geometry) res.getObject(1);
-            Coordinate[] coords = geom.getCoordinates();
-            int count = 0;
-            for (Coordinate coord : coords) {
-                if (coord.z == 5) {
-                    count++;
-                }
+        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_AREA;");
+        res.next();
+        Geometry geom = (Geometry) res.getObject(1);
+        Coordinate[] coords = geom.getCoordinates();
+        int count = 0;
+        for (Coordinate coord : coords) {
+            if (coord.z == 5) {
+                count++;
             }
-            assertEquals(count, coords.length);
         }
+        assertEquals(count, coords.length);
+        res.close();
 
     }
 
@@ -395,7 +402,7 @@ public class SHPImportExportTest {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/punctual_export.shp");
         stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
-        stat.execute("create table punctual(idarea int primary key, the_geom POINT)");
+        stat.execute("create table punctual(idarea int primary key, the_geom GEOMETRY(POINT Z))");
         stat.execute("insert into punctual values(1, 'POINT(-10 109 5)')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/punctual_export.shp', 'PUNCTUAL')");
@@ -403,12 +410,12 @@ public class SHPImportExportTest {
         assertTrue(shpFile.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
         stat.execute("CALL SHPRead('target/punctual_export.shp', 'IMPORT_PUNCTUAL')");
-        try (ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_PUNCTUAL;")) {
-            res.next();
-            Geometry geom = (Geometry) res.getObject(1);
-            Coordinate coord = geom.getCoordinate();
-            assertEquals(coord.z, 5, 10E-1);
-        }
+        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_PUNCTUAL;");
+        res.next();
+        Geometry geom = (Geometry) res.getObject(1);
+        Coordinate coord = geom.getCoordinate();
+        assertEquals(coord.z, 5, 10E-1);
+        res.close();
     }
     
      @Test
@@ -416,22 +423,22 @@ public class SHPImportExportTest {
         Statement stat = connection.createStatement();
         File shpFile = new File("target/lineal_export.shp");
         stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+        stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING Z))");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 6 0)')");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/lineal_export.shp', 'LINEAL')");
         // Read this shape file to check values
         assertTrue(shpFile.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
         stat.execute("CALL SHPRead('target/lineal_export.shp', 'IMPORT_LINEAL')");
-        try (ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_LINEAL;")) {
-            res.next();
-            Geometry geom = (Geometry) res.getObject(1);
-            Coordinate[] coords = geom.getCoordinates();
-            assertEquals(coords[0].z, 5, 10E-1);
-            //Since the 'NaN' DOUBLE values for Z coordinates is invalid in a shapefile, it is converted to '0.0'.
-            assertEquals(coords[1].z, 0, 10E-1);
-        }
+        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_LINEAL;");
+        res.next();
+        Geometry geom = (Geometry) res.getObject(1);
+        Coordinate[] coords = geom.getCoordinates();
+        assertEquals(coords[0].z, 5, 10E-1);
+        //Since the 'NaN' DOUBLE values for Z coordinates is invalid in a shapefile, it is converted to '0.0'. 
+        assertEquals(coords[1].z, 0, 10E-1);
+        res.close();
     }
     
     @Test(expected = SQLException.class)
@@ -505,10 +512,10 @@ public class SHPImportExportTest {
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export9.shp', 'AREA')");
         stat.execute("CALL SHPRead('target/area_export9.shp', 'AREA_READ')");
-        try (ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM AREA_READ;")) {
-            res.next();
-            assertTrue(res.getInt(1)==4326);
-        }        
+        ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM AREA_READ;");
+        res.next();
+        assertTrue(res.getInt(1)==4326);
+        res.close();        
     }
     
     @Test
@@ -531,10 +538,10 @@ public class SHPImportExportTest {
         stat.execute("CALL SHPWrite('target/area_export11.shp', 'AREA')"); 
         new File("target/area_export.prj").createNewFile();
         stat.execute("CALL SHPRead('target/area_export11.shp', 'AREA_READ')");
-        try (ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM AREA_READ;")) {
-            res.next();
-            assertTrue(res.getInt(1)==0);
-        }  
+        ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM AREA_READ;");
+        res.next();
+        assertTrue(res.getInt(1)==0);
+        res.close();  
     }
     
     @Test(expected = SQLException.class)
@@ -555,11 +562,11 @@ public class SHPImportExportTest {
         stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))'), 1, 'breton')"); 
         stat.execute("CALL DBFWrite('target/area_export12.dbf', 'AREA')"); 
         stat.execute("CALL DBFRead('target/area_export12.dbf', 'AREA_READ')");
-        try (ResultSet res = stat.executeQuery("SELECT * FROM AREA_READ;")) {
-            res.next();
-            assertTrue(res.getInt(2)==1);
-            assertTrue(res.getString(3).equals("breton"));
-        }  
+        ResultSet res = stat.executeQuery("SELECT * FROM AREA_READ;");
+        res.next();
+        assertTrue(res.getInt(2)==1);
+        assertTrue(res.getString(3).equals("breton"));        
+        res.close();  
     }
     
     @Test
@@ -571,11 +578,11 @@ public class SHPImportExportTest {
                 + "ST_GEOMFROMTEXT('POINT (-10 109)'), 'breton')"); 
         stat.execute("CALL DBFWrite('target/area_export13.dbf', 'AREA')"); 
         stat.execute("CALL DBFRead('target/area_export13.dbf', 'AREA_READ')");
-        try (ResultSet res = stat.executeQuery("SELECT * FROM AREA_READ;")) {
-            res.next();
-            assertTrue(res.getInt(2)==1);
-            assertTrue(res.getString(3).equals("breton"));
-        }  
+        ResultSet res = stat.executeQuery("SELECT * FROM AREA_READ;");
+        res.next();
+        assertTrue(res.getInt(2)==1);
+        assertTrue(res.getString(3).equals("breton"));        
+        res.close();  
     }
     
      @Test
@@ -588,10 +595,10 @@ public class SHPImportExportTest {
         stat.execute("CALL SHPWrite('target/area_export14.shp', 'AREA')"); 
         new File("target/area_export.prj").createNewFile();
         stat.execute("CALL SHPRead('target/area_export14.shp', 'AREA_READ')");
-        try (ResultSet res = stat.executeQuery("SELECT * FROM AREA_READ;")) {
-            res.next();
-            assertTrue(res.getInt(3)==1);
-        }  
+        ResultSet res = stat.executeQuery("SELECT * FROM AREA_READ;");
+        res.next();        
+        assertTrue(res.getInt(3)==1);
+        res.close();  
     }
     
     @Test
@@ -604,19 +611,19 @@ public class SHPImportExportTest {
         st.execute("CALL SHPWrite('target/river.shp', 'WATERNETWORK')");
         st.execute("CALL SHPRead('target/test_river.shp', 'RIVER');");
 
-        try ( // Check content
-                ResultSet rs = st.executeQuery("SELECT * FROM RIVER")) {
-            assertTrue(rs.next());
-            assertEquals(1, rs.getInt(H2TableIndex.PK_COLUMN_NAME));
-            assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))", rs.getString("the_geom"));
-            assertEquals("river", rs.getString("type_axe"));
-            assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
-            assertEquals(1, rs.getInt("GID"));
-            assertTrue(rs.next());
-            assertEquals("ditch", rs.getString("type_axe"));
-            assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
-            assertEquals(2, rs.getInt("GID"));
-        }
+        // Check content
+        ResultSet rs = st.executeQuery("SELECT * FROM RIVER");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(H2TableIndex.PK_COLUMN_NAME));
+        assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))", rs.getString("the_geom"));
+        assertEquals("river", rs.getString("type_axe"));
+        assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
+        assertEquals(1, rs.getInt("GID"));
+        assertTrue(rs.next());
+        assertEquals("ditch", rs.getString("type_axe"));
+        assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
+        assertEquals(2, rs.getInt("GID"));
+        rs.close();
     }
     
     
@@ -629,10 +636,10 @@ public class SHPImportExportTest {
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export_srid.shp', 'AREA')");
         stat.execute("CALL FILE_TABLE('target/area_export_srid.shp', 'AREA_SRID');");
-        try (ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM AREA_SRID;")) {
-            res.next();
-            assertTrue(res.getInt(1)==4326);
-        }        
+        ResultSet res = stat.executeQuery("SELECT ST_SRID(THE_GEOM) FROM AREA_SRID;");
+        res.next();
+        assertTrue(res.getInt(1)==4326);
+        res.close();        
     }
     
     @Test
@@ -643,19 +650,19 @@ public class SHPImportExportTest {
         st.execute("CALL SHPRead(" + path + ", 'WATERNETWORK');");
         st.execute("CALL SHPWrite('target/test_river.shp', '(select * from WATERNETWORK)')");
         st.execute("CALL SHPRead('target/test_river.shp', 'RIVER');");
-        try ( // Check content
-                ResultSet rs = st.executeQuery("SELECT * FROM RIVER")) {
-            assertTrue(rs.next());
-            assertEquals(1, rs.getInt(H2TableIndex.PK_COLUMN_NAME));
-            assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))", rs.getString("the_geom"));
-            assertEquals("river", rs.getString("type_axe"));
-            assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
-            assertEquals(1, rs.getInt("GID"));
-            assertTrue(rs.next());
-            assertEquals("ditch", rs.getString("type_axe"));
-            assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
-            assertEquals(2, rs.getInt("GID"));
-        }
+        // Check content
+        ResultSet rs = st.executeQuery("SELECT * FROM RIVER");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(H2TableIndex.PK_COLUMN_NAME));
+        assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))", rs.getString("the_geom"));
+        assertEquals("river", rs.getString("type_axe"));
+        assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
+        assertEquals(1, rs.getInt("GID"));
+        assertTrue(rs.next());
+        assertEquals("ditch", rs.getString("type_axe"));
+        assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
+        assertEquals(2, rs.getInt("GID"));
+        rs.close();
     }
     
     @Test
@@ -666,11 +673,11 @@ public class SHPImportExportTest {
         st.execute("CALL SHPRead(" + path + ", 'WATERNETWORK');");
         st.execute("CALL SHPWrite('target/test_river.shp', '(select * from WATERNETWORK limit 1)')");
         st.execute("CALL SHPRead('target/test_river.shp', 'RIVER');");
-        try ( // Check content
-                ResultSet rs = st.executeQuery("SELECT count(*) FROM RIVER")) {
-            assertTrue(rs.next());
-            assertEquals(1, rs.getInt(1));
-        }
+        // Check content
+        ResultSet rs = st.executeQuery("SELECT count(*) FROM RIVER");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getInt(1));        
+        rs.close();
     }   
     
     
@@ -688,43 +695,13 @@ public class SHPImportExportTest {
         assertTrue(shpFile.exists());
         
         stat.execute("CALL SHPRead('target/area_export_characters.shp', 'table_characters')");
-        try ( // Check content
-                ResultSet rs = stat.executeQuery("SELECT * FROM table_characters")) {
-            assertTrue(rs.next());
-            assertEquals("Forêt", rs.getString("cover"));
-            assertTrue(rs.next());
-            assertEquals("Zone arborée", rs.getString("cover"));
-        }
-    }
-    
-    @Test(expected = SQLException.class)
-    public void exportImportFileWithSpace() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        File shpFile = new File("target/lineal export.shp");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL SHPWrite('target/lineal export.shp', 'LINEAL')");
-        // Read this shape file to check values
-        assertTrue(shpFile.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
-        stat.execute("CALL SHPRead('target/lineal export.shp')");
-    }
-    
-    @Test(expected = SQLException.class)
-    public void exportImportFileWithDot() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        File shpFile = new File("target/lineal.export.shp");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL SHPWrite('target/lineal.export.shp', 'LINEAL')");
-        // Read this shape file to check values
-        assertTrue(shpFile.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
-        stat.execute("CALL SHPRead('target/lineal.export.shp')");
+        // Check content
+        ResultSet rs = stat.executeQuery("SELECT * FROM table_characters");
+        assertTrue(rs.next());
+        assertEquals("Forêt", rs.getString("cover"));
+        assertTrue(rs.next());
+        assertEquals("Zone arborée", rs.getString("cover"));
+        rs.close();
     }
     
 }

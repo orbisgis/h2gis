@@ -110,7 +110,7 @@ public class BasicTest {
             GeometryFactory geometryFactory = new GeometryFactory();
             Geometry geometry = geometryFactory.createPoint(new Coordinate(0,0));
             assertEquals("H2 does not use the same JTS ! Expected:\n" + Geometry.class.getName() + "\n but got:\n"
-                    + DataType.getTypeClassName(DataType.getTypeFromClass(geometry.getClass())) + "\n", Value.GEOMETRY,
+                    + DataType.getTypeClassName(DataType.getTypeFromClass(geometry.getClass()), true) + "\n", Value.GEOMETRY,
                     DataType.getTypeFromClass(geometry.getClass()));
         }
 
@@ -158,7 +158,7 @@ public class BasicTest {
         String catalog = connection.getCatalog();
         st.execute("drop schema if exists blah");
         st.execute("create schema blah");
-        st.execute("create table blah.testSFSUtilities(id integer, the_geom point)");
+        st.execute("create table blah.testSFSUtilities(id integer, the_geom GEOMETRY(point))");
         List<String> geomFields = SFSUtilities.getGeometryFields(connection, new TableLocation(catalog, "blah", "testSFSUtilities"));
         assertEquals(1, geomFields.size());
         assertEquals("THE_GEOM", geomFields.get(0));
@@ -183,7 +183,7 @@ public class BasicTest {
         ResultSet rs = st.executeQuery("SELECT * from POINT3D;");
         SFSUtilities.getFirstGeometryFieldName(rs);
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 }

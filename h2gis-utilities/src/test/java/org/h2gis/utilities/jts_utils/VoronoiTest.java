@@ -152,7 +152,7 @@ public class VoronoiTest {
         // Generate voronoi polygons with boundaries
         Geometry voronoiPoly = voronoi.generateVoronoi(2);
         assertEquals(6, voronoiPoly.getNumGeometries());
-        assertGeometryEquals(mesh.getEnvelope().toString(), voronoiPoly.getEnvelope());
+        assertTrue(mesh.getEnvelope().equals(voronoiPoly.getEnvelope()));
         // Generate voronoi lines with boundaries
         Geometry voronoiLines = voronoi.generateVoronoi(1);
         assertEquals(15, voronoiLines.getNumGeometries());

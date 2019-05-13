@@ -101,7 +101,7 @@ public class SerializationTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT boundary::TEXT FROM named_places WHERE name = 'Goose Island';");
         assertTrue(rs.next());
-        assertEquals("POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))", rs.getString(1));
+        assertEquals("SRID=101;POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))", rs.getString(1));
     }
 
     /**
@@ -114,7 +114,7 @@ public class SerializationTest {
         ResultSet rs = st.executeQuery("SELECT ST_Union(shore, boundary) FROM lakes, named_places " +
                 "WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Goose Island'");
         assertTrue(rs.next());
-        assertEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
+        assertEquals("SRID=101;POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
     }
 
     @Test

@@ -65,7 +65,7 @@ fid INTEGER NOT NULL PRIMARY KEY,
 
 name CHARACTER VARYING(64),
 
-shore POLYGON);
+shore GEOMETRY(POLYGON));
 
 -- Road Segments
 
@@ -79,7 +79,7 @@ aliases CHARACTER VARYING(64),
 
 num_lanes INTEGER,
 
-centerline LINESTRING);
+centerline GEOMETRY(LINESTRING));
 
 -- Divided Routes
 
@@ -91,7 +91,7 @@ name CHARACTER VARYING(64),
 
 num_lanes INTEGER,
 
-centerlines MULTILINESTRING);
+centerlines GEOMETRY(MULTILINESTRING));
 
 -- Forests
 
@@ -101,7 +101,7 @@ fid INTEGER NOT NULL PRIMARY KEY,
 
 name CHARACTER VARYING(64),
 
-boundary MULTIPOLYGON);
+boundary GEOMETRY(MULTIPOLYGON));
 
 -- Bridges
 
@@ -111,7 +111,7 @@ fid INTEGER NOT NULL PRIMARY KEY,
 
 name CHARACTER VARYING(64),
 
-position POINT);
+position GEOMETRY(POINT));
 
 -- Streams
 
@@ -121,7 +121,7 @@ fid INTEGER NOT NULL PRIMARY KEY,
 
 name CHARACTER VARYING(64),
 
-centerline LINESTRING);
+centerline GEOMETRY(LINESTRING));
 
 -- Buildings
 
@@ -131,9 +131,9 @@ fid INTEGER NOT NULL PRIMARY KEY,
 
 address CHARACTER VARYING(64),
 
-position POINT,
+position GEOMETRY(POINT),
 
-footprint POLYGON);
+footprint GEOMETRY(POLYGON));
 
 -- Ponds
 CREATE TABLE ponds (
@@ -144,7 +144,7 @@ name CHARACTER VARYING(64),
 
 type CHARACTER VARYING(64),
 
-shores MULTIPOLYGON);
+shores GEOMETRY(MULTIPOLYGON));
 
 -- Named Places
 
@@ -154,7 +154,7 @@ fid INTEGER NOT NULL PRIMARY KEY,
 
 name CHARACTER VARYING(64),
 
-boundary POLYGON);
+boundary GEOMETRY(POLYGON));
 
 -- Map Neatline
 
@@ -162,7 +162,7 @@ CREATE TABLE map_neatlines (
 
 fid INTEGER NOT NULL PRIMARY KEY,
 
-neatline POLYGON);
+neatline GEOMETRY(POLYGON));
 
 -- Spatial Reference System
 -- -- !#@ ADAPTATION BEGIN

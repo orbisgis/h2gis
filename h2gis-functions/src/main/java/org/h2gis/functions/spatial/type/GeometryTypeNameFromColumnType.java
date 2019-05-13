@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -25,33 +25,30 @@ import org.h2gis.utilities.SFSUtilities;
 
 
 /**
- * Parse the constraint and return the Geometry type name.
+ * Parse the column type and return the Geometry type name.
  *
- * Since H21.4.198, {@link GeometryTypeNameFromColumnType} should be used.
- *
- * @author Nicolas Fortin
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
-@Deprecated
-public class GeometryTypeNameFromConstraint extends DeterministicScalarFunction {
+public class GeometryTypeNameFromColumnType extends DeterministicScalarFunction {
 
-    public GeometryTypeNameFromConstraint() {
-        addProperty(PROP_REMARKS, "Parse the constraint and return the Geometry type name");
-        addProperty(PROP_NAME, "_GeometryTypeNameFromConstraint");
+    public GeometryTypeNameFromColumnType() {
+        addProperty(PROP_REMARKS, "Parse the column type and return the Geometry type name");
+        addProperty(PROP_NAME, "_GeometryTypeNameFromColumnType");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "getGeometryTypeNameFromConstraint";
+        return "getGeometryTypeNameFromColumnType";
     }
 
     /**
-     * Parse the constraint and return the Geometry type name.
-     * @param constraint Constraint on geometry type
-     * @param numericPrecision of the geometry type
+     * Parse the column type and return the Geometry type name.
+     * @param columnType column type
      * @return Geometry type
      */
-    public static String getGeometryTypeNameFromConstraint(String constraint, int numericPrecision) {
-        int geometryTypeCode = GeometryTypeFromConstraint.geometryTypeFromConstraint(constraint, numericPrecision);
+    public static String getGeometryTypeNameFromColumnType(String columnType) {
+        int geometryTypeCode = GeometryTypeFromColumnType.geometryTypeFromColumnType(columnType);
         return SFSUtilities.getGeometryTypeNameFromCode(geometryTypeCode);
     }
 }

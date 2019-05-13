@@ -66,7 +66,7 @@ public class GraphCreatorTest {
 //         \ v| /  7:2     >v|
 //          > 3 -----------> 5
 //               CORMEN
-        st.execute("CREATE TABLE cormen(road LINESTRING, id INT AUTO_INCREMENT PRIMARY KEY, weight DOUBLE, edge_orientation INT);" +
+        st.execute("CREATE TABLE cormen(road GEOMETRY(LINESTRING), id INT AUTO_INCREMENT PRIMARY KEY, weight DOUBLE, edge_orientation INT);" +
                 "INSERT INTO cormen VALUES "
                 + "('LINESTRING (0 1, 1 2)', DEFAULT, 10.0, 1),"
                 + "('LINESTRING (1 2, 2 2)', DEFAULT, 1.0, -1),"
@@ -81,7 +81,7 @@ public class GraphCreatorTest {
 
         // In order to not depend on ST_Graph, we simply simulate the output of ST_Graph
         // on the Cormen graph.
-        st.execute("CREATE TABLE cormen_nodes(node_id int auto_increment primary key, the_geom point);" +
+        st.execute("CREATE TABLE cormen_nodes(node_id int auto_increment primary key, the_geom GEOMETRY(point));" +
                 "INSERT INTO cormen_nodes(the_geom) VALUES "
                 + "('POINT (0 1)'),"
                 + "('POINT (1 2)'),"

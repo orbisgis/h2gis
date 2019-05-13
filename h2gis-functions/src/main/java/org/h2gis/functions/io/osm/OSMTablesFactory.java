@@ -104,11 +104,7 @@ public class OSMTablesFactory {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(nodeTableName);
             sb.append("(ID_NODE BIGINT PRIMARY KEY,  THE_GEOM ");
-            if(isH2) {
-                sb.append("POINT CHECK ST_SRID(THE_GEOM)=4326");
-            } else {
-                sb.append("GEOMETRY(POINT, 4326)");
-            }
+            sb.append("GEOMETRY(POINT, 4326)");
             sb.append(",ELE DOUBLE PRECISION,"
                     + "USER_NAME VARCHAR,"
                     + "UID BIGINT,"

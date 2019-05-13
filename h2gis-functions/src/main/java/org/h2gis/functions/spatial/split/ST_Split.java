@@ -48,7 +48,8 @@ public class ST_Split extends DeterministicScalarFunction {
                 + "- split a polygon or a multipolygon by a linestring,\n"
                 + "- split a linestring or a multilinestring by a linestring,\n"
                 + "- split a linestring or a multilinestring by a point. At this stage a double tolerance\n"
-                + "can be used to snap the point.");
+                + "can be used to snap the point.\n"
+                + "Note :  XYZ dimension is only supported when the linestring or a multilinestring is splited by a point");
     }
 
     @Override

@@ -77,7 +77,7 @@ public class ConstraintTest {
     public void LineStringInLineString() throws Exception {
         Statement st = connection.createStatement();
         st.execute("drop table test IF EXISTS");
-        st.execute("create table test (the_geom LINESTRING)");
+        st.execute("create table test (the_geom GEOMETRY(LINESTRING))");
         st.execute("insert into test values (ST_LineFromText('LINESTRING( 0 18, 10 21, 16 23, 28 26, 44 31 )' ,101))");
         ResultSet rs = st.executeQuery("SELECT count(*) FROM test");
         assertTrue(rs.next());
@@ -92,7 +92,7 @@ public class ConstraintTest {
     public void LineStringInPoint() throws Exception {
         Statement st = connection.createStatement();
         st.execute("drop table test IF EXISTS");
-        st.execute("create table test (the_geom POINT)");
+        st.execute("create table test (the_geom GEOMETRY(POINT))");
         st.execute("insert into test values (ST_LineFromText('LINESTRING( 0 18, 10 21, 16 23, 28 26, 44 31 )' ,101))");
     }
 
@@ -106,17 +106,17 @@ public class ConstraintTest {
         st.execute("drop table T_GEOMETRY IF EXISTS");
         st.execute("create table T_GEOMETRY (the_geom GEOMETRY)");
         st.execute("drop table T_POINT IF EXISTS");
-        st.execute("create table T_POINT (the_geom POINT)");
+        st.execute("create table T_POINT (the_geom GEOMETRY(POINT))");
         st.execute("drop table T_LINE IF EXISTS");
-        st.execute("create table T_LINE (the_geom LINESTRING)");
+        st.execute("create table T_LINE (the_geom GEOMETRY(LINESTRING))");
         st.execute("drop table T_POLYGON IF EXISTS");
-        st.execute("create table T_POLYGON (the_geom POLYGON)");
+        st.execute("create table T_POLYGON (the_geom GEOMETRY(POLYGON))");
         st.execute("drop table T_MPOINT IF EXISTS");
-        st.execute("create table T_MPOINT (the_geom MULTIPOINT)");
+        st.execute("create table T_MPOINT (the_geom GEOMETRY(MULTIPOINT))");
         st.execute("drop table T_MLINE IF EXISTS");
-        st.execute("create table T_MLINE (the_geom MULTILINESTRING)");
+        st.execute("create table T_MLINE (the_geom GEOMETRY(MULTILINESTRING))");
         st.execute("drop table T_MPOLYGON IF EXISTS");
-        st.execute("create table T_MPOLYGON (the_geom MULTIPOLYGON)");
+        st.execute("create table T_MPOLYGON (the_geom GEOMETRY(MULTIPOLYGON))");
 
         ResultSet rs = st.executeQuery("select * from GEOMETRY_COLUMNS where F_TABLE_NAME in ('T_GEOMETRY','T_POINT','T_LINE','T_POLYGON','T_MGEOMETRY','T_MPOINT','T_MLINE','T_MPOLYGON') ORDER BY F_TABLE_NAME");
         assertTrue(rs.next());
@@ -230,6 +230,22 @@ public class ConstraintTest {
     }
 
     /**
+     * Check constraint pass
+     * @throws SQLException
+     */
+    @Test
+    public void testColumnSRIDGeometryColumns2() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table IF EXISTS T_SRID");
+        st.execute("create table T_SRID (the_geom GEOMETRY (GEOMETRY, 27572))");
+        try (ResultSet rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'T_SRID'")) {
+            assertTrue(rs.next());
+            assertEquals(27572, rs.getInt("srid"));
+            assertFalse(rs.next());
+        }
+    }
+
+    /**
      * LineString into LineString column
      * @throws Exception
      */
@@ -239,17 +255,17 @@ public class ConstraintTest {
         st.execute("drop table T_GEOMETRY IF EXISTS");
         st.execute("create table T_GEOMETRY (the_geom GEOMETRY)");
         st.execute("drop table T_POINT IF EXISTS");
-        st.execute("create table T_POINT (the_geom POINT)");
+        st.execute("create table T_POINT (the_geom GEOMETRY(POINT))");
         st.execute("drop table T_LINE IF EXISTS");
-        st.execute("create table T_LINE (the_geom LINESTRING)");
+        st.execute("create table T_LINE (the_geom GEOMETRY(LINESTRING))");
         st.execute("drop table T_POLYGON IF EXISTS");
-        st.execute("create table T_POLYGON (the_geom POLYGON)");
+        st.execute("create table T_POLYGON (the_geom GEOMETRY(POLYGON))");
         st.execute("drop table T_MPOINT IF EXISTS");
-        st.execute("create table T_MPOINT (the_geom MULTIPOINT)");
+        st.execute("create table T_MPOINT (the_geom GEOMETRY(MULTIPOINT))");
         st.execute("drop table T_MLINE IF EXISTS");
-        st.execute("create table T_MLINE (the_geom MULTILINESTRING)");
+        st.execute("create table T_MLINE (the_geom GEOMETRY(MULTILINESTRING))");
         st.execute("drop table T_MPOLYGON IF EXISTS");
-        st.execute("create table T_MPOLYGON (the_geom MULTIPOLYGON)");
+        st.execute("create table T_MPOLYGON (the_geom GEOMETRY(MULTIPOLYGON))");
 
         try (ResultSet rs = st.executeQuery("select * from GEOMETRY_COLUMNS where f_table_name IN ('T_GEOMETRY', 'T_POINT'," +
                 "  'T_LINE', 'T_POLYGON','T_MPOINT','T_MLINE', 'T_MPOLYGON') order by f_table_name")) {
@@ -284,17 +300,17 @@ public class ConstraintTest {
         st.execute("drop table T_GEOMETRY IF EXISTS");
         st.execute("create table T_GEOMETRY (the_geom GEOMETRY)");
         st.execute("drop table T_POINT IF EXISTS");
-        st.execute("create table T_POINT (the_geom POINT)");
+        st.execute("create table T_POINT (the_geom GEOMETRY(POINT))");
         st.execute("drop table T_LINE IF EXISTS");
-        st.execute("create table T_LINE (the_geom LINESTRING)");
+        st.execute("create table T_LINE (the_geom GEOMETRY(LINESTRING))");
         st.execute("drop table T_POLYGON IF EXISTS");
-        st.execute("create table T_POLYGON (the_geom POLYGON)");
+        st.execute("create table T_POLYGON (the_geom GEOMETRY(POLYGON))");
         st.execute("drop table T_MPOINT IF EXISTS");
-        st.execute("create table T_MPOINT (the_geom MULTIPOINT)");
+        st.execute("create table T_MPOINT (the_geom GEOMETRY(MULTIPOINT))");
         st.execute("drop table T_MLINE IF EXISTS");
-        st.execute("create table T_MLINE (the_geom MULTILINESTRING)");
+        st.execute("create table T_MLINE (the_geom GEOMETRY(MULTILINESTRING))");
         st.execute("drop table T_MPOLYGON IF EXISTS");
-        st.execute("create table T_MPOLYGON (the_geom MULTIPOLYGON)");
+        st.execute("create table T_MPOLYGON (the_geom GEOMETRY(MULTIPOLYGON))");
 
         assertEquals(GeometryTypeCodes.GEOMETRY,
                 SFSUtilities.getGeometryType(connection, TableLocation.parse("T_GEOMETRY"),""));
@@ -319,7 +335,7 @@ public class ConstraintTest {
     public void testZConstraintOk() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table LIDAR_PTS IF EXISTS");
-        st.execute("create table LIDAR_PTS (the_geom POINT CHECK ST_COORDDIM(the_geom) = 3)");
+        st.execute("create table LIDAR_PTS (the_geom GEOMETRY(POINT Z) CHECK ST_COORDDIM(the_geom) = 3)");
         st.execute("insert into LIDAR_PTS VALUES ('POINT(12 14 56)')");
         st.execute("drop table LIDAR_PTS IF EXISTS");
     }
@@ -328,7 +344,7 @@ public class ConstraintTest {
     public void testZConstraintError() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table LIDAR_PTS IF EXISTS");
-        st.execute("create table LIDAR_PTS (the_geom POINT CHECK ST_COORDDIM(the_geom) = 3)");
+        st.execute("create table LIDAR_PTS (the_geom GEOMETRY(POINT Z) CHECK ST_COORDDIM(the_geom) = 3)");
         st.execute("insert into LIDAR_PTS VALUES ('POINT(12 14)')");
         st.execute("insert into LIDAR_PTS VALUES ('POINT(13 18)')");
         st.execute("drop table LIDAR_PTS IF EXISTS");
@@ -345,6 +361,19 @@ public class ConstraintTest {
         assertEquals(3, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM(\"the_geom\")!= 2", "the_geom"));
         assertEquals(2, DimensionFromConstraint.dimensionFromConstraint("ST_COORDDIM(\"geom\")= 3", "the_geom"));
     }
+
+    @Test
+    public void testDimensionFromColumnType() {
+        assertEquals(3, DimensionFromColumnType.dimensionFromColumnType("ST_COORDDIM(the_geom) = 3", "the_geom"));
+        assertEquals(3, DimensionFromColumnType.dimensionFromColumnType("ST_COORDDIM(the_geom) > 2", "the_geom"));
+        assertEquals(2, DimensionFromColumnType.dimensionFromColumnType("ST_COORDDIM(the_geom) < 3", "the_geom"));
+        assertEquals(2, DimensionFromColumnType.dimensionFromColumnType("ST_COORDDIM( the_geom )!= 3", "the_geom"));
+        assertEquals(2, DimensionFromColumnType.dimensionFromColumnType("ST_COORDDIM( the_geom )<> 3", "the_geom"));
+        assertEquals(3, DimensionFromColumnType.dimensionFromColumnType("ST_COORDDIM(`the_geom`)> 2", "the_geom"));
+        assertEquals(3, DimensionFromColumnType.dimensionFromColumnType("ST_COORDDIM(\"the_geom\")!= 2", "the_geom"));
+        assertEquals(2, DimensionFromColumnType.dimensionFromColumnType("ST_COORDDIM(\"geom\")= 3", "the_geom"));
+    }
+
     @Test
     public void testGeometryColumnCoordDimension() throws SQLException {
         Statement st = connection.createStatement();

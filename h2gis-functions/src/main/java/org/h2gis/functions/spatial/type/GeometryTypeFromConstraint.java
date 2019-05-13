@@ -28,8 +28,12 @@ import java.util.regex.Pattern;
 
 /**
  * Convert H2 constraint string into a OGC geometry type index.
+ *
+ * Since H21.4.198, {@link GeometryTypeFromColumnType} should be used.
+ *
  * @author Nicolas Fortin
  */
+@Deprecated
 public class GeometryTypeFromConstraint extends DeterministicScalarFunction {
     private static final Pattern TYPE_CODE_PATTERN = Pattern.compile(
             "ST_GeometryTypeCode\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d)+", Pattern.CASE_INSENSITIVE);

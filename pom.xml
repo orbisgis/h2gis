@@ -7,8 +7,8 @@
     <!-- Maven Coordinates -->
     <parent>
         <groupId>org.orbisgis</groupId>
-        <artifactId>orbisgis-nexus</artifactId>
-        <version>3</version>
+        <artifactId>orbisparent</artifactId>
+        <version>1.0.1</version>
     </parent>
 
     <artifactId>h2gis-parent</artifactId>
@@ -77,7 +77,7 @@
         <exec-maven-plugin-version>1.2.1</exec-maven-plugin-version>
 
         <h2-groupId>com.h2database</h2-groupId>
-        <h2-version>1.4.197</h2-version>
+        <h2-version>1.4.199</h2-version>
 
         <jackson-core-groupId>com.fasterxml.jackson.core</jackson-core-groupId>
         <jackson-core-version>2.3.1</jackson-core-version>
@@ -132,18 +132,29 @@
     </properties>
 
     <!-- Dependencies -->
+
+
     <repositories>
         <repository>
-            <id>osgi-maven</id>
-            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-snapshot</url>
-        </repository>               
-        <repository>
-            <id>osgi-maven-5.1</id>
-            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-5.1</url>
+            <id>orbisgis-release</id>
+            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
         </repository>
         <repository>
-            <id>osgi-maven-5.1-snapshot</id>
-            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-5.1-snapshot</url>
+            <id>orbisgis-snapshot</id>
+            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>always</updatePolicy>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
         </repository>
     </repositories>
 

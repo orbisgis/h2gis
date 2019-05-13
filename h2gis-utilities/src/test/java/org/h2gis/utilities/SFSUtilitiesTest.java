@@ -77,12 +77,12 @@ public class SFSUtilitiesTest {
         Statement st = connection.createStatement();
 
         String functionAlias = "_GeometryTypeFromConstraint";
-        ScalarFunction scalarFunction = new GeometryTypeFromConstraint();
+        ScalarFunction scalarFunction = new GeometryTypeFromColumnType();
         try {
             st.execute("DROP ALIAS IF EXISTS " + functionAlias);
         } catch (SQLException ignored) {}
         st.execute("CREATE FORCE ALIAS IF NOT EXISTS _GeometryTypeFromConstraint DETERMINISTIC NOBUFFER FOR \"" +
-                GeometryTypeFromConstraint.class.getName() + "." + scalarFunction.getJavaStaticMethod() + "\"");
+                GeometryTypeFromColumnType.class.getName() + "." + scalarFunction.getJavaStaticMethod() + "\"");
 
         st.execute("DROP AGGREGATE IF EXISTS " + ST_Extent.class.getSimpleName().toUpperCase());
         st.execute("CREATE FORCE AGGREGATE IF NOT EXISTS " + ST_Extent.class.getSimpleName().toUpperCase() +
@@ -98,13 +98,13 @@ public class SFSUtilitiesTest {
 
         //registerGeometryType
         st = connection.createStatement();
-        st.execute("CREATE DOMAIN IF NOT EXISTS POINT AS GEOMETRY(" + GeometryTypeCodes.POINT + ")");
-        st.execute("CREATE DOMAIN IF NOT EXISTS LINESTRING AS GEOMETRY(" + GeometryTypeCodes.LINESTRING + ")");
-        st.execute("CREATE DOMAIN IF NOT EXISTS POLYGON AS GEOMETRY(" + GeometryTypeCodes.POLYGON + ")");
-        st.execute("CREATE DOMAIN IF NOT EXISTS GEOMCOLLECTION AS GEOMETRY(" + GeometryTypeCodes.GEOMCOLLECTION + ")");
-        st.execute("CREATE DOMAIN IF NOT EXISTS MULTIPOINT AS GEOMETRY(" + GeometryTypeCodes.MULTIPOINT + ")");
-        st.execute("CREATE DOMAIN IF NOT EXISTS MULTILINESTRING AS GEOMETRY(" + GeometryTypeCodes.MULTILINESTRING + ")");
-        st.execute("CREATE DOMAIN IF NOT EXISTS MULTIPOLYGON AS GEOMETRY(" + GeometryTypeCodes.MULTIPOLYGON + ")");
+        st.execute("CREATE DOMAIN IF NOT EXISTS POINT AS GEOMETRY(POINT)");
+        st.execute("CREATE DOMAIN IF NOT EXISTS LINESTRING AS GEOMETRY(  LINESTRING)");
+        st.execute("CREATE DOMAIN IF NOT EXISTS POLYGON AS GEOMETRY(POLYGON)");
+        st.execute("CREATE DOMAIN IF NOT EXISTS GEOMCOLLECTION AS GEOMETRY(GEOMETRYCOLLECTION)");
+        st.execute("CREATE DOMAIN IF NOT EXISTS MULTIPOINT AS GEOMETRY(MULTIPOINT)");
+        st.execute("CREATE DOMAIN IF NOT EXISTS MULTILINESTRING AS GEOMETRY(MULTILINESTRING)");
+        st.execute("CREATE DOMAIN IF NOT EXISTS MULTIPOLYGON AS GEOMETRY(MULTIPOLYGON)");
 
         //registerSpatialTables
         st = connection.createStatement();
@@ -113,7 +113,7 @@ public class SFSUtilitiesTest {
                 "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) geometry_type" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");*/
         st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
-                "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) geometry_type," +
+                "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(COLUMN_TYPE) geometry_type," +
                 "_ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         /*st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
@@ -145,14 +145,14 @@ public class SFSUtilitiesTest {
         connection.createStatement().execute("INSERT INTO POINTTABLE VALUES ('POINT(1 1)')");
 
         connection.createStatement().execute("DROP TABLE IF EXISTS GEOMTABLE");
-        connection.createStatement().execute("CREATE TABLE GEOMTABLE (geom GEOMETRY, pt POINT, linestr LINESTRING, " +
+        connection.createStatement().execute("CREATE TABLE GEOMTABLE (geom GEOMETRY, pt GEOMETRY(  POINTZM    ), linestr LINESTRING, " +
                 "plgn POLYGON, multipt MULTIPOINT, multilinestr MULTILINESTRING, multiplgn MULTIPOLYGON, " +
                 "geomcollection GEOMCOLLECTION)");
-        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('POINT(1 1)', 'POINT(1 1)'," +
+        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('POINT(1 1)', 'POINT(1 1 0 0)'," +
                 " 'LINESTRING(1 1, 2 2)', 'POLYGON((1 1, 1 2, 2 2, 2 1, 1 1))', 'MULTIPOINT((1 1))'," +
                 " 'MULTILINESTRING((1 1, 2 2))', 'MULTIPOLYGON(((1 1, 1 2, 2 2, 2 1, 1 1)))'," +
                 " 'GEOMETRYCOLLECTION(POINT(1 1))')");
-        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('LINESTRING(1 1, 2 2)', 'POINT(2 2)'," +
+        connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('LINESTRING(1 1, 2 2)', 'POINT(2 2 0 0)'," +
                 " 'LINESTRING(2 2, 1 1)', 'POLYGON((1 1, 1 3, 3 3, 3 1, 1 1))', 'MULTIPOINT((3 3))'," +
                 " 'MULTILINESTRING((1 1, 3 3))', 'MULTIPOLYGON(((1 1, 1 3, 3 3, 3 1, 1 1)))'," +
                 " 'GEOMETRYCOLLECTION(POINT(3 3))')");
@@ -303,7 +303,7 @@ public class SFSUtilitiesTest {
         TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
         assertEquals(GeometryTypeCodes.GEOMETRY,
                 SFSUtilities.getGeometryType(connection, tableLocation, "geom"));
-        assertEquals(GeometryTypeCodes.POINT,
+        assertEquals(GeometryTypeCodes.POINTZM,
                 SFSUtilities.getGeometryType(connection, tableLocation, "pt"));
         assertEquals(GeometryTypeCodes.LINESTRING,
                 SFSUtilities.getGeometryType(connection, tableLocation, "linestr"));
@@ -348,7 +348,7 @@ public class SFSUtilitiesTest {
         assertTrue(map.containsKey("GEOM"));
         assertEquals(GeometryTypeCodes.GEOMETRY, map.get("GEOM").intValue());
         assertTrue(map.containsKey("PT"));
-        assertEquals(GeometryTypeCodes.POINT,
+        assertEquals(GeometryTypeCodes.POINTZM,
                 SFSUtilities.getGeometryType(connection, tableLocation, "pt"));
         assertTrue(map.containsKey("LINESTR"));
         assertEquals(GeometryTypeCodes.LINESTRING,
@@ -386,7 +386,7 @@ public class SFSUtilitiesTest {
         assertTrue(SFSUtilities.wrapConnection(new CustomConnection(connection)) instanceof ConnectionWrapper);
     }
 
-    // getTableEnvelope(Connection connection, TableLocation location, String geometryField)
+    
     @Test
     public void testTableEnvelope() throws SQLException {
         TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
@@ -558,32 +558,104 @@ public class SFSUtilitiesTest {
 
     /**
      * Function declared in test database
-     * @see org.h2gis.functions.spatial.type.GeometryTypeFromConstraint
+     * @see org.h2gis.functions.spatial.type.GeometryTypeFromColumnType
      */
-    public static class GeometryTypeFromConstraint extends DeterministicScalarFunction {
-        private static final Pattern TYPE_CODE_PATTERN = Pattern.compile(
-                "ST_GeometryTypeCode\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d)+", Pattern.CASE_INSENSITIVE);
-        private static final int CODE_GROUP_ID = 5;
+    public static class GeometryTypeFromColumnType extends DeterministicScalarFunction {
+        private static final Pattern PATTERN = Pattern.compile("\"(.*)\"|GEOMETRY\\((.*)\\)");
 
-        public GeometryTypeFromConstraint() {
-            addProperty(PROP_REMARKS, "Convert H2 constraint string into a OGC geometry type index.");
-            addProperty(PROP_NAME, "_GeometryTypeFromConstraint");
+        public GeometryTypeFromColumnType() {
+            addProperty(PROP_REMARKS, "Convert H2 column type string into a OGC geometry type index.");
+            addProperty(PROP_NAME, "_GeometryTypeFromColumnType");
         }
 
-        @Override public String getJavaStaticMethod() {return "geometryTypeFromConstraint";}
+        @Override
+        public String getJavaStaticMethod() {
+            return "geometryTypeFromColumnType";
+        }
 
-        public static int geometryTypeFromConstraint(String constraint, int numericPrecision) {
-            if(constraint.isEmpty() && numericPrecision > GeometryTypeCodes.GEOMETRYZM) {
+        public static int geometryTypeFromColumnType(String constraint) {
+            String type = null;
+            Matcher matcher = PATTERN.matcher(constraint);
+            while (matcher.find()) {
+                if(type == null) {
+                    type = matcher.group(1);
+                }
+                if(type == null) {
+                    type = matcher.group(2);
+                }
+            }
+            return typeToCode(type);
+        }
+
+        public static int typeToCode(String type){
+            if(type == null){
                 return GeometryTypeCodes.GEOMETRY;
             }
-            if(numericPrecision <= GeometryTypeCodes.GEOMETRYZM) {
-                return numericPrecision;
-            }
-            Matcher matcher = TYPE_CODE_PATTERN.matcher(constraint);
-            if(matcher.find()) {
-                return Integer.valueOf(matcher.group(CODE_GROUP_ID));
-            } else {
-                return GeometryTypeCodes.GEOMETRY;
+            type = type.replaceAll(" ", "");
+            switch(type){
+                case "POINT" :              return GeometryTypeCodes.POINT;
+                case "LINESTRING" :         return GeometryTypeCodes.LINESTRING;
+                case "POLYGON" :            return GeometryTypeCodes.POLYGON;
+                case "MULTIPOINT" :         return GeometryTypeCodes.MULTIPOINT;
+                case "MULTILINESTRING" :    return GeometryTypeCodes.MULTILINESTRING;
+                case "MULTIPOLYGON" :       return GeometryTypeCodes.MULTIPOLYGON;
+                case "GEOMCOLLECTION" :     return GeometryTypeCodes.GEOMCOLLECTION;
+                case "MULTICURVE" :         return GeometryTypeCodes.MULTICURVE;
+                case "MULTISURFACE" :       return GeometryTypeCodes.MULTISURFACE;
+                case "CURVE" :              return GeometryTypeCodes.CURVE;
+                case "SURFACE" :            return GeometryTypeCodes.SURFACE;
+                case "POLYHEDRALSURFACE" :  return GeometryTypeCodes.POLYHEDRALSURFACE;
+                case "TIN" :                return GeometryTypeCodes.TIN;
+                case "TRIANGLE" :           return GeometryTypeCodes.TRIANGLE;
+
+                case "POINTZ" :              return GeometryTypeCodes.POINTZ;
+                case "LINESTRINGZ" :         return GeometryTypeCodes.LINESTRINGZ;
+                case "POLYGONZ" :            return GeometryTypeCodes.POLYGONZ;
+                case "MULTIPOINTZ" :         return GeometryTypeCodes.MULTIPOINTZ;
+                case "MULTILINESTRINGZ" :    return GeometryTypeCodes.MULTILINESTRINGZ;
+                case "MULTIPOLYGONZ" :       return GeometryTypeCodes.MULTIPOLYGONZ;
+                case "GEOMCOLLECTIONZ" :     return GeometryTypeCodes.GEOMCOLLECTIONZ;
+                case "MULTICURVEZ" :         return GeometryTypeCodes.MULTICURVEZ;
+                case "MULTISURFACEZ" :       return GeometryTypeCodes.MULTISURFACEZ;
+                case "CURVEZ" :              return GeometryTypeCodes.CURVEZ;
+                case "SURFACEZ" :            return GeometryTypeCodes.SURFACEZ;
+                case "POLYHEDRALSURFACEZ" :  return GeometryTypeCodes.POLYHEDRALSURFACEZ;
+                case "TINZ" :                return GeometryTypeCodes.TINZ;
+                case "TRIANGLEZ" :           return GeometryTypeCodes.TRIANGLEZ;
+
+                case "POINTM" :             return GeometryTypeCodes.POINTM;
+                case "LINESTRINGM" :        return GeometryTypeCodes.LINESTRINGM;
+                case "POLYGONM" :           return GeometryTypeCodes.POLYGONM;
+                case "MULTIPOINTM" :        return GeometryTypeCodes.MULTIPOINTM;
+                case "MULTILINESTRINGM" :   return GeometryTypeCodes.MULTILINESTRINGM;
+                case "MULTIPOLYGONM" :      return GeometryTypeCodes.MULTIPOLYGONM;
+                case "GEOMCOLLECTIONM" :    return GeometryTypeCodes.GEOMCOLLECTIONM;
+                case "MULTICURVEM" :        return GeometryTypeCodes.MULTICURVEM;
+                case "MULTISURFACEM" :      return GeometryTypeCodes.MULTISURFACEM;
+                case "CURVEM" :             return GeometryTypeCodes.CURVEM;
+                case "SURFACEM" :           return GeometryTypeCodes.SURFACEM;
+                case "POLYHEDRALSURFACEM" : return GeometryTypeCodes.POLYHEDRALSURFACEM;
+                case "TINM" :               return GeometryTypeCodes.TINM;
+                case "TRIANGLEM" :          return GeometryTypeCodes.TRIANGLEM;
+
+                case "POINTZM" :              return GeometryTypeCodes.POINTZM;
+                case "LINESTRINGZM" :         return GeometryTypeCodes.LINESTRINGZM;
+                case "POLYGONZM" :            return GeometryTypeCodes.POLYGONZM;
+                case "MULTIPOINTZM" :         return GeometryTypeCodes.MULTIPOINTZM;
+                case "MULTILINESTRINGZM" :    return GeometryTypeCodes.MULTILINESTRINGZM;
+                case "MULTIPOLYGONZM" :       return GeometryTypeCodes.MULTIPOLYGONZM;
+                case "GEOMCOLLECTIONZM" :     return GeometryTypeCodes.GEOMCOLLECTIONZM;
+                case "MULTICURVEZM" :         return GeometryTypeCodes.MULTICURVEZM;
+                case "MULTISURFACEZM" :       return GeometryTypeCodes.MULTISURFACEZM;
+                case "CURVEZM" :              return GeometryTypeCodes.CURVEZM;
+                case "SURFACEZM" :            return GeometryTypeCodes.SURFACEZM;
+                case "POLYHEDRALSURFACEZM" :  return GeometryTypeCodes.POLYHEDRALSURFACEZM;
+                case "TINZM" :                return GeometryTypeCodes.TINZM;
+                case "TRIANGLEZM" :           return GeometryTypeCodes.TRIANGLEZM;
+
+
+                case "GEOMETRY" :
+                default :                   return GeometryTypeCodes.GEOMETRY;
             }
         }
     }
@@ -629,7 +701,7 @@ public class SFSUtilitiesTest {
                 return null;
             } else {
                 return new GeometryFactory().toGeometry(aggregatedEnvelope);
-            }
+        }
         }
     }
 
@@ -738,5 +810,22 @@ public class SFSUtilitiesTest {
     private class CustomConnection extends ConnectionWrapper {
         public CustomConnection(Connection connection) {super(connection);}
         @Override public boolean isWrapperFor(Class<?> var1) throws SQLException{return true;}
+    }
+    
+    @Test
+    public void testEstimatedExtentWithoutIndex() throws SQLException {
+        TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
+        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
+                SFSUtilities.getEstimatedExtent(connection, tableLocation, "GEOM").getEnvelopeInternal());
+    }
+    @Test
+    public void testEstimatedExtentWithIndex() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS GEOMTABLE_INDEX; CREATE TABLE GEOMTABLE_INDEX (THE_GEOM GEOMETRY);");
+        st.execute("INSERT INTO GEOMTABLE_INDEX VALUES ('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))'),('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))' )");
+        st.execute("CREATE SPATIAL INDEX ON GEOMTABLE_INDEX(THE_GEOM)");
+        TableLocation tableLocation = TableLocation.parse("GEOMTABLE_INDEX");
+        assertEquals(new Envelope(150.0 , 240.0, 250.0 , 360.0),
+                SFSUtilities.getEstimatedExtent(connection, tableLocation, "THE_GEOM").getEnvelopeInternal());
     }
 }

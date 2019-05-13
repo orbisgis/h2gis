@@ -18,49 +18,51 @@
  * or contact directly: info_at_h2gis.org
  */
 
-package org.h2gis.functions.spatial.edit;
+package org.h2gis.functions.spatial.geometry;
 
+import org.h2gis.api.DeterministicScalarFunction;
+import static org.h2gis.api.Function.PROP_REMARKS;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
- * This function replace the z component of (each vertex of) the geometric
- * parameter to the corresponding value given by a field.
- *
+ * Dummy spatial function for test
  * @author Erwan Bocher
  */
-public class ST_UpdateZ extends DeterministicScalarFunction {
+public class DummySpatialFunction extends DeterministicScalarFunction {
 
-    public ST_UpdateZ() {
-        addProperty(PROP_REMARKS, "This function replace the z value of (each vertex of) the\n"
-                + " geometric parameter to the corresponding value given by a field.");
+    public static final String REMARKS = "Dummy spatial function description";
+
+    public DummySpatialFunction() {
+        addProperty(PROP_REMARKS, REMARKS);
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "updateZ";
+        return "returnGeom";
     }
 
-   
-
+    public static Geometry returnGeom(Geometry geom) {
+        return geom;
+    }
+    
     /**
-     * Replace the z with same value. NaN values are also updated.
-     *
-     * @param geometry
-     * @param z
-     * @return geometry
+     * If true all z are replaced by Double.NaN
+     * If false only the first z
+     * @param geom
+     * @param setZtoNaN
+     * @return 
      */
-    public static Geometry updateZ(Geometry geometry, double z) {
-        if (geometry == null) {
-            return null;
-        }
-        geometry.apply(new UpdateZCoordinateSequenceFilter(z));
-        return geometry;
-    }
+    public static Geometry returnGeom(Geometry geom, boolean setZtoNaN) {
+        UpdateZCoordinateSequenceFilter updateZCoordinateSequenceFilter = new UpdateZCoordinateSequenceFilter(Double.NaN, setZtoNaN);
+        geom.apply(updateZCoordinateSequenceFilter);
 
-    /**
+        return geom;
+    }
+    
+    
+     /**
      * Replaces the z value to each vertex of the Geometry.
      *
      */
@@ -68,9 +70,11 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
         
         private boolean done = false;
         private final double z;
+        private final boolean zCondition;
 
-        public UpdateZCoordinateSequenceFilter(double z) {
+        public UpdateZCoordinateSequenceFilter(double z, boolean zCondition) {
             this.z = z;
+            this.zCondition = zCondition;
         }
 
         @Override
@@ -86,6 +90,9 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
         @Override
         public void filter(CoordinateSequence seq, int i) {            
             seq.setOrdinate(i, 2, z);
+            if(!zCondition){
+                done =true;
+            }
             if (i == seq.size()) {
                 done = true;
             }

@@ -20,11 +20,9 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import org.h2.value.ValueGeometry;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -32,7 +30,12 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import org.h2.value.ValueGeometry;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.unitTest.GeometryAsserts;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  * Final OGC Conformance test with spatial capabilities.
@@ -231,9 +234,7 @@ public class OGCConformance3Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_Boundary(boundary,101)) FROM named_places WHERE name = 'Goose Island'");
         assertTrue(rs.next());
-        // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
-        // Real OGC expected result "LINESTRING (67 13, 67 18, 59 18, 59 13, 67 13)"
-        assertEquals(ValueGeometry.get("LINEARRING (67 13, 67 18, 59 18, 59 13, 67 13)"), ValueGeometry.get(rs.getString(1)));
+        assertEquals(ValueGeometry.get("LINESTRING (67 13, 67 18, 59 18, 59 13, 67 13)"), ValueGeometry.get(rs.getString(1)));
     }
 
     /**
@@ -405,9 +406,7 @@ public class OGCConformance3Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_ExteriorRing(shore)) FROM lakes WHERE name = 'Blue Lake'");
         assertTrue(rs.next());
-        // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
-        // Real OGC expected result "LINESTRING (52 18, 66 23, 73 9, 48 6, 52 18)"
-        assertEquals(ValueGeometry.get("LINEARRING (52 18, 66 23, 73 9, 48 6, 52 18)"), ValueGeometry.get(rs.getString(1)));
+        GeometryAsserts.assertGeometryEquals("LINESTRING (52 18, 66 23, 73 9, 48 6, 52 18)", rs.getString(1));
     }
 
     /**
@@ -431,9 +430,7 @@ public class OGCConformance3Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_AsText(ST_InteriorRingN(shore, 1)) FROM lakes WHERE name = 'Blue Lake'");
         assertTrue(rs.next());
-        // Differs from OGC, in JTS all LineString that start and end with the same coordinate create a LinearRing not a LineString.
-        // Real OGC expected result "LINESTRING (59 18, 67 18, 67 13, 59 13, 59 18)"
-        assertEquals(ValueGeometry.get("LINEARRING (59 18, 67 18, 67 13, 59 13, 59 18)"), ValueGeometry.get(rs.getString(1)));
+        assertEquals(ValueGeometry.get("LINESTRING (59 18, 67 18, 67 13, 59 13, 59 18)"), ValueGeometry.get(rs.getString(1)));
     }
 
     /**

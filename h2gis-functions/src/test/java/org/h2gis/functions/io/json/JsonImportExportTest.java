@@ -61,7 +61,7 @@ public class JsonImportExportTest {
     public void testWriteJson() throws Exception {
          try (Statement stat = connection.createStatement()) {
              stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
-             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
+             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
              stat.execute("CALL JSONWrite('target/result.json', 'TABLE_POINT');");
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
@@ -73,7 +73,7 @@ public class JsonImportExportTest {
     public void testWriteResultSetJson() throws Exception {
          try (Statement stat = connection.createStatement()) {
              stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
-             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
+             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
              ResultSet rs = stat.executeQuery("SELECT * FROM TABLE_POINT");
              JsonWriteDriver jsonWriteDriver = new JsonWriteDriver(connection);
@@ -87,7 +87,7 @@ public class JsonImportExportTest {
     public void testWriteQueryJson() throws Exception {
          try (Statement stat = connection.createStatement()) {
              stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
-             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
+             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom GEOMETRY(POINT), codes  ARRAY)");
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000)),(2, 'POINT(12 200)', (10000, 20000, 30000, 10000))");
              stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)');");
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));

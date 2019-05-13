@@ -260,8 +260,8 @@ public class SHPDriverFunction implements DriverFunction {
                 shpDriver.setSRID(srid);
                 if(isH2) {
                     //H2 Syntax
-                    st.execute(String.format("CREATE TABLE %s ("+ pkColName + " SERIAL ,the_geom %s %s)", parse,
-                            getSFSGeometryType(shpHeader), types));
+                    st.execute(String.format("CREATE TABLE %s ("+ pkColName + " SERIAL , the_geom GEOMETRY(%s, %d) %s)", parse,
+                            getSFSGeometryType(shpHeader),srid, types));
                 } else {
                     // PostgreSQL Syntax
                     lastSql = String.format("CREATE TABLE %s ("+ pkColName + " SERIAL PRIMARY KEY, the_geom GEOMETRY(%s, %d) %s)", parse,
@@ -360,21 +360,25 @@ public class SHPDriverFunction implements DriverFunction {
     private static String getSFSGeometryType(ShapefileHeader header) {
         switch(header.getShapeType().id) {
             case 1:
+                return "POINT";
             case 11:
             case 21:
-                return "POINT";
+                return "POINT Z";
             case 3:
+                return "MULTILINESTRING";
             case 13:
             case 23:
-                return "MULTILINESTRING";
+                return "MULTILINESTRING Z";
             case 5:
+                return "MULTIPOLYGON";
             case 15:
             case 25:
-                return "MULTIPOLYGON";
+                return "MULTIPOLYGON Z";
             case 8:
+                return "MULTIPOINT";
             case 18:
             case 28:
-                return "MULTIPOINT";
+                return "MULTIPOINT Z";
             default:
                 return "GEOMETRY";
         }

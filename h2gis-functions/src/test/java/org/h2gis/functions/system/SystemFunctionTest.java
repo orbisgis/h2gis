@@ -21,16 +21,20 @@
 package org.h2gis.functions.system;
 
 
-import org.h2.jdbc.JdbcSQLException;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.*;
-
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
 import static org.junit.Assert.assertNotEquals;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
@@ -65,73 +69,73 @@ public class SystemFunctionTest {
     
     @Test
     public void test_DoubleRange1() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT DoubleRange(0, 5, 1);")) {
-            rs.next();
-            Array data = rs.getArray(1);
-            Object[] valueArray = (Object[]) data.getArray();
-            double[] actuals = new double[valueArray.length];
-            for (int i = 0; i < valueArray.length; i++) {
-                actuals[i] = (Double) valueArray[i];
-            }
-            double[] expecteds = new double[]{0, 1, 2, 3, 4};
-            Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
+        ResultSet rs = st.executeQuery("SELECT DoubleRange(0, 5, 1);");
+        rs.next();
+        Array data = rs.getArray(1);
+        Object[] valueArray = (Object[]) data.getArray();
+        double[] actuals = new double[valueArray.length];
+        for (int i = 0; i < valueArray.length; i++) {
+            actuals[i] = (Double) valueArray[i];
         }
+        double[] expecteds = new double[]{0, 1, 2, 3, 4};
+        Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
+        rs.close();
     }
     
     @Test
     public void test_DoubleRange2() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT DoubleRange(0, 1, 0.5);")) {
-            rs.next();
-            Array data = rs.getArray(1);
-            Object[] valueArray = (Object[]) data.getArray();
-            double[] actuals = new double[valueArray.length];
-            for (int i = 0; i < valueArray.length; i++) {
-                actuals[i] = (Double) valueArray[i];
-            }
-            double[] expecteds = new double[]{0, 0.5};
-            Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
+        ResultSet rs = st.executeQuery("SELECT DoubleRange(0, 1, 0.5);");
+        rs.next();
+        Array data = rs.getArray(1);
+        Object[] valueArray = (Object[]) data.getArray();
+        double[] actuals = new double[valueArray.length];
+        for (int i = 0; i < valueArray.length; i++) {
+            actuals[i] = (Double) valueArray[i];
         }
+        double[] expecteds = new double[]{0, 0.5};
+        Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
+        rs.close();
     }
     
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_DoubleRange3() throws Throwable {
         try {
             st.execute("SELECT DoubleRange(10, 1, 0.5);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
     
     @Test
     public void test_IntegerRange1() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT IntegerRange(0, 5, 1);")) {
-            rs.next();
-            Array data = rs.getArray(1);
-            Object[] valueArray = (Object[]) data.getArray();
-            int[] actuals = new int[valueArray.length];
-            for (int i = 0; i < valueArray.length; i++) {
-                actuals[i] = (Integer) valueArray[i];
-            }
-            int[] expecteds = new int[]{0, 1, 2, 3, 4};
-            Assert.assertArrayEquals(expecteds, actuals);
+        ResultSet rs = st.executeQuery("SELECT IntegerRange(0, 5, 1);");
+        rs.next();
+        Array data = rs.getArray(1);
+        Object[] valueArray = (Object[]) data.getArray();
+        int[] actuals = new int[valueArray.length];
+        for (int i = 0; i < valueArray.length; i++) {
+            actuals[i] = (Integer) valueArray[i];
         }
+        int[] expecteds = new int[]{0, 1, 2, 3, 4};
+        Assert.assertArrayEquals(expecteds, actuals);
+        rs.close();
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void test_IntegerRange2() throws Throwable {
         try {
             st.execute("SELECT IntegerRange(10, 1, 0.5);");
         } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
     
     @Test
     public void test_H2GISVersion() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT H2GISVersion();")) {
-            rs.next();
-            assertNotEquals("unknown", rs.getString(1));
-        }
+        ResultSet rs = st.executeQuery("SELECT H2GISVersion();");
+        rs.next();
+        assertNotEquals("unknown", rs.getString(1));
+        rs.close();
     }
 
 }

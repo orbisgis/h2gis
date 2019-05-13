@@ -66,6 +66,7 @@ public class SHPEngineTest {
     @Test
     public void readSHPMetaTest() throws SQLException {
         Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS SHPTABLE");
         st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
         try ( // Query declared Table columns
                 ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'")) {
@@ -78,15 +79,15 @@ public class SHPEngineTest {
             assertTrue(rs.next());
             assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
             assertEquals("CHAR",rs.getString("TYPE_NAME"));
-            assertEquals(254,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+            assertEquals(2147483647,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
             assertTrue(rs.next());
             assertEquals("GID",rs.getString("COLUMN_NAME"));
             assertEquals("BIGINT",rs.getString("TYPE_NAME"));
-            assertEquals(18,rs.getInt("NUMERIC_PRECISION"));
+            assertEquals(19,rs.getInt("NUMERIC_PRECISION"));
             assertTrue(rs.next());
             assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
             assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
-            assertEquals(20,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
+            assertEquals(17,rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
         }
         st.execute("drop table shptable");
     }

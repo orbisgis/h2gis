@@ -20,10 +20,20 @@
 
 package org.h2gis.functions.factory;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import org.h2.api.Aggregate;
 import org.h2.tools.RunScript;
 import org.h2gis.api.Function;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.spatial.properties.*;
+import org.h2gis.functions.spatial.split.ST_LineIntersector;
+import org.h2gis.functions.spatial.split.ST_Split;
 import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.dbf.DBFRead;
 import org.h2gis.functions.io.dbf.DBFWrite;
@@ -52,16 +62,75 @@ import org.h2gis.functions.spatial.buffer.ST_OffSetCurve;
 import org.h2gis.functions.spatial.buffer.ST_RingSideBuffer;
 import org.h2gis.functions.spatial.buffer.ST_SideBuffer;
 import org.h2gis.functions.spatial.clean.ST_MakeValid;
-import org.h2gis.functions.spatial.convert.*;
-import org.h2gis.functions.spatial.create.*;
+import org.h2gis.functions.spatial.convert.ST_AsBinary;
+import org.h2gis.functions.spatial.convert.ST_AsGML;
+import org.h2gis.functions.spatial.convert.ST_AsText;
+import org.h2gis.functions.spatial.convert.ST_AsWKT;
+import org.h2gis.functions.spatial.convert.ST_Force2D;
+import org.h2gis.functions.spatial.convert.ST_Force3D;
+import org.h2gis.functions.spatial.convert.ST_GeomFromGML;
+import org.h2gis.functions.spatial.convert.ST_GeomFromText;
+import org.h2gis.functions.spatial.convert.ST_GeomFromWKB;
+import org.h2gis.functions.spatial.convert.ST_GoogleMapLink;
+import org.h2gis.functions.spatial.convert.ST_Holes;
+import org.h2gis.functions.spatial.convert.ST_LineFromText;
+import org.h2gis.functions.spatial.convert.ST_LineFromWKB;
+import org.h2gis.functions.spatial.convert.ST_MLineFromText;
+import org.h2gis.functions.spatial.convert.ST_MPointFromText;
+import org.h2gis.functions.spatial.convert.ST_MPolyFromText;
+import org.h2gis.functions.spatial.convert.ST_OSMMapLink;
+import org.h2gis.functions.spatial.convert.ST_PointFromText;
+import org.h2gis.functions.spatial.convert.ST_PointFromWKB;
+import org.h2gis.functions.spatial.convert.ST_PolyFromText;
+import org.h2gis.functions.spatial.convert.ST_PolyFromWKB;
+import org.h2gis.functions.spatial.convert.ST_ToMultiLine;
+import org.h2gis.functions.spatial.convert.ST_ToMultiPoint;
+import org.h2gis.functions.spatial.convert.ST_ToMultiSegments;
+import org.h2gis.functions.spatial.create.ST_BoundingCircle;
+import org.h2gis.functions.spatial.create.ST_BoundingCircleCenter;
+import org.h2gis.functions.spatial.create.ST_Expand;
+import org.h2gis.functions.spatial.create.ST_Extrude;
+import org.h2gis.functions.spatial.create.ST_MakeEllipse;
+import org.h2gis.functions.spatial.create.ST_MakeEnvelope;
+import org.h2gis.functions.spatial.create.ST_MakeGrid;
+import org.h2gis.functions.spatial.create.ST_MakeGridPoints;
+import org.h2gis.functions.spatial.create.ST_MakeLine;
+import org.h2gis.functions.spatial.create.ST_MakePoint;
+import org.h2gis.functions.spatial.create.ST_MakePolygon;
+import org.h2gis.functions.spatial.create.ST_MinimumBoundingCircle;
+import org.h2gis.functions.spatial.create.ST_MinimumRectangle;
+import org.h2gis.functions.spatial.create.ST_OctogonalEnvelope;
+import org.h2gis.functions.spatial.create.ST_Point;
+import org.h2gis.functions.spatial.create.ST_RingBuffer;
 import org.h2gis.functions.spatial.crs.ST_SetSRID;
 import org.h2gis.functions.spatial.crs.ST_Transform;
-import org.h2gis.functions.spatial.distance.*;
+import org.h2gis.functions.spatial.distance.ST_ClosestCoordinate;
+import org.h2gis.functions.spatial.distance.ST_ClosestPoint;
+import org.h2gis.functions.spatial.distance.ST_FurthestCoordinate;
+import org.h2gis.functions.spatial.distance.ST_LocateAlong;
+import org.h2gis.functions.spatial.distance.ST_LongestLine;
+import org.h2gis.functions.spatial.distance.ST_MaxDistance;
+import org.h2gis.functions.spatial.distance.ST_ProjectPoint;
+import org.h2gis.functions.spatial.distance.ST_ShortestLine;
 import org.h2gis.functions.spatial.earth.ST_GeometryShadow;
-import org.h2gis.functions.spatial.earth.ST_Isovist;
 import org.h2gis.functions.spatial.earth.ST_SunPosition;
 import org.h2gis.functions.spatial.earth.ST_Svf;
-import org.h2gis.functions.spatial.edit.*;
+import org.h2gis.functions.spatial.edit.ST_AddPoint;
+import org.h2gis.functions.spatial.edit.ST_AddZ;
+import org.h2gis.functions.spatial.edit.ST_CollectionExtract;
+import org.h2gis.functions.spatial.edit.ST_Densify;
+import org.h2gis.functions.spatial.edit.ST_FlipCoordinates;
+import org.h2gis.functions.spatial.edit.ST_Interpolate3DLine;
+import org.h2gis.functions.spatial.edit.ST_MultiplyZ;
+import org.h2gis.functions.spatial.edit.ST_Normalize;
+import org.h2gis.functions.spatial.edit.ST_RemoveDuplicatedCoordinates;
+import org.h2gis.functions.spatial.edit.ST_RemoveHoles;
+import org.h2gis.functions.spatial.edit.ST_RemovePoints;
+import org.h2gis.functions.spatial.edit.ST_RemoveRepeatedPoints;
+import org.h2gis.functions.spatial.edit.ST_Reverse;
+import org.h2gis.functions.spatial.edit.ST_Reverse3DLine;
+import org.h2gis.functions.spatial.edit.ST_UpdateZ;
+import org.h2gis.functions.spatial.edit.ST_ZUpdateLineExtremities;
 import org.h2gis.functions.spatial.generalize.ST_PrecisionReducer;
 import org.h2gis.functions.spatial.generalize.ST_Simplify;
 import org.h2gis.functions.spatial.generalize.ST_SimplifyPreserveTopology;
@@ -69,21 +138,35 @@ import org.h2gis.functions.spatial.mesh.ST_ConstrainedDelaunay;
 import org.h2gis.functions.spatial.mesh.ST_Delaunay;
 import org.h2gis.functions.spatial.mesh.ST_Tessellate;
 import org.h2gis.functions.spatial.mesh.ST_Voronoi;
-import org.h2gis.functions.spatial.operators.*;
-import org.h2gis.functions.spatial.predicates.*;
-import org.h2gis.functions.spatial.properties.*;
+import org.h2gis.functions.spatial.operators.ST_ConvexHull;
+import org.h2gis.functions.spatial.operators.ST_Difference;
+import org.h2gis.functions.spatial.operators.ST_Intersection;
+import org.h2gis.functions.spatial.operators.ST_SymDifference;
+import org.h2gis.functions.spatial.operators.ST_Union;
+import org.h2gis.functions.spatial.predicates.ST_Contains;
+import org.h2gis.functions.spatial.predicates.ST_Covers;
+import org.h2gis.functions.spatial.predicates.ST_Crosses;
+import org.h2gis.functions.spatial.predicates.ST_DWithin;
+import org.h2gis.functions.spatial.predicates.ST_Disjoint;
+import org.h2gis.functions.spatial.predicates.ST_EnvelopesIntersect;
+import org.h2gis.functions.spatial.predicates.ST_Equals;
+import org.h2gis.functions.spatial.predicates.ST_Intersects;
+import org.h2gis.functions.spatial.predicates.ST_OrderingEquals;
+import org.h2gis.functions.spatial.predicates.ST_Overlaps;
+import org.h2gis.functions.spatial.predicates.ST_Relate;
+import org.h2gis.functions.spatial.predicates.ST_Touches;
+import org.h2gis.functions.spatial.predicates.ST_Within;
 import org.h2gis.functions.spatial.snap.ST_Snap;
-import org.h2gis.functions.spatial.split.ST_LineIntersector;
-import org.h2gis.functions.spatial.split.ST_Split;
-import org.h2gis.functions.spatial.topography.*;
+import org.h2gis.functions.spatial.topography.ST_Drape;
+import org.h2gis.functions.spatial.topography.ST_TriangleAspect;
+import org.h2gis.functions.spatial.topography.ST_TriangleContouring;
+import org.h2gis.functions.spatial.topography.ST_TriangleDirection;
+import org.h2gis.functions.spatial.topography.ST_TriangleSlope;
 import org.h2gis.functions.spatial.topology.ST_Graph;
 import org.h2gis.functions.spatial.topology.ST_Node;
 import org.h2gis.functions.spatial.topology.ST_Polygonize;
 import org.h2gis.functions.spatial.trigonometry.ST_Azimuth;
-import org.h2gis.functions.spatial.type.DimensionFromConstraint;
-import org.h2gis.functions.spatial.type.DomainInfo;
-import org.h2gis.functions.spatial.type.GeometryTypeFromConstraint;
-import org.h2gis.functions.spatial.type.GeometryTypeNameFromConstraint;
+import org.h2gis.functions.spatial.type.*;
 import org.h2gis.functions.string.HexToVarBinary;
 import org.h2gis.functions.system.DoubleRange;
 import org.h2gis.functions.system.H2GISversion;
@@ -91,10 +174,6 @@ import org.h2gis.functions.system.IntegerRange;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.sql.*;
 
 /**
  * Add H2GIS features to an H2 database
@@ -310,23 +389,11 @@ public class H2GISFunctions {
                 new ST_Svf(),
                 new JsonWrite(),
                 new ST_ShortestLine(),
-                new ST_OrientedEnvelope(),
-                new ST_Isovist()};
-    }
-
-    /**
-     * @return instance of all spatial built-ins field type
-     */
-    public static DomainInfo[] getBuiltInsType() {
-        return new DomainInfo[] {
-                new DomainInfo("POINT", GeometryTypeCodes.POINT),
-                new DomainInfo("LINESTRING", GeometryTypeCodes.LINESTRING),
-                new DomainInfo("POLYGON", GeometryTypeCodes.POLYGON),
-                new DomainInfo("GEOMCOLLECTION", GeometryTypeCodes.GEOMCOLLECTION),
-                new DomainInfo("MULTIPOINT", GeometryTypeCodes.MULTIPOINT),
-                new DomainInfo("MULTILINESTRING", GeometryTypeCodes.MULTILINESTRING),
-                new DomainInfo("MULTIPOLYGON", GeometryTypeCodes.MULTIPOLYGON)
-        };
+                new ST_EstimatedExtent(),
+                new ColumnSRIDFromColumnType(),
+                new DimensionFromColumnType(),
+                new GeometryTypeNameFromColumnType(),
+                new GeometryTypeFromColumnType()};
     }
 
     /**
@@ -339,7 +406,6 @@ public class H2GISFunctions {
     public static void load(Connection connection, String BundleSymbolicName, String BundleVersion) throws SQLException {
         String packagePrepend = BundleSymbolicName+":"+BundleVersion+":";
         registerH2GISFunctions(connection,packagePrepend);
-        registerGeometryType(connection);
         connection.commit();
     }
 
@@ -350,21 +416,7 @@ public class H2GISFunctions {
      */
     public static void load(Connection connection) throws SQLException {
         registerH2GISFunctions(connection,"");
-        registerGeometryType(connection);
         registerSpatialTables(connection);
-    }
-
-    /**
-     * Register geometry type in an OSGi environment
-     * @param connection Active H2 connection
-     * @throws SQLException
-     */
-    public static void registerGeometryType(Connection connection) throws SQLException {
-        Statement st = connection.createStatement();
-        for(DomainInfo domainInfo : getBuiltInsType()) {
-            // Check for byte array first, to not throw an enigmatic error CastException
-            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+"("+domainInfo.getGeometryTypeCode()+") CHECK (ST_GeometryTypeCode(VALUE) = "+domainInfo.getGeometryTypeCode()+");");
-        }
     }
 
     /**
@@ -376,10 +428,10 @@ public class H2GISFunctions {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
         st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
-                "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) geometry_type," +
-                "_DimensionFromConstraint(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) coord_dimension," +
-                "_ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid," +
-                " _GeometryTypeNameFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) type" +
+                "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromColumnType(COLUMN_TYPE) geometry_type," +
+                "_DimensionFromColumnType(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,COLUMN_TYPE) coord_dimension," +
+                "_ColumnSRIDFromColumnType(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,COLUMN_TYPE) srid," +
+                " _GeometryTypeNameFromColumnType(COLUMN_TYPE) type" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {
@@ -392,19 +444,6 @@ public class H2GISFunctions {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-        }
-    }
-
-    /**
-     * Release geometry type
-     * @param connection Active h2 connection with DROP DOMAIN and DROP ALIAS rights
-     * @throws java.sql.SQLException
-     */
-    public static void unRegisterGeometryType(Connection connection) throws SQLException {
-        Statement st = connection.createStatement();
-        DomainInfo[] domainInfos = getBuiltInsType();
-        for(DomainInfo domainInfo : domainInfos) {
-            st.execute("DROP DOMAIN IF EXISTS " + domainInfo.getDomainName());
         }
     }
 
@@ -555,6 +594,5 @@ public class H2GISFunctions {
         for (Function function : getBuiltInsFunctions()) {
             unRegisterFunction(st, function);
         }
-        unRegisterGeometryType(connection);
     }
 }

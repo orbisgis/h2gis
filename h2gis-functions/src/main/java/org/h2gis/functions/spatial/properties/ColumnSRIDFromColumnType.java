@@ -32,20 +32,19 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Get the column SRID from constraints and data.
+ * Get the column SRID from column type and data.
  *
- * Since H21.4.198, {@link DimensionFromConstraint} should be used.
- *
+ * @author Erwan Bocher (CNRS)
  * @author Nicolas Fortin
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
-@Deprecated
-public class ColumnSRID extends AbstractFunction implements ScalarFunction {
+public class ColumnSRIDFromColumnType extends AbstractFunction implements ScalarFunction {
     private static final String SRID_FUNC = ST_SRID.class.getSimpleName();
-    private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("ST_SRID\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("\"?ST_SRID\\s*\"?\\(([^\\)]+)\\)\\s*([<|>|!]?=|<>|>|<)\\s*(\\d+)|^\\s*GEOMETRY\\s*\\([\\w|\\s]+,\\s*(\\d*)\\)", Pattern.CASE_INSENSITIVE);
 
-    public ColumnSRID() {
-        addProperty(PROP_REMARKS, "Get the column SRID from constraints and data.");
-        addProperty(PROP_NAME, "_ColumnSRID");
+    public ColumnSRIDFromColumnType() {
+        addProperty(PROP_REMARKS, "Get the column SRID from column type and data.");
+        addProperty(PROP_NAME, "_ColumnSRIDFromColumnType");
     }
 
     @Override
@@ -58,18 +57,18 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
      * @param constraint Constraint expression ex:"ST_SRID(the_geom) = 27572"
      * @return The SRID or 0 if no constraint are found or constraint on other column
      */
-    public static int getSRIDFromConstraint(String constraint, String columnName) {
+    public static int getSRIDFromColumnType(String constraint, String columnName) {
         int srid = 0;
         Matcher matcher = SRID_CONSTRAINT_PATTERN.matcher(constraint);
         while (matcher.find()) {
-            String extractedColumnName = matcher.group(1).replace("\"","").replace("`","");
-            int sridConstr = Integer.valueOf(matcher.group(5));
-            if (extractedColumnName.equalsIgnoreCase(columnName)) {
-                if(srid != 0 && srid != sridConstr) {
-                    // Two srid constraint on the same column
-                    return 0;
+            if (matcher.group(1) != null) {
+                String extractedColumnName = matcher.group(1).replace("\"", "").replace("`", "");
+                if (extractedColumnName.equalsIgnoreCase(columnName)) {
+                    srid = Integer.valueOf(matcher.group(3));
                 }
-                srid = sridConstr;
+            }
+            else{
+                srid = Integer.valueOf(matcher.group(4));
             }
         }
         return srid;
@@ -113,22 +112,16 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
     public static int getSRID(Connection connection, String catalogName, String schemaName, String tableName, String columnName,String constraint) {
         try {
             Statement st = connection.createStatement();
-            // Merge column constraint and table constraint
-            constraint+=fetchConstraint(connection, catalogName, schemaName,tableName);
-            if(constraint.toUpperCase().contains(SRID_FUNC)) {
-                // Check constraint
-                // Extract column and SRID constraint value
-                // constraint = ".. ST_SRID(the_geom) = 27572 .."
-                int srid = getSRIDFromConstraint(constraint, columnName);
-                if(srid > 0) {
-                    return srid;
-                }
+            constraint += fetchConstraint(connection, catalogName, schemaName, tableName);
+            int srid = getSRIDFromColumnType(constraint, columnName);
+            if(srid > 0) {
+                return srid;
             }
             try ( // Fetch the first geometry to find a stored SRID
                     ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
                             StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)))) {
                 if(rs.next()) {
-                    int srid = rs.getInt(1);
+                    srid = rs.getInt(1);
                     if(srid > 0) {
                         return srid;
                     }

@@ -59,11 +59,7 @@ public class GPXTablesFactory {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(wayPointsTableName).append(" (");
-            if (isH2) {
-                sb.append("the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
-            } else {
-                sb.append("the_geom GEOMETRY(POINT, 4326),");
-            }
+            sb.append("the_geom GEOMETRY(POINT, 4326),");
             sb.append(" id INT,");
             sb.append(GPXTags.LAT.toLowerCase()).append(" FLOAT8,");
             sb.append(GPXTags.LON.toLowerCase()).append(" FLOAT8,");
@@ -111,11 +107,7 @@ public class GPXTablesFactory {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(routeTableName).append(" (");
-            if (isH2) {
-                sb.append("the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
-            } else {
-                sb.append("the_geom GEOMETRY(LINESTRING, 4326),");
-            }
+            sb.append("the_geom GEOMETRY(LINESTRING, 4326),");
             sb.append(" id INT,");
             sb.append(GPXTags.NAME.toLowerCase()).append(" TEXT,");
             sb.append(GPXTags.CMT.toLowerCase()).append(" TEXT,");
@@ -151,11 +143,7 @@ public class GPXTablesFactory {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(routePointsTable).append(" (");
-            if (isH2) {
-                sb.append("the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
-            } else {
-                sb.append("the_geom GEOMETRY(POINT, 4326),");
-            }
+            sb.append("the_geom GEOMETRY(POINT, 4326),");
             sb.append(" id INT,");
             sb.append(GPXTags.LAT.toLowerCase()).append(" FLOAT8,");
             sb.append(GPXTags.LON.toLowerCase()).append(" FLOAT8,");
@@ -206,7 +194,7 @@ public class GPXTablesFactory {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(trackTableName).append(" (");
             if (isH2) {
-                sb.append("the_geom MULTILINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
+                sb.append("the_geom GEOMETRY(MULTILINESTRING) CHECK ST_SRID(THE_GEOM) = 4326,");
             } else {
                 sb.append("the_geom GEOMETRY(MULTILINESTRING, 4326),");
             }
@@ -245,11 +233,7 @@ public class GPXTablesFactory {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(trackSegementsTableName).append(" (");
-            if (isH2) {
-                sb.append("the_geom LINESTRING CHECK ST_SRID(THE_GEOM) = 4326,");
-            } else {
-                sb.append("the_geom GEOMETRY(LINESTRING, 4326),");
-            }
+            sb.append("the_geom GEOMETRY(LINESTRING, 4326),");
             sb.append(" id INT,");
             sb.append(GPXTags.EXTENSIONS).append(" TEXT,");
             sb.append("id_track INT);");
@@ -278,12 +262,7 @@ public class GPXTablesFactory {
         try (Statement stmt = connection.createStatement()) {
             StringBuilder sb = new StringBuilder("CREATE TABLE ");
             sb.append(trackPointsTableName).append(" (");
-            if(isH2){
-                sb.append("the_geom POINT CHECK ST_SRID(THE_GEOM) = 4326,");
-            }
-            else{
-                sb.append("the_geom GEOMETRY(POINT, 4326),");
-            }
+            sb.append("the_geom GEOMETRY(POINT, 4326),");
             sb.append(" id INT,");
             sb.append(GPXTags.LAT.toLowerCase()).append(" FLOAT8,");
             sb.append(GPXTags.LON.toLowerCase()).append(" FLOAT8,");

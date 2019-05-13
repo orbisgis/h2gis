@@ -21,22 +21,29 @@
 package org.h2gis.functions.io.dbf;
 
 import org.h2.util.StringUtils;
-import org.h2gis.api.DriverFunction;
-import org.h2gis.api.EmptyProgressVisitor;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.SHPEngineTest;
+import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import org.h2.value.Value;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Nicolas Fortin
@@ -74,14 +81,14 @@ public class DBFImportExportTest {
         dbfDriver.initDriverFromFile(dbfFile);
         assertEquals(3, dbfDriver.getFieldCount());
         assertEquals(2, dbfDriver.getRowCount());
-        Object[] row = dbfDriver.getRow(0);
-        assertEquals(1, row[0]);
-        assertEquals(4.9406564584124654, (Double) row[1], 1e-12);
-        assertEquals("main area", row[2]);
+        Value[] row = dbfDriver.getRow(0);
+        assertEquals(1, row[0].getInt());
+        assertEquals(4.9406564584124654, row[1].getDouble(), 1e-12);
+        assertEquals("main area", row[2].getString());
         row = dbfDriver.getRow(1);
-        assertEquals(2, row[0]);
-        assertEquals(2.2250738585072009, (Double) row[1], 1e-12);
-        assertEquals("second area", row[2]);
+        assertEquals(2, row[0].getInt());
+        assertEquals(2.2250738585072009,  row[1].getDouble(), 1e-12);
+        assertEquals("second area", row[2].getString());
     }
 
     @Test
@@ -126,49 +133,6 @@ public class DBFImportExportTest {
         st.execute("drop table WATERNETWORK");
     }
 
-    @Test
-    public void importTableTestGeomEndWithDelete() throws SQLException, IOException {
-        Statement st = connection.createStatement();
-        final String path = SHPEngineTest.class.getResource("waternetwork.dbf").getPath();
-        DriverFunction driver = new DBFDriverFunction();
-        st.execute("DROP TABLE IF EXISTS waternetwork");
-        st.execute("CREATE TABLE waternetwork");
-        driver.importFile(connection, "WATERNETWORK", new File(path), new EmptyProgressVisitor(), true);
-        // Query declared Table columns
-        ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'WATERNETWORK'");
-        assertTrue(rs.next());
-        assertEquals(H2TableIndex.PK_COLUMN_NAME,rs.getString("COLUMN_NAME"));
-        assertEquals("INTEGER", rs.getString("TYPE_NAME"));
-        assertTrue(rs.next());
-        assertEquals("TYPE_AXE",rs.getString("COLUMN_NAME"));
-        assertEquals("VARCHAR", rs.getString("TYPE_NAME"));
-        assertEquals(254, rs.getInt("CHARACTER_MAXIMUM_LENGTH"));
-        assertTrue(rs.next());
-        assertEquals("GID",rs.getString("COLUMN_NAME"));
-        assertEquals("BIGINT", rs.getString("TYPE_NAME"));
-        assertTrue(rs.next());
-        assertEquals("LENGTH",rs.getString("COLUMN_NAME"));
-        assertEquals("DOUBLE",rs.getString("TYPE_NAME"));
-        rs.close();
-        // Check content
-        rs = st.executeQuery("SELECT * FROM WATERNETWORK");
-        assertTrue(rs.next());
-        assertEquals("river",rs.getString("type_axe"));
-        assertEquals(9.492402903934545, rs.getDouble("length"), 1e-12);
-        assertEquals(1, rs.getInt("GID"));
-        assertTrue(rs.next());
-        assertEquals("ditch", rs.getString("type_axe"));
-        assertEquals(261.62989135452983, rs.getDouble("length"), 1e-12);
-        assertEquals(2, rs.getInt("GID"));
-        rs.close();
-        // Computation
-        rs = st.executeQuery("SELECT SUM(length) sumlen FROM WATERNETWORK");
-        assertTrue(rs.next());
-        assertEquals(28469.778049948833, rs.getDouble(1), 1e-12);
-        rs.close();
-        st.execute("drop table WATERNETWORK");
-    }
-
     /**
      * Read a DBF where the encoding is missing in header.
      * @throws SQLException
@@ -178,29 +142,28 @@ public class DBFImportExportTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists sotchi");
         st.execute("CALL DBFREAD("+ StringUtils.quoteStringSQL(DBFEngineTest.class.getResource("sotchi.dbf").getPath())+", 'SOTCHI', 'cp1251');");
+        // Query declared Table columns
+        ResultSet rs = st.executeQuery("SELECT * FROM sotchi");
         // Check if fields name are OK
-        try ( // Query declared Table columns
-                ResultSet rs = st.executeQuery("SELECT * FROM sotchi")) {
-            // Check if fields name are OK
-            ResultSetMetaData meta = rs.getMetaData();
-            assertEquals("B_ДНА",meta.getColumnName(5));
-            assertEquals("ИМЕНА_УЧАС",meta.getColumnName(8));
-            assertEquals("ДЛИНА_КАНА",meta.getColumnName(9));
-            assertEquals("ДЛИНА_КАН_",meta.getColumnName(10));
-            assertEquals("ИМЯ_МУООС",meta.getColumnName(11));
-            assertTrue(rs.next());
-            assertEquals("ВП-2", rs.getString("NAMESHEME"));
-            assertEquals("Дубовский канал",rs.getString("NAME10000"));
-            assertTrue(rs.next());
-            assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
-            assertTrue(rs.next());
-            assertEquals("ВП-1", rs.getString("NAMESHEME"));
-            assertTrue(rs.next());
-            assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
-            assertTrue(rs.next());
-            assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
-            assertFalse(rs.next());
-        }
+        ResultSetMetaData meta = rs.getMetaData();
+        assertEquals("B_ДНА",meta.getColumnName(5));
+        assertEquals("ИМЕНА_УЧАС",meta.getColumnName(8));
+        assertEquals("ДЛИНА_КАНА",meta.getColumnName(9));
+        assertEquals("ДЛИНА_КАН_",meta.getColumnName(10));
+        assertEquals("ИМЯ_МУООС",meta.getColumnName(11));
+        assertTrue(rs.next());
+        assertEquals("ВП-2", rs.getString("NAMESHEME"));
+        assertEquals("Дубовский канал",rs.getString("NAME10000"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-2", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-1", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4", rs.getString("NAMESHEME"));
+        assertTrue(rs.next());
+        assertEquals("ВП-2-кр1-4-8", rs.getString("NAMESHEME"));
+        assertFalse(rs.next());
+        rs.close();
         st.execute("drop table sotchi");
     }
 
@@ -235,13 +198,13 @@ public class DBFImportExportTest {
         stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
         // Read this shape file to check values
         stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
-        try (ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id")) {
-            assertTrue(rs.next());
-            assertEquals(v1, rs.getDouble(1), 1e-12);
-            assertTrue(rs.next());
-            assertEquals(v2, rs.getDouble(1), 1e-12);
-            assertFalse(rs.next());
-        }
+        ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id");
+        assertTrue(rs.next());
+        assertEquals(v1, rs.getDouble(1), 1e-12);
+        assertTrue(rs.next());
+        assertEquals(v2, rs.getDouble(1), 1e-12);
+        assertFalse(rs.next());
+        rs.close();
     }
 
     @Test
@@ -258,113 +221,42 @@ public class DBFImportExportTest {
         stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
         // Read this shape file to check values
         stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
-        try (ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id")) {
-            assertTrue(rs.next());
-            assertEquals(v1, rs.getDouble(1), 1e-2);
-            assertTrue(rs.next());
-            assertEquals(v2, rs.getDouble(1), 1e-2);
-            assertFalse(rs.next());
-        }
+        ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id");
+        assertTrue(rs.next());
+        assertEquals(v1, rs.getDouble(1), 1e-2);
+        assertTrue(rs.next());
+        assertEquals(v2, rs.getDouble(1), 1e-2);
+        assertFalse(rs.next());
+        rs.close();
     }
 
     @Test
     public void testWriteReadEmptyTable1() throws SQLException {
-        try (Statement stat = connection.createStatement()) {
-            stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
-            stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
-            stat.execute("create table TABLE_EMPTY(id INTEGER)");
-            stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
-            stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
-            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
-            ResultSetMetaData rsmd = res.getMetaData();
-            assertTrue(rsmd.getColumnCount()==2);
-            assertTrue(!res.next());
-        }
+        Statement stat = connection.createStatement();
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
+        stat.execute("create table TABLE_EMPTY(id INTEGER)");
+        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
+        stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
+        ResultSetMetaData rsmd = res.getMetaData();
+        assertTrue(rsmd.getColumnCount()==2);
+        assertTrue(!res.next());
+        stat.close();
     }
     
     @Test
     public void testWriteReadEmptyTable2() throws SQLException {
-        try (Statement stat = connection.createStatement()) {
-            stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
-            stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
-            stat.execute("create table TABLE_EMPTY()");
-            stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
-            stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
-            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
-            ResultSetMetaData rsmd = res.getMetaData();
-            assertTrue(rsmd.getColumnCount()==0);
-            assertTrue(!res.next());
-        }
-    }
-    
-    @Test
-    public void exportImportFile() throws SQLException, IOException {
         Statement stat = connection.createStatement();
-        File fileOut = new File("target/lineal_export.dbf");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL DBFWrite('target/lineal_export.dbf', 'LINEAL')");
-        // Read this shape file to check values
-        assertTrue(fileOut.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
-        stat.execute("CALL DBFRead('target/lineal_export.dbf')");
-        
-         try (ResultSet res = stat.executeQuery("SELECT IDAREA FROM LINEAL_EXPORT;")) {
-            res.next();
-            assertTrue(res.getInt(1)==1);
-        }  
-    }
-    
-    
-    @Test(expected = SQLException.class)
-    public void exportImportFileWithSpace() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        File fileOut = new File("target/lineal export.dbf");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL DBFWrite('target/lineal export.dbf', 'LINEAL')");
-        // Read this shape file to check values
-        assertTrue(fileOut.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
-        stat.execute("CALL DBFRead('target/lineal export.dbf')");
-    }
-    
-    @Test(expected = SQLException.class)
-    public void exportImportFileWithDot() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        File fileOut = new File("target/lineal.export.dbf");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL DBFWrite('target/lineal.export.dbf', 'LINEAL')");
-        // Read this shape file to check values
-        assertTrue(fileOut.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
-        stat.execute("CALL DBFRead('target/lineal.export.dbf')");
-    }
-    
-    @Test
-    public void exportQueryImportFile() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        File fileOut = new File("target/lineal_export.dbf");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL DBFWrite('target/lineal_export.dbf', '(SELECT * FROM LINEAL)')");
-        // Read this shape file to check values
-        assertTrue(fileOut.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL,LINEAL_EXPORT;");
-        stat.execute("CALL DBFRead('target/lineal_export.dbf')");
-        
-         try (ResultSet res = stat.executeQuery("SELECT IDAREA FROM LINEAL_EXPORT;")) {
-            res.next();
-            assertTrue(res.getInt(1)==1);
-        }  
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY");
+        stat.execute("DROP TABLE IF EXISTS TABLE_EMPTY_READ");
+        stat.execute("create table TABLE_EMPTY()");
+        stat.execute("CALL DBFWrite('target/empty.dbf', 'TABLE_EMPTY');");
+        stat.execute("CALL DBFRead('target/empty.dbf', 'TABLE_EMPTY_READ');");
+        ResultSet res = stat.executeQuery("SELECT * FROM TABLE_EMPTY_READ;");
+        ResultSetMetaData rsmd = res.getMetaData();
+        assertTrue(rsmd.getColumnCount()==0);
+        assertTrue(!res.next());
+        stat.close();
     }
 }

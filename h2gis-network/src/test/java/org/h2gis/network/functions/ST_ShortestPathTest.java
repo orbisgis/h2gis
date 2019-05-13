@@ -27,6 +27,7 @@ import java.sql.Statement;
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
@@ -766,25 +767,25 @@ public class ST_ShortestPathTest {
         check(oneToOne(U, W, 5, 5), EMPTY);
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void testNonexistantSourceVertex() throws Throwable {
         try {
             // The graph does not contain vertex 6.
             check(oneToOne(U, W, 6, 1), null);
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains("Source vertex not found"));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test(expected = JdbcSQLNonTransientException.class)
     public void testNonexistantDestinationVertex() throws Throwable {
         try {
             // The graph does not contain vertex 6.
             check(oneToOne(U, W, 1, 6), null);
         } catch (JdbcSQLException e) {
             assertTrue(e.getMessage().contains("Target vertex not found"));
-            throw e.getOriginalCause();
+            throw e.getCause();
         }
     }
 

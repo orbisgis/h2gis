@@ -57,7 +57,7 @@ public class ConnectionWrapTest {
     public void testGeometryCast() throws SQLException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
+        stat.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
         stat.execute("insert into area values(2, 'POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))')");
         try (SpatialResultSet rs = stat.executeQuery("select idarea, the_geom  from area").unwrap(SpatialResultSet.class)) {
@@ -74,7 +74,7 @@ public class ConnectionWrapTest {
         WKTReader wktReader = new WKTReader();
         Statement stat = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY ,ResultSet.CONCUR_UPDATABLE);
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
+        stat.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
         SpatialResultSet rs = stat.executeQuery("select * from area").unwrap(SpatialResultSet.class);
         rs.moveToInsertRow();
         rs.updateInt(1, 1);
