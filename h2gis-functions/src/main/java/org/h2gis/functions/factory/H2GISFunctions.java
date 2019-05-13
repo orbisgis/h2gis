@@ -31,6 +31,8 @@ import org.h2.api.Aggregate;
 import org.h2.tools.RunScript;
 import org.h2gis.api.Function;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.spatial.create.*;
+import org.h2gis.functions.spatial.earth.ST_Isovist;
 import org.h2gis.functions.spatial.properties.*;
 import org.h2gis.functions.spatial.split.ST_LineIntersector;
 import org.h2gis.functions.spatial.split.ST_Split;
@@ -86,22 +88,6 @@ import org.h2gis.functions.spatial.convert.ST_PolyFromWKB;
 import org.h2gis.functions.spatial.convert.ST_ToMultiLine;
 import org.h2gis.functions.spatial.convert.ST_ToMultiPoint;
 import org.h2gis.functions.spatial.convert.ST_ToMultiSegments;
-import org.h2gis.functions.spatial.create.ST_BoundingCircle;
-import org.h2gis.functions.spatial.create.ST_BoundingCircleCenter;
-import org.h2gis.functions.spatial.create.ST_Expand;
-import org.h2gis.functions.spatial.create.ST_Extrude;
-import org.h2gis.functions.spatial.create.ST_MakeEllipse;
-import org.h2gis.functions.spatial.create.ST_MakeEnvelope;
-import org.h2gis.functions.spatial.create.ST_MakeGrid;
-import org.h2gis.functions.spatial.create.ST_MakeGridPoints;
-import org.h2gis.functions.spatial.create.ST_MakeLine;
-import org.h2gis.functions.spatial.create.ST_MakePoint;
-import org.h2gis.functions.spatial.create.ST_MakePolygon;
-import org.h2gis.functions.spatial.create.ST_MinimumBoundingCircle;
-import org.h2gis.functions.spatial.create.ST_MinimumRectangle;
-import org.h2gis.functions.spatial.create.ST_OctogonalEnvelope;
-import org.h2gis.functions.spatial.create.ST_Point;
-import org.h2gis.functions.spatial.create.ST_RingBuffer;
 import org.h2gis.functions.spatial.crs.ST_SetSRID;
 import org.h2gis.functions.spatial.crs.ST_Transform;
 import org.h2gis.functions.spatial.distance.ST_ClosestCoordinate;
@@ -349,7 +335,7 @@ public class H2GISFunctions {
                 new ST_MakePolygon(),
                 new ST_IsValidReason(),
                 new ST_IsValidDetail(),
-                new ST_LineIntersector(),        
+                new ST_LineIntersector(),
                 new ST_OffSetCurve(),
                 new OSMRead(),
                 new ST_OSMDownloader(),
@@ -389,6 +375,8 @@ public class H2GISFunctions {
                 new ST_Svf(),
                 new JsonWrite(),
                 new ST_ShortestLine(),
+                new ST_OrientedEnvelope(),
+                new ST_Isovist(),
                 new ST_EstimatedExtent(),
                 new ColumnSRIDFromColumnType(),
                 new DimensionFromColumnType(),
