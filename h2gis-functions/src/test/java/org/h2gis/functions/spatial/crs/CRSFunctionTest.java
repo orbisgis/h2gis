@@ -91,7 +91,7 @@ public class CRSFunctionTest {
     @Test
     public void testST_Transform27572to2154WithoutNadgrid() throws Exception {
         checkProjectedGeom("POINT(282331 2273699.7)", 27572, 2154,
-                "POINT(332602.96188705775 6709788.264374727)");
+                "POINT(332602.9618934966 6709788.264478932)");
     }
 
     @Test
