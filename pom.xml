@@ -22,7 +22,6 @@
         <module>h2gis-functions-osgi</module>
         <module>postgis-jts</module>
         <module>postgis-jts-osgi</module>
-        <module>h2gis-dist</module>
     </modules>
 
     <!-- Properties -->
@@ -234,4 +233,13 @@
             <url>file:/var/www/html/${project.artifactId}</url>
         </site>
     </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>standalone</id>
+            <modules>
+                <module>h2gis-dist</module>
+            </modules>
+        </profile>
+    </profiles>
 </project>
