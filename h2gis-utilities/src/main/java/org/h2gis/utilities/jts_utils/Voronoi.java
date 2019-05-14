@@ -26,6 +26,7 @@ import org.locationtech.jts.index.ItemVisitor;
 import org.locationtech.jts.index.quadtree.Quadtree;
 import org.locationtech.jts.math.Vector2D;
 import org.locationtech.jts.operation.polygonize.Polygonizer;
+
 import java.util.*;
 
 
@@ -259,7 +260,7 @@ public class Voronoi {
                     lastCoord = circumCenter;
                 }
             }
-            return gf.createPolygon(polygonVertex.toArray(new Coordinate[0]));
+            return gf.createPolygon(polygonVertex.toArray(new Coordinate[polygonVertex.size()]));
         } else {
             // Must complete with boundary
             if(envelope == null) {
@@ -357,7 +358,7 @@ public class Voronoi {
                     throw new TopologyException("Voronoi method accept only polygons");
                 }
             }
-            MultiPolygon result = geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[0]));
+            MultiPolygon result = geometryFactory.createMultiPolygon(polygons.toArray(new Polygon[polygons.size()]));
             if(envelope == null) {
                 return result;
             } else {
@@ -401,16 +402,19 @@ public class Voronoi {
             if(envelope != null) {
                 voronoiBorderLines.add(((Polygon)geometryFactory.toGeometry(envelope)).getExteriorRing());
                 MultiLineString env = (MultiLineString)geometryFactory.createMultiLineString(voronoiBorderLines.
-                        toArray(new LineString[0])).union();
-                for (int i = 0; i < env.getNumGeometries(); i++) {
+                        toArray(new LineString[voronoiBorderLines.size()])).union();
+                for (int i = 0; i < env.getNumGeometries(); i++) {                    
                     lineStrings.add((LineString) env.getGeometryN(i));
                 }
             }
             if(outputDimension == 1) {
-                return geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[0]));
+                MultiLineString g = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
+                ReplaceZ replacez = new ReplaceZ();
+                g.apply(replacez);
+                return g;
             } else {
                 Polygonizer polygonizer = new Polygonizer();
-                MultiLineString voronoiSegs = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[0]));
+                MultiLineString voronoiSegs = geometryFactory.createMultiLineString(lineStrings.toArray(new LineString[lineStrings.size()]));
                 polygonizer.add(voronoiSegs);
                 return geometryFactory.createMultiPolygon(GeometryFactory.toPolygonArray(polygonizer.getPolygons()));
             }
@@ -553,6 +557,39 @@ public class Voronoi {
                     nearest = idx;
                     nearestDistance = itemDistance;
                 }
+            }
+        }
+    }
+    
+     /**
+     * Replaces the z value to each vertex of the Geometry.
+     *
+     */
+    public static class ReplaceZ implements CoordinateSequenceFilter {
+        
+        private boolean done = false;
+
+        public ReplaceZ() {
+        }
+
+        @Override
+        public boolean isGeometryChanged() {
+            return true;
+        }
+
+        @Override
+        public boolean isDone() {
+            return done;
+        }
+
+        @Override
+        public void filter(CoordinateSequence seq, int i) {
+            if(Double.isNaN(seq.getOrdinate(i, 2))){
+                seq.setOrdinate(i, 2, 0);
+                //done =true;
+            }
+            if (i == seq.size()) {
+                done = true;
             }
         }
     }

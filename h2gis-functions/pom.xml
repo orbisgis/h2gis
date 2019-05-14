@@ -40,70 +40,71 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>${commons-compress-groupId}</groupId>
+            <groupId>org.apache.commons</groupId>
             <artifactId>commons-compress</artifactId>
         </dependency>
         <dependency>
-            <groupId>${cts-groupId}</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>cts</artifactId>
         </dependency>
         <dependency>
-            <groupId>${h2-groupId}</groupId>
+            <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-api</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-utilities</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${jackson-core-groupId}</groupId>
+            <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>${jts-core-groupId}</groupId>
+            <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>${poly2tri-groupId}</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>poly2tri-core</artifactId>
         </dependency>
 
         <!-- Provided dependencies -->
         <dependency>
-            <groupId>${osgi-enterprise-groupId}</groupId>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.enterprise</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${osgi-compendium-groupId}</groupId>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.compendium</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>${osgi-core-groupId}</groupId>
+            <groupId>org.osgi</groupId>
             <artifactId>org.osgi.core</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- Test dependencies -->
         <dependency>
-            <groupId>${commons-io-groupId}</groupId>
+            <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
+            <version>1.3.2</version>
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>${junit-groupId}</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-test-utilities</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
@@ -111,7 +112,6 @@
         <dependency>
             <groupId>${slf4j-groupId}</groupId>
             <artifactId>slf4j-simple</artifactId>
-            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -120,7 +120,7 @@
         <plugins>
             <!-- Plugin for the bundle packaging -->
             <plugin>
-                <groupId>${maven-bundle-plugin-groupId}</groupId>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -138,34 +138,21 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <!-- Plugin for the test coverage check -->
             <plugin>
-                <groupId>${cobertura-maven-plugin-groupId}</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <configuration>
-                    <check>
-                        <!-- TODO Raise Coverage constraint -->
-                        <branchRate>0</branchRate>
-                        <lineRate>0</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>50</totalBranchRate>
-                        <totalLineRate>70</totalLineRate>
-                        <packageLineRate>0</packageLineRate>
-                        <packageBranchRate>0</packageBranchRate>
-                    </check>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <!-- Plugin for the compilation -->
-            <plugin>
-                <groupId>${maven-compiler-plugin-groupId}</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
         </plugins>
 

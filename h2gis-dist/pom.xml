@@ -12,13 +12,11 @@
         <version>2.0.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-
     <artifactId>h2gis-dist</artifactId>
 
     <!-- Project Information -->
     <name>h2gis-dist</name>
     <description>Generate a jar file containing the whole H2GIS project.</description>
-
     <organization>
         <name>CNRS</name>
         <url>http://www.h2gis.org</url>
@@ -40,21 +38,21 @@
     <dependencies>
         <!-- Simple Logging Facade for Java -->
         <dependency>
-            <groupId>${slf4j-groupId}</groupId>
+            <groupId>org.slf4j</groupId>
             <artifactId>slf4j-simple</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-osgi</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>h2gis-network</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>postgis-jts-osgi</artifactId>
             <version>${project.version}</version>
             <exclusions>
@@ -75,7 +73,7 @@
         <plugins>
             <!-- Plugin for test running -->
             <plugin>
-                <groupId>${maven-surefire-plugin-groupId}</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <workingDirectory>target/</workingDirectory>
@@ -83,7 +81,7 @@
             </plugin>
             <!-- Plugin for the execution of a Java program -->
             <plugin>
-                <groupId>${exec-maven-plugin-groupId}</groupId>
+                <groupId>org.codehaus.mojo</groupId>
                 <artifactId>exec-maven-plugin</artifactId>
                 <configuration>
                     <executable>java</executable>
@@ -98,7 +96,7 @@
             </plugin>
             <!-- Create a JAR from the project -->
             <plugin>
-                <groupId>${maven-jar-plugin-groupId}</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
@@ -112,7 +110,7 @@
             </plugin>
             <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files  -->
             <plugin>
-                <groupId>${maven-assembly-plugin-groupId}</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <executions>
                     <execution>

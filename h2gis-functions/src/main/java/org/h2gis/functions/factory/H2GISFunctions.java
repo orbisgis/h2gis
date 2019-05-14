@@ -80,15 +80,11 @@ import org.h2gis.functions.spatial.topology.ST_Graph;
 import org.h2gis.functions.spatial.topology.ST_Node;
 import org.h2gis.functions.spatial.topology.ST_Polygonize;
 import org.h2gis.functions.spatial.trigonometry.ST_Azimuth;
-import org.h2gis.functions.spatial.type.DimensionFromConstraint;
-import org.h2gis.functions.spatial.type.DomainInfo;
-import org.h2gis.functions.spatial.type.GeometryTypeFromConstraint;
-import org.h2gis.functions.spatial.type.GeometryTypeNameFromConstraint;
+import org.h2gis.functions.spatial.type.*;
 import org.h2gis.functions.string.HexToVarBinary;
 import org.h2gis.functions.system.DoubleRange;
 import org.h2gis.functions.system.H2GISversion;
 import org.h2gis.functions.system.IntegerRange;
-import org.h2gis.utilities.GeometryTypeCodes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -270,7 +266,7 @@ public class H2GISFunctions {
                 new ST_MakePolygon(),
                 new ST_IsValidReason(),
                 new ST_IsValidDetail(),
-                new ST_LineIntersector(),        
+                new ST_LineIntersector(),
                 new ST_OffSetCurve(),
                 new OSMRead(),
                 new ST_OSMDownloader(),
@@ -311,22 +307,12 @@ public class H2GISFunctions {
                 new JsonWrite(),
                 new ST_ShortestLine(),
                 new ST_OrientedEnvelope(),
-                new ST_Isovist()};
-    }
-
-    /**
-     * @return instance of all spatial built-ins field type
-     */
-    public static DomainInfo[] getBuiltInsType() {
-        return new DomainInfo[] {
-                new DomainInfo("POINT", GeometryTypeCodes.POINT),
-                new DomainInfo("LINESTRING", GeometryTypeCodes.LINESTRING),
-                new DomainInfo("POLYGON", GeometryTypeCodes.POLYGON),
-                new DomainInfo("GEOMCOLLECTION", GeometryTypeCodes.GEOMCOLLECTION),
-                new DomainInfo("MULTIPOINT", GeometryTypeCodes.MULTIPOINT),
-                new DomainInfo("MULTILINESTRING", GeometryTypeCodes.MULTILINESTRING),
-                new DomainInfo("MULTIPOLYGON", GeometryTypeCodes.MULTIPOLYGON)
-        };
+                new ST_Isovist(),
+                new ST_EstimatedExtent(),
+                new ColumnSRIDFromColumnType(),
+                new DimensionFromColumnType(),
+                new GeometryTypeNameFromColumnType(),
+                new GeometryTypeFromColumnType()};
     }
 
     /**
@@ -339,7 +325,6 @@ public class H2GISFunctions {
     public static void load(Connection connection, String BundleSymbolicName, String BundleVersion) throws SQLException {
         String packagePrepend = BundleSymbolicName+":"+BundleVersion+":";
         registerH2GISFunctions(connection,packagePrepend);
-        registerGeometryType(connection);
         connection.commit();
     }
 
@@ -350,21 +335,7 @@ public class H2GISFunctions {
      */
     public static void load(Connection connection) throws SQLException {
         registerH2GISFunctions(connection,"");
-        registerGeometryType(connection);
         registerSpatialTables(connection);
-    }
-
-    /**
-     * Register geometry type in an OSGi environment
-     * @param connection Active H2 connection
-     * @throws SQLException
-     */
-    public static void registerGeometryType(Connection connection) throws SQLException {
-        Statement st = connection.createStatement();
-        for(DomainInfo domainInfo : getBuiltInsType()) {
-            // Check for byte array first, to not throw an enigmatic error CastException
-            st.execute("CREATE DOMAIN IF NOT EXISTS "+domainInfo.getDomainName()+" AS "+GEOMETRY_BASE_TYPE+"("+domainInfo.getGeometryTypeCode()+") CHECK (ST_GeometryTypeCode(VALUE) = "+domainInfo.getGeometryTypeCode()+");");
-        }
     }
 
     /**
@@ -376,10 +347,10 @@ public class H2GISFunctions {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
         st.execute("create view geometry_columns as select TABLE_CATALOG f_table_catalog,TABLE_SCHEMA f_table_schema,TABLE_NAME f_table_name," +
-                "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) geometry_type," +
-                "_DimensionFromConstraint(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) coord_dimension," +
-                "_ColumnSRID(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,CHECK_CONSTRAINT) srid," +
-                " _GeometryTypeNameFromConstraint(CHECK_CONSTRAINT || REMARKS, NUMERIC_PRECISION) type" +
+                "COLUMN_NAME f_geometry_column,1 storage_type,_GeometryTypeFromColumnType(COLUMN_TYPE) geometry_type," +
+                "_DimensionFromColumnType(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,COLUMN_TYPE) coord_dimension," +
+                "_ColumnSRIDFromColumnType(TABLE_CATALOG,TABLE_SCHEMA, TABLE_NAME,COLUMN_NAME,COLUMN_TYPE) srid," +
+                " _GeometryTypeNameFromColumnType(COLUMN_TYPE) type" +
                 " from INFORMATION_SCHEMA.COLUMNS WHERE TYPE_NAME = 'GEOMETRY'");
         ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
         if(!rs.next()) {
@@ -392,19 +363,6 @@ public class H2GISFunctions {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-        }
-    }
-
-    /**
-     * Release geometry type
-     * @param connection Active h2 connection with DROP DOMAIN and DROP ALIAS rights
-     * @throws java.sql.SQLException
-     */
-    public static void unRegisterGeometryType(Connection connection) throws SQLException {
-        Statement st = connection.createStatement();
-        DomainInfo[] domainInfos = getBuiltInsType();
-        for(DomainInfo domainInfo : domainInfos) {
-            st.execute("DROP DOMAIN IF EXISTS " + domainInfo.getDomainName());
         }
     }
 
@@ -555,6 +513,5 @@ public class H2GISFunctions {
         for (Function function : getBuiltInsFunctions()) {
             unRegisterFunction(st, function);
         }
-        unRegisterGeometryType(connection);
     }
 }

@@ -23,9 +23,9 @@ package org.h2gis.functions;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.io.WKTReader;
 
 import java.sql.Connection;
@@ -33,7 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test spatial wrapper of Connection
@@ -43,12 +43,12 @@ public class ConnectionWrapTest {
     private static Connection connection;
     private static final String DB_NAME = "ConnectionWrapTest";
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
     }
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -57,7 +57,7 @@ public class ConnectionWrapTest {
     public void testGeometryCast() throws SQLException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
+        stat.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
         stat.execute("insert into area values(1, 'POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))')");
         stat.execute("insert into area values(2, 'POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))')");
         try (SpatialResultSet rs = stat.executeQuery("select idarea, the_geom  from area").unwrap(SpatialResultSet.class)) {
@@ -74,7 +74,7 @@ public class ConnectionWrapTest {
         WKTReader wktReader = new WKTReader();
         Statement stat = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY ,ResultSet.CONCUR_UPDATABLE);
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(idarea int primary key, the_geom POLYGON)");
+        stat.execute("create table area(idarea int primary key, the_geom GEOMETRY(POLYGON))");
         SpatialResultSet rs = stat.executeQuery("select * from area").unwrap(SpatialResultSet.class);
         rs.moveToInsertRow();
         rs.updateInt(1, 1);

@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.io.dbf.internal;
 
+import org.h2.value.Value;
 import org.h2gis.api.FileDriver;
 
 import java.io.File;
@@ -136,12 +137,23 @@ public class DBFDriver implements FileDriver {
     }
 
     @Override
-    public Object[] getRow(long rowId) throws IOException {
+    public Value[] getRow(long rowId) throws IOException {
         final int fieldCount = dbaseFileReader.getFieldCount();
-        Object[] values = new Object[fieldCount];
+        Value[] values = new Value[fieldCount];
         for(int fieldId=0;fieldId<fieldCount;fieldId++) {
             values[fieldId] = dbaseFileReader.getFieldValue((int)rowId, fieldId);
         }
         return values;
     }
+
+    /**
+     * Get the file reader
+     * @return 
+     */
+    public DbaseFileReader getDbaseFileReader() {
+        return dbaseFileReader;
+    }
+    
+    
 }
+

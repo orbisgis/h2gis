@@ -20,17 +20,14 @@
 
 package org.h2gis.utilities;
 
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -227,6 +224,43 @@ public class SFSUtilities {
         }
         throw new SQLException("Unable to get the table extent it may be empty");
     }
+    
+    /**
+     * Compute the 'estimated' extent of the given spatial table. 
+     * In case of POSTGIS : the estimated is taken from the geometry column's statistics.
+     * In case of H2GIS : the estimated is taken from the spatial index of the geometry column.
+     * If the estimated extend is null the extent is computed.
+     * @param connection
+     * @param tableLocation
+     * @param geometryField
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryField) throws SQLException {
+        Geometry result;
+        StringBuilder query = new StringBuilder("SELECT  ESTIMATED_ENVELOPE('");
+        query.append(tableLocation.getTable()).append("','").append(geometryField).append("')");
+        ResultSet rs = connection.createStatement().executeQuery(query.toString());
+        if (rs.next()) {
+            result = (Geometry) rs.getObject(1);
+            if (result != null) {
+                return result;
+            } else {
+                query = new StringBuilder("SELECT  ENVELOPE(");
+                query.append(TableLocation.quoteIdentifier(geometryField)).append(") FROM ").append(tableLocation.getTable());
+                rs = connection.createStatement().executeQuery(query.toString());
+                if (rs.next()) {
+                    result = (Geometry) rs.getObject(1);
+                    if (result != null) {
+                        return result;
+                    }
+                }
+            }
+        }
+        throw new SQLException("Unable to compute the estimated extent");
+    }
+    
+    
 
     /**
      * Find geometry fields name of a table.

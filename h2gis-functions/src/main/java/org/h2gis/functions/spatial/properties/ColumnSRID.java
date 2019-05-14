@@ -23,6 +23,7 @@ package org.h2gis.functions.spatial.properties;
 import org.h2.util.StringUtils;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
+import org.h2gis.functions.spatial.type.DimensionFromConstraint;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -32,8 +33,12 @@ import java.util.regex.Pattern;
 
 /**
  * Get the column SRID from constraints and data.
+ *
+ * Since H21.4.198, {@link DimensionFromConstraint} should be used.
+ *
  * @author Nicolas Fortin
  */
+@Deprecated
 public class ColumnSRID extends AbstractFunction implements ScalarFunction {
     private static final String SRID_FUNC = ST_SRID.class.getSimpleName();
     private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("ST_SRID\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);

@@ -22,7 +22,9 @@ package org.h2gis.functions.io.dbf;
 
 import org.h2.command.ddl.CreateTableData;
 import org.h2.table.Column;
+import org.h2.value.TypeInfo;
 import org.h2.value.Value;
+import org.h2.value.ValueNull;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
 import org.h2gis.functions.io.file_table.FileEngine;
@@ -60,8 +62,8 @@ public class DBFEngine extends FileEngine<DBFDriver> {
         for (int i = 0; i < header.getNumFields(); i++) {
             String fieldsName = header.getFieldName(i);
             final int type = dbfTypeToH2Type(header,i);
-            Column column = new Column(fieldsName.toUpperCase(), type);
-            column.setPrecision(header.getFieldLength(i)); // set string length
+            TypeInfo typeInfo = new TypeInfo(type, header.getFieldLength(i), 0, ValueNull.STRING, null);
+            Column column = new Column(fieldsName.toUpperCase(), typeInfo);
             data.columns.add(column);
         }
     }

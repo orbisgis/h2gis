@@ -31,8 +31,12 @@ import java.util.regex.Pattern;
 
 /**
  * Check column constraint for Z constraint. Has M is not supported yet by JTS Topology Suite WKTReader.
+ *
+ * Since H21.4.198, {@link DimensionFromConstraint} should be used.
+ *
  * @author Nicolas Fortin
  */
+@Deprecated
 public class DimensionFromConstraint extends DeterministicScalarFunction {
     private static final Pattern Z_CONSTRAINT_PATTERN = Pattern.compile(
             "ST_COORDDIM\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*(((!|<|>)?=)|<>|>|<)\\s*(\\d+)", Pattern.CASE_INSENSITIVE);

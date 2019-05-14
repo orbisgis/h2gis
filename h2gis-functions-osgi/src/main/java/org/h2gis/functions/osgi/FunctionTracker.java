@@ -20,9 +20,6 @@
 
 package org.h2gis.functions.osgi;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import javax.sql.DataSource;
 import org.h2gis.api.Function;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.osgi.framework.BundleContext;
@@ -30,6 +27,10 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Keep connection open and track arrival and departure of h2gis OSGi functions

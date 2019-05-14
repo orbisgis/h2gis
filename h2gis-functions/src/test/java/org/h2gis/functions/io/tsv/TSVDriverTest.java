@@ -25,14 +25,13 @@ import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -44,7 +43,7 @@ public class TSVDriverTest {
     private static final String DB_NAME = "TSVImportExportTest";
     private Statement st;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
@@ -53,17 +52,17 @@ public class TSVDriverTest {
         
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
     
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -118,34 +117,38 @@ public class TSVDriverTest {
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void exportImportFileWithSpace() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        File fileOut = new File("target/lineal export.tsv");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL TSVWrite('target/lineal export.tsv', 'LINEAL')");
-        // Read this shape file to check values
-        assertTrue(fileOut.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
-        stat.execute("CALL TSVRead('target/lineal export.tsv')");
+        assertThrows(SQLException.class, () -> {
+            Statement stat = connection.createStatement();
+            File fileOut = new File("target/lineal export.tsv");
+            stat.execute("DROP TABLE IF EXISTS LINEAL");
+            stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
+            stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+            // Create a shape file using table area
+            stat.execute("CALL TSVWrite('target/lineal export.tsv', 'LINEAL')");
+            // Read this shape file to check values
+            assertTrue(fileOut.exists());
+            stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+            stat.execute("CALL TSVRead('target/lineal export.tsv')");
+        });
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void exportImportFileWithDot() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        File fileOut = new File("target/lineal.export.tsv");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom LINESTRING)");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL TSVWrite('target/lineal.export.tsv', 'LINEAL')");
-        // Read this shape file to check values
-        assertTrue(fileOut.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
-        stat.execute("CALL TSVRead('target/lineal.export.tsv')");
+        assertThrows(SQLException.class, () -> {
+            Statement stat = connection.createStatement();
+            File fileOut = new File("target/lineal.export.tsv");
+            stat.execute("DROP TABLE IF EXISTS LINEAL");
+            stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
+            stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+            // Create a shape file using table area
+            stat.execute("CALL TSVWrite('target/lineal.export.tsv', 'LINEAL')");
+            // Read this shape file to check values
+            assertTrue(fileOut.exists());
+            stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+            stat.execute("CALL TSVRead('target/lineal.export.tsv')");
+        });
     }
     
     

@@ -25,9 +25,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.h2.value.ValueGeometry;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Assert with Geometry type
@@ -87,7 +85,7 @@ public class GeometryAsserts {
                     moreInfo = "\n But are topologically equals";
                 }
             }
-            assertEquals("Expected:\n" + expected.getWKT() + "\nActual:\n" + actual.getWKT()+moreInfo, expected, actual);
+            assertEquals(expected, actual, "Expected:\n" + expected.getEWKT()+ "\nActual:\n" + actual.getEWKT()+moreInfo);
         }
     }
     /**

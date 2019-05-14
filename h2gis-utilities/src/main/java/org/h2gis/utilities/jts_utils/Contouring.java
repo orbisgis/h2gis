@@ -23,11 +23,7 @@ package org.h2gis.utilities.jts_utils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.TopologyException;
 
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Split triangle into area within the specified range values.

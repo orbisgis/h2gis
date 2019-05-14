@@ -23,11 +23,7 @@ package org.h2gis.utilities.trigger;
 import org.h2.api.Trigger;
 import org.h2gis.utilities.TableLocation;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 /**
  * This trigger is used to track modifications on tables by inserting notifications into a temporary table.

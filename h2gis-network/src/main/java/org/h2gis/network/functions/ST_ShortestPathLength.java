@@ -20,25 +20,25 @@
 package org.h2gis.network.functions;
 
 
-import java.sql.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 import org.h2.tools.SimpleResultSet;
 import org.h2.value.Value;
 import org.h2.value.ValueInt;
 import org.h2.value.ValueString;
 import org.h2gis.api.ScalarFunction;
-import static org.h2gis.network.functions.GraphConstants.DESTINATION;
-import static org.h2gis.network.functions.GraphConstants.DISTANCE;
-import static org.h2gis.network.functions.GraphConstants.SOURCE;
-import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 import org.h2gis.utilities.JDBCUtilities;
 import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
+
+import java.sql.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import static org.h2gis.network.functions.GraphConstants.*;
+import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 
 /**
  * Calculates the length(s) of shortest path(s) between vertices in a JGraphT

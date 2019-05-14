@@ -20,18 +20,18 @@
 package org.h2gis.network.functions;
 
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.jupiter.api.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.junit.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Adam Gouge
@@ -50,7 +50,7 @@ public class ST_ShortestPathLengthTest {
     private static final String SOURCE_TABLE = "'source_table'";
     private static final String DEST_TABLE = "'dest_table'";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase("ST_ShortestPathLengthTest", true);
@@ -59,17 +59,17 @@ public class ST_ShortestPathLengthTest {
         registerSourceDestinationTable(connection);
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -674,52 +674,60 @@ public class ST_ShortestPathLengthTest {
         manyToManySTDT(orientation, null, sourceTable, destinationTable, distances);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void emptySourceTableFail() throws Throwable {
-        try {
-            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
-                    "'undirected', 'SOURCE_TABLE', 'EMPTY_TABLE')");
-        } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
-            assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
-            throw originalCause;
-        }
+    @Test
+    public void emptySourceTableFail() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
+                        "'undirected', 'SOURCE_TABLE', 'EMPTY_TABLE')");
+            } catch (JdbcSQLException e) {
+                final Throwable originalCause = e.getCause();
+                assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
+                throw originalCause;
+            }
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void emptyDestTableFail() throws Throwable {
-        try {
-            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
-                    "'undirected', 'EMPTY_TABLE', 'DEST_TABLE')");
-        } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
-            assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
-            throw originalCause;
-        }
+    @Test
+    public void emptyDestTableFail() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
+                        "'undirected', 'EMPTY_TABLE', 'DEST_TABLE')");
+            } catch (JdbcSQLException e) {
+                final Throwable originalCause = e.getCause();
+                assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
+                throw originalCause;
+            }
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void emptySourceTableDestTableFail() throws Throwable {
-        try {
-            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
-                    "'undirected', 'EMPTY_TABLE', 'EMPTY_TABLE')");
-        } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
-            assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
-            throw originalCause;
-        }
+    @Test
+    public void emptySourceTableDestTableFail() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
+                        "'undirected', 'EMPTY_TABLE', 'EMPTY_TABLE')");
+            } catch (JdbcSQLException e) {
+                final Throwable originalCause = e.getCause();
+                assertTrue(originalCause.getMessage().equals("Table EMPTY_TABLE was empty."));
+                throw originalCause;
+            }
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void nonExistentNodeFail() throws Throwable {
-        try {
-            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
-                    "'undirected', 'NONEXISTENT_NODE_TABLE', 'DEST_TABLE')");
-        } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getOriginalCause();
-            assertTrue(originalCause.getMessage().equals("The graph does not contain vertex 9999"));
-            throw originalCause;
-        }
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', " +
+                        "'undirected', 'NONEXISTENT_NODE_TABLE', 'DEST_TABLE')");
+            } catch (JdbcSQLException e) {
+                final Throwable originalCause = e.getCause();
+                assertTrue(originalCause.getMessage().equals("The graph does not contain vertex 9999"));
+                throw originalCause;
+            }
+        });
     }
 
     // ************************* One-to-Several ***************************************
@@ -814,14 +822,16 @@ public class ST_ShortestPathLengthTest {
         oneToSeveral(W, U, 5, "'1, 2, 3, 4, 5'", new double[]{7.0, 4.0, 2.0, 4.0, 0.0});
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void oneToSeveralFail() throws Throwable {
-        try {
-            // The graph does not contain vertex 7.
-            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 1, '2, 7')");
-        } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
-        }
+    @Test
+    public void oneToSeveralFail() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                // The graph does not contain vertex 7.
+                st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 1, '2, 7')");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     private void oneToSeveral(String orientation, String weight, int source, String destinationString, double[] distances) throws SQLException {
@@ -861,31 +871,37 @@ public class ST_ShortestPathLengthTest {
                 distances, 25);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void arg3Fail() throws Throwable {
-        try {
-            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 2.0)");
-        } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
-        }
+    @Test
+    public void arg3Fail() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 2.0)");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void arg4Fail() throws Throwable {
-        try {
-            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 1, 2.0)");
-        } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
-        }
+    @Test
+    public void arg4Fail() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 1, 2.0)");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void arg5Fail() throws Throwable {
-        try {
-            st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 'weight', 1, 2.0)");
-        } catch (JdbcSQLException e) {
-            throw e.getOriginalCause();
-        }
+    @Test
+    public void arg5Fail() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.executeQuery("SELECT * FROM ST_ShortestPathLength('CORMEN_EDGES_ALL', 'undirected', 'weight', 1, 2.0)");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test

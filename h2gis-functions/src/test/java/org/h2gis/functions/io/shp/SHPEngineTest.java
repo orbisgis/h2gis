@@ -29,11 +29,9 @@ import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.hamcrest.CoreMatchers;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 
 import java.io.File;
@@ -42,7 +40,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nicolas Fortin
@@ -51,14 +49,14 @@ public class SHPEngineTest {
     private static Connection connection;
     private static final String DB_NAME = "SHPTest";
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new DriverManager(), "");
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -66,6 +64,7 @@ public class SHPEngineTest {
     @Test
     public void readSHPMetaTest() throws SQLException {
         Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS SHPTABLE");
         st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
         try ( // Query declared Table columns
                 ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'")) {
@@ -348,7 +347,7 @@ public class SHPEngineTest {
         //
         ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM shptable where PK >=4 order by PK limit 5");
         assertTrue(rs.next());
-        Assert.assertThat(rs.getString(1), CoreMatchers.containsString("PUBLIC.\"SHPTABLE.PK_INDEX_1\": PK >= 4"));
+        assertTrue(rs.getString(1).contains("PUBLIC.\"SHPTABLE.PK_INDEX_1\": PK >= 4"));
         rs.close();
         // Query declared Table columns
         rs = st.executeQuery("SELECT * FROM shptable where PK >=4 order by PK limit 5");
@@ -380,7 +379,7 @@ public class SHPEngineTest {
         try (ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM " +
                 "SHPTABLE ORDER BY PK LIMIT 51;")) {
             assertTrue(rs.next());
-            assertTrue( "Expected contains PK_INDEX but result is " + rs.getString(1) , rs.getString(1).contains("PK_INDEX"));
+            assertTrue(rs.getString(1).contains("PK_INDEX"), "Expected contains PK_INDEX but result is " + rs.getString(1));
         }
     }
 }

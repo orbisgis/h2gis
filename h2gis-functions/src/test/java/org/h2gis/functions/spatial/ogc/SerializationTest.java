@@ -21,9 +21,9 @@
 package org.h2gis.functions.spatial.ogc;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -32,7 +32,7 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Geometry fields serialization tests.
@@ -42,7 +42,7 @@ public class SerializationTest {
     private static Connection connection;
     private static final String DB_NAME = "SerializationTest";
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
@@ -50,7 +50,7 @@ public class SerializationTest {
         OGCConformance1Test.executeScript(connection, "ogc_conformance_test3.sql");
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -101,7 +101,7 @@ public class SerializationTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT boundary::TEXT FROM named_places WHERE name = 'Goose Island';");
         assertTrue(rs.next());
-        assertEquals("POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))", rs.getString(1));
+        assertEquals("SRID=101;POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))", rs.getString(1));
     }
 
     /**
@@ -114,7 +114,7 @@ public class SerializationTest {
         ResultSet rs = st.executeQuery("SELECT ST_Union(shore, boundary) FROM lakes, named_places " +
                 "WHERE lakes.name = 'Blue Lake' AND named_places.name = 'Goose Island'");
         assertTrue(rs.next());
-        assertEquals("POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
+        assertEquals("SRID=101;POLYGON ((52 18, 66 23, 73 9, 48 6, 52 18))", rs.getString(1));
     }
 
     @Test

@@ -20,13 +20,14 @@
 
 package org.h2gis.network.functions;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import org.h2gis.api.Function;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * A class to load the Network functions

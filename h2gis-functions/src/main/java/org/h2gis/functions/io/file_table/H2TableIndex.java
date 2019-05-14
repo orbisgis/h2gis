@@ -21,6 +21,7 @@
 package org.h2gis.functions.io.file_table;
 
 import org.h2.api.ErrorCode;
+import org.h2.command.dml.AllColumnsForPlan;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
@@ -29,20 +30,17 @@ import org.h2.message.DbException;
 import org.h2.result.Row;
 import org.h2.result.SearchRow;
 import org.h2.result.SortOrder;
-import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.Table;
 import org.h2.table.TableFilter;
-import org.h2.value.DataType;
 import org.h2.value.Value;
 import org.h2.value.ValueLong;
 import org.h2gis.api.FileDriver;
 
 import java.io.IOException;
-import java.util.HashSet;
 
 /**
- * ScanIndex of {@link org.h2gis.drivers.FileDriver}, the key is the row index [1-n].
+ * ScanIndex of {@link org.h2gis.api.FileDriver}, the key is the row index [1-n].
  * @author Nicolas Fortin
  */
 public class H2TableIndex extends BaseIndex {
@@ -56,14 +54,12 @@ public class H2TableIndex extends BaseIndex {
      * @param driver Linked file driver
      * @param table Linked table
      * @param id Index identifier
+     * @param indexColumn Column to index
      */
-    public H2TableIndex(FileDriver driver, Table table, int id) {
+    public H2TableIndex(FileDriver driver, Table table, int id,  IndexColumn indexColumn) {  
+        super(table, id, table.getName() + "_ROWID_", new IndexColumn[]{indexColumn}, IndexType.createScan(true));
         this.isScanIndex = true;
         this.driver = driver;
-        IndexColumn indexColumn = new IndexColumn();
-        indexColumn.columnName = "key";
-        indexColumn.column = new Column("key", Value.LONG);
-        initBaseIndex(table, id, table.getName() + "_ROWID_", new IndexColumn[]{indexColumn}, IndexType.createScan(true));
     }
 
     /**
@@ -71,17 +67,13 @@ public class H2TableIndex extends BaseIndex {
      * @param driver Linked file driver
      * @param table Linked table
      * @param id Index identifier
-     * @param PKColumn Primary key column declaration
      * @param indexName Unique index name
+     * @param indexColumn Column to index
      */
-    public H2TableIndex(FileDriver driver, Table table, int id, Column PKColumn, String indexName) {
+    public H2TableIndex(FileDriver driver, Table table, int id, String indexName, IndexColumn indexColumn) {
+            super(table, id, indexName, new IndexColumn[]{indexColumn}, IndexType.createPrimaryKey(true, false));
             this.isScanIndex = false;
             this.driver = driver;
-            IndexColumn indexColumn = new IndexColumn();
-            indexColumn.columnName = PK_COLUMN_NAME;
-            indexColumn.column = PKColumn;
-            indexColumn.sortType = SortOrder.ASCENDING;
-            initBaseIndex(table, id, indexName, new IndexColumn[]{indexColumn}, IndexType.createPrimaryKey(true, false));
     }
 
     @Override
@@ -98,12 +90,8 @@ public class H2TableIndex extends BaseIndex {
         try {
             Object[] driverRow = driver.getRow(key - 1);
             Value[] values = new Value[driverRow.length + 1];
-            Column[] columns = table.getColumns();
+            System.arraycopy(driverRow, 0, values, 1, driverRow.length);
             values[0] = ValueLong.get(key);
-            for(int idField=1;idField<=driverRow.length;idField++) {
-                // TODO in H2, switch on type parameter instead of if elseif
-                values[idField] = DataType.convertToValue(session, driverRow[idField - 1], columns[idField - 1].getType());
-            }
             Row row = session.createRow(values, Row.MEMORY_CALCULATE);
             row.setKey(key);
             return row;
@@ -147,15 +135,14 @@ public class H2TableIndex extends BaseIndex {
         }
         return new SHPCursor(this, first, last, session);
     }
-    
-    
+
     @Override
-    public double getCost(Session session, int[] masks, TableFilter[] tableFilters, int filter, SortOrder sortOrder, HashSet<Column> allColumnsSet) {
+    public double getCost(Session session, int[] masks, TableFilter[] tableFilters, int filter, SortOrder sortOrder, AllColumnsForPlan allColumnsForPlan) {
         // Copied from h2/src/main/org/h2/mvstore/db/MVPrimaryIndex.java#L210
         // Must kept sync with this
         try {
             return 10 * getCostRangeIndex(masks, driver.getRowCount(),
-                    tableFilters, filter, sortOrder, true, allColumnsSet);
+                    tableFilters, filter, sortOrder, true, allColumnsForPlan);
         } catch (IllegalStateException e) {
             throw DbException.get(ErrorCode.OBJECT_CLOSED, e);
         }

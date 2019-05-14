@@ -20,14 +20,14 @@
 
 package org.h2gis.functions.spatial.convert;
 
-import java.sql.SQLException;
-import org.h2gis.functions.spatial.edit.ST_UpdateZ;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
-import org.locationtech.jts.io.WKTReader;
+
+import java.sql.SQLException;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 /**

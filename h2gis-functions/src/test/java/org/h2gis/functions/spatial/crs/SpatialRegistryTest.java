@@ -23,15 +23,15 @@ package org.h2gis.functions.spatial.crs;
 import org.cts.parser.proj.ProjKeyParameters;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.util.Map;
 import java.util.Set;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -43,7 +43,7 @@ public class SpatialRegistryTest {
     private static final String DB_NAME = "SpatialRegistryTest";
     private static SpatialRefRegistry srr;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
@@ -51,7 +51,7 @@ public class SpatialRegistryTest {
         srr.setConnection(connection);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }

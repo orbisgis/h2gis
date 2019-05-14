@@ -21,16 +21,17 @@
 package org.h2gis.functions.spatial.crs;
 
 
+import org.cts.parser.proj.ProjKeyParameters;
+import org.cts.registry.AbstractProjRegistry;
+import org.cts.registry.Registry;
+import org.cts.registry.RegistryException;
+
 import java.sql.*;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
-import org.cts.parser.proj.ProjKeyParameters;
-import org.cts.registry.AbstractProjRegistry;
-import org.cts.registry.Registry;
-import org.cts.registry.RegistryException;
 
 
 /**

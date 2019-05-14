@@ -21,12 +21,9 @@
 package org.h2gis.functions.spatial.edit;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
-
-import java.sql.SQLException;
 
 /**
  * This function replace the z component of (each vertex of) the geometric
@@ -38,11 +35,7 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
 
     public ST_UpdateZ() {
         addProperty(PROP_REMARKS, "This function replace the z value of (each vertex of) the\n"
-                + " geometric parameter to the corresponding value given by a field.\n"
-                + "The first argument is used to replace all existing z values.\n"
-                + "The second argument is a int value. \n Set 1 to replace all z values.\n"
-                + "Set 2 to replace all z values excepted the NaN values.\n"
-                + "Set 3 to replace only the NaN z values.");
+                + " geometric parameter to the corresponding value given by a field.");
     }
 
     @Override
@@ -50,57 +43,34 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
         return "updateZ";
     }
 
+   
+
     /**
      * Replace the z with same value. NaN values are also updated.
      *
      * @param geometry
      * @param z
-     * @return
-     * @throws java.sql.SQLException
+     * @return geometry
      */
-    public static Geometry updateZ(Geometry geometry, double z) throws SQLException {
-        return updateZ(geometry, z, 1);
-    }
-
-    /**
-     * Replace the z value depending on the condition.
-     *
-     * @param geometry
-     * @param z
-     * @param updateCondition set if the NaN value must be updated or not
-     * @return
-     * @throws java.sql.SQLException
-     */
-    public static Geometry updateZ(Geometry geometry, double z, int updateCondition) throws SQLException {
-        if(geometry == null){
+    public static Geometry updateZ(Geometry geometry, double z) {
+        if (geometry == null) {
             return null;
         }
-        if (updateCondition == 1 || updateCondition == 2 || updateCondition == 3) {
-            Geometry outPut = geometry.copy();
-            outPut.apply(new UpdateZCoordinateSequenceFilter(z, updateCondition));
-            return outPut;
-        } else {
-            throw new SQLException("Available values are 1, 2 or 3.\n"
-                    + "Please read the description of the function to use it.");
-        }
+        geometry.apply(new UpdateZCoordinateSequenceFilter(z));
+        return geometry;
     }
 
     /**
-     * Replaces the z value to each vertex of the Geometry. 
-     * If the condition is equal to 1, replace all z. 
-     * If the consition is equal to 2 replace only not NaN z. 
-     * If the condition is equal to 3 replace only NaN z.
+     * Replaces the z value to each vertex of the Geometry.
      *
      */
     public static class UpdateZCoordinateSequenceFilter implements CoordinateSequenceFilter {
-
+        
         private boolean done = false;
         private final double z;
-        private final int condition;
 
-        public UpdateZCoordinateSequenceFilter(double z, int condition) {
+        public UpdateZCoordinateSequenceFilter(double z) {
             this.z = z;
-            this.condition = condition;
         }
 
         @Override
@@ -114,24 +84,8 @@ public class ST_UpdateZ extends DeterministicScalarFunction {
         }
 
         @Override
-        public void filter(CoordinateSequence seq, int i) {
-            if (condition == 1) {
-                seq.setOrdinate(i, 2, z);
-            } else if (condition == 2) {
-                Coordinate coord = seq.getCoordinate(i);
-                double currentZ = coord.z;
-                if (!Double.isNaN(currentZ)) {
-                    seq.setOrdinate(i, 2, z);
-                }
-            } else if (condition == 3) {
-                Coordinate coord = seq.getCoordinate(i);
-                double currentZ = coord.z;
-                if (Double.isNaN(currentZ)) {
-                    seq.setOrdinate(i, 2, z);
-                } 
-            } else {
-                done = true;
-            }
+        public void filter(CoordinateSequence seq, int i) {            
+            seq.setOrdinate(i, 2, z);
             if (i == seq.size()) {
                 done = true;
             }

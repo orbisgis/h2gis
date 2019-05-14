@@ -19,15 +19,15 @@
  */
 package org.h2gis.postgis_jts;
 
+import org.postgresql.Driver;
+import org.postgresql.PGConnection;
+
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import org.postgresql.Driver;
-import org.postgresql.PGConnection;
 
 public class JtsWrapper extends Driver {
     protected static final Logger logger = Logger.getLogger("org.postgis.DriverWrapper");

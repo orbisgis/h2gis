@@ -20,7 +20,6 @@
 
 package org.h2gis.functions.spatial.volume;
 
-import org.h2gis.functions.spatial.edit.ST_UpdateZ.UpdateZCoordinateSequenceFilter;
 import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.geom.*;
 
@@ -90,7 +89,7 @@ public class GeometryExtrude {
         for (int i = 0; i < coords.length - 1; i++) {
             walls[i] = extrudeEdge(coords[i], coords[i + 1], height, factory);
         }
-        lineString.apply(new TranslateCoordinateSequenceFilter(0));
+        lineString.apply(new UpdateZValue(0));
         geometries[0]= lineString;
         geometries[1]=  factory.createMultiPolygon(walls);        
         geometries[2]= extractRoof(lineString, height);
@@ -106,7 +105,7 @@ public class GeometryExtrude {
      */
     public static Geometry extractRoof(LineString lineString, double height) {
         LineString result = (LineString)lineString.copy();
-        result.apply(new TranslateCoordinateSequenceFilter(height));
+        result.apply(new UpdateZValue(height));
         return result;
     }
     
@@ -150,7 +149,7 @@ public class GeometryExtrude {
     public static Polygon extractRoof(Polygon polygon, double height) {
         GeometryFactory factory = polygon.getFactory();
         Polygon roofP =  (Polygon)polygon.copy();
-        roofP.apply(new TranslateCoordinateSequenceFilter(height));
+        roofP.apply(new UpdateZValue(height));
         final LinearRing shell = factory.createLinearRing(getCounterClockWise(roofP.getExteriorRing()).getCoordinates());
         final int nbOfHoles = roofP.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
@@ -188,7 +187,7 @@ public class GeometryExtrude {
         final Coordinate c0 = lineString.getCoordinateN(0);
         final Coordinate c1 = lineString.getCoordinateN(1);
         final Coordinate c2 = lineString.getCoordinateN(2);
-        lineString.apply(new UpdateZCoordinateSequenceFilter(0, 3));
+        lineString.apply(new UpdateZValue(0));
         if (CGAlgorithms.computeOrientation(c0, c1, c2) == CGAlgorithms.CLOCKWISE) {
             return lineString;
         } else {            
@@ -205,7 +204,7 @@ public class GeometryExtrude {
         final Coordinate c0 = lineString.getCoordinateN(0);
         final Coordinate c1 = lineString.getCoordinateN(1);
         final Coordinate c2 = lineString.getCoordinateN(2);
-        lineString.apply(new UpdateZCoordinateSequenceFilter(0, 3));
+        lineString.apply(new UpdateZValue(0));
         if (CGAlgorithms.computeOrientation(c0, c1, c2) == CGAlgorithms.COUNTERCLOCKWISE) {
             return lineString;
         } else {
@@ -255,15 +254,15 @@ public class GeometryExtrude {
      
     
     /**
-     * Translate a geometry to a specific z value added to each vertexes.
+     * Update the z value.
      *
      */
-    public static class TranslateCoordinateSequenceFilter implements CoordinateSequenceFilter {
+    public static class UpdateZValue implements CoordinateSequenceFilter {
 
         private boolean done = false;
         private final double z;
 
-        public TranslateCoordinateSequenceFilter(double z) {
+        public UpdateZValue(double z) {
             this.z = z;
         }
 
@@ -291,5 +290,5 @@ public class GeometryExtrude {
                 done = true;
             }
         }
-    }
+    }  
 }

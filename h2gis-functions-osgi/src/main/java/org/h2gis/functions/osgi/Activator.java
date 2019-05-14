@@ -23,6 +23,7 @@ package org.h2gis.functions.osgi;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.Function;
+import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
 import org.h2gis.functions.io.geojson.GeoJsonDriverFunction;
@@ -36,7 +37,6 @@ import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
 
 import javax.sql.DataSource;
-import org.h2gis.functions.factory.H2GISFunctions;
 
 /**
  * Publish H2GIS service on OSGi. Track for DataSource service, register spatial features into it.

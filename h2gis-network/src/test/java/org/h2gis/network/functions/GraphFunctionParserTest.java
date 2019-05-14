@@ -19,18 +19,18 @@
  */
 package org.h2gis.network.functions;
 
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.utilities.TableLocation;
+import org.h2gis.utilities.TableUtilities;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 
-import static junit.framework.Assert.assertTrue;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.TableUtilities;
-import org.junit.AfterClass;
-import static org.junit.Assert.assertEquals;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests the parsing methods of {@link org.h2gis.network.graph_creator.GraphFunctionParser}.
@@ -43,13 +43,13 @@ public class GraphFunctionParserTest {
     private static GraphFunctionParser parser;
     private static Connection connection;
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         parser = new GraphFunctionParser();
         connection = H2GISDBFactory.createSpatialDataBase(GraphFunctionParserTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -72,23 +72,23 @@ public class GraphFunctionParserTest {
 
     @Test
     public void testNullOrientation() {
-        assertEquals(null, parser.parseGlobalOrientation(null));
-        assertEquals(null, parser.parseEdgeOrientation(null));
+        assertNull(GraphFunctionParser.parseGlobalOrientation(null));
+        assertNull(parser.parseEdgeOrientation(null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testGlobalOrientationSpellingError() {
-        parser.parseGlobalOrientation("undirrected");
+        assertThrows(IllegalArgumentException.class, () -> GraphFunctionParser.parseGlobalOrientation("undirrected"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testMissingEdgeOrientationError() {
-        parser.parseEdgeOrientation("directed");
+        assertThrows(IllegalArgumentException.class, () -> parser.parseEdgeOrientation("directed"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testEdgeOrientationUndirectedGraphError() {
-        parser.parseEdgeOrientation("undirected");
+        assertThrows(IllegalArgumentException.class, () -> parser.parseEdgeOrientation("undirected"));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class GraphFunctionParserTest {
 
     @Test
     public void testNullWeight() {
-        assertEquals(null, parser.parseWeight(null));
+        assertNull(parser.parseWeight(null));
     }
 
     @Test
@@ -157,45 +157,41 @@ public class GraphFunctionParserTest {
         assertEquals(local, p.getEdgeOrientation());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testDFail() {
-        parser.parseWeightAndOrientation(null, null);
+        assertThrows(IllegalArgumentException.class, () -> parser.parseWeightAndOrientation(null, null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWDFail1() {
-        parser.parseWeightAndOrientation("weight", null);
+        assertThrows(IllegalArgumentException.class, () -> parser.parseWeightAndOrientation("weight", null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testWDFail2() {
-        parser.parseWeightAndOrientation(null, "weight");
+        assertThrows(IllegalArgumentException.class, () -> parser.parseWeightAndOrientation(null, "weight"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testDoubleWeight() {
-        parser.parseWeightAndOrientation("weight", "distance");
+        assertThrows(IllegalArgumentException.class, () -> parser.parseWeightAndOrientation("weight", "distance"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testDoubleOrientation() {
-        parser.parseWeightAndOrientation("undirected", "undirected");
+        assertThrows(IllegalArgumentException.class, () -> parser.parseWeightAndOrientation("undirected", "undirected"));
     }
 
     @Test
     public void testDestinationsString() {
-        assertTrue(Arrays.equals(new int[]{1, 2, 3, 4, 5},
-                parser.parseDestinationsString("1, 2, 3, 4, 5")));
-        assertTrue(Arrays.equals(new int[]{2343, 637, 1, 345},
-                parser.parseDestinationsString("2343   ,    637,1, 345")));
-        assertTrue(Arrays.equals(new int[]{1, 2},
-                parser.parseDestinationsString("1, 2,,,,,,,,")));
+        assertArrayEquals(new int[]{1, 2, 3, 4, 5}, GraphFunctionParser.parseDestinationsString("1, 2, 3, 4, 5"));
+        assertArrayEquals(new int[]{2343, 637, 1, 345}, GraphFunctionParser.parseDestinationsString("2343   ,    637,1, 345"));
+        assertArrayEquals(new int[]{1, 2}, GraphFunctionParser.parseDestinationsString("1, 2,,,,,,,,"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testDestinationsStringFail() {
-        assertTrue(Arrays.equals(new int[]{1, 2, 3},
-                parser.parseDestinationsString("1, 2,,3")));
+        assertThrows(IllegalArgumentException.class, () -> GraphFunctionParser.parseDestinationsString("1, 2,,3"));
     }
 
     @Test

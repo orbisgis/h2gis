@@ -21,7 +21,7 @@
 package org.h2gis.functions.spatial.mesh;
 
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -29,8 +29,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Unit tests of package spatial mesh
@@ -41,23 +40,23 @@ public class MeshFunctionTest {
     private static Connection connection;
     private Statement st;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(MeshFunctionTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -297,11 +296,13 @@ public class MeshFunctionTest {
         }
     }
 
-    @Test(expected = SQLException.class)
-    public void testInvalid2ST_TESSELLATE() throws Exception {
-        try (ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE('POINT(1 1)') the_geom")) {
-            assertTrue(rs.next());
-            assertGeometryEquals("MULTIPOLYGON (((-5 -5, -5 5, 5 5, -5 -5)), ((-5 -5, 5 5, 5 -5, -5 -5)), ((10 -5, 10 5, 20 5, 10 -5)), ((10 -5, 20 5, 20 -5, 10 -5)))", rs.getObject(1));
-        }
+    @Test
+    public void testInvalid2ST_TESSELLATE() {
+        assertThrows(SQLException.class, ()-> {
+            try (ResultSet rs = st.executeQuery("SELECT ST_TESSELLATE('POINT(1 1)') the_geom")) {
+                assertTrue(rs.next());
+                assertGeometryEquals("MULTIPOLYGON (((-5 -5, -5 5, 5 5, -5 -5)), ((-5 -5, 5 5, 5 -5, -5 -5)), ((10 -5, 10 5, 20 5, 10 -5)), ((10 -5, 20 5, 20 -5, 10 -5)))", rs.getObject(1));
+            }
+        });
     }
 }

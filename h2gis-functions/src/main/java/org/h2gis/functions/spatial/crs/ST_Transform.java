@@ -26,6 +26,7 @@ import org.cts.crs.CRSException;
 import org.cts.crs.CoordinateReferenceSystem;
 import org.cts.crs.GeodeticCRS;
 import org.cts.op.CoordinateOperation;
+import org.cts.op.CoordinateOperationException;
 import org.cts.op.CoordinateOperationFactory;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
@@ -40,7 +41,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.cts.op.CoordinateOperationException;
 
 
 /**

@@ -1,7 +1,10 @@
 language: java
 jdk:
-    - openjdk7
-# Do not install anything so that we can use our custom script. Instead, just
-# return true.
-install: true
-script: "./travis-build.sh"
+    - oraclejdk8
+    - openjdk8
+env:
+    global:
+        - CODECOV_TOKEN="81ad370c-848f-4fe9-9733-b672adc723d1"
+script: mvn clean install
+after_success:
+    - bash <(curl -s https://codecov.io/bash)

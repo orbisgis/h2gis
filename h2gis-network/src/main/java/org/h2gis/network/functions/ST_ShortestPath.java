@@ -19,23 +19,8 @@
  */
 package org.h2gis.network.functions;
 
-import org.locationtech.jts.geom.Geometry;
-
-import java.sql.*;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.api.ScalarFunction;
-import static org.h2gis.network.functions.GraphConstants.DESTINATION;
-import static org.h2gis.network.functions.GraphConstants.EDGE_ID;
-import static org.h2gis.network.functions.GraphConstants.PATH_EDGE_ID;
-import static org.h2gis.network.functions.GraphConstants.PATH_ID;
-import static org.h2gis.network.functions.GraphConstants.SOURCE;
-import static org.h2gis.network.functions.GraphConstants.THE_GEOM;
-import static org.h2gis.network.functions.GraphConstants.WEIGHT;
-import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
@@ -43,6 +28,16 @@ import org.javanetworkanalyzer.alg.Dijkstra;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
+import org.locationtech.jts.geom.Geometry;
+
+import java.sql.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.h2gis.network.functions.GraphConstants.*;
+import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 
 /**
  * Calculates the shortest path(s) between vertices in a JGraphT graph produced

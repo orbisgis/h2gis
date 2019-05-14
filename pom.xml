@@ -4,59 +4,35 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Maven Coordinates -->
+    <!-- The Basics -->
     <parent>
         <groupId>org.orbisgis</groupId>
-        <artifactId>orbisgis-nexus</artifactId>
-        <version>3</version>
+        <artifactId>orbisparent</artifactId>
+        <version>1.0.2</version>
     </parent>
-
     <artifactId>h2gis-parent</artifactId>
     <version>2.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
-
-    <!-- Project Information -->
-    <name>H2GIS</name>
-    <description>H2GIS is a spatial extension of the H2 database engine in the spirit of PostGIS. It adds support for
-        the Open Geospatial Consortium (OGC) Simple Features for SQL (SFSQL) functions.</description>
-
-    <organization>
-        <name>CNRS</name>
-        <url>http://www.h2gis.org</url>
-    </organization>
-    <url>http://github.com/orbisgis/H2GIS</url>
-    <licenses>
-        <license>
-            <name>GNU Lesser General Public License (LGPLV3+)</name>
-            <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
-        </license>
-    </licenses>
-
-    <developers>
-        <developer>
-            <name>Nicolas Fortin</name>
-            <organization>Laboratoire d’Acoustique Environnementale (LAE) - IFSTTAR</organization>
-        </developer>
-        <developer>
-            <name>Erwan Bocher</name>
-            <organization>CNRS, Lab-STICC UMR 6285</organization>
-        </developer>
-        <developer>
-            <name>Sylvain Palominos</name>
-            <organization>UBS, Lab-STICC UMR 6285</organization>
-        </developer>
-    </developers>
-
-    <scm>
-        <connection>scm:git:https://github.com/orbisgis/H2GIS.git</connection>
-        <developerConnection>scm:git:https://github.com/orbisgis/H2GIS.git</developerConnection>
-        <url>git@github.com:orbisgis/H2GIS.git</url>
-    </scm>
+    <modules>
+        <module>h2gis-api</module>
+        <module>h2gis-utilities</module>
+        <module>h2gis-test-utilities</module>
+        <module>h2gis-functions</module>
+        <module>h2gis-network</module>
+        <module>h2gis-functions-osgi</module>
+        <module>postgis-jts</module>
+        <module>postgis-jts-osgi</module>
+        <module>h2gis-dist</module>
+    </modules>
 
     <!-- Properties -->
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <stagingDirectory>${project.build.directory}/staging/${project.version}</stagingDirectory>
+        <maven.build.timestamp.format>YYYY-MM-dd</maven.build.timestamp.format>
+        <buildNumber>${maven.build.timestamp}</buildNumber>
+        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>8</maven.compiler.source>
+        <site.basedir>${project.basedir}</site.basedir>
 
         <!-- Dependency groupId and version -->
         <!-- Plugin for the test coverage check -->
@@ -77,7 +53,7 @@
         <exec-maven-plugin-version>1.2.1</exec-maven-plugin-version>
 
         <h2-groupId>com.h2database</h2-groupId>
-        <h2-version>1.4.197</h2-version>
+        <h2-version>1.4.199</h2-version>
 
         <jackson-core-groupId>com.fasterxml.jackson.core</jackson-core-groupId>
         <jackson-core-version>2.3.1</jackson-core-version>
@@ -131,180 +107,15 @@
         <slf4j-version>1.6.0</slf4j-version>
     </properties>
 
-    <!-- Dependencies -->
-    <repositories>
-        <repository>
-            <id>osgi-maven</id>
-            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-snapshot</url>
-        </repository>               
-        <repository>
-            <id>osgi-maven-5.1</id>
-            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-5.1</url>
-        </repository>
-        <repository>
-            <id>osgi-maven-5.1-snapshot</id>
-            <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-5.1-snapshot</url>
-        </repository>
-    </repositories>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>${commons-compress-groupId}</groupId>
-                <artifactId>commons-compress</artifactId>
-                <version>${commons-compress-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${cts-groupId}</groupId>
-                <artifactId>cts</artifactId>
-                <version>${cts-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${h2-groupId}</groupId>
-                <artifactId>h2</artifactId>
-                <version>${h2-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${jackson-core-groupId}</groupId>
-                <artifactId>jackson-core</artifactId>
-                <version>${jackson-core-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${java-network-analyzer-groupId}</groupId>
-                <artifactId>java-network-analyzer</artifactId>
-                <version>${java-network-analyzer-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${jts-core-groupId}</groupId>
-                <artifactId>jts-core</artifactId>
-                <version>${jts-core-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${junit-groupId}</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${poly2tri-groupId}</groupId>
-                <artifactId>poly2tri-core</artifactId>
-                <version>${poly2tri-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${postgis-jdbc-groupId}</groupId>
-                <artifactId>postgis-jdbc</artifactId>
-                <version>${postgis-jdbc-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${slf4j-groupId}</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j-version}</version>
-            </dependency>
-
-            <!-- Provided dependencies -->
-            <dependency>
-                <groupId>${osgi-compendium-groupId}</groupId>
-                <artifactId>org.osgi.compendium</artifactId>
-                <version>${osgi-compendium-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${osgi-core-groupId}</groupId>
-                <artifactId>org.osgi.core</artifactId>
-                <version>${osgi-core-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${osgi-enterprise-groupId}</groupId>
-                <artifactId>org.osgi.enterprise</artifactId>
-                <version>${osgi-enterprise-version}</version>
-            </dependency>
-
-            <!-- Test dependencies -->
-            <dependency>
-                <groupId>${commons-io-groupId}</groupId>
-                <artifactId>commons-io</artifactId>
-                <version>${commons-io-version}</version>
-            </dependency>
-            <dependency>
-                <groupId>${slf4j-groupId}</groupId>
-                <artifactId>slf4j-simple</artifactId>
-                <version>${slf4j-version}</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <!-- Build Settings -->
-    <modules>
-        <module>h2gis-utilities</module>
-        <module>h2gis-api</module>
-        <module>h2gis-test-utilities</module>
-        <module>h2gis-functions</module>
-        <module>h2gis-network</module>
-        <module>h2gis-functions-osgi</module>
-        <module>postgis-jts</module>
-        <module>postgis-jts-osgi</module>
-        <module>h2gis-dist</module>
-    </modules>
-
     <build>
-        <pluginManagement>
-            <plugins>
-                <!-- Plugin for the test coverage check -->
-                <plugin>
-                    <groupId>${cobertura-maven-plugin-groupId}</groupId>
-                    <artifactId>cobertura-maven-plugin</artifactId>
-                    <version>${cobertura-maven-plugin-version}</version>
-                </plugin>
-                <!-- Plugin for the execution of a Java program -->
-                <plugin>
-                    <groupId>${exec-maven-plugin-groupId}</groupId>
-                    <artifactId>exec-maven-plugin</artifactId>
-                    <version>${exec-maven-plugin-version}</version>
-                </plugin>
-                <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files  -->
-                <plugin>
-                    <groupId>${maven-assembly-plugin-groupId}</groupId>
-                    <artifactId>maven-assembly-plugin</artifactId>
-                    <version>${maven-assembly-plugin-version}</version>
-                </plugin>
-                <!-- Plugin for the bundle packaging -->
-                <plugin>
-                    <groupId>${maven-bundle-plugin-groupId}</groupId>
-                    <artifactId>maven-bundle-plugin</artifactId>
-                    <version>${maven-bundle-plugin-version}</version>
-                </plugin>
-                <!-- Plugin for the compilation -->
-                <plugin>
-                    <groupId>${maven-compiler-plugin-groupId}</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin-version}</version>
-                    <configuration>
-                        <source>1.7</source>
-                        <target>1.7</target>
-                    </configuration>
-                </plugin>
-                <!-- Create a JAR from the project -->
-                <plugin>
-                    <groupId>${maven-jar-plugin-groupId}</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>${maven-jar-plugin-version}</version>
-                </plugin>
-                <!-- Plugin for test running -->
-                <plugin>
-                    <groupId>${maven-surefire-plugin-groupId}</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven-surefire-plugin-version}</version>
-                </plugin>
-            </plugins>
-        </pluginManagement>
-
         <plugins>
-            <!-- Plugin for the compilation -->
             <plugin>
-                <groupId>${maven-compiler-plugin-groupId}</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
-            <!-- Create a JAR from the project -->
             <plugin>
-                <groupId>${maven-jar-plugin-groupId}</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <configuration>
                     <archive>
@@ -318,7 +129,109 @@
                     </archive>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.gmavenplus</groupId>
+                <artifactId>gmavenplus-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+            </plugin>
         </plugins>
     </build>
 
+    <!-- More Project Information -->
+    <name>H2GIS</name>
+    <description>H2GIS is a spatial extension of the H2 database engine in the spirit of PostGIS. It adds support for
+        the Open Geospatial Consortium (OGC) Simple Features for SQL (SFSQL) functions.</description>
+    <url>http://github.com/orbisgis/H2GIS</url>
+    <licenses>
+        <license>
+            <name>GNU Lesser General Public License (LGPLV3+)</name>
+            <url>http://www.gnu.org/licenses/lgpl-3.0.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    <organization>
+        <name>CNRS</name>
+        <url>http://www.h2gis.org</url>
+    </organization>
+    <developers>
+        <developer>
+            <name>Nicolas Fortin</name>
+            <organization>Laboratoire d’Acoustique Environnementale (LAE) - IFSTTAR</organization>
+        </developer>
+        <developer>
+            <name>Erwan Bocher</name>
+            <organization>CNRS, Lab-STICC UMR 6285</organization>
+        </developer>
+        <developer>
+            <name>Sylvain Palominos</name>
+            <organization>UBS, Lab-STICC UMR 6285</organization>
+        </developer>
+    </developers>
+
+    <!-- Environment Settings -->
+    <issueManagement>
+        <system>Github</system>
+        <url>https://github.com/orbisgis/H2GIS/issues</url>
+    </issueManagement>
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.com/orbisgis/H2GIS</url>
+    </ciManagement>
+    <scm>
+        <connection>scm:git:git://github.com/orbisgis/H2GIS</connection>
+    </scm>
+
+    <repositories>
+        <repository>
+            <id>orbisgis-release</id>
+            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>orbisgis-snapshot</id>
+            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <distributionManagement>
+        <site>
+            <id>orbisgis-devs-website</id>
+            <name>Devs Website</name>
+            <url>file:/var/www/html/${project.artifactId}</url>
+        </site>
+    </distributionManagement>
 </project>

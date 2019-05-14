@@ -20,9 +20,9 @@
 package org.h2gis.postgis_jts;
 
 import org.locationtech.jts.geom.*;
+import org.locationtech.jts.geom.impl.PackedCoordinateSequence.Double;
 import org.postgis.binary.ByteGetter;
 import org.postgis.binary.ValueGetter;
-import org.locationtech.jts.geom.impl.PackedCoordinateSequence.Double;
 
 /**
  * Parser class able to convert binary data into a JTS {@link org.locationtech.jts.geom.Geometry}.

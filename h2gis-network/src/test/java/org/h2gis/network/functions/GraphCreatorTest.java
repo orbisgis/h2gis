@@ -19,20 +19,18 @@
  */
 package org.h2gis.network.functions;
 
-import junit.framework.Assert;
+import org.h2gis.functions.factory.H2GISDBFactory;
 import org.javanetworkanalyzer.data.VDijkstra;
 import org.javanetworkanalyzer.model.*;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Set;
 
-import static junit.framework.Assert.assertTrue;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Tests the graph creators under all possible configurations.
@@ -45,7 +43,7 @@ public class GraphCreatorTest {
     private static Connection connection;
     private static final double TOLERANCE = 0.0;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase("GraphCreatorTest");
@@ -66,7 +64,7 @@ public class GraphCreatorTest {
 //         \ v| /  7:2     >v|
 //          > 3 -----------> 5
 //               CORMEN
-        st.execute("CREATE TABLE cormen(road LINESTRING, id INT AUTO_INCREMENT PRIMARY KEY, weight DOUBLE, edge_orientation INT);" +
+        st.execute("CREATE TABLE cormen(road GEOMETRY(LINESTRING), id INT AUTO_INCREMENT PRIMARY KEY, weight DOUBLE, edge_orientation INT);" +
                 "INSERT INTO cormen VALUES "
                 + "('LINESTRING (0 1, 1 2)', DEFAULT, 10.0, 1),"
                 + "('LINESTRING (1 2, 2 2)', DEFAULT, 1.0, -1),"
@@ -81,7 +79,7 @@ public class GraphCreatorTest {
 
         // In order to not depend on ST_Graph, we simply simulate the output of ST_Graph
         // on the Cormen graph.
-        st.execute("CREATE TABLE cormen_nodes(node_id int auto_increment primary key, the_geom point);" +
+        st.execute("CREATE TABLE cormen_nodes(node_id int auto_increment primary key, the_geom GEOMETRY(point));" +
                 "INSERT INTO cormen_nodes(the_geom) VALUES "
                 + "('POINT (0 1)'),"
                 + "('POINT (1 2)'),"
@@ -182,7 +180,7 @@ public class GraphCreatorTest {
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedPseudoG);
         assertEquals(5, graph.vertexSet().size());
-        Assert.assertEquals(11, graph.edgeSet().size());
+        assertEquals(11, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
         checkEdge(graph, 1, 1, 2);
         checkEdge(graph, 2, 4, 2);
@@ -207,7 +205,7 @@ public class GraphCreatorTest {
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedWeightedPseudoG);
         assertEquals(5, graph.vertexSet().size());
-        Assert.assertEquals(11, graph.edgeSet().size());
+        assertEquals(11, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
         checkEdge(graph, 1, 1, 2, 10.0);
         checkEdge(graph, 2, 4, 2, 1.0);
@@ -232,7 +230,7 @@ public class GraphCreatorTest {
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedPseudoG);
         assertEquals(5, graph.vertexSet().size());
-        Assert.assertEquals(11, graph.edgeSet().size());
+        assertEquals(11, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
         checkEdge(graph, 1, 2, 1);
         checkEdge(graph, 2, 2, 4);
@@ -257,7 +255,7 @@ public class GraphCreatorTest {
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof DirectedWeightedPseudoG);
         assertEquals(5, graph.vertexSet().size());
-        Assert.assertEquals(11, graph.edgeSet().size());
+        assertEquals(11, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
         checkEdge(graph, 1, 2, 1, 10.0);
         checkEdge(graph, 2, 2, 4, 1.0);
@@ -282,12 +280,12 @@ public class GraphCreatorTest {
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof PseudoG);
         assertEquals(5, graph.vertexSet().size());
-        Assert.assertEquals(10, graph.edgeSet().size());
+        assertEquals(10, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
         checkEdge(graph, 1, 1, 2);
         checkEdge(graph, 2, 2, 4);
         final Set<Edge> edges23 = graph.getAllEdges(graph.getVertex(2), graph.getVertex(3));
-        Assert.assertEquals(2, edges23.size());
+        assertEquals(2, edges23.size());
         for (Edge e : edges23) {
             if (e.getID() != 4) {
                 assertEquals(3, e.getID());
@@ -297,7 +295,7 @@ public class GraphCreatorTest {
         checkEdge(graph, 6, 3, 4);
         checkEdge(graph, 7, 3, 5);
         final Set<Edge> edges45 = graph.getAllEdges(graph.getVertex(4), graph.getVertex(5));
-        Assert.assertEquals(2, edges45.size());
+        assertEquals(2, edges45.size());
         for (Edge e : edges45) {
             if (e.getID() != 8) {
                 assertEquals(9, e.getID());
@@ -316,12 +314,12 @@ public class GraphCreatorTest {
         final KeyedGraph<VDijkstra,Edge> graph = graphCreator.prepareGraph();
         assertTrue(graph instanceof WeightedPseudoG);
         assertEquals(5, graph.vertexSet().size());
-        Assert.assertEquals(10, graph.edgeSet().size());
+        assertEquals(10, graph.edgeSet().size());
         checkVertices(graph, 1, 2, 3, 4, 5);
         checkEdge(graph, 1, 1, 2, 10.0);
         checkEdge(graph, 2, 2, 4, 1.0);
         final Set<Edge> edges23 = graph.getAllEdges(graph.getVertex(2), graph.getVertex(3));
-        Assert.assertEquals(2, edges23.size());
+        assertEquals(2, edges23.size());
         for (Edge e : edges23) {
             if (e.getID() == 4) {
                 assertEquals(3.0, graph.getEdgeWeight(e), TOLERANCE);
@@ -334,7 +332,7 @@ public class GraphCreatorTest {
         checkEdge(graph, 6, 3, 4, 9.0);
         checkEdge(graph, 7, 3, 5, 2.0);
         final Set<Edge> edges45 = graph.getAllEdges(graph.getVertex(4), graph.getVertex(5));
-        Assert.assertEquals(2, edges45.size());
+        assertEquals(2, edges45.size());
         for (Edge e : edges45) {
             if (e.getID() == 8) {
                 assertEquals(4.0, graph.getEdgeWeight(e), TOLERANCE);
@@ -363,14 +361,14 @@ public class GraphCreatorTest {
         }
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testNullOrientation() throws SQLException {
-        testOrientation("NULL");
+    @Test
+    public void testNullOrientation() {
+        assertThrows(IllegalArgumentException.class, () -> testOrientation("NULL"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void testInvalidOrientation() throws SQLException {
-        testOrientation("2");
+    @Test
+    public void testInvalidOrientation() {
+        assertThrows(IllegalArgumentException.class, () -> testOrientation("2"));
     }
 
     private void testOrientation(String newOrientation) throws SQLException {

@@ -29,7 +29,10 @@ import org.locationtech.jts.noding.NodedSegmentString;
 import org.locationtech.jts.noding.SegmentString;
 import org.locationtech.jts.util.GeometricShapeFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class compute an IsoVist from a coordinate and a set of originalSegments

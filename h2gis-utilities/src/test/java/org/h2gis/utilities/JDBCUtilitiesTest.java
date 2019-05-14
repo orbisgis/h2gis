@@ -22,19 +22,14 @@ package org.h2gis.utilities;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ArrayList;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nicolas Fortin
@@ -44,7 +39,7 @@ public class JDBCUtilitiesTest {
     private static Connection connection;
     private static Statement st;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         String dataBaseLocation = new File("target/JDBCUtilitiesTest").getAbsolutePath();
         String databasePath = "jdbc:h2:"+dataBaseLocation;
@@ -58,17 +53,17 @@ public class JDBCUtilitiesTest {
                 "sa", "");
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void dispose() throws Exception {
         connection.close();
     }
@@ -114,15 +109,17 @@ public class JDBCUtilitiesTest {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void testPrimaryKeyExtractOnNonexistantTable() throws SQLException {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
-        try {
-            JDBCUtilities.getIntegerPrimaryKey(connection, "TEMPTABLE");
-        } catch (SQLException e) {
-            assertTrue(e.getMessage().contains("Table TEMPTABLE not found"));
-            throw e;
-        }
+        assertThrows(SQLException.class, () -> {
+            try {
+                JDBCUtilities.getIntegerPrimaryKey(connection, "TEMPTABLE");
+            } catch (SQLException e) {
+                assertTrue(e.getMessage().contains("Table TEMPTABLE not found"));
+                throw e;
+            }
+        });
     }
 
     @Test
@@ -256,6 +253,6 @@ public class JDBCUtilitiesTest {
         ArrayList<String> expecteds = new ArrayList<>();
         expecteds.add("ID");
         expecteds.add("NAME");
-        Assert.assertEquals(expecteds, JDBCUtilities.getFieldNames(md));
+        assertEquals(expecteds, JDBCUtilities.getFieldNames(md));
     }
 }

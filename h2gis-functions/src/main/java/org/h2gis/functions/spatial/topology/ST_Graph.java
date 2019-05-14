@@ -71,7 +71,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             "the z-value of their first and last coordinates (decreasing).\n";
 
     private static final Logger LOGGER = LoggerFactory.getLogger("gui." + ST_Graph.class);
-    public static final String TYPE_ERROR = "Only LINESTRINGs " +
+    public static final String TYPE_ERROR = "Only LINESTRINGs and LINESTRING Zs " +
             "are accepted. Type code: ";
     public static final String ALREADY_RUN_ERROR = "ST_Graph has already been called on table ";
     
@@ -292,7 +292,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final String fieldName
                 = JDBCUtilities.getFieldName(connection.getMetaData(), tableName.getTable(), spatialFieldIndex);
         int geomType = SFSUtilities.getGeometryType(connection, tableName, fieldName);
-        if (geomType != GeometryTypeCodes.LINESTRING) {
+        if (geomType != GeometryTypeCodes.LINESTRING && geomType != GeometryTypeCodes.LINESTRINGZ) {
             throw new IllegalArgumentException(TYPE_ERROR
                     + SFSUtilities.getGeometryTypeNameFromCode(geomType));
         }
@@ -395,8 +395,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 // Putting all points and their envelopes together...
                 st.execute("CREATE  TABLE "+ PTS_TABLE +"( "
                         + "ID SERIAL PRIMARY KEY, "
-                        + "THE_GEOM POINT, "
-                        + "AREA POLYGON "
+                        + "THE_GEOM GEOMETRY(POINT,"+srid+"), "
+                        + "AREA GEOMETRY(POLYGON,"+srid+") "
                         + ") AS "
                         + "SELECT NULL, START_POINT, START_POINT_EXP FROM "+ COORDS_TABLE
                         + " UNION ALL "
@@ -422,7 +422,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                 // If the tolerance is zero, we just put all points together
                 st.execute("CREATE  TABLE "+ PTS_TABLE +"( "
                         + "ID SERIAL PRIMARY KEY, "
-                        + "THE_GEOM POINT"
+                        + "THE_GEOM GEOMETRY(GEOMETRY, "+srid+")"
                         + ") AS "
                         + "SELECT NULL, START_POINT FROM "+ COORDS_TABLE
                         + " UNION ALL "
@@ -457,8 +457,8 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             if(isH2){
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM POINT, " +
-                    "EXP POLYGON" +
+                    "THE_GEOM GEOMETRY(POINT), " +
+                    "EXP GEOMETRY(POLYGON)" +
                     ") AS " +
                     "SELECT NULL, A.THE_GEOM, A.AREA FROM "+ PTS_TABLE + " as A," + PTS_TABLE +" as B " +
                     "WHERE A.AREA && B.AREA " +
@@ -483,7 +483,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             // by using = rather than &&.
             st.execute("CREATE TABLE " + nodesName + "(" +
                     "NODE_ID SERIAL PRIMARY KEY, " +
-                    "THE_GEOM POINT" +
+                    "THE_GEOM GEOMETRY" +
                     ") AS " +
                     "SELECT NULL, A.THE_GEOM FROM "+ PTS_TABLE + " as A," + PTS_TABLE + " as B " +
                     "WHERE A.THE_GEOM && B.THE_GEOM AND A.THE_GEOM=B.THE_GEOM " +

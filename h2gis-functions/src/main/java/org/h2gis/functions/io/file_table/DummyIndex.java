@@ -21,6 +21,7 @@
 package org.h2gis.functions.io.file_table;
 
 
+import org.h2.command.dml.AllColumnsForPlan;
 import org.h2.engine.Session;
 import org.h2.index.BaseIndex;
 import org.h2.index.Cursor;
@@ -28,26 +29,19 @@ import org.h2.index.IndexType;
 import org.h2.result.Row;
 import org.h2.result.SearchRow;
 import org.h2.result.SortOrder;
-import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.Table;
 import org.h2.table.TableFilter;
-import org.h2.value.Value;
-
-import java.util.HashSet;
 
 /**
  * When linked files are not available, this table index defines an empty table
  * @author Nicolas Fortin
  */
 public class DummyIndex extends BaseIndex {
-
-    public DummyIndex(Table table,int id) {
-
-        IndexColumn indexColumn = new IndexColumn();
-        indexColumn.columnName = "key";
-        indexColumn.column = new Column("key", Value.LONG);
-        initBaseIndex(table,id,table.getName()+"_DATA",new IndexColumn[] {indexColumn}, IndexType.createScan(true));
+   
+        
+    public DummyIndex(Table table,int id, IndexColumn indexColumn) {
+        super(table,id,table.getName()+"_DATA",new IndexColumn[] {indexColumn}, IndexType.createScan(true));
     }
 
     @Override
@@ -73,8 +67,7 @@ public class DummyIndex extends BaseIndex {
     }
 
     @Override
-    public double getCost(Session session, int[] ints, TableFilter[] tableFilters, int i, SortOrder sortOrder,
-                           HashSet<Column> allColumnsSet) {
+    public double getCost(Session session, int[] ints, TableFilter[] tableFilters, int i, SortOrder sortOrder, AllColumnsForPlan allColumnsForPlan) {
         return 0;
     }
 

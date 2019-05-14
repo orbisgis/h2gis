@@ -26,8 +26,12 @@ import org.h2gis.utilities.SFSUtilities;
 
 /**
  * Parse the constraint and return the Geometry type name.
+ *
+ * Since H21.4.198, {@link GeometryTypeNameFromColumnType} should be used.
+ *
  * @author Nicolas Fortin
  */
+@Deprecated
 public class GeometryTypeNameFromConstraint extends DeterministicScalarFunction {
 
     public GeometryTypeNameFromConstraint() {

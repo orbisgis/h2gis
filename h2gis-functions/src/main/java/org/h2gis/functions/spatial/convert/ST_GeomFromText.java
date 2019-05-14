@@ -52,7 +52,7 @@ public class ST_GeomFromText extends DeterministicScalarFunction {
      * Convert well known text parameter into a Geometry
      * @param wkt Well known text
      * @return Geometry instance or null if parameter is null
-     * @throws ParseException If wkt is invalid
+     * @throws java.sql.SQLException
      */
     public static Geometry toGeometry(String wkt) throws SQLException {
         if(wkt == null) {

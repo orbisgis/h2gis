@@ -20,15 +20,18 @@
 
 package org.h2gis.utilities.jts_utils;
 
-import org.locationtech.jts.geom.*;
+import org.junit.jupiter.api.Test;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.TopologyException;
 import org.locationtech.jts.triangulate.DelaunayTriangulationBuilder;
+
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test class voronoi
@@ -92,7 +95,7 @@ public class VoronoiTest {
                 assertTrue(neigh[triA.getC()].contains(aIndex));
             }
             // There is at least two neighbors
-            assertTrue(triA.toString(), triA.getNeighCount() >= 2);
+            assertTrue(triA.getNeighCount() >= 2, triA.toString());
         }
     }
 
@@ -152,7 +155,7 @@ public class VoronoiTest {
         // Generate voronoi polygons with boundaries
         Geometry voronoiPoly = voronoi.generateVoronoi(2);
         assertEquals(6, voronoiPoly.getNumGeometries());
-        assertGeometryEquals(mesh.getEnvelope().toString(), voronoiPoly.getEnvelope());
+        assertTrue(mesh.getEnvelope().equals(voronoiPoly.getEnvelope()));
         // Generate voronoi lines with boundaries
         Geometry voronoiLines = voronoi.generateVoronoi(1);
         assertEquals(15, voronoiLines.getNumGeometries());
