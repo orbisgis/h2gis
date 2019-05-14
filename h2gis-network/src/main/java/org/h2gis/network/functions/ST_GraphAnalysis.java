@@ -19,19 +19,7 @@
  */
 package org.h2gis.network.functions;
 
-import java.lang.reflect.InvocationTargetException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Set;
 import org.h2gis.api.ScalarFunction;
-import static org.h2gis.network.functions.GraphConstants.BETWEENNESS;
-import static org.h2gis.network.functions.GraphConstants.CLOSENESS;
-import static org.h2gis.network.functions.GraphConstants.EDGE_CENT_SUFFIX;
-import static org.h2gis.network.functions.GraphConstants.EDGE_ID;
-import static org.h2gis.network.functions.GraphConstants.NODE_CENT_SUFFIX;
-import static org.h2gis.network.functions.GraphConstants.NODE_ID;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.analyzers.GraphAnalyzer;
@@ -46,6 +34,15 @@ import org.javanetworkanalyzer.progress.DefaultProgressMonitor;
 import org.jgrapht.WeightedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Set;
+
+import static org.h2gis.network.functions.GraphConstants.*;
 
 /**
  * Calculates closeness and betweenness centrality for nodes, as well as

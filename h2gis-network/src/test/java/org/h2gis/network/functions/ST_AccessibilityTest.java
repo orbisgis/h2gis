@@ -19,21 +19,19 @@
  */
 package org.h2gis.network.functions;
 
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.jupiter.api.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
-import static org.h2gis.network.functions.GraphConstants.CLOSEST_DEST;
-import static org.h2gis.network.functions.GraphConstants.DESTINATION;
-import static org.h2gis.network.functions.GraphConstants.DISTANCE;
-import static org.h2gis.network.functions.GraphConstants.SOURCE;
-import org.junit.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.h2gis.network.functions.GraphConstants.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * @author Adam Gouge
@@ -49,7 +47,7 @@ public class ST_AccessibilityTest {
     private static final String U = "'undirected'";
     private static final String W = "'weight'";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase("ST_AccessibilityTest", true);
@@ -59,17 +57,17 @@ public class ST_AccessibilityTest {
         registerDestinationTables(connection);
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }

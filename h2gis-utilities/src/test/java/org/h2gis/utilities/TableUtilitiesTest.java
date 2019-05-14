@@ -21,15 +21,15 @@
 package org.h2gis.utilities;
 
 import org.h2.tools.SimpleResultSet;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 /**
  * Unit test of TableUtilities
@@ -41,7 +41,7 @@ public class TableUtilitiesTest {
     /** Test database connection. */
     private static Connection connection;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws Exception {
         String dataBaseLocation = new File("target/JDBCUtilitiesTest").getAbsolutePath();
         String databasePath = "jdbc:h2:"+dataBaseLocation;

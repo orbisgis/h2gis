@@ -19,20 +19,20 @@
  */
 package org.h2gis.network.functions;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.jupiter.api.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashMap;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertTrue;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.jdbc.JdbcSQLNonTransientException;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import org.junit.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Adam Gouge
@@ -49,7 +49,7 @@ public class ST_ShortestPathTreeTest {
     private static final String W = "'weight'";
     private static final String CORMEN = "CORMEN_EDGES_ALL";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase("ST_ShortestPathTreeTest", true);
@@ -57,17 +57,17 @@ public class ST_ShortestPathTreeTest {
         GraphCreatorTest.registerCormenGraph(connection);
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -711,43 +711,49 @@ public class ST_ShortestPathTreeTest {
         );
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void unrecognizedArg4() throws Throwable {
-        // The source vertex must be given as an INT and not a DOUBLE.
-        try {
-            st.executeQuery(
-                "SELECT * FROM ST_ShortestPathTree('COPY_EDGES_ALL', " +
-                        DO + ", 1.0, 1)");
-        } catch (JdbcSQLException e) {
-            assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "1.0"));
-            throw e.getCause();
-        }
+    @Test
+    public void unrecognizedArg4() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            // The source vertex must be given as an INT and not a DOUBLE.
+            try {
+                st.executeQuery(
+                        "SELECT * FROM ST_ShortestPathTree('COPY_EDGES_ALL', " +
+                                DO + ", 1.0, 1)");
+            } catch (JdbcSQLException e) {
+                assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "1.0"));
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
+    @Test
     public void unrecognizedArg5() throws Throwable {
-        // The radius must be given as a DOUBLE and not an INT.
-        try {
-            st.executeQuery(
-                "SELECT * FROM ST_ShortestPathTree('COPY_EDGES_ALL', " +
-                        DO + ", 1, 5)");
-        } catch (JdbcSQLException e) {
-            assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "5"));
-            throw e.getCause();
-        }
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            // The radius must be given as a DOUBLE and not an INT.
+            try {
+                st.executeQuery(
+                        "SELECT * FROM ST_ShortestPathTree('COPY_EDGES_ALL', " +
+                                DO + ", 1, 5)");
+            } catch (JdbcSQLException e) {
+                assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "5"));
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
+    @Test
     public void otherUnrecognizedArg5() throws Throwable {
-        // The source vertex must be given as an INT and not a DOUBLE.
-        try {
-            st.executeQuery(
-                "SELECT * FROM ST_ShortestPathTree('COPY_EDGES_ALL', " +
-                        DO + ", " + W + ", 1.0)");
-        } catch (JdbcSQLException e) {
-            assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "1.0"));
-            throw e.getCause();
-        }
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            // The source vertex must be given as an INT and not a DOUBLE.
+            try {
+                st.executeQuery(
+                        "SELECT * FROM ST_ShortestPathTree('COPY_EDGES_ALL', " +
+                                DO + ", " + W + ", 1.0)");
+            } catch (JdbcSQLException e) {
+                assertTrue(e.getMessage().contains(GraphFunction.ARG_ERROR + "1.0"));
+                throw e.getCause();
+            }
+        });
     }
 
     private ResultSet oneToAll(String table, String orientation, int source) throws SQLException {

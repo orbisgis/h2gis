@@ -25,16 +25,16 @@ import org.h2gis.functions.spatial.properties.ColumnSRID;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 /**
  * Test constraints functions
  * @author Nicolas Fortin
@@ -43,13 +43,13 @@ public class ConstraintTest {
     private static Connection connection;
 
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase("ConstraintTest");
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -88,12 +88,14 @@ public class ConstraintTest {
      * LineString into Point column
      * @throws Exception
      */
-    @Test(expected = SQLException.class)
+    @Test
     public void LineStringInPoint() throws Exception {
-        Statement st = connection.createStatement();
-        st.execute("drop table test IF EXISTS");
-        st.execute("create table test (the_geom GEOMETRY(POINT))");
-        st.execute("insert into test values (ST_LineFromText('LINESTRING( 0 18, 10 21, 16 23, 28 26, 44 31 )' ,101))");
+        assertThrows(SQLException.class, () -> {
+            Statement st = connection.createStatement();
+            st.execute("drop table test IF EXISTS");
+            st.execute("create table test (the_geom GEOMETRY(POINT))");
+            st.execute("insert into test values (ST_LineFromText('LINESTRING( 0 18, 10 21, 16 23, 28 26, 44 31 )' ,101))");
+        });
     }
 
     /**
@@ -163,7 +165,7 @@ public class ConstraintTest {
      * Check constraint violation
      * @throws SQLException
      */
-    @Test(expected = SQLException.class)
+    @Test
     public void testWrongSRID() throws SQLException {
         Statement st = connection.createStatement();
         try {
@@ -173,7 +175,7 @@ public class ConstraintTest {
         } catch (SQLException ex) {
             return;
         }
-        st.execute("insert into T_SRID values('POINT(1 1)')");
+        assertThrows(SQLException.class, ()-> st.execute("insert into T_SRID values('POINT(1 1)')"));
     }
 
     /**
@@ -340,14 +342,16 @@ public class ConstraintTest {
         st.execute("drop table LIDAR_PTS IF EXISTS");
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void testZConstraintError() throws SQLException {
-        Statement st = connection.createStatement();
-        st.execute("drop table LIDAR_PTS IF EXISTS");
-        st.execute("create table LIDAR_PTS (the_geom GEOMETRY(POINT Z) CHECK ST_COORDDIM(the_geom) = 3)");
-        st.execute("insert into LIDAR_PTS VALUES ('POINT(12 14)')");
-        st.execute("insert into LIDAR_PTS VALUES ('POINT(13 18)')");
-        st.execute("drop table LIDAR_PTS IF EXISTS");
+        assertThrows(SQLException.class, () -> {
+            Statement st = connection.createStatement();
+            st.execute("drop table LIDAR_PTS IF EXISTS");
+            st.execute("create table LIDAR_PTS (the_geom GEOMETRY(POINT Z) CHECK ST_COORDDIM(the_geom) = 3)");
+            st.execute("insert into LIDAR_PTS VALUES ('POINT(12 14)')");
+            st.execute("insert into LIDAR_PTS VALUES ('POINT(13 18)')");
+            st.execute("drop table LIDAR_PTS IF EXISTS");
+        });
     }
 
     @Test

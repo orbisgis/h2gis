@@ -20,9 +20,9 @@
 
 package org.h2gis.functions.spatial.topography;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -33,9 +33,7 @@ import java.util.Set;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nicolas Fortin
@@ -44,23 +42,23 @@ public class TopographyTest {
     private static Connection connection;
     private Statement st;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(TopographyTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -81,10 +79,12 @@ public class TopographyTest {
         rs.close();
     }
 
-    @Test(expected = SQLException.class)
-    public void test_ST_TriangleAspect3() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 , 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
-        rs.close();
+    @Test
+    public void test_ST_TriangleAspect3() {
+        assertThrows(SQLException.class, ()-> {
+            ResultSet rs = st.executeQuery("SELECT ST_TriangleAspect('POLYGON ((0 0 , 10 0 0, 0 10 1, 0 0 1))'::GEOMETRY);");
+            rs.close();
+        });
     }
 
     @Test

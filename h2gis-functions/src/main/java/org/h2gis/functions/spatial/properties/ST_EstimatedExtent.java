@@ -5,13 +5,14 @@
  */
 package org.h2gis.functions.spatial.properties;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * Estimated extent function based on the internal H2 ESTIMATED_ENVELOPE

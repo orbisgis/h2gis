@@ -30,7 +30,6 @@ import java.io.*;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  * JSON class to write a table or a resultset to a file

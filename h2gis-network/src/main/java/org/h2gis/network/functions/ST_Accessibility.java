@@ -20,22 +20,21 @@
 package org.h2gis.network.functions;
 
 
-import java.sql.*;
-import java.util.HashSet;
-import java.util.Set;
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.api.ScalarFunction;
-import static org.h2gis.network.functions.GraphConstants.CLOSEST_DEST;
-import static org.h2gis.network.functions.GraphConstants.DESTINATION;
-import static org.h2gis.network.functions.GraphConstants.DISTANCE;
-import static org.h2gis.network.functions.GraphConstants.SOURCE;
-import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.analyzers.AccessibilityAnalyzer;
 import org.javanetworkanalyzer.data.VAccess;
 import org.javanetworkanalyzer.model.Edge;
 import org.javanetworkanalyzer.model.KeyedGraph;
+
+import java.sql.*;
+import java.util.HashSet;
+import java.util.Set;
+
+import static org.h2gis.network.functions.GraphConstants.*;
+import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 
 /**
  * Calculates, for each vertex, the closest destination among several possible

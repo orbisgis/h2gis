@@ -20,14 +20,14 @@
 
 package org.h2gis.utilities;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.locationtech.jts.util.Assert.shouldNeverReachHere;
 
 /**
@@ -193,10 +193,10 @@ public class TableLocationTest {
         assertEquals("identifier", TableLocation.capsIdentifier("identifier", null));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testNoTableCstr(){
-        new TableLocation("catalog", "schema", null);
-        shouldNeverReachHere();
+        assertThrows(IllegalArgumentException.class,() ->
+                new TableLocation("catalog", "schema", null));
     }
 
     @Test

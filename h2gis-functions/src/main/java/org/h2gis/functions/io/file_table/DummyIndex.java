@@ -29,12 +29,9 @@ import org.h2.index.IndexType;
 import org.h2.result.Row;
 import org.h2.result.SearchRow;
 import org.h2.result.SortOrder;
-import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.Table;
 import org.h2.table.TableFilter;
-
-import java.util.HashSet;
 
 /**
  * When linked files are not available, this table index defines an empty table

@@ -20,18 +20,14 @@
 
 package org.h2gis.utilities.jts_utils;
 
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.TopologyException;
-import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Unit test for contouring

@@ -20,9 +20,12 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.h2.value.ValueGeometry;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.unitTest.GeometryAsserts;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -30,12 +33,7 @@ import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.h2.value.ValueGeometry;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.unitTest.GeometryAsserts;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Final OGC Conformance test with spatial capabilities.
@@ -45,7 +43,7 @@ public class OGCConformance3Test {
     private static Connection connection;
     private static final String DB_NAME = "OGCConformance3Test";
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
@@ -54,7 +52,7 @@ public class OGCConformance3Test {
         OGCConformance1Test.executeScript(connection, "ogc_conformance_test3.sql");
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }

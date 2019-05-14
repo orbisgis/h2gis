@@ -22,7 +22,7 @@ package org.h2gis.functions.io.osm;
 
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Point;
 
 import java.io.File;
@@ -35,7 +35,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -47,21 +47,21 @@ public class OSMImportTest {
     private static final String DB_NAME = "OSMImportTest";
     private Statement st;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }

@@ -28,7 +28,7 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.trigger.UpdateTrigger;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -38,7 +38,7 @@ import org.locationtech.jts.io.WKTReader;
 import java.sql.*;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * 
@@ -48,24 +48,24 @@ public class BasicTest {
         private static Connection connection;
         private Statement st;
 
-        @BeforeClass
+        @BeforeAll
         public static void tearUp() throws Exception {
             // Keep a connection alive to not close the DataBase on each unit test
             connection = H2GISDBFactory.createSpatialDataBase("BasicTest");
         }
-        @AfterClass
+        @AfterAll
         public static void tearDown() throws Exception {
             connection.close();
         }
      
-        @Before
+        @BeforeEach
         public void setUpStatement() throws Exception {
             st = connection.createStatement();            
             st.execute("DROP TABLE IF EXISTS dummy;CREATE TABLE dummy(id INTEGER);");
             st.execute("INSERT INTO dummy values (1)");
         }
 
-        @After
+        @AfterEach
         public void tearDownStatement() throws Exception {
             st.close();
         }
@@ -109,9 +109,9 @@ public class BasicTest {
         public void testSameClass() {
             GeometryFactory geometryFactory = new GeometryFactory();
             Geometry geometry = geometryFactory.createPoint(new Coordinate(0,0));
-            assertEquals("H2 does not use the same JTS ! Expected:\n" + Geometry.class.getName() + "\n but got:\n"
-                    + DataType.getTypeClassName(DataType.getTypeFromClass(geometry.getClass()), true) + "\n", Value.GEOMETRY,
-                    DataType.getTypeFromClass(geometry.getClass()));
+            assertEquals(Value.GEOMETRY, DataType.getTypeFromClass(geometry.getClass()), "H2 does not use the same " +
+                    "JTS ! Expected:\n" + Geometry.class.getName() + "\n but got:\n"
+                    + DataType.getTypeClassName(DataType.getTypeFromClass(geometry.getClass()), true) + "\n");
         }
 
         @Test
@@ -174,16 +174,18 @@ public class BasicTest {
         assertEquals("THE_GEOM", geomField);
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void testSFSUtilitiesFirstGeometryFieldName2() throws Throwable {
-        try{
-        st.execute("DROP TABLE IF EXISTS POINT3D");
-        st.execute("CREATE TABLE POINT3D (gid int )");
-        st.execute("INSERT INTO POINT3D (gid) VALUES(1)");
-        ResultSet rs = st.executeQuery("SELECT * from POINT3D;");
-        SFSUtilities.getFirstGeometryFieldName(rs);
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+        assertThrows(SQLException.class, () -> {
+            try {
+                st.execute("DROP TABLE IF EXISTS POINT3D");
+                st.execute("CREATE TABLE POINT3D (gid int )");
+                st.execute("INSERT INTO POINT3D (gid) VALUES(1)");
+                ResultSet rs = st.executeQuery("SELECT * from POINT3D;");
+                SFSUtilities.getFirstGeometryFieldName(rs);
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 }

@@ -24,7 +24,7 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
@@ -32,8 +32,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -45,24 +44,24 @@ public class GPXImportTest {
     private static final String DB_NAME = "GPXImportTest";
     private Statement st;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
         H2GISFunctions.registerFunction(connection.createStatement(), new GPXRead(), "");
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
     
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -87,15 +86,17 @@ public class GPXImportTest {
         rs.close();
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void importGPXWaypoints1() throws Throwable {
         st.execute("DROP TABLE IF EXISTS GPXDATA_WAYPOINT, GPXDATA_ROUTE, GPXDATA_ROUTEPOINT,GPXDATA_TRACK, GPXDATA_TRACKSEGMENT, GPXDATA_TRACKPOINT;");
         st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA');");
-        try {
-            st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA');");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+        assertThrows(SQLException.class, ()-> {
+            try {
+                st.execute("CALL GPXRead(" + StringUtils.quoteStringSQL(GPXImportTest.class.getResource("waypoint.gpx").getPath()) + ", 'GPXDATA');");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test

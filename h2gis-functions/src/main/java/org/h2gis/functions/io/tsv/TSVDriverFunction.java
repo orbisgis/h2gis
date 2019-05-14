@@ -23,6 +23,7 @@ package org.h2gis.functions.io.tsv;
 
 import org.h2.tools.Csv;
 import org.h2gis.api.DriverFunction;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
@@ -33,7 +34,6 @@ import java.nio.channels.FileChannel;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.api.EmptyProgressVisitor;
 
 /**
  * This driver allow to import and export the Tab Separated Values (TSV): a

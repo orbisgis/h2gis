@@ -35,19 +35,16 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>${h2-groupId}</groupId>
+            <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
-            <version>${h2-version}</version>
         </dependency>
         <dependency>
             <groupId>net.postgis</groupId>
             <artifactId>postgis-jdbc</artifactId>
-            <version>2.3.0</version>
         </dependency>
         <dependency>
-            <groupId>${jts-core-groupId}</groupId>
+            <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
-            <version>${jts-core-version}</version>
         </dependency>
     </dependencies>
 

@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.io.dbf.internal;
 
+import org.h2.value.*;
 import org.h2gis.functions.io.utility.ReadBufferManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,14 +33,6 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.Calendar;
-import org.h2.value.Value;
-import org.h2.value.ValueBoolean;
-import org.h2.value.ValueDate;
-import org.h2.value.ValueDouble;
-import org.h2.value.ValueInt;
-import org.h2.value.ValueLong;
-import org.h2.value.ValueNull;
-import org.h2.value.ValueString;
 
 /**
  * A DbaseFileReader is used to read a dbase III format file. <br>

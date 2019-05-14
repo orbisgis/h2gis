@@ -20,25 +20,24 @@
 
 package org.h2gis.functions.spatial.processing;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2.value.ValueGeometry;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.spatial.properties.ST_CoordDim;
+import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.io.WKTReader;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.value.ValueGeometry;
-import org.h2gis.functions.spatial.properties.ST_CoordDim;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.*;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLNonTransientException;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.*;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nicolas Fortin
@@ -48,24 +47,24 @@ public class ProcessingFunctionTest {
     private Statement st;
     private static WKTReader WKT_READER;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(ProcessingFunctionTest.class.getSimpleName());
         WKT_READER = new WKTReader();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -146,14 +145,16 @@ public class ProcessingFunctionTest {
         rs.close();
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void test_ST_LineIntersector4()  throws Throwable {
-        try {
-            st.execute("SELECT ST_LineIntersector( 'MULTIPOLYGON (((0.9 2.3, 4.2 2.3, 4.2 -1.8, 0.9 -1.8, 0.9 2.3)),((6 2, 8.5 2, 8.5 -1.6, 6 -1.6, 6 2)))'::GEOMETRY,"
-                    + "'LINESTRING (0 0 0, 10 0 0)'::GEOMETRY);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_LineIntersector4() {
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                st.execute("SELECT ST_LineIntersector( 'MULTIPOLYGON (((0.9 2.3, 4.2 2.3, 4.2 -1.8, 0.9 -1.8, 0.9 2.3)),((6 2, 8.5 2, 8.5 -1.6, 6 -1.6, 6 2)))'::GEOMETRY,"
+                        + "'LINESTRING (0 0 0, 10 0 0)'::GEOMETRY);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test
@@ -329,23 +330,28 @@ public class ProcessingFunctionTest {
         rs.close();
     }
 
-    @Test(expected = SQLException.class)
-    public void test_ST_RingSideBuffer4()  throws Throwable {
-        try {
-            st.execute("SELECT ST_RingSideBuffer('MULTIPOLYGON (((10 20, 20 20, 20 10, 10 10, 10 20)),"
-                    + "  ((0 29, 10 29, 10 20, 0 20, 0 29)))'::GEOMETRY, -1, 3);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_RingSideBuffer4() {
+        assertThrows(SQLException.class, ()-> {
+            try {
+                st.execute("SELECT ST_RingSideBuffer('MULTIPOLYGON (((10 20, 20 20, 20 10, 10 10, 10 20)),"
+                        + "  ((0 29, 10 29, 10 20, 0 20, 0 29)))'::GEOMETRY, -1, 3);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = SQLException.class)
-    public void test_ST_RingSideBuffer5()  throws Throwable {
-        try {
-            st.execute("SELECT ST_RingSideBuffer('POINT(10 20)'::GEOMETRY, -1, 3);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_RingSideBuffer5() {
+
+        assertThrows(SQLException.class, ()-> {
+            try {
+                st.execute("SELECT ST_RingSideBuffer('POINT(10 20)'::GEOMETRY, -1, 3);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test
@@ -377,13 +383,15 @@ public class ProcessingFunctionTest {
         rs.close();
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void test_ST_SideBuffer3()  throws Throwable {
-        try {
-            st.execute("SELECT ST_SideBuffer('LINESTRING (120 150, 180 270)', 10, 'endcap=square');");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_SideBuffer3() {
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                st.execute("SELECT ST_SideBuffer('LINESTRING (120 150, 180 270)', 10, 'endcap=square');");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test

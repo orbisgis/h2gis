@@ -28,8 +28,8 @@ import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -46,9 +46,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.locationtech.jts.util.Assert.shouldNeverReachHere;
 
 /**
@@ -61,7 +59,7 @@ public class SFSUtilitiesTest {
 
     private static Connection connection;
 
-    @BeforeClass
+    @BeforeAll
     public static void init() throws ClassNotFoundException, SQLException {
         String dataBaseLocation = new File("target/JDBCUtilitiesTest").getAbsolutePath();
         String databasePath = "jdbc:h2:"+dataBaseLocation;
@@ -322,22 +320,22 @@ public class SFSUtilitiesTest {
                 SFSUtilities.getGeometryType(connection, tableLocation, ""));
     }
 
-    @Test(expected = SQLException.class)
-    public void testGeometryTypeNoGeomTableEmptyField() throws SQLException {
-        SFSUtilities.getGeometryType(connection, TableLocation.parse("NOGEOM"), "");
-        shouldNeverReachHere();
+    @Test
+    public void testGeometryTypeNoGeomTableEmptyField() {
+        assertThrows(SQLException.class,() ->
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("NOGEOM"), ""));
     }
 
-    @Test(expected = SQLException.class)
-    public void testGeometryTypeNoGeomTable() throws SQLException {
-        SFSUtilities.getGeometryType(connection, TableLocation.parse("NOGEOM"), "id");
-        shouldNeverReachHere();
+    @Test
+    public void testGeometryTypeNoGeomTable() {
+        assertThrows(SQLException.class,() ->
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("NOGEOM"), "id"));
     }
 
-    @Test(expected = SQLException.class)
-    public void testGeometryTypeNotValidField() throws SQLException {
-        SFSUtilities.getGeometryType(connection, TableLocation.parse("NOGEOM"), "notAField");
-        shouldNeverReachHere();
+    @Test
+    public void testGeometryTypeNotValidField() {
+        assertThrows(SQLException.class,() ->
+                SFSUtilities.getGeometryType(connection, TableLocation.parse("NOGEOM"), "notAField"));
     }
 
     // getGeometryTypes(Connection connection, TableLocation location)
@@ -410,11 +408,11 @@ public class SFSUtilitiesTest {
                 SFSUtilities.getTableEnvelope(connection, tableLocation, "GEOMCOLLECTION"));
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void testBadTableEnvelope() throws SQLException {
         TableLocation tableLocation = TableLocation.parse("NOGEOM");
-        SFSUtilities.getTableEnvelope(connection, tableLocation, "");
-        shouldNeverReachHere();
+        assertThrows(SQLException.class,() ->
+                SFSUtilities.getTableEnvelope(connection, tableLocation, ""));
     }
 
     // getGeometryFields(Connection connection,String catalog, String schema, String table)
@@ -503,11 +501,11 @@ public class SFSUtilitiesTest {
         assertEquals("GEOM", SFSUtilities.getFirstGeometryFieldName(rs));
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void testFirstGeometryFieldName2() throws SQLException {
         ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
-        SFSUtilities.getFirstGeometryFieldName(rs);
-        shouldNeverReachHere();
+        assertThrows(SQLException.class,() ->
+                SFSUtilities.getFirstGeometryFieldName(rs));
     }
 
     // hasGeometryField(ResultSet resultSet)
@@ -526,11 +524,11 @@ public class SFSUtilitiesTest {
         assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0), SFSUtilities.getResultSetEnvelope(rs));
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void testResultSetEnvelope2() throws SQLException {
         ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
-        SFSUtilities.getResultSetEnvelope(rs);
-        shouldNeverReachHere();
+        assertThrows(SQLException.class,() ->
+                SFSUtilities.getResultSetEnvelope(rs));
     }
 
     // getResultSetEnvelope(ResultSet resultSet, String fieldName)
@@ -542,11 +540,11 @@ public class SFSUtilitiesTest {
         assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0), SFSUtilities.getResultSetEnvelope(rs, "MULTILINESTR"));
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void testResultSetEnvelope4() throws SQLException {
         ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
-        SFSUtilities.getResultSetEnvelope(rs, "GEOM");
-        shouldNeverReachHere();
+        assertThrows(SQLException.class,() ->
+                SFSUtilities.getResultSetEnvelope(rs, "GEOM"));
     }
 
     // getSRID(Connection connection, TableLocation table)
@@ -558,7 +556,6 @@ public class SFSUtilitiesTest {
 
     /**
      * Function declared in test database
-     * @see org.h2gis.functions.spatial.type.GeometryTypeFromColumnType
      */
     public static class GeometryTypeFromColumnType extends DeterministicScalarFunction {
         private static final Pattern PATTERN = Pattern.compile("\"(.*)\"|GEOMETRY\\((.*)\\)");
@@ -662,7 +659,6 @@ public class SFSUtilitiesTest {
 
     /**
      * Function declared in test database
-     * @see org.h2gis.functions.spatial.spatial.properties.ST_Extent
      */
     public static class ST_Extent extends AbstractFunction implements Aggregate {
         private Envelope aggregatedEnvelope = new Envelope();

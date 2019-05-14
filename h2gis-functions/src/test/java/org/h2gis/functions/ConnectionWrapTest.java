@@ -23,9 +23,9 @@ package org.h2gis.functions;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSet;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.io.WKTReader;
 
 import java.sql.Connection;
@@ -33,7 +33,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Test spatial wrapper of Connection
@@ -43,12 +43,12 @@ public class ConnectionWrapTest {
     private static Connection connection;
     private static final String DB_NAME = "ConnectionWrapTest";
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
     }
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }

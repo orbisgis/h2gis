@@ -19,20 +19,19 @@
  */
 package org.h2gis.network.functions;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.jupiter.api.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.jdbc.JdbcSQLNonTransientException;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import org.junit.*;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Adam Gouge
@@ -49,7 +48,7 @@ public class ST_ShortestPathTest {
     private static final String W = "'weight'";
     private static final PathEdge[] EMPTY = new PathEdge[]{};
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase("ST_ShortestPathTest", true);
@@ -57,17 +56,17 @@ public class ST_ShortestPathTest {
         GraphCreatorTest.registerCormenGraph(connection);
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -767,26 +766,31 @@ public class ST_ShortestPathTest {
         check(oneToOne(U, W, 5, 5), EMPTY);
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void testNonexistantSourceVertex() throws Throwable {
-        try {
-            // The graph does not contain vertex 6.
-            check(oneToOne(U, W, 6, 1), null);
-        } catch (JdbcSQLException e) {
-            assertTrue(e.getMessage().contains("Source vertex not found"));
-            throw e.getCause();
-        }
+    @Test
+    public void testNonexistantSourceVertex() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                // The graph does not contain vertex 6.
+                check(oneToOne(U, W, 6, 1), null);
+            } catch (JdbcSQLException e) {
+                assertTrue(e.getMessage().contains("Source vertex not found"));
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void testNonexistantDestinationVertex() throws Throwable {
-        try {
-            // The graph does not contain vertex 6.
-            check(oneToOne(U, W, 1, 6), null);
-        } catch (JdbcSQLException e) {
-            assertTrue(e.getMessage().contains("Target vertex not found"));
-            throw e.getCause();
-        }
+    @Test
+    public void testNonexistantDestinationVertex() {
+
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                // The graph does not contain vertex 6.
+                check(oneToOne(U, W, 1, 6), null);
+            } catch (JdbcSQLException e) {
+                assertTrue(e.getMessage().contains("Target vertex not found"));
+                throw e.getCause();
+            }
+        });
     }
 
     @Test

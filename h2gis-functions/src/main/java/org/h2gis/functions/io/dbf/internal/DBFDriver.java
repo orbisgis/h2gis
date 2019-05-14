@@ -20,13 +20,13 @@
 
 package org.h2gis.functions.io.dbf.internal;
 
+import org.h2.value.Value;
 import org.h2gis.api.FileDriver;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import org.h2.value.Value;
 
 /**
  * Manage DBFReader and DBFWriter

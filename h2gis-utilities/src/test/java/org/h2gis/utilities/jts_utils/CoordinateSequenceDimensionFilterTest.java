@@ -20,11 +20,11 @@
 
 package org.h2gis.utilities.jts_utils;
 
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.io.WKTReader;
-import org.junit.Test;
 
-import static junit.framework.Assert.assertFalse;
-import static junit.framework.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * @author Adam Gouge

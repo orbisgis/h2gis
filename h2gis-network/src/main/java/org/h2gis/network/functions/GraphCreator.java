@@ -20,18 +20,17 @@
 package org.h2gis.network.functions;
 
 
-import java.sql.*;
-
-import static org.h2gis.network.functions.GraphConstants.EDGE_ID;
-import static org.h2gis.network.functions.GraphConstants.END_NODE;
-import static org.h2gis.network.functions.GraphConstants.START_NODE;
-import static org.h2gis.network.functions.GraphFunction.logTime;
 import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.data.VId;
 import org.javanetworkanalyzer.model.*;
 import org.jgrapht.WeightedGraph;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.sql.*;
+
+import static org.h2gis.network.functions.GraphConstants.*;
+import static org.h2gis.network.functions.GraphFunction.logTime;
 
 /**
  * Creates a JGraphT graph from an edges table produced by {@link

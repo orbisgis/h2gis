@@ -20,23 +20,22 @@
 
 package org.h2gis.functions.spatial.create;
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTReader;
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLNonTransientException;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Nicolas Fortin
@@ -47,23 +46,23 @@ public class CreateFunctionTest {
     private static final GeometryFactory FACTORY = new GeometryFactory();
     private static final WKTReader WKT_READER = new WKTReader(FACTORY);
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(CreateFunctionTest.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -639,32 +638,38 @@ public class CreateFunctionTest {
         rs.close();
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void test_ST_MakePolygon3() throws Throwable {
-        try {
-            st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY, "
-                    + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_MakePolygon3() {
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY, "
+                        + "'LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)'::GEOMETRY );");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void test_ST_MakePolygon4() throws Throwable {
-        try {
-            st.execute("SELECT ST_MakePolygon('POINT (100 250)'::GEOMETRY );");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_MakePolygon4() {
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                st.execute("SELECT ST_MakePolygon('POINT (100 250)'::GEOMETRY );");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void test_ST_MakePolygon5() throws Throwable {
-        try {
-            st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_MakePolygon5() {
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                st.execute("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250)'::GEOMETRY);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test
@@ -785,9 +790,10 @@ public class CreateFunctionTest {
         rs.close();
     }
 
-    @Test(expected = SQLException.class)
-    public void test_ST_RingBufferEndCapBUTT() throws Exception {
-        st.execute("SELECT ST_RingBuffer('LINESTRING (-10 10, 10 10)'::GEOMETRY, 10, 3,'endcap=BUTT');");
+    @Test
+    public void test_ST_RingBufferEndCapBUTT() {
+        assertThrows(SQLException.class, () ->
+                st.execute("SELECT ST_RingBuffer('LINESTRING (-10 10, 10 10)'::GEOMETRY, 10, 3,'endcap=BUTT');"));
     }
 
 

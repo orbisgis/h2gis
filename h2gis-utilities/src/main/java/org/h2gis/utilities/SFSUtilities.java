@@ -20,17 +20,14 @@
 
 package org.h2gis.utilities;
 
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+
 import javax.sql.DataSource;
 import java.lang.reflect.Field;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;

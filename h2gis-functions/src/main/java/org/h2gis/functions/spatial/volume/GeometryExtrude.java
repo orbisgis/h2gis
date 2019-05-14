@@ -20,7 +20,6 @@
 
 package org.h2gis.functions.spatial.volume;
 
-import org.h2gis.functions.spatial.edit.ST_UpdateZ.UpdateZCoordinateSequenceFilter;
 import org.locationtech.jts.algorithm.CGAlgorithms;
 import org.locationtech.jts.geom.*;
 

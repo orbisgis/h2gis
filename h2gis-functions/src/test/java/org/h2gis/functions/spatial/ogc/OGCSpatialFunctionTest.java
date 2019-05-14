@@ -20,13 +20,8 @@
 
 package org.h2gis.functions.spatial.ogc;
 
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.DummyFunction;
 import org.h2gis.functions.factory.H2GISDBFactory;
@@ -34,15 +29,17 @@ import org.h2gis.functions.factory.H2GISFunctions;
 import org.h2gis.functions.spatial.convert.ST_GeomFromText;
 import org.h2gis.functions.spatial.convert.ST_PointFromText;
 import org.h2gis.utilities.GeometryTypeCodes;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLNonTransientException;
+
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -54,7 +51,7 @@ public class OGCSpatialFunctionTest {
 
     private static Connection connection;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(OGCSpatialFunctionTest.class.getSimpleName());
@@ -63,7 +60,7 @@ public class OGCSpatialFunctionTest {
         OGCConformance1Test.executeScript(connection, "spatial_index_test_data.sql");
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -210,14 +207,16 @@ public class OGCSpatialFunctionTest {
         rs.close();
     }
     
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void testSetSRIDNullSRID() throws Throwable {
-        try {
-            Statement st = connection.createStatement();
-            st.execute("SELECT ST_SETSRID('POINT(12 13)',null)");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void testSetSRIDNullSRID() {
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                Statement st = connection.createStatement();
+                st.execute("SELECT ST_SETSRID('POINT(12 13)',null)");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test
@@ -298,10 +297,12 @@ public class OGCSpatialFunctionTest {
         assertFalse(rs.next());
     }
 
-    @Test(expected = SQLException.class)
-    public void test_ST_GeometryNIndexOutOfRange() throws Exception {
-        Statement st = connection.createStatement();
-        st.executeQuery("SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 0);");
+    @Test
+    public void test_ST_GeometryNIndexOutOfRange() {
+        assertThrows(SQLException.class, ()-> {
+            Statement st = connection.createStatement();
+            st.executeQuery("SELECT ST_GeometryN('LINESTRING(1 1, 1 6, 2 2, -1 2)', 0);");
+        });
     }
 
     @Test
@@ -484,28 +485,32 @@ public class OGCSpatialFunctionTest {
         }
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void test_ST_Buffer7() throws Throwable {
-        Statement st = connection.createStatement();
-        try {
-        st.execute("SELECT ST_Buffer("
-                + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
-                + " 10, 'quad_segs=2 endcap=flated');");
-        }catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_Buffer7() {
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            Statement st = connection.createStatement();
+            try {
+                st.execute("SELECT ST_Buffer("
+                        + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
+                        + " 10, 'quad_segs=2 endcap=flated');");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void test_ST_Buffer8() throws Throwable {
-        Statement st = connection.createStatement();
-        try {
-            st.execute("SELECT ST_Buffer("
-                    + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
-                    + " 10, 'quad_segments=2 endcap=flated');");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_Buffer8() {
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            Statement st = connection.createStatement();
+            try {
+                st.execute("SELECT ST_Buffer("
+                        + " ST_GeomFromText('LINESTRING (100 250, 200 250, 150 350)'),"
+                        + " 10, 'quad_segments=2 endcap=flated');");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
     
     @Test
@@ -568,16 +573,18 @@ public class OGCSpatialFunctionTest {
         rs.close();
     }
 
-    @Test(expected = SQLException.class)
-    public void test_ST_PointFromTextWrongType() throws Throwable {
-        Statement st = connection.createStatement();
-        try {
-            st.executeQuery("SELECT ST_PointFromText('LINESTRING(0 0, 1 0)', 2154);");
-        } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getCause();
-            assertTrue(e.getMessage().contains(ST_PointFromText.TYPE_ERROR + "LineString"));
-            throw originalCause;
-        }
+    @Test
+    public void test_ST_PointFromTextWrongType() {
+        assertThrows(SQLException.class, ()-> {
+            Statement st = connection.createStatement();
+            try {
+                st.executeQuery("SELECT ST_PointFromText('LINESTRING(0 0, 1 0)', 2154);");
+            } catch (JdbcSQLException e) {
+                final Throwable originalCause = e.getCause();
+                assertTrue(e.getMessage().contains(ST_PointFromText.TYPE_ERROR + "LineString"));
+                throw originalCause;
+            }
+        });
     }
     
     @Test
@@ -590,10 +597,12 @@ public class OGCSpatialFunctionTest {
         rs.close();
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void test_ST_PointFromWKB2() throws Throwable {
-        Statement st = connection.createStatement();
-        st.executeQuery("SELECT ST_PointFromWKB(ST_AsBinary('LINESTRING(0 10, 10 10)'::GEOMETRY));");
+        assertThrows(SQLException.class, ()-> {
+            Statement st = connection.createStatement();
+            st.executeQuery("SELECT ST_PointFromWKB(ST_AsBinary('LINESTRING(0 10, 10 10)'::GEOMETRY));");
+        });
     }
     
     @Test

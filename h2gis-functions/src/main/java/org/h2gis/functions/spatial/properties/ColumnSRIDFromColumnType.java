@@ -23,7 +23,6 @@ package org.h2gis.functions.spatial.properties;
 import org.h2.util.StringUtils;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
-import org.h2gis.functions.spatial.type.DimensionFromConstraint;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 

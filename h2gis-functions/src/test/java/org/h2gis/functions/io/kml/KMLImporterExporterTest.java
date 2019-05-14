@@ -20,22 +20,24 @@
 
 package org.h2gis.functions.io.kml;
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.jdbc.JdbcSQLNonTransientException;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -47,7 +49,7 @@ public class KMLImporterExporterTest {
     private static final String DB_NAME = "KMLExportTest";
     private static final WKTReader WKT_READER = new WKTReader();
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
@@ -55,7 +57,7 @@ public class KMLImporterExporterTest {
         H2GISFunctions.registerFunction(connection.createStatement(), new ST_AsKml(), "");
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -301,31 +303,34 @@ public class KMLImporterExporterTest {
     }
 
 
-    @Test(expected = JdbcSQLNonTransientException.class)
+    @Test
     public void testST_AsKml7() throws Throwable {
         Statement stat = connection.createStatement();
-        try {
-            stat.execute("SELECT ST_AsKml(ST_Geomfromtext("
-                    + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
-                    + "                -1.49 47.17 100)',4326), true, 666);");
-        } catch (JdbcSQLException e) {
-            throw e.getNextException();
-        } finally {
-            stat.close();
-        }
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                stat.execute("SELECT ST_AsKml(ST_Geomfromtext("
+                        + "    'LINESTRING(-1.53 47.24 100, -1.51 47.22 100, -1.50 47.19 100,"
+                        + "                -1.49 47.17 100)',4326), true, 666);");
+            } catch (JdbcSQLException e) {
+                throw e.getNextException();
+            } finally {
+                stat.close();
+            }
+        });
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void importFileNoExist() throws SQLException, IOException {
         Statement stat = connection.createStatement();
-        stat.execute("CALL KMLRead('target/blabla.kml', 'BLABLA')");
+        assertThrows(SQLException.class, () -> stat.execute("CALL KMLRead('target/blabla.kml', 'BLABLA')"));
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void importFileWithBadExtension() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         File file = new File("target/area_export.blabla");
         file.createNewFile();
-        stat.execute("CALL KMLRead('target/area_export.blabla', 'BLABLA')");
+        assertThrows(SQLException.class, () ->
+                stat.execute("CALL KMLRead('target/area_export.blabla', 'BLABLA')"));
     }
 }

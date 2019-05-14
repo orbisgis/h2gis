@@ -11,7 +11,6 @@
         <version>2.0.0-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
-
     <artifactId>h2gis-api</artifactId>
     <packaging>bundle</packaging>
 
@@ -41,7 +40,7 @@
         <plugins>
             <!-- Plugin for the bundle packaging -->
             <plugin>
-                <groupId>${maven-bundle-plugin-groupId}</groupId>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -54,7 +53,7 @@
             </plugin>
             <!-- Plugin for the compilation -->
             <plugin>
-                <groupId>${maven-compiler-plugin-groupId}</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>

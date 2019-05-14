@@ -20,21 +20,18 @@
 
 package org.h2gis.functions.spatial.geometry;
 
+import org.h2.jdbc.JdbcSQLDataException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.h2gis.unitTest.GeometryAsserts;
+import org.junit.jupiter.api.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.unitTest.GeometryAsserts;
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import static org.junit.Assert.assertTrue;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -45,24 +42,24 @@ public class GeometryFormsTest {
     private static Connection connection;
     private Statement st;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(GeometryFormsTest.class.getSimpleName());
         H2GISFunctions.registerFunction(connection.createStatement(), new DummySpatialFunction(), "");
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -127,14 +124,16 @@ public class GeometryFormsTest {
         GeometryAsserts.assertGeometryEquals("POINT(0 0)", rs.getObject(1));
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void testDummySpatialFunctionOneZNaNInvalid() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('LINESTRING (160 220 0, 180 200 0)'::GEOMETRY, false)");
-        try {
-            assertTrue(rs.next());
-            Assert.assertNotNull(rs.getObject(1));
-        } finally {
-            rs.close();
-        }
+        assertThrows(JdbcSQLDataException.class, () -> {
+            ResultSet rs = st.executeQuery("SELECT DummySpatialFunction('LINESTRING (160 220 0, 180 200 0)'::GEOMETRY, false)");
+            try {
+                assertTrue(rs.next());
+                assertNotNull(rs.getObject(1));
+            } finally {
+                rs.close();
+            }
+        });
     }
 }

@@ -21,28 +21,19 @@
 package org.h2gis.functions.spatial;
 
 
-import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-
-import static junit.framework.Assert.assertTrue;
-
-import org.locationtech.jts.geom.Geometry;
-
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.*;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLNonTransientException;
+
+import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -53,23 +44,23 @@ public class SpatialFunction2Test {
     private static Connection connection;
     private Statement st;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(SpatialFunction2Test.class.getSimpleName());
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -80,8 +71,8 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_SunPosition('POINT (139.74 35.65)'::GEOMETRY, '2015-1-25 21:49:26+01:00');");
         assertTrue(rs.next());
         Geometry point = (Geometry) rs.getObject(1);
-        Assert.assertEquals(104.99439384398441, Math.toDegrees(point.getCoordinate().x), 10E-1);
-        Assert.assertEquals(-11.642433433992824, Math.toDegrees(point.getCoordinate().y), 10E-1);
+        assertEquals(104.99439384398441, Math.toDegrees(point.getCoordinate().x), 10E-1);
+        assertEquals(-11.642433433992824, Math.toDegrees(point.getCoordinate().y), 10E-1);
         rs.close();
     }
 
@@ -206,7 +197,7 @@ public class SpatialFunction2Test {
     public void test_ST_MaxDistance1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'LINESTRING ( 2 0, 0 2 )'::geometry)");
         rs.next();
-        Assert.assertEquals(2, rs.getDouble(1), 0);
+        assertEquals(2, rs.getDouble(1), 0);
         rs.close();
     }
     
@@ -214,7 +205,7 @@ public class SpatialFunction2Test {
     public void test_ST_MaxDistance2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'LINESTRING ( 2 2, 2 2 )'::geometry)");
         rs.next();
-        Assert.assertEquals(2.8284, rs.getDouble(1), 0.001);
+        assertEquals(2.8284, rs.getDouble(1), 0.001);
         rs.close();
     }
     
@@ -222,7 +213,7 @@ public class SpatialFunction2Test {
     public void test_ST_MaxDistance3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('LINESTRING ( 0 0, 2 2, 10 0 )'::geometry, 'LINESTRING ( 0 0, 2 2, 10 0 )'::geometry)");
         rs.next();
-        Assert.assertEquals(10, rs.getDouble(1), 0);
+        assertEquals(10, rs.getDouble(1), 0);
         rs.close();
     }
     
@@ -231,7 +222,7 @@ public class SpatialFunction2Test {
     public void test_ST_MaxDistance4() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'POINT(0 10)'::geometry)");
         rs.next();
-        Assert.assertEquals(10, rs.getDouble(1), 0);
+        assertEquals(10, rs.getDouble(1), 0);
         rs.close();
     }
     
@@ -239,7 +230,7 @@ public class SpatialFunction2Test {
     public void test_ST_MaxDistance5() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MaxDistance('POINT(0 0)'::geometry, 'POINT(0 10)'::geometry)");
         rs.next();
-        Assert.assertEquals(10, rs.getDouble(1), 0);
+        assertEquals(10, rs.getDouble(1), 0);
         rs.close();
     }
     
@@ -247,7 +238,7 @@ public class SpatialFunction2Test {
     public void test_ST_MaxDistance6() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MaxDistance(ST_BUFFER('POINT(0 0)'::geometry, 10), ST_BUFFER('POINT(0 0)'::geometry, 10))");
         rs.next();
-        Assert.assertEquals(20, rs.getDouble(1), 0);
+        assertEquals(20, rs.getDouble(1), 0);
         rs.close();
     }
     
@@ -255,7 +246,7 @@ public class SpatialFunction2Test {
     public void test_ST_LongestLine1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_LongestLine('POINT(0 0)'::geometry, 'POINT(0 0)'::geometry)");
         rs.next();
-        Assert.assertNull(rs.getBytes(1));
+        assertNull(rs.getBytes(1));
         rs.close();
     }
     
@@ -263,7 +254,7 @@ public class SpatialFunction2Test {
     public void test_ST_LongestLine2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_LongestLine('MULTIPOINT((0 0),(0 0))'::geometry, 'MULTIPOINT((0 0),(0 0))'::geometry)");
         rs.next();
-        Assert.assertNull(rs.getBytes(1));
+        assertNull(rs.getBytes(1));
         rs.close();
     }
     
@@ -520,13 +511,15 @@ public class SpatialFunction2Test {
         rs.close();
     }
     
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void test_ST_GoogleMapLink3() throws Throwable {
-        try {
-            st.execute("SELECT ST_GoogleMapLink('POINT(-2.070365 47.643713)'::GEOMETRY, 'dsp');");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void test_ST_GoogleMapLink3() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.execute("SELECT ST_GoogleMapLink('POINT(-2.070365 47.643713)'::GEOMETRY, 'dsp');");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
     
     @Test
@@ -749,7 +742,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSpherePointToPointEpsg4326() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT(0 0)'::GEOMETRY, 'POINT(-118 38)'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(12421874.764417205, rs.getDouble(1),1e-12);
     }
 
@@ -757,22 +750,24 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSpherePointToPointEpsg4008() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere(ST_SetSRID('POINT(0 0)'::GEOMETRY, 4008), ST_SetSRID('POINT(-118 38)'::GEOMETRY, 4008))");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(12421855.452633386, rs.getDouble(1),1e-12);
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void test_ST_DistanceSpherePointToPointEpsg2375() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere(ST_SetSRID('POINT(0 0)'::GEOMETRY, 2375), ST_SetSRID('POINT(-118 38)'::GEOMETRY, 2375))");
-        Assert.assertTrue(rs.next());
+        assertThrows(SQLException.class, () -> {
+            ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere(ST_SetSRID('POINT(0 0)'::GEOMETRY, 2375), ST_SetSRID('POINT(-118 38)'::GEOMETRY, 2375))");
+            assertTrue(rs.next());
+        });
     }
 
     @Test
     public void test_ST_DistanceSpherePointToLineString() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT(0 0)'::GEOMETRY, 'LINESTRING (10 5, 10 10)'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(1241932.5985221416, rs.getDouble(1),1e-12);
     }
 
@@ -780,7 +775,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSphereLineStringToPoint() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('LINESTRING (10 5, 10 10)'::GEOMETRY, 'POINT(0 0)'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(1241932.5985221416, rs.getDouble(1),1e-12);
     }
 
@@ -788,7 +783,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSphereLineStringToLineString() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('LINESTRING (10 5, 10 10)'::GEOMETRY, 'LINESTRING(0 0, 1 1)'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(1093701.742472634, rs.getDouble(1),1e-12);
     }
 
@@ -796,7 +791,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSpherePointToPolygon() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT(0 0)'::GEOMETRY, 'POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(157249.5977685051, rs.getDouble(1),1e-12);
     }
 
@@ -804,7 +799,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSpherePolygonToPoint() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY, 'POINT(0 0)'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(157249.5977685051, rs.getDouble(1),1e-12);
     }
 
@@ -812,7 +807,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSpherePointInPolygon() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT(1 1)'::GEOMETRY, 'POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(0, rs.getDouble(1),1e-12);
     }
 
@@ -820,7 +815,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSphereLineStringToPolygon() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('LINESTRING (100 50, 50 50)'::GEOMETRY, 'POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(5763657.991914633, rs.getDouble(1),1e-12);
     }
 
@@ -828,7 +823,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSpherePolygonToLineString() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY, 'LINESTRING (100 50, 50 50)'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(5763657.991914633, rs.getDouble(1),1e-12);
     }
 
@@ -836,7 +831,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSpherePolygonToLineStringDistanceZero() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY, 'LINESTRING (1 10, 10 10)'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(0, rs.getDouble(1),1e-12);
     }
 
@@ -844,7 +839,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSpherePolygonToPolygon() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POLYGON ((130 390, 280 390, 280 210, 130 210, 130 390))'::GEOMETRY, 'POLYGON((1 1,10 0,10 10,0 10,1 1),(5 5,7 5,7 7,5 7, 5 5))'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(8496739.27764427, rs.getDouble(1),1e-12);
     }
 
@@ -852,7 +847,7 @@ public class SpatialFunction2Test {
     public void test_ST_DistanceSpherePointToMultiPolygon() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_DistanceSphere('POINT (130 210)'::GEOMETRY, 'MULTIPOLYGON (((50 400, 50 350, 50 300, 70 290, 80 280, 90 260, 99 254, 109 253, 120 252, 130 252, 140 255, 150 259, 159 264, 168 270, 172 280, 174 290, 175 300, 173 310, 167 320, 158 325, 148 325, 138 323, 129 316, 124 306, 114 312, 108 321, 105 332, 106 342, 112 351, 121 357, 132 359, 143 359, 153 359, 163 360, 173 359, 183 357, 193 355, 203 355, 216 355, 227 355, 238 357, 247 362, 256 369, 264 378, 269 387, 275 396, 273 406, 267 414, 259 421, 250 426, 240 426, 230 426, 220 425, 210 420, 199 418, 189 419, 179 419, 169 419, 158 419, 148 419, 138 419, 126 419, 116 419, 101 419, 83 419, 70 421, 60 427, 52 433, 44 441, 40 440, 50 400),(80 400, 100 400, 100 390, 80 390, 80 400),(177 395, 200 395, 200 380, 177 380, 177 395), (74 344, 80 344, 80 310, 74 310, 74 344)))'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(1074360.2834168628, rs.getDouble(1),1e-12);
     }
     
@@ -860,7 +855,7 @@ public class SpatialFunction2Test {
     public void test_ST_Node1() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Node('MULTILINESTRING ((100 300, 200 200), (100 200, 200 300))'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertGeometryEquals("MULTILINESTRING ((100 300, 150 250), (150 250, 200 200), (100 200, 150 250),(150 250, 200 300))" , rs.getObject(1));
     }
     
@@ -868,7 +863,7 @@ public class SpatialFunction2Test {
     public void test_ST_Node2() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Node('MULTIPOLYGON (((100 200, 200 200, 200 100, 100 100, 100 200)), ((151 225, 300 225, 300 70, 151 70, 151 225)))'::GEOMETRY)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertGeometryEquals("MULTILINESTRING ((100 200, 151 200), (151 200, 200 200, 200 100, 151 100), (151 100, 100 100, 100 200), (151 225, 300 225, 300 70, 151 70, 151 100), (151 100, 151 200), (151 200, 151 225))" , rs.getObject(1));
     }
     
@@ -876,7 +871,7 @@ public class SpatialFunction2Test {
     public void test_ST_SVF1() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_svf(null, null, 1,0)");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(-1, rs.getDouble(1), 0);
     }
     
@@ -884,7 +879,7 @@ public class SpatialFunction2Test {
     public void test_ST_SVF2() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'POLYGON ((10 -1 10, 20 -1 10, 20 20 10, 10 20 10, 10 -1 10))'::GEOMETRY, 50, 8) as result");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         double dTheta = Math.toRadians(45);
         double sinGamma0 = Math.sin(Math.atan(10/Math.sqrt(200)));
         double sinGamma1 = Math.sin(Math.atan(1));
@@ -896,7 +891,7 @@ public class SpatialFunction2Test {
     public void test_ST_SVF3() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, ST_UPDATEZ(ST_buffer('POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         double svfTest = 0.4098;
         assertEquals(svfTest, rs.getDouble(1), 0.01);
     }
@@ -905,7 +900,7 @@ public class SpatialFunction2Test {
     public void test_ST_SVF4() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTILINESTRING((-10 -1000 12, -10 1000 12), (10 -1000 12, 10 1000 12))'::GEOMETRY, 100, 120) as result");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         double svfTest = 0.6402;
         assertEquals(svfTest, rs.getDouble(1), 0.01);
     }
@@ -914,7 +909,7 @@ public class SpatialFunction2Test {
     public void test_ST_SVF5() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTIPOLYGON(((10 -5 2, 10 5 2, 15 5 2, 15 -5 2, 10 -5 2)), ((15 -5 20, 15 5 20, 20 5 20, 20 -5 20, 15 -5 20)))'::GEOMETRY, 100, 8) as result");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         double dTheta = Math.toRadians(45);
         double sinGamma = Math.sin(Math.atan2(20, 15));
         double svfTest = 1 - (dTheta * sinGamma * sinGamma) / (2 * Math.PI);
@@ -925,7 +920,7 @@ public class SpatialFunction2Test {
     public void test_ST_ShortestLine1() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT st_length(ST_ShortestLine('POINT(0 0)'::GEOMETRY, 'LINESTRING(0 0, 10 10)'::GEOMETRY)) as result");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertEquals(0, rs.getDouble(1), 0.1);
     }
     
@@ -933,7 +928,7 @@ public class SpatialFunction2Test {
     public void test_ST_ShortestLine2() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ShortestLine('POINT(10 0 )'::GEOMETRY, 'LINESTRING(5 5, 10 10)'::GEOMETRY) as result");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertGeometryEquals("LINESTRING (10 0, 5 5)", rs.getObject(1));
     }
     
@@ -941,7 +936,7 @@ public class SpatialFunction2Test {
     public void test_ST_ShortestLine3() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ShortestLine('POINT(10 0 )'::GEOMETRY, 'LINESTRING(1 10, 5 5, 10 10)'::GEOMETRY) as result");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertGeometryEquals("LINESTRING (10 0, 5 5)", rs.getObject(1));
     }
     
@@ -949,7 +944,7 @@ public class SpatialFunction2Test {
     public void test_ST_ShortestLine4() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_ShortestLine('POLYGON ((0 4, 8 4, 8 0, 0 0, 0 4))'::GEOMETRY, 'POLYGON ((2 10.1, 9 10.1, 9 4.9, 2 4.9, 2 10.1))'::GEOMETRY) as result");
-        Assert.assertTrue(rs.next());
+        assertTrue(rs.next());
         assertGeometryEquals("LINESTRING (2 4, 2 4.9)", rs.getObject(1));
     }
 }

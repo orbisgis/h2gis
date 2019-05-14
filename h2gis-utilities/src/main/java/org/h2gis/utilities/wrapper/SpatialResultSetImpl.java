@@ -20,9 +20,9 @@
 
 package org.h2gis.utilities.wrapper;
 
-import org.locationtech.jts.geom.Geometry;
 import org.h2gis.utilities.SpatialResultSet;
 import org.h2gis.utilities.SpatialResultSetMetaData;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

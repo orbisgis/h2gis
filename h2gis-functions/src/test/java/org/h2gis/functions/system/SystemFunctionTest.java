@@ -21,20 +21,17 @@
 package org.h2gis.functions.system;
 
 
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.junit.jupiter.api.*;
+
 import java.sql.Array;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.jdbc.JdbcSQLNonTransientException;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import static org.junit.Assert.assertNotEquals;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -46,23 +43,23 @@ public class SystemFunctionTest {
     private Statement st;
     private static final String DB_NAME = "SystemFunctionTest";
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -78,7 +75,7 @@ public class SystemFunctionTest {
             actuals[i] = (Double) valueArray[i];
         }
         double[] expecteds = new double[]{0, 1, 2, 3, 4};
-        Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
+        assertArrayEquals(expecteds, actuals, 10 - 5);
         rs.close();
     }
     
@@ -93,17 +90,19 @@ public class SystemFunctionTest {
             actuals[i] = (Double) valueArray[i];
         }
         double[] expecteds = new double[]{0, 0.5};
-        Assert.assertArrayEquals(expecteds, actuals, 10 - 5);
+        assertArrayEquals(expecteds, actuals, 10 - 5);
         rs.close();
     }
     
-    @Test(expected = JdbcSQLNonTransientException.class)
+    @Test
     public void test_DoubleRange3() throws Throwable {
-        try {
-            st.execute("SELECT DoubleRange(10, 1, 0.5);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                st.execute("SELECT DoubleRange(10, 1, 0.5);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
     
     @Test
@@ -117,17 +116,19 @@ public class SystemFunctionTest {
             actuals[i] = (Integer) valueArray[i];
         }
         int[] expecteds = new int[]{0, 1, 2, 3, 4};
-        Assert.assertArrayEquals(expecteds, actuals);
+        assertArrayEquals(expecteds, actuals);
         rs.close();
     }
 
-    @Test(expected = JdbcSQLNonTransientException.class)
+    @Test
     public void test_IntegerRange2() throws Throwable {
-        try {
-            st.execute("SELECT IntegerRange(10, 1, 0.5);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                st.execute("SELECT IntegerRange(10, 1, 0.5);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
     
     @Test

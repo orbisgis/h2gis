@@ -20,24 +20,22 @@
 
 package org.h2gis.functions.spatial.crs;
 
-import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
+import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.jdbc.JdbcSQLNonTransientException;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -49,23 +47,23 @@ public class CRSFunctionTest {
     private static Statement st;
     private static final String DB_NAME = "CRSFunctionTest";
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
 
-        @AfterClass
+        @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -91,7 +89,7 @@ public class CRSFunctionTest {
     @Test
     public void testST_Transform27572to2154WithoutNadgrid() throws Exception {
         checkProjectedGeom("POINT(282331 2273699.7)", 27572, 2154,
-                "POINT(332602.9618934966 6709788.264478932)");
+                "POINT(332602.9618934966 6709788.264478932)", 10E-3);
     }
 
     @Test
@@ -153,7 +151,7 @@ public class CRSFunctionTest {
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
                 + "null, 2154);");
         rs.next();
-        Assert.assertNull(rs.getObject(1));
+        assertNull(rs.getObject(1));
         rs.close();
     }
     
@@ -162,18 +160,20 @@ public class CRSFunctionTest {
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
                 + "null, null);");
         rs.next();
-        Assert.assertNull(rs.getObject(1));
+        assertNull(rs.getObject(1));
         rs.close();
     }
     
-    @Test(expected = JdbcSQLNonTransientException.class)
-    public void testST_TransformOnNullSRID() throws Throwable {
-        try {
-            st.execute("SELECT ST_TRANSFORM("
-                    + "ST_GeomFromText('MULTIPOLYGON (((2 40, 3 40, 3 3, 2 3, 2 40)))',  4326 ), null);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+    @Test
+    public void testST_TransformOnNullSRID() {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
+            try {
+                st.execute("SELECT ST_TRANSFORM("
+                        + "ST_GeomFromText('MULTIPOLYGON (((2 40, 3 40, 3 3, 2 3, 2 40)))',  4326 ), null);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test
@@ -185,28 +185,31 @@ public class CRSFunctionTest {
         st.execute("CREATE TABLE L2E AS SELECT ST_TRANSFORM(THE_GEOM, 27582) as THE_GEOM FROM L93;");
 
         ResultSet rsL93 = st.executeQuery("select ST_Extent(THE_GEOM) EXTL93 from L93;");
-        Assert.assertTrue(rsL93.next());
+        assertTrue(rsL93.next());
         Object resultObjL93 = rsL93.getObject("EXTL93");
-        Assert.assertTrue(resultObjL93 instanceof Geometry);
+        assertTrue(resultObjL93 instanceof Geometry);
         Envelope resultL93 = ((Geometry) resultObjL93).getEnvelopeInternal();
 
         ResultSet rsL2e = st.executeQuery("select ST_Extent(THE_GEOM) EXTL2E from L2E;");
-        Assert.assertTrue(rsL2e.next());
+        assertTrue(rsL2e.next());
         Object resultObjL2e = rsL2e.getObject("EXTL2E");
-        Assert.assertTrue(resultObjL2e instanceof Geometry);
+        assertTrue(resultObjL2e instanceof Geometry);
         Envelope resultL2e = ((Geometry) resultObjL2e).getEnvelopeInternal();
 
-        assertNotEquals("Values should be different : "+resultL93.getMinX()+" and "+resultL2e.getMinX(), resultL93.getMinX(), resultL2e.getMinX(), 1);
-        assertNotEquals("Values should be different : "+resultL93.getMaxX()+" and "+resultL2e.getMaxX(), resultL93.getMaxX(), resultL2e.getMaxX(), 1);
-        assertNotEquals("Values should be different : "+resultL93.getMinY()+" and "+resultL2e.getMinY(), resultL93.getMinY(), resultL2e.getMinY(), 1);
-        assertNotEquals("Values should be different : "+resultL93.getMaxY()+" and "+resultL2e.getMaxY(), resultL93.getMaxY(), resultL2e.getMaxY(), 1);
+        assertNotEquals(resultL93.getMinX(), resultL2e.getMinX(), 1, "Values should be different : "+resultL93.getMinX()+" and "+resultL2e.getMinX());
+        assertNotEquals(resultL93.getMaxX(), resultL2e.getMaxX(), 1, "Values should be different : "+resultL93.getMaxX()+" and "+resultL2e.getMaxX());
+        assertNotEquals(resultL93.getMinY(), resultL2e.getMinY(), 1, "Values should be different : "+resultL93.getMinY()+" and "+resultL2e.getMinY());
+        assertNotEquals(resultL93.getMaxY(), resultL2e.getMaxY(), 1, "Values should be different : "+resultL93.getMaxY()+" and "+resultL2e.getMaxY());
 
         st.execute("DROP TABLE IF EXISTS BASE_L93, BASE_L2E, BASE;");
     }
-    
-        
+
+
     private void checkProjectedGeom(String inputGeom, int inProj, int outProj, String expectedGeom) throws SQLException {
         check(compute(inputGeom, inProj, outProj), expectedGeom, outProj);
+    }
+    private void checkProjectedGeom(String inputGeom, int inProj, int outProj, String expectedGeom, double tolerance) throws SQLException {
+        checkWithTolerance(compute(inputGeom, inProj, outProj), expectedGeom, outProj, tolerance);
     }
 
     private ResultSet compute(String inputGeom, int inProj, int outProj) throws SQLException {

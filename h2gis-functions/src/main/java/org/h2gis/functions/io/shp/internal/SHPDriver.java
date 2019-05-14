@@ -20,6 +20,8 @@
 
 package org.h2gis.functions.io.shp.internal;
 
+import org.h2.value.Value;
+import org.h2.value.ValueGeometry;
 import org.h2gis.api.FileDriver;
 import org.h2gis.functions.io.dbf.internal.DBFDriver;
 import org.h2gis.functions.io.dbf.internal.DbaseFileHeader;
@@ -29,8 +31,6 @@ import java.io.*;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import org.h2.value.Value;
-import org.h2.value.ValueGeometry;
 
 /**
  * Merge ShapeFileReader and DBFReader.

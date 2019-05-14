@@ -20,18 +20,15 @@
 package org.h2gis.network.functions;
 
 
-import java.sql.*;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.jupiter.api.*;
 
-import static org.h2gis.network.functions.GraphConstants.EDGE_CENT_SUFFIX;
-import static org.h2gis.network.functions.GraphConstants.EDGE_ID;
-import static org.h2gis.network.functions.GraphConstants.END_NODE;
-import static org.h2gis.network.functions.GraphConstants.NODE_CENT_SUFFIX;
-import static org.h2gis.network.functions.GraphConstants.START_NODE;
+import java.sql.*;
+
+import static org.h2gis.network.functions.GraphConstants.*;
 import static org.h2gis.network.functions.ST_GraphAnalysis.BATCH_SIZE;
-import org.junit.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Adam Gouge
@@ -56,7 +53,7 @@ public class ST_GraphAnalysisTest {
     private static final String W = "'weight'";
     public static final String LINE_GRAPH_TABLE = "LINE_GRAPH_EDGES";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase("ST_GraphAnalysisTest", true);
@@ -64,17 +61,17 @@ public class ST_GraphAnalysisTest {
         GraphCreatorTest.registerCormenGraph(connection);
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }

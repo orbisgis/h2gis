@@ -21,7 +21,6 @@
 package org.h2gis.functions.spatial.geometry;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import static org.h2gis.api.Function.PROP_REMARKS;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;

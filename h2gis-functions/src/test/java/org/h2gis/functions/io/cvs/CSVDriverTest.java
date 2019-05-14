@@ -24,7 +24,7 @@ import org.h2gis.api.DriverFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.csv.CSVDriverFunction;
-import org.junit.*;
+import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,8 +33,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -47,23 +47,23 @@ public class CSVDriverTest {
     private static final String DB_NAME = "CSVImportExportTest";
     private Statement st;
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
-    
-    @Before
+
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }

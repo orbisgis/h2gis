@@ -25,13 +25,13 @@ import org.h2.engine.Session;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.result.Row;
+import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
-
-import java.util.ArrayList;
-import org.h2.table.Column;
 import org.h2.table.TableType;
 import org.h2.value.Value;
+
+import java.util.ArrayList;
 
 /**
  * When linked files are not available, this table defines an empty table

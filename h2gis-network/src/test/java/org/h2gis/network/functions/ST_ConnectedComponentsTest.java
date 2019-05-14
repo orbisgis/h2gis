@@ -20,22 +20,21 @@
 package org.h2gis.network.functions;
 
 
+import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.functions.factory.H2GISFunctions;
+import org.junit.jupiter.api.*;
+
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.*;
-import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
 
-import static org.h2gis.network.functions.GraphConstants.CONNECTED_COMPONENT;
-import static org.h2gis.network.functions.GraphConstants.EDGE_COMP_SUFFIX;
-import static org.h2gis.network.functions.GraphConstants.NODE_COMP_SUFFIX;
+import static org.h2gis.network.functions.GraphConstants.*;
 import static org.h2gis.network.functions.ST_ConnectedComponents.NULL_CONNECTED_COMPONENT_NUMBER;
 import static org.h2gis.network.functions.ST_GraphAnalysisTest.LINE_GRAPH_TABLE;
 import static org.h2gis.network.functions.ST_GraphAnalysisTest.createLineGraphTable;
-import org.junit.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Adam Gouge
@@ -50,7 +49,7 @@ public class ST_ConnectedComponentsTest {
     private static final String U = "'undirected'";
     private static final String EDGES = "EDGES";
 
-    @BeforeClass
+    @BeforeAll
     public static void setUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase("ST_ConnectedComponentsTest", true);
@@ -58,17 +57,17 @@ public class ST_ConnectedComponentsTest {
         registerEdges(connection);
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }

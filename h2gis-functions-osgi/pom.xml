@@ -34,7 +34,7 @@
     <!-- Dependencies -->
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+            <groupId>org.orbisgis</groupId>
             <artifactId>h2gis</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -62,7 +62,7 @@
         <plugins>
             <!-- Plugin for the bundle packaging -->
             <plugin>
-                <groupId>${maven-bundle-plugin-groupId}</groupId>
+                <groupId>org.apache.felix</groupId>
                 <artifactId>maven-bundle-plugin</artifactId>
                 <extensions>true</extensions>
                 <configuration>
@@ -76,8 +76,20 @@
             </plugin>
             <!-- Plugin for the compilation -->
             <plugin>
-                <groupId>${maven-compiler-plugin-groupId}</groupId>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

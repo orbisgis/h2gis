@@ -19,21 +19,23 @@
  */
 package org.h2gis.functions.io.json;
 
-import java.io.File;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import org.h2gis.api.EmptyProgressVisitor;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  *
@@ -44,7 +46,7 @@ public class JsonImportExportTest {
      private static Connection connection;
     private static final String DB_NAME = "JsonExportTest";
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
@@ -52,7 +54,7 @@ public class JsonImportExportTest {
         
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -65,7 +67,7 @@ public class JsonImportExportTest {
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000))");
              stat.execute("CALL JSONWrite('target/result.json', 'TABLE_POINT');");
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
-             Assert.assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
+             assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
          }
     }
     
@@ -79,7 +81,7 @@ public class JsonImportExportTest {
              JsonWriteDriver jsonWriteDriver = new JsonWriteDriver(connection);
              jsonWriteDriver.write(new EmptyProgressVisitor(), rs, new File("target/result.json"));
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
-             Assert.assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
+             assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
          }
     }
     
@@ -91,18 +93,20 @@ public class JsonImportExportTest {
              stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000)),(2, 'POINT(12 200)', (10000, 20000, 30000, 10000))");
              stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)');");
              String result = new String( Files.readAllBytes(Paths.get("target/result.json")));
-             Assert.assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
+             assertEquals("{\"IDAREA\":1,\"THE_GEOM\":\"POINT (1 2)\",\"CODES\":[10000,20000,30000,10000]}",result);
          }
     }
     
-    @Test(expected = SQLException.class)
-    public void testWriteBadEncoding() throws Exception {
-         try (Statement stat = connection.createStatement()) {
-             stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
-             stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
-             stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000)),(2, 'POINT(12 200)', (10000, 20000, 30000, 10000))");
-             stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)', 'CP52');");
-         }
+    @Test
+    public void testWriteBadEncoding() {
+        assertThrows(SQLException.class, () -> {
+            try (Statement stat = connection.createStatement()) {
+                stat.execute("DROP TABLE IF EXISTS TABLE_POINT");
+                stat.execute("create table TABLE_POINT(idarea int primary key, the_geom POINT, codes  ARRAY)");
+                stat.execute("insert into TABLE_POINT values(1, 'POINT(1 2)', (10000, 20000, 30000, 10000)),(2, 'POINT(12 200)', (10000, 20000, 30000, 10000))");
+                stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)', 'CP52');");
+            }
+        });
     }
     
 }

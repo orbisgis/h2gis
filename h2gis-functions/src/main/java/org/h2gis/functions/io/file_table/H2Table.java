@@ -31,9 +31,11 @@ import org.h2.index.IndexType;
 import org.h2.index.SpatialTreeIndex;
 import org.h2.message.DbException;
 import org.h2.result.Row;
+import org.h2.result.SortOrder;
 import org.h2.table.Column;
 import org.h2.table.IndexColumn;
 import org.h2.table.TableBase;
+import org.h2.table.TableType;
 import org.h2.util.MathUtils;
 import org.h2.value.Value;
 import org.h2gis.api.FileDriver;
@@ -44,8 +46,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import org.h2.result.SortOrder;
-import org.h2.table.TableType;
+
 import static org.h2gis.functions.io.file_table.H2TableIndex.PK_COLUMN_NAME;
 
 /**

@@ -21,16 +21,18 @@
 package org.h2gis.functions.spatial;
 
 
-import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTReader;
+import org.h2.jdbc.JdbcSQLDataException;
 import org.h2.jdbc.JdbcSQLException;
+import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.spatial.affine_transformations.ST_Translate;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.junit.*;
+import org.junit.jupiter.api.*;
+import org.locationtech.jts.geom.*;
+import org.locationtech.jts.io.WKTReader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -38,11 +40,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Map;
 
-import org.h2.jdbc.JdbcSQLDataException;
-import org.h2.jdbc.JdbcSQLNonTransientException;
-
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
 * @author Nicolas Fortin
@@ -66,7 +65,7 @@ public class SpatialFunctionTest {
     private static final String MULTIPOLYGON2D = "'MULTIPOLYGON (((0 0, 1 1, 0 1, 0 0)))'";
     private static final String LINESTRING2D = "'LINESTRING (1 1, 2 1, 2 2, 1 2, 1 1)'";
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(SpatialFunctionTest.class.getSimpleName());
@@ -74,17 +73,17 @@ public class SpatialFunctionTest {
         WKT_READER = new WKTReader();
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
 
-    @Before
+    @BeforeEach
     public void setUpStatement() throws Exception {
         st = connection.createStatement();
     }
 
-    @After
+    @AfterEach
     public void tearDownStatement() throws Exception {
         st.close();
     }
@@ -174,34 +173,38 @@ public class SpatialFunctionTest {
         st.execute("drop table forests");
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void test_ST_ExplodeWithBadQuery() throws Throwable {
-        try {
-            st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
-                    + " boundary MULTIPOLYGON);"
-                    + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
-                    + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
-            st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('select ') WHERE name = 'Green Forest' and explod_id=2");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        } finally {
-            st.execute("drop table forests");
-        }
+        assertThrows(SQLException.class, ()-> {
+            try {
+                st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+                        + " boundary MULTIPOLYGON);"
+                        + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
+                        + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
+                st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('select ') WHERE name = 'Green Forest' and explod_id=2");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            } finally {
+                st.execute("drop table forests");
+            }
+        });
     }
 
-    @Test(expected = SQLException.class)
+    @Test
     public void test_ST_ExplodeWithBadQuery2() throws Throwable {
-        try {
-            st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
-                    + " boundary MULTIPOLYGON);"
-                    + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
-                    + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
-            st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('select *') WHERE name = 'Green Forest' and explod_id=2");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        } finally {
-            st.execute("drop table forests");
-        }
+        assertThrows(SQLException.class, ()-> {
+            try {
+                st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+                        + " boundary MULTIPOLYGON);"
+                        + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
+                        + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
+                st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('select *') WHERE name = 'Green Forest' and explod_id=2");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            } finally {
+                st.execute("drop table forests");
+            }
+        });
     }
 
     public void test_ST_ExplodeFieldName() throws Exception {
@@ -215,19 +218,21 @@ public class SpatialFunctionTest {
         st.execute("drop table forests");
     }
        
-    @Test(expected = SQLException.class)
+    @Test
     public void test_ST_ExplodeWithoutFieldName() throws Throwable {
-        try {
-            st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
-                    + " boundary MULTIPOLYGON);"
-                    + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
-                    + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
-            st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('forests', 'the_geom') WHERE name = 'Green Forest' and explod_id=2");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        } finally {
-            st.execute("drop table forests");
-        }
+        assertThrows(SQLException.class, ()-> {
+            try {
+                st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+                        + " boundary MULTIPOLYGON);"
+                        + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
+                        + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
+                st.execute("SELECT ST_AsText(boundary) FROM ST_Explode('forests', 'the_geom') WHERE name = 'Green Forest' and explod_id=2");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            } finally {
+                st.execute("drop table forests");
+            }
+        });
     }
 
     @Test
@@ -1210,13 +1215,15 @@ public class SpatialFunctionTest {
         rs.close();
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void test_ST_RemoveRepeatedPointsTolerance2() throws Throwable {
-        try {
-            st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0)'::GEOMETRY, 3);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+        assertThrows(SQLException.class, ()-> {
+            try {
+                st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0)'::GEOMETRY, 3);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
     
     @Test
@@ -1487,30 +1494,34 @@ public class SpatialFunctionTest {
         rs.close();
     }
 
-    @Test(expected = JdbcSQLDataException.class)
+    @Test
     public void test_ST_TranslateMixedDimensionXY() throws Throwable {
-        try {
-            st.executeQuery("SELECT " +
-                    "ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2);");
-        } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getCause();
-            assertEquals(ST_Translate.MIXED_DIM_ERROR,
-                    originalCause.getMessage());
-            throw originalCause;
-        }
+        assertThrows(JdbcSQLDataException.class, ()-> {
+            try {
+                st.executeQuery("SELECT " +
+                        "ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2);");
+            } catch (JdbcSQLException e) {
+                final Throwable originalCause = e.getCause();
+                assertEquals(ST_Translate.MIXED_DIM_ERROR,
+                        originalCause.getMessage());
+                throw originalCause;
+            }
+        });
     }
 
-    @Test(expected = JdbcSQLDataException.class)
+    @Test
     public void test_ST_TranslateMixedDimensionXYZ() throws Throwable {
-        try {
-            st.executeQuery("SELECT " +
-                    "ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2, 3);");
-        } catch (JdbcSQLException e) {
-            final Throwable originalCause = e.getCause();
-            assertEquals(ST_Translate.MIXED_DIM_ERROR,
-                    originalCause.getMessage());
-            throw originalCause;
-        }
+        assertThrows(JdbcSQLDataException.class, ()-> {
+            try {
+                st.executeQuery("SELECT " +
+                        "ST_Translate('LINESTRING(0 0, 1 0 0)', 1, 2, 3);");
+            } catch (JdbcSQLException e) {
+                final Throwable originalCause = e.getCause();
+                assertEquals(ST_Translate.MIXED_DIM_ERROR,
+                        originalCause.getMessage());
+                throw originalCause;
+            }
+        });
     }
 
     @Test
@@ -1869,13 +1880,15 @@ public class SpatialFunctionTest {
         rs.close();
     }
     
-    @Test(expected = JdbcSQLNonTransientException.class)
+    @Test
     public void test_ST_IsValidReason6() throws Throwable {
-        try {
-            st.execute("SELECT ST_IsvalidReason('LINESTRING (80 240, 330 330, 280 240, 190 360)'::GEOMETRY, 199);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                st.execute("SELECT ST_IsvalidReason('LINESTRING (80 240, 330 330, 280 240, 190 360)'::GEOMETRY, 199);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
 
     @Test
@@ -1935,13 +1948,15 @@ public class SpatialFunctionTest {
         rs.close();
     }
     
-    @Test(expected = JdbcSQLNonTransientException.class)
+    @Test
     public void test_ST_IsValidRDetail6() throws Throwable {
-        try {
-            st.execute("SELECT ST_IsvalidDetail('LINESTRING (80 240, 330 330, 280 240, 190 360)'::GEOMETRY, 199);");
-        } catch (JdbcSQLException e) {
-            throw e.getCause();
-        }
+        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+            try {
+                st.execute("SELECT ST_IsvalidDetail('LINESTRING (80 240, 330 330, 280 240, 190 360)'::GEOMETRY, 199);");
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            }
+        });
     }
     
     

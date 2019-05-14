@@ -20,21 +20,22 @@
 
 package org.h2gis.functions.io.geojson;
 
-import java.io.File;
-import java.io.IOException;
+import org.h2.jdbc.JdbcSQLDataException;
 import org.h2.util.StringUtils;
+import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.*;
-import org.h2gis.api.EmptyProgressVisitor;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  *
@@ -47,7 +48,7 @@ public class GeojsonImportExportTest {
     private static final String DB_NAME = "GeojsonExportTest";
     private static final WKTReader WKTREADER = new WKTReader();
 
-    @BeforeClass
+    @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
@@ -58,7 +59,7 @@ public class GeojsonImportExportTest {
         
     }
 
-    @AfterClass
+    @AfterAll
     public static void tearDown() throws Exception {
         connection.close();
     }
@@ -765,34 +766,38 @@ public class GeojsonImportExportTest {
     }
     
     
-    @Test(expected = SQLException.class)
+    @Test
     public void exportImportFileWithSpace() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        File fileOut = new File("target/lineal export.geojson");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL GeoJSONWrite('target/lineal export.geojson', 'LINEAL')");
-        // Read this shape file to check values
-        assertTrue(fileOut.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
-        stat.execute("CALL GeoJSONRead('target/lineal export.geojson')");
+        assertThrows(JdbcSQLDataException.class, () -> {
+            Statement stat = connection.createStatement();
+            File fileOut = new File("target/lineal export.geojson");
+            stat.execute("DROP TABLE IF EXISTS LINEAL");
+            stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
+            stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+            // Create a shape file using table area
+            stat.execute("CALL GeoJSONWrite('target/lineal export.geojson', 'LINEAL')");
+            // Read this shape file to check values
+            assertTrue(fileOut.exists());
+            stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+            stat.execute("CALL GeoJSONRead('target/lineal export.geojson')");
+        });
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void exportImportFileWithDot() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        File fileOut = new File("target/lineal.export.geojson");
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        // Create a shape file using table area
-        stat.execute("CALL GeoJSONWrite('target/lineal.export.geojson', 'LINEAL')");
-        // Read this shape file to check values
-        assertTrue(fileOut.exists());
-        stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
-        stat.execute("CALL GeoJSONRead('target/lineal.export.geojson')");
+        assertThrows(JdbcSQLDataException.class, () -> {
+            Statement stat = connection.createStatement();
+            File fileOut = new File("target/lineal.export.geojson");
+            stat.execute("DROP TABLE IF EXISTS LINEAL");
+            stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
+            stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+            // Create a shape file using table area
+            stat.execute("CALL GeoJSONWrite('target/lineal.export.geojson', 'LINEAL')");
+            // Read this shape file to check values
+            assertTrue(fileOut.exists());
+            stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
+            stat.execute("CALL GeoJSONRead('target/lineal.export.geojson')");
+        });
     }
     
     @Test
@@ -835,25 +840,29 @@ public class GeojsonImportExportTest {
         }
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void exportResultSetBadEncoding() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        ResultSet resultSet = stat.executeQuery("SELECT * FROM lineal");
-        GeoJsonWriteDriver  gjw = new GeoJsonWriteDriver(connection);
-        gjw.write(new EmptyProgressVisitor(), resultSet, new File("target/lineal_export.geojson"),"CP52");        
+        assertThrows(JdbcSQLDataException.class, () -> {
+            Statement stat = connection.createStatement();
+            stat.execute("DROP TABLE IF EXISTS LINEAL");
+            stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
+            stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+            ResultSet resultSet = stat.executeQuery("SELECT * FROM lineal");
+            GeoJsonWriteDriver gjw = new GeoJsonWriteDriver(connection);
+            gjw.write(new EmptyProgressVisitor(), resultSet, new File("target/lineal_export.geojson"), "CP52");
+        });
     }
     
-    @Test(expected = SQLException.class)
+    @Test
     public void exportBadEncoding() throws SQLException, IOException {
-        Statement stat = connection.createStatement();
-        stat.execute("DROP TABLE IF EXISTS LINEAL");
-        stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
-        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-        GeoJsonWriteDriver  gjw = new GeoJsonWriteDriver(connection);
-        gjw.write(new EmptyProgressVisitor(), "lineal", new File("target/lineal_export.geojson"),"CP52");        
+        assertThrows(JdbcSQLDataException.class, () -> {
+            Statement stat = connection.createStatement();
+            stat.execute("DROP TABLE IF EXISTS LINEAL");
+            stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
+            stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
+            GeoJsonWriteDriver  gjw = new GeoJsonWriteDriver(connection);
+            gjw.write(new EmptyProgressVisitor(), "lineal", new File("target/lineal_export.geojson"),"CP52");
+        });
     }
 
 }

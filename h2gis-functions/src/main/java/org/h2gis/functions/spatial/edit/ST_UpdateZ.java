@@ -20,10 +20,10 @@
 
 package org.h2gis.functions.spatial.edit;
 
+import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.CoordinateSequence;
 import org.locationtech.jts.geom.CoordinateSequenceFilter;
 import org.locationtech.jts.geom.Geometry;
-import org.h2gis.api.DeterministicScalarFunction;
 
 /**
  * This function replace the z component of (each vertex of) the geometric
