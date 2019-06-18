@@ -366,10 +366,10 @@ public class SHPImportExportTest {
         assertEquals(1, row[0].getInt());
         // The driver can not create POLYGON
         WKTWriter toText = new WKTWriter(3);
-        assertEquals("MULTIPOLYGON (((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", toText.write((Geometry) row[1].getObject()));
+        assertEquals("MULTIPOLYGON Z(((-10 109 5, 90 109 5, 90 9 5, -10 9 5, -10 109 5)))", toText.write((Geometry) row[1].getObject()));
         row = shpDriver.getRow(1);
         assertEquals(2, row[0].getInt());
-        assertEquals("MULTIPOLYGON (((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", toText.write((Geometry)row[1].getObject()));
+        assertEquals("MULTIPOLYGON Z(((90 109 3, 190 109 3, 190 9 3, 90 9 3, 90 109 3)))", toText.write((Geometry)row[1].getObject()));
     }
 
     @Test

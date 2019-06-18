@@ -160,6 +160,7 @@ public class GeometryCoordinateDimension {
                     cs[i]=coord;
                     break;
                 case 3: {
+                    coord = new Coordinate(coord);
                     double z = coord.z;
                     if (Double.isNaN(z)) {
                         coord.z = 0;

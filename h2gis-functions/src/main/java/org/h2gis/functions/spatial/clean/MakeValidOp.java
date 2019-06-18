@@ -211,7 +211,7 @@ public class MakeValidOp {
             CoordinateSequenceFactory csFactory = geometry.getFactory().getCoordinateSequenceFactory();
             // Preserve 4th coordinate dimension as much as possible if preserveCoordDim is true
             if (preserveCoordDim && csFactory instanceof PackedCoordinateSequenceFactory
-                    && ((PackedCoordinateSequenceFactory) csFactory).getDimension() == 4) {
+                    /*&& ((PackedCoordinateSequenceFactory) csFactory).getDimension() == 4*/) {
                 Map<Coordinate, Double> map = new HashMap<>();
                 gatherDim4(geometry, map);
                 list2 = restoreDim4(list2, map);
@@ -566,7 +566,7 @@ public class MakeValidOp {
     // Use ring to restore M values on geoms
     private Collection<Geometry> restoreDim4(Collection<Geometry> geoms, Map<Coordinate, Double> map) {
         GeometryFactory factory = new GeometryFactory(
-                new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE, 4));
+                new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE));
         Collection<Geometry> result = new ArrayList<>();
         for (Geometry geom : geoms) {
             if (geom instanceof Point) {
@@ -622,7 +622,7 @@ public class MakeValidOp {
 
     // Use map to restore M values on the coordinate array
     private CoordinateSequence restoreDim4(CoordinateSequence cs, Map<Coordinate, Double> map) {
-        CoordinateSequence seq = new PackedCoordinateSequenceFactory(DOUBLE, 4).create(cs.size(), 4);
+        CoordinateSequence seq = new PackedCoordinateSequenceFactory(DOUBLE).create(cs.size(), 4);
         for (int i = 0; i < cs.size(); i++) {
             seq.setOrdinate(i, 0, cs.getOrdinate(i, 0));
             seq.setOrdinate(i, 1, cs.getOrdinate(i, 1));

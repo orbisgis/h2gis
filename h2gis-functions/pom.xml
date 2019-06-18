@@ -68,6 +68,7 @@
         <dependency>
             <groupId>org.locationtech.jts</groupId>
             <artifactId>jts-core</artifactId>
+            <version>1.16.1</version>
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
@@ -125,8 +126,6 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
-                        <Export-Package>org.h2gis.functions.*</Export-Package>
-                        <Fragment-Host>org.h2</Fragment-Host>
                         <Bundle-Vendor>CNRS</Bundle-Vendor>
                         <Bundle-Category>JDBC</Bundle-Category>
                         <Import-Package>

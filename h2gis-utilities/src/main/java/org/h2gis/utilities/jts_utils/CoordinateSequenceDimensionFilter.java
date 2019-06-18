@@ -47,14 +47,14 @@ public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilt
     public void filter(CoordinateSequence seq, int i) {
         // Here we find the largest possible dimension of the CoordinateSequence.
         int currentDim = 0;
-        if (Double.isNaN(seq.getOrdinate(i, CoordinateSequence.Z))) {
+        if (!seq.hasZ() || Double.isNaN(seq.getOrdinate(i, CoordinateSequence.Z))) {
             // Found a NaN z-coordinate
             exists2D = true;
             currentDim = XY;
         } else {
             // Found a non-NaN z-coordinate
             exists3D = true;
-            if (Double.isNaN(seq.getOrdinate(i, CoordinateSequence.M))) {
+            if (!seq.hasM() || Double.isNaN(seq.getOrdinate(i, CoordinateSequence.M))) {
                 currentDim = XYZ;
             } else {
                 currentDim = XYZM;
