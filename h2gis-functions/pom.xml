@@ -126,6 +126,8 @@
                 <extensions>true</extensions>
                 <configuration>
                     <instructions>
+                        <Export-Package>org.h2gis.functions.*</Export-Package>
+                        <Fragment-Host>org.h2</Fragment-Host>
                         <Bundle-Vendor>CNRS</Bundle-Vendor>
                         <Bundle-Category>JDBC</Bundle-Category>
                         <Import-Package>

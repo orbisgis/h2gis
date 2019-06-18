@@ -210,8 +210,7 @@ public class MakeValidOp {
         } else {
             CoordinateSequenceFactory csFactory = geometry.getFactory().getCoordinateSequenceFactory();
             // Preserve 4th coordinate dimension as much as possible if preserveCoordDim is true
-            if (preserveCoordDim && csFactory instanceof PackedCoordinateSequenceFactory
-                    /*&& ((PackedCoordinateSequenceFactory) csFactory).getDimension() == 4*/) {
+            if (preserveCoordDim && csFactory instanceof PackedCoordinateSequenceFactory) {
                 Map<Coordinate, Double> map = new HashMap<>();
                 gatherDim4(geometry, map);
                 list2 = restoreDim4(list2, map);
