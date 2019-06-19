@@ -36,7 +36,7 @@ import org.locationtech.jts.operation.union.UnaryUnionOp;
 
 import java.util.*;
 
-import static org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory.DOUBLE;
+import static org.locationtech.jts.geom.impl.PackedCoordinateSequenceFactory.*;
 
 /**
  * Operator to make a geometry valid.
@@ -325,7 +325,7 @@ public class MakeValidOp {
         if (modified) {
             double[] shrinkedArray = new double[count * dim];
             System.arraycopy(array, 0, shrinkedArray, 0, count * dim);
-            return PackedCoordinateSequenceFactory.DOUBLE_FACTORY.create(shrinkedArray, dim);
+            return DOUBLE_FACTORY.create(shrinkedArray, dim);
         } else {
             return sequence;
         }
@@ -565,7 +565,7 @@ public class MakeValidOp {
     // Use ring to restore M values on geoms
     private Collection<Geometry> restoreDim4(Collection<Geometry> geoms, Map<Coordinate, Double> map) {
         GeometryFactory factory = new GeometryFactory(
-                new PackedCoordinateSequenceFactory(PackedCoordinateSequenceFactory.DOUBLE));
+                new PackedCoordinateSequenceFactory(DOUBLE));
         Collection<Geometry> result = new ArrayList<>();
         for (Geometry geom : geoms) {
             if (geom instanceof Point) {

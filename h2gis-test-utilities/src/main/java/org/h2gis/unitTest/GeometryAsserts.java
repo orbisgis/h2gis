@@ -20,10 +20,10 @@
 
 package org.h2gis.unitTest;
 
+import org.h2.value.ValueGeometry;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
-import org.h2.value.ValueGeometry;
 
 import static org.junit.jupiter.api.Assertions.*;
 

@@ -21,9 +21,6 @@ package org.h2gis.functions.spatial.topology;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.RobustLineIntersector3D;
-import org.locationtech.jts.algorithm.*;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;

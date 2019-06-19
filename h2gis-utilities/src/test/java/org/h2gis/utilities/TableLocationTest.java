@@ -28,7 +28,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.locationtech.jts.util.Assert.shouldNeverReachHere;
 
 /**
  * Test TableLocation
