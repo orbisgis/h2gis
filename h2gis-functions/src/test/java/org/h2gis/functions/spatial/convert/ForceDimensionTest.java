@@ -26,8 +26,7 @@ import org.locationtech.jts.geom.impl.CoordinateArraySequence;
 
 import java.sql.SQLException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 
 /**
@@ -59,7 +58,7 @@ public class ForceDimensionTest {
         assertEquals(2, newPoint.getCoordinateSequence().getDimension());
         assertEquals(10.0, newPoint.getCoordinateSequence().getOrdinate(0, 0), 0);
         assertEquals(11.0, newPoint.getCoordinateSequence().getOrdinate(0, 1), 0);
-        assertEquals(Double.NaN, newPoint.getCoordinateSequence().getOrdinate(0, 2), 0);
+        assertFalse(newPoint.getCoordinateSequence().hasZ());
         
         //Call ST_Force3D
         Point newPoint3D = (Point) ST_Force3D.force3D(newPoint);
@@ -67,7 +66,7 @@ public class ForceDimensionTest {
         assertEquals(3, newPoint3D.getCoordinateSequence().getDimension());
         assertEquals(10.0, newPoint3D.getCoordinateSequence().getOrdinate(0, 0), 0);
         assertEquals(11.0, newPoint3D.getCoordinateSequence().getOrdinate(0, 1), 0);
-        assertEquals(0, newPoint.getCoordinateSequence().getOrdinate(0, 2), 0);
+        assertEquals(0, newPoint3D.getCoordinateSequence().getOrdinate(0, 2), 0);
         
         //Create a 3D with NaN z
         coordinateSequence = new CoordinateArraySequence(1, 3);
@@ -76,7 +75,7 @@ public class ForceDimensionTest {
         coordinateSequence.setOrdinate(0, 2, Double.NaN);
         Point point3DNaN = FACTORY.createPoint(coordinateSequence);
         assertEquals(3, point3DNaN.getCoordinateSequence().getDimension());
-        assertEquals(0, newPoint.getCoordinateSequence().getOrdinate(0, 2), 0);
+        assertFalse(newPoint.getCoordinateSequence().hasZ());
         
     }
 
@@ -103,17 +102,17 @@ public class ForceDimensionTest {
         //Assert that input data are 2D geometries
         assertEquals(10.0, point1.getCoordinateSequence().getOrdinate(0, 0), 0);
         assertEquals(11.0, point1.getCoordinateSequence().getOrdinate(0, 1), 0);
-        assertEquals(Double.NaN, point1.getCoordinateSequence().getOrdinate(0, 2), 0);
+        assertFalse(point1.getCoordinateSequence().hasZ());
         assertEquals(2, point1.getCoordinateSequence().getDimension());
 
         assertEquals(20.0, point2.getCoordinateSequence().getOrdinate(0, 0), 0);
         assertEquals(21.0, point2.getCoordinateSequence().getOrdinate(0, 1), 0);
-        assertEquals(Double.NaN, point2.getCoordinateSequence().getOrdinate(0, 2), 0);
+        assertFalse(point2.getCoordinateSequence().hasZ());
         assertEquals(2, point2.getCoordinateSequence().getDimension());
 
         assertEquals(30.0, point3.getCoordinateSequence().getOrdinate(0, 0), 0);
         assertEquals(31.0, point3.getCoordinateSequence().getOrdinate(0, 1), 0);
-        assertEquals(Double.NaN, point3.getCoordinateSequence().getOrdinate(0, 2), 0);
+        assertFalse(point3.getCoordinateSequence().hasZ());
         assertEquals(2, point3.getCoordinateSequence().getDimension());
 
         assertEquals(3, multiPoint.getNumPoints());

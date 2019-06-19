@@ -53,7 +53,6 @@ public class SHPEngineTest {
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
-        H2GISFunctions.registerFunction(connection.createStatement(), new DriverManager(), "");
     }
 
     @AfterAll

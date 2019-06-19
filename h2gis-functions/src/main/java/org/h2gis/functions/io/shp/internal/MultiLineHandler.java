@@ -158,7 +158,7 @@ public class MultiLineHandler implements ShapeHandler {
 			// PackedCoordinateSequence.Double(
 			// length, dimension);
 			PackedCoordinateSequence builder = new PackedCoordinateSequence.Double(
-					length, 3);
+					length, 3, 0);
 			for (int i = 0; i < length; i++) {
 				builder.setOrdinate(i, 0, buffer.getDouble());
 				builder.setOrdinate(i, 1, buffer.getDouble());

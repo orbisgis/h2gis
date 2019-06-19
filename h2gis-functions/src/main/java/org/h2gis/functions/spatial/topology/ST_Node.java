@@ -20,7 +20,7 @@
 package org.h2gis.functions.spatial.topology;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.algorithm.RobustLineIntersector;
+import org.h2gis.utilities.jts_utils.RobustLineIntersector3D;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.noding.IntersectionAdder;
 import org.locationtech.jts.noding.MCIndexNoder;
@@ -29,11 +29,12 @@ import org.locationtech.jts.noding.SegmentStringUtil;
 
 /**
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (UBS 2019)
  */
 public class ST_Node extends DeterministicScalarFunction{
 
-      public ST_Node(){
+    public ST_Node(){
         addProperty(PROP_REMARKS, "Add nodes on a geometry for each intersection ");
     }
 
@@ -51,7 +52,7 @@ public class ST_Node extends DeterministicScalarFunction{
         if (geom == null) {
             return null;
         }        
-        Noder noder = new MCIndexNoder(new IntersectionAdder(new RobustLineIntersector()));
+        Noder noder = new MCIndexNoder(new IntersectionAdder(new RobustLineIntersector3D()));
         noder.computeNodes(SegmentStringUtil.extractNodedSegmentStrings(geom));
         return SegmentStringUtil.toGeometry(noder.getNodedSubstrings(), geom.getFactory());
     }

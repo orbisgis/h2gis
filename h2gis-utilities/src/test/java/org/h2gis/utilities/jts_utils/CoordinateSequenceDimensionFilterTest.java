@@ -23,8 +23,7 @@ package org.h2gis.utilities.jts_utils;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.io.WKTReader;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * @author Adam Gouge
@@ -37,22 +36,22 @@ public class CoordinateSequenceDimensionFilterTest {
     public void testDimensionSequence() throws Exception {
         CoordinateSequenceDimensionFilter cd = new CoordinateSequenceDimensionFilter();
         wKTReader.read("POINT(0 0)").apply(cd);
-        assertTrue(cd.getDimension() == 2);
+        assertEquals(2, cd.getDimension());
         assertTrue(cd.is2D());
         assertFalse(cd.isMixed());
         cd = new CoordinateSequenceDimensionFilter();
         wKTReader.read("LINESTRING(0 0, 1 0)").apply(cd);
-        assertTrue(cd.getDimension() == 2);
+        assertEquals(2, cd.getDimension());
         assertTrue(cd.is2D());
         assertFalse(cd.isMixed());
         cd = new CoordinateSequenceDimensionFilter();
         wKTReader.read("LINESTRING(0 0, 1 0 0)").apply(cd);
-        assertTrue(cd.getDimension() == 3);
+        assertEquals(3, cd.getDimension());
         assertFalse(cd.is2D());
         assertTrue(cd.isMixed());
         cd = new CoordinateSequenceDimensionFilter();
         wKTReader.read("LINESTRING(0 0 0, 1 0 0)").apply(cd);
-        assertTrue(cd.getDimension() == 3);
+        assertEquals(3, cd.getDimension());
         assertFalse(cd.is2D());
         assertFalse(cd.isMixed());
     }

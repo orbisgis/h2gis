@@ -210,7 +210,7 @@ public class JtsBinaryParser {
     private CoordinateSequence parseCS(ValueGetter data, boolean haveZ, boolean haveM) {
         int count = data.getInt();
         int dims = haveZ ? 3 : 2;
-        CoordinateSequence cs = new Double(count, dims);
+        CoordinateSequence cs = new Double(new Coordinate[count], dims);
 
         for(int i = 0; i < count; ++i) {
             for(int d = 0; d < dims; ++d) {
