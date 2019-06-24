@@ -660,6 +660,8 @@ public class CreateFunctionTest {
             }
         });
     }
+    
+   
 
     @Test
     public void test_ST_MakePolygon5() {
@@ -670,6 +672,19 @@ public class CreateFunctionTest {
                 throw e.getCause();
             }
         });
+    }
+    
+     @Test
+    public void test_ST_MakePolygon6() throws Exception {
+        
+        st.execute("DROP TABLE IF EXISTS LINES; CREATE TABLE lines (the_geom geometry); "
+                + "insert into lines values ('LINESTRING(150 280, 190 280, 190 260, 150 260, 150 280)'), ('LINESTRING(120 320, 150 320, 150 300, 120 300, 120 320)');");
+        ResultSet rs = st.executeQuery("SELECT ST_MakePolygon('LINESTRING (100 250, 100 350, 200 350, 200 250, 100 250)'::GEOMETRY, "
+                + "st_accum(lines.the_geom) ) from lines ;");
+        rs.next();
+        assertGeometryEquals("POLYGON ((100 250, 100 350, 200 350, 200 250, 100 250), "
+                + "(120 300, 150 300, 150 320, 120 320, 120 300), (150 260, 190 260, 190 280, 150 280, 150 260))", rs.getBytes(1));
+        rs.close();
     }
 
     @Test

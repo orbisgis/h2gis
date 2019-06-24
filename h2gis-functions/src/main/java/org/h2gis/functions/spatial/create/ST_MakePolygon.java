@@ -64,16 +64,21 @@ public class ST_MakePolygon extends DeterministicScalarFunction {
      * @param holes
      * @return
      */
-    public static Polygon makePolygon(Geometry shell, Geometry... holes) throws IllegalArgumentException {
-        if(shell == null) {
+    public static Polygon makePolygon(Geometry shell, Geometry holes) throws IllegalArgumentException {
+        if (shell == null) {
             return null;
         }
         LinearRing outerLine = checkLineString(shell);
-        LinearRing[] interiorlinestrings = new LinearRing[holes.length];
-        for (int i = 0; i < holes.length; i++) {
-            interiorlinestrings[i] = checkLineString(holes[i]);
+        if (holes == null) {
+            return shell.getFactory().createPolygon(outerLine, null);
+        } else {
+            final int size = holes.getNumGeometries();
+            LinearRing[] interiorlinestrings = new LinearRing[size];
+            for (int i = 0; i < size; i++) {
+                interiorlinestrings[i] = checkLineString(holes.getGeometryN(i));
+            }
+            return shell.getFactory().createPolygon(outerLine, interiorlinestrings);
         }
-        return shell.getFactory().createPolygon(outerLine, interiorlinestrings);
     }
 
     /**
