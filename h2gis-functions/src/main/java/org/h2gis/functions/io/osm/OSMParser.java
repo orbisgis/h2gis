@@ -62,7 +62,6 @@ public class OSMParser extends DefaultHandler {
 
     
     // Set the same batch size as OSMOSIS
-    // 1000 lines is 73 kb for node insert
     private static final int BATCH_SIZE = 4000;
     private PreparedStatement nodePreparedStmt;
     private PreparedStatement nodeTagPreparedStmt;
