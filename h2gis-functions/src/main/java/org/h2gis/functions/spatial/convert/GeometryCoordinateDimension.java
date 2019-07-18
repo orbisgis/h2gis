@@ -114,14 +114,16 @@ public class GeometryCoordinateDimension {
      * @return 
      */
     public static Polygon convert(Polygon polygon, int dimension) {
-        LinearRing shell = GeometryCoordinateDimension.convert(polygon.getExteriorRing(),dimension);
+        LinearRing shell = gf.createLinearRing(convertSequence(polygon.getExteriorRing().getCoordinates(),dimension));
         int nbOfHoles = polygon.getNumInteriorRing();
         final LinearRing[] holes = new LinearRing[nbOfHoles];
         for (int i = 0; i < nbOfHoles; i++) {
-            holes[i] = GeometryCoordinateDimension.convert(polygon.getInteriorRingN(i),dimension);
+            holes[i] =  gf.createLinearRing(convertSequence(polygon.getInteriorRingN(i).getCoordinates(),dimension));
         }
         return gf.createPolygon(shell, holes);
-    }
+    }   
+    
+    
 
     /**
      * Force the dimension of the LineString and update correctly the coordinate 
@@ -130,8 +132,8 @@ public class GeometryCoordinateDimension {
      * @param dimension
      * @return 
      */
-    public static LinearRing convert(LineString lineString,int dimension) {
-        return gf.createLinearRing(convertSequence(lineString.getCoordinates(),dimension));
+    public static LineString convert(LineString lineString,int dimension) {
+        return gf.createLineString(convertSequence(lineString.getCoordinates(),dimension));
     }
 
     /**
