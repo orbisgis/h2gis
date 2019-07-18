@@ -2033,6 +2033,15 @@ public class SpatialFunctionTest {
         assertGeometryEquals("POINT (-10 10)", rs.getBytes(1));
         rs.close();
     }   
+    
+    
+    @Test
+    public void test_ST_Force2D4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('MULTILINESTRING((268394.46568222373 6745339.923834022, 268396.99851297046 6745339.229782337))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("MULTILINESTRING((268394.46568222373 6745339.923834022, 268396.99851297046 6745339.229782337))", rs.getBytes(1));
+        rs.close();
+    }
 
     @Test
     public void test_ST_ProjectPoint1() throws Exception {
