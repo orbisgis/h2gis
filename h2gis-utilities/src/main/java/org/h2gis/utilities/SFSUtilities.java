@@ -32,6 +32,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.cts.util.UTMUtils;
 
 /**
  * Generic utilities function to retrieve spatial metadata trough SFS specification.
@@ -546,16 +547,17 @@ public class SFSUtilities {
      * @throws SQLException
      */
     public static int getSRID(Connection connection, TableLocation table, String fieldName) throws SQLException {
-        ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
-                table.getTable());
-        int srid = 0;
-        while (geomResultSet.next()) {
-            if (geomResultSet.getString("f_geometry_column").equals(fieldName)) {
-                srid = geomResultSet.getInt("srid");
-                break;
+        int srid;
+        try (ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
+                table.getTable())) {
+            srid = 0;
+            while (geomResultSet.next()) {
+                if (geomResultSet.getString("f_geometry_column").equals(fieldName)) {
+                    srid = geomResultSet.getInt("srid");
+                    break;
+                }
             }
         }
-        geomResultSet.close();
         return srid;
     }
     
@@ -573,33 +575,29 @@ public class SFSUtilities {
      */
     public static String[] getAuthorityAndSRID(Connection connection, TableLocation table, String fieldName)
             throws SQLException{
-        ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
-                table.getTable());
-        int srid = 0;
-        while (geomResultSet.next()) {
-            if (geomResultSet.getString("f_geometry_column").equals(fieldName)) {
-                srid = geomResultSet.getInt("srid");
-                break;
+        int srid;
+        try (ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
+                table.getTable())) {
+            srid = 0;
+            while (geomResultSet.next()) {
+                if (geomResultSet.getString("f_geometry_column").equals(fieldName)) {
+                    srid = geomResultSet.getInt("srid");
+                    break;
+                }
             }
         }
-        geomResultSet.close();
         String authority = null;
         String sridCode = null;
         if (srid != 0) {
             PreparedStatement ps = connection.prepareStatement("SELECT AUTH_NAME FROM PUBLIC.SPATIAL_REF_SYS " +
                     " WHERE SRID = ?");
             ps.setInt(1, srid);
-            ResultSet rs = null;
-            try {
-                rs = ps.executeQuery();
+            try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     authority = rs.getString(1);
                     sridCode=String.valueOf(srid);
                 }
             } finally {
-                if (rs != null) {
-                    rs.close();
-                }
                 ps.close();
             }
         }
@@ -624,5 +622,29 @@ public class SFSUtilities {
             connection.createStatement().execute(String.format("ALTER TABLE %s ADD CHECK ST_SRID(the_geom)=%d",
                     tableLocation.toString(), srid));
         }
+    }
+    
+    
+    /**
+     * Return a SRID code from latitude and longitude coordinates
+     * @param connection to the database
+     * @param latitude
+     * @param longitude
+     * @return a SRID code
+     * @throws SQLException
+     */
+    public static int getSRID(Connection connection, float latitude, float longitude)
+            throws SQLException {      
+            int srid = -1;
+            PreparedStatement ps = connection.prepareStatement("select SRID from PUBLIC.SPATIAL_REF_SYS where PROJ4TEXT = ?");
+            ps.setString(1, UTMUtils.getProj(latitude,longitude));
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    srid = rs.getInt(1);
+                }
+            } finally {
+                ps.close();
+            }
+            return srid;
     }
 }
