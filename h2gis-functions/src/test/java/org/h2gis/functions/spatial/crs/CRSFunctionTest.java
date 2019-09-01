@@ -237,4 +237,26 @@ public class CRSFunctionTest {
             rs.close();
         }
     }
+    
+    @Test
+    public void testGetSRIDLatitudeLongitude() throws SQLException {
+        assertEquals(32632, SFSUtilities.getSRID(connection,59.04f, 3.68f));
+        assertEquals(32717, SFSUtilities.getSRID(connection,-10.8469f, -81.0351f));
+        assertEquals(32634, SFSUtilities.getSRID(connection,68.948f, 20.939f));
+        assertEquals(4038, SFSUtilities.getSRID(connection,66.682f, 32.2119f));
+        assertEquals(32736, SFSUtilities.getSRID(connection,-66.682f,32.2119f));
+    }
+    
+    
+    @Test
+    public void testST_FindUTMSRID() throws SQLException {        
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_FindUTMSRID('POINT(3.68 59.04)'::GEOMETRY) as result");
+        assertTrue(rs.next());
+        assertEquals(32632, rs.getInt(1));
+        
+        rs = st.executeQuery("SELECT ST_FindUTMSRID('POINT(32.2119 -66.682)'::GEOMETRY) as result");
+        assertTrue(rs.next());
+        assertEquals(32736, rs.getInt(1));        
+    }
 }

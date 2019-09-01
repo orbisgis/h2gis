@@ -91,6 +91,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
+import org.h2gis.functions.spatial.crs.ST_FindUTMSRID;
 
 /**
  * Add H2GIS features to an H2 database
@@ -312,7 +313,8 @@ public class H2GISFunctions {
                 new ColumnSRIDFromColumnType(),
                 new DimensionFromColumnType(),
                 new GeometryTypeNameFromColumnType(),
-                new GeometryTypeFromColumnType()};
+                new GeometryTypeFromColumnType(),
+                new ST_FindUTMSRID()};
     }
 
     /**
