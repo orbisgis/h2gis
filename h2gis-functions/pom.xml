@@ -45,7 +45,8 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>cts</artifactId>
+            <artifactId>cts</artifactId>            
+             <version>1.5.3-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>com.h2database</groupId>
