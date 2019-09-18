@@ -62,7 +62,7 @@ public class OSMParser extends DefaultHandler {
 
     
     // Set the same batch size as OSMOSIS
-    private static final int BATCH_SIZE = 4000;
+    private static final int BATCH_SIZE = 8000;
     private PreparedStatement nodePreparedStmt;
     private PreparedStatement nodeTagPreparedStmt;
     private PreparedStatement wayPreparedStmt;
