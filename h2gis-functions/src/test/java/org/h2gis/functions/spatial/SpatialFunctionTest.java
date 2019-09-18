@@ -233,6 +233,19 @@ public class SpatialFunctionTest {
                 st.execute("drop table forests");
             }
         });
+    }   
+    
+    @Test
+    public void test_ST_ExplodeWithSRID() throws Exception {
+        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+                + " boundary GEOMETRY(MULTIPOLYGON, 4326));"
+                + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
+                + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));");
+        st.execute("Drop table if exists exploded_forests; CREATE TABLE exploded_forests as SELECT * FROM ST_Explode('forests')");
+        ResultSet rs = st.executeQuery("SELECT * FROM exploded_forests");
+        assertTrue(rs.next());
+        assertEquals(4326, SFSUtilities.getSRID(connection, TableLocation.parse("exploded_forests")));
+        st.execute("drop table forests");
     }
 
     @Test

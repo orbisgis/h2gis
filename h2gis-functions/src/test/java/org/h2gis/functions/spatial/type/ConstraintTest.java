@@ -246,6 +246,62 @@ public class ConstraintTest {
             assertFalse(rs.next());
         }
     }
+    
+    /**
+     * Check constraint pass
+     * @throws SQLException
+     */
+    @Test
+    public void testColumnSRIDGeometryColumns3() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table IF EXISTS T_SRID");
+        st.execute("create table T_SRID (the_geom GEOMETRY (GEOMETRY, 4326))");
+        st.execute ("insert into T_SRID VALUES(ST_GEOMFROMTEXT('POINT (2 47)',4326))");
+        try (ResultSet rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'T_SRID'")) {
+            assertTrue(rs.next());
+            assertEquals(4326, rs.getInt("srid"));
+            assertFalse(rs.next());
+        }
+        assertEquals(4326, SFSUtilities.getSRID(connection, TableLocation.parse("T_SRID")));
+    }
+    
+    /**
+     * Check constraint pass
+     * @throws SQLException
+     */
+    @Test
+    public void testColumnSRIDGeometryColumns4() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table IF EXISTS T_SRID");
+        st.execute("create table T_SRID (the_geom GEOMETRY (POINT, 4326))");
+        st.execute ("insert into T_SRID VALUES(ST_GEOMFROMTEXT('POINT (2 47)',4326))");
+        try (ResultSet rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'T_SRID'")) {
+            assertTrue(rs.next());
+            assertEquals(4326, rs.getInt("srid"));
+            assertFalse(rs.next());
+        }
+        assertEquals(4326, SFSUtilities.getSRID(connection, TableLocation.parse("T_SRID")));
+    }
+    
+    /**
+     * Check constraint pass
+     * @throws SQLException
+     */
+    @Test
+    public void testColumnSRIDGeometryColumns5() throws SQLException {
+        Statement st = connection.createStatement();
+        st.execute("drop table IF EXISTS T_SRID");
+        st.execute("create table T_SRID (the_geom GEOMETRY (MULTIPOLYGON, 4326))");
+        st.execute ("insert into T_SRID VALUES(ST_GEOMFROMTEXT('MULTIPOLYGON(((28 26,28 0,84 0,"
+                + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326))");
+        try (ResultSet rs = st.executeQuery("SELECT SRID FROM GEOMETRY_COLUMNS WHERE F_TABLE_NAME = 'T_SRID'")) {
+            assertTrue(rs.next());
+            assertEquals(4326, rs.getInt("srid"));
+            assertFalse(rs.next());
+        }
+        assertEquals(4326, SFSUtilities.getSRID(connection, TableLocation.parse("T_SRID")));
+    }
+    
 
     /**
      * LineString into LineString column

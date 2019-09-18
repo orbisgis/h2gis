@@ -201,7 +201,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
             Statement st = connection.createStatement();
             tableQuery = st.executeQuery("SELECT * FROM "+tableName);
             firstRow = false;
-            ResultSetMetaData meta = tableQuery.getMetaData();
+            ResultSetMetaData meta = tableQuery.getMetaData();  
             columnCount = meta.getColumnCount();
             if(spatialFieldName==null) {
                 // Find first geometry column
