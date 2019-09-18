@@ -201,10 +201,10 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
             Statement st = connection.createStatement();
             tableQuery = st.executeQuery("SELECT * FROM "+tableName);
             firstRow = false;
-            ResultSetMetaData meta = tableQuery.getMetaData();
+            ResultSetMetaData meta = tableQuery.getMetaData();  
             columnCount = meta.getColumnCount();
             if(spatialFieldName==null) {
-                // Find first geometry column
+                // Find first geometry column and its SRID
                 List<String> geomFields = SFSUtilities.getGeometryFields(connection,TableLocation.parse(tableName));
                 if(!geomFields.isEmpty()) {
                     spatialFieldName = geomFields.get(0);
