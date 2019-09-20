@@ -917,6 +917,24 @@ public class SpatialFunction2Test {
     }
     
     @Test
+    public void test_ST_SVF6() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTILINESTRING ((-10 -1000 12, -10 1000 12), (10 -1000 12, 10 1000 12),   (330 -185 10, 325 190 10))'::GEOMETRY, 100, 120) as result");
+        assertTrue(rs.next());
+        double svfTest = 0.6402;
+        assertEquals(svfTest, rs.getDouble(1), 0.01);
+    }
+    
+    @Test
+    public void test_ST_SVF7() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT(0 0 0)'::GEOMETRY, 'MULTILINESTRING ( (330 -185, 325 190))'::GEOMETRY, 100, 120) as result");
+        assertTrue(rs.next());
+        assertEquals(1, rs.getDouble(1), 0.01);
+    }
+    
+    
+    @Test
     public void test_ST_ShortestLine1() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT st_length(ST_ShortestLine('POINT(0 0)'::GEOMETRY, 'LINESTRING(0 0, 10 10)'::GEOMETRY)) as result");
