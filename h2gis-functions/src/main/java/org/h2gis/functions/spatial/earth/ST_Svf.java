@@ -101,21 +101,25 @@ public class ST_Svf extends DeterministicScalarFunction{
 
         if (geoms.getDimension() > 0) {            
             GeometryFactory factory = pt.getFactory();
+            Geometry ptBuffer = pt.buffer(distance);
             //Convert input geoms to a set of linestring
             STRtree sTRtree = new STRtree();
             int nbGeoms = geoms.getNumGeometries();
             for (int i = 0; i < nbGeoms; i++) {
                 Geometry subGeom = geoms.getGeometryN(i);
                 if (subGeom instanceof LineString) {
-                    addSegments(subGeom.getCoordinates(), factory, sTRtree);
+                    addSegments(subGeom.getCoordinates(), ptBuffer,factory, sTRtree);
                 } else if (subGeom instanceof Polygon) {
                     Polygon p = (Polygon) subGeom;
-                    addSegments(p.getExteriorRing().getCoordinates(), factory, sTRtree);
+                    addSegments(p.getExteriorRing().getCoordinates(), ptBuffer,factory, sTRtree);
                     int nbInterior = p.getNumInteriorRing();
                     for (int j = 0; j < nbInterior; j++) {
-                        addSegments(p.getInteriorRingN(j).getCoordinates(), factory, sTRtree);
+                        addSegments(p.getInteriorRingN(j).getCoordinates(), ptBuffer,factory, sTRtree);
                     }
                 }
+            }
+            if(sTRtree.isEmpty()){
+                return 1;
             }
             Coordinate startCoordinate = pt.getCoordinate();
             double startZ = Double.isNaN(startCoordinate.z)?0:startCoordinate.z;
@@ -165,19 +169,23 @@ public class ST_Svf extends DeterministicScalarFunction{
     }
     
     /**
-     * 
-     * @param coords
-     * @param factory
-     * @param strtree 
+     * Tranform to segments and add then in a STRtree if they intersect a buffer
+     * geometry
+     * @param coords the coordinates of the input geometry
+     * @param ptBuffer the buffer
+     * @param factory the geometry factory
+     * @param strtree  the STRtree to store the segments
      */
-    public static void addSegments(final Coordinate[] coords, GeometryFactory factory, STRtree strtree) {
+    public static void addSegments(final Coordinate[] coords, Geometry ptBuffer, GeometryFactory factory, STRtree strtree) {
         for (int j = 0; j < coords.length - 1; j++) {
             Coordinate startCoord = coords[j];
             Coordinate endCoord = coords[j + 1];
-            if (!(Double.isNaN(startCoord.z) || Double.isNaN(endCoord.z))) {
+            if (!(Double.isNaN(startCoord.z) || Double.isNaN(endCoord.z))) {                
                 LineString lineString = factory.createLineString(
                         new Coordinate[]{startCoord, endCoord});
+                if(lineString.intersects(ptBuffer)){
                 strtree.insert(lineString.getEnvelopeInternal(), lineString);
+                }
             }
         }
     }
