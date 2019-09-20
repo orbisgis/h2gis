@@ -965,4 +965,27 @@ public class SpatialFunction2Test {
         assertTrue(rs.next());
         assertGeometryEquals("LINESTRING (2 4, 2 4.9)", rs.getObject(1));
     }
+    
+    @Test
+    public void test_ST_GENERATEPOINTS1() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_GeneratePoints('POLYGON ((0 4, 8 4, 8 0, 0 0, 0 4))'::GEOMETRY,10) as result");
+        assertTrue(rs.next());
+        assertEquals(10, ((Geometry)rs.getObject(1)).getNumPoints());
+    }
+    
+    @Test
+    public void test_ST_GENERATEPOINTS2() throws Exception {
+        assertThrows(SQLException.class, () -> {
+            try {
+                Statement st = connection.createStatement();
+                ResultSet rs = st.executeQuery("SELECT ST_GeneratePoints('LINESTRING (0 4, 8 4, 8 0, 0 0, 0 4)'::GEOMETRY,10) as result");
+                assertTrue(rs.next());
+                assertNull(rs.getObject(1));
+            } catch (JdbcSQLException e) {
+                throw e.getCause();
+            } finally {
+            }
+        });
+    }
 }

@@ -314,7 +314,8 @@ public class H2GISFunctions {
                 new DimensionFromColumnType(),
                 new GeometryTypeNameFromColumnType(),
                 new GeometryTypeFromColumnType(),
-                new ST_FindUTMSRID()};
+                new ST_FindUTMSRID(),
+                new ST_GeneratePoints()};
     }
 
     /**
