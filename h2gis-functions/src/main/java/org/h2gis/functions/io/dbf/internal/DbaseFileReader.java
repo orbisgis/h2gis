@@ -145,14 +145,14 @@ public class DbaseFileReader {
          * @return byte array extracted from the buffer
          * @throws IOException
          */
-        private byte[] getBytes(int pos, int length) throws IOException {
+        private byte[] getBytes(long pos, int length) throws IOException {
                 byte[] bytes = new byte[length];
                 buffer.get(pos, bytes);
                 return bytes;
         }
 
         public Value getFieldValue(int row, int column) throws IOException {
-                int fieldPosition = getPositionFor(row, column);
+                long fieldPosition = getPositionFor(row, column);
                 int fieldLength = getLengthFor(column);
                 byte[] fieldBytes = getBytes(fieldPosition, fieldLength);
                 ByteBuffer field = ByteBuffer.wrap(fieldBytes);
@@ -169,12 +169,12 @@ public class DbaseFileReader {
                 return header.getFieldLength(column);
         }
 
-        private int getPositionFor(int row, int column) {
-                int recordOffset = header.getHeaderLength() + row
+        protected long getPositionFor(int row, int column) {
+                long recordOffset = header.getHeaderLength() + (long)row
                         * header.getRecordLength() + 1;
-                int fieldOffset = 0;
+                long fieldOffset = 0;
                 for (int i = 0; i < column; i++) {
-                        fieldOffset += header.getFieldLength(i);
+                        fieldOffset += (long)header.getFieldLength(i);
                 }
 
                 return fieldOffset + recordOffset;

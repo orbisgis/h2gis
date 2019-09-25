@@ -34,8 +34,8 @@ import java.io.IOException;
  */
 public class DBFDriver implements FileDriver {
     private File dbfFile;
-    private DbaseFileReader dbaseFileReader;
-    private DbaseFileWriter dbaseFileWriter;
+    protected DbaseFileReader dbaseFileReader;
+    protected DbaseFileWriter dbaseFileWriter;
 
     /**
      * Init file header for DBF File
