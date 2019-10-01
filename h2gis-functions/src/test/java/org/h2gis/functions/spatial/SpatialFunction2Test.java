@@ -933,6 +933,14 @@ public class SpatialFunction2Test {
         assertEquals(1, rs.getDouble(1), 0.01);
     }
     
+    @Test
+    public void test_ST_SVF8() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_svf('POINT EMPTY'::GEOMETRY, 'MULTILINESTRING ( (330 -185, 325 190))'::GEOMETRY, 100, 120) as result");
+        assertTrue(rs.next());
+        assertNull(rs.getObject(1));
+    }
+    
     
     @Test
     public void test_ST_ShortestLine1() throws Exception {
