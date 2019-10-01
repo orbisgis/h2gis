@@ -872,7 +872,7 @@ public class SpatialFunction2Test {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_svf(null, null, 1,0)");
         assertTrue(rs.next());
-        assertEquals(-1, rs.getDouble(1), 0);
+        assertNull(rs.getObject(1));
     }
     
     @Test
