@@ -63,7 +63,7 @@ public class ST_Svf extends DeterministicScalarFunction{
      * @param geoms
      * @return
      */
-    public static double computeSvf(Point pt, Geometry geoms, double distance, int rayCount) {
+    public static Double computeSvf(Point pt, Geometry geoms, double distance, int rayCount) {
         return computeSvf(pt, geoms, distance, rayCount, RAY_STEP_LENGTH);
     }   
   
@@ -77,9 +77,12 @@ public class ST_Svf extends DeterministicScalarFunction{
      * @param geoms
      * @return 
      */
-    public static double computeSvf(Point pt, Geometry geoms, double distance, int rayCount, int stepRayLength){   
-        double svf = -1;
+    public static Double computeSvf(Point pt, Geometry geoms, double distance, int rayCount, int stepRayLength){   
+        Double svf = null;
         if(pt ==null){
+            return svf;
+        }
+        if(pt.isEmpty()){
             return svf;
         }
         if(geoms == null){
@@ -118,7 +121,7 @@ public class ST_Svf extends DeterministicScalarFunction{
                 }
             }
             if(sTRtree.isEmpty()){
-                return 1;
+                return 1D;
             }
             Coordinate startCoordinate = pt.getCoordinate();
             double startZ = Double.isNaN(startCoordinate.z)?0:startCoordinate.z;
