@@ -20,9 +20,16 @@
 package org.h2gis.functions.spatial.create;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 import org.h2gis.api.DeterministicScalarFunction;
+import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
+import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.MultiPoint;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.shape.random.RandomPointsBuilder;
@@ -36,10 +43,16 @@ import org.locationtech.jts.shape.random.RandomPointsBuilder;
  */
 public class ST_GeneratePoints extends DeterministicScalarFunction {
 
+    static  PointOnGeometryLocator extentLocator;
+    
     
     public ST_GeneratePoints() {
-        addProperty(PROP_REMARKS, "Generates pseudo-random points until "
-                + "the requested number are found within the input polygon or multipolygon.");
+        addProperty(PROP_REMARKS, "Return a distribution of points for a given polygon or multipolygon.\n"
+                + "The following signature ST_GeneratePoints(Geometry geom, int nPts), generates pseudo-random points until \n"
+                + "the requested number are found within the input polygon or multipolygon.\n"
+                + "The following signature ST_GeneratePoints(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask)\n"
+                + "generates a regular set of points according a x and y cell sizes. \n"
+                + "The usemask argument is used to keep the points loacted inside the input geometry.");
     }
     
     @Override
@@ -67,7 +80,57 @@ public class ST_GeneratePoints extends DeterministicScalarFunction {
         } else {
             throw new SQLException("Only polygon or multipolygon is supported");
         }
+    }   
+    
+     public static Geometry generatePoints(Geometry geom, int cellSizeX, int cellSizeY) throws SQLException {
+         return generatePoints(geom, cellSizeX, cellSizeY, false);
+     }
+        
+    /**
+     * Make a regular distribution of points
+     *
+     * @param geom input geometry as polygon or multipolygon
+     * @param cellSizeX size of the x cell
+     * @param cellSizeY size of the y cell
+     * @param useMask set to true to keep the points loacted inside the input geometry
+     * @return a regular distribution of points as multipoint
+     * @throws java.sql.SQLException
+     */
+    public static Geometry generatePoints(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask) throws SQLException {
+        if (geom == null) {
+            return null;
+        }
+        if (geom instanceof Polygon || geom instanceof MultiPolygon) {
+            Envelope env = geom.getEnvelopeInternal();
+            GeometryFactory geomFact = geom.getFactory();
+            int nCellsOnSideX = (int) (env.getWidth() / cellSizeX) + 1;
+            int nCellsOnSideY = (int) (env.getHeight() / cellSizeY) + 1;
+
+            List<Coordinate> geoms = new ArrayList<Coordinate>();
+            double envMinX = env.getMinX() + (env.getWidth() % cellSizeX) / 2;
+            double envMinY = env.getMinY() + (env.getHeight() % cellSizeY) / 2;
+            if (useMask) {
+                extentLocator = new IndexedPointInAreaLocator(geom);
+                for (int i = 0; i < nCellsOnSideX; i++) {
+                    for (int j = 0; j < nCellsOnSideY; j++) {
+                        Coordinate c = new Coordinate(envMinX + i * cellSizeX, envMinY + j * cellSizeY);
+                        if (extentLocator.locate(c) != Location.EXTERIOR) {
+                            geoms.add(c);
+                        }
+                    }
+                }
+            } else {
+                for (int i = 0; i < nCellsOnSideX; i++) {
+                    for (int j = 0; j < nCellsOnSideY; j++) {
+                        geoms.add(new Coordinate(envMinX + i * cellSizeX, envMinY + j * cellSizeY));
+                    }
+                }
+            }
+            return geomFact.createMultiPointFromCoords(geoms.toArray(new Coordinate[0]));
+
+        } else {
+            throw new SQLException("Only polygon or multipolygon is supported");
+        }
     }
-    
-    
+
 }
