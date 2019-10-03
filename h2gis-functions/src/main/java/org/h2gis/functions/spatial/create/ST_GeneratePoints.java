@@ -21,7 +21,9 @@ package org.h2gis.functions.spatial.create;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
 import org.locationtech.jts.algorithm.locate.PointOnGeometryLocator;
@@ -50,9 +52,11 @@ public class ST_GeneratePoints extends DeterministicScalarFunction {
         addProperty(PROP_REMARKS, "Return a distribution of points for a given polygon or multipolygon.\n"
                 + "The following signature ST_GeneratePoints(Geometry geom, int nPts), generates pseudo-random points until \n"
                 + "the requested number are found within the input polygon or multipolygon.\n"
-                + "The following signature ST_GeneratePoints(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask)\n"
+                + "The following signature ST_GeneratePoints(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask[, int nbPoints])\n"
                 + "generates a regular set of points according a x and y cell sizes. \n"
-                + "The usemask argument is used to keep the points loacted inside the input geometry.");
+                + "The usemask argument is used to keep the points loacted inside the input geometry.\n"
+                + "The nbPoints is an optional integer value to limit the number of points randomly selected\n"
+                + "in the grid.");
     }
     
     @Override
@@ -85,8 +89,8 @@ public class ST_GeneratePoints extends DeterministicScalarFunction {
      public static Geometry generatePoints(Geometry geom, int cellSizeX, int cellSizeY) throws SQLException {
          return generatePoints(geom, cellSizeX, cellSizeY, false);
      }
-        
-    /**
+     
+     /**
      * Make a regular distribution of points
      *
      * @param geom input geometry as polygon or multipolygon
@@ -100,37 +104,83 @@ public class ST_GeneratePoints extends DeterministicScalarFunction {
         if (geom == null) {
             return null;
         }
-        if (geom instanceof Polygon || geom instanceof MultiPolygon) {
-            Envelope env = geom.getEnvelopeInternal();
+        if (geom instanceof Polygon || geom instanceof MultiPolygon) {                 
+            GeometryFactory geomFact = geom.getFactory();                   
+            return geomFact.createMultiPointFromCoords(createGridPoints(geom, cellSizeX, cellSizeY, useMask).toArray(new Coordinate[0]));
+        } else {
+            throw new SQLException("Only polygon or multipolygon is supported");
+        }
+    }
+        
+    /**
+     * Make a regular distribution of points
+     *
+     * @param geom input geometry as polygon or multipolygon
+     * @param cellSizeX size of the x cell
+     * @param cellSizeY size of the y cell
+     * @param useMask set to true to keep the points loacted inside the input geometry
+     * @param nbPoints Random number of points to keep
+     * @return a regular distribution of points as multipoint
+     * @throws java.sql.SQLException
+     */
+    public static Geometry generatePoints(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask, int nbPoints) throws SQLException {
+        if (geom == null) {
+            return null;
+        }
+        if (geom instanceof Polygon || geom instanceof MultiPolygon) {                 
             GeometryFactory geomFact = geom.getFactory();
-            int nCellsOnSideX = (int) (env.getWidth() / cellSizeX) + 1;
-            int nCellsOnSideY = (int) (env.getHeight() / cellSizeY) + 1;
-
-            List<Coordinate> geoms = new ArrayList<Coordinate>();
-            double envMinX = env.getMinX() + (env.getWidth() % cellSizeX) / 2;
-            double envMinY = env.getMinY() + (env.getHeight() % cellSizeY) / 2;
-            if (useMask) {
-                extentLocator = new IndexedPointInAreaLocator(geom);
-                for (int i = 0; i < nCellsOnSideX; i++) {
-                    for (int j = 0; j < nCellsOnSideY; j++) {
-                        Coordinate c = new Coordinate(envMinX + i * cellSizeX, envMinY + j * cellSizeY);
-                        if (extentLocator.locate(c) != Location.EXTERIOR) {
-                            geoms.add(c);
-                        }
-                    }
-                }
-            } else {
-                for (int i = 0; i < nCellsOnSideX; i++) {
-                    for (int j = 0; j < nCellsOnSideY; j++) {
-                        geoms.add(new Coordinate(envMinX + i * cellSizeX, envMinY + j * cellSizeY));
-                    }
-                }
+            List<Coordinate> geoms = createGridPoints(geom, cellSizeX, cellSizeY, useMask);            
+            if(nbPoints> geoms.size()){
+                throw new SQLException("The number of points to keep cannot be greater than the"
+                        + "number of distributed points.");
             }
+            else if(nbPoints<1){
+                throw new SQLException("The number of points cannot be lower than 1.");
+            }
+            else{                
+             Collections.shuffle(geoms);
+             geoms = geoms.subList(0, nbPoints);
+            }            
             return geomFact.createMultiPointFromCoords(geoms.toArray(new Coordinate[0]));
 
         } else {
             throw new SQLException("Only polygon or multipolygon is supported");
         }
+    }
+    
+    /**
+     * Make a regular distribution of points stored in an array
+     * @param geom input geometry as polygon or multipolygon
+     * @param cellSizeX size of the x cell
+     * @param cellSizeY size of the y cell
+     * @param useMask set to true to keep the points loacted inside the input geometry
+     * @return
+     */
+    static List<Coordinate> createGridPoints(Geometry geom, int cellSizeX, int cellSizeY, boolean useMask) {
+        Envelope env = geom.getEnvelopeInternal();
+        int nCellsOnSideX = (int) (env.getWidth() / cellSizeX) + 1;
+        int nCellsOnSideY = (int) (env.getHeight() / cellSizeY) + 1;
+        List<Coordinate> geoms = new ArrayList<Coordinate>();
+        double envMinX = env.getMinX() + (env.getWidth() % cellSizeX) / 2;
+        double envMinY = env.getMinY() + (env.getHeight() % cellSizeY) / 2;
+        if (useMask) {
+            extentLocator = new IndexedPointInAreaLocator(geom);
+            for (int i = 0; i < nCellsOnSideX; i++) {
+                for (int j = 0; j < nCellsOnSideY; j++) {
+                    Coordinate c = new Coordinate(envMinX + i * cellSizeX, envMinY + j * cellSizeY);
+                    if (extentLocator.locate(c) != Location.EXTERIOR) {
+                        geoms.add(c);
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < nCellsOnSideX; i++) {
+                for (int j = 0; j < nCellsOnSideY; j++) {
+                    geoms.add(new Coordinate(envMinX + i * cellSizeX, envMinY + j * cellSizeY));
+                }
+            }
+        }
+        return geoms;
     }
 
 }
