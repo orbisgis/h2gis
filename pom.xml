@@ -55,7 +55,7 @@
         <h2-version>1.4.200</h2-version>
 
         <jackson-core-groupId>com.fasterxml.jackson.core</jackson-core-groupId>
-        <jackson-core-version>2.3.1</jackson-core-version>
+        <jackson-core-version>2.10.0</jackson-core-version>
 
         <java-network-analyzer-groupId>org.orbisgis</java-network-analyzer-groupId>
         <java-network-analyzer-version>0.1.7</java-network-analyzer-version>
