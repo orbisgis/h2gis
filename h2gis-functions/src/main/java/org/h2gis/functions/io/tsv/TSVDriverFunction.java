@@ -187,10 +187,13 @@ public class TSVDriverFunction implements DriverFunction{
 
             StringBuilder insertTable = new StringBuilder("INSERT INTO ");
             insertTable.append(table).append(" VALUES(");
-
             for (int i = 0; i < columnCount; i++) {
-                createTable.append(metadata.getColumnName(i + 1)).append(" VARCHAR,");
-                insertTable.append("?,");
+                if (i > 0) {
+                    createTable.append(",");
+                    insertTable.append(",");
+                }
+                createTable.append(metadata.getColumnName(i + 1)).append(" VARCHAR");
+                insertTable.append("?");
             }
             createTable.append(")");
             insertTable.append(")");

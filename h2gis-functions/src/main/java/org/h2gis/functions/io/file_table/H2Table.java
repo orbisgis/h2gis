@@ -28,7 +28,6 @@ import org.h2.engine.SysProperties;
 import org.h2.index.Cursor;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
-import org.h2.index.SpatialTreeIndex;
 import org.h2.message.DbException;
 import org.h2.result.Row;
 import org.h2.result.SortOrder;
@@ -46,6 +45,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import org.h2.pagestore.db.SpatialTreeIndex;
 
 import static org.h2gis.functions.io.file_table.H2TableIndex.PK_COLUMN_NAME;
 
