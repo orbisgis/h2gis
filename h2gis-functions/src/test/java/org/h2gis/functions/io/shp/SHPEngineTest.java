@@ -23,8 +23,6 @@ package org.h2gis.functions.io.shp;
 import org.apache.commons.io.FileUtils;
 import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.functions.factory.H2GISFunctions;
-import org.h2gis.functions.io.DriverManager;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
@@ -289,7 +287,7 @@ public class SHPEngineTest {
         rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='THE_GEOM'");
         try {
             assertTrue(rs.next());
-            assertEquals("org.h2.index.SpatialTreeIndex", rs.getString("INDEX_CLASS"));
+            assertEquals("org.h2.pagestore.db.SpatialTreeIndex", rs.getString("INDEX_CLASS"));
         } finally {
             rs.close();
         }
