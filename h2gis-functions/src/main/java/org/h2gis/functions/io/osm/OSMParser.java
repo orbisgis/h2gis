@@ -98,6 +98,7 @@ public class OSMParser extends DefaultHandler {
     // For progression information return
     private static final int AVERAGE_NODE_SIZE = 500;
     private static String TAG_DUPLICATE_EXCEPTION = String.valueOf(ErrorCode.DUPLICATE_KEY_1);
+    private Connection connection;
 
     public OSMParser() {
 
@@ -115,9 +116,11 @@ public class OSMParser extends DefaultHandler {
      */
     public boolean read(Connection connection, String tableName, File inputFile, ProgressVisitor progress) throws SQLException {
         this.progress = progress.subProcess(100);
+        this.connection=connection;
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         boolean success = false;
+        connection.setAutoCommit(false);
         TableLocation requestedTable = TableLocation.parse(tableName, isH2);
         String osmTableName = requestedTable.getTable();
         checkOSMTables(connection, isH2, requestedTable, osmTableName);
@@ -189,7 +192,8 @@ public class OSMParser extends DefaultHandler {
             }
             if (relationMemberPreparedStmt != null) {
                 relationMemberPreparedStmt.close();
-            }
+            }            
+            connection.setAutoCommit(true);
         }
 
         return success;
@@ -459,6 +463,8 @@ public class OSMParser extends DefaultHandler {
     private int insertBatch(PreparedStatement st, int batchSize, int maxBatchSize) throws SQLException {
         if(batchSize >= maxBatchSize) {
             st.executeBatch();
+            connection.commit();
+            st.clearBatch();
             return 0;
         } else {
             return batchSize;

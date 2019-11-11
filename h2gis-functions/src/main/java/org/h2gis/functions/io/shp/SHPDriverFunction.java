@@ -53,7 +53,7 @@ import java.util.regex.Pattern;
  */
 public class SHPDriverFunction implements DriverFunction {
     public static String DESCRIPTION = "ESRI shapefile";
-    private static final int BATCH_MAX_SIZE = 100;
+    private static final int BATCH_MAX_SIZE = 200;
     
 
     @Override
@@ -244,8 +244,9 @@ public class SHPDriverFunction implements DriverFunction {
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
             final TableLocation parse;
             int srid;
-            try ( // Build CREATE TABLE sql request
-                    Statement st = connection.createStatement()) {
+            try ( 
+                // Build CREATE TABLE sql request
+                Statement st = connection.createStatement()) {
                 String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2);
                 if(!types.isEmpty()) {
                     types = ", " + types;
@@ -270,7 +271,8 @@ public class SHPDriverFunction implements DriverFunction {
             }
             try {
                         lastSql = String.format("INSERT INTO %s VALUES (DEFAULT, %s )", parse,
-                                DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
+                                DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));                        
+                        connection.setAutoCommit(false);
                 try (PreparedStatement preparedStatement = connection.prepareStatement(lastSql)) {
                     long batchSize = 0;
                     for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
@@ -282,14 +284,18 @@ public class SHPDriverFunction implements DriverFunction {
                         batchSize++;
                         if (batchSize >= BATCH_MAX_SIZE) {
                             preparedStatement.executeBatch();
+                            connection.commit();
                             preparedStatement.clearBatch();
                             batchSize = 0;
                             copyProgress.endStep();
                         }
                     }
                     if(batchSize > 0) {
-                        preparedStatement.executeBatch();
+                        preparedStatement.executeBatch();                        
+                        connection.commit();
                     }
+                    
+                    connection.setAutoCommit(true);
                 }
                 //Alter table to set the SRID constraint
                 if(isH2){
