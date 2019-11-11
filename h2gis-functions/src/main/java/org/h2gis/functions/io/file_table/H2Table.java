@@ -45,7 +45,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import org.h2.mvstore.db.MVSpatialIndex;
 import org.h2.pagestore.db.SpatialTreeIndex;
 
 import static org.h2gis.functions.io.file_table.H2TableIndex.PK_COLUMN_NAME;
