@@ -42,6 +42,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
+ * @author Erwan Bocher, CNRS
  * @author Nicolas Fortin
  * @author Sylvain PALOMINOS (UBS 2019)
  */
@@ -203,7 +204,7 @@ public class DBFDriverFunction implements DriverFunction {
             } else {
                 try {
                     try ( // Build CREATE TABLE sql request
-                            Statement st = connection.createStatement()) {
+                        Statement st = connection.createStatement()) {
                         List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
                         for (int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
                             otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
@@ -213,6 +214,7 @@ public class DBFDriverFunction implements DriverFunction {
                                 getSQLColumnTypes(dbfHeader, isH2)));
                     }
                     try {
+                        connection.setAutoCommit(false);
                         try (PreparedStatement preparedStatement = connection.prepareStatement(
                                 String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
                                         getQuestionMark(dbfHeader.getNumFields() + 1)))) {
@@ -227,6 +229,7 @@ public class DBFDriverFunction implements DriverFunction {
                                 batchSize++;
                                 if (batchSize >= BATCH_MAX_SIZE) {
                                     preparedStatement.executeBatch();
+                                    connection.commit();
                                     preparedStatement.clearBatch();
                                     batchSize = 0;
                                     copyProgress.endStep();
@@ -234,7 +237,10 @@ public class DBFDriverFunction implements DriverFunction {
                             }
                             if (batchSize > 0) {
                                 preparedStatement.executeBatch();
+                                connection.commit();
+                                preparedStatement.clearBatch();
                             }
+                            connection.setAutoCommit(true);
                         }
                     } catch (Exception ex) {
                         connection.createStatement().execute("DROP TABLE IF EXISTS " + parsedTable);

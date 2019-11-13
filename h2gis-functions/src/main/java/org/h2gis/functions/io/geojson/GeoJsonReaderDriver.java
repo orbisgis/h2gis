@@ -152,9 +152,12 @@ public class GeoJsonReaderDriver {
         this.progress = progress.subProcess(100);
         init();
         if (parseMetadata()) {
+            connection.setAutoCommit(false);
             GF = new GeometryFactory(new PrecisionModel(), parsedSRID);
             parseData();
             setGeometryTypeConstraints();
+            connection.setAutoCommit(true);
+
         } else {
             throw new SQLException("Cannot create the table " + tableLocation + " to import the GeoJSON data");
         }
@@ -917,6 +920,7 @@ public class GeoJsonReaderDriver {
                     batchSize++;
                     if (batchSize >= BATCH_MAX_SIZE) {
                         preparedStatement.executeBatch();
+                        connection.commit();
                         preparedStatement.clearBatch();
                         batchSize = 0;
                     }
@@ -933,6 +937,8 @@ public class GeoJsonReaderDriver {
                     }
                     if (batchSize > 0) {
                         preparedStatement.executeBatch();
+                        connection.commit();
+                        preparedStatement.clearBatch();
                     }
                 } else {
                     throw new SQLException("Malformed GeoJSON file. Expected 'Feature', found '" + geomType + "'");
