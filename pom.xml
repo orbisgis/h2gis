@@ -106,6 +106,17 @@
         <slf4j-version>1.6.0</slf4j-version>
     </properties>
 
+    <!-- Dependencies -->
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>1.4.201-SNAPSHOT</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
     <!-- Build Settings -->
     <build>
         <plugins>
