@@ -45,13 +45,15 @@ public class ForceDimensionTest {
         coordinateSequence.setOrdinate(0, 1, 11.0);
         coordinateSequence.setOrdinate(0, 2, 1);
         Point point = FACTORY.createPoint(coordinateSequence);
+        Point pointWithSrid = FACTORY.createPoint(coordinateSequence);
+        pointWithSrid.setSRID(2154);
 
         //Assert that input data are 3D geometries
         assertEquals(3, point.getCoordinateSequence().getDimension());
         assertEquals(10.0, point.getCoordinateSequence().getOrdinate(0, 0), 0);
         assertEquals(11.0, point.getCoordinateSequence().getOrdinate(0, 1), 0);
         assertEquals(1, point.getCoordinateSequence().getOrdinate(0, 2), 0);
-        
+
         //Call ST_Force2D
         Point newPoint = (Point) ST_Force2D.force2D(point);
         //Assert that the new Point is a 2D one     
@@ -59,6 +61,15 @@ public class ForceDimensionTest {
         assertEquals(10.0, newPoint.getCoordinateSequence().getOrdinate(0, 0), 0);
         assertEquals(11.0, newPoint.getCoordinateSequence().getOrdinate(0, 1), 0);
         assertFalse(newPoint.getCoordinateSequence().hasZ());
+
+        //Call ST_Force2D
+        Point newPointWithSrid = (Point) ST_Force2D.force2D(pointWithSrid);
+        //Assert that the new Point is a 2D one
+        assertEquals(2, newPointWithSrid.getCoordinateSequence().getDimension());
+        assertEquals(10.0, newPointWithSrid.getCoordinateSequence().getOrdinate(0, 0), 0);
+        assertEquals(11.0, newPointWithSrid.getCoordinateSequence().getOrdinate(0, 1), 0);
+        assertFalse(newPointWithSrid.getCoordinateSequence().hasZ());
+        assertEquals(2154, newPointWithSrid.getSRID());
         
         //Call ST_Force3D
         Point newPoint3D = (Point) ST_Force3D.force3D(newPoint);

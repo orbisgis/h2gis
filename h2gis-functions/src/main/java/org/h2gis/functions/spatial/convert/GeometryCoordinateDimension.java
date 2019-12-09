@@ -40,22 +40,24 @@ public class GeometryCoordinateDimension {
      * @return 
      */
      public static Geometry force(Geometry geom, int dimension) {
+         Geometry g = geom;
         if (geom instanceof Point) {
-            return gf.createPoint(convertSequence(geom.getCoordinates(),dimension));
+            g = gf.createPoint(convertSequence(geom.getCoordinates(),dimension));
         } else if (geom instanceof LineString) {
-            return gf.createLineString(convertSequence(geom.getCoordinates(),dimension));
+            g = gf.createLineString(convertSequence(geom.getCoordinates(),dimension));
         } else if (geom instanceof Polygon) {
-            return GeometryCoordinateDimension.convert((Polygon) geom,dimension);
+            g = GeometryCoordinateDimension.convert((Polygon) geom,dimension);
         } else if (geom instanceof MultiPoint) {
-            return gf.createMultiPoint(convertSequence(geom.getCoordinates(),dimension));
+            g = gf.createMultiPoint(convertSequence(geom.getCoordinates(),dimension));
         } else if (geom instanceof MultiLineString) {
-            return GeometryCoordinateDimension.convert((MultiLineString) geom,dimension);
+            g = GeometryCoordinateDimension.convert((MultiLineString) geom,dimension);
         } else if (geom instanceof MultiPolygon) {
-            return GeometryCoordinateDimension.convert((MultiPolygon) geom,dimension);
+            g = GeometryCoordinateDimension.convert((MultiPolygon) geom,dimension);
         } else if (geom instanceof GeometryCollection) {
-            return GeometryCoordinateDimension.convert((GeometryCollection)geom,dimension);
+            g = GeometryCoordinateDimension.convert((GeometryCollection)geom,dimension);
         }
-        return geom;
+        g.setSRID(geom.getSRID());
+        return g;
     }
     
      /**
