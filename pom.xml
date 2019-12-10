@@ -34,88 +34,9 @@
         <site.basedir>${project.basedir}</site.basedir>
 
         <!-- Dependency groupId and version -->
-        <!-- Plugin for the test coverage check -->
-        <cobertura-maven-plugin-groupId>org.codehaus.mojo</cobertura-maven-plugin-groupId>
-        <cobertura-maven-plugin-version>2.6</cobertura-maven-plugin-version>
-
-        <commons-compress-groupId>org.apache.commons</commons-compress-groupId>
-        <commons-compress-version>1.19</commons-compress-version>
-
-        <commons-io-groupId>commons-io</commons-io-groupId>
-        <commons-io-version>2.6</commons-io-version>
-
-        <cts-groupId>org.orbisgis</cts-groupId>
-        <cts-version>1.5.3-SNAPSHOT</cts-version>
-
-        <!-- Plugin for the execution of a Java program -->
-        <exec-maven-plugin-groupId>org.codehaus.mojo</exec-maven-plugin-groupId>
-        <exec-maven-plugin-version>1.2.1</exec-maven-plugin-version>
-
-        <h2-groupId>com.h2database</h2-groupId>
-        <h2-version>1.4.201-RC1</h2-version>
-
-        <jackson-core-groupId>com.fasterxml.jackson.core</jackson-core-groupId>
-        <jackson-core-version>2.10.0</jackson-core-version>
-
-        <java-network-analyzer-groupId>org.orbisgis</java-network-analyzer-groupId>
-        <java-network-analyzer-version>0.1.7</java-network-analyzer-version>
-
-        <jts-core-groupId>org.locationtech.jts</jts-core-groupId>
-        <jts-core-version>1.16.1</jts-core-version>
-
-        <junit-groupId>junit</junit-groupId>
-        <junit-version>4.12</junit-version>
-
-        <!-- Plugin for aggregate the project output with dependencies, modules, documentation and other files  -->
-        <maven-assembly-plugin-groupId>org.apache.maven.plugins</maven-assembly-plugin-groupId>
-        <maven-assembly-plugin-version>2.3</maven-assembly-plugin-version>
-
-        <!-- Plugin for the bundle packaging -->
-        <maven-bundle-plugin-groupId>org.apache.felix</maven-bundle-plugin-groupId>
-        <maven-bundle-plugin-version>2.3.7</maven-bundle-plugin-version>
-
-        <!-- Plugin for the compilation -->
-        <maven-compiler-plugin-groupId>org.apache.maven.plugins</maven-compiler-plugin-groupId>
-        <maven-compiler-plugin-version>2.3.2</maven-compiler-plugin-version>
-
-        <!-- Create a JAR from the project -->
-        <maven-jar-plugin-groupId>org.apache.maven.plugins</maven-jar-plugin-groupId>
-        <maven-jar-plugin-version>2.4</maven-jar-plugin-version>
-
-        <!-- Plugin for test running -->
-        <maven-surefire-plugin-groupId>org.apache.maven.plugins</maven-surefire-plugin-groupId>
-        <maven-surefire-plugin-version>2.14</maven-surefire-plugin-version>
-
-        <osgi-compendium-groupId>org.osgi</osgi-compendium-groupId>
-        <osgi-compendium-version>4.3.1</osgi-compendium-version>
-
-        <osgi-core-groupId>org.osgi</osgi-core-groupId>
-        <osgi-core-version>4.3.1</osgi-core-version>
-
-        <osgi-enterprise-groupId>org.osgi</osgi-enterprise-groupId>
-        <osgi-enterprise-version>5.0.0</osgi-enterprise-version>
-
-        <poly2tri-groupId>org.orbisgis</poly2tri-groupId>
-        <poly2tri-version>0.1.2</poly2tri-version>
-
         <postgis-jdbc-groupId>net.postgis</postgis-jdbc-groupId>
         <postgis-jdbc-version>2.3.0</postgis-jdbc-version>
-
-        <!-- Simple Logging Facade for Java -->
-        <slf4j-groupId>org.slf4j</slf4j-groupId>
-        <slf4j-version>1.6.0</slf4j-version>
     </properties>
-
-    <!-- Dependencies -->
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>com.h2database</groupId>
-                <artifactId>h2</artifactId>
-                <version>1.4.201-RC1</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <!-- Build Settings -->
     <build>
