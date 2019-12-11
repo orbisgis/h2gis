@@ -199,11 +199,6 @@ public class JtsBinaryParser {
 
     }
 
-    public static final void main(String[] args){
-        Coordinate[] coords = new Coordinate[5];
-        System.out.println(coords.length);
-    }
-
     /**
      * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.CoordinateSequence}.
