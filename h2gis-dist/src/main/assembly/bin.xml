@@ -26,6 +26,15 @@
             <outputDirectory>/bin/</outputDirectory>
             <useProjectArtifact>true</useProjectArtifact>
             <scope>runtime</scope>
+            <excludes>
+                <exclude>org.orbisgis:h2gis-test-utilities</exclude>
+                <exclude>org.apache.lucene:lucene-analyzers-common</exclude>
+                <exclude>org.apache.lucene:lucene-core</exclude>
+                <exclude>org.apache.lucene:lucene-queries</exclude>
+                <exclude>org.apache.lucene:lucene-queryparser</exclude>
+                <exclude>org.apache.lucene:lucene-sandbox</exclude>
+                <exclude>javax.servlet:javax.servlet-api</exclude>
+            </excludes>
         </dependencySet>
     </dependencySets>
 </assembly>
