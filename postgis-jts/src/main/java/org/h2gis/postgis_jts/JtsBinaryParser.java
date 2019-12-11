@@ -24,6 +24,8 @@ import org.locationtech.jts.geom.impl.PackedCoordinateSequence.Double;
 import org.postgis.binary.ByteGetter;
 import org.postgis.binary.ValueGetter;
 
+import java.util.Arrays;
+
 /**
  * Parser class able to convert binary data into a JTS {@link org.locationtech.jts.geom.Geometry}.
  *
@@ -197,6 +199,11 @@ public class JtsBinaryParser {
 
     }
 
+    public static final void main(String[] args){
+        Coordinate[] coords = new Coordinate[5];
+        System.out.println(coords.length);
+    }
+
     /**
      * Parse the given {@link org.postgis.binary.ValueGetter} into a JTS
      * {@link org.locationtech.jts.geom.CoordinateSequence}.
@@ -207,10 +214,12 @@ public class JtsBinaryParser {
      *
      * @return The parsed {@link org.locationtech.jts.geom.CoordinateSequence}.
      */
-    private CoordinateSequence parseCS(ValueGetter data, boolean haveZ, boolean haveM) {
+    public CoordinateSequence parseCS(ValueGetter data, boolean haveZ, boolean haveM) {
         int count = data.getInt();
         int dims = haveZ ? 3 : 2;
-        CoordinateSequence cs = new Double(new Coordinate[count], dims);
+        Coordinate[] coordinates = new Coordinate[count];
+        Arrays.fill(coordinates, new Coordinate());
+        CoordinateSequence cs = new Double(coordinates, dims);
 
         for(int i = 0; i < count; ++i) {
             for(int d = 0; d < dims; ++d) {
