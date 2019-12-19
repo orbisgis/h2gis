@@ -35,11 +35,13 @@ import java.util.List;
  * Construct an array of Geometries.
  *
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
 public class ST_Accum extends AbstractFunction implements Aggregate {
     private List<Geometry> toUnite = new LinkedList<Geometry>();
     private int minDim = Integer.MAX_VALUE;
     private int maxDim = Integer.MIN_VALUE;
+    private int srid =-1;
 
     public ST_Accum() {
         addProperty(PROP_REMARKS, "This aggregate function returns a GeometryCollection "
@@ -93,7 +95,15 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
     public void add(Object o) throws SQLException {
         if (o instanceof Geometry) {
             Geometry geom = (Geometry) o;
+            if(srid ==-1){                
+                srid=geom.getSRID();
+            }
+            if(srid==geom.getSRID()){
             addGeometry(geom);
+            }
+            else {
+              throw new SQLException("Operation on mixed SRID geometries not supported");  
+            }
         } else if (o != null) {
             throw new SQLException("ST_Accum accepts only Geometry values. Input: " +
                     o.getClass().getSimpleName());
@@ -102,7 +112,7 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
 
     @Override
     public GeometryCollection getResult() throws SQLException {
-        GeometryFactory factory = new GeometryFactory();
+        GeometryFactory factory = new GeometryFactory(new PrecisionModel(), srid);        
         if(maxDim != minDim) {
             return factory.createGeometryCollection(toUnite.toArray(new Geometry[0]));
         } else {

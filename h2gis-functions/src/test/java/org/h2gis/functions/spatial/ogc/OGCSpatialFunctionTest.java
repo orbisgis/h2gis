@@ -375,11 +375,11 @@ public class OGCSpatialFunctionTest {
     public void test_ST_Buffer1() throws SQLException {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Buffer("
-                + " ST_GeomFromText('POINT(100 90)'),"
+                + " ST_GeomFromText('POINT(100 90)', 4326),"
                 + " 50, 2);");
         try {
             assertTrue(rs.next());
-            assertEquals("POLYGON ((150 90, 135.35533905932738 54.64466094067263, 100 40, 64.64466094067262 54.64466094067262,"
+            assertEquals("SRID=4326;POLYGON ((150 90, 135.35533905932738 54.64466094067263, 100 40, 64.64466094067262 54.64466094067262,"
                     + " 50 90, 64.64466094067262 125.35533905932738, 99.99999999999999 140,"
                     + " 135.35533905932738 125.35533905932738, 150 90))", rs.getString(1));
         } finally {

@@ -71,9 +71,9 @@ public class ProcessingFunctionTest {
 
     @Test
     public void testLineMerger() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_LineMerge('MULTILINESTRING((0 0, 10 15), (56 50, 10 15))');");
+        ResultSet rs = st.executeQuery("SELECT ST_LineMerge('SRID=4326;MULTILINESTRING((0 0, 10 15), (56 50, 10 15))');");
         assertTrue(rs.next());
-        assertGeometryEquals("MULTILINESTRING((0 0, 10 15, 56 50))",  rs.getBytes(1));
+        assertGeometryEquals("SRID=4326;MULTILINESTRING((0 0, 10 15, 56 50))",  rs.getBytes(1));
         rs.close();
     }
 
@@ -178,10 +178,12 @@ public class ProcessingFunctionTest {
 
     @Test
     public void test_ST_OffSetCurve1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_OffSetCurve('POINT (10 10)'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_OffSetCurve('SRID=4326;POINT (10 10)'::GEOMETRY, 10);");
         rs.next();
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertEquals(4326, geom.getSRID());
         assertGeometryBarelyEquals("LINESTRING (20 10, 19.807852804032304 8.049096779838717, 19.238795325112868 6.173165676349102, 18.314696123025453 4.444297669803978, 17.071067811865476 2.9289321881345254, 15.555702330196024 1.6853038769745474, 13.826834323650898 0.7612046748871322, 11.950903220161283 0.1921471959676957, 10 0, 8.049096779838719 0.1921471959676957, 6.173165676349103 0.7612046748871322, 4.44429766980398 1.6853038769745474, 2.9289321881345254 2.9289321881345245, 1.6853038769745474 4.444297669803978, 0.7612046748871322 6.173165676349106, 0.1921471959676939 8.049096779838722, 0 10.000000000000007, 0.1921471959676975 11.950903220161292, 0.7612046748871375 13.826834323650909, 1.6853038769745545 15.555702330196034, 2.928932188134537 17.071067811865486, 4.444297669803992 18.314696123025463, 6.173165676349122 19.238795325112875, 8.04909677983874 19.807852804032308, 10.000000000000025 20, 11.950903220161308 19.8078528040323, 13.826834323650925 19.238795325112857, 15.555702330196048 18.314696123025435, 17.071067811865497 17.07106781186545, 18.31469612302547 15.555702330195993, 19.238795325112882 13.826834323650862, 19.80785280403231 11.950903220161244, 20 10)",
-                rs.getObject(1));
+                geom);
         rs.close();
     }
 
@@ -301,11 +303,13 @@ public class ProcessingFunctionTest {
 
     @Test
     public void test_ST_RingSideBuffer1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_RingSideBuffer('LINESTRING (-10 10, 10 10)'::GEOMETRY, 10, 3);");
+        ResultSet rs = st.executeQuery("SELECT ST_RingSideBuffer('SRID=4326;LINESTRING (-10 10, 10 10)'::GEOMETRY, 10, 3);");
         assertTrue(rs.next());
+        Geometry geom = (Geometry) rs.getObject(1);
+        assertEquals(4326, geom.getSRID());
         assertGeometryBarelyEquals("MULTIPOLYGON (((10 10, -10 10, -10 20, 10 20, 10 10)),"
                 + "  ((-10 20, -10 30, 10 30, 10 20, -10 20)),"
-                + "  ((-10 30, -10 40, 10 40, 10 30, -10 30)))", rs.getObject(1));
+                + "  ((-10 30, -10 40, 10 40, 10 30, -10 30)))", geom);
         rs.close();
     }
 
