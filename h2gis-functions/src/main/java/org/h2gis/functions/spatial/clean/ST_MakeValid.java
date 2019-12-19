@@ -27,7 +27,7 @@ import java.sql.SQLException;
 /**
  * Function to make a geometry valid.
  * @author Michaël Michaud
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS
  */
 public class ST_MakeValid extends DeterministicScalarFunction{
 

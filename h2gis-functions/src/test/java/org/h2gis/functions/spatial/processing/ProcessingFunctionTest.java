@@ -371,9 +371,9 @@ public class ProcessingFunctionTest {
 
     @Test
     public void test_ST_SideBuffer1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_SideBuffer('LINESTRING (120 150, 180 270)', 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_SideBuffer('SRID=4326;LINESTRING (120 150, 180 270)', 10);");
         rs.next();
-        assertEquals("POLYGON ((180 270, 120 150, 111.05572809000084 154.47213595499957, 171.05572809000085 274.4721359549996, 180 270))",
+        assertEquals("SRID=4326;POLYGON ((180 270, 120 150, 111.05572809000084 154.47213595499957, 171.05572809000085 274.4721359549996, 180 270))",
                 rs.getString(1));
         rs.close();
     }
