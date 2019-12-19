@@ -398,7 +398,7 @@ public class CreateFunctionTest {
     public void test_ST_MakeEnvelope() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MakeEnvelope(0,0, 1, 1);");
         rs.next();
-        assertGeometryEquals("POLYGON((0 0, 1 0 0, 1 1 , 0 1, 0 0))",rs.getObject(1));
+        assertGeometryEquals("SRID=0;POLYGON((0 0, 1 0, 1 1 , 0 1, 0 0))",rs.getObject(1));
         rs.close();
     }
 
@@ -406,7 +406,7 @@ public class CreateFunctionTest {
     public void test_ST_MakeEnvelopeSRID() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MakeEnvelope(0,0, 1, 1, 4326);");
         rs.next();        
-        assertGeometryEquals("SRID=4326;POLYGON((0 0, 1 0 0, 1 1 , 0 1, 0 0))",rs.getObject(1));
+        assertGeometryEquals("SRID=4326;POLYGON((0 0, 1 0 , 1 1 , 0 1, 0 0))",rs.getObject(1));
         rs.close();
     }
 
