@@ -120,7 +120,7 @@ public class OGCSpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Accum(footprint) FROM buildings GROUP BY SUBSTRING(address,4)");
         assertTrue(rs.next());
-        assertEquals("MULTIPOLYGON (((50 31, 54 31, 54 29, 50 29, 50 31)), ((66 34, 62 34, 62 32, 66 32, 66 34)))", rs.getString(1));
+        assertGeometryEquals("SRID=101;MULTIPOLYGON (((50 31, 54 31, 54 29, 50 29, 50 31)), ((66 34, 62 34, 62 32, 66 32, 66 34)))", rs.getString(1));
         rs.close();
     }
 
@@ -163,7 +163,7 @@ public class OGCSpatialFunctionTest {
         st.execute("INSERT INTO LEFT_TEST(the_geom) VALUES ('POINT(1 1)')");
         ResultSet rs = st.executeQuery("SELECT ST_Accum(r.the_geom) FROM LEFT_TEST L LEFT JOIN RIGHT_TEST R ON (L.GID = R.GID) group by l.gid");
         assertTrue(rs.next());
-        assertGeometryEquals("GEOMETRYCOLLECTION EMPTY", rs.getObject(1));
+        assertGeometryEquals("SRID=0;GEOMETRYCOLLECTION EMPTY", rs.getObject(1));
         rs.close();
     }
     
@@ -172,7 +172,7 @@ public class OGCSpatialFunctionTest {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Collect(footprint) FROM buildings GROUP BY SUBSTRING(address,4)");
         assertTrue(rs.next());
-        assertEquals("MULTIPOLYGON (((50 31, 54 31, 54 29, 50 29, 50 31)), ((66 34, 62 34, 62 32, 66 32, 66 34)))", rs.getString(1));
+        assertGeometryEquals("SRID=101;MULTIPOLYGON (((50 31, 54 31, 54 29, 50 29, 50 31)), ((66 34, 62 34, 62 32, 66 32, 66 34)))", rs.getString(1));
         rs.close();
     }
 

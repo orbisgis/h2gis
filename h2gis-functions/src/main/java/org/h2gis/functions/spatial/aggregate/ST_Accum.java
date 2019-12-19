@@ -112,7 +112,7 @@ public class ST_Accum extends AbstractFunction implements Aggregate {
 
     @Override
     public GeometryCollection getResult() throws SQLException {
-        GeometryFactory factory = new GeometryFactory(new PrecisionModel(), srid);        
+        GeometryFactory factory = new GeometryFactory(new PrecisionModel(), srid==-1?0:srid);        
         if(maxDim != minDim) {
             return factory.createGeometryCollection(toUnite.toArray(new Geometry[0]));
         } else {
