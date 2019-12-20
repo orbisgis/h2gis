@@ -26,7 +26,6 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTReader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;

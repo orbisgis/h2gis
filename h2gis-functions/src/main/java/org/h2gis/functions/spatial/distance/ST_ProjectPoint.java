@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.distance;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -48,10 +49,14 @@ public class ST_ProjectPoint extends DeterministicScalarFunction{
      * @param point
      * @param geometry
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public static Point projectPoint(Geometry point, Geometry geometry) {
+    public static Point projectPoint(Geometry point, Geometry geometry) throws SQLException {
         if (point == null || geometry==null) {
             return null;
+        }
+        if(point.getSRID()!=geometry.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         if (point.getDimension()==0 && geometry.getDimension() == 1) {
             LengthIndexedLine ll = new LengthIndexedLine(geometry);
