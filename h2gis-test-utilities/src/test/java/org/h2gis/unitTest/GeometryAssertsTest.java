@@ -19,11 +19,7 @@
  */
 package org.h2gis.unitTest;
 
-import org.h2.jdbc.JdbcSQLException;
-import org.h2.jdbc.JdbcSQLNonTransientException;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
-import org.opentest4j.AssertionFailedError;
 
 /**
  *
@@ -34,6 +30,6 @@ public class GeometryAssertsTest {
     @Test
     public void assertGeometryEqualsTest(){
         GeometryAsserts.assertGeometryEquals("SRID=4326;POINT(0 0)", "SRID=4326;POINT(0 0)");
-        GeometryAsserts.assertGeometryEquals("SRID=4326;POINT(0 0)", "SRID=23;POINT(0 0)");        
+        GeometryAsserts.assertGeometryEquals("SRID=23;POINT(0 0)", "SRID=23;POINT(0 0)");        
     }    
 }
