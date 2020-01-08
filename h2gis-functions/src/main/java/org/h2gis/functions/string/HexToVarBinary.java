@@ -22,7 +22,7 @@ package org.h2gis.functions.string;
 
 import org.h2gis.api.DeterministicScalarFunction;
 
-import javax.xml.bind.DatatypeConverter;
+import java.util.Base64;
 
 /**
  * Convert Hexadecimal string into an array of byte.
@@ -43,6 +43,6 @@ public class HexToVarBinary extends DeterministicScalarFunction {
         if(hex==null) {
             return null;
         }
-        return DatatypeConverter.parseHexBinary(hex.replace("\n",""));
+        return Base64.getDecoder().decode(hex.replace("\n",""));
     }
 }
