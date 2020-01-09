@@ -866,7 +866,7 @@ public class GeojsonImportExportTest {
     }
     
     
-     @Test
+    @Test
     public void testSelectWriteReadGeojsonLinestring() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS");
@@ -886,7 +886,7 @@ public class GeojsonImportExportTest {
     @Test
     public void testSelectWriteRead() throws Exception {
         try (Statement stat = connection.createStatement()) {
-            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT st_geomfromtext(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
             stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();
