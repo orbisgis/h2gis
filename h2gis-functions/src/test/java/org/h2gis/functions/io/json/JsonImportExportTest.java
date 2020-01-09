@@ -112,7 +112,7 @@ public class JsonImportExportTest {
     }
     
     @Test
-    public void testSelectWriteReadGeojsonLinestring() throws Exception {
+    public void testSelectWriteReadJsonLinestring() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS");
             stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
@@ -125,7 +125,7 @@ public class JsonImportExportTest {
     }
     
     @Test
-    public void testSelectWriteRead() throws Exception {
+    public void testSelectWrite() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("CALL JsonWrite('target/lines.json', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
             String result = new String( Files.readAllBytes(Paths.get("target/lines.json")));

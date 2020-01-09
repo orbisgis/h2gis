@@ -65,14 +65,15 @@ public class KMLDriverFunction implements DriverFunction {
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        KMLWriterDriver kMLWriter = new KMLWriterDriver(connection, tableReference, fileName);
-        kMLWriter.write(progress);
+        KMLWriterDriver kMLWriter = new KMLWriterDriver(connection);
+        kMLWriter.write(progress,tableReference, fileName,null);
     }
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                            String options) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, progress);
+            String encoding) throws SQLException, IOException {
+        KMLWriterDriver kMLWriter = new KMLWriterDriver(connection);
+        kMLWriter.write(progress, tableReference, fileName, encoding);
     }
 
     @Override

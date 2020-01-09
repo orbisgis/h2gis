@@ -35,40 +35,93 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 /**
- *
+ * KML writer
+ * 
  * @author Erwan Bocher
  */
 public class KMLWriterDriver {
-
-    private final String tableName;
-    private final File fileName;
+    
     private final Connection connection;
     private HashMap<Integer, String> kmlFields;
     private int columnCount = -1;
+    private String tableName;
 
-    public KMLWriterDriver(Connection connection, String tableName, File fileName) {
+    public KMLWriterDriver(Connection connection) {
         this.connection = connection;
-        this.tableName = tableName;
-        this.fileName = fileName;
     }
 
     /**
-     * Write spatial table to kml or kmz file format.
+     * Write spatial table or sql query to kml or kmz file format.
+     *
+     * @param progress progress monitor
+     * @param tableName the name of table or a select query 
+     * @param fileName
+     * @param encoding
+     * @throws SQLException
+     * @throws java.io.IOException
+     */
+    public void write(ProgressVisitor progress, String tableName, File fileName, String encoding) throws SQLException, IOException {        
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tableName);
+        if (matcher.find()) {
+            if (tableName.startsWith("(") && tableName.endsWith(")")) {
+                PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                ResultSet resultSet = ps.executeQuery();
+                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(resultSet);
+                 if (spatialFieldNames.isEmpty()) {
+                    throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
+                }
+                int rowCount = 0;
+                int type = resultSet.getType();
+                if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
+                    resultSet.last();
+                    rowCount = resultSet.getRow();
+                    resultSet.beforeFirst();
+                }  
+                this.tableName =  "QUERY_"+System.currentTimeMillis();
+                write(progress.subProcess(rowCount), resultSet, spatialFieldNames.get(0), fileName, encoding);
+            } else {
+                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
+            }
+        } else {
+                //Write table
+                Statement st = connection.createStatement() ;
+                ResultSet resultSet = st.executeQuery(String.format("select * from %s", tableName));
+                // Read Geometry Index and type
+                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+                if (spatialFieldNames.isEmpty()) {
+                    throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
+                }
+                this.tableName=tableName;
+                write(progress, resultSet,spatialFieldNames.get(0), fileName, encoding);
+        }
+    }
+    
+    /**
+     * Write a resulset to a kml file
      *
      * @param progress
+     * @param rs input resulset
+     * @param geomField
+     * @param fileName the output file
+     * @param encoding
      * @throws SQLException
+     * @throws java.io.IOException
      */
-    public void write(ProgressVisitor progress) throws SQLException {        
+    public void write(ProgressVisitor progress, ResultSet rs, String geomField, File fileName, String encoding) throws SQLException, IOException {
         if (FileUtil.isExtensionWellFormated(fileName, "kml")) {
-            writeKML(progress);
+            writeKML(progress, fileName,rs, geomField,  encoding);
         } else if (FileUtil.isExtensionWellFormated(fileName, "kmz")) {
             String name = fileName.getName();
             int pos = name.lastIndexOf(".");
-            writeKMZ(progress, name.substring(0, pos) + ".kml");
+            writeKMZ(progress, fileName, name.substring(0, pos) + ".kml", rs, geomField,encoding);
         } else {
             throw new SQLException("Please use the extensions .kml or kmz.");
         }
@@ -80,11 +133,11 @@ public class KMLWriterDriver {
      * @param progress
      * @throws SQLException
      */
-    private void writeKML(ProgressVisitor progress) throws SQLException {
+    private void writeKML(ProgressVisitor progress,File fileName,ResultSet rs,String geomField,  String encoding) throws SQLException {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(fileName);
-            writeKMLDocument(progress, fos);
+            writeKMLDocument(progress, fos, rs,geomField,encoding);
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
 
@@ -106,13 +159,13 @@ public class KMLWriterDriver {
      * @param fileNameWithExtension
      * @throws SQLException
      */
-    private void writeKMZ(ProgressVisitor progress, String fileNameWithExtension) throws SQLException {
+    private void writeKMZ(ProgressVisitor progress,File fileName, String fileNameWithExtension, ResultSet rs,String geomField,  String encoding) throws SQLException {
         ZipOutputStream zos = null;
         try {
             zos = new ZipOutputStream(new FileOutputStream(fileName));
             // Create a zip entry for the main KML file
             zos.putNextEntry(new ZipEntry(fileNameWithExtension));
-            writeKMLDocument(progress, zos);
+            writeKMLDocument(progress, zos, rs, geomField, encoding);
         } catch (FileNotFoundException ex) {
             throw new SQLException(ex);
         } catch (IOException ex) {
@@ -135,8 +188,6 @@ public class KMLWriterDriver {
                 }
             }
         }
-
-
     }
 
     /**
@@ -147,17 +198,15 @@ public class KMLWriterDriver {
      * @param outputStream
      * @throws SQLException
      */
-    private void writeKMLDocument(ProgressVisitor progress, OutputStream outputStream) throws SQLException {
-        // Read Geometry Index and type
-        List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
-        if (spatialFieldNames.isEmpty()) {
-            throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
-        }
+    private void writeKMLDocument(ProgressVisitor progress, OutputStream outputStream, ResultSet rs, String geomField,  String encoding) throws SQLException {       
         try {
             final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();
             streamWriterFactory.setProperty("escapeCharacters", false);
+            if (encoding == null || encoding.isEmpty()) {
+                encoding = "UTF-8";
+            }
             XMLStreamWriter xmlOut = streamWriterFactory.createXMLStreamWriter(
-                    new BufferedOutputStream(outputStream), "UTF-8");
+                    new BufferedOutputStream(outputStream), encoding);
             xmlOut.writeStartDocument("UTF-8", "1.0");
             xmlOut.writeStartElement("kml");
             xmlOut.writeDefaultNamespace("http://www.opengis.net/kml/2.2");
@@ -168,29 +217,22 @@ public class KMLWriterDriver {
 
             xmlOut.writeStartElement("Document");
 
-            try ( // Read table content
-                Statement st = connection.createStatement()) {
-                ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
-                try {
-                    int recordCount = JDBCUtilities.getRowCount(connection, tableName);
-                    ProgressVisitor copyProgress = progress.subProcess(recordCount);
-                    ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                    int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
-
-                    writeSchema(xmlOut, resultSetMetaData);
-                    xmlOut.writeStartElement("Folder");
-                    xmlOut.writeStartElement("name");
-                    xmlOut.writeCharacters(tableName);
-                    xmlOut.writeEndElement();//Name
-                    while (rs.next()) {
-                        writePlacemark(xmlOut, rs, geoFieldIndex, spatialFieldNames.get(0));
-                        copyProgress.endStep();
-                    }
-
-                } finally {
-                    rs.close();
+             try {
+                ResultSetMetaData resultSetMetaData = rs.getMetaData();               
+                writeSchema(xmlOut, resultSetMetaData);
+                xmlOut.writeStartElement("Folder");
+                xmlOut.writeStartElement("name");
+                xmlOut.writeCharacters(tableName);
+                xmlOut.writeEndElement();//Name
+                while (rs.next()) {
+                    writePlacemark(xmlOut, rs, geomField);
+                    progress.endStep();
                 }
+
+            } finally {
+                rs.close();
             }
+
             xmlOut.writeEndElement();//Folder
             xmlOut.writeEndElement();//KML
             xmlOut.writeEndDocument();//DOC
@@ -262,49 +304,49 @@ public class KMLWriterDriver {
     }
 
     /**
-     * A Placemark is a Feature with associated Geometry.
+     * A Placemark is a Feature with associated Geometry.Syntax :
+
+    <Placemark id="ID">
+    <!-- inherited from Feature element -->
+    <name>...</name> <!-- string -->
+    <visibility>1</visibility> <!-- boolean -->
+    <open>0</open> <!-- boolean -->
+    <atom:author>...<atom:author> <!-- xmlns:atom -->
+    <atom:link href=" "/> <!-- xmlns:atom -->
+    <address>...</address> <!-- string -->
+    <xal:AddressDetails>...</xal:AddressDetails> <!-- xmlns:xal -->
+    <phoneNumber>...</phoneNumber> <!-- string -->
+    <Snippet maxLines="2">...</Snippet> <!-- string -->
+    <description>...</description> <!-- string -->
+    <AbstractView>...</AbstractView> <!-- Camera or LookAt -->
+    <TimePrimitive>...</TimePrimitive>
+    <styleUrl>...</styleUrl> <!-- anyURI -->
+    <StyleSelector>...</StyleSelector>
+    <Region>...</Region>
+    <Metadata>...</Metadata> <!-- deprecated in KML 2.2 -->
+    <ExtendedData>...</ExtendedData> <!-- new in KML 2.2 -->
+
+    <!-- specific to Placemark element -->
+    <Geometry>...</Geometry>
+    </Placemark>
      *
-     * Syntax :
-     *
-     * <Placemark id="ID">
-     * <!-- inherited from Feature element -->
-     * <name>...</name> <!-- string -->
-     * <visibility>1</visibility> <!-- boolean -->
-     * <open>0</open> <!-- boolean -->
-     * <atom:author>...<atom:author> <!-- xmlns:atom -->
-     * <atom:link href=" "/> <!-- xmlns:atom -->
-     * <address>...</address> <!-- string -->
-     * <xal:AddressDetails>...</xal:AddressDetails> <!-- xmlns:xal -->
-     * <phoneNumber>...</phoneNumber> <!-- string -->
-     * <Snippet maxLines="2">...</Snippet> <!-- string -->
-     * <description>...</description> <!-- string -->
-     * <AbstractView>...</AbstractView> <!-- Camera or LookAt -->
-     * <TimePrimitive>...</TimePrimitive>
-     * <styleUrl>...</styleUrl> <!-- anyURI -->
-     * <StyleSelector>...</StyleSelector>
-     * <Region>...</Region>
-     * <Metadata>...</Metadata> <!-- deprecated in KML 2.2 -->
-     * <ExtendedData>...</ExtendedData> <!-- new in KML 2.2 -->
-     *
-     * <!-- specific to Placemark element -->
-     * <Geometry>...</Geometry>
-     * </Placemark>
      *
      * @param xmlOut
+     * @param rs
+     * @param geomField
      */
-    public void writePlacemark(XMLStreamWriter xmlOut, ResultSet rs, int geoFieldIndex, String spatialFieldName) throws XMLStreamException, SQLException {
+    public void writePlacemark(XMLStreamWriter xmlOut, ResultSet rs, String geomField) throws XMLStreamException, SQLException {
         xmlOut.writeStartElement("Placemark");
         if (columnCount > 1) {
             writeExtendedData(xmlOut, rs);
         }
         StringBuilder sb = new StringBuilder();
-        Geometry geom = (Geometry) rs.getObject(geoFieldIndex);
+        Geometry geom = (Geometry) rs.getObject(geomField);
         int inputSRID = geom.getSRID();
         if (inputSRID == 0) {
             throw new SQLException("A coordinate reference system must be set to save the KML file");
         } else if (inputSRID != 4326) {
-            throw new SQLException("The kml format supports only the WGS84 projection. \n"
-                    + "Please use ST_Transform(" + spatialFieldName + "," + inputSRID + ")");
+            throw new SQLException("The kml format supports only the WGS84 projection.");
         }
         KMLGeometry.toKMLGeometry(geom, ExtrudeMode.NONE, AltitudeMode.NONE, sb);
         //Write geometry
