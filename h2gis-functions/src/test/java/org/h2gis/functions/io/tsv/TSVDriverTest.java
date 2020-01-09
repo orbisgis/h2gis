@@ -29,9 +29,13 @@ import org.junit.jupiter.api.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.*;
+import org.h2gis.unitTest.GeometryAsserts;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  *
@@ -168,6 +172,36 @@ public class TSVDriverTest {
             assertEquals(20000, rs.getDouble(1), 1e-6);
         }
 
+    }
+    
+     @Test
+    public void testSelectWriteReadTSVLinestring() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS");
+            stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
+            stat.execute("CALL TSVWrite('target/lines.tsv', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            stat.execute("CALL TSVRead('target/lines.tsv', 'TABLE_LINESTRINGS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+            res.next();
+            GeometryAsserts.assertGeometryEquals("LINESTRING(1 10, 20 15)", res.getString("THE_GEOM"));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
+    }
+    
+    @Test
+    public void testSelectWrite() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
+            stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+            res.next();
+            GeometryAsserts.assertGeometryEquals("LINESTRING(1 10, 20 15)", res.getString("THE_GEOM"));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
     }
     
 }
