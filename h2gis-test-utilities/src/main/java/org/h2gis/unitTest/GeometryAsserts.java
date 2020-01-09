@@ -58,23 +58,11 @@ public class GeometryAsserts {
      * @param expectedWKT Expected value, in WKT
      * @param valueObject Test value geometry ex rs.getObject(i)
      */
-    public static void assertGeometryEquals(String expectedWKT, Object valueObject) {
-        assertGeometryEquals(expectedWKT, 0, valueObject);
-    }
-
-
-    /**
-     * Check Geometry type,X,Y,Z and SRID
-     *
-     * @param expectedWKT Expected value, in WKT
-     * @param expectedSRID Expected SRID code,
-     * @param valueObject Test value geometry ex rs.getObject(i)
-     */
-    public static void assertGeometryEquals(String expectedWKT,int expectedSRID, Object valueObject) {
+    public static void assertGeometryEquals(String expectedWKT, Object valueObject) {       
         if (expectedWKT == null) {
             assertNull(valueObject);
         } else {
-            ValueGeometry expected = ValueGeometry.get(expectedWKT, expectedSRID);
+            ValueGeometry expected = ValueGeometry.get(expectedWKT);
             ValueGeometry actual = ValueGeometry.getFromGeometry(((Geometry)valueObject).norm());
             expected = ValueGeometry.getFromGeometry(expected.getGeometry().norm());
             String moreInfo = "";
@@ -116,20 +104,8 @@ public class GeometryAsserts {
      * @param epsilon epsilon error acceptance
      */
     public static void assertGeometryBarelyEquals(String expectedWKT, Object resultSetObject, double epsilon) {
-        assertGeometryBarelyEquals(expectedWKT, 0, resultSetObject, epsilon);
-    }
-
-    /**
-     * Equals test with epsilon error acceptance and SRID.
-     *
-     * @param expectedWKT Expected value, in WKT
-     * @param expectedSRID Expected SRID Value
-     * @param resultSetObject
-     * @param epsilon epsilon error acceptance
-     */
-    public static void assertGeometryBarelyEquals(String expectedWKT,int expectedSRID, Object resultSetObject, double epsilon) {
         assertTrue(resultSetObject instanceof Geometry);
-        Geometry expectedGeometry = ValueGeometry.get(expectedWKT, expectedSRID).getGeometry();
+        Geometry expectedGeometry = ValueGeometry.get(expectedWKT).getGeometry();
         Geometry result = (Geometry) resultSetObject;
         assertEquals(expectedGeometry.getGeometryType(), result.getGeometryType());
         assertEquals(expectedGeometry.getNumPoints(), result.getNumPoints());

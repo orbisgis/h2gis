@@ -56,6 +56,9 @@ public class ST_Drape extends DeterministicScalarFunction{
         }
         if (triangles == null) {
             return geomToDrape;
+        }        
+        if(geomToDrape.getSRID()!=triangles.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         
         //Check if triangles are triangles and create a quadtree to perform spatial queries

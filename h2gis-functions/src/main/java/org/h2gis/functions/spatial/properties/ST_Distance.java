@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.properties;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -48,10 +49,14 @@ public class ST_Distance extends DeterministicScalarFunction {
      * @param b Geometry instance or null
      * @return the 2-dimensional minimum Cartesian distance between two geometries
      * in projected units (spatial ref units)
+     * @throws java.sql.SQLException
      */
-    public static Double distance(Geometry a,Geometry b) {
+    public static Double distance(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {
             return null;
+        }
+        if(a.getSRID()!=b.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         return a.distance(b);
     }

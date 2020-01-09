@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import java.sql.SQLException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.api.DeterministicScalarFunction;
 
@@ -51,8 +52,12 @@ public class ST_OrderingEquals extends DeterministicScalarFunction{
      * @param geomA
      * @param geomB
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public static boolean orderingEquals(ValueGeometry geomA, ValueGeometry geomB){        
+    public static boolean orderingEquals(ValueGeometry geomA, ValueGeometry geomB) throws SQLException{ 
+        if(geomA.getSRID()!=geomB.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
+        }
         return geomA.equals(geomB);        
     }
 }

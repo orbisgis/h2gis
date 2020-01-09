@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.distance;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -48,8 +49,15 @@ public class ST_MaxDistance extends DeterministicScalarFunction{
      * @param geomA
      * @param geomB
      * @return
+     * @throws java.sql.SQLException
      */
-    public static Double maxDistance(Geometry geomA, Geometry geomB) {
+    public static Double maxDistance(Geometry geomA, Geometry geomB) throws SQLException {
+        if(geomA ==null || geomB==null){
+            return null;
+        }
+        if(geomA.getSRID()!=geomB.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
+        }
         return new MaxDistanceOp(geomA, geomB).getDistance();
     }
     
