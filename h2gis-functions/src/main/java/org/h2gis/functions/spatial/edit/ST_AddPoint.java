@@ -76,6 +76,10 @@ public class ST_AddPoint extends DeterministicScalarFunction {
         if(geometry == null || point == null){
             return null;
         }
+        if(geometry.getSRID()!=point.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
+        }
+        
         if (geometry instanceof MultiPoint) {
             return insertVertexInMultipoint(geometry, point);
         } else if (geometry instanceof LineString) {

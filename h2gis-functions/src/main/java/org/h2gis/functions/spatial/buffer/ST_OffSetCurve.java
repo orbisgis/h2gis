@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Return an offset line at a given distance and side from an input geometry.
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS
  */
 public class ST_OffSetCurve extends DeterministicScalarFunction {
 

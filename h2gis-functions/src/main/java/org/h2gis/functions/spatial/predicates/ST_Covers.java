@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -46,10 +47,15 @@ public class ST_Covers extends DeterministicScalarFunction {
      * @param geomA Geometry A
      * @param geomB Geometry B
      * @return True if no point in geometry B is outside geometry A
+     * @throws java.sql.SQLException
      */
-    public static Boolean covers(Geometry geomA, Geometry geomB) {
+    public static Boolean covers(Geometry geomA, Geometry geomB) throws SQLException {
         if(geomA == null||geomB == null){
             return null;
+        }
+        
+        if(geomA.getSRID()!=geomB.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         return geomA.covers(geomB);
     }

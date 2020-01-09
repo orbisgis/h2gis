@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.operators;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -44,11 +45,16 @@ public class ST_Intersection extends DeterministicScalarFunction {
     /**
      * @param a Geometry instance.
      * @param b Geometry instance
+     * 
      * @return the intersection between two geometries
+     * @throws java.sql.SQLException
      */
-    public static Geometry intersection(Geometry a,Geometry b) {
+    public static Geometry intersection(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {
             return null;
+        }
+        if(a.getSRID()!=b.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         return a.intersection(b);
     }

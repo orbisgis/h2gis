@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.*;
 import org.locationtech.jts.geom.impl.CoordinateArraySequence;
-import org.locationtech.jts.geom.impl.PackedCoordinateSequence;
 
 import java.sql.Connection;
 import java.sql.SQLException;
