@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.split;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.algorithm.RobustLineIntersector;
 import org.locationtech.jts.geom.*;
@@ -61,10 +62,14 @@ public class ST_LineIntersector extends  DeterministicScalarFunction{
      * @param inputLines
      * @param clipper
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public static Geometry lineIntersector(Geometry inputLines, Geometry clipper) throws IllegalArgumentException {
+    public static Geometry lineIntersector(Geometry inputLines, Geometry clipper) throws IllegalArgumentException, SQLException {
         if(inputLines == null||clipper == null){
             return null;
+        }
+        if(inputLines.getSRID()!=clipper.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         if(inputLines.getDimension()==1){
         MCIndexNoder mCIndexNoder = new MCIndexNoder();

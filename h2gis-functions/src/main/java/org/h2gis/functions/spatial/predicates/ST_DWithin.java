@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -49,9 +50,12 @@ public class ST_DWithin extends DeterministicScalarFunction {
      * @param distance Distance
      * @return True if if the geometries are within the specified distance of one another
      */
-    public static Boolean isWithinDistance(Geometry geomA, Geometry geomB, Double distance) {
+    public static Boolean isWithinDistance(Geometry geomA, Geometry geomB, Double distance) throws SQLException {
         if(geomA == null||geomB == null){
             return null;
+        }        
+        if(geomA.getSRID()!=geomB.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         return geomA.isWithinDistance(geomB, distance);
     }

@@ -650,9 +650,9 @@ public class SpatialFunction2Test {
     
     @Test
     public void test_ST_MakeValid1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POINT(0 0)'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('SRID=4326;POINT(0 0)'::GEOMETRY);");
         rs.next();
-        assertGeometryEquals("POINT(0 0)", rs.getString(1));
+        assertGeometryEquals("SRID=4326;POINT (0 0)", rs.getString(1));
         rs.close();
     }
         

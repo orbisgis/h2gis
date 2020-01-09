@@ -21,7 +21,6 @@ package org.h2gis.functions.spatial.create;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.algorithm.locate.IndexedPointInAreaLocator;
@@ -33,8 +32,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Location;
 import org.locationtech.jts.geom.MultiPolygon;
 import org.locationtech.jts.geom.Polygon;
-import org.locationtech.jts.shape.random.RandomPointsBuilder;
-import org.locationtech.jts.shape.random.RandomPointsInGridBuilder;
 
 /**
  * This function is used to generate pseudo-random points until the requested

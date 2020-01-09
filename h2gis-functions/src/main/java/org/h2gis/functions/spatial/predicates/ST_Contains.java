@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -47,12 +48,16 @@ public class ST_Contains extends DeterministicScalarFunction {
      * @param testGeometry Geometry instance
      * @return True only if no points of testGeometry lie outside of surface
      */
-    public static Boolean isContains(Geometry surface,Geometry testGeometry) {
+    public static Boolean isContains(Geometry surface,Geometry testGeometry) throws SQLException {
         if(surface==null) {
             return null;
         }
         if(testGeometry==null) {
             return false;
+        }        
+        
+        if(surface.getSRID()!=testGeometry.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         return surface.contains(testGeometry);
     }

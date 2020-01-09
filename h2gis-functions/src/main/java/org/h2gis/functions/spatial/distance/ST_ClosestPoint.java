@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.distance;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
@@ -51,10 +52,14 @@ public class ST_ClosestPoint extends DeterministicScalarFunction {
      * @param geomA Geometry A
      * @param geomB Geometry B
      * @return The 2D point on geometry A that is closest to geometry B
+     * @throws java.sql.SQLException
      */
-    public static Point closestPoint(Geometry geomA, Geometry geomB) {
+    public static Point closestPoint(Geometry geomA, Geometry geomB) throws SQLException {
         if (geomA == null || geomB == null) {
             return null;
+        }
+        if(geomA.getSRID()!=geomB.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         // Return the closest point on geomA. (We would have used index
         // 1 to return the closest point on geomB.)

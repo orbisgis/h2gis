@@ -19,6 +19,7 @@
  */
 package org.h2gis.functions.spatial.distance;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -46,14 +47,18 @@ public class ST_ShortestLine extends  DeterministicScalarFunction{
      * @param geomA
      * @param geomB
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public static LineString shortestLine(Geometry geomA, Geometry geomB){
+    public static LineString shortestLine(Geometry geomA, Geometry geomB) throws SQLException{
         if (geomA == null || geomB == null) {
             return null;
         }
         if (geomA.isEmpty() || geomB.isEmpty()) {
             return null;
-        }        
+        }      
+        if(geomA.getSRID()!=geomB.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
+        }
         Coordinate[] pts = DistanceOp.nearestPoints(geomA, geomB);
         return geomA.getFactory().createLineString(pts);
     }

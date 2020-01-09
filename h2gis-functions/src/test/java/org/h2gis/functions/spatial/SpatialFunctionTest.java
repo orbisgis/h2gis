@@ -426,16 +426,18 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_Rotate() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(geom Geometry);"
+                + "CREATE TABLE input_table(geom Geometry(GEOMETRY, 4326));"
                 + "INSERT INTO input_table VALUES("
-                + "ST_GeomFromText('LINESTRING(1 3, 1 1, 2 1)'));");
+                + "ST_GeomFromText('LINESTRING(1 3, 1 1, 2 1)', 4326));");
         ResultSet rs = st.executeQuery("SELECT ST_Rotate(geom, pi()),"
                 + "ST_Rotate(geom, pi() / 3), "
                 + "ST_Rotate(geom, pi()/2, 1.0, 1.0), "
                 + "ST_Rotate(geom, -pi()/2, ST_GeomFromText('POINT(2 1)')) "
                 + "FROM input_table;");
         assertTrue(rs.next());
-        assertTrue(((LineString) rs.getObject(1)).equalsExact(
+        LineString geom = (LineString) rs.getObject(1);
+        assertEquals(4326, geom.getSRID());
+        assertTrue(geom.equalsExact(
                 FACTORY.createLineString(
                 new Coordinate[]{new Coordinate(2, 1),
             new Coordinate(2, 3),
@@ -465,16 +467,17 @@ public class SpatialFunctionTest {
                 new Coordinate[]{new Coordinate(4, 2),
             new Coordinate(2, 2),
             new Coordinate(2, 1)}),
-                TOLERANCE));
+                TOLERANCE));        
         st.execute("DROP TABLE input_table;");
-    }
+    }    
+   
 
     @Test
     public void test_ST_Scale() throws Exception {
         st.execute("DROP TABLE IF EXISTS input_table;"
-                + "CREATE TABLE input_table(twoDLine Geometry, threeDLine Geometry);"
+                + "CREATE TABLE input_table(twoDLine Geometry(GEOMETRY, 4326), threeDLine Geometry);"
                 + "INSERT INTO input_table VALUES("
-                + "ST_GeomFromText('LINESTRING(1 2, 4 5)'),"
+                + "ST_GeomFromText('LINESTRING(1 2, 4 5)', 4326),"
                 + "ST_GeomFromText('LINESTRING(1 2 3, 4 5 6)'));");
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_Scale(twoDLine, 0.5, 0.75), ST_Scale(threeDLine, 0.5, 0.75), "
@@ -482,7 +485,9 @@ public class SpatialFunctionTest {
                 + "ST_Scale(twoDLine, 0.0, -1.0, 2.0), ST_Scale(threeDLine, 0.0, -1.0, 2.0) "
                 + "FROM input_table;");
         assertTrue(rs.next());
-        assertTrue(((LineString) rs.getObject(1)).equalsExact(
+        LineString geom = (LineString) rs.getObject(1);
+        assertEquals(4326, geom.getSRID());
+        assertTrue(geom.equalsExact(
                 FACTORY.createLineString(new Coordinate[]{
             new Coordinate(0.5, 1.5),
             new Coordinate(2, 3.75)}),
@@ -1451,9 +1456,9 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_Translate1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Translate('POINT(-71.01 42.37)'::GEOMETRY, 1, 0);");
+        ResultSet rs = st.executeQuery("SELECT ST_Translate('SRID=4326;POINT(-71.01 42.37)'::GEOMETRY, 1, 0);");
         rs.next();
-        assertGeometryEquals("POINT(-70.01 42.37)", rs.getBytes(1));
+        assertGeometryEquals("SRID=4326;POINT(-70.01 42.37)", rs.getBytes(1));
         rs.close();
     }
 
