@@ -202,12 +202,12 @@ public class KMLWriterDriver {
         try {
             final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();
             streamWriterFactory.setProperty("escapeCharacters", false);
-            if (encoding == null || encoding.isEmpty()) {
-                encoding = "UTF-8";
+           if (newEncoding == null || newEncoding.isEmpty()) {
+                newEncoding = "UTF-8";
             }
             XMLStreamWriter xmlOut = streamWriterFactory.createXMLStreamWriter(
-                    new BufferedOutputStream(outputStream), encoding);
-            xmlOut.writeStartDocument("UTF-8", "1.0");
+                    new BufferedOutputStream(outputStream), newEncoding);
+            xmlOut.writeStartDocument(newEncoding, "1.0");
             xmlOut.writeStartElement("kml");
             xmlOut.writeDefaultNamespace("http://www.opengis.net/kml/2.2");
             xmlOut.writeNamespace("atom", "http://www.w3.org/2005/Atom");
