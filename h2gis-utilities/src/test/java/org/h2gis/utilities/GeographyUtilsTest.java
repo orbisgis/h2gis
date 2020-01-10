@@ -89,5 +89,25 @@ public class GeographyUtilsTest {
         GeometryFactory gf = new GeometryFactory();
         System.out.println(gf.toGeometry(env));
     }
+    
+    @Test
+    public void computeLatitudeDistance1() throws Exception {
+        assertEquals(0, GeographyUtils.computeLatitudeDistance(0));
+    }
+    
+    @Test
+    public void computeLatitudeDistance2() throws Exception {
+        assertTrue((1- GeographyUtils.computeLatitudeDistance(111.045))>0.01);
+    }
+    
+    @Test
+    public void computeLongitudeDistance1() throws Exception {
+        assertEquals(0, GeographyUtils.computeLongitudeDistance(0, 0));
+    }
+    
+    @Test
+    public void computeLongitudeDistance2() throws Exception {
+        assertTrue((1- GeographyUtils.computeLongitudeDistance(87.87018,3 ))>0.01);
+    }
 
 }
