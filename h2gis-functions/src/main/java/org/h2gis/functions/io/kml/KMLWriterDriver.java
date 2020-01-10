@@ -202,7 +202,8 @@ public class KMLWriterDriver {
         try {
             final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();
             streamWriterFactory.setProperty("escapeCharacters", false);
-           if (newEncoding == null || newEncoding.isEmpty()) {
+            String newEncoding = encoding;
+            if (newEncoding == null || newEncoding.isEmpty()) {
                 newEncoding = "UTF-8";
             }
             XMLStreamWriter xmlOut = streamWriterFactory.createXMLStreamWriter(
