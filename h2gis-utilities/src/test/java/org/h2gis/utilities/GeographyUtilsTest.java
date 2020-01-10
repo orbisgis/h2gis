@@ -74,7 +74,7 @@ public class GeographyUtilsTest {
     
     @Test
     //https://andrew.hedges.name/experiments/haversine/
-    public void HaversineDistanceInMeters1() throws Exception {
+    public void haversineDistanceInMeters1() throws Exception {
         Coordinate coorda = new Coordinate(-77.037852, 38.898556);
         Coordinate coordb = new Coordinate(-77.043934, 38.897147);
         assertEquals(549, GeographyUtils.getHaversineDistanceInMeters(coorda, coordb), 1, "HaversineDistance");
