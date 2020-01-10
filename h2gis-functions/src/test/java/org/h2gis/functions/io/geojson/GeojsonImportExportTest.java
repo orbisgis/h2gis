@@ -869,7 +869,7 @@ public class GeojsonImportExportTest {
     @Test
     public void testSelectWriteReadGeojsonLinestring() throws Exception {
         try (Statement stat = connection.createStatement()) {
-            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS");
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS, TABLE_LINESTRINGS_READ");
             stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
