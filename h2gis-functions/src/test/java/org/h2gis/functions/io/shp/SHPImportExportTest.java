@@ -722,7 +722,7 @@ public class SHPImportExportTest {
     @Test
     public void testSelectWriteReadSHPLinestring() throws Exception {
         try (Statement stat = connection.createStatement()) {
-            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS");
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS,TABLE_LINESTRINGS_READ");
             stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
             stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
@@ -730,7 +730,7 @@ public class SHPImportExportTest {
             stat.execute("CALL SHPRead('target/lines.shp', 'TABLE_LINESTRINGS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
             res.next();            
-            GeometryAsserts.assertGeometryEquals("MULTILINESTRING ((1 10, 20 15))",res.getObject("THE_GEOM"));
+            GeometryAsserts.assertGeometryEquals("SRID=4326;MULTILINESTRING ((1 10, 20 15))",res.getObject("THE_GEOM"));
             assertEquals(2, res.getInt("ID"));
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
