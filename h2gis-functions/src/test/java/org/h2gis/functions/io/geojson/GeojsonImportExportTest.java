@@ -864,5 +864,36 @@ public class GeojsonImportExportTest {
             gjw.write(new EmptyProgressVisitor(), "lineal", new File("target/lineal_export.geojson"),"CP52");
         });
     }
+    
+    
+    @Test
+    public void testSelectWriteReadGeojsonLinestring() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS, TABLE_LINESTRINGS_READ");
+            stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+            res.next();
+            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING(1 10, 20 15)")));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
+    }
+    
+    @Test
+    public void testSelectWriteRead() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL GeoJsonWrite('target/lines.geojson', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
+            stat.execute("CALL GeoJsonRead('target/lines.geojson', 'TABLE_LINESTRINGS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+            res.next();
+            assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING(1 10, 20 15)")));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
+    }
 
 }

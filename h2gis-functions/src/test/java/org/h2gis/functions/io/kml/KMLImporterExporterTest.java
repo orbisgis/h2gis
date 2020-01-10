@@ -31,13 +31,22 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.WKTReader;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import org.h2gis.unitTest.GeometryAsserts;
 
 import static org.junit.jupiter.api.Assertions.*;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
 /**
  *
@@ -332,5 +341,32 @@ public class KMLImporterExporterTest {
         file.createNewFile();
         assertThrows(SQLException.class, () ->
                 stat.execute("CALL KMLRead('target/area_export.blabla', 'BLABLA')"));
+    }
+    
+   @Test
+    public void testSelectWriteReadKMLLinestring() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            new File("target/lines.kml").delete();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS");
+            stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING,4326), id int)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'SRID=4326;LINESTRING(1 2, 5 3, 10 19)', 1)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'SRID=4326;LINESTRING(1 10, 20 15)', 2)");
+            stat.execute("CALL KMLWrite('target/lines.kml', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");           
+            File xmlFile = new File("target/lines.kml");
+            assertTrue(xmlFile.exists());
+            assertTrue(xmlFile.length()>0);
+        }
+    }
+    
+    @Test
+    public void testSelectWrite() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            new File("target/lines.kml").delete();
+            stat.execute("CALL KMLWrite('target/lines.kml', '(SELECT ST_BUFFER(ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326),10) as the_geom)');");
+            File xmlFile = new File("target/lines.kml");
+            assertTrue(xmlFile.exists());
+            assertTrue(xmlFile.length()>0);
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
     }
 }
