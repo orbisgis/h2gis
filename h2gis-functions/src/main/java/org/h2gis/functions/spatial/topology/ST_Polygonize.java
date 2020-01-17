@@ -62,6 +62,6 @@ public class ST_Polygonize extends DeterministicScalarFunction {
         if(pols.isEmpty()){
             return null;
         }
-        return FACTORY.createMultiPolygon(GeometryFactory.toPolygonArray(pols));
+        return geometry.getFactory().createMultiPolygon(GeometryFactory.toPolygonArray(pols));
     }
 }

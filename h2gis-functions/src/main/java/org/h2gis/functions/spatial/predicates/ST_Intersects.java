@@ -53,8 +53,7 @@ public class ST_Intersects extends DeterministicScalarFunction {
         }
         if(testGeometry==null) {
             return false;
-        }
-        
+        }        
         if(surface.getSRID()!=testGeometry.getSRID()){
             throw new SQLException("Operation on mixed SRID geometries not supported");
         }

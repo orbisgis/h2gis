@@ -2068,6 +2068,14 @@ public class SpatialFunctionTest {
         assertGeometryEquals("MULTILINESTRING ((268790.26367179473 6745239.766363457, 269133.30707034504 6745363.971731897, 269180.1863793153 6745381.28101521), (269347.25949076854 6745377.418053095, 269411.29051399784 6745352.142649189, 269442.8347345542 6745314.683887278, 269572.9546443491 6745235.823335887))", rs.getBytes(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Force2D6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Force2D('SRID=4326;POINT (-10 10)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POINT (-10 10)", rs.getBytes(1));
+        rs.close();
+    } 
 
     
     @Test
@@ -2213,5 +2221,36 @@ public class SpatialFunctionTest {
         assertTrue(resultMap.containsKey("GEOMCOLLECTION_FIELD"));
         assertEquals(GeometryTypeCodes.GEOMCOLLECTION, (int) resultMap.get("GEOMCOLLECTION_FIELD"));
         assertFalse(resultMap.containsKey("ID"));
+    }
+    
+    @Test
+    public void test_ST_PointOnSurfaceSRID() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_PointOnSurface('SRID=4326;POINT(0 0)'::GEOMETRY) the_geom");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POINT(0 0)", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_UnionSRID1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union('SRID=4326;MULTIPOLYGON (((230 350, 460 350, 460 200, 230 200, 230 350)),((460 350, 810 350, 810 200, 460 200, 460 350)))'::GEOMETRY) the_geom");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON ((230 200, 230 350, 460 350, 810 350, 810 200, 460 200, 230 200))", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_UnionSRID2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union('SRID=4326;POLYGON ((230 350, 460 350, 460 200, 230 200, 230 350))'::geometry,'SRID=4326;POLYGON((460 350, 810 350, 810 200, 460 200, 460 350))'::GEOMETRY) the_geom");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON ((230 200, 230 350, 460 350, 810 350, 810 200, 460 200, 230 200))", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_UnionSRID3() throws Exception {
+        assertThrows(SQLException.class, () -> {
+            st.execute("SELECT ST_Union('SRID=4327;POLYGON ((230 350, 460 350, 460 200, 230 200, 230 350))'::geometry,'SRID=4326;POLYGON((460 350, 810 350, 810 200, 460 200, 460 350))'::GEOMETRY) the_geom");
+        });
     }
 }
