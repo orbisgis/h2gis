@@ -868,6 +868,14 @@ public class SpatialFunction2Test {
     }
     
     @Test
+    public void test_ST_Node3() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_Node('SRID=4326;MULTILINESTRING ((100 300, 200 200), (100 200, 200 300))'::GEOMETRY)");
+        assertTrue(rs.next());
+        assertGeometryEquals("SRID=4326;MULTILINESTRING ((100 300, 150 250), (150 250, 200 200), (100 200, 150 250),(150 250, 200 300))" , rs.getObject(1));
+    }
+    
+    @Test
     public void test_ST_SVF1() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_svf(null, null, 1,0)");

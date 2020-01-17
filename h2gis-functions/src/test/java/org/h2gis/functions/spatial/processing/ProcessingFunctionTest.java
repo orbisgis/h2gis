@@ -276,6 +276,15 @@ public class ProcessingFunctionTest {
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOLYGON( ((231.5744116672191 306.8379184620484, 170 250, 101.95319531953196 301.03510351035106, 199 425, 231.5744116672191 306.8379184620484)))")));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Polygonize4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Polygonize('SRID=4326;MULTILINESTRING ((130 190, 80 370, 290 380), \n"
+                + " (290 380, 270 270, 130 190))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;MULTIPOLYGON ( ((130 190, 80 370, 290 380, 270 270, 130 190)))", rs.getObject(1));
+        rs.close();
+    }
 
     @Test
     public void test_ST_PrecisionReducer1() throws Exception {
@@ -298,6 +307,14 @@ public class ProcessingFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('MULTIPOINT( (190.005 300 100), (10.534 11 50))'::GEOMETRY, 4);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("MULTIPOINT( (190.005 300 100), (10.534 11 50))")));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_PrecisionReducer4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_PrecisionReducer('SRID=4326;MULTIPOINT( (190 300 100), (10 11 50))'::GEOMETRY, 0.1);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;MULTIPOINT Z( (190 300 100), (10 11 50))", rs.getBytes(1));
         rs.close();
     }
 
