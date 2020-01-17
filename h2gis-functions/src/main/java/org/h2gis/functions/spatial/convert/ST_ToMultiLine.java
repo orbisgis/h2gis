@@ -36,8 +36,6 @@ import java.util.List;
  */
 public class ST_ToMultiLine extends DeterministicScalarFunction {
 
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
-
     public ST_ToMultiLine() {
         addProperty(PROP_REMARKS, "Constructs a MultiLineString from the given " +
                 "geometry's coordinates.");
@@ -60,10 +58,10 @@ public class ST_ToMultiLine extends DeterministicScalarFunction {
             if (geom.getDimension() > 0) {
                 final List<LineString> lineStrings = new LinkedList<LineString>();
                 toMultiLineString(geom, lineStrings);
-                return GEOMETRY_FACTORY.createMultiLineString(
+                return geom.getFactory().createMultiLineString(
                         lineStrings.toArray(new LineString[0]));
             } else {
-                return GEOMETRY_FACTORY.createMultiLineString(null);
+                return geom.getFactory().createMultiLineString(null);
             }
         } else {
             return null;

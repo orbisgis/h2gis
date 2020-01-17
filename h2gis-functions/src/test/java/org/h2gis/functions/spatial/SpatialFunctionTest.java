@@ -685,7 +685,7 @@ public class SpatialFunctionTest {
                 + "polygon GEOMETRY(Polygon), "
                 + "polygon_with_holes GEOMETRY(Polygon), "
                 + "multi_polygon GEOMETRY(MultiPolygon),"
-                + "collection Geometry);"
+                + "collection Geometry, geomsrid Geometry(Linestring, 2154));"
                 + "INSERT INTO input_table VALUES("
                 + "ST_PointFromText('POINT(2 4)',2154),"
                 + "ST_GeomFromText('LINESTRING EMPTY',2154),"
@@ -697,7 +697,8 @@ public class SpatialFunctionTest {
                 + "(52 18,66 23,73 9,48 6,52 18)),"
                 + "((59 18,67 18,67 13,59 13,59 18)))',2154),"
                 + "ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),"
-                + "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))'));");
+                + "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))'),"
+                + "ST_GEOMFROMTEXT('LINESTRING(5 5, 1 2, 3 4, 99 3)',2154));");
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_ToMultiLine(point), "
                 + "ST_ToMultiLine(empty_line_string), "
@@ -705,7 +706,8 @@ public class SpatialFunctionTest {
                 + "ST_ToMultiLine(polygon), "
                 + "ST_ToMultiLine(polygon_with_holes), "
                 + "ST_ToMultiLine(multi_polygon), "
-                + "ST_ToMultiLine(collection)"
+                + "ST_ToMultiLine(collection),"
+                + "ST_ToMultiLine(geomsrid)"
                 + "FROM input_table;");
         assertTrue(rs.next());
         assertTrue(((MultiLineString) rs.getObject(1)).isEmpty());
@@ -724,6 +726,7 @@ public class SpatialFunctionTest {
         assertTrue(WKT_READER.read("MULTILINESTRING((1 4 3, 15 7 9, 16 17 22),"
                 + "(1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))").equalsExact(
                 (MultiLineString) rs.getObject(7), TOLERANCE));
+        assertGeometryEquals("SRID=2154;MULTILINESTRING((5 5, 1 2, 3 4, 99 3))", rs.getObject(8));
         assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
