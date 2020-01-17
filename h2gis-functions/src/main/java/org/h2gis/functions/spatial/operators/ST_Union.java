@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.operators;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.union.UnaryUnionOp;
@@ -47,10 +48,14 @@ public class ST_Union extends DeterministicScalarFunction {
      * @param a Geometry instance.
      * @param b Geometry instance
      * @return union of Geometries a and b
+     * @throws java.sql.SQLException
      */
-    public static Geometry union(Geometry a,Geometry b) {
+    public static Geometry union(Geometry a,Geometry b) throws SQLException {
         if(a==null || b==null) {
             return null;
+        }
+        if(a.getSRID()!=b.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         return a.union(b);
     }

@@ -2223,11 +2223,19 @@ public class SpatialFunctionTest {
         assertFalse(resultMap.containsKey("ID"));
     }
     
-     @Test
+    @Test
     public void test_ST_PointOnSurfaceSRID() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_PointOnSurface('SRID=4326;POINT(0 0)'::GEOMETRY) the_geom");
         rs.next();
         assertGeometryEquals("SRID=4326;POINT(0 0)", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_UnionSRID() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Union('SRID=4326;MULTIPOLYGON (((230 350, 460 350, 460 200, 230 200, 230 350)),((460 350, 810 350, 810 200, 460 200, 460 350)))'::GEOMETRY) the_geom");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON ((230 200, 230 350, 460 350, 810 350, 810 200, 460 200, 230 200))", rs.getObject(1));
         rs.close();
     }
 }
