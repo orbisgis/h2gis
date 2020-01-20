@@ -13,6 +13,7 @@ import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 /**
  * Estimated extent function based on the internal H2 ESTIMATED_ENVELOPE
@@ -35,8 +36,21 @@ public class ST_EstimatedExtent extends AbstractFunction implements ScalarFuncti
     return "computeEstimatedExtent";
     }
     
+    
     /**
-     * 
+     * Compute the estimated extent based on the first geometry column
+     * @param connection
+     * @param tableName
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public static Geometry computeEstimatedExtent(Connection connection,
+                                      String tableName) throws SQLException{
+        return SFSUtilities.getEstimatedExtent(connection, TableLocation.parse(tableName, true));
+    }
+    
+    /**
+     * Compute the estimated extent based on a geometry field
      * @param connection
      * @param tableName
      * @param geometryColumn
@@ -44,8 +58,7 @@ public class ST_EstimatedExtent extends AbstractFunction implements ScalarFuncti
      * @throws java.sql.SQLException 
      */
     public static Geometry computeEstimatedExtent(Connection connection,
-                                      String tableName, String geometryColumn) throws SQLException{
-        TableLocation tableLocation =  TableLocation.parse(tableName, true);        
-        return SFSUtilities.getEstimatedExtent(connection, tableLocation, geometryColumn);
+                                      String tableName, String geometryColumn) throws SQLException{  
+        return SFSUtilities.getEstimatedExtent(connection, TableLocation.parse(tableName, true), geometryColumn);
     }
 }

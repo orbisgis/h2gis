@@ -38,9 +38,7 @@ import java.util.Iterator;
  * a set of geometries. 
  * @author Erwan Bocher
  */
-public class ST_LineIntersector extends  DeterministicScalarFunction{   
-    
-    
+public class ST_LineIntersector extends  DeterministicScalarFunction{  
     
     private static final RobustLineIntersector ROBUST_INTERSECTOR = new RobustLineIntersector();
     

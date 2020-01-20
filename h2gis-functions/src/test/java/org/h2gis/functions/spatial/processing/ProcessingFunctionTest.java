@@ -465,6 +465,14 @@ public class ProcessingFunctionTest {
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((250 250, 360 300, 332 165, 250 180, 250 250))")));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Simplify4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Simplify('SRID=2154;MULTIPOINT( (190 300), (10 11))'::GEOMETRY, 4);");
+        rs.next();
+        assertGeometryEquals("SRID=2154;MULTIPOINT( (190 300), (10 11))", rs.getObject(1));
+        rs.close();
+    }
 
     @Test
     public void test_ST_SimplifyPreserveTopology1() throws Exception {
@@ -487,6 +495,14 @@ public class ProcessingFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology('POLYGON ((250 250, 248 240, 250 180, 290 150, 332 165, 350 190, 330 200, 340 220, 360 260, 360 300, 330 310, 319 310, 300 310, 280 280, 256 284, 250 250))'::GEOMETRY, 40);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((250 250, 360 300, 332 165, 250 180, 250 250))")));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_SimplifyPreserveTopology4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SimplifyPreserveTopology('SRID=2154;MULTIPOINT( (190 300), (10 11))'::GEOMETRY, 4);");
+        rs.next();
+        assertGeometryEquals("SRID=2154;MULTIPOINT( (190 300), (10 11))",rs.getObject(1));
         rs.close();
     }
 
