@@ -12,14 +12,13 @@ import org.locationtech.jts.geom.*;
 import java.util.ArrayList;
 
 /**
- *
- * @author Erwan Bocher
+ * Remove duplicate coordinates in a geometry
+ * 
+ * @author Erwan Bocher CNRS
  */
 public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction {
     
-    private static final GeometryFactory FACTORY = new GeometryFactory();
-
-
+    
     public ST_RemoveDuplicatedCoordinates() {
         addProperty(PROP_REMARKS, "Returns a version of the given geometry without duplicated coordinates.");
     }
@@ -78,7 +77,7 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
      */
     public static MultiPoint removeCoordinates(MultiPoint g) {
         Coordinate[] coords = CoordinateUtils.removeDuplicatedCoordinates(g.getCoordinates(),false);
-        return FACTORY.createMultiPoint(coords);
+        return g.getFactory().createMultiPointFromCoords(coords);
     }
 
     /**
@@ -89,7 +88,7 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
      */
     public static LineString removeCoordinates(LineString g) {
         Coordinate[] coords = CoordinateUtils.removeDuplicatedCoordinates(g.getCoordinates(), false);
-        return FACTORY.createLineString(coords);
+        return g.getFactory().createLineString(coords);
     }
 
     /**
@@ -100,7 +99,7 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
      */
     public static LinearRing removeCoordinates(LinearRing g) {
         Coordinate[] coords = CoordinateUtils.removeDuplicatedCoordinates(g.getCoordinates(),false);
-        return FACTORY.createLinearRing(coords);
+        return g.getFactory().createLinearRing(coords);
     }
 
     /**
@@ -115,7 +114,7 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
             LineString line = (LineString) g.getGeometryN(i);
             lines.add(removeCoordinates(line));
         }
-        return FACTORY.createMultiLineString(GeometryFactory.toLineStringArray(lines));
+        return g.getFactory().createMultiLineString(GeometryFactory.toLineStringArray(lines));
     }
 
     /**
@@ -125,14 +124,15 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
      * @return
      */
     public static Polygon removeCoordinates(Polygon poly) {
+        GeometryFactory factory =poly.getFactory();
         Coordinate[] shellCoords = CoordinateUtils.removeDuplicatedCoordinates(poly.getExteriorRing().getCoordinates(),true);
-        LinearRing shell = FACTORY.createLinearRing(shellCoords);
+        LinearRing shell = factory.createLinearRing(shellCoords);
         ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
         for (int i = 0; i < poly.getNumInteriorRing(); i++) {
             Coordinate[] holeCoords = CoordinateUtils.removeDuplicatedCoordinates(poly.getInteriorRingN(i).getCoordinates(),true);
-            holes.add(FACTORY.createLinearRing(holeCoords));
+            holes.add(factory.createLinearRing(holeCoords));
         }
-        return FACTORY.createPolygon(shell, GeometryFactory.toLinearRingArray(holes));
+        return factory.createPolygon(shell, GeometryFactory.toLinearRingArray(holes));
     }
 
     /**
@@ -147,7 +147,7 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
             Polygon poly = (Polygon) g.getGeometryN(i);
             polys.add(removeCoordinates(poly));
         }
-        return FACTORY.createMultiPolygon(GeometryFactory.toPolygonArray(polys));
+        return g.getFactory().createMultiPolygon(GeometryFactory.toPolygonArray(polys));
     }
 
     /**
@@ -162,7 +162,7 @@ public class ST_RemoveDuplicatedCoordinates extends DeterministicScalarFunction 
             Geometry geom = g.getGeometryN(i);
             geoms.add(removeCoordinates(geom));
         }
-        return FACTORY.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
+        return g.getFactory().createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
     }
 }
     

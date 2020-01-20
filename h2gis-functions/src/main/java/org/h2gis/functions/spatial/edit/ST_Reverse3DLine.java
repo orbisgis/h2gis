@@ -27,11 +27,9 @@ import org.locationtech.jts.geom.*;
  * Returns a 1 dimension geometry with vertex order reversed according the start
  * and the end z values.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher CNRS
  */
 public class ST_Reverse3DLine extends DeterministicScalarFunction {
-
-    private static final GeometryFactory FACTORY = new GeometryFactory();
 
     public ST_Reverse3DLine() {
         addProperty(PROP_REMARKS, "Returns a 1 dimension geometry with vertex order reversed according \n"
@@ -82,6 +80,7 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
      * must be lower than the z of the end point.
      *
      * @param lineString
+     * @param order asc to reverse in ascending , desc to reverse in descending
      * @return
      */
     private static LineString reverse3D(LineString lineString, String order) {
@@ -91,12 +90,12 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
         if (order.equalsIgnoreCase("desc")) {
             if (!Double.isNaN(startZ) && !Double.isNaN(endZ) && startZ < endZ) {
                 CoordinateSequences.reverse(seq);
-                return FACTORY.createLineString(seq);
+                return lineString.getFactory().createLineString(seq);
             }
         } else if (order.equalsIgnoreCase("asc")) {
             if (!Double.isNaN(startZ) && !Double.isNaN(endZ) && startZ > endZ) {
                 CoordinateSequences.reverse(seq);
-                return FACTORY.createLineString(seq);
+                return lineString.getFactory().createLineString(seq);
             }
         }
         else {
@@ -106,11 +105,12 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
     }
 
     /**
-     * Reverses a multilinestring according to z value. If asc : the z first
+     * Reverses a multilinestring according to z value.If asc : the z first
      * point must be lower than the z end point if desc : the z first point must
      * be greater than the z end point
      *
      * @param multiLineString
+     * @param order asc to reverse in ascending , desc to reverse in descending
      * @return
      */
     public static MultiLineString reverse3D(MultiLineString multiLineString, String order) {
@@ -120,6 +120,6 @@ public class ST_Reverse3DLine extends DeterministicScalarFunction {
             lineStrings[i] = reverse3D((LineString) multiLineString.getGeometryN(i), order);
 
         }
-        return FACTORY.createMultiLineString(lineStrings);
+        return multiLineString.getFactory().createMultiLineString(lineStrings);
     }
 }

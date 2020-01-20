@@ -55,6 +55,10 @@ public class ST_RemovePoints extends DeterministicScalarFunction {
         if(geometry == null){
             return null;
         }
+        if(geometry.getSRID()!=polygon.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
+        }
+        
         GeometryEditor localGeometryEditor = new GeometryEditor();
         PolygonDeleteVertexOperation localBoxDeleteVertexOperation = new PolygonDeleteVertexOperation(geometry.getFactory(), new PreparedPolygon(polygon));
         Geometry localGeometry = localGeometryEditor.edit(geometry, localBoxDeleteVertexOperation);

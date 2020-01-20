@@ -646,8 +646,15 @@ public class SpatialFunction2Test {
         rs.next();
         assertGeometryEquals("POLYGON((4 4, 1 1, 0 0, 4 4))", rs.getString(1));
         rs.close();
-    }
+    }    
     
+    @Test
+    public void test_ST_RemoveDuplicatedCoordinates5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveDuplicatedCoordinates('SRID=4326;MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;MULTIPOINT((4 4), (1 1), (1 0), (0 3))", rs.getString(1));
+        rs.close();
+    }
     @Test
     public void test_ST_MakeValid1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MakeValid('SRID=4326;POINT(0 0)'::GEOMETRY);");
