@@ -646,8 +646,15 @@ public class SpatialFunction2Test {
         rs.next();
         assertGeometryEquals("POLYGON((4 4, 1 1, 0 0, 4 4))", rs.getString(1));
         rs.close();
-    }
+    }    
     
+    @Test
+    public void test_ST_RemoveDuplicatedCoordinates5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveDuplicatedCoordinates('SRID=4326;MULTIPOINT((4 4), (1 1), (1 0), (0 3), (4 4))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;MULTIPOINT((4 4), (1 1), (1 0), (0 3))", rs.getString(1));
+        rs.close();
+    }
     @Test
     public void test_ST_MakeValid1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MakeValid('SRID=4326;POINT(0 0)'::GEOMETRY);");
@@ -735,6 +742,14 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_MakeValid('POLYGON Z ((353851 7684917 0, 353851 7684918 136.1, 353853 7684918 0, 353852 7684918 135.6, 353851 7684917 0))'::GEOMETRY);");
         rs.next();
         assertGeometryEquals("POLYGON Z((353851 7684917 0, 353851 7684918 136.1, 353852 7684918 135.6, 353851 7684917 0))", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_MakeValid14() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_MakeValid('SRID=4326;LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;LINESTRING(0 0, 10 0, 20 0, 20 0, 30 0)", rs.getObject(1));
         rs.close();
     }
 
@@ -949,6 +964,22 @@ public class SpatialFunction2Test {
         assertNull(rs.getObject(1));
     }
     
+    @Test
+    public void test_ST_SVF9() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_svf('SRID=2154;POINT(0 0 0)'::GEOMETRY, ST_UPDATEZ(ST_buffer('SRID=2154;POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
+        assertTrue(rs.next());
+        double svfTest = 0.4098;
+        assertEquals(svfTest, rs.getDouble(1), 0.01);
+    }
+    
+    @Test
+    public void test_ST_SVF10() throws Exception {
+        assertThrows(SQLException.class, () -> {
+        st.execute("SELECT ST_svf('SRID=27572;POINT(0 0 0)'::GEOMETRY, ST_UPDATEZ(ST_buffer('SRID=2154;POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
+        });
+    }
+    
     
     @Test
     public void test_ST_ShortestLine1() throws Exception {
@@ -985,9 +1016,11 @@ public class SpatialFunction2Test {
     @Test
     public void test_ST_GENERATEPOINTS1() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_GeneratePoints('POLYGON ((0 4, 8 4, 8 0, 0 0, 0 4))'::GEOMETRY,10) as result");
+        ResultSet rs = st.executeQuery("SELECT ST_GeneratePoints('SRID=4326;POLYGON ((0 4, 8 4, 8 0, 0 0, 0 4))'::GEOMETRY,10) as result");
         assertTrue(rs.next());
-        assertEquals(10, ((Geometry)rs.getObject(1)).getNumPoints());
+        Geometry geom = (Geometry)rs.getObject(1);
+        assertEquals(4326, geom.getSRID());
+        assertEquals(10, geom.getNumPoints());
     }
     
     @Test
@@ -1043,6 +1076,42 @@ public class SpatialFunction2Test {
         ResultSet rs = st.executeQuery("SELECT ST_GeneratePointsInGrid('POLYGON EMPTY'::GEOMETRY,10, 15, true) as result");
         assertTrue(rs.next());
         assertNull(rs.getObject(1));
+    }
+    
+    
+    @Test
+    public void test_ST_ISOVIST1() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Isovist('POINT(0 0)'::GEOMETRY, 'LINESTRING (100 0, 100 100, 0 100)'::GEOMETRY, "
+                + "150);");
+        assertTrue(rs.next());
+        assertGeometryEquals("POLYGON ((-150 2.8421709430404007E-14, -147.11779206048456 29.26354830241928, -138.581929876693 57.40251485476347, -124.7204418453818 83.33553495294032, -106.06601717798212 106.06601717798213, -83.3355349529403 124.7204418453818, -57.40251485476347 138.58192987669304, -29.263548302419224 147.1177920604846, 0 150, 0 100, 100 100, 100 0, 150 0, 147.1177920604846 -29.26354830241931, 138.58192987669298 -57.40251485476355, 124.7204418453818 -83.33553495294032, 106.06601717798208 -106.06601717798215, 83.3355349529403 -124.72044184538181, 57.402514854763496 -138.58192987669298, 29.263548302419252 -147.11779206048456, -2.8421709430404007E-14 -150, -29.263548302419295 -147.11779206048456, -57.40251485476355 -138.58192987669298, -83.33553495294032 -124.72044184538179, -106.06601717798215 -106.06601717798212, -124.72044184538181 -83.3355349529403, -138.58192987669304 -57.40251485476345, -147.11779206048456 -29.263548302419252, -150 2.8421709430404007E-14)) ", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_ISOVIST2() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Isovist('POINT(0 0)'::GEOMETRY, 'MULTILINESTRING ((100 0, 100 100, 0 100),  (-100 100, -100 -100, 100 -100))'::GEOMETRY, "
+                + "150);");
+        assertTrue(rs.next());
+        assertGeometryEquals("POLYGON ((-106.06601717798212 106.06601717798213, -83.3355349529403 124.7204418453818, -57.40251485476347 138.58192987669304, -29.263548302419224 147.1177920604846, 0 150, 0 100, 100 100, 100 0, 150 0, 147.1177920604846 -29.26354830241931, 138.58192987669298 -57.40251485476355, 124.7204418453818 -83.33553495294032, 106.06601717798213 -106.0660171779821, 100 -100, -100 -100, -100 100.00000000000003, -106.06601717798212 106.06601717798213))", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_ISOVIST3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Isovist('SRID=4326;POINT(0 0)'::GEOMETRY, 'SRID=4326;LINESTRING (100 0, 100 100, 0 100)'::GEOMETRY, "
+                + "150);");
+        assertTrue(rs.next());
+        assertGeometryEquals("SRID=4326;POLYGON ((-150 2.8421709430404007E-14, -147.11779206048456 29.26354830241928, -138.581929876693 57.40251485476347, -124.7204418453818 83.33553495294032, -106.06601717798212 106.06601717798213, -83.3355349529403 124.7204418453818, -57.40251485476347 138.58192987669304, -29.263548302419224 147.1177920604846, 0 150, 0 100, 100 100, 100 0, 150 0, 147.1177920604846 -29.26354830241931, 138.58192987669298 -57.40251485476355, 124.7204418453818 -83.33553495294032, 106.06601717798208 -106.06601717798215, 83.3355349529403 -124.72044184538181, 57.402514854763496 -138.58192987669298, 29.263548302419252 -147.11779206048456, -2.8421709430404007E-14 -150, -29.263548302419295 -147.11779206048456, -57.40251485476355 -138.58192987669298, -83.33553495294032 -124.72044184538179, -106.06601717798215 -106.06601717798212, -124.72044184538181 -83.3355349529403, -138.58192987669304 -57.40251485476345, -147.11779206048456 -29.263548302419252, -150 2.8421709430404007E-14)) ", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_ISOVIST4() throws Exception {
+        assertThrows(SQLException.class, () -> {
+        st.execute("SELECT ST_Isovist('SRID=2154;POINT(0 0)'::GEOMETRY, 'SRID=4326;LINESTRING (100 0, 100 100, 0 100)'::GEOMETRY, "
+                + "150);");
+        });       
     }
     
     

@@ -30,7 +30,6 @@ import org.locationtech.jts.geom.*;
  */
 public class ST_Interpolate3DLine extends DeterministicScalarFunction {
 
-    private static final GeometryFactory FACTORY = new GeometryFactory();
 
     public ST_Interpolate3DLine() {
         addProperty(PROP_REMARKS, "Interpolate the z values of a linestring or multilinestring based on\n"
@@ -97,7 +96,7 @@ public class ST_Interpolate3DLine extends DeterministicScalarFunction {
             lines[i] = subGeom;
 
         }
-        return FACTORY.createMultiLineString(lines);
+        return multiLineString.getFactory().createMultiLineString(lines);
     }
 
     /**

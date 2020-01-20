@@ -36,6 +36,7 @@ import java.sql.SQLException;
  */
 public class ST_Extent extends AbstractFunction implements Aggregate {
     private Envelope aggregatedEnvelope = new Envelope();
+    private int srid = 0;
 
     public ST_Extent() {
         addProperty(PROP_REMARKS, "Return an envelope of the aggregation of all geometries in the table.");
@@ -60,7 +61,14 @@ public class ST_Extent extends AbstractFunction implements Aggregate {
     @Override
     public void add(Object o) throws SQLException {
         if (o instanceof Geometry) {
-            Geometry geom = (Geometry) o;
+            Geometry geom = (Geometry) o;            
+            int currentSRID = geom.getSRID();
+            if(srid==0){
+                srid=currentSRID;
+            }
+            else if(srid!=currentSRID){
+                throw new SQLException("Operation on mixed SRID geometries not supported");
+            }
             aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
         }
     }
@@ -70,7 +78,9 @@ public class ST_Extent extends AbstractFunction implements Aggregate {
         if(aggregatedEnvelope.isNull()) {
             return null;
         } else {
-            return new GeometryFactory().toGeometry(aggregatedEnvelope);
+            Geometry geom = new GeometryFactory().toGeometry(aggregatedEnvelope);
+            geom.setSRID(srid);
+            return geom;
         }
     }
 }

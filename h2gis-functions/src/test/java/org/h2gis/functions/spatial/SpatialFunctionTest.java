@@ -268,6 +268,13 @@ public class SpatialFunctionTest {
         assertFalse(rs.next());
         st.execute("drop table ptClouds");
     }
+    
+    @Test
+    public void test_ST_Extent2() throws Exception {
+        ResultSet rs = st.executeQuery("select ST_Extent('SRID=4326;MULTIPOLYGON (((28 0, 28 42, 84 42, 84 0, 28 0)), ((59 59, 74 59, 74 37, 59 37, 59 59)), ((36 52, 49 52, 49 29, 36 29, 36 52)))'::GEOMETRY);");
+        assertTrue(rs.next());
+        assertGeometryEquals("SRID=4326;POLYGON ((28 0, 28 59, 84 59, 84 0, 28 0))", rs.getObject(1));
+    }
 
     @Test
     public void test_NULL_ST_Extent() throws Exception {
@@ -668,9 +675,10 @@ public class SpatialFunctionTest {
         assertEquals(WKT_READER.read("MULTIPOINT(5 5)"), rs.getObject(3));
         assertEquals(WKT_READER.read("MULTIPOINT(5 5, 1 2, 3 4, 99 3)"), rs.getObject(4));
         assertEquals(WKT_READER.read("MULTIPOINT(0 0, 10 0, 10 5, 0 5, 0 0)"), rs.getObject(5));
-        assertEquals(WKT_READER.read("MULTIPOINT(28 26,28 0,84 0,84 42,28 26,"
+        assertGeometryEquals("SRID=2154;MULTIPOINT(28 26,28 0,84 0,84 42,28 26,"
                 + "52 18,66 23,73 9,48 6,52 18,"
-                + "59 18,67 18,67 13,59 13,59 18)"), rs.getObject(6));
+                + "59 18,67 18,67 13,59 13,59 18)", rs.getObject(6));
+        
         assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
@@ -685,7 +693,7 @@ public class SpatialFunctionTest {
                 + "polygon GEOMETRY(Polygon), "
                 + "polygon_with_holes GEOMETRY(Polygon), "
                 + "multi_polygon GEOMETRY(MultiPolygon),"
-                + "collection Geometry);"
+                + "collection Geometry, geomsrid Geometry(Linestring, 2154));"
                 + "INSERT INTO input_table VALUES("
                 + "ST_PointFromText('POINT(2 4)',2154),"
                 + "ST_GeomFromText('LINESTRING EMPTY',2154),"
@@ -697,7 +705,8 @@ public class SpatialFunctionTest {
                 + "(52 18,66 23,73 9,48 6,52 18)),"
                 + "((59 18,67 18,67 13,59 13,59 18)))',2154),"
                 + "ST_GeomFromText('GEOMETRYCOLLECTION(LINESTRING(1 4 3, 15 7 9, 16 17 22),"
-                + "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))'));");
+                + "POLYGON((1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1)))'),"
+                + "ST_GEOMFROMTEXT('LINESTRING(5 5, 1 2, 3 4, 99 3)',2154));");
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_ToMultiLine(point), "
                 + "ST_ToMultiLine(empty_line_string), "
@@ -705,7 +714,8 @@ public class SpatialFunctionTest {
                 + "ST_ToMultiLine(polygon), "
                 + "ST_ToMultiLine(polygon_with_holes), "
                 + "ST_ToMultiLine(multi_polygon), "
-                + "ST_ToMultiLine(collection)"
+                + "ST_ToMultiLine(collection),"
+                + "ST_ToMultiLine(geomsrid)"
                 + "FROM input_table;");
         assertTrue(rs.next());
         assertTrue(((MultiLineString) rs.getObject(1)).isEmpty());
@@ -724,6 +734,7 @@ public class SpatialFunctionTest {
         assertTrue(WKT_READER.read("MULTILINESTRING((1 4 3, 15 7 9, 16 17 22),"
                 + "(1 1 -1, 3 1 0, 3 2 1, 1 2 2, 1 1 -1))").equalsExact(
                 (MultiLineString) rs.getObject(7), TOLERANCE));
+        assertGeometryEquals("SRID=2154;MULTILINESTRING((5 5, 1 2, 3 4, 99 3))", rs.getObject(8));
         assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
@@ -750,7 +761,8 @@ public class SpatialFunctionTest {
                 + "ST_Holes(line), "
                 + "ST_Holes(polygon), "
                 + "ST_Holes(polygon_with_holes), "
-                + "ST_Holes(collection)"
+                + "ST_Holes(collection),"
+                + "ST_Holes(st_setsrid(collection, 4326))"
                 + "FROM input_table;");
         assertTrue(rs.next());
         assertTrue(((GeometryCollection) rs.getObject(1)).isEmpty());
@@ -761,6 +773,8 @@ public class SpatialFunctionTest {
         assertTrue(WKT_READER.read("GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)),"
                 + "POLYGON((12 7, 14 7, 14 8, 12 8, 12 7)))")
                 .equalsExact((GeometryCollection) rs.getObject(5), TOLERANCE));
+        assertGeometryEquals("SRID=4326;GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)),"
+                + "POLYGON((12 7, 14 7, 14 8, 12 8, 12 7)))", rs.getObject(6));
         assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
@@ -790,7 +804,7 @@ public class SpatialFunctionTest {
                 + "(1 1, 2 1, 2 4, 1 4, 1 1),"
                 + "(7 1, 8 1, 8 3, 7 3, 7 1)),"
                 + "POINT(2 3),"
-                + "LINESTRING (8 7, 9 5, 11 3))'));");
+                + "LINESTRING (8 7, 9 5, 11 3))', 2154));");
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_ToMultiSegments(point), "
                 + "ST_ToMultiSegments(empty_line_string), "
@@ -814,11 +828,10 @@ public class SpatialFunctionTest {
                 + "(1 1, 2 1), (2 1, 2 4), (2 4, 1 4), (1 4, 1 1),"
                 + "(7 1, 8 1), (8 1, 8 3), (8 3, 7 3), (7 3, 7 1))")
                 .equalsExact((MultiLineString) rs.getObject(6), TOLERANCE));
-        assertTrue(WKT_READER.read("MULTILINESTRING((0 0, 10 0), (10 0, 10 5), (10 5, 0 5), (0 5, 0 0),"
+        assertGeometryEquals("SRID=2154;MULTILINESTRING((0 0, 10 0), (10 0, 10 5), (10 5, 0 5), (0 5, 0 0),"
                 + "(1 1, 2 1), (2 1, 2 4), (2 4, 1 4), (1 4, 1 1),"
                 + "(7 1, 8 1), (8 1, 8 3), (8 3, 7 3), (7 3, 7 1),"
-                + "(8 7, 9 5), (9 5, 11 3))")
-                .equalsExact((MultiLineString) rs.getObject(7), TOLERANCE));
+                + "(8 7, 9 5), (9 5, 11 3))", rs.getObject(7));
         assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
@@ -1216,6 +1229,15 @@ public class SpatialFunctionTest {
     }
     
     @Test
+    public void test_ST_RemoveRepeatedPoints5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('SRID=2154;LINESTRING (60 290, 67 300, 67 300, 140 330, 136 319,136 319, 127 314, "
+                + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("SRID=2154;LINESTRING (60 290, 67 300, 140 330, 136 319, 127 314,  116 307, 110 299, 103 289, 100 140, 110 142, 270 170)", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
     public void test_ST_RemoveRepeatedPointsTolerance() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_RemoveRepeatedPoints('LINESTRING (0 0, 2 0, 10 0, 100 0)'::GEOMETRY, 3);");
         rs.next();
@@ -1309,6 +1331,22 @@ public class SpatialFunctionTest {
         assertGeometryEquals("MULTILINESTRING Z((0 0 0, 5 0 5, 10 0 10),(0 0 0, 50 0 50, 100 0 100))", rs.getBytes(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_InterpolateLine4() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine('SRID=4326;MULTILINESTRING Z((0 0 0, 5 0 0, 10 0 10),(0 0 0, 50 0 0, 100 0 100))'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;MULTILINESTRING Z((0 0 0, 5 0 5, 10 0 10),(0 0 0, 50 0 50, 100 0 100))", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_InterpolateLine5() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Interpolate3DLine('SRID=4326;LINESTRING Z(0 0 0, 5 0 0, 10 0 10)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;LINESTRING Z(0 0 0, 5 0 5, 10 0 10)", rs.getBytes(1));
+        rs.close();
+    }
 
     @Test
     public void test_ST_AddPoint1() throws Exception {
@@ -1370,6 +1408,24 @@ public class SpatialFunctionTest {
         assertGeometryEquals("POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
                 + "(2 2, 4 2, 4 4, 2 4, 2 2))", rs.getBytes(1));
         rs.close();
+    }
+    
+    @Test
+    public void test_ST_AddPoint8() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_AddPoint('SRID=4326;POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
+                + "(2 2, 4 2, 4 4, 2 4, 2 2))'::geometry,'SRID=4326;POINT(3 3)'::geometry);");
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
+                + "(2 2, 4 2, 4 4, 2 4, 2 2))", rs.getBytes(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_AddPoint9() throws Exception {
+        assertThrows(SQLException.class, () -> {
+            st.execute("SELECT ST_AddPoint('SRID=4326;POLYGON((1 1, 1 5, 5 5, 5 1, 1 1), "
+                    + "(2 2, 4 2, 4 4, 2 4, 2 2))'::geometry,'SRID=2154;POINT(3 3)'::geometry);");
+        });
     }
 
     @Test
@@ -1452,7 +1508,21 @@ public class SpatialFunctionTest {
         assertGeometryEquals("POLYGON((1 1, 1 6, 5 1, 1 1), (2 3, 3 3, 3 2, 2 2, 2 3))", rs.getBytes(1));
         rs.close();
     }
-
+    
+    @Test
+    public void test_ST_RemovePoint11() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_RemovePoints('SRID=2154;MULTIPOINT ((5 5), (10 10))'::GEOMETRY, ST_Buffer('SRID=2154;POINT(10 10)'::GEOMETRY, 0.01));");
+        rs.next();
+        assertGeometryEquals("SRID=2154;MULTIPOINT((5 5))", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RemovePoint12() throws Exception {
+        assertThrows(SQLException.class, () -> {
+            st.execute("SELECT ST_RemovePoints('SRID=27572;MULTIPOINT ((5 5), (10 10))'::GEOMETRY, ST_Buffer('SRID=2154;POINT(10 10)'::GEOMETRY, 0.01));");
+        });
+    }
 
     @Test
     public void test_ST_Translate1() throws Exception {
@@ -1623,6 +1693,14 @@ public class SpatialFunctionTest {
         assertNull(rs.getObject(1));
         rs.close();
     }
+    
+    @Test
+    public void test_ST_Reverse3DLine6() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_Reverse3DLine('SRID=2154;LINESTRING (105 353 10, 150 180 0, 300 280 0)'::GEOMETRY);");
+        rs.next();
+        assertGeometryEquals("SRID=2154;LINESTRING Z(300 280 0, 150 180 0,105 353 10)", rs.getBytes(1));
+        rs.close();
+    }
 
     @Test
     public void test_ST_RemoveHoles1() throws Exception {
@@ -1648,6 +1726,20 @@ public class SpatialFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_RemoveHoles(the_geom) FROM input_table;");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((100 370, 335 370, 335 135, 100 135, 100 370))")));
+        rs.close();
+        st.execute("DROP TABLE input_table;");
+    }
+    
+    
+    @Test
+    public void test_ST_RemoveHoles3() throws Exception {
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom GEOMETRY(POLYGON, 2154));"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON ((190 300, 140 180, 300 110, 313 117, 430 270, 380 430, 190 300))', 2154));");
+        ResultSet rs = st.executeQuery("SELECT ST_RemoveHoles(the_geom) FROM input_table;");
+        rs.next();
+        assertGeometryEquals("SRID=2154;POLYGON ((190 300, 140 180, 300 110, 313 117, 430 270, 380 430, 190 300))", rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table;");
     }
@@ -2170,9 +2262,9 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_BoundingCircleCenter() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircleCenter(ST_EXPAND('POINT(0 0)',5,5)) the_geom");
+        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircleCenter(ST_EXPAND('SRID=4326;POINT(0 0)',5,5)) the_geom");
         rs.next();
-        assertGeometryEquals("POINT(0 0)", rs.getObject(1));
+        assertGeometryEquals("SRID=4326;POINT(0 0)", rs.getObject(1));
         rs.close();
     }
 
@@ -2252,5 +2344,30 @@ public class SpatialFunctionTest {
         assertThrows(SQLException.class, () -> {
             st.execute("SELECT ST_Union('SRID=4327;POLYGON ((230 350, 460 350, 460 200, 230 200, 230 350))'::geometry,'SRID=4326;POLYGON((460 350, 810 350, 810 200, 460 200, 460 350))'::GEOMETRY) the_geom");
         });
+    }
+    
+    @Test
+    public void test_ST_EstimatedExtent1() throws Exception {
+        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+                + " boundary GEOMETRY(MULTIPOLYGON, 4326));"
+                + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
+                + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));");
+        st.execute("Drop table if exists exploded_forests; CREATE TABLE exploded_forests as SELECT * FROM ST_Explode('forests')");
+        ResultSet rs = st.executeQuery("SELECT  ST_EstimatedExtent('exploded_forests')");
+        assertTrue(rs.next());
+        assertGeometryEquals("SRID=4326;POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", rs.getObject(1));
+        st.execute("drop table forests");
+    }
+    
+    @Test
+    public void test_ST_EstimatedExtent2() throws Exception {
+        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+                + " the_geom GEOMETRY(MULTIPOLYGON, 4326));"
+                + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
+                + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));");
+        ResultSet rs = st.executeQuery("SELECT  ST_EstimatedExtent('forests', 'THE_GEOM')");
+        assertTrue(rs.next());
+        assertGeometryEquals("SRID=4326;POLYGON ((28 0, 28 42, 84 42, 84 0, 28 0))", rs.getObject(1));
+        st.execute("drop table forests");
     }
 }
