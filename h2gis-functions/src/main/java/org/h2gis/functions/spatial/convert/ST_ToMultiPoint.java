@@ -29,10 +29,10 @@ import org.locationtech.jts.geom.MultiPoint;
  * ST_ToMultiPoint constructs a MultiPoint from the given geometry's coordinates.
  *
  * @author Adam Gouge
+ * @author Erwan Bocher, CNRS
  */
 public class ST_ToMultiPoint extends DeterministicScalarFunction {
 
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
 
     public ST_ToMultiPoint() {
         addProperty(PROP_REMARKS, "Constructs a MultiPoint from the given geometry's " +
@@ -52,7 +52,7 @@ public class ST_ToMultiPoint extends DeterministicScalarFunction {
      */
     public static MultiPoint createMultiPoint(Geometry geom) {
         if (geom != null) {
-            return GEOMETRY_FACTORY.createMultiPoint(geom.getCoordinates());
+            return geom.getFactory().createMultiPointFromCoords(geom.getCoordinates());
         } else {
             return null;
         }

@@ -31,7 +31,7 @@ import java.util.List;
  * ST_ToMultiLine constructs a MultiLineString from the given geometry's
  * coordinates. Returns MULTILINESTRING EMPTY for geometries of dimension 0.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS
  * @author Adam Gouge
  */
 public class ST_ToMultiLine extends DeterministicScalarFunction {

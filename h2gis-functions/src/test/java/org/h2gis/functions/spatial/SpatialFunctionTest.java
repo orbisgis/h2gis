@@ -668,9 +668,10 @@ public class SpatialFunctionTest {
         assertEquals(WKT_READER.read("MULTIPOINT(5 5)"), rs.getObject(3));
         assertEquals(WKT_READER.read("MULTIPOINT(5 5, 1 2, 3 4, 99 3)"), rs.getObject(4));
         assertEquals(WKT_READER.read("MULTIPOINT(0 0, 10 0, 10 5, 0 5, 0 0)"), rs.getObject(5));
-        assertEquals(WKT_READER.read("MULTIPOINT(28 26,28 0,84 0,84 42,28 26,"
+        assertGeometryEquals("SRID=2154;MULTIPOINT(28 26,28 0,84 0,84 42,28 26,"
                 + "52 18,66 23,73 9,48 6,52 18,"
-                + "59 18,67 18,67 13,59 13,59 18)"), rs.getObject(6));
+                + "59 18,67 18,67 13,59 13,59 18)", rs.getObject(6));
+        
         assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
@@ -753,7 +754,8 @@ public class SpatialFunctionTest {
                 + "ST_Holes(line), "
                 + "ST_Holes(polygon), "
                 + "ST_Holes(polygon_with_holes), "
-                + "ST_Holes(collection)"
+                + "ST_Holes(collection),"
+                + "ST_Holes(st_setsrid(collection, 4326))"
                 + "FROM input_table;");
         assertTrue(rs.next());
         assertTrue(((GeometryCollection) rs.getObject(1)).isEmpty());
@@ -764,6 +766,8 @@ public class SpatialFunctionTest {
         assertTrue(WKT_READER.read("GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)),"
                 + "POLYGON((12 7, 14 7, 14 8, 12 8, 12 7)))")
                 .equalsExact((GeometryCollection) rs.getObject(5), TOLERANCE));
+        assertGeometryEquals("SRID=4326;GEOMETRYCOLLECTION(POLYGON((1 1, 2 1, 2 4, 1 4, 1 1)),"
+                + "POLYGON((12 7, 14 7, 14 8, 12 8, 12 7)))", rs.getObject(6));
         assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
@@ -793,7 +797,7 @@ public class SpatialFunctionTest {
                 + "(1 1, 2 1, 2 4, 1 4, 1 1),"
                 + "(7 1, 8 1, 8 3, 7 3, 7 1)),"
                 + "POINT(2 3),"
-                + "LINESTRING (8 7, 9 5, 11 3))'));");
+                + "LINESTRING (8 7, 9 5, 11 3))', 2154));");
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_ToMultiSegments(point), "
                 + "ST_ToMultiSegments(empty_line_string), "
@@ -817,11 +821,10 @@ public class SpatialFunctionTest {
                 + "(1 1, 2 1), (2 1, 2 4), (2 4, 1 4), (1 4, 1 1),"
                 + "(7 1, 8 1), (8 1, 8 3), (8 3, 7 3), (7 3, 7 1))")
                 .equalsExact((MultiLineString) rs.getObject(6), TOLERANCE));
-        assertTrue(WKT_READER.read("MULTILINESTRING((0 0, 10 0), (10 0, 10 5), (10 5, 0 5), (0 5, 0 0),"
+        assertGeometryEquals("SRID=2154;MULTILINESTRING((0 0, 10 0), (10 0, 10 5), (10 5, 0 5), (0 5, 0 0),"
                 + "(1 1, 2 1), (2 1, 2 4), (2 4, 1 4), (1 4, 1 1),"
                 + "(7 1, 8 1), (8 1, 8 3), (8 3, 7 3), (7 3, 7 1),"
-                + "(8 7, 9 5), (9 5, 11 3))")
-                .equalsExact((MultiLineString) rs.getObject(7), TOLERANCE));
+                + "(8 7, 9 5), (9 5, 11 3))", rs.getObject(7));
         assertFalse(rs.next());
         st.execute("DROP TABLE input_table;");
     }
@@ -2173,9 +2176,9 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_BoundingCircleCenter() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircleCenter(ST_EXPAND('POINT(0 0)',5,5)) the_geom");
+        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircleCenter(ST_EXPAND('SRID=4326;POINT(0 0)',5,5)) the_geom");
         rs.next();
-        assertGeometryEquals("POINT(0 0)", rs.getObject(1));
+        assertGeometryEquals("SRID=4326;POINT(0 0)", rs.getObject(1));
         rs.close();
     }
 
