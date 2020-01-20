@@ -957,6 +957,22 @@ public class SpatialFunction2Test {
         assertNull(rs.getObject(1));
     }
     
+    @Test
+    public void test_ST_SVF9() throws Exception {
+        Statement st = connection.createStatement();
+        ResultSet rs = st.executeQuery("SELECT ST_svf('SRID=2154;POINT(0 0 0)'::GEOMETRY, ST_UPDATEZ(ST_buffer('SRID=2154;POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
+        assertTrue(rs.next());
+        double svfTest = 0.4098;
+        assertEquals(svfTest, rs.getDouble(1), 0.01);
+    }
+    
+    @Test
+    public void test_ST_SVF10() throws Exception {
+        assertThrows(SQLException.class, () -> {
+        st.execute("SELECT ST_svf('SRID=27572;POINT(0 0 0)'::GEOMETRY, ST_UPDATEZ(ST_buffer('SRID=2154;POINT(0 0)'::GEOMETRY, 10, 120), 12), 50, 8) as result");
+        });
+    }
+    
     
     @Test
     public void test_ST_ShortestLine1() throws Exception {
