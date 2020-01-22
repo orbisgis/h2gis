@@ -202,11 +202,11 @@ public class GeoJsonWriteDriver {
                 FileOutputStream fos = null;
                 try {
                     fos = new FileOutputStream(fileName);
-                    int recordCount = JDBCUtilities.getRowCount(connection, tableName);
+                    final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+                    int recordCount = JDBCUtilities.getRowCount(connection, parse);
                     if (recordCount > 0) {
                         ProgressVisitor copyProgress = progress.subProcess(recordCount);
                         // Read Geometry Index and type
-                        final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData()));
                         List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, parse);
                         if (spatialFieldNames.isEmpty()) {
                             throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));

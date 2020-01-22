@@ -989,7 +989,7 @@ public class GeoJsonReaderDriver {
         String coordinatesField = jp.getText();
         if (coordinatesField.equalsIgnoreCase(GeoJsonField.COORDINATES)) {
             jp.nextToken(); // START_ARRAY [ coordinates
-            MultiPoint mPoint = GF.createMultiPoint(parseCoordinates(jp));
+            MultiPoint mPoint = GF.createMultiPointFromCoords(parseCoordinates(jp));
             jp.nextToken();//END_OBJECT } geometry
             return mPoint;
         } else {
@@ -1302,12 +1302,22 @@ public class GeoJsonReaderDriver {
             jp.nextToken(); // crs name
             jp.nextToken(); // crs value
             String crsURI = jp.getText();
-            String[] split = crsURI.toLowerCase().split(GeoJsonField.CRS_URN_EPSG);
-            if (split != null) {
-                srid = Integer.valueOf(split[1]);
-            } else {
+            if (crsURI.toLowerCase().startsWith(GeoJsonField.CRS_URN_EPSG)) {
+                String[] split = crsURI.toLowerCase().split(GeoJsonField.CRS_URN_EPSG);
+                if (split != null) {
+                    srid = Integer.valueOf(split[1]);
+                } else {
+                    log.warn("The CRS URN " + crsURI + " is not supported.");
+                }
+            } else if (crsURI.equalsIgnoreCase(GeoJsonField.CRS_URN_OGC)) {
+                log.warn("Specification of coordinate reference systems has been removed,\n "
+                        + "i.e., the \"crs\" member of [GJ2008] is no longer used. Assuming WGS84 CRS");
+                srid=4326;
+            }
+            else{
                 log.warn("The CRS URN " + crsURI + " is not supported.");
             }
+            
             jp.nextToken(); //END_OBJECT }
             jp.nextToken(); //END_OBJECT }
             jp.nextToken(); //Go to features
