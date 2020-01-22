@@ -44,7 +44,7 @@ public class GeoJsonField {
     static String GEOMETRYCOLLECTION="geometrycollection";
     static String GEOMETRIES="geometries";
     static String CRS_URN_EPSG="urn:ogc:def:crs:epsg::"; // 2008
-    static String CRS_URN_OGC="urn:ogc:def:crs:ogc:1.3:"; // 2008
+    static String CRS_URN_OGC="urn:ogc:def:crs:ogc:1.3:CRS84"; // 2008
     static String LINK="link"; // 2008
     static String BBOX="bbox";
 

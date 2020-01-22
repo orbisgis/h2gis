@@ -34,6 +34,7 @@ import org.locationtech.jts.io.WKTReader;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import org.h2gis.unitTest.GeometryAsserts;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -893,6 +894,38 @@ public class GeojsonImportExportTest {
             assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("LINESTRING(1 10, 20 15)")));
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
+    }
+    
+    @Test
+    public void testReadCRS84() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("urn_crs84.geojson").getPath()) + ")");
+        ResultSet res = stat.executeQuery("SELECT * FROM URN_CRS84;");
+        res.next();
+        GeometryAsserts.assertGeometryEquals("SRID=4326;POINT(7.49587624983838 48.5342070572556)",res.getObject(1));
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS URN_CRS84");
+    } 
+    
+    @Test
+    public void testWriteReadGeojsonTableCase() throws Exception {
+        Statement stat = connection.createStatement();
+        try {
+            stat.execute("DROP TABLE IF EXISTS TABLE_POINTS");
+            stat.execute("create table TABLE_POINTS(the_geom GEOMETRY(POINT), id INT, climat VARCHAR)");
+            stat.execute("insert into TABLE_POINTS values( 'POINT(1 2)', 1, 'bad')");
+            stat.execute("CALL GeoJsonWrite('target/points_properties.geojson', 'table_points');");
+            stat.execute("CALL GeoJsonRead('target/points_properties.geojson', 'table_points_import');");
+            try (ResultSet res = stat.executeQuery("SELECT * FROM table_points_import;")) {
+                res.next();
+                assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT(1 2)")));
+                assertTrue((res.getInt(2) == 1));
+                assertEquals("bad", res.getString(3));
+            }
+        } finally {
+            stat.execute("DROP TABLE IF EXISTS table_points_import");
+            stat.close();
         }
     }
 
