@@ -26,11 +26,10 @@ import org.locationtech.jts.geom.*;
 /**
  * Removes any holes from a polygon or multipolygon
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher CNRS
  */
 public class ST_RemoveHoles extends DeterministicScalarFunction {
 
-    private static final GeometryFactory FACTORY = new GeometryFactory();
 
     public ST_RemoveHoles() {
         addProperty(PROP_REMARKS, "Remove all holes in a polygon or a multipolygon. "
@@ -70,7 +69,7 @@ public class ST_RemoveHoles extends DeterministicScalarFunction {
                     geometries[i] = geom;
                 }
             }
-            return FACTORY.createGeometryCollection(geometries);
+            return geometry.getFactory().createGeometryCollection(geometries);
         }
         return null;
     }

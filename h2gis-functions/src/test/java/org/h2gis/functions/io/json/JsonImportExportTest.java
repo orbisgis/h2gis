@@ -36,6 +36,8 @@ import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.locationtech.jts.geom.Geometry;
 
 /**
  *
@@ -107,6 +109,28 @@ public class JsonImportExportTest {
                 stat.execute("CALL JSONWrite('target/result.json', '(SELECT * FROM TABLE_POINT WHERE idarea=1)', 'CP52');");
             }
         });
+    }
+    
+    @Test
+    public void testSelectWriteReadJsonLinestring() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS");
+            stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
+            stat.execute("CALL JsonWrite('target/lines.json', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            String result = new String( Files.readAllBytes(Paths.get("target/lines.json")));
+            assertEquals("{\"THE_GEOM\":\"LINESTRING (1 10, 20 15)\",\"ID\":2}",result);
+        }
+    }
+    
+    @Test
+    public void testSelectWrite() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL JsonWrite('target/lines.json', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
+            String result = new String( Files.readAllBytes(Paths.get("target/lines.json")));
+            assertEquals("{\"THE_GEOM\":\"SRID=4326;LINESTRING (1 10, 20 15)\"}",result);
+        }
     }
     
 }

@@ -40,7 +40,7 @@ public class GeometryCoordinateDimension {
      * @return 
      */
      public static Geometry force(Geometry geom, int dimension) {
-         Geometry g = geom;
+        Geometry g = geom;
         if (geom instanceof Point) {
             g = gf.createPoint(convertSequence(geom.getCoordinates(),dimension));
         } else if (geom instanceof LineString) {

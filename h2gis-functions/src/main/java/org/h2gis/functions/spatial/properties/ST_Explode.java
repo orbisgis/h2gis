@@ -47,7 +47,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
 
     public ST_Explode() {
         addProperty(PROP_REMARKS, "Explode Geometry Collection into multiple geometries.\n"
-                + "Note : This function supports select query as the first arfument.");
+                + "Note : This function supports select query as the first argument.");
         addProperty(PROP_NOBUFFER, true);
     }
 

@@ -25,11 +25,10 @@ import org.locationtech.jts.geom.*;
 
 /**
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher CNRS
  */
 public class ST_ZUpdateLineExtremities extends DeterministicScalarFunction {
 
-    private static final GeometryFactory FACTORY = new GeometryFactory();
 
     public ST_ZUpdateLineExtremities() {
         addProperty(PROP_REMARKS, "Replace the start and end z values of a linestring or multilinestring.\n"
@@ -70,7 +69,7 @@ public class ST_ZUpdateLineExtremities extends DeterministicScalarFunction {
                 LineString subGeom = (LineString) geometry.getGeometryN(i);
                 lines[i] = (LineString) force3DStartEnd(subGeom, startZ, endZ, interpolate);
             }
-            return FACTORY.createMultiLineString(lines);
+            return geometry.getFactory().createMultiLineString(lines);
         } else {
             return null;
         }

@@ -524,7 +524,7 @@ public class OGCConformance3Test {
     public void T37() throws Exception {
         Statement st = connection.createStatement();
         ResultSet rs = st.executeQuery("SELECT ST_Equals(boundary, " +
-                "ST_PolyFromText('POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))',1)) FROM named_places" +
+                "ST_PolyFromText('POLYGON ((67 13, 67 18, 59 18, 59 13, 67 13))',101)) FROM named_places" +
                 " WHERE name = 'Goose Island'");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));

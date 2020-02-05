@@ -30,11 +30,9 @@ import java.util.ArrayList;
 /**
  * Remove duplicated points on a geometry
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher CNRS
  */
 public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
-
-    private static final GeometryFactory FACTORY = new GeometryFactory();
 
     public ST_RemoveRepeatedPoints() {
         addProperty(PROP_REMARKS, "Returns a version of the given geometry with duplicated points removed.\n"
@@ -115,7 +113,7 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
         if(coords.length<2){  
             throw new SQLException("Not enough coordinates to build a new LineString.\n Please adjust the tolerance");
         }
-        return FACTORY.createLineString(coords);
+        return linestring.getFactory().createLineString(coords);
     }
 
     /**
@@ -127,7 +125,7 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      */
     public static LinearRing removeDuplicateCoordinates(LinearRing linearRing, double tolerance) {
         Coordinate[] coords = CoordinateUtils.removeRepeatedCoordinates(linearRing.getCoordinates(), tolerance, true);
-        return FACTORY.createLinearRing(coords);
+        return linearRing.getFactory().createLinearRing(coords);
     }
 
     /**
@@ -143,7 +141,7 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
             LineString line = (LineString) multiLineString.getGeometryN(i);
             lines.add(removeDuplicateCoordinates(line, tolerance));
         }
-        return FACTORY.createMultiLineString(GeometryFactory.toLineStringArray(lines));
+        return multiLineString.getFactory().createMultiLineString(GeometryFactory.toLineStringArray(lines));
     }
 
     /**
@@ -155,17 +153,18 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
      * @throws java.sql.SQLException
      */
     public static Polygon removeDuplicateCoordinates(Polygon polygon, double tolerance) throws SQLException {
+        GeometryFactory factory = polygon.getFactory();
         Coordinate[] shellCoords = CoordinateUtils.removeRepeatedCoordinates(polygon.getExteriorRing().getCoordinates(),tolerance,true);
-        LinearRing shell = FACTORY.createLinearRing(shellCoords);
+        LinearRing shell = factory.createLinearRing(shellCoords);
         ArrayList<LinearRing> holes = new ArrayList<LinearRing>();
         for (int i = 0; i < polygon.getNumInteriorRing(); i++) {
             Coordinate[] holeCoords = CoordinateUtils.removeRepeatedCoordinates(polygon.getInteriorRingN(i).getCoordinates(), tolerance, true);
             if (holeCoords.length < 4) {
                 throw new SQLException("Not enough coordinates to build a new LinearRing.\n Please adjust the tolerance");
             }
-            holes.add(FACTORY.createLinearRing(holeCoords));
+            holes.add(factory.createLinearRing(holeCoords));
         }
-        return FACTORY.createPolygon(shell, GeometryFactory.toLinearRingArray(holes));
+        return factory.createPolygon(shell, GeometryFactory.toLinearRingArray(holes));
     }
 
     /**
@@ -182,7 +181,7 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
             Polygon poly = (Polygon) multiPolygon.getGeometryN(i);
             polys.add(removeDuplicateCoordinates(poly, tolerance));
         }
-        return FACTORY.createMultiPolygon(GeometryFactory.toPolygonArray(polys));
+        return multiPolygon.getFactory().createMultiPolygon(GeometryFactory.toPolygonArray(polys));
     }
 
     /**
@@ -199,6 +198,6 @@ public class ST_RemoveRepeatedPoints extends DeterministicScalarFunction {
             Geometry geom = geometryCollection.getGeometryN(i);
             geoms.add(removeDuplicateCoordinates(geom, tolerance));
         }
-        return FACTORY.createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
+        return geometryCollection.getFactory().createGeometryCollection(GeometryFactory.toGeometryArray(geoms));
     }
 }

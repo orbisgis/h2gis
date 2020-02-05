@@ -44,6 +44,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.unitTest.GeometryAsserts;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -715,6 +716,38 @@ public class SHPImportExportTest {
         assertTrue(rs.next());
         assertEquals("Zone arborée", rs.getString("cover"));
         rs.close();
+    }
+    
+    
+    @Test
+    public void testSelectWriteReadSHPLinestring() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS,TABLE_LINESTRINGS_READ");
+            stat.execute("create table TABLE_LINESTRINGS(the_geom GEOMETRY(LINESTRING), id int)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 2, 5 3, 10 19)', 1)");
+            stat.execute("insert into TABLE_LINESTRINGS values( 'LINESTRING(1 10, 20 15)', 2)");
+            stat.execute("CALL SHPWrite('target/lines.shp', '(SELECT * FROM TABLE_LINESTRINGS WHERE ID=2)');");
+            stat.execute("CALL SHPRead('target/lines.shp', 'TABLE_LINESTRINGS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+            res.next();            
+            GeometryAsserts.assertGeometryEquals("SRID=4326;MULTILINESTRING ((1 10, 20 15))",res.getObject("THE_GEOM"));
+            assertEquals(2, res.getInt("ID"));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
+    }
+    
+    @Test
+    public void testSelectWriteRead() throws Exception {
+        try (Statement stat = connection.createStatement()) {
+            stat.execute("CALL SHPWrite('target/lines.shp', '(SELECT ST_GEOMFROMTEXT(''LINESTRING(1 10, 20 15)'', 4326) as the_geom)');");
+            stat.execute("CALL SHPRead('target/lines.shp', 'TABLE_LINESTRINGS_READ');");
+            ResultSet res = stat.executeQuery("SELECT * FROM TABLE_LINESTRINGS_READ;");
+            res.next();
+            GeometryAsserts.assertGeometryEquals("SRID=4326;MULTILINESTRING ((1 10, 20 15))",res.getObject("THE_GEOM"));
+            res.close();
+            stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
+        }
     }
     
 }

@@ -39,8 +39,6 @@ import java.util.ArrayList;
  */
 public class ST_Holes extends DeterministicScalarFunction {
 
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
-
     public ST_Holes() {
         addProperty(PROP_REMARKS, "Returns the given geometry's holes as a " +
                 "GeometryCollection.");
@@ -67,16 +65,16 @@ public class ST_Holes extends DeterministicScalarFunction {
                     if (subgeom instanceof Polygon) {
                         Polygon polygon = (Polygon) subgeom;
                         for (int j = 0; j < polygon.getNumInteriorRing(); j++) {
-                            holes.add(GEOMETRY_FACTORY.createPolygon(
-                                    GEOMETRY_FACTORY.createLinearRing(
+                            holes.add(geom.getFactory().createPolygon(
+                                    geom.getFactory().createLinearRing(
                                             polygon.getInteriorRingN(j).getCoordinates()), null));
                         }
                     }
                 }
-                return GEOMETRY_FACTORY.createGeometryCollection(
+                return geom.getFactory().createGeometryCollection(
                         holes.toArray(new Geometry[0]));
             } else {
-                return GEOMETRY_FACTORY.createGeometryCollection(null);
+                return geom.getFactory().createGeometryCollection(null);
             }
         }
         return null;

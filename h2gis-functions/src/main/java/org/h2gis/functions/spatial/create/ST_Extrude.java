@@ -90,22 +90,24 @@ public class ST_Extrude extends DeterministicScalarFunction {
             return null;
         }
         if (geometry instanceof Polygon) {
-            if (flag == 1) {
-                return GeometryExtrude.extractWalls((Polygon)geometry, height);
-            } else if (flag == 2) {
-                return GeometryExtrude.extractRoof((Polygon)geometry, height);
-            } else {
-                throw new SQLException("Incorrect flag value. Please set 1 to extract walls "
-                        + "or 2 to extract roof.");
+            switch (flag) {
+                case 1:
+                    return GeometryExtrude.extractWalls((Polygon)geometry, height);
+                case 2:
+                    return GeometryExtrude.extractRoof((Polygon)geometry, height);
+                default:
+                    throw new SQLException("Incorrect flag value. Please set 1 to extract walls "
+                            + "or 2 to extract roof.");
             }
         } else if (geometry instanceof LineString) {
-            if (flag == 1) {
-                return GeometryExtrude.extractWalls((LineString)geometry, height);
-            } else if (flag == 2) {
-                return GeometryExtrude.extractRoof((LineString)geometry, height);
-            } else {
-                throw new SQLException("Incorrect flag value. Please set 1 to extract walls "
-                        + "or 2 to extract roof.");
+            switch (flag) {
+                case 1:
+                    return GeometryExtrude.extractWalls((LineString)geometry, height);
+                case 2:
+                    return GeometryExtrude.extractRoof((LineString)geometry, height);
+                default:
+                    throw new SQLException("Incorrect flag value. Please set 1 to extract walls "
+                            + "or 2 to extract roof.");
             }
         }
         throw new SQLException("Only LINESTRING and POLYGON inputs are accepted.");

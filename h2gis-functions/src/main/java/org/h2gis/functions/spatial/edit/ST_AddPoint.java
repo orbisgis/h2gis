@@ -35,7 +35,6 @@ import java.util.ArrayList;
  */
 public class ST_AddPoint extends DeterministicScalarFunction {
 
-    private static final GeometryFactory FACTORY = new GeometryFactory();
     public static final double PRECISION = 10E-6;
 
     public ST_AddPoint() {
@@ -76,17 +75,23 @@ public class ST_AddPoint extends DeterministicScalarFunction {
         if(geometry == null || point == null){
             return null;
         }
+        if(geometry.getSRID()!=point.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
+        }
+        
+        GeometryFactory factory = geometry.getFactory();
+        
         if (geometry instanceof MultiPoint) {
-            return insertVertexInMultipoint(geometry, point);
+            return insertVertexInMultipoint(geometry, point, factory);
         } else if (geometry instanceof LineString) {
-            return insertVertexInLineString((LineString) geometry, point, tolerance);
+            return insertVertexInLineString((LineString) geometry, point, tolerance, factory);
         } else if (geometry instanceof MultiLineString) {
             LineString[] linestrings = new LineString[geometry.getNumGeometries()];
             boolean any = false;
             for (int i = 0; i < geometry.getNumGeometries(); i++) {
                 LineString line = (LineString) geometry.getGeometryN(i);
 
-                LineString inserted = insertVertexInLineString(line, point, tolerance);
+                LineString inserted = insertVertexInLineString(line, point, tolerance, factory);
                 if (inserted != null) {
                     linestrings[i] = inserted;
                     any = true;
@@ -95,18 +100,18 @@ public class ST_AddPoint extends DeterministicScalarFunction {
                 }
             }
             if (any) {
-                return FACTORY.createMultiLineString(linestrings);
+                return factory.createMultiLineString(linestrings);
             } else {
                 return null;
             }
         } else if (geometry instanceof Polygon) {
-            return insertVertexInPolygon((Polygon) geometry, point, tolerance);
+            return insertVertexInPolygon((Polygon) geometry, point, tolerance, factory);
         } else if (geometry instanceof MultiPolygon) {
             Polygon[] polygons = new Polygon[geometry.getNumGeometries()];
             boolean any = false;
             for (int i = 0; i < geometry.getNumGeometries(); i++) {
                 Polygon polygon = (Polygon) geometry.getGeometryN(i);
-                Polygon inserted = insertVertexInPolygon(polygon, point, tolerance);
+                Polygon inserted = insertVertexInPolygon(polygon, point, tolerance, factory);
                 if (inserted != null) {
                     any = true;
                     polygons[i] = inserted;
@@ -115,7 +120,7 @@ public class ST_AddPoint extends DeterministicScalarFunction {
                 }
             }
             if (any) {
-                return FACTORY.createMultiPolygon(polygons);
+                return factory.createMultiPolygon(polygons);
             } else {
                 return null;
             }
@@ -130,16 +135,17 @@ public class ST_AddPoint extends DeterministicScalarFunction {
      *
      * @param g
      * @param vertexPoint
+     * @param factory 
      * @return
      */
-    private static Geometry insertVertexInMultipoint(Geometry g, Point vertexPoint) {
+    private static Geometry insertVertexInMultipoint(Geometry g, Point vertexPoint, GeometryFactory factory) {
         ArrayList<Point> geoms = new ArrayList<Point>();
         for (int i = 0; i < g.getNumGeometries(); i++) {
             Point geom = (Point) g.getGeometryN(i);
             geoms.add(geom);
         }
-        geoms.add(FACTORY.createPoint(new Coordinate(vertexPoint.getX(), vertexPoint.getY())));
-        return FACTORY.createMultiPoint(GeometryFactory.toPointArray(geoms));
+        geoms.add(factory.createPoint(new Coordinate(vertexPoint.getX(), vertexPoint.getY())));
+        return factory.createMultiPoint(GeometryFactory.toPointArray(geoms));
     }
 
     /**
@@ -148,11 +154,12 @@ public class ST_AddPoint extends DeterministicScalarFunction {
      * @param lineString
      * @param vertexPoint
      * @param tolerance
+     * @param factory
      * @return
      * @throws SQLException
      */
     private static LineString insertVertexInLineString(LineString lineString, Point vertexPoint,
-            double tolerance) throws SQLException {
+            double tolerance,  GeometryFactory factory) throws SQLException {
         GeometryLocation geomLocation = EditUtilities.getVertexToSnap(lineString, vertexPoint, tolerance);
         if (geomLocation != null) {
             Coordinate[] coords = lineString.getCoordinates();
@@ -164,7 +171,7 @@ public class ST_AddPoint extends DeterministicScalarFunction {
                 ret[index + 1] = coord;
                 System.arraycopy(coords, index + 1, ret, index + 2, coords.length
                         - (index + 1));
-                return FACTORY.createLineString(ret);
+                return factory.createLineString(ret);
             }
             return null;
         } else {
@@ -178,11 +185,12 @@ public class ST_AddPoint extends DeterministicScalarFunction {
      * @param polygon
      * @param vertexPoint
      * @param tolerance
+     * @param factory 
      * @return
      * @throws SQLException
      */
     private static Polygon insertVertexInPolygon(Polygon polygon,
-            Point vertexPoint, double tolerance) throws SQLException {        
+            Point vertexPoint, double tolerance,  GeometryFactory factory) throws SQLException {        
         Polygon geom =polygon;
         LineString linearRing = polygon.getExteriorRing();
         int index = -1;
@@ -194,13 +202,13 @@ public class ST_AddPoint extends DeterministicScalarFunction {
         }        
         if(index==-1){
             //The point is a on the exterior ring.
-            LinearRing inserted = insertVertexInLinearRing(linearRing, vertexPoint, tolerance);
+            LinearRing inserted = insertVertexInLinearRing(linearRing, vertexPoint, tolerance, factory);
             if(inserted!=null){
             LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
             for (int i = 0; i < holes.length; i++) {
                 holes[i]= (LinearRing) polygon.getInteriorRingN(i);
             }
-            geom = FACTORY.createPolygon(inserted, holes);
+            geom = factory.createPolygon(inserted, holes);
             }
         }
         else{
@@ -208,12 +216,12 @@ public class ST_AddPoint extends DeterministicScalarFunction {
             LinearRing[] holes = new LinearRing[polygon.getNumInteriorRing()];
             for (int i = 0; i < holes.length; i++) {
                 if (i == index) {
-                    holes[i] = insertVertexInLinearRing(polygon.getInteriorRingN(i), vertexPoint, tolerance);
+                    holes[i] = insertVertexInLinearRing(polygon.getInteriorRingN(i), vertexPoint, tolerance, factory);
                 } else {
                     holes[i] = (LinearRing) polygon.getInteriorRingN(i);
                 }
             }
-            geom = FACTORY.createPolygon((LinearRing) linearRing, holes);
+            geom = factory.createPolygon((LinearRing) linearRing, holes);
         }       
         if(geom!=null){
         if (!geom.isValid()) {
@@ -242,10 +250,11 @@ public class ST_AddPoint extends DeterministicScalarFunction {
      * @param lineString
      * @param vertexPoint
      * @param tolerance
+     * @param factory 
      * @return
      */
     private static LinearRing insertVertexInLinearRing(LineString lineString,
-            Point vertexPoint, double tolerance) {
+            Point vertexPoint, double tolerance,  GeometryFactory factory) {
         GeometryLocation geomLocation = EditUtilities.getVertexToSnap(lineString, vertexPoint, tolerance);
         if (geomLocation != null) {
             Coordinate[] coords = lineString.getCoordinates();
@@ -257,7 +266,7 @@ public class ST_AddPoint extends DeterministicScalarFunction {
                 ret[index + 1] = coord;
                 System.arraycopy(coords, index + 1, ret, index + 2, coords.length
                         - (index + 1));
-                return FACTORY.createLinearRing(ret);
+                return factory.createLinearRing(ret);
             }
             return null;
         } else {

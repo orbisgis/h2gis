@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -48,10 +49,14 @@ public class ST_Disjoint extends DeterministicScalarFunction {
      * @param a Geometry Geometry.
      * @param b Geometry instance
      * @return true if the two Geometries are disjoint
+     * @throws java.sql.SQLException
      */
-    public static Boolean geomDisjoint(Geometry a, Geometry b) {
+    public static Boolean geomDisjoint(Geometry a, Geometry b) throws SQLException {
         if(a==null || b==null) {
             return null;
+        }        
+        if(a.getSRID()!=b.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         return a.disjoint(b);
     }

@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.predicates;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 
@@ -48,10 +49,15 @@ public class ST_EnvelopesIntersect extends DeterministicScalarFunction {
      * @param testGeometry Geometry instance
      * @return true if the envelope of Geometry A intersects the envelope of
      * Geometry B
+     * @throws java.sql.SQLException
      */
-    public static Boolean intersects(Geometry surface,Geometry testGeometry) {
+    public static Boolean intersects(Geometry surface,Geometry testGeometry) throws SQLException {
         if(surface==null && testGeometry==null) {
             return null;
+        }
+        
+        if(surface.getSRID()!=testGeometry.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         return !(testGeometry == null || surface == null) && surface.getEnvelopeInternal().intersects(testGeometry.getEnvelopeInternal());
     }

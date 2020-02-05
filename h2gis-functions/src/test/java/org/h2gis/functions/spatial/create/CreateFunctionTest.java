@@ -26,7 +26,6 @@ import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;
-import org.locationtech.jts.io.WKTReader;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -44,7 +43,6 @@ public class CreateFunctionTest {
     private static Connection connection;
     private Statement st;
     private static final GeometryFactory FACTORY = new GeometryFactory();
-    private static final WKTReader WKT_READER = new WKTReader(FACTORY);
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -69,9 +67,9 @@ public class CreateFunctionTest {
 
     @Test
     public void test_ST_BoundingCircle1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'::GEOMETRY);");
-        rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
+        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('SRID=4326;POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'::GEOMETRY);");
+        rs.next();        
+        assertGeometryEquals("SRID=4326;POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
                 + "355.97696351423673 204.69731282226294, 343.22623616044143 180.84237978870843, "
                 + "326.06664389021483 159.93335610978517, 305.1576202112916 142.77376383955857, "
                 + "281.3026871777371 130.02303648576327, 255.41857648803023 122.17117734991535, "
@@ -87,15 +85,15 @@ public class CreateFunctionTest {
                 + "281.3026871777374 384.97696351423656, 305.15762021129194 372.2262361604412, "
                 + "326.0666438902152 355.06664389021455, 343.2262361604417 334.15762021129115, "
                 + "355.9769635142369 310.3026871777366, 363.82882265008476 284.41857648802966, "
-                + "366.4800710247679 257.5))")));
+                + "366.4800710247679 257.5))", rs.getObject(1));
         rs.close();
     }
 
     @Test
     public void test_ST_BoundingCircle2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('LINESTRING (140 200, 170 150)'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_BoundingCircle('SRID=3426;LINESTRING (140 200, 170 150)'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((184.1547594742265 175, 183.59455894601797 "
+        assertGeometryEquals("SRID=3426;POLYGON ((184.1547594742265 175, 183.59455894601797 "
                 + "169.3121885858704, 181.9354855535274 163.8429565746244, "
                 + "179.24129655680906 158.8024834852735, 175.6155281280883 154.3844718719117, "
                 + "171.1975165147265 150.75870344319094, 166.1570434253756 148.0645144464726, "
@@ -111,15 +109,15 @@ public class CreateFunctionTest {
                 + "160.6878114141297 203.59455894601797, 166.1570434253757 201.93548555352737, "
                 + "171.19751651472654 199.241296556809, 175.61552812808839 195.61552812808824, "
                 + "179.24129655680912 191.19751651472637, 181.93548555352743 186.15704342537552, "
-                + "183.594558946018 180.6878114141295, 184.1547594742265 175))")));
+                + "183.594558946018 180.6878114141295, 184.1547594742265 175))", rs.getObject(1));
         rs.close();
     }
 
     @Test
     public void test_ST_MinimumBoundingCircle1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_MinimumBoundingCircle('POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'::GEOMETRY);");
+        ResultSet rs = st.executeQuery("SELECT ST_MinimumBoundingCircle('SRID=3426;POLYGON ((190 390, 100 210, 267 125, 360 280, 190 390))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
+        assertGeometryEquals("SRID=3426;POLYGON ((366.4800710247679 257.5, 363.82882265008465 230.58142351196977, "
                 + "355.97696351423673 204.69731282226294, 343.22623616044143 180.84237978870843, "
                 + "326.06664389021483 159.93335610978517, 305.1576202112916 142.77376383955857, "
                 + "281.3026871777371 130.02303648576327, 255.41857648803023 122.17117734991535, "
@@ -135,15 +133,15 @@ public class CreateFunctionTest {
                 + "281.3026871777374 384.97696351423656, 305.15762021129194 372.2262361604412, "
                 + "326.0666438902152 355.06664389021455, 343.2262361604417 334.15762021129115, "
                 + "355.9769635142369 310.3026871777366, 363.82882265008476 284.41857648802966, "
-                + "366.4800710247679 257.5))")));
+                + "366.4800710247679 257.5))", rs.getObject(1));
         rs.close();
     }
 
     @Test
     public void test_ST_Expand1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 10, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_Expand('SRID=4326;POINT (100 150)'::GEOMETRY, 10, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((90 140, 90 160, 110 160, 110 140, 90 140))")));
+        assertGeometryEquals("SRID=4326;POLYGON ((90 140, 90 160, 110 160, 110 140, 90 140))",rs.getObject(1));
         rs.close();
     }
 
@@ -151,7 +149,7 @@ public class CreateFunctionTest {
     public void test_ST_Expand2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 5, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))")));
+        assertGeometryEquals("POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))",rs.getObject(1));
         rs.close();
     }
 
@@ -159,7 +157,7 @@ public class CreateFunctionTest {
     public void test_ST_Expand3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 5, -10);");
         rs.next();
-        assertEquals(ValueGeometry.get("LINESTRING (95 150, 105 150)").getGeometry(), rs.getObject(1));
+        assertGeometryEquals("LINESTRING (95 150, 105 150)", rs.getObject(1));
         rs.close();
     }
 
@@ -167,7 +165,7 @@ public class CreateFunctionTest {
     public void test_ST_Expand4() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Expand('POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))'::GEOMETRY, 5, -10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (90 150, 110 150)")));
+        assertGeometryEquals("LINESTRING (90 150, 110 150)",rs.getObject(1));
         rs.close();
     }
     
@@ -175,7 +173,7 @@ public class CreateFunctionTest {
     public void test_ST_Expand5() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_Expand('POINT (100 150)'::GEOMETRY, 10);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((90 140, 90 160, 110 160, 110 140, 90 140))")));
+        assertGeometryEquals("POLYGON ((90 140, 90 160, 110 160, 110 140, 90 140))",rs.getObject(1));
         rs.close();
     }
 
@@ -247,8 +245,8 @@ public class CreateFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_MakePoint(1.4, -3.7), "
                 + "ST_MakePoint(1.4, -3.7, 6.2);");
         assertTrue(rs.next());
-        assertEquals(WKT_READER.read("POINT(1.4 -3.7)"), rs.getObject(1));
-        assertEquals(WKT_READER.read("POINT(1.4 -3.7 6.2)"), rs.getObject(2));
+        assertGeometryEquals("POINT(1.4 -3.7)", rs.getObject(1));
+        assertGeometryEquals("POINT(1.4 -3.7 6.2)", rs.getObject(2));
         assertFalse(rs.next());
         rs.close();
     }
@@ -258,8 +256,8 @@ public class CreateFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_Point(1.4, -3.7), "
                 + "ST_Point(1.4, -3.7, 6.2);");
         assertTrue(rs.next());
-        assertEquals(WKT_READER.read("POINT(1.4 -3.7)"), rs.getObject(1));
-        assertEquals(WKT_READER.read("POINT(1.4 -3.7 6.2)"), rs.getObject(2));
+        assertGeometryEquals("POINT(1.4 -3.7)", rs.getObject(1));
+        assertGeometryEquals("POINT(1.4 -3.7 6.2)", rs.getObject(2));
         assertFalse(rs.next());
         rs.close();
     }
@@ -267,12 +265,13 @@ public class CreateFunctionTest {
     @Test
     public void test_ST_MakeEllipse() throws Exception {
         ResultSet rs = st.executeQuery("SELECT "
-                + "ST_MakeEllipse(ST_MakePoint(0, 0), 6, 4),"
+                + "ST_SETSRID(ST_MakeEllipse(ST_MakePoint(0, 0), 6, 4), 4326),"
                 + "ST_MakeEllipse(ST_MakePoint(-1, 4), 2, 4),"
                 + "ST_MakeEllipse(ST_MakePoint(4, -5), 4, 4),"
                 + "ST_Buffer(ST_MakePoint(4, -5), 2);");
         assertTrue(rs.next());
         Polygon ellipse1 = (Polygon) rs.getObject(1);
+        assertEquals(4326, ellipse1.getSRID());
         final Envelope ellipse1EnvelopeInternal = ellipse1.getEnvelopeInternal();
         assertEquals(101, ellipse1.getCoordinates().length);
         assertTrue(ellipse1EnvelopeInternal.centre().equals2D(new Coordinate(0, 0)));
@@ -399,18 +398,15 @@ public class CreateFunctionTest {
     public void test_ST_MakeEnvelope() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MakeEnvelope(0,0, 1, 1);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equalsExact(
-                WKT_READER.read("POLYGON((0 0, 1 0 0, 1 1 , 0 1, 0 0))")));
+        assertGeometryEquals("SRID=0;POLYGON((0 0, 1 0, 1 1 , 0 1, 0 0))",rs.getObject(1));
         rs.close();
     }
 
     @Test
     public void test_ST_MakeEnvelopeSRID() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MakeEnvelope(0,0, 1, 1, 4326);");
-        rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equalsExact(
-                WKT_READER.read("POLYGON((0 0, 1 0 0, 1 1 , 0 1, 0 0))")));
-        assertTrue(((Geometry) rs.getObject(1)).getSRID() == 4326);
+        rs.next();        
+        assertGeometryEquals("SRID=4326;POLYGON((0 0, 1 0 , 1 1 , 0 1, 0 0))",rs.getObject(1));
         rs.close();
     }
 
@@ -427,13 +423,13 @@ public class CreateFunctionTest {
         rs.close();
         rs = st.executeQuery("select * from grid;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        assertGeometryEquals("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        assertGeometryEquals("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        assertGeometryEquals("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        assertGeometryEquals("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }
@@ -447,13 +443,13 @@ public class CreateFunctionTest {
         rs.close();
         rs = st.executeQuery("select * from grid;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        assertGeometryEquals("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        assertGeometryEquals("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        assertGeometryEquals("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        assertGeometryEquals("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE grid;");
     }
@@ -476,13 +472,13 @@ public class CreateFunctionTest {
         rs.close();
         rs = st.executeQuery("select * from grid;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        assertGeometryEquals("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        assertGeometryEquals("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        assertGeometryEquals("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        assertGeometryEquals("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }
@@ -512,13 +508,13 @@ public class CreateFunctionTest {
         rs.close();
         rs = st.executeQuery("select * from grid;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        assertGeometryEquals("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        assertGeometryEquals("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        assertGeometryEquals("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        assertGeometryEquals("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }
@@ -536,13 +532,13 @@ public class CreateFunctionTest {
         rs.close();
         rs = st.executeQuery("select * from grid;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(0.5 0.5)")));
+        assertGeometryEquals("POINT(0.5 0.5)",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(1.5 0.5)")));
+        assertGeometryEquals("POINT(1.5 0.5)",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(0.5 1.5)")));
+        assertGeometryEquals("POINT(0.5 1.5)",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POINT(1.5 1.5)")));
+        assertGeometryEquals("POINT(1.5 1.5)",rs.getObject(1));
         st.execute("DROP TABLE input_table, grid;");
     }
 
@@ -559,17 +555,17 @@ public class CreateFunctionTest {
         rs.close();
         rs = st.executeQuery("select * from grid;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))")));
+        assertGeometryEquals("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))")));
+        assertGeometryEquals("POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((2 0, 3 0, 3 1, 2 1, 2 0))")));
+        assertGeometryEquals("POLYGON((2 0, 3 0, 3 1, 2 1, 2 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))")));
+        assertGeometryEquals("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))")));
+        assertGeometryEquals("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((2 1, 3 1, 3 2, 2 2, 2 1))")));
+        assertGeometryEquals("POLYGON((2 1, 3 1, 3 2, 2 2, 2 1))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }
@@ -587,11 +583,11 @@ public class CreateFunctionTest {
         rs.close();
         rs = st.executeQuery("select * from grid;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 0.5 0, 0.5 0.5, 0 0.5, 0 0))")));
+        assertGeometryEquals("POLYGON((0 0, 0.5 0, 0.5 0.5, 0 0.5, 0 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0.5 0, 1 0, 1 0.5, 0.5 0.5, 0.5 0))")));
+        assertGeometryEquals("POLYGON((0.5 0, 1 0, 1 0.5, 0.5 0.5, 0.5 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 1.5 0, 1.5 0.5, 1 0.5, 1 0))")));
+        assertGeometryEquals("POLYGON((1 0, 1.5 0, 1.5 0.5, 1 0.5, 1 0))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }
@@ -609,13 +605,13 @@ public class CreateFunctionTest {
         rs.close();
         rs = st.executeQuery("select * from grid;");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0, 1 0, 1 0.5, 0 0.5, 0 0))")));
+        assertGeometryEquals("POLYGON((0 0, 1 0, 1 0.5, 0 0.5, 0 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((1 0, 2 0, 2 0.5, 1 0.5, 1 0))")));
+        assertGeometryEquals("POLYGON((1 0, 2 0, 2 0.5, 1 0.5, 1 0))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON((0 0.5, 1 0.5, 1 1, 0 1, 0 0.5))")));
+        assertGeometryEquals("POLYGON((0 0.5, 1 0.5, 1 1, 0 1, 0 0.5))",rs.getObject(1));
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((1 0.5, 2 0.5, 2 1, 1 1, 1 0.5))")));
+        assertGeometryEquals("POLYGON ((1 0.5, 2 0.5, 2 1, 1 1, 1 0.5))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }
@@ -691,7 +687,7 @@ public class CreateFunctionTest {
     public void test_ST_OctogonalEnvelope1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))")));
+        assertGeometryEquals("POLYGON ((95 140, 95 160, 105 160, 105 140, 95 140))",rs.getObject(1));
         rs.close();
     }
 
@@ -699,7 +695,7 @@ public class CreateFunctionTest {
     public void test_ST_OctogonalEnvelope2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('POLYGON ((170 350, 95 214, 220 120, 210 210, 159 205, 170 240, 170 350))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((95 214, 95 275, 170 350, 220 300, 220 120, 189 120, 95 214))")));
+        assertGeometryEquals("POLYGON ((95 214, 95 275, 170 350, 220 300, 220 120, 189 120, 95 214))",rs.getObject(1));
         rs.close();
     }
 
@@ -707,7 +703,7 @@ public class CreateFunctionTest {
     public void test_ST_OctogonalEnvelope3() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('LINESTRING (50 210, 140 290, 120 120, 210 110)'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((50 190, 50 210, 130 290, 140 290, 210 220, 210 110, 130 110, 50 190))")));
+        assertGeometryEquals("POLYGON ((50 190, 50 210, 130 290, 140 290, 210 220, 210 110, 130 110, 50 190))",rs.getObject(1));
         rs.close();
     }
 
@@ -715,7 +711,7 @@ public class CreateFunctionTest {
     public void test_ST_OctogonalEnvelope4() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_OctogonalEnvelope('MULTIPOINT ((230 220), (193 205))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((193 205, 208 220, 230 220, 215 205, 193 205))")));
+        assertGeometryEquals("POLYGON ((193 205, 208 220, 230 220, 215 205, 193 205))",rs.getObject(1));
         rs.close();
     }
 
@@ -723,7 +719,7 @@ public class CreateFunctionTest {
     public void test_ST_MinimumRectangle1() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('MULTIPOINT ((230 220), (193 205))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING (230 220, 193 205)")));
+        assertGeometryEquals("LINESTRING (230 220, 193 205)",rs.getObject(1));
         rs.close();
     }
 
@@ -731,9 +727,9 @@ public class CreateFunctionTest {
     public void test_ST_MinimumRectangle2() throws Exception {
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('POLYGON ((150 290, 110 210, 280 130, 280 250, 235 221, 150 290))'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((279.99999999999693 129.99999999999395, "
+        assertGeometryEquals("POLYGON ((279.99999999999693 129.99999999999395, "
                 + "326.23229461756006 228.24362606231597, 156.23229461756213 308.24362606231944, "
-                + "109.99999999999888 209.99999999999753, 279.99999999999693 129.99999999999395))")));
+                + "109.99999999999888 209.99999999999753, 279.99999999999693 129.99999999999395))",rs.getObject(1));
         rs.close();
     }
 
@@ -742,9 +738,9 @@ public class CreateFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_MinimumRectangle('LINESTRING (60 290, 67 300, 140 330, 136 319, 127 314, "
                 + "116 307, 110 299, 103 289, 100 140, 110 142, 270 170)'::GEOMETRY);");
         rs.next();
-        assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("POLYGON ((125.65411764705883 347.6564705882353, "
+        assertGeometryEquals("POLYGON ((125.65411764705883 347.6564705882353, "
                 + "8.571764705882353 252.52705882352942, "
-                + "152.91764705882352 74.87058823529412, 270 170, 125.65411764705883 347.6564705882353))")));
+                + "152.91764705882352 74.87058823529412, 270 170, 125.65411764705883 347.6564705882353))",rs.getObject(1));
         rs.close();
     }
 
@@ -784,6 +780,15 @@ public class CreateFunctionTest {
         ResultSet rs = st.executeQuery("SELECT ST_RingBuffer('LINESTRING (-10 10, 10 10)'::GEOMETRY, 10, 3);");
         rs.next();
         assertGeometryBarelyEquals("MULTIPOLYGON (((10 20, 11.950903220161283 19.807852804032304, 13.826834323650898 19.238795325112868, 15.555702330196024 18.314696123025453, 17.071067811865476 17.071067811865476, 18.314696123025453 15.555702330196022, 19.238795325112868 13.826834323650898, 19.807852804032304 11.950903220161283, 20 10, 19.807852804032304 8.049096779838717, 19.238795325112868 6.173165676349102, 18.314696123025453 4.444297669803979, 17.071067811865476 2.9289321881345254, 15.55570233019602 1.6853038769745474, 13.826834323650894 0.7612046748871304, 11.950903220161276 0.1921471959676939, 10 0, -10 0, -11.950903220161287 0.1921471959676975, -13.826834323650903 0.7612046748871357, -15.555702330196022 1.6853038769745474, -17.071067811865476 2.9289321881345254, -18.314696123025456 4.44429766980398, -19.238795325112868 6.173165676349104, -19.807852804032304 8.049096779838717, -20 10.000000000000002, -19.807852804032304 11.950903220161287, -19.238795325112868 13.8268343236509, -18.314696123025453 15.555702330196022, -17.071067811865476 17.071067811865476, -15.55570233019602 18.314696123025453, -13.826834323650893 19.238795325112868, -11.950903220161276 19.807852804032308, -10 20, 10 20)), ((10 30, 13.901806440322567 29.61570560806461, 17.653668647301796 28.477590650225736, 21.111404660392047 26.629392246050905, 24.14213562373095 24.14213562373095, 26.629392246050905 21.111404660392044, 28.477590650225736 17.653668647301796, 29.61570560806461 13.901806440322565, 30 10, 29.61570560806461 6.098193559677435, 28.477590650225736 2.346331352698204, 26.629392246050905 -1.1114046603920418, 24.14213562373095 -4.142135623730949, 21.11140466039204 -6.629392246050905, 17.65366864730179 -8.47759065022574, 13.901806440322552 -9.615705608064612, 10 -10, -10 -10, -13.901806440322574 -9.615705608064605, -17.653668647301807 -8.477590650225729, -21.111404660392044 -6.629392246050905, -24.142135623730955 -4.142135623730949, -26.62939224605091 -1.11140466039204, -28.477590650225736 2.346331352698207, -29.61570560806461 6.098193559677433, -30 10.000000000000002, -29.61570560806461 13.901806440322572, -28.477590650225736 17.6536686473018, -26.629392246050905 21.111404660392044, -24.14213562373095 24.14213562373095, -21.11140466039204 26.629392246050905, -17.653668647301785 28.47759065022574, -13.90180644032255 29.615705608064612, -10 30, 10 30), (10 20, -10 20, -11.950903220161276 19.807852804032308, -13.826834323650893 19.238795325112868, -15.55570233019602 18.314696123025453, -17.071067811865476 17.071067811865476, -18.314696123025453 15.555702330196022, -19.238795325112868 13.8268343236509, -19.807852804032304 11.950903220161287, -20 10.000000000000002, -19.807852804032304 8.049096779838717, -19.238795325112868 6.173165676349104, -18.314696123025456 4.44429766980398, -17.071067811865476 2.9289321881345254, -15.555702330196022 1.6853038769745474, -13.826834323650903 0.7612046748871357, -11.950903220161287 0.1921471959676975, -10 0, 10 0, 11.950903220161276 0.1921471959676939, 13.826834323650894 0.7612046748871304, 15.55570233019602 1.6853038769745474, 17.071067811865476 2.9289321881345254, 18.314696123025453 4.444297669803979, 19.238795325112868 6.173165676349102, 19.807852804032304 8.049096779838717, 20 10, 19.807852804032304 11.950903220161283, 19.238795325112868 13.826834323650898, 18.314696123025453 15.555702330196022, 17.071067811865476 17.071067811865476, 15.555702330196024 18.314696123025453, 13.826834323650898 19.238795325112868, 11.950903220161283 19.807852804032304, 10 20)), ((10 40, 15.85270966048385 39.42355841209691, 21.480502970952696 37.7163859753386, 26.667106990588067 34.944088369076354, 31.213203435596427 31.213203435596423, 34.944088369076354 26.667106990588067, 37.7163859753386 21.480502970952692, 39.42355841209691 15.852709660483846, 40 10, 39.42355841209691 4.147290339516153, 37.7163859753386 -1.4805029709526938, 34.94408836907636 -6.6671069905880636, 31.213203435596427 -11.213203435596423, 26.667106990588064 -14.944088369076361, 21.48050297095268 -17.71638597533861, 15.85270966048383 -19.423558412096916, 10 -20, -10 -20, -15.85270966048386 -19.42355841209691, -21.48050297095271 -17.716385975338596, -26.667106990588067 -14.944088369076358, -31.21320343559643 -11.213203435596423, -34.94408836907637 -6.66710699058806, -37.71638597533861 -1.4805029709526902, -39.42355841209691 4.147290339516149, -40 10.000000000000004, -39.42355841209691 15.852709660483859, -37.7163859753386 21.4805029709527, -34.94408836907636 26.667106990588067, -31.213203435596423 31.213203435596427, -26.66710699058806 34.94408836907636, -21.480502970952678 37.71638597533861, -15.852709660483827 39.42355841209692, -10 40, 10 40), (10 30, -10 30, -13.90180644032255 29.615705608064612, -17.653668647301785 28.47759065022574, -21.11140466039204 26.629392246050905, -24.14213562373095 24.14213562373095, -26.629392246050905 21.111404660392044, -28.477590650225736 17.6536686473018, -29.61570560806461 13.901806440322572, -30 10.000000000000002, -29.61570560806461 6.098193559677433, -28.477590650225736 2.346331352698207, -26.62939224605091 -1.11140466039204, -24.142135623730955 -4.142135623730949, -21.111404660392044 -6.629392246050905, -17.653668647301807 -8.477590650225729, -13.901806440322574 -9.615705608064605, -10 -10, 10 -10, 13.901806440322552 -9.615705608064612, 17.65366864730179 -8.47759065022574, 21.11140466039204 -6.629392246050905, 24.14213562373095 -4.142135623730949, 26.629392246050905 -1.1114046603920418, 28.477590650225736 2.346331352698204, 29.61570560806461 6.098193559677435, 30 10, 29.61570560806461 13.901806440322565, 28.477590650225736 17.653668647301796, 26.629392246050905 21.111404660392044, 24.14213562373095 24.14213562373095, 21.111404660392047 26.629392246050905, "
+                + "17.653668647301796 28.477590650225736, 13.901806440322567 29.61570560806461, 10 30)))", rs.getObject(1));
+        rs.close();
+    }
+    
+    @Test
+    public void test_ST_RingBuffer3() throws Exception {
+        ResultSet rs = st.executeQuery("SELECT ST_SETSRID(ST_RingBuffer('LINESTRING (-10 10, 10 10)'::GEOMETRY, 10, 3), 4326);");
+        rs.next();
+        assertGeometryBarelyEquals("SRID=4326;MULTIPOLYGON (((10 20, 11.950903220161283 19.807852804032304, 13.826834323650898 19.238795325112868, 15.555702330196024 18.314696123025453, 17.071067811865476 17.071067811865476, 18.314696123025453 15.555702330196022, 19.238795325112868 13.826834323650898, 19.807852804032304 11.950903220161283, 20 10, 19.807852804032304 8.049096779838717, 19.238795325112868 6.173165676349102, 18.314696123025453 4.444297669803979, 17.071067811865476 2.9289321881345254, 15.55570233019602 1.6853038769745474, 13.826834323650894 0.7612046748871304, 11.950903220161276 0.1921471959676939, 10 0, -10 0, -11.950903220161287 0.1921471959676975, -13.826834323650903 0.7612046748871357, -15.555702330196022 1.6853038769745474, -17.071067811865476 2.9289321881345254, -18.314696123025456 4.44429766980398, -19.238795325112868 6.173165676349104, -19.807852804032304 8.049096779838717, -20 10.000000000000002, -19.807852804032304 11.950903220161287, -19.238795325112868 13.8268343236509, -18.314696123025453 15.555702330196022, -17.071067811865476 17.071067811865476, -15.55570233019602 18.314696123025453, -13.826834323650893 19.238795325112868, -11.950903220161276 19.807852804032308, -10 20, 10 20)), ((10 30, 13.901806440322567 29.61570560806461, 17.653668647301796 28.477590650225736, 21.111404660392047 26.629392246050905, 24.14213562373095 24.14213562373095, 26.629392246050905 21.111404660392044, 28.477590650225736 17.653668647301796, 29.61570560806461 13.901806440322565, 30 10, 29.61570560806461 6.098193559677435, 28.477590650225736 2.346331352698204, 26.629392246050905 -1.1114046603920418, 24.14213562373095 -4.142135623730949, 21.11140466039204 -6.629392246050905, 17.65366864730179 -8.47759065022574, 13.901806440322552 -9.615705608064612, 10 -10, -10 -10, -13.901806440322574 -9.615705608064605, -17.653668647301807 -8.477590650225729, -21.111404660392044 -6.629392246050905, -24.142135623730955 -4.142135623730949, -26.62939224605091 -1.11140466039204, -28.477590650225736 2.346331352698207, -29.61570560806461 6.098193559677433, -30 10.000000000000002, -29.61570560806461 13.901806440322572, -28.477590650225736 17.6536686473018, -26.629392246050905 21.111404660392044, -24.14213562373095 24.14213562373095, -21.11140466039204 26.629392246050905, -17.653668647301785 28.47759065022574, -13.90180644032255 29.615705608064612, -10 30, 10 30), (10 20, -10 20, -11.950903220161276 19.807852804032308, -13.826834323650893 19.238795325112868, -15.55570233019602 18.314696123025453, -17.071067811865476 17.071067811865476, -18.314696123025453 15.555702330196022, -19.238795325112868 13.8268343236509, -19.807852804032304 11.950903220161287, -20 10.000000000000002, -19.807852804032304 8.049096779838717, -19.238795325112868 6.173165676349104, -18.314696123025456 4.44429766980398, -17.071067811865476 2.9289321881345254, -15.555702330196022 1.6853038769745474, -13.826834323650903 0.7612046748871357, -11.950903220161287 0.1921471959676975, -10 0, 10 0, 11.950903220161276 0.1921471959676939, 13.826834323650894 0.7612046748871304, 15.55570233019602 1.6853038769745474, 17.071067811865476 2.9289321881345254, 18.314696123025453 4.444297669803979, 19.238795325112868 6.173165676349102, 19.807852804032304 8.049096779838717, 20 10, 19.807852804032304 11.950903220161283, 19.238795325112868 13.826834323650898, 18.314696123025453 15.555702330196022, 17.071067811865476 17.071067811865476, 15.555702330196024 18.314696123025453, 13.826834323650898 19.238795325112868, 11.950903220161283 19.807852804032304, 10 20)), ((10 40, 15.85270966048385 39.42355841209691, 21.480502970952696 37.7163859753386, 26.667106990588067 34.944088369076354, 31.213203435596427 31.213203435596423, 34.944088369076354 26.667106990588067, 37.7163859753386 21.480502970952692, 39.42355841209691 15.852709660483846, 40 10, 39.42355841209691 4.147290339516153, 37.7163859753386 -1.4805029709526938, 34.94408836907636 -6.6671069905880636, 31.213203435596427 -11.213203435596423, 26.667106990588064 -14.944088369076361, 21.48050297095268 -17.71638597533861, 15.85270966048383 -19.423558412096916, 10 -20, -10 -20, -15.85270966048386 -19.42355841209691, -21.48050297095271 -17.716385975338596, -26.667106990588067 -14.944088369076358, -31.21320343559643 -11.213203435596423, -34.94408836907637 -6.66710699058806, -37.71638597533861 -1.4805029709526902, -39.42355841209691 4.147290339516149, -40 10.000000000000004, -39.42355841209691 15.852709660483859, -37.7163859753386 21.4805029709527, -34.94408836907636 26.667106990588067, -31.213203435596423 31.213203435596427, -26.66710699058806 34.94408836907636, -21.480502970952678 37.71638597533861, -15.852709660483827 39.42355841209692, -10 40, 10 40), (10 30, -10 30, -13.90180644032255 29.615705608064612, -17.653668647301785 28.47759065022574, -21.11140466039204 26.629392246050905, -24.14213562373095 24.14213562373095, -26.629392246050905 21.111404660392044, -28.477590650225736 17.6536686473018, -29.61570560806461 13.901806440322572, -30 10.000000000000002, -29.61570560806461 6.098193559677433, -28.477590650225736 2.346331352698207, -26.62939224605091 -1.11140466039204, -24.142135623730955 -4.142135623730949, -21.111404660392044 -6.629392246050905, -17.653668647301807 -8.477590650225729, -13.901806440322574 -9.615705608064605, -10 -10, 10 -10, 13.901806440322552 -9.615705608064612, 17.65366864730179 -8.47759065022574, 21.11140466039204 -6.629392246050905, 24.14213562373095 -4.142135623730949, 26.629392246050905 -1.1114046603920418, 28.477590650225736 2.346331352698204, 29.61570560806461 6.098193559677435, 30 10, 29.61570560806461 13.901806440322565, 28.477590650225736 17.653668647301796, 26.629392246050905 21.111404660392044, 24.14213562373095 24.14213562373095, 21.111404660392047 26.629392246050905, "
                 + "17.653668647301796 28.477590650225736, 13.901806440322567 29.61570560806461, 10 30)))", rs.getObject(1));
         rs.close();
     }

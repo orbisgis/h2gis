@@ -227,6 +227,25 @@ public class SFSUtilities {
     }
     
     /**
+     * Compute the 'estimated' extent of the given spatial table.
+     * Use the first geometry field
+     * In case of POSTGIS : the estimated is taken from the geometry column's statistics.
+     * In case of H2GIS : the estimated is taken from the spatial index of the geometry column.
+     * If the estimated extend is null the extent is computed.
+     * @param connection
+     * @param tableLocation
+     * @return 
+     * @throws java.sql.SQLException 
+     */
+    public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation) throws SQLException { 
+        List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableLocation);
+        if(geometryFields.isEmpty()){
+            throw new SQLException("Cannot find any geometry column");
+        }
+        return getEstimatedExtent(connection, tableLocation, geometryFields.get(0) );
+    }
+    
+    /**
      * Compute the 'estimated' extent of the given spatial table. 
      * In case of POSTGIS : the estimated is taken from the geometry column's statistics.
      * In case of H2GIS : the estimated is taken from the spatial index of the geometry column.
@@ -239,12 +258,14 @@ public class SFSUtilities {
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryField) throws SQLException {
         Geometry result;
+        int srid = getSRID(connection, tableLocation, geometryField);
         StringBuilder query = new StringBuilder("SELECT  ESTIMATED_ENVELOPE('");
         query.append(tableLocation.getTable()).append("','").append(geometryField).append("')");
         ResultSet rs = connection.createStatement().executeQuery(query.toString());
         if (rs.next()) {
             result = (Geometry) rs.getObject(1);
             if (result != null) {
+                result.setSRID(srid);
                 return result;
             } else {
                 query = new StringBuilder("SELECT  ENVELOPE(");
@@ -253,6 +274,7 @@ public class SFSUtilities {
                 if (rs.next()) {
                     result = (Geometry) rs.getObject(1);
                     if (result != null) {
+                        result.setSRID(srid);
                         return result;
                     }
                 }

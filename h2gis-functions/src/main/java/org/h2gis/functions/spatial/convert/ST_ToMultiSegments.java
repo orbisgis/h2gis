@@ -37,8 +37,6 @@ import java.util.List;
  */
 public class ST_ToMultiSegments extends DeterministicScalarFunction {
 
-    private static final GeometryFactory GEOMETRY_FACTORY = new GeometryFactory();
-
     public ST_ToMultiSegments() {
         addProperty(PROP_REMARKS, "Converts a geometry into a set of distinct " +
                 "segments stored in a MultiLineString.");
@@ -63,10 +61,10 @@ public class ST_ToMultiSegments extends DeterministicScalarFunction {
             if (geom.getDimension() > 0) {
                 result = new LinkedList<LineString>();
                 createSegments(geom, result);
-                return GEOMETRY_FACTORY.createMultiLineString(
+                return geom.getFactory().createMultiLineString(
                         result.toArray(new LineString[0]));
             } else {
-                return GEOMETRY_FACTORY.createMultiLineString(null);
+                return geom.getFactory().createMultiLineString(null);
             }
         }
         return null;
@@ -87,7 +85,7 @@ public class ST_ToMultiSegments extends DeterministicScalarFunction {
                                        final List<LineString> result) throws SQLException {
         Coordinate[] coords = CoordinateArrays.removeRepeatedPoints(geom.getCoordinates());
         for (int j = 0; j < coords.length - 1; j++) {
-            LineString lineString = GEOMETRY_FACTORY.createLineString(
+            LineString lineString = geom.getFactory().createLineString(
                     new Coordinate[]{coords[j], coords[j + 1]});
             result.add(lineString);
         }

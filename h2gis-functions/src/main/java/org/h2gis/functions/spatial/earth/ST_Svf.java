@@ -19,6 +19,7 @@
  */
 package org.h2gis.functions.spatial.earth;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.jts_utils.CoordinateUtils;
 import org.locationtech.jts.geom.*;
@@ -62,8 +63,9 @@ public class ST_Svf extends DeterministicScalarFunction{
      * @param rayCount number of rays
      * @param geoms
      * @return
+     * @throws java.sql.SQLException
      */
-    public static Double computeSvf(Point pt, Geometry geoms, double distance, int rayCount) {
+    public static Double computeSvf(Point pt, Geometry geoms, double distance, int rayCount) throws SQLException {
         return computeSvf(pt, geoms, distance, rayCount, RAY_STEP_LENGTH);
     }   
   
@@ -76,8 +78,9 @@ public class ST_Svf extends DeterministicScalarFunction{
      * @param stepRayLength length of sub ray used to limit the number of geometries when requested
      * @param geoms
      * @return 
+     * @throws java.sql.SQLException 
      */
-    public static Double computeSvf(Point pt, Geometry geoms, double distance, int rayCount, int stepRayLength){   
+    public static Double computeSvf(Point pt, Geometry geoms, double distance, int rayCount, int stepRayLength) throws SQLException{   
         Double svf = null;
         if(pt ==null){
             return svf;
@@ -87,7 +90,11 @@ public class ST_Svf extends DeterministicScalarFunction{
         }
         if(geoms == null){
             return svf;
+        }        
+        if(pt.getSRID()!=geoms.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
+        
         if(distance<=0){
             throw new IllegalArgumentException("The distance value must be greater than 0");
         }

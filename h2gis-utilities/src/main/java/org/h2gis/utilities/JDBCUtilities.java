@@ -158,6 +158,17 @@ public class JDBCUtilities {
         }
         return fieldNameList;
     }
+    
+    /**
+     * Fetch the row count of a table.
+     * @param connection Active connection.
+     * @param location Table location
+     * @return Row count
+     * @throws SQLException If the table does not exists, or sql request fail.
+     */
+    public static int getRowCount(Connection connection, TableLocation location) throws SQLException {
+        return getRowCount(connection, location.toString());
+    }
 
     /**
      * Fetch the row count of a table.

@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.distance;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -60,10 +61,14 @@ public class ST_FurthestCoordinate extends DeterministicScalarFunction {
      * @param geom  Geometry
      * @return The furthest coordinate(s) contained in the given geometry starting from
      *         the given point, using the 2D distance
+     * @throws java.sql.SQLException
      */
-    public static Geometry getFurthestCoordinate(Point point, Geometry geom) {
+    public static Geometry getFurthestCoordinate(Point point, Geometry geom) throws SQLException {
         if (point == null || geom == null) {
             return null;
+        }
+        if(point.getSRID()!=geom.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         double maxDistance = Double.NEGATIVE_INFINITY;
         Coordinate pointCoordinate = point.getCoordinate();

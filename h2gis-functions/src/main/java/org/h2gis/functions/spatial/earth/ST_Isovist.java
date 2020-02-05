@@ -26,6 +26,7 @@ import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.util.GeometricShapeFactory;
 
 import java.sql.SQLException;
+import org.locationtech.jts.geom.Polygon;
 
 
 /**
@@ -60,13 +61,18 @@ public class ST_Isovist extends DeterministicScalarFunction {
     public static Geometry isovist(Geometry viewPoint, Geometry lineSegments, double maxDistance) throws SQLException {
         if (!(viewPoint instanceof Point) || viewPoint.isEmpty()) {
             throw new SQLException("First parameter of ST_Isovist must be a Point");
+        }        
+        if(viewPoint.getSRID()!=lineSegments.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         if (maxDistance <= 0) {
             throw new SQLException("Third parameter of ST_Isovist must be a valid distance superior than 0");
         }
         VisibilityAlgorithm visibilityAlgorithm = new VisibilityAlgorithm(maxDistance);
         visibilityAlgorithm.addGeometry(lineSegments);
-        return visibilityAlgorithm.getIsoVist(viewPoint.getCoordinate(), true);
+        Polygon geomIsovist = visibilityAlgorithm.getIsoVist(viewPoint.getCoordinate(), true);
+        geomIsovist.setSRID(viewPoint.getSRID());
+        return geomIsovist;
     }
 
     /**

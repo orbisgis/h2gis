@@ -20,6 +20,7 @@
 
 package org.h2gis.functions.spatial.snap;
 
+import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.overlay.snap.GeometrySnapper;
@@ -47,10 +48,14 @@ public class ST_Snap extends DeterministicScalarFunction {
      * @param geometryB a geometry to snap
      * @param distance the tolerance to use
      * @return the snapped geometries
+     * @throws java.sql.SQLException
      */
-    public static Geometry snap(Geometry geometryA, Geometry geometryB, double distance) {
+    public static Geometry snap(Geometry geometryA, Geometry geometryB, double distance) throws SQLException {
         if(geometryA == null||geometryB == null){
             return null;
+        }
+        if(geometryA.getSRID()!=geometryB.getSRID()){
+            throw new SQLException("Operation on mixed SRID geometries not supported");
         }
         Geometry[] snapped = GeometrySnapper.snap(geometryA, geometryB, distance);
         return snapped[0];
