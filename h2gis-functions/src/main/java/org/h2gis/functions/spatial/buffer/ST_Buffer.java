@@ -21,8 +21,8 @@
 package org.h2gis.functions.spatial.buffer;
 
 import org.h2.value.Value;
-import org.h2.value.ValueInt;
-import org.h2.value.ValueString;
+import org.h2.value.ValueInteger;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.operation.buffer.BufferOp;
@@ -76,7 +76,7 @@ public class ST_Buffer extends DeterministicScalarFunction {
         if(geom ==null){
             return null;
         }        
-        if(value instanceof ValueString){
+        if(value instanceof ValueVarchar){
             String[] buffParemeters = value.getString().split("\\s+");  
             BufferParameters bufferParameters = new BufferParameters();
             for (String params : buffParemeters) {
@@ -124,7 +124,7 @@ public class ST_Buffer extends DeterministicScalarFunction {
             BufferOp bufOp  = new BufferOp(geom, bufferParameters);            
             return bufOp.getResultGeometry(distance);
         }
-        else if (value instanceof ValueInt){
+        else if (value instanceof ValueInteger){
             BufferOp bufOp  = new BufferOp(geom, new BufferParameters(value.getInt()));
             return bufOp.getResultGeometry(distance);
         }

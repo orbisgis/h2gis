@@ -21,6 +21,7 @@ package org.h2gis.network.functions;
 
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
+import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.factory.H2GISFunctions;
 import org.junit.jupiter.api.*;
@@ -837,7 +838,7 @@ public class ST_ShortestPathTest {
             assertTrue(rs.next());
             PathEdge e = pathEdges[i];
             if (checkGeom) {
-                assertGeometryEquals(e.getGeom(), rs.getBytes(GraphConstants.THE_GEOM));
+                assertGeometryEquals(e.getGeom(), ValueGeometry.getFromGeometry(rs.getObject(GraphConstants.THE_GEOM)).getBytes());
             }
             assertEquals(e.getEdgeID(), rs.getInt(GraphConstants.EDGE_ID));
             assertEquals(e.getPathID(), rs.getInt(GraphConstants.PATH_ID));

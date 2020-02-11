@@ -78,7 +78,7 @@ public class CRSFunctionTest {
     @Test
     public void testST_Transform4326to2154() throws Exception {
         checkProjectedGeom("SRID=4326;POINT(2.114551393 50.345609791)",
-                "SRID=2154;POINT(636890.7403214505 7027895.263449971 0)");
+                "SRID=2154;POINT(636890.7403214505 7027895.263449971)");
     }
 
     @Test
@@ -125,7 +125,7 @@ public class CRSFunctionTest {
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM(" +
                 "ST_GeomFromText('MULTILINESTRING ((2.11 50.34, 2.15 51))',  4326 ), 2154);");
         checkWithTolerance(rs, 
-                "SRID=2154;MULTILINESTRING ((636559.3165826919 7027274.112512174 0, 640202.1706468144 7100786.438815401 0))",10E-3 );
+                "SRID=2154;MULTILINESTRING ((636559.3165826919 7027274.112512174, 640202.1706468144 7100786.438815401))",10E-3 );
     }
     
     @Test
@@ -135,7 +135,7 @@ public class CRSFunctionTest {
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
                 + "ST_GeomFromText('MULTIPOINT ((2.11 50.34), (2.11 50.34))',  4326 ), 2154);");
         checkWithTolerance(rs,
-                "SRID=2154;MULTIPOINT ((636559.3165826919 7027274.112512174 0), (636559.3165826919 7027274.112512174 0))", 10E-3);
+                "SRID=2154;MULTIPOINT ((636559.3165826919 7027274.112512174), (636559.3165826919 7027274.112512174))", 10E-3);
     }
     
      @Test
@@ -143,8 +143,8 @@ public class CRSFunctionTest {
         final ResultSet rs = st.executeQuery("SELECT ST_TRANSFORM("
                 + "ST_GeomFromText('MULTIPOLYGON (((2 40, 3 40, 3 3, 2 3, 2 40)))',  4326 ), 2154);");
         checkWithTolerance(rs,
-                "SRID=2154;MULTIPOLYGON (((614156.72100231 5877577.312128516 0, 700000 5877033.734723133 0, 700000 1336875.474634381 0, "
-                        + "556660.5833028702 1337783.1294808295 0, 614156.72100231 5877577.312128516 0)))", 10E-3);
+                "SRID=2154;MULTIPOLYGON (((614156.72100231 5877577.312128516, 700000 5877033.734723133, 700000 1336875.474634381, "
+                        + "556660.5833028702 1337783.1294808295, 614156.72100231 5877577.312128516)))", 10E-3);
     }
     
     @Test

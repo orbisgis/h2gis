@@ -22,6 +22,7 @@ package org.h2gis.functions.spatial.type;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.functions.spatial.properties.ColumnSRID;
+import org.h2gis.functions.spatial.properties.ColumnSRIDFromColumnType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -94,7 +95,7 @@ public class DimensionFromColumnType extends DeterministicScalarFunction {
         try {
             Statement st = connection.createStatement();
             // Merge column constraint and table constraint
-            constraint+= ColumnSRID.fetchConstraint(connection, catalogName, schemaName, tableName);
+            constraint+= ColumnSRIDFromColumnType.fetchConstraint(connection, catalogName, schemaName, tableName);
             return dimensionFromColumnType(constraint, columnName);
         } catch (SQLException ex) {
             return 2;

@@ -245,7 +245,7 @@ public class DbaseFileReader {
                                         // set up the new indexes for start and end
 
                                         // this prevents one array copy (the one made by String)
-                                        object  = ValueString.get(new String(charBuffer.array(), start, end + 1 - start));
+                                        object  = ValueVarchar.get(new String(charBuffer.array(), start, end + 1 - start));
                                         break;
                                 // (D)date (Date)
                                 case 'd':
@@ -286,7 +286,7 @@ public class DbaseFileReader {
 
                                                     String numberString = extractNumberString(charBuffer, fieldOffset,
                                                             fieldLen);
-                                                        object = ValueInt.get(Integer.parseInt(numberString));
+                                                        object = ValueInteger.get(Integer.parseInt(numberString));
                                                         // parsing successful --> exit
                                                         break;
                                                 }
@@ -305,7 +305,7 @@ public class DbaseFileReader {
 
                                                     String numberString = extractNumberString(charBuffer, fieldOffset,
                                                             fieldLen);
-                                                        object = ValueLong.get(Long.parseLong(numberString));
+                                                        object = ValueBigint.get(Long.parseLong(numberString));
                                                         // parsing successful --> exit
                                                         break;
                                                 } catch (NumberFormatException e2) {

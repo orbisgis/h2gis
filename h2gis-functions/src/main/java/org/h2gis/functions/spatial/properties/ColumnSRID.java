@@ -87,11 +87,11 @@ public class ColumnSRID extends AbstractFunction implements ScalarFunction {
     public static String fetchConstraint(Connection connection, String catalogName, String schemaName, String tableName) throws SQLException {
         // Merge column constraint and table constraint
         PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection, catalogName, schemaName,
-                tableName, "INFORMATION_SCHEMA.CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
+                tableName, "INFORMATION_SCHEMA.TABLE_CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
         try (ResultSet rsConstraint = pst.executeQuery()) {
             StringBuilder constraint = new StringBuilder();
             while (rsConstraint.next()) {
-                String tableConstr = rsConstraint.getString("CHECK_EXPRESSION");
+                String tableConstr = rsConstraint.getString("SQL");
                 if(tableConstr != null) {
                     constraint.append(tableConstr);
                 }

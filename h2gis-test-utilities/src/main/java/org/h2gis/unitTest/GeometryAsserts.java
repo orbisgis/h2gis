@@ -73,7 +73,7 @@ public class GeometryAsserts {
                     moreInfo = "\n But are topologically equals";
                 }
             }
-            assertEquals(expected, actual, "Expected:\n" + expected.getEWKT()+ "\nActual:\n" + actual.getEWKT()+moreInfo);
+            assertEquals(expected, actual, "Expected:\n" + expected.getString() + "\nActual:\n" + actual.getString()+moreInfo);
         }
     }
     /**

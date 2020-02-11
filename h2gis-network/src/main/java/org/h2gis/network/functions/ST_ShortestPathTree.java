@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -20,10 +20,7 @@
 package org.h2gis.network.functions;
 
 import org.h2.tools.SimpleResultSet;
-import org.h2.value.Value;
-import org.h2.value.ValueDecimal;
-import org.h2.value.ValueInt;
-import org.h2.value.ValueString;
+import org.h2.value.*;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
@@ -110,17 +107,17 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
                                             String orientation,
                                             Value arg4,
                                             Value arg5) throws SQLException {
-        if (arg4 instanceof ValueInt) {
+        if (arg4 instanceof ValueInteger) {
             final int source = arg4.getInt();
-            if (arg5 instanceof ValueDecimal) {
+            if (arg5 instanceof ValueNumeric) {
                 final double radius = arg5.getDouble();
                 return oneToAll(connection, inputTable, orientation, null, source, radius);
             } else {
                 throw new IllegalArgumentException(ARG_ERROR + arg5);
             }
-        } else if (arg4 instanceof ValueString) {
+        } else if (arg4 instanceof ValueVarchar) {
             final String weight = arg4.getString();
-            if (arg5 instanceof ValueInt) {
+            if (arg5 instanceof ValueInteger) {
                 final int source = arg5.getInt();
                 return oneToAll(connection, inputTable, orientation, weight, source, Double.POSITIVE_INFINITY);
             } else {

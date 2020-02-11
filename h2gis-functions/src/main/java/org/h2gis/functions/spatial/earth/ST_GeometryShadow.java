@@ -132,7 +132,7 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      */
     private static Geometry shadowLine(LineString lineString, double[] shadowOffset, GeometryFactory factory, boolean doUnion) {
         Coordinate[] coords = lineString.getCoordinates();
-        Collection<Polygon> shadows = new ArrayList<Polygon>();
+        Collection<Polygon> shadows = new ArrayList<>();
         createShadowPolygons(shadows, coords, shadowOffset, factory);
         if (!doUnion) {
             return factory.buildGeometry(shadows);
@@ -157,18 +157,19 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
      */
     private static Geometry shadowPolygon(Polygon polygon, double[] shadowOffset, GeometryFactory factory, boolean doUnion) {
         Coordinate[] shellCoords = polygon.getExteriorRing().getCoordinates();
-        Collection<Polygon> shadows = new ArrayList<Polygon>();
+        Collection<Polygon> shadows = new ArrayList<>();
         createShadowPolygons(shadows, shellCoords, shadowOffset, factory);
         final int nbOfHoles = polygon.getNumInteriorRing();
         for (int i = 0; i < nbOfHoles; i++) {
             createShadowPolygons(shadows, polygon.getInteriorRingN(i).getCoordinates(), shadowOffset, factory);
         }
         if (!doUnion) {
-            Geometry geom = factory.buildGeometry(shadows);            
+            Geometry geom = factory.buildGeometry(shadows);
+            geom.apply(new UpdateZCoordinateSequenceFilter(0));
             return geom;
         } else {
             if (!shadows.isEmpty()) {
-                Collection<Geometry> shadowParts = new ArrayList<Geometry>();
+                Collection<Geometry> shadowParts = new ArrayList<>();
                 for (Polygon shadowPolygon : shadows) {
                     shadowParts.add(shadowPolygon.difference(polygon));
                 }
@@ -196,8 +197,9 @@ public class ST_GeometryShadow extends DeterministicScalarFunction {
         if (offset.distance(point.getCoordinate()) < 10E-3) {
             return point;
         } else {
-            startCoord.z = 0;
-            return factory.createLineString(new Coordinate[]{startCoord, offset});
+            Geometry result = factory.createLineString(new Coordinate[]{startCoord, offset});
+            result.apply(new UpdateZCoordinateSequenceFilter(0));
+            return result;
         }
     }
 

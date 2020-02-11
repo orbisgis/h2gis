@@ -22,7 +22,7 @@ package org.h2gis.functions.spatial.create;
 
 import org.h2.value.Value;
 import org.h2.value.ValueGeometry;
-import org.h2.value.ValueString;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 
@@ -69,7 +69,7 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
         if(value == null){
             return null;
         }
-        if (value instanceof ValueString) {
+        if (value instanceof ValueVarchar) {
             GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, value.getString());
             return gridRowSet.getResultSet();
         } else if (value instanceof ValueGeometry) {

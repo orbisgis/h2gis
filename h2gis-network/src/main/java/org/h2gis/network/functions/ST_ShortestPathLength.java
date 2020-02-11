@@ -22,8 +22,8 @@ package org.h2gis.network.functions;
 
 import org.h2.tools.SimpleResultSet;
 import org.h2.value.Value;
-import org.h2.value.ValueInt;
-import org.h2.value.ValueString;
+import org.h2.value.ValueInteger;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.javanetworkanalyzer.alg.Dijkstra;
@@ -113,10 +113,10 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
-        if (arg3 instanceof ValueInt) {
+        if (arg3 instanceof ValueInteger) {
             int source = arg3.getInt();
             return oneToAll(connection, inputTable, orientation, null, source);
-        } else if (arg3 instanceof ValueString) {
+        } else if (arg3 instanceof ValueVarchar) {
             String table = arg3.getString();
             return manyToMany(connection, inputTable, orientation, null, table);
         } else {
@@ -155,31 +155,31 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
-        if (arg3 instanceof ValueInt) {
+        if (arg3 instanceof ValueInteger) {
             int source = arg3.getInt();
-            if (arg4 instanceof ValueInt) {
+            if (arg4 instanceof ValueInteger) {
                 int destination = arg4.getInt();
                 return oneToOne(connection, inputTable, orientation, null, source, destination);
-            } else if (arg4 instanceof ValueString) {
+            } else if (arg4 instanceof ValueVarchar) {
                 String destinationString = arg4.getString();
                 return oneToSeveral(connection, inputTable, orientation, null, source, destinationString);
             } else {
                 throw new IllegalArgumentException(ARG_ERROR + arg4);
             }
-        } else if (arg3 instanceof ValueString) {
+        } else if (arg3 instanceof ValueVarchar) {
             final String arg3String = arg3.getString();
             if (JDBCUtilities.hasField(connection, inputTable, arg3String)) {
-                if (arg4 instanceof ValueInt) {
+                if (arg4 instanceof ValueInteger) {
                     int source = arg4.getInt();
                     return oneToAll(connection, inputTable, orientation, arg3String, source);
-                } else if (arg4 instanceof ValueString) {
+                } else if (arg4 instanceof ValueVarchar) {
                     String table = arg4.getString();
                     return manyToMany(connection, inputTable, orientation, arg3String, table);
                 } else {
                     throw new IllegalArgumentException(ARG_ERROR + arg4);
                 }
             } else {
-                if (arg4 instanceof ValueString) {
+                if (arg4 instanceof ValueVarchar) {
                     final String destTable = arg4.getString();
                     return manyToManySeparateTables(connection, inputTable, orientation, null, arg3String, destTable);
                 } else {
@@ -217,20 +217,20 @@ public class ST_ShortestPathLength extends GraphFunction implements ScalarFuncti
         if (isColumnListConnection(connection)) {
             return prepareResultSet();
         }
-        if (arg4 instanceof ValueInt) {
+        if (arg4 instanceof ValueInteger) {
             final int source = arg4.getInt();
-            if (arg5 instanceof ValueInt) {
+            if (arg5 instanceof ValueInteger) {
                 int destination = arg5.getInt();
                 return oneToOne(connection, inputTable, orientation, weight, source, destination);
-            } else if (arg5 instanceof ValueString) {
+            } else if (arg5 instanceof ValueVarchar) {
                 String destinationString = arg5.getString();
                 return oneToSeveral(connection, inputTable, orientation, weight, source, destinationString);
             } else {
                 throw new IllegalArgumentException(ARG_ERROR + arg5);
             }
-        } else if (arg4 instanceof ValueString) {
+        } else if (arg4 instanceof ValueVarchar) {
             final String sourceTable = arg4.getString();
-            if (arg5 instanceof ValueString) {
+            if (arg5 instanceof ValueVarchar) {
                 final String destTable = arg5.getString();
                 return manyToManySeparateTables(connection, inputTable, orientation, weight, sourceTable, destTable);
             } else {

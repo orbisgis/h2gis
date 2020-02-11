@@ -59,10 +59,9 @@ public class H2Table extends TableBase {
     private final ArrayList<Index> indexes = new ArrayList<>();
     private Column rowIdColumn;
 
-    public H2Table(FileDriver driver, CreateTableData data) throws IOException {
+    public H2Table(FileDriver driver, CreateTableData data) {
         super(data);
-        IndexColumn indexColumn = new IndexColumn();
-        indexColumn.columnName = PK_COLUMN_NAME;
+        IndexColumn indexColumn = new IndexColumn(PK_COLUMN_NAME);
         indexColumn.column = data.columns.get(0);
         indexColumn.sortType = SortOrder.ASCENDING;
         indexes.add(new H2TableIndex(driver,this,this.getId(),
@@ -75,9 +74,8 @@ public class H2Table extends TableBase {
      * @param session database session
      */
     public void init(Session session) {        
-        IndexColumn indexColumn = new IndexColumn();
-        indexColumn.columnName = "pk";
-        indexColumn.column = new Column("pk", Value.LONG);
+        IndexColumn indexColumn = new IndexColumn("pk");
+        indexColumn.column = new Column("pk", Value.BIGINT);
         indexes.add(0, new H2TableIndex(driver,this,this.getId(), indexColumn));
     }
 
@@ -300,7 +298,7 @@ public class H2Table extends TableBase {
     @Override
     public Column getRowIdColumn() {
         if (rowIdColumn == null) {
-            rowIdColumn = new Column(Column.ROWID, Value.LONG);
+            rowIdColumn = new Column(Column.ROWID, Value.BIGINT);
             rowIdColumn.setTable(this, -1);
         }
         return rowIdColumn;

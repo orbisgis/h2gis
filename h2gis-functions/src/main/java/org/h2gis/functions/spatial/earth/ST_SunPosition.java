@@ -25,6 +25,7 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
+import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -54,7 +55,7 @@ public class ST_SunPosition extends DeterministicScalarFunction{
      * @return 
      */
     public static Geometry sunPosition(Geometry point){
-        return sunPosition(point, new Date());
+        return sunPosition(point, new Timestamp(0));
     }
     
     /**
@@ -65,7 +66,7 @@ public class ST_SunPosition extends DeterministicScalarFunction{
      * @return
      * @throws IllegalArgumentException 
      */
-    public static Geometry sunPosition(Geometry point, Date date) throws IllegalArgumentException{
+    public static Geometry sunPosition(Geometry point, Timestamp date) throws IllegalArgumentException{
         if(point == null){
             return null;
         }

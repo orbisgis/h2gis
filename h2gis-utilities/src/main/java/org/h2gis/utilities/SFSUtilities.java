@@ -625,17 +625,17 @@ public class SFSUtilities {
         }
         return new String[]{authority, sridCode};
     }
-    
-    
+
+
     /**
      * Alter a table to add a SRID constraint.
      * The srid must be greater than zero.
-     * 
+     *
      * @param connection Active connection
      * @param tableLocation TableLocation of the table to update
      * @param srid SRID to set
      *
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static void addTableSRIDConstraint(Connection connection, TableLocation tableLocation, int srid)
             throws SQLException {

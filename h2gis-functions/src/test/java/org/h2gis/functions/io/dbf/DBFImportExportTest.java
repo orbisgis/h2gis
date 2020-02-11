@@ -64,7 +64,7 @@ public class DBFImportExportTest {
         Statement stat = connection.createStatement();
         File dbfFile = new File("target/area_export.dbf");
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(idarea int primary key, value DOUBLE, descr CHAR(50))");
+        stat.execute("create table area(idarea int primary key, val DOUBLE, descr CHAR(50))");
         stat.execute("insert into area values(1, 4.9406564584124654, 'main area')");
         stat.execute("insert into area values(2, 2.2250738585072009, 'second area')");
         // Create a dbf file using table area
@@ -166,7 +166,7 @@ public class DBFImportExportTest {
         Statement stat = connection.createStatement();
         File dbfFile = new File("target/area_export.dbf");
         stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
-        stat.execute("create table area("+H2TableIndex.PK_COLUMN_NAME+" serial, value DOUBLE, descr CHAR(50))");
+        stat.execute("create table area("+H2TableIndex.PK_COLUMN_NAME+" serial, val DOUBLE, descr CHAR(50))");
         stat.execute("insert into area values(null, 4.9406564584124654, 'main area')");
         stat.execute("insert into area values(null, 2.2250738585072009, 'second area')");
         // Create a shape file using table area
@@ -183,7 +183,7 @@ public class DBFImportExportTest {
         Statement stat = connection.createStatement();
         File dbfFile = new File("target/area_export.dbf");
         stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
-        stat.execute("create table area(id integer, value DECIMAL(13,3), descr CHAR(50))");
+        stat.execute("create table area(id integer, val DECIMAL(13,3), descr CHAR(50))");
         double v1 = 40656458.41;
         double v2 = 25073858.50;
         stat.execute("insert into area values(1, "+v1+", 'main area')");
@@ -192,7 +192,7 @@ public class DBFImportExportTest {
         stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
         // Read this shape file to check values
         stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
-        ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id");
+        ResultSet rs = stat.executeQuery("SELECT val FROM AREA2 order by id");
         assertTrue(rs.next());
         assertEquals(v1, rs.getDouble(1), 1e-12);
         assertTrue(rs.next());
@@ -206,7 +206,7 @@ public class DBFImportExportTest {
         Statement stat = connection.createStatement();
         File dbfFile = new File("target/area_export.dbf");
         stat.execute("DROP TABLE IF EXISTS AREA, AREA2");
-        stat.execute("create table area(id integer, value REAL, descr CHAR(50))");
+        stat.execute("create table area(id integer, val REAL, descr CHAR(50))");
         double v1 = 406.56;
         double v2 = 250.73;
         stat.execute("insert into area values(1, "+v1+", 'main area')");
@@ -215,7 +215,7 @@ public class DBFImportExportTest {
         stat.execute("CALL DBFWrite('"+dbfFile.getPath()+"', 'AREA')");
         // Read this shape file to check values
         stat.execute("CALL DBFRead('"+dbfFile.getPath()+"', 'AREA2')");
-        ResultSet rs = stat.executeQuery("SELECT value FROM AREA2 order by id");
+        ResultSet rs = stat.executeQuery("SELECT val FROM AREA2 order by id");
         assertTrue(rs.next());
         assertEquals(v1, rs.getDouble(1), 1e-2);
         assertTrue(rs.next());

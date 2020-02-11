@@ -62,7 +62,7 @@ public class DBFEngine extends FileEngine<DBFDriver> {
         for (int i = 0; i < header.getNumFields(); i++) {
             String fieldsName = header.getFieldName(i);
             final int type = dbfTypeToH2Type(header,i);
-            TypeInfo typeInfo = new TypeInfo(type, header.getFieldLength(i), 0, ValueNull.STRING, null);
+            TypeInfo typeInfo = new TypeInfo(type, header.getFieldLength(i), 0, ValueNull.VARCHAR, null);
             Column column = new Column(fieldsName.toUpperCase(), typeInfo);
             data.columns.add(column);
         }
@@ -84,7 +84,7 @@ public class DBFEngine extends FileEngine<DBFDriver> {
             // (C)character (String)
             case 'c':
             case 'C':
-                return Value.STRING_FIXED;
+                return Value.CHAR;
             // (D)date (Date)
             case 'd':
             case 'D':
@@ -95,9 +95,9 @@ public class DBFEngine extends FileEngine<DBFDriver> {
                 if ((header.getFieldDecimalCount(i) == 0)) {
                     if ((header.getFieldLength(i) >= 0)
                             && (header.getFieldLength(i) < 10)) {
-                        return Value.INT;
+                        return Value.INTEGER;
                     } else {
-                        return Value.LONG;
+                        return Value.BIGINT;
                     }
                 }
             case 'f':

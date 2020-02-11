@@ -24,7 +24,7 @@ import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2.value.Value;
 import org.h2.value.ValueArray;
-import org.h2.value.ValueString;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
@@ -87,9 +87,9 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         ExplodeResultSet rowSource = null;
         if(varArgs.length > 3) {
             // First ones may be column names
-            if(varArgs[0] instanceof ValueString &&
-                    varArgs[1] instanceof ValueString &&
-                    varArgs[2] instanceof ValueString) {
+            if(varArgs[0] instanceof ValueVarchar &&
+                    varArgs[1] instanceof ValueVarchar &&
+                    varArgs[2] instanceof ValueVarchar) {
                 // Use table columns for iso levels
                 List<Double> isoLvls = new ArrayList<Double>(varArgs.length - 3);
                 for(int idArg = 3; idArg < varArgs.length; idArg++) {

@@ -34,7 +34,7 @@ import org.h2.table.IndexColumn;
 import org.h2.table.Table;
 import org.h2.table.TableFilter;
 import org.h2.value.Value;
-import org.h2.value.ValueLong;
+import org.h2.value.ValueBigint;
 import org.h2gis.api.FileDriver;
 
 import java.io.IOException;
@@ -91,8 +91,8 @@ public class H2TableIndex extends BaseIndex {
             Object[] driverRow = driver.getRow(key - 1);
             Value[] values = new Value[driverRow.length + 1];
             System.arraycopy(driverRow, 0, values, 1, driverRow.length);
-            values[0] = ValueLong.get(key);
-            Row row = session.createRow(values, Row.MEMORY_CALCULATE);
+            values[0] = ValueBigint.get(key);
+            Row row = Row.get(values, Row.MEMORY_CALCULATE);
             row.setKey(key);
             return row;
         } catch (IOException ex) {
@@ -118,13 +118,13 @@ public class H2TableIndex extends BaseIndex {
     @Override
     public Cursor find(Session session, SearchRow first, SearchRow last) {
         if (!isScanIndex) {
-            Row remakefirst = session.createRow(null, 0);
+            Row remakefirst = Row.get(null, 0);
             if(first != null) {
                 remakefirst.setKey(first.getValue(0).getLong());
             } else {
                 remakefirst.setKey(1);
             }
-            Row remakeLast = session.createRow(null, 0);
+            Row remakeLast = Row.get(null, 0);
             if(last != null) {
                 remakeLast.setKey(last.getValue(0).getLong());
             } else {
@@ -223,12 +223,12 @@ public class H2TableIndex extends BaseIndex {
 
         @Override
         public SearchRow getSearchRow() {
-            Row row =  session.createRow(new Value[tIndex.getTable().getColumns().length], Row.MEMORY_CALCULATE);
+            Row row = Row.get(new Value[tIndex.getTable().getColumns().length], Row.MEMORY_CALCULATE);
             row.setKey(rowIndex);
             // Add indexed columns values
             for(IndexColumn column : tIndex.getIndexColumns()) {
                 if(column.column.getColumnId() >= 0) {
-                    row.setValue(column.column.getColumnId(), ValueLong.get(rowIndex));
+                    row.setValue(column.column.getColumnId(), ValueBigint.get(rowIndex));
                 }
             }
             return row;

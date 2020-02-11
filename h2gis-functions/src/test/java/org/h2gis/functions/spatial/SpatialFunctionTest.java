@@ -91,7 +91,8 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExplodeWithoutGeometryField() throws Exception {
-        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+        st.execute("DROP TABLE forest IF EXISTS;" +
+                "CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
                 + " boundary GEOMETRY(MULTIPOLYGON));"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 101));");
@@ -103,12 +104,12 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ExplodeEmptyGeometryCollection() throws Exception {
-        st.execute("create table test(the_geom GEOMETRY, value Integer);"
+        st.execute("create table test(the_geom GEOMETRY, val Integer);"
                 + "insert into test VALUES (ST_GeomFromText('MULTILINESTRING EMPTY'),108),"
                 + " (ST_GeomFromText('MULTIPOINT EMPTY'),109),"
                 + " (ST_GeomFromText('MULTIPOLYGON EMPTY'),110),"
                 + " (ST_GeomFromText('GEOMETRYCOLLECTION EMPTY'),111);");
-        ResultSet rs = st.executeQuery("SELECT the_geom::Geometry , value FROM ST_Explode('test') ORDER BY value");
+        ResultSet rs = st.executeQuery("SELECT the_geom::Geometry, val FROM ST_Explode('test') ORDER BY val");
         assertTrue(rs.next());
         assertEquals(108, rs.getInt(2));
         assertEquals("LINESTRING EMPTY", ((Geometry) rs.getObject(1)).toText());
@@ -488,8 +489,7 @@ public class SpatialFunctionTest {
                 + "ST_GeomFromText('LINESTRING(1 2 3, 4 5 6)'));");
         ResultSet rs = st.executeQuery("SELECT "
                 + "ST_Scale(twoDLine, 0.5, 0.75), ST_Scale(threeDLine, 0.5, 0.75), "
-                + "ST_Scale(twoDLine, 0.5, 0.75, 1.2), ST_Scale(threeDLine, 0.5, 0.75, 1.2), "
-                + "ST_Scale(twoDLine, 0.0, -1.0, 2.0), ST_Scale(threeDLine, 0.0, -1.0, 2.0) "
+                + "ST_Scale(threeDLine, 0.5, 0.75, 1.2), ST_Scale(threeDLine, 0.0, -1.0, 2.0) "
                 + "FROM input_table;");
         assertTrue(rs.next());
         LineString geom = (LineString) rs.getObject(1);
@@ -506,20 +506,10 @@ public class SpatialFunctionTest {
                 TOLERANCE));
         assertTrue(((LineString) rs.getObject(3)).equalsExact(
                 FACTORY.createLineString(new Coordinate[]{
-            new Coordinate(0.5, 1.5),
-            new Coordinate(2, 3.75)}),
-                TOLERANCE));
-        assertTrue(((LineString) rs.getObject(4)).equalsExact(
-                FACTORY.createLineString(new Coordinate[]{
             new Coordinate(0.5, 1.5, 3.6),
             new Coordinate(2, 3.75, 7.2)}),
                 TOLERANCE));
-        assertTrue(((LineString) rs.getObject(5)).equalsExact(
-                FACTORY.createLineString(new Coordinate[]{
-            new Coordinate(0, -2),
-            new Coordinate(0, -5)}),
-                TOLERANCE));
-        assertTrue(((LineString) rs.getObject(6)).equalsExact(
+        assertTrue(((LineString) rs.getObject(4)).equalsExact(
                 FACTORY.createLineString(new Coordinate[]{
             new Coordinate(0, -2, 6),
             new Coordinate(0, -5, 12)}),
@@ -1746,7 +1736,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_UpdateZ1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('POINT (190 300)'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_UpdateZ('POINT (190 300 0)'::GEOMETRY, 10);");
         rs.next();
         assertGeometryEquals("POINT Z (190 300 10)", rs.getBytes(1));
         rs.close();
@@ -1771,7 +1761,7 @@ public class SpatialFunctionTest {
     @Test
     public void test_ST_UpdateZ6() throws Exception {
         Statement st = connection.createStatement();
-        ResultSet rs = st.executeQuery("SELECT ST_UPDATEZ(ST_buffer('POINT(0 0)'::GEOMETRY, 10), 120);");
+        ResultSet rs = st.executeQuery("SELECT ST_UPDATEZ(ST_FORCE3D(ST_buffer('POINT(0 0)'::GEOMETRY, 10)), 120);");
         assertTrue(rs.next());
         System.out.println(((Geometry)rs.getObject(1)).getCoordinates()[0].z);
     }
@@ -1827,7 +1817,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities1() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('LINESTRING (250 250, 280 290)'::GEOMETRY, 40, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('LINESTRING (250 250 0, 280 290 0)'::GEOMETRY, 40, 10);");
         rs.next();
         assertGeometryEquals("LINESTRING (250 250 40, 280 290 10)", rs.getBytes(1));
         rs.close();
@@ -1835,7 +1825,7 @@ public class SpatialFunctionTest {
 
     @Test
     public void test_ST_ZUpdateExtremities2() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0, 5 0 , 10 0)'::GEOMETRY, 0, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_ZUpdateLineExtremities('LINESTRING(0 0 0, 5 0 0, 10 0 0)'::GEOMETRY, 0, 10);");
         rs.next();
         assertTrue(((Geometry) rs.getObject(1)).equals(WKT_READER.read("LINESTRING(0 0 0, 5 0 5, 10 0 10)")));
         rs.close();
@@ -2348,7 +2338,8 @@ public class SpatialFunctionTest {
     
     @Test
     public void test_ST_EstimatedExtent1() throws Exception {
-        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+        st.execute("DROP TABLE  forest IF EXISTS;" +
+                "CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
                 + " boundary GEOMETRY(MULTIPOLYGON, 4326));"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));");
@@ -2361,7 +2352,8 @@ public class SpatialFunctionTest {
     
     @Test
     public void test_ST_EstimatedExtent2() throws Exception {
-        st.execute("CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
+        st.execute("DROP TABLE forest IF EXISTS;" +
+                "CREATE TABLE forests ( fid INTEGER NOT NULL PRIMARY KEY, name CHARACTER VARYING(64),"
                 + " the_geom GEOMETRY(MULTIPOLYGON, 4326));"
                 + "INSERT INTO forests VALUES(109, 'Green Forest', ST_MPolyFromText( 'MULTIPOLYGON(((28 26,28 0,84 0,"
                 + "84 42,28 26), (52 18,66 23,73 9,48 6,52 18)),((59 18,67 18,67 13,59 13,59 18)))', 4326));");

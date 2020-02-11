@@ -39,7 +39,7 @@ import java.util.regex.Pattern;
  */
 public class ColumnSRIDFromColumnType extends AbstractFunction implements ScalarFunction {
     private static final String SRID_FUNC = ST_SRID.class.getSimpleName();
-    private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("\"?ST_SRID\\s*\"?\\(([^\\)]+)\\)\\s*([<|>|!]?=|<>|>|<)\\s*(\\d+)|^\\s*GEOMETRY\\s*\\([\\w|\\s]+,\\s*(\\d*)\\)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("\"?ST_SRID\\s*\"?\\(([^)]+)\\)\\s*([<|>|!]?=|<>|>|<)\\s*(\\d+)|^\\s*GEOMETRY\\s*\\([\\w|\\s]+,\\s*(\\d*)\\)", Pattern.CASE_INSENSITIVE);
 
     public ColumnSRIDFromColumnType() {
         addProperty(PROP_REMARKS, "Get the column SRID from column type and data.");
@@ -85,11 +85,11 @@ public class ColumnSRIDFromColumnType extends AbstractFunction implements Scalar
     public static String fetchConstraint(Connection connection, String catalogName, String schemaName, String tableName) throws SQLException {
         // Merge column constraint and table constraint
         PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection, catalogName, schemaName,
-                tableName, "INFORMATION_SCHEMA.CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
+                tableName, "INFORMATION_SCHEMA.TABLE_CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
         try (ResultSet rsConstraint = pst.executeQuery()) {
             StringBuilder constraint = new StringBuilder();
             while (rsConstraint.next()) {
-                String tableConstr = rsConstraint.getString("CHECK_EXPRESSION");
+                String tableConstr = rsConstraint.getString("SQL");
                 if(tableConstr != null) {
                     constraint.append(tableConstr);
                 }
