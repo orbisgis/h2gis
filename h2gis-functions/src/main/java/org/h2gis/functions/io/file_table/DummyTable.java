@@ -145,9 +145,8 @@ public class DummyTable extends TableBase {
      * @return 
      */
     private Index createIndex(){
-        IndexColumn indexColumn = new IndexColumn();
-        indexColumn.columnName = "key";
-        indexColumn.column = new Column("key", Value.LONG);
+        IndexColumn indexColumn = new IndexColumn("key");
+        indexColumn.column = new Column("key", Value.BIGINT);
         return new DummyIndex(this, getId(), indexColumn);
     }
 }

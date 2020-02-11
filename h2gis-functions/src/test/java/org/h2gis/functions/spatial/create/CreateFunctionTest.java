@@ -179,7 +179,7 @@ public class CreateFunctionTest {
 
     @Test
     public void test_ST_ExtrudeLineString() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('LINESTRING (0 0, 1 0)'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('LINESTRING (0 0 0, 1 0 0)'::GEOMETRY, 10);");
         rs.next();
         //Test if the wall is created
         assertGeometryEquals("MULTIPOLYGON(((0 0 0, 0 0 10, 1 0 10, 1 0 0, 0 0 0)))", ValueGeometry.getFromGeometry(((Geometry) rs.getObject(1)).getGeometryN(1)).getBytes());
@@ -188,7 +188,7 @@ public class CreateFunctionTest {
 
     @Test
     public void test_ST_ExtrudePolygon() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))'::GEOMETRY, 10);");
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
@@ -206,8 +206,8 @@ public class CreateFunctionTest {
 
     @Test
     public void test_ST_ExtrudePolygonWithHole() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON ((0 10, 10 10, 10 0, 0 0, 0 10),"
-                + " (1 3, 3 3, 3 1, 1 1, 1 3))'::GEOMETRY, 10);");
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON ((0 10 0, 10 10 0, 10 0 0, 0 0 0, 0 10 0),"
+                + " (1 3 0, 3 3 0, 3 1 0, 1 1 0, 1 3 0))'::GEOMETRY, 10);");
         rs.next();
         Geometry outputGeom = (Geometry) rs.getObject(1);
         //Test the floor
@@ -224,7 +224,7 @@ public class CreateFunctionTest {
 
     @Test
     public void test_ST_ExtrudePolygonWalls() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10, 1);");
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))'::GEOMETRY, 10, 1);");
         rs.next();
         //Test if the walls are created
         assertGeometryEquals("MULTIPOLYGON (((0 0 0, 0 0 10, 0 1 10, 0 1 0, 0 0 0)), ((0 1 0, 0 1 10, 1 1 10, 1 1 0, 0 1 0)), ((1 1 0, 1 1 10, 1 0 10, 1 0 0, 1 1 0)), ((1 0 0, 1 0 10, 0 0 10, 0 0 0, 1 0 0)))", rs.getBytes(1));
@@ -233,7 +233,7 @@ public class CreateFunctionTest {
 
     @Test
     public void test_ST_ExtrudePolygonRoof() throws Exception {
-        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))'::GEOMETRY, 10, 2);");
+        ResultSet rs = st.executeQuery("SELECT ST_Extrude('POLYGON((0 0 0, 1 0 0, 1 1 0, 0 1 0, 0 0 0))'::GEOMETRY, 10, 2);");
         rs.next();
         //Test the roof
         assertGeometryEquals("POLYGON((0 0 10, 1 0 10, 1 1 10, 0 1 10, 0 0 10))", rs.getBytes(1));

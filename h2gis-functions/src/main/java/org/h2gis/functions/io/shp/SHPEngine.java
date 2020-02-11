@@ -21,8 +21,16 @@
 package org.h2gis.functions.io.shp;
 
 import org.h2.command.Parser;
+import org.h2.command.ddl.AlterDomainAddConstraint;
+import org.h2.command.ddl.CreateDomain;
 import org.h2.command.ddl.CreateTableData;
+import org.h2.constraint.ConstraintDomain;
+import org.h2.expression.Expression;
+import org.h2.schema.Domain;
 import org.h2.table.Column;
+import org.h2.value.ExtTypeInfo;
+import org.h2.value.ExtTypeInfoGeometry;
+import org.h2.value.TypeInfo;
 import org.h2.value.Value;
 import org.h2gis.functions.io.dbf.DBFEngine;
 import org.h2gis.functions.io.file_table.FileEngine;
@@ -62,11 +70,17 @@ public class SHPEngine extends FileEngine<SHPDriver> {
 
     @Override
     protected void feedCreateTableData(SHPDriver driver, CreateTableData data) throws IOException {
-        Column geometryColumn = new Column("THE_GEOM", Value.GEOMETRY);
-        Parser parser = new Parser(data.session);
-        geometryColumn.addCheckConstraint(data.session,
-                parser.parseExpression("ST_GeometryTypeCode(THE_GEOM) = "+getGeometryTypeCodeFromShapeType(driver.getShapeFileHeader().getShapeType())));
+        int type = getGeometryTypeCodeFromShapeType(driver.getShapeFileHeader().getShapeType());
+        ExtTypeInfo extTypeInfo = new ExtTypeInfoGeometry(type, driver.getSrid());
+        TypeInfo typeInfo = TypeInfo.getTypeInfo(
+                TypeInfo.TYPE_GEOMETRY.getValueType(),
+                TypeInfo.TYPE_GEOMETRY.getPrecision(),
+                TypeInfo.TYPE_GEOMETRY.getScale(),
+                extTypeInfo);
+        Column geometryColumn = new Column("THE_GEOM", typeInfo);
+
         data.columns.add(geometryColumn);
+
         DBFEngine.feedTableDataFromHeader(driver.getDbaseFileHeader(), data);
     }
 }

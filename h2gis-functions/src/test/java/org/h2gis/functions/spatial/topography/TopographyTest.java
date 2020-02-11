@@ -413,7 +413,7 @@ public class TopographyTest {
     public void testST_Drape5() throws SQLException {
         Statement st = connection.createStatement();
         try {
-            ResultSet rs = st.executeQuery("select st_drape('MULTIPOINT ((8 5.1), (5 2), (9 2), (6.1 4), (3 9), (0.3 7.2), (3.8 6.7), (11.5 7.4), (12.1 3), (0 0))'::GEOMETRY, 'POLYGON Z((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
+            ResultSet rs = st.executeQuery("select st_drape('MULTIPOINT ((8 5.1 0), (5 2 0), (9 2 0), (6.1 4 0), (3 9 0), (0.3 7.2 0), (3.8 6.7 0), (11.5 7.4 0), (12.1 3 0), (0 0 0))'::GEOMETRY, 'POLYGON Z((0 0 0, 10 0 0, 10 10 10, 0 0 0))'::geometry)");
             rs.next();            
             assertGeometryEquals("MULTIPOINT Z ((8 5.1 5.1), (5 2 2), (9 2 2), (6.1 4 4), (3 9 0), (0.3 7.2 0), (3.8 6.7 0), (11.5 7.4 0), (12.1 3 0), (0 0 0))", rs.getObject(1));
         } finally {

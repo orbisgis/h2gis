@@ -34,7 +34,7 @@ import java.util.regex.Pattern;
  */
 public class GeometryTypeFromColumnType extends DeterministicScalarFunction {
     //private static final Pattern PATTERN = Pattern.compile("\"(.*)\"|GEOMETRY\\((.*)\\)");
-    private static final Pattern PATTERN = Pattern.compile("^GEOMETRY\\s*\\(\\s*([^)]+)\\s*\\)|(^[^ ]+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern PATTERN = Pattern.compile("^GEOMETRY\\s*\\(\\s*([^),]+)\\s*[\\),]|(^[^ ]+)", Pattern.CASE_INSENSITIVE);
     private static final Pattern PATTERN_CHECK = Pattern.compile(
             "\"?ST_GEOMETRYTYPECODE\\s*\"?\\(([^)]+)\\)\\s*([<|>|!]?=|<>|>|<)\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
 

@@ -52,7 +52,16 @@ public class ST_Scale extends DeterministicScalarFunction {
      * @return The geometry scaled by the given x and y scale factors
      */
     public static Geometry scale(Geometry geom, double xFactor, double yFactor) {
-        return scale(geom, xFactor, yFactor, 1.0);
+        if (geom != null) {
+            Geometry scaledGeom = geom.copy();
+            for (Coordinate c : scaledGeom.getCoordinates()) {
+                c.setOrdinate(Coordinate.X, c.getOrdinate(Coordinate.X) * xFactor);
+                c.setOrdinate(Coordinate.Y, c.getOrdinate(Coordinate.Y) * yFactor);
+            }
+            return scaledGeom;
+        } else {
+            return null;
+        }
     }
 
     /**
