@@ -138,7 +138,7 @@
     <repositories>
         <repository>
             <id>orbisgis-release</id>
-            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-release</url>
+            <url>https://nexus-ng.orbisgis.org/repository/orbisgis-release</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
@@ -148,7 +148,7 @@
         </repository>
         <repository>
             <id>orbisgis-snapshot</id>
-            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-snapshot</url>
+            <url>https://nexus-ng.orbisgis.org/repository/orbisgis-snapshot</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
