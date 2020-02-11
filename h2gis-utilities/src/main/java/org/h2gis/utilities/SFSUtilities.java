@@ -645,30 +645,6 @@ public class SFSUtilities {
                     tableLocation.toString(), srid));
         }
     }
-
-
-    /**
-     * Alter a table to add a SRID constraint on the given column.
-     * The srid must be greater than zero.
-     *
-     * @param connection Active connection
-     * @param tableLocation TableLocation of the table to update
-     * @param columnName Name of the column to alter
-     * @param srid SRID to set
-     *
-     * @throws SQLException
-     */
-    public static void addColumnSRIDConstraint(Connection connection, TableLocation tableLocation, String columnName,
-                                              int srid)
-            throws SQLException {
-        //Alter table to set the SRID constraint
-        if (srid > 0) {
-            String formattedColumn = TableLocation.quoteIdentifier(columnName,
-                    JDBCUtilities.isH2DataBase(connection.getMetaData()));
-            connection.createStatement().execute(String.format(
-                    "ALTER TABLE %s ADD CHECK ST_SRID(" + formattedColumn + ")=%d", tableLocation.toString(), srid));
-        }
-    }
     
     
     /**
