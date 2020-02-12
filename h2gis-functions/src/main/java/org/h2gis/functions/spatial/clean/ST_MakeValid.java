@@ -81,7 +81,6 @@ public class ST_MakeValid extends DeterministicScalarFunction{
         if (geometry == null) {
             return null;
         }
-
         if (geometry.isEmpty()) {
             return geometry;
         }

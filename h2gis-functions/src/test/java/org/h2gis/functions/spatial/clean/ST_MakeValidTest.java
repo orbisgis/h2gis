@@ -94,17 +94,6 @@ public class ST_MakeValidTest {
         result = ST_MakeValid.validGeom(multiPoint);
         GeometryAsserts.assertGeometryEquals("MULTIPOINT((4.2 2.3),(0.8 8.9))", result);
 
-        //TODO this case seems problematic
-        /*coords2 = new Coordinate[]{new Coordinate(25, 142, 5.6)};
-        points = new Point[]{
-                new Point(new CoordinateArraySequence(coords1), geometryFactory),
-                new Point(new CoordinateArraySequence(coords2), geometryFactory),
-                new Point(new CoordinateArraySequence(coords3), geometryFactory)
-        };
-        multiPoint = new MultiPoint(points, geometryFactory);
-        result = ST_MakeValid.validGeom(multiPoint);
-        GeometryAsserts.assertGeometryEquals("MULTIPOINT((4.2 2.3),(25 142),(0.8 8.9))", result);*/
-
         coords2 = new Coordinate[]{new Coordinate(25, 142, NaN)};
         points = new Point[]{
                 new Point(new CoordinateArraySequence(coords1), geometryFactory),
@@ -119,5 +108,25 @@ public class ST_MakeValidTest {
         multiPoint = new MultiPoint(points, geometryFactory);
         result = ST_MakeValid.validGeom(multiPoint);
         assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void makeValidPolygonTest() throws SQLException {
+        //Flat polygon test
+        Coordinate[] coords = new Coordinate[]{
+                new Coordinate(5848, 49987),
+                new Coordinate(5848, 49986),
+                new Coordinate(5848, 49984),
+                new Coordinate(5848, 49987)
+        };
+        CoordinateSequence points = new CoordinateArraySequence(coords);
+        LinearRing shell = new LinearRing(points, geometryFactory);
+        Polygon polygon = new Polygon(shell, null, geometryFactory);
+
+        Geometry result = ST_MakeValid.validGeom(polygon, true);
+        assertTrue(result.isEmpty());
+
+        result = ST_MakeValid.validGeom(polygon, false);
+        GeometryAsserts.assertGeometryEquals("MULTILINESTRING ((5848 49986,5848 49987), (5848 49986,5848 49984))", result);
     }
 }
