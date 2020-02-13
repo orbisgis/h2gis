@@ -533,6 +533,9 @@ public class MakeValidOp {
                 }
             }
             Geometry unionPoly = UnaryUnionOp.union(geoms);
+            if (unionPoly == null) {
+                unionPoly = ring.getFactory().createPolygon(new Coordinate[0]);
+            }
             Geometry unionLines = UnaryUnionOp.union(lines).difference(unionPoly.getBoundary());
             geoms.clear();
             decompose(unionPoly, geoms);
