@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -24,24 +24,32 @@ import org.h2.command.ddl.CreateTableData;
 import org.h2.engine.Session;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
+import org.h2.mvstore.db.MVTable;
 import org.h2.result.Row;
 import org.h2.table.Column;
 import org.h2.table.IndexColumn;
-import org.h2.table.TableBase;
 import org.h2.table.TableType;
 import org.h2.value.Value;
 
 import java.util.ArrayList;
 
 /**
- * When linked files are not available, this table defines an empty table
- * @author Nicolas Fortin
+ * When linked files are not available, this table defines an empty MV table
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2020)
  */
-public class DummyTable extends TableBase {
+public class DummyMVTable extends MVTable {
 
-    public DummyTable(CreateTableData data) {
-        super(data);
+    public DummyMVTable(CreateTableData data) {
+        super(data, data.session.getDatabase().getStore());
     }
+
+    @Override
+    public void removeChildrenAndResources(Session session) {
+        super.removeChildrenAndResources(session);
+    }
+
     @Override
     public Index addIndex(Session session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
         return null;
@@ -54,26 +62,32 @@ public class DummyTable extends TableBase {
 
     @Override
     public void close(Session session) {
+        //Nothing to do
     }
 
     @Override
     public void unlock(Session s) {
+        //Nothing to do
     }
 
     @Override
     public void removeRow(Session session, Row row) {
+        //Nothing to do
     }
 
     @Override
     public void truncate(Session session) {
+        //Nothing to do
     }
 
     @Override
     public void addRow(Session session, Row row) {
+        //Nothing to do
     }
 
     @Override
     public void checkSupportAlter() {
+        //Nothing to do
     }
 
     @Override
@@ -138,6 +152,7 @@ public class DummyTable extends TableBase {
 
     @Override
     public void checkRename() {
+        //Nothing to do
     }
     
     /**
