@@ -28,6 +28,7 @@ import org.h2.index.Cursor;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.message.DbException;
+import org.h2.mvstore.db.MVSecondaryIndex;
 import org.h2.mvstore.db.MVSpatialIndex;
 import org.h2.mvstore.db.MVTable;
 import org.h2.result.Row;
@@ -128,7 +129,7 @@ public class H2MVTable extends MVTable {
         if (indexType.isSpatial()) {
             index = new MVSpatialIndex(session.getDatabase(), this, indexId, indexName, cols, indexType);
         } else {
-            throw DbException.getUnsupportedException("VIEW");
+            index = new MVSecondaryIndex(session.getDatabase(), this, indexId, indexName, cols, indexType);
         }
 
         if (index.needRebuild() && getRowCount(session) > 0) {
