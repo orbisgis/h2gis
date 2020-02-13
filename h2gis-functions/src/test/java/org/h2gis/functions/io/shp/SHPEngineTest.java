@@ -126,7 +126,7 @@ public class SHPEngineTest {
     public void testRowIdHiddenColumn() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('" + SHPEngineTest.class.getResource("waternetwork.shp").getPath() + "', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath() + "', 'SHPTABLE');");
         // Check random access using hidden column _rowid_
         ResultSet rs = st.executeQuery("SELECT _rowid_ FROM shptable");
         try {
@@ -142,12 +142,13 @@ public class SHPEngineTest {
         rs = st.executeQuery("SELECT * FROM shptable where _rowid_ = 1");
         try {
             assertTrue(rs.next());
-            assertEquals(1, rs.getInt("gid"));
+            assertEquals(1,rs.getInt("gid"));
             assertEquals("river", rs.getString("type_axe"));
             assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))", rs.getObject("the_geom").toString());
         } finally {
             rs.close();
         }
+
         st.execute("drop table shptable");
     }
 
@@ -291,7 +292,7 @@ public class SHPEngineTest {
         rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='THE_GEOM'");
         try {
             assertTrue(rs.next());
-            //assertEquals("org.h2.mvstore.db.MVSpatialIndex", rs.getString("INDEX_CLASS"));
+            assertEquals("org.h2.mvstore.db.MVSpatialIndex", rs.getString("INDEX_CLASS"));
         } finally {
             rs.close();
         }

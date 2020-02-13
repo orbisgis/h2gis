@@ -294,7 +294,7 @@ public class SHPEngineTestNoMVStore {
         rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='THE_GEOM'");
         try {
             assertTrue(rs.next());
-            //assertEquals("org.h2.mvstore.db.MVSpatialIndex", rs.getString("INDEX_CLASS"));
+            assertEquals("org.h2.pagestore.db.SpatialTreeIndex", rs.getString("INDEX_CLASS"));
         } finally {
             rs.close();
         }
