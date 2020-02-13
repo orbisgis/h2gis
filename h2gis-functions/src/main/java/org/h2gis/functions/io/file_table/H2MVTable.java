@@ -1,4 +1,4 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
@@ -24,16 +24,16 @@ import org.h2.api.DatabaseEventListener;
 import org.h2.api.ErrorCode;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.engine.Session;
-import org.h2.engine.SysProperties;
 import org.h2.index.Cursor;
 import org.h2.index.Index;
 import org.h2.index.IndexType;
 import org.h2.message.DbException;
+import org.h2.mvstore.db.MVSpatialIndex;
+import org.h2.mvstore.db.MVTable;
 import org.h2.result.Row;
 import org.h2.result.SortOrder;
 import org.h2.table.Column;
 import org.h2.table.IndexColumn;
-import org.h2.table.TableBase;
 import org.h2.table.TableType;
 import org.h2.util.MathUtils;
 import org.h2.value.Value;
@@ -45,22 +45,23 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import org.h2.pagestore.db.SpatialTreeIndex;
 
 import static org.h2gis.functions.io.file_table.H2TableIndex.PK_COLUMN_NAME;
 
 /**
- * A table linked with a {@link org.h2gis.api.FileDriver}
- * @author Nicolas Fortin
+ * A MV table linked with a {@link FileDriver}
+ *
+ * @author Erwan Bocher (CNRS)
+ * @author Sylvain PALOMINOS (Lab-STICC UBS 2020)
  */
-public class H2Table extends TableBase {
+public class H2MVTable extends MVTable {
     private FileDriver driver;
-    private static final Logger LOG = LoggerFactory.getLogger(H2Table.class);
+    private static final Logger LOG = LoggerFactory.getLogger(H2MVTable.class);
     private final ArrayList<Index> indexes = new ArrayList<>();
     private Column rowIdColumn;
 
-    public H2Table(FileDriver driver, CreateTableData data) {
-        super(data);
+    public H2MVTable(FileDriver driver, CreateTableData data) {
+        super(data, data.session.getDatabase().getStore());
         IndexColumn indexColumn = new IndexColumn(PK_COLUMN_NAME);
         indexColumn.column = data.columns.get(0);
         indexColumn.sortType = SortOrder.ASCENDING;
@@ -108,66 +109,32 @@ public class H2Table extends TableBase {
 
     @Override
     public Index addIndex(Session session, String indexName, int indexId, IndexColumn[] cols, IndexType indexType, boolean create, String indexComment) {
+        if (indexType.isPrimaryKey()) {
+            for (IndexColumn c : cols) {
+                Column column = c.column;
+                if (column.isNullable()) {
+                    throw DbException.get(
+                            ErrorCode.COLUMN_MUST_NOT_BE_NULLABLE_1,
+                            column.getName());
+                }
+                column.setPrimaryKey(true);
+            }
+        }
         boolean isSessionTemporary = isTemporary() && !isGlobalTemporary();
         if (!isSessionTemporary) {
             database.lockMeta(session);
         }
         Index index;
-        if (isPersistIndexes() && indexType.isPersistent()) {
-            if (indexType.isSpatial()) {
-                index = new SpatialTreeIndex(this, indexId, indexName, cols,
-                        indexType, true, create, session);
-            } else {
-                throw DbException.getUnsupportedException("VIEW");
-            }
+        if (indexType.isSpatial()) {
+            index = new MVSpatialIndex(session.getDatabase(), this, indexId, indexName, cols, indexType);
         } else {
-            if (indexType.isSpatial()) {
-                index = new SpatialTreeIndex(this, indexId, indexName, cols,
-                        indexType, false, true, session);
-            } else {
-                throw DbException.getUnsupportedException("VIEW");
-            }
+            throw DbException.getUnsupportedException("VIEW");
         }
+
         if (index.needRebuild() && getRowCount(session) > 0) {
-            try {
-                Index scan = getScanIndex(session);
-                long remaining = scan.getRowCount(session);
-                long total = remaining;
-                Cursor cursor = scan.find(session, null, null);
-                long i = 0;
-                int bufferSize = (int) Math.min(getRowCount(session), database.getMaxMemoryRows());
-                ArrayList<Row> buffer = new ArrayList<Row>(bufferSize);
-                String n = getName() + ":" + index.getName();
-                int t = MathUtils.convertLongToInt(total);
-                while (cursor.next()) {
-                    database.setProgress(DatabaseEventListener.STATE_CREATE_INDEX, n,
-                            MathUtils.convertLongToInt(i++), t);
-                    Row row = cursor.get();
-                    buffer.add(row);
-                    if (buffer.size() >= bufferSize) {
-                        addRowsToIndex(session, buffer, index);
-                    }
-                    remaining--;
-                }
-                addRowsToIndex(session, buffer, index);
-                if (SysProperties.CHECK && remaining != 0) {
-                    throw DbException.throwInternalError("rowcount remaining=" +
-                            remaining + " " + getName());
-                }
-            } catch (DbException e) {
-                getSchema().freeUniqueName(indexName);
-                try {
-                    index.remove(session);
-                } catch (DbException e2) {
-                    // this could happen, for example on failure in the storage
-                    // but if that is not the case it means
-                    // there is something wrong with the database
-                    trace.error(e2, "could not remove index");
-                    throw e2;
-                }
-                throw e;
-            }
+            rebuild(session, index);
         }
+
         index.setTemporary(isTemporary());
         if (index.getCreateSQL() != null) {
             index.setComment(indexComment);
@@ -182,7 +149,47 @@ public class H2Table extends TableBase {
         return index;
     }
 
-    private static void addRowsToIndex(Session session, ArrayList<Row> list,
+    private void rebuild(Session session, Index index){
+        Index scan = getScanIndex(session);
+        long remaining = scan.getRowCount(session);
+        long total = remaining;
+        Cursor cursor = scan.find(session, null, null);
+        long i = 0;
+        int bufferSize = (int) Math.min(total, database.getMaxMemoryRows());
+        ArrayList<Row> buffer = new ArrayList<>(bufferSize);
+        String n = getName() + ":" + index.getName();
+        int t = MathUtils.convertLongToInt(total);
+        while (cursor.next()) {
+            Row row = cursor.get();
+            buffer.add(row);
+            database.setProgress(DatabaseEventListener.STATE_CREATE_INDEX, n,
+                    MathUtils.convertLongToInt(i++), t);
+            if (buffer.size() >= bufferSize) {
+                addRowsToIndex(session, buffer, index);
+            }
+            remaining--;
+        }
+        addRowsToIndex(session, buffer, index);
+        if (remaining != 0) {
+            throw DbException.throwInternalError("rowcount remaining=" + remaining +
+                    " " + getName());
+        }
+    }
+
+    @Override
+    public void removeChildrenAndResources(Session session) {
+        while (indexes.size() > 2) {
+            Index index = indexes.get(2);
+            index.remove(session);
+            if (index.getName() != null) {
+                database.removeSchemaObject(session, index);
+            }
+            indexes.remove(index);
+        }
+        super.removeChildrenAndResources(session);
+    }
+
+    public static void addRowsToIndex(Session session, ArrayList<Row> list,
                                        Index index) {
         final Index idx = index;
         Collections.sort(list, new Comparator<Row>() {

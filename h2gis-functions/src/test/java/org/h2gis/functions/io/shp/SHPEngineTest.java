@@ -27,9 +27,7 @@ import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;
 
 import java.io.File;
@@ -37,6 +35,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -53,8 +52,14 @@ public class SHPEngineTest {
         connection = H2GISDBFactory.createSpatialDataBase(DB_NAME);
     }
 
-    @AfterAll
-    public static void tearDown() throws Exception {
+    @BeforeEach
+    public void tearUp2() throws Exception {
+        // Keep a connection alive to not close the DataBase on each unit test
+        connection = H2GISDBFactory.openSpatialDataBase(DB_NAME);
+    }
+
+    @AfterEach
+    public void tearDown() throws Exception {
         connection.close();
     }
 
@@ -121,7 +126,7 @@ public class SHPEngineTest {
     public void testRowIdHiddenColumn() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath() + "', 'SHPTABLE');");
         // Check random access using hidden column _rowid_
         ResultSet rs = st.executeQuery("SELECT _rowid_ FROM shptable");
         try {
@@ -137,14 +142,14 @@ public class SHPEngineTest {
         rs = st.executeQuery("SELECT * FROM shptable where _rowid_ = 1");
         try {
             assertTrue(rs.next());
-            assertEquals(1, rs.getInt("gid"));
-            assertEquals("river",rs.getString("type_axe"));
-            assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))",rs.getObject("the_geom").toString());
+            assertEquals(1,rs.getInt("gid"));
+            assertEquals("river", rs.getString("type_axe"));
+            assertEquals("MULTILINESTRING ((183299.71875 2425074.75, 183304.828125 2425066.75))", rs.getObject("the_geom").toString());
         } finally {
             rs.close();
         }
-        st.execute("drop table shptable");
 
+        st.execute("drop table shptable");
     }
 
     @Test
@@ -287,7 +292,7 @@ public class SHPEngineTest {
         rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='THE_GEOM'");
         try {
             assertTrue(rs.next());
-            assertEquals("org.h2.pagestore.db.SpatialTreeIndex", rs.getString("INDEX_CLASS"));
+            assertEquals("org.h2.mvstore.db.MVSpatialIndex", rs.getString("INDEX_CLASS"));
         } finally {
             rs.close();
         }
@@ -344,7 +349,7 @@ public class SHPEngineTest {
         //
         ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM shptable where PK >=4 order by PK limit 5");
         assertTrue(rs.next());
-        assertTrue(rs.getString(1).contains("PUBLIC.\"SHPTABLE.PK_INDEX_1\": PK >= 4"));
+        assertTrue(rs.getString(1).contains("PUBLIC.\"SHPTABLE.PK_INDEX_1") && rs.getString(1).contains("\": PK >= 4"));
         rs.close();
         // Query declared Table columns
         rs = st.executeQuery("SELECT * FROM shptable where PK >=4 order by PK limit 5");
