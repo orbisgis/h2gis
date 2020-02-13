@@ -27,7 +27,10 @@ import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Geometry;
 
 import java.io.File;
@@ -42,9 +45,9 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * @author Nicolas Fortin
  */
-public class SHPEngineTest {
+public class SHPEngineTestNoMVStore {
     private static Connection connection;
-    private static final String DB_NAME = "SHPTest";
+    private static final String DB_NAME = "SHPTest;MV_STORE=false";
 
     @BeforeAll
     public static void tearUp() throws Exception {
@@ -67,7 +70,7 @@ public class SHPEngineTest {
     public void readSHPMetaTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS SHPTABLE");
-        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
+        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
         try ( // Query declared Table columns
                 ResultSet rs = st.executeQuery("SELECT * FROM INFORMATION_SCHEMA.COLUMNS where TABLE_NAME = 'SHPTABLE'")) {
             assertTrue(rs.next());
@@ -96,7 +99,7 @@ public class SHPEngineTest {
     public void readSHPDataTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+ SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         try ( // Query declared Table columns
                 ResultSet rs = st.executeQuery("SELECT * FROM shptable")) {
             assertTrue(rs.next());
@@ -111,7 +114,7 @@ public class SHPEngineTest {
     public void readPartialSHPDataTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPtable');");
+        st.execute("CALL FILE_TABLE('"+ SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()+"', 'SHPtable');");
         try ( // Query declared Table columns
                 ResultSet rs = st.executeQuery("SELECT TYPE_AXE, GID, LENGTH FROM SHPTABLE;")) {
             assertTrue(rs.next());
@@ -126,7 +129,7 @@ public class SHPEngineTest {
     public void testRowIdHiddenColumn() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('" + SHPEngineTest.class.getResource("waternetwork.shp").getPath() + "', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('" + SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath() + "', 'SHPTABLE');");
         // Check random access using hidden column _rowid_
         ResultSet rs = st.executeQuery("SELECT _rowid_ FROM shptable");
         try {
@@ -155,7 +158,7 @@ public class SHPEngineTest {
     public void persistenceTest() throws Exception {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+ SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         ResultSet rs = st.executeQuery("SELECT COUNT(*) FROM shptable");
         assertTrue(rs.next());
         assertEquals(382, rs.getInt(1));
@@ -173,7 +176,7 @@ public class SHPEngineTest {
     public void readSHPDataTest2() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+ SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         try ( // Query declared Table columns
                 ResultSet rs = st.executeQuery("SELECT the_geom FROM shptable")) {
             double sumLength = 0;
@@ -188,9 +191,9 @@ public class SHPEngineTest {
     @Test
     public void testReopenMovedShp() throws Exception {
         // Copy file in target
-        File src = new File(SHPEngineTest.class.getResource("waternetwork.shp").getPath());
-        File srcDbf = new File(SHPEngineTest.class.getResource("waternetwork.dbf").getPath());
-        File srcShx = new File(SHPEngineTest.class.getResource("waternetwork.shx").getPath());
+        File src = new File(SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath());
+        File srcDbf = new File(SHPEngineTestNoMVStore.class.getResource("waternetwork.dbf").getPath());
+        File srcShx = new File(SHPEngineTestNoMVStore.class.getResource("waternetwork.shx").getPath());
         File tmpFile = File.createTempFile("waternetwork","");
         File dst = new File(tmpFile + ".shp");
         File dstDbf = new File(tmpFile + ".dbf");
@@ -249,7 +252,7 @@ public class SHPEngineTest {
     public void readSHPConstraintTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+ SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         assertEquals(GeometryTypeCodes.MULTILINESTRING, SFSUtilities.getGeometryType(connection, TableLocation.parse("SHPTABLE"), ""));
         st.execute("drop table shptable");
     }
@@ -258,7 +261,7 @@ public class SHPEngineTest {
     public void testAddIndexOnTableLink() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("DROP TABLE IF EXISTS shptable");
-        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
+        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
         String explainWithoutIndex;
         ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 15)");
         try{
@@ -313,7 +316,7 @@ public class SHPEngineTest {
     public void readSHPOrderDataTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+ SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         try ( // Query declared Table columns
                 ResultSet rs = st.executeQuery("SELECT * FROM shptable order by PK limit 8")) {
             assertTrue(rs.next());
@@ -344,7 +347,7 @@ public class SHPEngineTest {
     public void readSHPFilteredOrderDataTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+ SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         //
         ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM shptable where PK >=4 order by PK limit 5");
         assertTrue(rs.next());
@@ -375,7 +378,7 @@ public class SHPEngineTest {
     public void linkedShpSpatialIndexFlatQueryTest() throws SQLException {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
-        st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
+        st.execute("CALL FILE_TABLE('"+ SHPEngineTestNoMVStore.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
         st.execute("CREATE SPATIAL INDEX SPATIALINDEX ON PUBLIC.SHPTABLE(THE_GEOM);\n");
         try (ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM " +
                 "SHPTABLE ORDER BY PK LIMIT 51;")) {
