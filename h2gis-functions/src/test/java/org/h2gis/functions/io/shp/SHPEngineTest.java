@@ -274,8 +274,6 @@ public class SHPEngineTest {
         rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 15)");
         try{
             assertTrue(rs.next());
-            System.out.println(explainWithoutIndex);
-            System.out.println(rs.getString(1));
             assertNotEquals(explainWithoutIndex, rs.getString(1));
         } finally {
             rs.close();
@@ -324,8 +322,6 @@ public class SHPEngineTest {
         rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE gid = 201");
         try{
             assertTrue(rs.next());
-            System.out.println(explainWithoutIndex);
-            System.out.println(rs.getString(1));
             assertNotEquals(explainWithoutIndex, rs.getString(1));
         } finally {
             rs.close();
