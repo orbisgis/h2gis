@@ -131,34 +131,9 @@ public class H2MVTable extends MVTable {
             throw DbException.getUnsupportedException("VIEW");
         }
 
-
         if (index.needRebuild() && getRowCount(session) > 0) {
-            Index scan = getScanIndex(session);
-            long remaining = scan.getRowCount(session);
-            long total = remaining;
-            Cursor cursor = scan.find(session, null, null);
-            long i = 0;
-            int bufferSize = (int) Math.min(total, database.getMaxMemoryRows());
-            ArrayList<Row> buffer = new ArrayList<>(bufferSize);
-            String n = getName() + ":" + index.getName();
-            int t = MathUtils.convertLongToInt(total);
-            while (cursor.next()) {
-                Row row = cursor.get();
-                buffer.add(row);
-                database.setProgress(DatabaseEventListener.STATE_CREATE_INDEX, n,
-                        MathUtils.convertLongToInt(i++), t);
-                if (buffer.size() >= bufferSize) {
-                    addRowsToIndex(session, buffer, index);
-                }
-                remaining--;
-            }
-            addRowsToIndex(session, buffer, index);
-            if (remaining != 0) {
-                throw DbException.throwInternalError("rowcount remaining=" + remaining +
-                        " " + getName());
-            }
+            rebuild(session, index);
         }
-
 
         index.setTemporary(isTemporary());
         if (index.getCreateSQL() != null) {
@@ -172,6 +147,33 @@ public class H2MVTable extends MVTable {
         indexes.add(index);
         setModified();
         return index;
+    }
+
+    private void rebuild(Session session, Index index){
+        Index scan = getScanIndex(session);
+        long remaining = scan.getRowCount(session);
+        long total = remaining;
+        Cursor cursor = scan.find(session, null, null);
+        long i = 0;
+        int bufferSize = (int) Math.min(total, database.getMaxMemoryRows());
+        ArrayList<Row> buffer = new ArrayList<>(bufferSize);
+        String n = getName() + ":" + index.getName();
+        int t = MathUtils.convertLongToInt(total);
+        while (cursor.next()) {
+            Row row = cursor.get();
+            buffer.add(row);
+            database.setProgress(DatabaseEventListener.STATE_CREATE_INDEX, n,
+                    MathUtils.convertLongToInt(i++), t);
+            if (buffer.size() >= bufferSize) {
+                addRowsToIndex(session, buffer, index);
+            }
+            remaining--;
+        }
+        addRowsToIndex(session, buffer, index);
+        if (remaining != 0) {
+            throw DbException.throwInternalError("rowcount remaining=" + remaining +
+                    " " + getName());
+        }
     }
 
     @Override

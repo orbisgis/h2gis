@@ -28,7 +28,6 @@ import org.h2.mvstore.db.MVTable;
 import org.h2.result.Row;
 import org.h2.table.Column;
 import org.h2.table.IndexColumn;
-import org.h2.table.TableBase;
 import org.h2.table.TableType;
 import org.h2.value.Value;
 
@@ -63,26 +62,32 @@ public class DummyMVTable extends MVTable {
 
     @Override
     public void close(Session session) {
+        //Nothing to do
     }
 
     @Override
     public void unlock(Session s) {
+        //Nothing to do
     }
 
     @Override
     public void removeRow(Session session, Row row) {
+        //Nothing to do
     }
 
     @Override
     public void truncate(Session session) {
+        //Nothing to do
     }
 
     @Override
     public void addRow(Session session, Row row) {
+        //Nothing to do
     }
 
     @Override
     public void checkSupportAlter() {
+        //Nothing to do
     }
 
     @Override
@@ -147,6 +152,7 @@ public class DummyMVTable extends MVTable {
 
     @Override
     public void checkRename() {
+        //Nothing to do
     }
     
     /**
