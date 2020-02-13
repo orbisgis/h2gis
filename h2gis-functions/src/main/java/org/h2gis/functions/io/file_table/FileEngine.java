@@ -24,8 +24,10 @@ import org.h2.api.ErrorCode;
 import org.h2.api.TableEngine;
 import org.h2.command.ddl.CreateTableData;
 import org.h2.message.DbException;
+import org.h2.mvstore.db.MVTableEngine;
 import org.h2.table.Column;
 import org.h2.table.Table;
+import org.h2.table.TableBase;
 import org.h2.util.StringUtils;
 import org.h2.value.Value;
 import org.h2gis.api.FileDriver;
@@ -46,7 +48,7 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
     private Logger LOGGER = LoggerFactory.getLogger(FileEngine.class);
 
     @Override
-    public Table createTable(CreateTableData data) {
+    public TableBase createTable(CreateTableData data) {
         if(data.tableEngineParams.isEmpty()) {
             throw DbException.get(ErrorCode.FILE_NOT_FOUND_1);
         }
@@ -54,7 +56,12 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
         if(!filePath.exists()) {
             // Do not throw an exception as it will prevent the user from opening the database
             LOGGER.error("File not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
-            return new DummyTable(data);
+            if(!data.session.getDatabase().isMVStore()){
+                return new DummyTable(data);
+            }
+            else{
+                return new DummyMVTable(data);
+            }
         }
         try {
             Driver driver = createDriver(filePath, data.tableEngineParams);
@@ -67,9 +74,16 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
                 pk.setNullable(false);
                 data.columns.add(0, pk);
             }
-            H2Table shpTable = new H2Table(driver, data);
-            shpTable.init(data.session);
-            return shpTable;
+            //If MVSTORE is activated, use an MVTable with the MVSpatialIndex
+            if (data.session.getDatabase().isMVStore()) {
+                H2MVTable table = new H2MVTable(driver, data);
+                table.init(data.session);
+                return table;
+            } else {
+                H2Table table = new H2Table(driver, data);
+                table.init(data.session);
+                return table;
+            }
         } catch (IOException ex) {
             throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
         }
