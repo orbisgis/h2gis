@@ -54,12 +54,7 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
         if(!filePath.exists()) {
             // Do not throw an exception as it will prevent the user from opening the database
             LOGGER.error("File not found:\n"+filePath.getAbsolutePath()+"\nThe table "+data.tableName+" will be empty.");
-            if(!data.session.getDatabase().isMVStore()){
-                return new DummyTable(data);
-            }
-            else{
-                return new DummyMVTable(data);
-            }
+            return new DummyMVTable(data);
         }
         try {
             Driver driver = createDriver(filePath, data.tableEngineParams);
@@ -72,16 +67,9 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
                 pk.setNullable(false);
                 data.columns.add(0, pk);
             }
-            //If MVSTORE is activated, use an MVTable with the MVSpatialIndex
-            if (data.session.getDatabase().isMVStore()) {
-                H2MVTable table = new H2MVTable(driver, data);
-                table.init(data.session);
-                return table;
-            } else {
-                H2Table table = new H2Table(driver, data);
-                table.init(data.session);
-                return table;
-            }
+            H2MVTable table = new H2MVTable(driver, data);
+            table.init(data.session);
+            return table;
         } catch (IOException ex) {
             throw DbException.get(ErrorCode.IO_EXCEPTION_1,ex);
         }
