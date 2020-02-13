@@ -261,6 +261,7 @@ public class SHPEngineTest {
         st.execute("DROP TABLE IF EXISTS shptable");
         st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
         String explainWithoutIndex;
+        //Spatial index
         ResultSet rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 15)");
         try{
             assertTrue(rs.next());
@@ -269,10 +270,12 @@ public class SHPEngineTest {
             rs.close();
         }
         // Query plan test with index
-        st.execute("CREATE SPATIAL INDEX ON shptable(the_geom)");
+        st.execute("CREATE INDEX ON shptable USING RTREE (the_geom)");
         rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE THE_GEOM && ST_BUFFER('POINT(183541 2426015)', 15)");
         try{
             assertTrue(rs.next());
+            System.out.println(explainWithoutIndex);
+            System.out.println(rs.getString(1));
             assertNotEquals(explainWithoutIndex, rs.getString(1));
         } finally {
             rs.close();
@@ -299,6 +302,54 @@ public class SHPEngineTest {
         st.execute("DROP TABLE IF EXISTS shptable");
         // Check if the index has been removed
         rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='THE_GEOM'");
+        try {
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
+
+        //Alphanumeric index
+        st.execute("DROP TABLE IF EXISTS shptable");
+        st.execute("CALL FILE_TABLE("+ StringUtils.quoteStringSQL(SHPEngineTest.class.getResource("waternetwork.shp").getPath()) + ", 'shptable');");
+
+        rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE gid = 201");
+        try{
+            assertTrue(rs.next());
+            explainWithoutIndex = rs.getString(1);
+        } finally {
+            rs.close();
+        }
+        // Query plan test with index
+        st.execute("CREATE INDEX ON shptable(gid)");
+        rs = st.executeQuery("EXPLAIN SELECT * FROM SHPTABLE WHERE gid = 201");
+        try{
+            assertTrue(rs.next());
+            System.out.println(explainWithoutIndex);
+            System.out.println(rs.getString(1));
+            assertNotEquals(explainWithoutIndex, rs.getString(1));
+        } finally {
+            rs.close();
+        }
+        // Execute query using index
+        rs = st.executeQuery("SELECT PK FROM SHPTABLE WHERE gid = 201 ORDER BY PK");
+        try{
+            assertTrue(rs.next());
+            assertEquals(201, rs.getLong(1));
+            assertFalse(rs.next());
+        } finally {
+            rs.close();
+        }
+        // Check if the index is here
+        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='gid'");
+        try {
+            assertTrue(rs.next());
+            assertEquals("org.h2.mvstore.db.MVSecondaryIndex", rs.getString("INDEX_CLASS"));
+        } finally {
+            rs.close();
+        }
+        st.execute("DROP TABLE IF EXISTS shptable");
+        // Check if the index has been removed
+        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='gid'");
         try {
             assertFalse(rs.next());
         } finally {
