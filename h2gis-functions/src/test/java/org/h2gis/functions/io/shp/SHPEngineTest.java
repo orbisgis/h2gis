@@ -340,7 +340,7 @@ public class SHPEngineTest {
             rs.close();
         }
         // Check if the index is here
-        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='gid'");
+        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='GID'");
         try {
             assertTrue(rs.next());
             assertEquals("org.h2.mvstore.db.MVSecondaryIndex", rs.getString("INDEX_CLASS"));
@@ -349,7 +349,7 @@ public class SHPEngineTest {
         }
         st.execute("DROP TABLE IF EXISTS shptable");
         // Check if the index has been removed
-        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='gid'");
+        rs = st.executeQuery("select * from INFORMATION_SCHEMA.INDEXES WHERE TABLE_NAME = 'SHPTABLE' and COLUMN_NAME='GID'");
         try {
             assertFalse(rs.next());
         } finally {
