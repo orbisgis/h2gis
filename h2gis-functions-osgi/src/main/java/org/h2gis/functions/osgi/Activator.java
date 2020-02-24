@@ -32,6 +32,7 @@ import org.h2gis.functions.io.kml.KMLDriverFunction;
 import org.h2gis.functions.io.osm.OSMDriverFunction;
 import org.h2gis.functions.io.shp.SHPDriverFunction;
 import org.h2gis.functions.io.tsv.TSVDriverFunction;
+import org.h2gis.functions.io.asc.AscDriverFunction;
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.util.tracker.ServiceTracker;
@@ -63,6 +64,7 @@ public class Activator implements BundleActivator {
         bc.registerService(DriverFunction.class, new KMLDriverFunction(), null);
         bc.registerService(DriverFunction.class, new CSVDriverFunction(), null);
         bc.registerService(DriverFunction.class, new TSVDriverFunction(), null);
+        bc.registerService(DriverFunction.class, new AscDriverFunction(), null);
 
         DataSourceTracker dataSourceTracker = new DataSourceTracker(bc);
         databaseTracker = new ServiceTracker<>(bc,DataSource.class,dataSourceTracker);

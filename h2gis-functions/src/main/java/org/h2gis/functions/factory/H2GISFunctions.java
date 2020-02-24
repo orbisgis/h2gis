@@ -25,6 +25,7 @@ import org.h2.tools.RunScript;
 import org.h2gis.api.Function;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.functions.io.DriverManager;
+import org.h2gis.functions.io.asc.AscRead;
 import org.h2gis.functions.io.dbf.DBFRead;
 import org.h2gis.functions.io.dbf.DBFWrite;
 import org.h2gis.functions.io.geojson.GeoJsonRead;
@@ -316,7 +317,9 @@ public class H2GISFunctions {
                 new GeometryTypeFromColumnType(),
                 new ST_FindUTMSRID(),
                 new ST_GeneratePoints(),
-                new ST_GeneratePointsInGrid()};
+                new ST_GeneratePointsInGrid(),
+                new AscRead()
+        };
     }
 
     /**

@@ -84,6 +84,11 @@ public class AscDriverFunction implements DriverFunction {
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
+        importFile(connection, tableReference, fileName, progress, ascReaderDriver);
+    }
+
+    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, AscReaderDriver ascReaderDriver)
+            throws SQLException, IOException {
         int srid = 0;
         String filePath = fileName.getAbsolutePath();
         final int dotIndex = filePath.lastIndexOf('.');
