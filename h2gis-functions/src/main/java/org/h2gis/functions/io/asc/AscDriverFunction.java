@@ -34,8 +34,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * GeoJSON driver to import a GeoJSON file and export a spatial table in a
- * GeoJSON 1.0 file.
+ * Asc driver to import ESRI ASCII Raster file as polygons
  * 
  * @author Nicolas Fortin (Université Gustave Eiffel 2020)
  */
