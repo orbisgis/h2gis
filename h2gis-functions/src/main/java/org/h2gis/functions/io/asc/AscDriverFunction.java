@@ -71,12 +71,12 @@ public class AscDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException{
-
+        // Import only driver
     }
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException{
-
+        // Import only driver
     }
 
     @Override

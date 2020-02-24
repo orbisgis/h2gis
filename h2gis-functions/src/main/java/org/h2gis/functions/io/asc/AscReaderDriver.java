@@ -50,6 +50,15 @@ public class AscReaderDriver {
     private boolean as3DPoint = false;
     private Envelope extractEnvelope = null;
     private int downScale = 1;
+    private String lastWord = "";
+
+    private int nrows;
+    private int ncols;
+    private double cellSize;
+    private double yValue;
+    private double xValue;
+    private boolean readFirst;
+    private int noData;
 
     /**
      * @return If true ASC is imported as 3D points cloud, Raster is imported in pixel polygons otherwise.
@@ -93,6 +102,77 @@ public class AscReaderDriver {
         this.downScale = downScale;
     }
 
+    private void readHeader(Scanner scanner) throws IOException {
+        // NCOLS
+        lastWord = scanner.next();
+        if (!lastWord.equalsIgnoreCase("NCOLS")) {
+            throw new IOException("Unexpected word " + lastWord);
+        }
+        // XXX
+        lastWord = scanner.next();
+        ncols = Integer.parseInt(lastWord);
+        if (ncols <= 0) {
+            throw new IOException("NCOLS <= 0");
+        }
+        // NROWS
+        lastWord = scanner.next();
+        if (!lastWord.equalsIgnoreCase("NROWS")) {
+            throw new IOException("Unexpected word " + lastWord);
+        }
+        // XXX
+        lastWord = scanner.next();
+        nrows = Integer.parseInt(lastWord);
+        if (nrows <= 0) {
+            throw new IOException("NROWS <= 0");
+        }
+        // XLLCENTER or XLLCORNER
+        lastWord = scanner.next();
+        if (!(lastWord.equalsIgnoreCase("XLLCENTER") || lastWord.equalsIgnoreCase("XLLCORNER"))) {
+            throw new IOException("Unexpected word " + lastWord);
+        }
+        boolean isXCenter = lastWord.equalsIgnoreCase("XLLCENTER");
+        // XXX
+        lastWord = scanner.next();
+        xValue = Double.parseDouble(lastWord);
+
+        // YLLCENTER or YLLCORNER
+        lastWord = scanner.next();
+        if (!(lastWord.equalsIgnoreCase("YLLCENTER") || lastWord.equalsIgnoreCase("YLLCORNER"))) {
+            throw new IOException("Unexpected word " + lastWord);
+        }
+        boolean isYCenter = lastWord.equalsIgnoreCase("YLLCENTER");
+        // XXX
+        lastWord = scanner.next();
+        yValue = Double.parseDouble(lastWord);
+
+        // CELLSIZE
+        lastWord = scanner.next();
+        if (!lastWord.equalsIgnoreCase("CELLSIZE")) {
+            throw new IOException("Unexpected word " + lastWord);
+        }
+        // XXX
+        lastWord = scanner.next();
+        cellSize = Double.parseDouble(lastWord);
+        // Compute offsets
+        if (isXCenter) {
+            xValue = xValue - cellSize / 2;
+        }
+        if (isYCenter) {
+            yValue = yValue + cellSize * nrows - cellSize / 2;
+        } else {
+            yValue = yValue + cellSize * nrows;
+        }
+        // Optional NODATA_VALUE
+        lastWord = scanner.next();
+        readFirst = false;
+        noData = -9999;
+        if (lastWord.equalsIgnoreCase("NODATA_VALUE")) {
+            readFirst = true;
+            // XXX
+            lastWord = scanner.next();
+            noData = Integer.parseInt(lastWord);
+        }
+    }
     /**
      * Read asc stream
      *
@@ -106,80 +186,12 @@ public class AscReaderDriver {
     public void read(Connection connection, InputStream inputStream, ProgressVisitor progress, String tableReference,
                      int srid) throws SQLException, IOException {
         BufferedInputStream bof = new BufferedInputStream(inputStream, BUFFER_SIZE);
-        String lastWord = "";
         try {
             Scanner scanner = new Scanner(bof);
             // Read HEADER
-            // NCOLS
-            lastWord = scanner.next();
-            if (!lastWord.equalsIgnoreCase("NCOLS")) {
-                throw new IOException("Unexpected word " + lastWord);
-            }
-            // XXX
-            lastWord = scanner.next();
-            int ncols = Integer.parseInt(lastWord);
-            if (ncols <= 0) {
-                throw new IOException("NCOLS <= 0");
-            }
-            // NROWS
-            lastWord = scanner.next();
-            if (!lastWord.equalsIgnoreCase("NROWS")) {
-                throw new IOException("Unexpected word " + lastWord);
-            }
-            // XXX
-            lastWord = scanner.next();
-            int nrows = Integer.parseInt(lastWord);
-            if (nrows <= 0) {
-                throw new IOException("NROWS <= 0");
-            }
-            // XLLCENTER or XLLCORNER
-            lastWord = scanner.next();
-            if (!(lastWord.equalsIgnoreCase("XLLCENTER") || lastWord.equalsIgnoreCase("XLLCORNER"))) {
-                throw new IOException("Unexpected word " + lastWord);
-            }
-            boolean isXCenter = lastWord.equalsIgnoreCase("XLLCENTER");
-            // XXX
-            lastWord = scanner.next();
-            double xValue = Double.parseDouble(lastWord);
+            readHeader(scanner);
 
-            // YLLCENTER or YLLCORNER
-            lastWord = scanner.next();
-            if (!(lastWord.equalsIgnoreCase("YLLCENTER") || lastWord.equalsIgnoreCase("YLLCORNER"))) {
-                throw new IOException("Unexpected word " + lastWord);
-            }
-            boolean isYCenter = lastWord.equalsIgnoreCase("YLLCENTER");
-            // XXX
-            lastWord = scanner.next();
-            double yValue = Double.parseDouble(lastWord);
-
-            // CELLSIZE
-            lastWord = scanner.next();
-            if (!lastWord.equalsIgnoreCase("CELLSIZE")) {
-                throw new IOException("Unexpected word " + lastWord);
-            }
-            // XXX
-            lastWord = scanner.next();
-            double cellSize = Double.parseDouble(lastWord);
-            // Compute offsets
-            if (isXCenter) {
-                xValue = xValue - cellSize / 2;
-            }
-            if (isYCenter) {
-                yValue = yValue + cellSize * nrows - cellSize / 2;
-            } else {
-                yValue = yValue + cellSize * nrows;
-            }
-            // Optional NODATA_VALUE
-            lastWord = scanner.next();
-            boolean readFirst = false;
-            int noData = -9999;
-            if (lastWord.equalsIgnoreCase("NODATA_VALUE")) {
-                readFirst = true;
-                // XXX
-                lastWord = scanner.next();
-                noData = Integer.parseInt(lastWord);
-            }
-
+            // Read values
             Statement st = connection.createStatement();
             PreparedStatement preparedStatement;
             if(as3DPoint) {
