@@ -28,6 +28,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
+import org.locationtech.jts.geom.Geometry;
+import org.locationtech.jts.geom.GeometryFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -183,6 +185,46 @@ public class AscReaderDriverTest {
 
         // Check number of extracted cells
         Statement st = connection.createStatement();
+        try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
+            assertTrue(rs.next());
+            assertEquals((15 / 5) * (20 / 5), rs.getInt("CPT"));
+        }
+    }
+
+
+    @Test
+    public void testASCRead() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+
+        // Check number of extracted cells
+        try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
+            assertTrue(rs.next());
+            assertEquals(300, rs.getInt("CPT"));
+        }
+
+        Envelope env = new Envelope(-178.242, -174.775, -89.707, -85.205);
+        GeometryFactory factory = new GeometryFactory();
+        Geometry envGeom = factory.toGeometry(env);
+        envGeom.setSRID(3857);
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN', '%s'" +
+                "::GEOMETRY , 1, FALSE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile(),
+                envGeom.toString()
+                ));
+
+        // Check number of extracted cells
+        try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
+            assertTrue(rs.next());
+            assertEquals(90, rs.getInt("CPT"));
+        }
+
+
+
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
+        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN', NULL, 5, FALSE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+
+        // Check number of extracted cells
         try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
             assertTrue(rs.next());
             assertEquals((15 / 5) * (20 / 5), rs.getInt("CPT"));
