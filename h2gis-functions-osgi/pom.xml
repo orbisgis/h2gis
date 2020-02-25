@@ -38,6 +38,11 @@
             <artifactId>h2gis</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.orbisgis</groupId>
+            <artifactId>h2gis-utilities</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Provided dependencies -->
         <dependency>
