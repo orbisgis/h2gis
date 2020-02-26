@@ -180,6 +180,7 @@ public class AscReaderDriver {
      * @param inputStream
      * @param progress
      * @param tableReference
+     * @param srid the espg code of the input file
      * @throws SQLException
      * @throws IOException
      */
@@ -247,7 +248,7 @@ public class AscReaderDriver {
                             if (data != noData) {
                                 preparedStatement.setObject(2, data);
                             } else {
-                                preparedStatement.setNull(2, Types.INTEGER);
+                                preparedStatement.setNull(2, Types.DOUBLE);
                             }
                             preparedStatement.addBatch();
                             batchSize++;
