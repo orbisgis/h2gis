@@ -248,7 +248,7 @@ public class AscReaderDriver {
                             if (data != noData) {
                                 preparedStatement.setObject(2, data);
                             } else {
-                                preparedStatement.setNull(2, Types.DOUBLE);
+                                preparedStatement.setNull(2, Types.INTEGER);
                             }
                             preparedStatement.addBatch();
                             batchSize++;
