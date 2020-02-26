@@ -552,8 +552,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
     }
-    
-    
+
     @Test
     public void testReadComplexFile() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -587,7 +586,7 @@ public class GeojsonImportExportTest {
             assertEquals(56.848998452816424, res.getDouble(4), 0);
             assertEquals(55.87291487481895, res.getDouble(5), 0);
             assertEquals(0.0, res.getDouble(6), 0);
-            assertEquals("null", res.getString(7));
+            assertNull(res.getString(7));
             assertEquals(2, res.getDouble(8), 0);
             assertEquals("2017-01-19T18:29:26+01:00", res.getString(9));
             assertEquals("1484846966000", res.getBigDecimal(10).toString());
@@ -622,7 +621,7 @@ public class GeojsonImportExportTest {
             assertEquals(56.848998452816424, res.getDouble(4), 0);
             assertEquals(55.87291487481895, res.getDouble(5), 0);
             assertEquals(0.0, res.getDouble(6), 0);
-            assertEquals("null", res.getString(7));
+            assertNull(res.getString(7));
             assertEquals(2, res.getDouble(8), 0);
             assertEquals("2017-01-19T18:29:26+01:00", res.getString(9));
             assertEquals("1484846966000", res.getBigDecimal(10).toString());
@@ -688,7 +687,7 @@ public class GeojsonImportExportTest {
             assertArrayEquals(expectedResult5, result5);
             res.next();
             assertNull((res.getObject(1)));
-            assertEquals("null", res.getString(2));
+            assertNull(res.getString(2));
             assertEquals("{}", res.getString(3));
             Object[] expectedResult6 = {1,2};
             Object[] result6 = (Object[]) res.getObject(4);
@@ -927,6 +926,16 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS table_points_import");
             stat.close();
         }
+    }
+
+    @Test
+    public void testReadWithNullValues() throws Exception {
+        Statement stat = connection.createStatement();
+        stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("startNull.geojson").getPath()) + ")");
+        ResultSet res = stat.executeQuery("SELECT * FROM startNull;");
+        res.next();
+        res.close();
+        stat.execute("DROP TABLE IF EXISTS startNull");
     }
 
 }

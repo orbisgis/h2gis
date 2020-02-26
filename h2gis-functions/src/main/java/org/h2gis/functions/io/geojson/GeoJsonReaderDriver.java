@@ -867,7 +867,7 @@ public class GeoJsonReaderDriver {
                 String str = parseObject(jp);
                 values[cachedColumnIndex.get(fieldName)] = str;
             } else if (value == JsonToken.VALUE_NULL) {
-                values[cachedColumnIndex.get(fieldName)] = "null";
+                values[cachedColumnIndex.get(fieldName)] = null;
             }
             else {
                 //ignore other value
