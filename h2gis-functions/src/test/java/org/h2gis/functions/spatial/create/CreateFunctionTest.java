@@ -422,6 +422,7 @@ public class CreateFunctionTest {
         assertEquals(rs.getInt(1), 4);
         rs.close();
         rs = st.executeQuery("select * from grid;");
+        assertEquals(1111, rs.getMetaData().getColumnType(1));
         rs.next();
         assertGeometryEquals("POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
         rs.next();
