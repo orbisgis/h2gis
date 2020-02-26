@@ -24,7 +24,6 @@ import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.utilities.SFSUtilities;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
@@ -37,6 +36,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import org.h2gis.unitTest.GeometryAsserts;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -200,7 +200,7 @@ public class AscReaderDriverTest {
         // Check number of extracted cells
         try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
             assertTrue(rs.next());
-            assertEquals(300, rs.getInt("CPT"));
+            assertEquals(299, rs.getInt("CPT"));
         }
 
         Envelope env = new Envelope(-178.242, -174.775, -89.707, -85.205);
@@ -209,7 +209,7 @@ public class AscReaderDriverTest {
         envGeom.setSRID(3857);
         st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
         st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN', '%s'" +
-                "::GEOMETRY , 1, FALSE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile(),
+                "::GEOMETRY , 1, TRUE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile(),
                 envGeom.toString()
                 ));
 
@@ -222,12 +222,22 @@ public class AscReaderDriverTest {
 
 
         st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
-        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN', NULL, 5, FALSE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+        st.execute(String.format("CALL ASCREAD('%s', 'PRECIP30MIN', NULL, 5, TRUE)",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
 
         // Check number of extracted cells
         try(ResultSet rs = st.executeQuery("SELECT COUNT(*) CPT FROM PRECIP30MIN")) {
             assertTrue(rs.next());
             assertEquals((15 / 5) * (20 / 5), rs.getInt("CPT"));
+        }
+    }
+    
+    @Test
+    public void testASCReadPoints() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
+        try(ResultSet rs = st.executeQuery("SELECT the_geom  FROM PRECIP30MIN limit 1")) {
+            assertTrue(rs.next());
+            GeometryAsserts.assertGeometryEquals("SRID=3857;POINT Z (-179.75 -80.25 234)", rs.getObject("THE_GEOM"));
         }
     }
 }
