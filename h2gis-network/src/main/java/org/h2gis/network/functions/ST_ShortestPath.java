@@ -275,7 +275,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
     private static SimpleResultSet prepareResultSet(boolean includeGeomColumn) {
         SimpleResultSet output = new SimpleResultSet();
         if (includeGeomColumn) {
-            output.addColumn(THE_GEOM, Types.JAVA_OBJECT, "GEOMETRY", 0, 0);
+            output.addColumn(THE_GEOM, Types.OTHER, "GEOMETRY", 0, 0);
         }
         output.addColumn(EDGE_ID, Types.INTEGER, 10, 0);
         output.addColumn(PATH_ID, Types.INTEGER, 10, 0);
