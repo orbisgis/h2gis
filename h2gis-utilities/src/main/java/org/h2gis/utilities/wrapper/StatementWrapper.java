@@ -234,14 +234,14 @@ public class StatementWrapper implements Statement {
         return statement.isPoolable();
     }
 
-    // @Override -- Commented out for Java 6 compatibility.
+    @Override
     public void closeOnCompletion() throws SQLException {
-        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+        statement.closeOnCompletion();
     }
 
-    // @Override -- Commented out for Java 6 compatibility.
+    @Override
     public boolean isCloseOnCompletion() throws SQLException {
-        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+        return statement.isCloseOnCompletion();
     }
 
     @Override
