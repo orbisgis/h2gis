@@ -310,6 +310,7 @@ public class JDBCUtilities {
         }
         return 0;
     }
+    
 
     /**
      * Return true if the table exists.

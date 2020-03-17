@@ -270,29 +270,29 @@ public class ConnectionWrapper implements Connection {
         return connection.createStruct(typeName, attributes);
     }
 
-    // @Override -- Commented out for Java 6 compatibility.
+    @Override 
     public void setSchema(String schema) throws SQLException {
-        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+        connection.setSchema(schema);
     }
 
-    // @Override -- Commented out for Java 6 compatibility.
+    @Override 
     public String getSchema() throws SQLException {
-        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+        return connection.getSchema();
     }
 
-    // @Override -- Commented out for Java 6 compatibility.
+    @Override 
     public void abort(Executor executor) throws SQLException {
-        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+        connection.abort(executor);
     }
 
-    // @Override -- Commented out for Java 6 compatibility.
+    @Override 
     public void setNetworkTimeout(Executor executor, int milliseconds) throws SQLException {
-        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+        connection.setNetworkTimeout(executor, milliseconds);
     }
 
-    // @Override -- Commented out for Java 6 compatibility.
+    @Override
     public int getNetworkTimeout() throws SQLException {
-        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+       return connection.getNetworkTimeout();
     }
 
     @Override

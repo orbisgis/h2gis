@@ -255,4 +255,17 @@ public class JDBCUtilitiesTest {
         expecteds.add("NAME");
         assertEquals(expecteds, JDBCUtilities.getFieldNames(md));
     }
+    
+    @Test
+    public void testGetObjectClass() throws SQLException {
+        st.execute("drop table if exists mytable; create table mytable(temperature double precision);"
+                + "insert into mytable values(12.1258952354)");      
+        ResultSet res = st.executeQuery("SELECT * FROM mytable;");
+        res.next();
+        assertEquals((float)12.1258952354d, res.getObject(1, Float.class));
+        assertEquals(12, res.getObject(1, Integer.class));
+        assertEquals((float)12.1258952354d, res.getObject("temperature", Float.class));
+        assertEquals(12, res.getObject("temperature", Integer.class));
+        st.execute("DROP TABLE mytable");
+    }
 }

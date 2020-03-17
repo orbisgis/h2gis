@@ -68,9 +68,9 @@ public class DataSourceWrapper implements DataSource {
         return dataSource.getLoginTimeout();
     }
 
-    // @Override -- Commented out for Java 6 compatibility.
+    @Override
     public Logger getParentLogger() throws SQLFeatureNotSupportedException {
-        throw new UnsupportedOperationException("This Java 7 method is not yet supported.");
+        return dataSource.getParentLogger();
     }
 
     @Override
