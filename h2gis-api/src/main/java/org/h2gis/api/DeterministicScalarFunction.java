@@ -3,7 +3,7 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -31,6 +31,6 @@ public abstract class DeterministicScalarFunction extends AbstractFunction imple
      * Default empty constructor.
      */
     public DeterministicScalarFunction() {
-        addProperty(ScalarFunction.PROP_DETERMINISTIC,true);
+        addProperty(ScalarFunction.PROP_DETERMINISTIC, true);
     }
 }

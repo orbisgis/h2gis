@@ -3,7 +3,7 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -28,18 +28,21 @@ package org.h2gis.api;
  */
 public interface Function {
 
-    /** SQL function name, take class name by default */
+    /**
+     * SQL function name, take class name by default
+     */
     String PROP_NAME = "name";
 
-    /** SQL Function description */
+    /**
+     * SQL Function description
+     */
     String PROP_REMARKS = "remarks";
 
     /**
-     * Return the value of optional function property with the specified name
+     * Return the value of optional function property with the specified name.
      *
-     * @param propertyName Name of the property which value is returned
-     *
-     * @return The value or null if the property doesn't not exists
+     * @param propertyName Name of the property which value is returned.
+     * @return The value or null if the property doesn't not exists.
      */
     Object getProperty(String propertyName);
 }

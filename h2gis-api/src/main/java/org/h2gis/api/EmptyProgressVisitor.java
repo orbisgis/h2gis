@@ -3,7 +3,7 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -30,13 +30,16 @@ import java.beans.PropertyChangeSupport;
  */
 public class EmptyProgressVisitor implements ProgressVisitor {
 
-    /** Indicate if the the ProgressVisitor has been cancelled or not. */
+    /**
+     * Indicate if the the ProgressVisitor has been cancelled or not.
+     */
     private boolean canceled = false;
 
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
 
     @Override
-    public void endOfProgress() {}
+    public void endOfProgress() {
+    }
 
     @Override
     public ProgressVisitor subProcess(int stepCount) {
@@ -44,10 +47,12 @@ public class EmptyProgressVisitor implements ProgressVisitor {
     }
 
     @Override
-    public void endStep() {}
+    public void endStep() {
+    }
 
     @Override
-    public void setStep(int idStep) { }
+    public void setStep(int idStep) {
+    }
 
     @Override
     public int getStepCount() {

@@ -3,7 +3,7 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -30,7 +30,7 @@ import java.util.Map;
  * @author Sylvain PALOMINOS (UBS 2018)
  */
 public abstract class AbstractFunction implements Function {
-    private Map<String,Object> properties = new HashMap<>();
+    private Map<String, Object> properties = new HashMap<>();
 
     @Override
     public Object getProperty(String propertyName) {
@@ -40,21 +40,20 @@ public abstract class AbstractFunction implements Function {
     /**
      * Add a property to the map.
      *
-     * @param propertyName Property identifier
-     * @param value New property value
+     * @param propertyName Property identifier.
+     * @param value        New property value.
      */
     public void addProperty(String propertyName, Object value) {
-        properties.put(propertyName,value);
+        properties.put(propertyName, value);
     }
 
     /**
      * Remove a property from the map.
      *
-     * @param propertyName Property identifier
-     *
-     * @return True if the property is removed
+     * @param propertyName Property identifier.
+     * @return True if the property is removed.
      */
     public boolean removeProperty(String propertyName) {
-        return properties.remove(propertyName)!=null;
+        return properties.remove(propertyName) != null;
     }
 }

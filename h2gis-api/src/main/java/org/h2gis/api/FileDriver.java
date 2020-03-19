@@ -1,9 +1,9 @@
-/**
+/*
  * H2GIS is a library that brings spatial support to the H2 Database Engine
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -38,7 +38,9 @@ import java.io.IOException;
 public interface FileDriver {
 
     /**
-     * @return Row count
+     * Returns row count.
+     *
+     * @return Row count.
      */
     long getRowCount();
 
@@ -52,20 +54,17 @@ public interface FileDriver {
     /**
      * Return the content of the given row.
      *
-     * @param rowId Row index [0-getRowCount()]
-     *
+     * @param rowId Row index [0-getRowCount()].
      * @return The row content.
-     *
      * @throws java.io.IOException Read error.
      */
     Object[] getRow(long rowId) throws IOException;
-   
+
     /**
-     * Insert values to the current row
+     * Insert values to the current row.
      *
-     * @param values Values to insert
-     *
-     * @throws IOException  Write error.
+     * @param values Values to insert.
+     * @throws IOException Write error.
      */
     void insertRow(Object[] values) throws IOException;
 }

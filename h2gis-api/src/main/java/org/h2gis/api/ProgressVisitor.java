@@ -3,7 +3,7 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -29,30 +29,35 @@ import java.beans.PropertyChangeListener;
  */
 public interface ProgressVisitor {
 
-
+    /**
+     * Property indicating that the process has been cancelled.
+     */
     String PROPERTY_CANCELED = "CANCELED";
 
     /**
      * Create a sub process. When this sub process finish it will count as a single step in this process.
      *
      * @param stepCount Number of step into the sub-process.
-     *
-     * @return The sub-process as a {@link ProgressVisitor}
+     * @return The sub-process as a {@link ProgressVisitor}.
      */
     ProgressVisitor subProcess(int stepCount);
 
     /**
-     * Same as {@link ProgressVisitor#setStep(int)} with currentStep++
+     * Same as {@link ProgressVisitor#setStep(int)} with currentStep++.
      */
     void endStep();
 
     /**
-     * @param idStep Set the current step, must be in [0-stepCount]
+     * Set the current step, must be in [0-stepCount].
+     *
+     * @param idStep Set the current step, must be in [0-stepCount].
      */
     void setStep(int idStep);
 
     /**
-     * @return The step count of this progress
+     * Return the step count of this progress.
+     *
+     * @return The step count of this progress.
      */
     int getStepCount();
 
@@ -62,7 +67,7 @@ public interface ProgressVisitor {
     void endOfProgress();
 
     /**
-     * Get the step progression which belong to [0,1]
+     * Get the step progression which belong to [0,1].
      *
      * @return This step progression [O-1], take account sub process progression.
      */
