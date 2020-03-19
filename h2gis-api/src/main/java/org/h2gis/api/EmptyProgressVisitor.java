@@ -48,10 +48,12 @@ public class EmptyProgressVisitor implements ProgressVisitor {
 
     @Override
     public void endStep() {
+        //Nothing to do
     }
 
     @Override
     public void setStep(int idStep) {
+        //Nothing to do
     }
 
     @Override
