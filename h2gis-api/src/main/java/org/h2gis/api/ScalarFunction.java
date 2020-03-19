@@ -38,12 +38,6 @@ public interface ScalarFunction extends Function {
     String PROP_DETERMINISTIC = "deterministic";
 
     /**
-     * Boolean, if nobuffer is true then this function will be called more often but will not cache the results in
-     * memory nor files
-     */
-    String PROP_NOBUFFER = "nobuffer";
-
-    /**
      * Returns Java name of static methods in this class to expose in database, theses methods are under the same
      * alias but with different number of arguments.
      *

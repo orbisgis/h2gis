@@ -61,7 +61,6 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
                 "select * from ST_TRIANGLECONTOURING('input_table',10,20,30,40)\n" +
                 "Iso contouring using table columns\n" +
                 "SELECT * FROM ST_TRIANGLECONTOURING('input_table','m1','m2','m3',10,20,30,40)");
-        addProperty(PROP_NOBUFFER, true);
     }
 
     @Override
