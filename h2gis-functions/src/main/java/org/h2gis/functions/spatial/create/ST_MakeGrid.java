@@ -46,7 +46,6 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
                 + "The delta X and Y cell grid are expressed in a cartesian plane."
                 + "Note :The geometry could be expressed using a subquery as\n"
                 + " (SELECT the_geom from myTable)");
-        addProperty(PROP_NOBUFFER, true);
     }
 
     @Override

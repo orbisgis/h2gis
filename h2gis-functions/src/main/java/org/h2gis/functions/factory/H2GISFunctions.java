@@ -455,13 +455,9 @@ public class H2GISFunctions {
             if(getBooleanProperty(function,ScalarFunction.PROP_DETERMINISTIC,false)) {
                 deterministic = " DETERMINISTIC";
             }
-            String nobuffer = "";
-            if(getBooleanProperty(function, ScalarFunction.PROP_NOBUFFER, false)) {
-                nobuffer = " NOBUFFER";
-            }
             // Create alias, H2 does not support prepare statement on create alias
             // "FORCE ALIAS means that the class not existing will not prevent the database from being opened."
-            st.execute("CREATE FORCE ALIAS IF NOT EXISTS " + functionAlias + deterministic + nobuffer + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
+            st.execute("CREATE FORCE ALIAS IF NOT EXISTS " + functionAlias + deterministic + " FOR \"" + packagePrepend + functionClass + "." + functionName + "\"");
             // Set comment
             String functionRemarks = getStringProperty(function, Function.PROP_REMARKS);
             if(!functionRemarks.isEmpty()) {

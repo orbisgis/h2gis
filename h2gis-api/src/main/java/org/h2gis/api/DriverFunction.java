@@ -3,7 +3,7 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -39,7 +39,7 @@ public interface DriverFunction {
      * A copy will transfer Data from the File to the remote/local database and the database content will not be
      * synced with the file.
      */
-    enum IMPORT_DRIVER_TYPE { LINK, COPY }
+    enum IMPORT_DRIVER_TYPE {LINK, COPY}
 
     /**
      * Return the driver import type.
@@ -51,14 +51,14 @@ public interface DriverFunction {
     /**
      * Return the file extensions that can be loaded by this driver
      *
-     * @return file extension ex: ["shp","ply"]
+     * @return File extension ex: ["shp","ply"].
      */
     String[] getImportFormats();
 
     /**
      * Return the file extensions that can be saved by this driver
      *
-     * @return file extension ex: ["shp","ply"]
+     * @return File extension ex: ["shp","ply"].
      */
     String[] getExportFormats();
 
@@ -66,9 +66,8 @@ public interface DriverFunction {
      * Return the description of the specified format.
      *
      * @param format Format given through getImportFormats and/or getExportFormats
-     *
      * @return The description of this format under the default Locale.
-     *          An empty string if the description is not available.
+     * An empty string if the description is not available.
      */
     String getFormatDescription(String format);
 
@@ -77,7 +76,6 @@ public interface DriverFunction {
      * it.
      *
      * @param extension Extension to check.
-     *
      * @return True if the extension is a spatial one, false otherwise.
      */
     boolean isSpatialFormat(String extension);
@@ -85,13 +83,12 @@ public interface DriverFunction {
     /**
      * Export the specified table from the specified connection into the specified file.
      *
-     * @param connection Active connection, do not close this connection.
+     * @param connection     Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference.
-     * @param fileName File path to write, if exists it may be replaced.
-     * @param progress Progress visitor following the execution.
-     *
-     * @throws SQLException Table read error
-     * @throws IOException File write error
+     * @param fileName       File path to write, if exists it may be replaced.
+     * @param progress       Progress visitor following the execution.
+     * @throws SQLException Table read error.
+     * @throws IOException  File write error.
      */
     void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException;
@@ -99,29 +96,27 @@ public interface DriverFunction {
     /**
      * Export the specified table from the specified connection into the specified file.
      *
-     * @param connection Active connection, do not close this connection.
-     * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path to write, if exists it may be replaced
-     * @param progress
-     * @param options Options to use for the export like encoding, separator ...
-     *                The options are different from a format to another.
-     *
-     * @throws SQLException Table read error
-     * @throws IOException File write error
+     * @param connection     Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference.
+     * @param fileName       File path to write, if exists it may be replaced.
+     * @param progress       Progress visitor following the execution.
+     * @param options        Options to use for the export like encoding, separator ...
+     *                       The options are different from a format to another.
+     * @throws SQLException Table read error.
+     * @throws IOException  File write error.
      */
     void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                    String options) throws SQLException, IOException;
+                     String options) throws SQLException, IOException;
 
     /**
      * Import the specified file into the specified table in the specified connection.
      *
-     * @param connection Active connection, do not close this connection.
+     * @param connection     Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference.
-     * @param fileName File path to read.
-     * @param progress Progress visitor following the execution.
-     *
-     * @throws SQLException Table write error
-     * @throws IOException File read error
+     * @param fileName       File path to read.
+     * @param progress       Progress visitor following the execution.
+     * @throws SQLException Table write error.
+     * @throws IOException  File read error.
      */
     void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException;
@@ -129,15 +124,14 @@ public interface DriverFunction {
     /**
      * Import the specified file into the specified table in the specified connection.
      *
-     * @param connection Active connection, do not close this connection.
-     * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path to read
-     * @param progress
-     * @param options Options to use for the export like encoding, separator ...
-     *                The options are different from a format to another.
-     *
-     * @throws SQLException Table write error
-     * @throws IOException File read error
+     * @param connection     Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference.
+     * @param fileName       File path to read.
+     * @param progress       Progress visitor following the execution.
+     * @param options        Options to use for the export like encoding, separator ...
+     *                       The options are different from a format to another.
+     * @throws SQLException Table write error.
+     * @throws IOException  File read error.
      */
     void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
                     String options) throws SQLException, IOException;
@@ -145,14 +139,13 @@ public interface DriverFunction {
     /**
      * Import the specified file into the specified table in the specified connection.
      *
-     * @param connection Active connection, do not close this connection.
-     * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path to read
-     * @param progress
-     * @param deleteTables True if the existing table used for the import should be deleted, false otherwise.
-     *
-     * @throws SQLException Table write error
-     * @throws IOException File read error
+     * @param connection     Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference.
+     * @param fileName       File path to read.
+     * @param progress       Progress visitor following the execution.
+     * @param deleteTables   True if the existing table used for the import should be deleted, false otherwise.
+     * @throws SQLException Table write error.
+     * @throws IOException  File read error.
      */
     void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
                     boolean deleteTables) throws SQLException, IOException;
