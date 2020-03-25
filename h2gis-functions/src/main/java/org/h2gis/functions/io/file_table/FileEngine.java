@@ -95,6 +95,7 @@ public abstract class FileEngine<Driver extends FileDriver> implements TableEngi
             }
             if(findDuplicate) {
                 cursor = base + Integer.toString(cpt);
+                cpt++;
             }
         }
         return cursor;
