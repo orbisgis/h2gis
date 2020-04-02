@@ -47,7 +47,7 @@ import java.util.UUID;
  * ├─ MULTIPOLYGON       ─┬─ With hole ─┬─┤
  * │                      └─ No hole   ─┘ │
  * └─ GEOMETRYCOLLECTION ─────────────────┘
- * To initiate the geometries, call the {@link BaseTest#geometriesInit()} method.
+ * All the geometries are accessible as static members.
  *
  * @author Sylvain PALOMINOS (UBS Lab-STICC 2020)
  */
@@ -56,94 +56,94 @@ public abstract class BaseTest {
     /**
      * Default tolerance for the geometry assertion.
      */
-    protected static final double TOLERANCE = 10E-10;
+    public static final double TOLERANCE = 10E-10;
 
     /**
      * POINT (3.0 5.0)
      */
-    protected static Point POINT_2D;
+    public static final Point POINT_2D;
     /**
      * POINT Z (3.0 5.0 7.0)
      */
-    protected static Point POINT_3D;
+    public static final Point POINT_3D;
     /**
      * LINESTRING (3.0 5.0, 4.0 8.0, 6.0 9.0)
      */
-    protected static LineString LINESTRING_2D;
+    public static final LineString LINESTRING_2D;
     /**
      * LINESTRING Z (3.0 5.0 7.0, 4.0 8.0 8.0, 6.0 9.0 10.0)
      */
-    protected static LineString LINESTRING_3D;
+    public static final LineString LINESTRING_3D;
     /**
      * LINESTRING Z (3.0 5.0, 4.0 8.0 8.0, 6.0 9.0)
      */
-    protected static LineString LINESTRING_MIXED;
+    public static final LineString LINESTRING_MIXED;
     /**
      * POLYGON ((3.0 5.0, 4.0 8.0, 6.0 9.0, 10.0 11.0, 8.0 7.0, 3.0 5.0))
      */
-    protected static Polygon POLYGON_2D;
+    public static final Polygon POLYGON_2D;
     /**
      * POLYGON ((3.0 5.0, 4.0 8.0, 6.0 9.0, 10.0 11.0, 8.0 7.0, 3.0 5.0),
      *          (4.0 7.0, 5.0 8.0, 6.0 8.0, 4.0 7.0),
      *          (7.0 9.0, 6.0 7.0, 7.0 8.0, 7.0 9.0))
      */
-    protected static Polygon POLYGON_HOLES_2D;
+    public static final Polygon POLYGON_HOLES_2D;
     /**
      * POLYGON Z ((3.0 5.0 7.0, 4.0 8.0 8.0, 6.0 9.0 10.0, 10.0 11.0 12.0, 8.0 7.0 6.0, 3.0 5.0 7.0))
      */
-    protected static Polygon POLYGON_3D;
+    public static final Polygon POLYGON_3D;
     /**
      * POLYGON Z ((3.0 5.0 7.0, 4.0 8.0 8.0, 6.0 9.0 10.0, 10.0 11.0 12.0, 8.0 7.0 6.0, 3.0 5.0 7.0),
      *            (4.0 7.0 4.0,5.0 8.0 11.0,6.0 8.0 10.0,4.0 7.0 4.0),
      *            (7.0 9.0 11.0, 6.0 7.0 8.0, 7.0 8.0 9.0, 7.0 9.0 11.0))
      */
-    protected static Polygon POLYGON_HOLES_3D;
+    public static final Polygon POLYGON_HOLES_3D;
     /**
      * POLYGON Z ((3.0 5.0 7.0, 4.0 8.0, 6.0 9.0 10.0, 10.0 11.0, 8.0 7.0 6.0, 3.0 5.0 7.0))
      */
-    protected static Polygon POLYGON_MIXED;
+    public static final Polygon POLYGON_MIXED;
     /**
      * POLYGON Z ((3.0 5.0 7.0, 4.0 8.0, 6.0 9.0 10.0, 10.0 11.0, 8.0 7.0 6.0, 3.0 5.0 7.0),
      *            (4.0 7.0 4.0, 5.0 8.0, 6.0 8.0 10.0, 4.0 7.0 4.0),
      *            (7.0 9.0 11.0, 6.0 7.0, 7.0 8.0, 7.0 9.0 11.0))
      */
-    protected static Polygon POLYGON_HOLES_MIXED;
+    public static final Polygon POLYGON_HOLES_MIXED;
     /**
      * MULTIPOINT ((3.0 5.0), (4.0 8.0), (6.0 9.0))
      */
-    protected static MultiPoint MULTIPOINT_2D;
+    public static final MultiPoint MULTIPOINT_2D;
     /**
      * MULTIPOINT Z ((3.0 5.0 7.0), (4.0 8.0 8.0), (6.0 9.0 10.0))
      */
-    protected static MultiPoint MULTIPOINT_3D;
+    public static final MultiPoint MULTIPOINT_3D;
     /**
      * MULTIPOINT Z ((3.0 5.0 7.0), (4.0 8.0), (6.0 9.0 10.0))
      */
-    protected static MultiPoint MULTIPOINT_MIXED;
+    public static final MultiPoint MULTIPOINT_MIXED;
     /**
      * MULTILINESTRING ((3.0 5.0, 4.0 8.0, 6.0 9.0),
      *                  (9.0 2.0, 1.0 2.0, 6.0 6.0),
      *                  (10.0 1.0, 9.0 2.0, 8.0 3.0))
      */
-    protected static MultiLineString MULTILINESTRING_2D;
+    public static final MultiLineString MULTILINESTRING_2D;
     /**
      * MULTILINESTRING Z ((3.0 5.0 7.0, 4.0 8.0 12.0, 6.0 9.0 12.0),
      *                    (9.0 2.0 9.0, 1.0 2.0 3.0, 6.0 6.0 6.0),
      *                    (10.0 1.0 1.0, 9.0 2.0 2.0, 8.0 3.0 3.0))
      */
-    protected static MultiLineString MULTILINESTRING_3D;
+    public static final MultiLineString MULTILINESTRING_3D;
     /**
      * MULTILINESTRING Z ((3.0 5.0, 4.0 8.0, 6.0 9.0),
      *                    (9.0 2.0 9.0, 1.0 2.0 3.0, 6.0 6.0 6.0),
      *                    (10.0 1.0, 9.0 2.0, 8.0 3.0))
      */
-    protected static MultiLineString MULTILINESTRING_MIXED;
+    public static final MultiLineString MULTILINESTRING_MIXED;
     /**
      * MULTIPOLYGON (((3.0 5.0, 4.0 8.0, 6.0 9.0, 10.0 11.0, 8.0 7.0, 3.0 5.0)),
      *               ((10.0 11.0, 15.0 16.0, 2.0 12.0, 1.0 11.0)),
      *               ((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_2D;
+    public static final MultiPolygon MULTIPOLYGON_2D;
     /**
      * MULTIPOLYGON (((3.0 5.0, 4.0 8.0, 6.0 9.0, 10.0 11.0, 8.0 7.0, 3.0 5.0),
      *                (4.0 7.0, 5.0 8.0, 6.0 8.0, 4.0 7.0),
@@ -151,13 +151,13 @@ public abstract class BaseTest {
      *               ((10.0 11.0, 15.0 16.0, 2.0 12.0, 10.0 11.0)),
      *               ((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_HOLES_2D;
+    public static final MultiPolygon MULTIPOLYGON_HOLES_2D;
     /**
      * MULTIPOLYGON Z (((3.0 5.0 7.0, 4.0 8.0 8.0, 6.0 9.0 10.0, 10.0 11.0 12.0, 8.0 7.0 6.0, 3.0 5.0 7.0)),
      *                 ((10.0 11.0 12.0, 15.0 16.0 17.0, 2.0 12.0 2.0, 10.0 11.0 12.0)),
      *                 ((0.0 0.0 11.0, 1.0 0.0 12.0, 1.0 1.0 13.0, 0.0 1.0 14.0, 0.0 0.0 11.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_3D;
+    public static final MultiPolygon MULTIPOLYGON_3D;
     /**
      * MULTIPOLYGON Z (((3.0 5.0 7.0, 4.0 8.0, 6.0 9.0 10.0, 10.0 11.0, 8.0 7.0 6.0, 3.0 5.0 7.0),
      *                  (4.0 7.0 4.0, 5.0 8.0, 6.0 8.0 10.0, 4.0 7.0 4.0),
@@ -165,13 +165,13 @@ public abstract class BaseTest {
      *                 ((10.0 11.0 12.0, 15.0 16.0 17.0, 2.0 12.0 2.0, 10.0 11.0 12.0)),
      *                 ((0.0 0.0 11.0, 1.0 0.0 12.0, 1.0 1.0 13.0, 0.0 1.0 14.0, 0.0 0.0 11.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_HOLES_3D;
+    public static final MultiPolygon MULTIPOLYGON_HOLES_3D;
     /**
      * MULTIPOLYGON Z (((3.0 5.0 7.0, 4.0 8.0 8.0, 6.0 9.0 10.0, 10.0 11.0 12.0, 8.0 7.0 6.0, 3.0 5.0 7.0)),
      *                 ((10.0 11.0 12.0, 15.0 16.0 17.0, 2.0 12.0 2.0, 10.0 11.0 12.0)),
      *                 ((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_MIXED;
+    public static final MultiPolygon MULTIPOLYGON_MIXED;
     /**
      * MULTIPOLYGON Z (((3.0 5.0, 4.0 8.0, 6.0 9.0, 10.0 11.0, 8.0 7.0, 3.0 5.0),
      *                  (4.0 7.0, 5.0 8.0, 6.0 8.0, 4.0 7.0),
@@ -179,7 +179,7 @@ public abstract class BaseTest {
      *                 ((10.0 11.0 12.0, 15.0 16.0 17.0, 2.0 12.0 2.0, 10.0 11.0 12.0)),
      *                 ((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_HOLES_MIXED;
+    public static final MultiPolygon MULTIPOLYGON_HOLES_MIXED;
     /**
      * GEOMETRYCOLLECTION (
      *                     POINT (3.0 5.0),
@@ -202,7 +202,7 @@ public abstract class BaseTest {
      *                                   ((0.0 0.0, 1.0 0.0, 1.0 1.0, 0.0 1.0, 0.0 0.0)))
      * )
      */
-    protected static GeometryCollection GEOMETRY_COLLECTION_2D;
+    public static final GeometryCollection GEOMETRY_COLLECTION_2D;
     /**
      * GEOMETRYCOLLECTION (
      *                     POINT Z (3.0 5.0 7.0),
@@ -225,7 +225,7 @@ public abstract class BaseTest {
      *                                     ((0.0 0.0 11.0, 1.0 0.0 12.0, 1.0 1.0 13.0, 0.0 1.0 14.0, 0.0 0.0 11.0)))
      * )
      */
-    protected static GeometryCollection GEOMETRY_COLLECTION_3D;
+    public static final GeometryCollection GEOMETRY_COLLECTION_3D;
     /**
      * GEOMETRYCOLLECTION (
      *                     POINT (3.0 5.0),
@@ -248,118 +248,118 @@ public abstract class BaseTest {
      *                                     ((0.0 0.0 11.0, 1.0 0.0 12.0, 1.0 1.0 13.0, 0.0 1.0 14.0, 0.0 0.0 11.0)))
      * )
      */
-    protected static GeometryCollection GEOMETRY_COLLECTION_MIXED;
+    public static final GeometryCollection GEOMETRY_COLLECTION_MIXED;
 
     /**
      * POINT (0.0 0.0)
      */
-    protected static Point POINT_0_2D;
+    public static final Point POINT_0_2D;
     /**
      * POINT Z (0.0 0.0 0.0)
      */
-    protected static Point POINT_0_3D;
+    public static final Point POINT_0_3D;
     /**
      * LINESTRING (1.0 1.0, 0.0 0.0, -1.0 -1.0)
      */
-    protected static LineString LINESTRING_0_2D;
+    public static final LineString LINESTRING_0_2D;
     /**
      * LINESTRING Z (1.0 1.0 1.0, 0.0 0.0 0.0, -1.0 -1.0 -1.0)
      */
-    protected static LineString LINESTRING_0_3D;
+    public static final LineString LINESTRING_0_3D;
     /**
      * LINESTRING Z (1.0 1.0, 0.0 0.0 1.0, -1.0 -1.0)
      */
-    protected static LineString LINESTRING_0_MIXED;
+    public static final LineString LINESTRING_0_MIXED;
     /**
      * POLYGON ((2.0 2.0, 2.0 -2.0, -2.0 -2.0, -2.0 2.0, 2.0 2.0))
      */
-    protected static Polygon POLYGON_0_2D;
+    public static final Polygon POLYGON_0_2D;
     /**
      * POLYGON ((2.0 2.0, 2.0 -2.0, -2.0 -2.0, -2.0 2.0, 2.0 2.0),
      *          (1.0 1.0, 1.0 -1.0, -1.0 -1.0, -1.0 1.0, 1.0 1.0))
      */
-    protected static Polygon POLYGON_HOLES_0_2D;
+    public static final Polygon POLYGON_HOLES_0_2D;
     /**
      * POLYGON Z ((2.0 2.0 2.0, 2.0 -2.0 0.0, -2.0 -2.0 -2.0, -2.0 2.0 0.0, 2.0 2.0 2.0))
      */
-    protected static Polygon POLYGON_0_3D;
+    public static final Polygon POLYGON_0_3D;
     /**
      * POLYGON Z ((2.0 2.0 2.0, 2.0 -2.0 0.0, -2.0 -2.0 -2.0, -2.0 2.0 0.0, 2.0 2.0 2.0),
      *            (1.0 1.0 1.0, 1.0 -1.0 0.0, -1.0 -1.0 -1.0, -1.0 1.0 0.0, 1.0 1.0 1.0))
      */
-    protected static Polygon POLYGON_HOLES_0_3D;
+    public static final Polygon POLYGON_HOLES_0_3D;
     /**
      * POLYGON Z ((2.0 2.0 2.0, 2.0 -2.0, -2.0 -2.0 -2.0, -2.0 2.0, 2.0 2.0 2.0))
      */
-    protected static Polygon POLYGON_0_MIXED;
+    public static final Polygon POLYGON_0_MIXED;
     /**
      * POLYGON Z ((2.0 2.0 2.0, 2.0 -2.0, -2.0 -2.0 -2.0, -2.0 2.0, 2.0 2.0 2.0),
      *            (1.0 1.0 1.0, 1.0 -1.0 0.0, -1.0 -1.0 -1.0, -1.0 1.0 0.0, 1.0 1.0 1.0))
      */
-    protected static Polygon POLYGON_HOLES_0_MIXED;
+    public static final Polygon POLYGON_HOLES_0_MIXED;
     /**
      * MULTIPOINT ((1.0 1.0), (0.0 0.0), (-1.0 -1.0))
      */
-    protected static MultiPoint MULTIPOINT_0_2D;
+    public static final MultiPoint MULTIPOINT_0_2D;
     /**
      * MULTIPOINT Z ((1.0 1.0 1.0), (0.0 0.0 0.0), (-1.0 -1.0 -1.0))
      */
-    protected static MultiPoint MULTIPOINT_0_3D;
+    public static final MultiPoint MULTIPOINT_0_3D;
     /**
      * MULTIPOINT Z ((1.0 1.0 1.0), (0.0 0.0), (-1.0 -1.0 -1.0))
      */
-    protected static MultiPoint MULTIPOINT_0_MIXED;
+    public static final MultiPoint MULTIPOINT_0_MIXED;
     /**
      * MULTILINESTRING ((1.0 1.0, 0.0 0.0, -1.0 -1.0),
      *                  (1.0 0.0, 0.0 0.0, -1.0 0.0),
      *                  (-1.0 1.0, 0.0 0.0, 1.0 1.0))
      */
-    protected static MultiLineString MULTILINESTRING_0_2D;
+    public static final MultiLineString MULTILINESTRING_0_2D;
     /**
      * MULTILINESTRING Z ((1.0 1.0 1.0, 0.0 0.0 0.0, -1.0 -1.0 -1.0),
      *                    (1.0 0.0 0.0, 0.0 0.0 1.0, -1.0 0.0 0.0),
      *                    (-1.0 1.0 0.0 , 0.0 0.0 1.0, 1.0 -1.0 0.0))
      */
-    protected static MultiLineString MULTILINESTRING_0_3D;
+    public static final MultiLineString MULTILINESTRING_0_3D;
     /**
      * MULTILINESTRING Z ((1.0 1.0, 0.0 0.0, -1.0 -1.0),
      *                    (1.0 0.0 0.0, 0.0 0.0 1.0, -1.0 0.0 0.0),
      *                    (-1.0 1.0, 0.0 0.0, 1.0 1.0))
      */
-    protected static MultiLineString MULTILINESTRING_0_MIXED;
+    public static final MultiLineString MULTILINESTRING_0_MIXED;
     /**
      * MULTIPOLYGON (((2.0 2.0, 2.0 -2.0, -2.0 -2.0, -2.0 2.0, 2.0 2.0)),
      *               ((3.0 3.0, 3.0 -3.0, -3.0 -3.0, -3.0 3.0, 3.0 3.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_0_2D;
+    public static final MultiPolygon MULTIPOLYGON_0_2D;
     /**
      * MULTIPOLYGON (((2.0 2.0, 2.0 -2.0, -2.0 -2.0, -2.0 2.0, 2.0 2.0),
      *                (1.0 1.0, 1.0 -1.0, -1.0 -1.0, -1.0 1.0, 1.0 1.0)),
      *               ((3.0 3.0, 3.0 -3.0, -3.0 -3.0, -3.0 3.0, 3.0 3.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_HOLES_0_2D;
+    public static final MultiPolygon MULTIPOLYGON_HOLES_0_2D;
     /**
      * MULTIPOLYGON Z (((2.0 2.0 2.0, 2.0 -2.0 0.0, -2.0 -2.0 -2.0, -2.0 2.0 0.0, 2.0 2.0 2.0)),
      *                 ((3.0 3.0 3.0, 3.0 -3.0 0.0, -3.0 -3.0 -3.0, -3.0 3.0 0.0, 3.0 3.0 3.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_0_3D;
+    public static final MultiPolygon MULTIPOLYGON_0_3D;
     /**
      * MULTIPOLYGON Z (((2.0 2.0 2.0, 2.0 -2.0 0.0, -2.0 -2.0 -2.0, -2.0 2.0 0.0, 2.0 2.0 2.0),
      *                  (1.0 1.0, 1.0 -1.0, -1.0 -1.0, -1.0 1.0, 1.0 1.0)),
      *                 ((3.0 3.0 3.0, 3.0 -3.0 0.0, -3.0 -3.0 -3.0, -3.0 3.0 0.0, 3.0 3.0 3.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_HOLES_0_3D;
+    public static final MultiPolygon MULTIPOLYGON_HOLES_0_3D;
     /**
      * MULTIPOLYGON Z (((2.0 2.0 2.0, 2.0 -2.0 0.0, -2.0 -2.0 -2.0, -2.0 2.0 0.0, 2.0 2.0 2.0)),
      *                 ((3.0 3.0, 3.0 -3.0, -3.0 -3.0, -3.0 3.0, 3.0 3.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_0_MIXED;
+    public static final MultiPolygon MULTIPOLYGON_0_MIXED;
     /**
      * MULTIPOLYGON Z (((2.0 2.0 2.0, 2.0 -2.0 0.0, -2.0 -2.0 -2.0, -2.0 2.0 0.0, 2.0 2.0 2.0),
      *                  (1.0 1.0, 1.0 -1.0, -1.0 -1.0, -1.0 1.0, 1.0 1.0)),
      *                 ((3.0 3.0, 3.0 -3.0, -3.0 -3.0, -3.0 3.0, 3.0 3.0)))
      */
-    protected static MultiPolygon MULTIPOLYGON_HOLES_0_MIXED;
+    public static final MultiPolygon MULTIPOLYGON_HOLES_0_MIXED;
     /**
      * GEOMETRYCOLLECTION (
      *                     POINT (0.0 0.0),
@@ -378,7 +378,7 @@ public abstract class BaseTest {
      *                                   ((3.0 3.0, 3.0 -3.0, -3.0 -3.0, -3.0 3.0, 3.0 3.0)))
      * )
      */
-    protected static GeometryCollection GEOMETRY_COLLECTION_0_2D;
+    public static final GeometryCollection GEOMETRY_COLLECTION_0_2D;
     /**
      * GEOMETRYCOLLECTION (
      *                     POINT Z (0.0 0.0 0.0),
@@ -397,7 +397,7 @@ public abstract class BaseTest {
      *                                     ((3.0 3.0 3.0, 3.0 -3.0 0.0, -3.0 -3.0 -3.0, -3.0 3.0 0.0, 3.0 3.0 3.0)))
      * )
      */
-    protected static GeometryCollection GEOMETRY_COLLECTION_0_3D;
+    public static final GeometryCollection GEOMETRY_COLLECTION_0_3D;
     /**
      * GEOMETRYCOLLECTION (
      *                     POINT (0.0 0.0),
@@ -416,23 +416,16 @@ public abstract class BaseTest {
      *                                     ((3.0 3.0 3.0, 3.0 -3.0 0.0, -3.0 -3.0 -3.0, -3.0 3.0 0.0, 3.0 3.0 3.0)))
      * )
      */
-    protected static GeometryCollection GEOMETRY_COLLECTION_0_MIXED;
-
-    /**
-     * {@link Statement} used for SQL queries.
-     */
-    protected Statement st;
+    public static final GeometryCollection GEOMETRY_COLLECTION_0_MIXED;
     /**
      * Preset {@link GeometryFactory} used for JTS geometry creation.
      */
-    protected static GeometryFactory FACTORY;
+    private static GeometryFactory FACTORY;
 
-    /**
-     * Initialisation of default test geometries.
-     * Each geometries has e 2D, 3D and Mixed coordinates version.
-     * Each are duplicated : one centered around (0 0), the other not.
+    /*
+     * Geometries static initialisation.
      */
-    protected static void geometriesInit() {
+    static {
         FACTORY = new GeometryFactory();
 
         POINT_2D = createPoint2D();
@@ -512,10 +505,10 @@ public abstract class BaseTest {
      * @throws ClassNotFoundException {@link Exception} thrown during the creation of the database, when calling the H2
      *                                driver class..
      */
-    protected void statementInit(@Nullable String prefix) throws SQLException, ClassNotFoundException {
+    public Statement statementInit(@Nullable String prefix) throws SQLException, ClassNotFoundException {
         Connection connection = H2GISDBFactory.createSpatialDataBase(
                 "target/" + (prefix!=null?prefix:"") + UUID.randomUUID().toString());
-        st = connection.createStatement();
+        return connection.createStatement();
     }
 
     /**
@@ -526,8 +519,8 @@ public abstract class BaseTest {
      * @throws ClassNotFoundException {@link Exception} thrown during the creation of the database, when calling the H2
      *                                driver class..
      */
-    protected void statementInit() throws SQLException, ClassNotFoundException {
-        statementInit(null);
+    public Statement statementInit() throws SQLException, ClassNotFoundException {
+        return statementInit(null);
     }
 
     /**
