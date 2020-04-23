@@ -145,6 +145,26 @@
             <id>osgi-maven-5.1-snapshot</id>
             <url>http://nexus.orbisgis.org/content/repositories/osgi-maven-5.1-snapshot</url>
         </repository>
+        <repository>
+            <id>orbisgis-release</id>
+            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-release</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
+            <id>orbisgis-snapshot</id>
+            <url>http://nexus-ng.orbisgis.org/repository/orbisgis-snapshot</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
     </repositories>
 
     <dependencyManagement>
@@ -248,11 +268,12 @@
         <pluginManagement>
             <plugins>
                 <!-- Plugin for the test coverage check -->
-                <plugin>
+                <!-- TODO replace cobertura by jacoco -->
+                <!--<plugin>
                     <groupId>${cobertura-maven-plugin-groupId}</groupId>
                     <artifactId>cobertura-maven-plugin</artifactId>
                     <version>${cobertura-maven-plugin-version}</version>
-                </plugin>
+                </plugin>-->
                 <!-- Plugin for the execution of a Java program -->
                 <plugin>
                     <groupId>${exec-maven-plugin-groupId}</groupId>
@@ -320,5 +341,23 @@
             </plugin>
         </plugins>
     </build>
+
+    <profiles>
+        <profile>
+            <id>orbisgis-deploy</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>orbisgis-deploy-snapshots</id>
+                    <name>Internal Snaphots</name>
+                    <url>http://nexus-ng.orbisgis.org/repository/orbisgis-snapshot/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>orbisgis-deploy-release</id>
+                    <name>Internal Releases</name>
+                    <url>http://nexus-ng.orbisgis.org/repository/orbisgis-release/</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 
 </project>

@@ -138,30 +138,6 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <!-- Plugin for the test coverage check -->
-            <plugin>
-                <groupId>${cobertura-maven-plugin-groupId}</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <configuration>
-                    <check>
-                        <!-- TODO Raise Coverage constraint -->
-                        <branchRate>0</branchRate>
-                        <lineRate>0</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>50</totalBranchRate>
-                        <totalLineRate>70</totalLineRate>
-                        <packageLineRate>0</packageLineRate>
-                        <packageBranchRate>0</packageBranchRate>
-                    </check>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- Plugin for the compilation -->
             <plugin>
                 <groupId>${maven-compiler-plugin-groupId}</groupId>
