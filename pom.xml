@@ -268,11 +268,12 @@
         <pluginManagement>
             <plugins>
                 <!-- Plugin for the test coverage check -->
-                <plugin>
+                <!-- TODO replace cobertura by jacoco -->
+                <!--<plugin>
                     <groupId>${cobertura-maven-plugin-groupId}</groupId>
                     <artifactId>cobertura-maven-plugin</artifactId>
                     <version>${cobertura-maven-plugin-version}</version>
-                </plugin>
+                </plugin>-->
                 <!-- Plugin for the execution of a Java program -->
                 <plugin>
                     <groupId>${exec-maven-plugin-groupId}</groupId>
