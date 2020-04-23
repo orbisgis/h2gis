@@ -100,29 +100,6 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <!-- Plugin for the test coverage check -->
-            <plugin>
-               <groupId>${cobertura-maven-plugin-groupId}</groupId>
-               <artifactId>cobertura-maven-plugin</artifactId>
-               <configuration>
-                   <check>
-                       <lineRate>0</lineRate>
-                       <branchRate>0</branchRate>
-                       <haltOnFailure>true</haltOnFailure>
-                       <totalLineRate>50</totalLineRate>
-                       <totalBranchRate>80</totalBranchRate>
-                       <packageLineRate>90</packageLineRate>
-                       <packageBranchRate>80</packageBranchRate>
-                   </check>
-               </configuration>
-               <executions>
-                   <execution>
-                       <goals>
-                           <goal>check</goal>
-                       </goals>
-                   </execution>
-               </executions>
-           </plugin>
             <!-- Plugin for test running -->
             <plugin>
                 <groupId>${maven-surefire-plugin-groupId}</groupId>

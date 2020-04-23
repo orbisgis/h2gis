@@ -101,40 +101,6 @@
                     </instructions>
                 </configuration>
             </plugin>
-            <!-- Plugin for the test coverage check -->
-            <plugin>
-                <groupId>${cobertura-maven-plugin-groupId}</groupId>
-                <artifactId>cobertura-maven-plugin</artifactId>
-                <configuration>
-                    <check>
-                        <!-- TODO Raise Coverage constraint -->
-                        <branchRate>0</branchRate>
-                        <lineRate>0</lineRate>
-                        <haltOnFailure>true</haltOnFailure>
-                        <totalBranchRate>57</totalBranchRate>
-                        <totalLineRate>42</totalLineRate>
-                        <regexes>
-                            <regex>
-                                <pattern>org.h2gis.utilities.jts_utils.Contouring</pattern>
-                                <branchRate>79</branchRate>
-                                <lineRate>80</lineRate>
-                            </regex>
-                            <regex>
-                                <pattern>org.h2gis.utilities.wrapper</pattern>
-                                <branchRate>0</branchRate>
-                                <lineRate>0</lineRate>
-                            </regex>
-                        </regexes>
-                    </check>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>check</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
             <!-- Plugin for test running -->
             <plugin>
                 <groupId>${maven-surefire-plugin-groupId}</groupId>
