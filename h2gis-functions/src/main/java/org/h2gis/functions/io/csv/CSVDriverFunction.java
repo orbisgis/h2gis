@@ -74,7 +74,7 @@ public class CSVDriverFunction implements DriverFunction{
         return false;
     }
     
-     @Override
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
              throws SQLException, IOException {
          exportTable(connection, tableReference, fileName, progress, null);
@@ -91,6 +91,7 @@ public class CSVDriverFunction implements DriverFunction{
      * @throws SQLException
      * @throws IOException 
      */
+    @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String csvOptions) throws SQLException, IOException {
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);

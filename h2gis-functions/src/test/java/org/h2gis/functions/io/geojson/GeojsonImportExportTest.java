@@ -57,7 +57,7 @@ public class GeojsonImportExportTest {
         H2GISFunctions.registerFunction(connection.createStatement(), new GeoJsonWrite(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new GeoJsonRead(), "");
         H2GISFunctions.registerFunction(connection.createStatement(), new ST_GeomFromGeoJSON(), "");
-        
+
     }
 
     @AfterAll
@@ -483,7 +483,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_MIXED_READ");
         }
     }
-    
+
     @Test
     public void testReadGeoJSON1() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -492,7 +492,7 @@ public class GeojsonImportExportTest {
             assertEquals("POINT (10 1)", res.getString(1));
         }
     }
-    
+
     @Test
     public void testReadGeoJSON2() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -501,7 +501,7 @@ public class GeojsonImportExportTest {
             assertEquals("LINESTRING (1 1, 10 10)", res.getString(1));
         }
     }
-    
+
     @Test
     public void testReadGeoJSON3() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -510,7 +510,7 @@ public class GeojsonImportExportTest {
             assertEquals("MULTIPOINT ((100 0), (101 1))", res.getString(1));
         }
     }
-    
+
     @Test
     public void testWriteReadNullGeojsonPoint() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -529,8 +529,8 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
     }
-    
-    
+
+
     @Test
     public void testWriteReadlGeojsonComplex() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -557,17 +557,43 @@ public class GeojsonImportExportTest {
     public void testReadComplexFile() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_COMPLEX_READ");
-            stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("complex.geojson").getPath()) + ", 'TABLE_COMPLEX_READ');");
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("complex.geojson").getPath()) + ", 'TABLE_COMPLEX_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_COMPLEX_READ;");
+            ResultSetMetaData metadata = res.getMetaData();
+            assertEquals(15, metadata.getColumnCount());
+            assertEquals("GEOMETRY", metadata.getColumnTypeName(1));
+            assertEquals("DOUBLE", metadata.getColumnTypeName(2));
+            assertEquals("DOUBLE", metadata.getColumnTypeName(3));
+            assertEquals("BIGINT", metadata.getColumnTypeName(4));
+            assertEquals("BIGINT", metadata.getColumnTypeName(5));
+            assertEquals("BIGINT", metadata.getColumnTypeName(6));
+            assertEquals("VARCHAR", metadata.getColumnTypeName(7));
+            assertEquals("DOUBLE", metadata.getColumnTypeName(8));
+            assertEquals("DOUBLE", metadata.getColumnTypeName(9));
+            assertEquals("VARCHAR", metadata.getColumnTypeName(10));
+            assertEquals("BOOLEAN", metadata.getColumnTypeName(11));
+            assertEquals("VARCHAR", metadata.getColumnTypeName(12));
+            assertEquals("DOUBLE", metadata.getColumnTypeName(13));
+            assertEquals("DOUBLE", metadata.getColumnTypeName(14));
+            assertEquals("DOUBLE", metadata.getColumnTypeName(15));
             res.next();
             assertNull(res.getObject(1));
+            assertEquals(79.04200463708992, res.getDouble(2));
             assertEquals("#C5E805", res.getString(7));
-            assertNull(res.getObject(31));
-            assertNull(res.getObject(32));
+            assertNull(res.getObject(14));
+            assertNull(res.getObject(15));
+            res.next();
+            assertNull(res.getObject(1));
+            assertNull(res.getObject(2));
+            assertEquals("#C5E805", res.getString(7));
+            assertEquals("12.0", res.getString(10));
+            assertNull(res.getObject(11));
+            assertTrue(res.getBoolean(12));
             res.next();
             assertEquals(10.2d, ((Geometry) res.getObject(1)).getCoordinate().z, 0);
-            assertEquals(0.87657195d, res.getDouble(31), 0);
-            assertEquals(234.16d, res.getDouble(32), 0);
+            assertNull(res.getObject(13));
+            assertEquals(0.87657195d, res.getDouble(14), 0);
+            assertEquals(234.16d, res.getDouble(15), 0);
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_POINTS_READ");
         }
@@ -577,7 +603,7 @@ public class GeojsonImportExportTest {
     public void testReadProperties() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES_READ;");
-            stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ", 'TABLE_PROPERTIES_READ');");
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ", 'TABLE_PROPERTIES_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_PROPERTIES_READ;");
             res.next();
             assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POLYGON ((7.49587624983838 48.5342070572556, 7.49575955525988 48.5342516702309, 7.49564286068138 48.5342070572556, 7.49564286068138 48.534117831187, 7.49575955525988 48.5340732180938, 7.49587624983838 48.534117831187, 7.49587624983838 48.5342070572556))")));
@@ -609,7 +635,7 @@ public class GeojsonImportExportTest {
     public void testWriteReadProperties() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES;");
-            stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ", 'TABLE_PROPERTIES');");
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("data.geojson").getPath()) + ", 'TABLE_PROPERTIES');");
             stat.execute("CALL GeoJsonWrite('target/properties_read.geojson','TABLE_PROPERTIES')");
             stat.execute("DROP TABLE IF EXISTS TABLE_PROPERTIES_READ;");
             stat.execute("CALL GeoJsonRead('target/properties_read.geojson', 'TABLE_PROPERTIES_READ')");
@@ -644,7 +670,7 @@ public class GeojsonImportExportTest {
     public void testWriteReadNullField() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_NULL;");
-            stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("null.geojson").getPath()) + ", 'TABLE_NULL');");
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("null.geojson").getPath()) + ", 'TABLE_NULL');");
             stat.execute("CALL GeoJsonWrite('target/null_read.geojson','TABLE_NULL')");
             stat.execute("DROP TABLE IF EXISTS TABLE_NULL_READ");
             stat.execute("CALL GeoJsonRead('target/null_read.geojson', 'TABLE_NULL_READ')");
@@ -661,35 +687,35 @@ public class GeojsonImportExportTest {
             assertNull((res.getObject(1)));
             assertTrue(res.getBoolean(2));
             assertEquals("{}", res.getString(3));
-            Object[] expectedResult2 = {1,2};
+            Object[] expectedResult2 = {1, 2};
             Object[] result2 = (Object[]) res.getObject(4);
             assertArrayEquals(expectedResult2, result2);
             res.next();
             assertNull((res.getObject(1)));
             assertEquals(2, res.getInt(2), 0);
             assertEquals("{}", res.getString(3));
-            Object[] expectedResult3 = {1,2};
+            Object[] expectedResult3 = {1, 2};
             Object[] result3 = (Object[]) res.getObject(4);
             assertArrayEquals(expectedResult3, result3);
             res.next();
             assertNull((res.getObject(1)));
             assertEquals("{}", res.getString(2));
             assertEquals("{}", res.getString(3));
-            Object[] expectedResult4 = {1,2};
+            Object[] expectedResult4 = {1, 2};
             Object[] result4 = (Object[]) res.getObject(4);
             assertArrayEquals(expectedResult4, result4);
             res.next();
             assertNull((res.getObject(1)));
             assertEquals("[5, 6, 6]", res.getString(2));
             assertEquals("{}", res.getString(3));
-            Object[] expectedResult5 = {1,2};
+            Object[] expectedResult5 = {1, 2};
             Object[] result5 = (Object[]) res.getObject(4);
             assertArrayEquals(expectedResult5, result5);
             res.next();
             assertNull((res.getObject(1)));
             assertNull(res.getString(2));
             assertEquals("{}", res.getString(3));
-            Object[] expectedResult6 = {1,2};
+            Object[] expectedResult6 = {1, 2};
             Object[] result6 = (Object[]) res.getObject(4);
             assertArrayEquals(expectedResult6, result6);
             res.close();
@@ -700,7 +726,7 @@ public class GeojsonImportExportTest {
     public void testReadAdditionalProps() throws Exception {
         try (Statement stat = connection.createStatement()) {
             stat.execute("DROP TABLE IF EXISTS TABLE_ADDITIONALPROPS_READ;");
-            stat.execute("CALL GeoJsonRead("+ StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("additionalProps.geojson").getPath()) + ", 'TABLE_ADDITIONALPROPS_READ');");
+            stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("additionalProps.geojson").getPath()) + ", 'TABLE_ADDITIONALPROPS_READ');");
             ResultSet res = stat.executeQuery("SELECT * FROM TABLE_ADDITIONALPROPS_READ;");
             res.next();
             assertTrue(((Geometry) res.getObject(1)).equals(WKTREADER.read("POINT (100.0 0.0)")));
@@ -709,7 +735,7 @@ public class GeojsonImportExportTest {
             res.close();
         }
     }
-    
+
     @Test
     public void testWriteReadEmptyTable() throws SQLException {
         try (Statement stat = connection.createStatement()) {
@@ -724,7 +750,7 @@ public class GeojsonImportExportTest {
             assertFalse(res.next());
         }
     }
-    
+
     @Test
     public void testWriteReadGeojsonProperties() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -743,8 +769,8 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_MIXED_PROPS_READ");
         }
     }
-    
-    
+
+
     @Test
     public void exportImportFile() throws SQLException, IOException {
         Statement stat = connection.createStatement();
@@ -764,8 +790,8 @@ public class GeojsonImportExportTest {
             assertEquals(1, res.getInt(1));
         }
     }
-    
-    
+
+
     @Test
     public void exportImportFileWithSpace() throws SQLException, IOException {
         assertThrows(JdbcSQLDataException.class, () -> {
@@ -782,7 +808,7 @@ public class GeojsonImportExportTest {
             stat.execute("CALL GeoJSONRead('target/lineal export.geojson')");
         });
     }
-    
+
     @Test
     public void exportImportFileWithDot() throws SQLException, IOException {
         assertThrows(JdbcSQLDataException.class, () -> {
@@ -799,7 +825,7 @@ public class GeojsonImportExportTest {
             stat.execute("CALL GeoJSONRead('target/lineal.export.geojson')");
         });
     }
-    
+
     @Test
     public void exportImportResultSet() throws SQLException, IOException {
         Statement stat = connection.createStatement();
@@ -808,7 +834,7 @@ public class GeojsonImportExportTest {
         stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING Z))");
         stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 2 6)')");
         ResultSet resultSet = stat.executeQuery("SELECT * FROM lineal");
-        GeoJsonWriteDriver  gjw = new GeoJsonWriteDriver(connection);
+        GeoJsonWriteDriver gjw = new GeoJsonWriteDriver(connection);
         gjw.write(new EmptyProgressVisitor(), resultSet, new File("target/lineal_export.geojson"));
         // Read this geojson file to check values
         assertTrue(fileOut.exists());
@@ -819,7 +845,7 @@ public class GeojsonImportExportTest {
             assertEquals(1, res.getInt(1));
         }
     }
-    
+
     @Test
     public void exportQueryImportFile() throws SQLException, IOException {
         Statement stat = connection.createStatement();
@@ -839,7 +865,7 @@ public class GeojsonImportExportTest {
             assertEquals(1, res.getInt(1));
         }
     }
-    
+
     @Test
     public void exportResultSetBadEncoding() throws SQLException, IOException {
         assertThrows(JdbcSQLDataException.class, () -> {
@@ -852,7 +878,7 @@ public class GeojsonImportExportTest {
             gjw.write(new EmptyProgressVisitor(), resultSet, new File("target/lineal_export.geojson"), "CP52");
         });
     }
-    
+
     @Test
     public void exportBadEncoding() throws SQLException, IOException {
         assertThrows(JdbcSQLDataException.class, () -> {
@@ -860,12 +886,12 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS LINEAL");
             stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING))");
             stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12  6)')");
-            GeoJsonWriteDriver  gjw = new GeoJsonWriteDriver(connection);
-            gjw.write(new EmptyProgressVisitor(), "lineal", new File("target/lineal_export.geojson"),"CP52");
+            GeoJsonWriteDriver gjw = new GeoJsonWriteDriver(connection);
+            gjw.write(new EmptyProgressVisitor(), "lineal", new File("target/lineal_export.geojson"), "CP52");
         });
     }
-    
-    
+
+
     @Test
     public void testSelectWriteReadGeojsonLinestring() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -882,7 +908,7 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
     }
-    
+
     @Test
     public void testSelectWriteRead() throws Exception {
         try (Statement stat = connection.createStatement()) {
@@ -895,18 +921,18 @@ public class GeojsonImportExportTest {
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
     }
-    
+
     @Test
     public void testReadCRS84() throws Exception {
         Statement stat = connection.createStatement();
         stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("urn_crs84.geojson").getPath()) + ")");
         ResultSet res = stat.executeQuery("SELECT * FROM URN_CRS84;");
         res.next();
-        GeometryAsserts.assertGeometryEquals("SRID=4326;POINT(7.49587624983838 48.5342070572556)",res.getObject(1));
+        GeometryAsserts.assertGeometryEquals("SRID=4326;POINT(7.49587624983838 48.5342070572556)", res.getObject(1));
         res.close();
         stat.execute("DROP TABLE IF EXISTS URN_CRS84");
-    } 
-    
+    }
+
     @Test
     public void testWriteReadGeojsonTableCase() throws Exception {
         Statement stat = connection.createStatement();
@@ -937,5 +963,5 @@ public class GeojsonImportExportTest {
         res.close();
         stat.execute("DROP TABLE IF EXISTS startNull");
     }
-
 }
+
