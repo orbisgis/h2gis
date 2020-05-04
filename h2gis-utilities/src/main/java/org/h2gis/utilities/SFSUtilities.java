@@ -17,7 +17,6 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
 package org.h2gis.utilities;
 
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
@@ -35,36 +34,31 @@ import java.util.Map;
 import org.cts.util.UTMUtils;
 
 /**
- * Generic utilities function to retrieve spatial metadata trough SFS specification.
- * Compatible with H2 and PostGIS.
+ * Generic utilities function to retrieve spatial metadata trough SFS
+ * specification. Compatible with H2 and PostGIS.
  *
  * @author Nicolas Fortin
  * @author Sylvain PALOMINOS (UBS 2018)
  */
 public class SFSUtilities {
 
-    private static final Map<Integer, String> TYPE_MAP = new HashMap<>();
-    private static final Map<String, Integer> GEOM_TYPE_TO_SFS_CODE;
+    private static final Map<Integer, String> CODE_TYPE_MAP = new HashMap<>();
+    private static final Map<String, Integer> TYPE_CODE_MAP = new HashMap<>();
+
+    //private static final Map<String, Integer> GEOM_TYPE_TO_SFS_CODE;
     static {
-        GEOM_TYPE_TO_SFS_CODE = new HashMap<>();
-        GEOM_TYPE_TO_SFS_CODE.put("point", GeometryTypeCodes.POINT);
-        GEOM_TYPE_TO_SFS_CODE.put("linestring", GeometryTypeCodes.LINESTRING);
-        GEOM_TYPE_TO_SFS_CODE.put("polygon", GeometryTypeCodes.POLYGON);
-        GEOM_TYPE_TO_SFS_CODE.put("multipoint", GeometryTypeCodes.MULTIPOINT);
-        GEOM_TYPE_TO_SFS_CODE.put("multilinestring", GeometryTypeCodes.MULTILINESTRING);
-        GEOM_TYPE_TO_SFS_CODE.put("multipolygon", GeometryTypeCodes.MULTIPOLYGON);
-        GEOM_TYPE_TO_SFS_CODE.put("geometry", GeometryTypeCodes.GEOMETRY);
-        GEOM_TYPE_TO_SFS_CODE.put("geometrycollection", GeometryTypeCodes.GEOMCOLLECTION);
         // Cache GeometryTypeCodes into a static HashMap
-        for(Field field : GeometryTypeCodes.class.getDeclaredFields()) {
+        for (Field field : GeometryTypeCodes.class.getDeclaredFields()) {
             try {
-                TYPE_MAP.put(field.getInt(null),field.getName());
-            } catch (IllegalAccessException ignored) {}
+                CODE_TYPE_MAP.put(field.getInt(null), field.getName());
+                TYPE_CODE_MAP.put(field.getName(),field.getInt(null));
+            } catch (IllegalAccessException ignored) {
+            }
         }
     }
 
     public static String getGeometryTypeNameFromCode(int geometryTypeCode) {
-        return TYPE_MAP.get(geometryTypeCode);
+        return CODE_TYPE_MAP.get(geometryTypeCode);
     }
 
     /**
@@ -75,16 +69,12 @@ public class SFSUtilities {
      * @return The sfs geometry type identifier
      */
     public static int getGeometryTypeFromGeometry(Geometry geometry) {
-        Integer sfsGeomCode = GEOM_TYPE_TO_SFS_CODE.get(geometry.getGeometryType().toLowerCase());
-        if(sfsGeomCode == null) {
-            return GeometryTypeCodes.GEOMETRY;
-        } else {
-            return sfsGeomCode;
-        }
+        return GeometryMetaData.getMetaData(geometry).getGeometryTypeCode();
     }
 
     /**
-     * Return the sfs geometry type identifier of the provided field of the provided table.
+     * Return the sfs geometry type identifier of the provided field of the
+     * provided table.
      *
      * @param connection Active connection
      * @param location Catalog, schema and table name
@@ -96,38 +86,40 @@ public class SFSUtilities {
      *
      * @throws SQLException
      */
-    public static int getGeometryType(Connection connection,TableLocation location, String fieldName)
+    public static int getGeometryType(Connection connection, TableLocation location, String fieldName)
             throws SQLException {
-        if(fieldName==null || fieldName.isEmpty()) {
+        if (fieldName == null || fieldName.isEmpty()) {
             List<String> geometryFields = getGeometryFields(connection, location);
-            if(geometryFields.isEmpty()) {
-                throw new SQLException("The table "+location+" does not contain a Geometry field, " +
-                        "then geometry type cannot be computed");
+            if (geometryFields.isEmpty()) {
+                throw new SQLException("The table " + location + " does not contain a Geometry field, "
+                        + "then geometry type cannot be computed");
             }
             fieldName = geometryFields.get(0);
         }
-        ResultSet geomResultSet = getGeometryColumnsView(connection,location.getCatalog(),location.getSchema(),
+        ResultSet geomResultSet = getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
                 location.getTable());
         boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        while(geomResultSet.next()) {
-            if(fieldName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(fieldName)) {
-                if(isH2) {
+        while (geomResultSet.next()) {
+            if (fieldName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(fieldName)) {
+                if (isH2) {
                     return geomResultSet.getInt("GEOMETRY_TYPE");
                 } else {
-                    return GEOM_TYPE_TO_SFS_CODE.get(geomResultSet.getString("type").toLowerCase());
+                    return TYPE_CODE_MAP.get(geomResultSet.getString("type").toLowerCase());
                 }
             }
         }
-        throw new SQLException("Field not found "+fieldName);
+        throw new SQLException("Field not found " + fieldName);
     }
 
     /**
-     * Returns a map containing the field names as key and the SFS geometry type as value from the given table.
+     * Returns a map containing the field names as key and the SFS geometry type
+     * as value from the given table.
      *
      * @param connection Active connection
      * @param location Catalog, schema and table name
      *
-     * @return A map containing the geometric fields names as key and the SFS geometry type as value.
+     * @return A map containing the geometric fields names as key and the SFS
+     * geometry type as value.
      *
      * @see GeometryTypeCodes
      *
@@ -136,27 +128,27 @@ public class SFSUtilities {
     public static Map<String, Integer> getGeometryTypes(Connection connection, TableLocation location)
             throws SQLException {
         Map<String, Integer> map = new HashMap<>();
-        ResultSet geomResultSet = getGeometryColumnsView(connection,location.getCatalog(),location.getSchema(),
+        ResultSet geomResultSet = getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
                 location.getTable());
         boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
-        while(geomResultSet.next()) {
+        while (geomResultSet.next()) {
             String fieldName = geomResultSet.getString("F_GEOMETRY_COLUMN");
             int type;
-            if(isH2) {
+            if (isH2) {
                 type = geomResultSet.getInt("GEOMETRY_TYPE");
             } else {
-                type = GEOM_TYPE_TO_SFS_CODE.get(geomResultSet.getString("type").toLowerCase());
+                type = TYPE_CODE_MAP.get(geomResultSet.getString("type").toLowerCase());
             }
             map.put(fieldName, type);
         }
         return map;
     }
 
-
     /**
      * In order to be able to use {@link ResultSet#unwrap(Class)} and
-     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get {@link SpatialResultSet} and
-     * {@link SpatialResultSetMetaData} this method wrap the provided dataSource.
+     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get
+     * {@link SpatialResultSet} and {@link SpatialResultSetMetaData} this method
+     * wrap the provided dataSource.
      *
      * @param dataSource H2 or PostGIS DataSource
      *
@@ -164,7 +156,7 @@ public class SFSUtilities {
      */
     public static DataSource wrapSpatialDataSource(DataSource dataSource) {
         try {
-            if(dataSource.isWrapperFor(DataSourceWrapper.class)) {
+            if (dataSource.isWrapperFor(DataSourceWrapper.class)) {
                 return dataSource;
             } else {
                 return new DataSourceWrapper(dataSource);
@@ -175,10 +167,11 @@ public class SFSUtilities {
     }
 
     /**
-     * Use this only if DataSource is not available.
-     * In order to be able to use {@link ResultSet#unwrap(Class)} and
-     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get {@link SpatialResultSet} and
-     * {@link SpatialResultSetMetaData} this method wrap the provided connection.
+     * Use this only if DataSource is not available. In order to be able to use
+     * {@link ResultSet#unwrap(Class)} and
+     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get
+     * {@link SpatialResultSet} and {@link SpatialResultSetMetaData} this method
+     * wrap the provided connection.
      *
      * @param connection H2 or PostGIS Connection
      *
@@ -186,7 +179,7 @@ public class SFSUtilities {
      */
     public static Connection wrapConnection(Connection connection) {
         try {
-            if(connection.isWrapperFor(ConnectionWrapper.class)) {
+            if (connection.isWrapperFor(ConnectionWrapper.class)) {
                 return connection;
             } else {
                 return new ConnectionWrapper(connection);
@@ -201,60 +194,64 @@ public class SFSUtilities {
      *
      * @param connection Active connection (not closed by this function)
      * @param location Location of the table
-     * @param geometryField Geometry field or empty string (take the first geometry field)
+     * @param geometryField Geometry field or empty string (take the first
+     * geometry field)
      *
      * @return Envelope of the table
      *
-     * @throws SQLException If the table not exists, empty or does not contain a geometry field.
+     * @throws SQLException If the table not exists, empty or does not contain a
+     * geometry field.
      */
     public static Envelope getTableEnvelope(Connection connection, TableLocation location, String geometryField)
             throws SQLException {
-        if(geometryField==null || geometryField.isEmpty()) {
+        if (geometryField == null || geometryField.isEmpty()) {
             List<String> geometryFields = getGeometryFields(connection, location);
-            if(geometryFields.isEmpty()) {
-                throw new SQLException("The table "+location+" does not contain a Geometry field, then the extent " +
-                        "cannot be computed");
+            if (geometryFields.isEmpty()) {
+                throw new SQLException("The table " + location + " does not contain a Geometry field, then the extent "
+                        + "cannot be computed");
             }
             geometryField = geometryFields.get(0);
         }
-        ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("+
-                TableLocation.quoteIdentifier(geometryField)+") ext FROM "+location);
-        if(rs.next()) {
+        ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("
+                + TableLocation.quoteIdentifier(geometryField) + ") ext FROM " + location);
+        if (rs.next()) {
             // Todo under postgis it is a BOX type
-            return ((Geometry)rs.getObject(1)).getEnvelopeInternal();
+            return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
         }
         throw new SQLException("Unable to get the table extent it may be empty");
     }
-    
+
     /**
-     * Compute the 'estimated' extent of the given spatial table.
-     * Use the first geometry field
-     * In case of POSTGIS : the estimated is taken from the geometry column's statistics.
-     * In case of H2GIS : the estimated is taken from the spatial index of the geometry column.
-     * If the estimated extend is null the extent is computed.
+     * Compute the 'estimated' extent of the given spatial table. Use the first
+     * geometry field In case of POSTGIS : the estimated is taken from the
+     * geometry column's statistics. In case of H2GIS : the estimated is taken
+     * from the spatial index of the geometry column. If the estimated extend is
+     * null the extent is computed.
+     *
      * @param connection
      * @param tableLocation
-     * @return 
-     * @throws java.sql.SQLException 
+     * @return
+     * @throws java.sql.SQLException
      */
-    public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation) throws SQLException { 
+    public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation) throws SQLException {
         List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableLocation);
-        if(geometryFields.isEmpty()){
+        if (geometryFields.isEmpty()) {
             throw new SQLException("Cannot find any geometry column");
         }
-        return getEstimatedExtent(connection, tableLocation, geometryFields.get(0) );
+        return getEstimatedExtent(connection, tableLocation, geometryFields.get(0));
     }
-    
+
     /**
-     * Compute the 'estimated' extent of the given spatial table. 
-     * In case of POSTGIS : the estimated is taken from the geometry column's statistics.
-     * In case of H2GIS : the estimated is taken from the spatial index of the geometry column.
-     * If the estimated extend is null the extent is computed.
+     * Compute the 'estimated' extent of the given spatial table. In case of
+     * POSTGIS : the estimated is taken from the geometry column's statistics.
+     * In case of H2GIS : the estimated is taken from the spatial index of the
+     * geometry column. If the estimated extend is null the extent is computed.
+     *
      * @param connection
      * @param tableLocation
      * @param geometryField
-     * @return 
-     * @throws java.sql.SQLException 
+     * @return
+     * @throws java.sql.SQLException
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryField) throws SQLException {
         Geometry result;
@@ -282,8 +279,6 @@ public class SFSUtilities {
         }
         throw new SQLException("Unable to compute the estimated extent");
     }
-    
-    
 
     /**
      * Find geometry fields name of a table.
@@ -295,13 +290,13 @@ public class SFSUtilities {
      *
      * @throws SQLException
      */
-    public static List<String> getGeometryFields(Connection connection,TableLocation location) throws SQLException {
+    public static List<String> getGeometryFields(Connection connection, TableLocation location) throws SQLException {
         return getGeometryFields(connection, location.getCatalog(), location.getSchema(), location.getTable());
     }
 
     /**
-     * For table containing catalog, schema and table name, this function create a prepared statement with a filter
-     * on this combination.
+     * For table containing catalog, schema and table name, this function create
+     * a prepared statement with a filter on this combination.
      *
      * @param connection Active connection
      * @param catalog Table catalog, may be empty
@@ -317,24 +312,24 @@ public class SFSUtilities {
      *
      * @throws SQLException
      */
-    public static PreparedStatement prepareInformationSchemaStatement(Connection connection,String catalog,
-                                                                      String schema, String table,
-                                                                      String informationSchemaTable,
-                                                                      String endQuery, String catalog_field,
-                                                                      String schema_field, String table_field)
+    public static PreparedStatement prepareInformationSchemaStatement(Connection connection, String catalog,
+            String schema, String table,
+            String informationSchemaTable,
+            String endQuery, String catalog_field,
+            String schema_field, String table_field)
             throws SQLException {
         Integer catalogIndex = null;
         Integer schemaIndex = null;
         Integer tableIndex = 1;
-        StringBuilder sb = new StringBuilder("SELECT * from "+informationSchemaTable+" where ");
-        if(!catalog.isEmpty()) {
+        StringBuilder sb = new StringBuilder("SELECT * from " + informationSchemaTable + " where ");
+        if (!catalog.isEmpty()) {
             sb.append("UPPER(");
             sb.append(catalog_field);
             sb.append(") = ? AND ");
             catalogIndex = 1;
             tableIndex++;
         }
-        if(!schema.isEmpty()) {
+        if (!schema.isEmpty()) {
             sb.append("UPPER(");
             sb.append(schema_field);
             sb.append(") = ? AND ");
@@ -346,10 +341,10 @@ public class SFSUtilities {
         sb.append(") = ? ");
         sb.append(endQuery);
         PreparedStatement preparedStatement = connection.prepareStatement(sb.toString());
-        if(catalogIndex!=null) {
+        if (catalogIndex != null) {
             preparedStatement.setString(catalogIndex, catalog.toUpperCase());
         }
-        if(schemaIndex!=null) {
+        if (schemaIndex != null) {
             preparedStatement.setString(schemaIndex, schema.toUpperCase());
         }
         preparedStatement.setString(tableIndex, table.toUpperCase());
@@ -357,8 +352,9 @@ public class SFSUtilities {
     }
 
     /**
-     * For table containing catalog, schema and table name, this function create a prepared statement with a filter on
-     * this combination. Use "f_table_catalog","f_table_schema","f_table_name" as field names.
+     * For table containing catalog, schema and table name, this function create
+     * a prepared statement with a filter on this combination. Use
+     * "f_table_catalog","f_table_schema","f_table_name" as field names.
      *
      * @param connection Active connection
      * @param catalog Table catalog, may be empty
@@ -371,20 +367,21 @@ public class SFSUtilities {
      *
      * @throws SQLException
      */
-    public static PreparedStatement prepareInformationSchemaStatement(Connection connection,String catalog,
-                                                                      String schema, String table,
-                                                                      String informationSchemaTable, String endQuery)
+    public static PreparedStatement prepareInformationSchemaStatement(Connection connection, String catalog,
+            String schema, String table,
+            String informationSchemaTable, String endQuery)
             throws SQLException {
-        return prepareInformationSchemaStatement(connection,catalog, schema, table, informationSchemaTable, endQuery,
-                "f_table_catalog","f_table_schema","f_table_name");
+        return prepareInformationSchemaStatement(connection, catalog, schema, table, informationSchemaTable, endQuery,
+                "f_table_catalog", "f_table_schema", "f_table_name");
     }
 
-    private static ResultSet getGeometryColumnsView(Connection connection,String catalog, String schema, String table)
+    private static ResultSet getGeometryColumnsView(Connection connection, String catalog, String schema, String table)
             throws SQLException {
-        PreparedStatement geomStatement = prepareInformationSchemaStatement(connection,catalog, schema, table,
+        PreparedStatement geomStatement = prepareInformationSchemaStatement(connection, catalog, schema, table,
                 "geometry_columns", "");
         return geomStatement.executeQuery();
     }
+
     /**
      * Find geometry fields name of a table.
      *
@@ -397,17 +394,17 @@ public class SFSUtilities {
      *
      * @throws SQLException
      */
-    public static List<String> getGeometryFields(Connection connection,String catalog, String schema, String table)
+    public static List<String> getGeometryFields(Connection connection, String catalog, String schema, String table)
             throws SQLException {
         List<String> fieldsName = new LinkedList<>();
-        ResultSet geomResultSet = getGeometryColumnsView(connection,catalog,schema,table);
+        ResultSet geomResultSet = getGeometryColumnsView(connection, catalog, schema, table);
         while (geomResultSet.next()) {
             fieldsName.add(geomResultSet.getString("f_geometry_column"));
         }
         geomResultSet.close();
         return fieldsName;
     }
-    
+
     /**
      * Find geometry fields name of a resultSet.
      *
@@ -427,8 +424,7 @@ public class SFSUtilities {
             }
         }
         return fieldsName;
-    }   
-    
+    }
 
     /**
      * Find the first geometry field name of a resultSet. Return -1 if there is
@@ -450,10 +446,10 @@ public class SFSUtilities {
         }
         return -1;
     }
-    
+
     /**
-     * Find the first geometry field name of a resultSet. 
-     * Return -1 if there is no geometry column
+     * Find the first geometry field name of a resultSet. Return -1 if there is
+     * no geometry column
      *
      * @param resultSet ResultSet to analyse
      *
@@ -534,7 +530,7 @@ public class SFSUtilities {
         }
         return aggregatedEnvelope;
     }
-    
+
     /**
      * Return the SRID of the first geometry column of the input table
      *
@@ -543,7 +539,7 @@ public class SFSUtilities {
      *
      * @return The SRID of the first geometry column
      *
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static int getSRID(Connection connection, TableLocation table) throws SQLException {
         ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
@@ -556,9 +552,10 @@ public class SFSUtilities {
         geomResultSet.close();
         return srid;
     }
-    
+
     /**
-     * Return the srid of a table for a given field name. If the specified field isn't geometric, return 0.
+     * Return the srid of a table for a given field name. If the specified field
+     * isn't geometric, return 0.
      *
      * @param connection Active connection
      * @param table Table name
@@ -582,21 +579,22 @@ public class SFSUtilities {
         }
         return srid;
     }
-    
+
     /**
-     * Return an array of two string that correspond to the authority name and its SRID code.
-     * If the SRID does not exist return the array {null, null}
+     * Return an array of two string that correspond to the authority name and
+     * its SRID code. If the SRID does not exist return the array {null, null}
      *
      * @param connection Active connection
      * @param table Table name
      * @param fieldName Field to analyse
      *
-     * @return Array of two string that correspond to the authority name  and its SRID code
+     * @return Array of two string that correspond to the authority name and its
+     * SRID code
      *
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static String[] getAuthorityAndSRID(Connection connection, TableLocation table, String fieldName)
-            throws SQLException{
+            throws SQLException {
         int srid;
         try (ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
                 table.getTable())) {
@@ -611,13 +609,13 @@ public class SFSUtilities {
         String authority = null;
         String sridCode = null;
         if (srid != 0) {
-            PreparedStatement ps = connection.prepareStatement("SELECT AUTH_NAME FROM PUBLIC.SPATIAL_REF_SYS " +
-                    " WHERE SRID = ?");
+            PreparedStatement ps = connection.prepareStatement("SELECT AUTH_NAME FROM PUBLIC.SPATIAL_REF_SYS "
+                    + " WHERE SRID = ?");
             ps.setInt(1, srid);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
                     authority = rs.getString(1);
-                    sridCode=String.valueOf(srid);
+                    sridCode = String.valueOf(srid);
                 }
             } finally {
                 ps.close();
@@ -626,10 +624,9 @@ public class SFSUtilities {
         return new String[]{authority, sridCode};
     }
 
-
     /**
-     * Alter a table to add a SRID constraint.
-     * The srid must be greater than zero.
+     * Alter a table to add a SRID constraint. The srid must be greater than
+     * zero.
      *
      * @param connection Active connection
      * @param tableLocation TableLocation of the table to update
@@ -645,10 +642,10 @@ public class SFSUtilities {
                     tableLocation.toString(), srid));
         }
     }
-    
-    
+
     /**
      * Return a SRID code from latitude and longitude coordinates
+     *
      * @param connection to the database
      * @param latitude
      * @param longitude
@@ -656,17 +653,17 @@ public class SFSUtilities {
      * @throws SQLException
      */
     public static int getSRID(Connection connection, float latitude, float longitude)
-            throws SQLException {      
-            int srid = -1;
-            PreparedStatement ps = connection.prepareStatement("select SRID from PUBLIC.SPATIAL_REF_SYS where PROJ4TEXT = ?");
-            ps.setString(1, UTMUtils.getProj(latitude,longitude));
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    srid = rs.getInt(1);
-                }
-            } finally {
-                ps.close();
+            throws SQLException {
+        int srid = -1;
+        PreparedStatement ps = connection.prepareStatement("select SRID from PUBLIC.SPATIAL_REF_SYS where PROJ4TEXT = ?");
+        ps.setString(1, UTMUtils.getProj(latitude, longitude));
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                srid = rs.getInt(1);
             }
-            return srid;
+        } finally {
+            ps.close();
+        }
+        return srid;
     }
 }

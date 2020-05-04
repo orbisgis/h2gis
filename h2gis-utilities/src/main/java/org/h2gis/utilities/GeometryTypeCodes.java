@@ -22,6 +22,7 @@ package org.h2gis.utilities;
 
 /**
  * Geometry type codes as defined in OGC SFS 1.2.1
+ * and SQL/MM specification. SQL-MM 3: 5.1.4
  *
  * @author Nicolas Fortin
  * @author Sylvain PALOMINOS (UBS 2018)

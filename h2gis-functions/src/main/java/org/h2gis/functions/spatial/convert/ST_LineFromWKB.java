@@ -22,7 +22,7 @@ package org.h2gis.functions.spatial.convert;
 
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.utilities.jts_utils.GeometryMetaData;
+import org.h2gis.utilities.GeometryMetaData;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKBReader;
@@ -74,7 +74,7 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
         }
         WKBReader wkbReader = new WKBReader();
         try {
-            if(GeometryMetaData.getMetaDataFromWKB(bytes).geometryType != GeometryTypeCodes.LINESTRING) {
+            if(GeometryMetaData.getMetaData(bytes).geometryTypeCode != GeometryTypeCodes.LINESTRING) {
                 throw new SQLException("Provided WKB is not a LINESTRING.");
             }
             Geometry geometry = wkbReader.read(bytes);
