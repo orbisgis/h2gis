@@ -51,6 +51,7 @@ public class GridRowSet implements SimpleRowSource {
     private boolean isTable;
     private String tableName;
     private boolean isCenterCell = false;
+    private int srid;
 
     /**
      * The grid will be computed according a table stored in the database
@@ -69,18 +70,19 @@ public class GridRowSet implements SimpleRowSource {
     }
 
     /**
-     * The grid will be computed according an envelope
+     * The grid will be computed according the envelope of a geometry
      *
      * @param connection
      * @param deltaX
      * @param deltaY
-     * @param envelope
+     * @param geometry 
      */
-    public GridRowSet(Connection connection, double deltaX, double deltaY, Envelope envelope) {
+    public GridRowSet(Connection connection, double deltaX, double deltaY, Geometry geometry) {
         this.connection = connection;
         this.deltaX = deltaX;
         this.deltaY = deltaY;
-        this.envelope = envelope;
+        srid = geometry.getSRID();        
+        this.envelope = geometry.getEnvelopeInternal();
         this.isTable = false;
     }
 
@@ -115,6 +117,8 @@ public class GridRowSet implements SimpleRowSource {
         //We compute the extend according the first input value
         if (isTable) {
             Statement statement = connection.createStatement();
+            //Find the SRID
+            srid = SFSUtilities.getSRID(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
             try (ResultSet rs = statement.executeQuery("select ST_Extent(" + getFirstGeometryField(tableName, connection) + ")  from " + tableName)) {
                 rs.next();
                 Geometry geomExtend = (Geometry) rs.getObject(1);
@@ -154,6 +158,7 @@ public class GridRowSet implements SimpleRowSource {
         final LinearRing g = GF.createLinearRing(summits);
         final Polygon gg = GF.createPolygon(g, null);
         cellI++;
+        gg.setSRID(srid);
         return gg;
     }
 
@@ -166,7 +171,9 @@ public class GridRowSet implements SimpleRowSource {
         double x1 = (minX + cellI * deltaX) + (deltaX / 2d);
         double y1 = (minY + cellJ * deltaY) + (deltaY / 2d);
         cellI++;
-        return GF.createPoint(new Coordinate(x1, y1));
+        Point gg = GF.createPoint(new Coordinate(x1, y1));
+        gg.setSRID(srid);
+        return gg;
     }
 
     /**

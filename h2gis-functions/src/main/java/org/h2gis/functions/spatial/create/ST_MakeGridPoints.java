@@ -72,7 +72,7 @@ public class ST_MakeGridPoints extends AbstractFunction implements ScalarFunctio
             return gridRowSet.getResultSet();
         } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
-            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry().getEnvelopeInternal());
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry());
             gridRowSet.setCenterCell(true);
             return gridRowSet.getResultSet();
         } else {

@@ -24,6 +24,8 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
+import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;
 
@@ -516,6 +518,32 @@ public class CreateFunctionTest {
         assertGeometryEquals("POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
         rs.next();
         assertGeometryEquals("POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
+        rs.close();
+        st.execute("DROP TABLE input_table, grid;");
+    }
+
+    @Test
+    public void test_ST_MakeGridSRID() throws Exception {
+        st.execute("DROP TABLE IF EXISTS input_table,grid;"
+                + "CREATE TABLE input_table(the_geom Geometry(POLYGON, 4326));"
+                + "INSERT INTO input_table VALUES"
+                + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))', 4326));");
+        st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1);");
+        assertEquals(4326,SFSUtilities.getSRID(connection, TableLocation.parse("GRID")));
+        ResultSet rs = st.executeQuery("select count(*) from grid;");
+        rs.next();
+        assertEquals(rs.getInt(1), 4);
+        rs.close();
+        rs = st.executeQuery("select * from grid;");
+        assertEquals(1111, rs.getMetaData().getColumnType(1));
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON((0 0, 1 0, 1 1, 0 1, 0 0))",rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON((1 0, 2 0, 2 1, 1 1, 1 0))",rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON((0 1, 1 1, 1 2, 0 2, 0 1))",rs.getObject(1));
+        rs.next();
+        assertGeometryEquals("SRID=4326;POLYGON((1 1, 2 1, 2 2, 1 2, 1 1))",rs.getObject(1));
         rs.close();
         st.execute("DROP TABLE input_table, grid;");
     }

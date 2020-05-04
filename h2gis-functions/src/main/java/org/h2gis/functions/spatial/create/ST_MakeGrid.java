@@ -73,7 +73,7 @@ public class ST_MakeGrid extends AbstractFunction implements ScalarFunction {
             return gridRowSet.getResultSet();
         } else if (value instanceof ValueGeometry) {
             ValueGeometry geom = (ValueGeometry) value;
-            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry().getEnvelopeInternal());
+            GridRowSet gridRowSet = new GridRowSet(connection, deltaX, deltaY, geom.getGeometry());
             return gridRowSet.getResultSet();
         } else {
             throw new SQLException("This function supports only table name or geometry as first argument.");
