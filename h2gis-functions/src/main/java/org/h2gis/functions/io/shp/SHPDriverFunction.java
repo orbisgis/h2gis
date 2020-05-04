@@ -36,7 +36,7 @@ import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
-import org.h2gis.utilities.jts_utils.GeometryMetaData;
+import org.h2gis.utilities.GeometryMetaData;
 
 import java.io.File;
 import java.io.IOException;
@@ -156,7 +156,7 @@ public class SHPDriverFunction implements DriverFunction {
                     // If there is not shape type constraint read the first geometry and use the same type
                     byte[] wkb = rs.getBytes(geoFieldIndex);
                     if (wkb != null) {
-                        GeometryMetaData gm = GeometryMetaData.getMetaDataFromWKB(wkb);                        
+                        GeometryMetaData gm = GeometryMetaData.getMetaData(wkb);                        
                         if (srid == 0) {
                             srid = gm.SRID;
                         }
@@ -337,7 +337,7 @@ public class SHPDriverFunction implements DriverFunction {
      */
     private static ShapeType getShapeTypeFromGeometryMetaData(GeometryMetaData meta) throws SQLException {
         ShapeType shapeType;
-        switch (meta.geometryType) {
+        switch (meta.geometryTypeCode) {
             case GeometryTypeCodes.MULTILINESTRING:
             case GeometryTypeCodes.LINESTRING:
             case GeometryTypeCodes.MULTILINESTRINGM:

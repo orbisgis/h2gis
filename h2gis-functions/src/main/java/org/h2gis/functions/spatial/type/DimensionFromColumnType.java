@@ -21,7 +21,6 @@
 package org.h2gis.functions.spatial.type;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.functions.spatial.properties.ColumnSRID;
 import org.h2gis.functions.spatial.properties.ColumnSRIDFromColumnType;
 
 import java.sql.Connection;

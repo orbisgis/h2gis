@@ -21,7 +21,7 @@
 package org.h2gis.functions.spatial.properties;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.GeometryMetaData;
+import org.h2gis.utilities.GeometryMetaData;
 
 import java.io.IOException;
 
@@ -54,7 +54,7 @@ public class ST_Is3D extends DeterministicScalarFunction{
          if (geom == null) {
             return 0;
         }
-        return GeometryMetaData.getMetaDataFromWKB(geom).hasZ?1:0;              
+        return GeometryMetaData.getMetaData(geom).hasZ?1:0;              
     }
 
    

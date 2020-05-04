@@ -21,7 +21,7 @@
 package org.h2gis.functions.spatial.properties;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.utilities.jts_utils.GeometryMetaData;
+import org.h2gis.utilities.GeometryMetaData;
 
 import java.io.IOException;
 
@@ -50,6 +50,6 @@ public class ST_GeometryTypeCode extends DeterministicScalarFunction {
         if(geometry == null) {
             return null;
         }
-        return GeometryMetaData.getMetaDataFromWKB(geometry).geometryType;
+        return GeometryMetaData.getMetaData(geometry).geometryTypeCode;
     }
 }

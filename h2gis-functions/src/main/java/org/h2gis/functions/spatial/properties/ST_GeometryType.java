@@ -21,11 +21,12 @@
 package org.h2gis.functions.spatial.properties;
 
 import org.h2gis.api.DeterministicScalarFunction;
-import org.locationtech.jts.geom.Geometry;
+import org.h2gis.utilities.GeometryMetaData;
 
 /**
- * Return the type of geometry : POINT, LINESTRING, POLYGON...
+ * Return the type of geometry : ST_POINT, ST_LINESTRING, ST_POLYGON...
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS (2020)
  */
 public class ST_GeometryType extends DeterministicScalarFunction {
 
@@ -33,7 +34,8 @@ public class ST_GeometryType extends DeterministicScalarFunction {
      * Default constructor
      */
     public ST_GeometryType() {
-        addProperty(PROP_REMARKS, "Return the type of geometry : POINT, LINESTRING, POLYGON..");
+        addProperty(PROP_REMARKS, "Return the geometry type of the ST_Geometry value\n "
+                + " for a user-defined type defined in SQL/MM specification. SQL-MM 3: 5.1.4");
     }
 
     @Override
@@ -43,12 +45,12 @@ public class ST_GeometryType extends DeterministicScalarFunction {
 
     /**
      * @param geometry Geometry instance
-     * @return Geometry type equivalent to {@link org.locationtech.jts.geom.Geometry#getGeometryType()}
+     * @return Geometry type for a user-defined type defined in SQL/MM specification. SQL-MM 3: 5.1.4
      */
-    public static String getGeometryType(Geometry geometry) {
+    public static String getGeometryType(byte[] geometry) {
         if(geometry==null) {
             return null;
         }
-        return geometry.getGeometryType();
+        return GeometryMetaData.getMetaData(geometry).getGeometryType();
     }
 }
