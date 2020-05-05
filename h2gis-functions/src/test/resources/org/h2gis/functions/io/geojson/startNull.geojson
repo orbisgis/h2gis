@@ -22,17 +22,17 @@
                 ]
             },
             "properties":{
-                "id_build":49,
-                "id_source":"BATIMENT0000000258092994",
-                "height_wall":4,
-                "height_roof":4,
-                "nb_lev":1,
-                "type":"building",
-                "main_use":"",
-                "zindex":0,
-                "id_zone":"outside",
+                "id_build":null,
+                "id_source":null,
+                "height_wall":null,
+                "height_roof":null,
+                "nb_lev":null,
+                "type":null,
+                "main_use":null,
+                "zindex":null,
+                "id_zone":null,
                 "id_rsu":null,
-                "area":57.425000001658915
+                "area":null
             }
         },
         {
