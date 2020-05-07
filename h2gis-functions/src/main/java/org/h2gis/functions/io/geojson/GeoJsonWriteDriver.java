@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.utilities.GeometryTableUtils;
 
 /**
  * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -207,7 +208,7 @@ public class GeoJsonWriteDriver {
                     if (recordCount > 0) {
                         ProgressVisitor copyProgress = progress.subProcess(recordCount);
                         // Read Geometry Index and type
-                        List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, parse);
+                        List<String> spatialFieldNames = GeometryTableUtils.getGeometryFields(connection, parse);
                         if (spatialFieldNames.isEmpty()) {
                             throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
                         }

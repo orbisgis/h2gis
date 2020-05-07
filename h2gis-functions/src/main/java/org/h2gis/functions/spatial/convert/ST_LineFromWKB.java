@@ -74,7 +74,7 @@ public class ST_LineFromWKB extends DeterministicScalarFunction {
         }
         WKBReader wkbReader = new WKBReader();
         try {
-            if(GeometryMetaData.getMetaData(bytes).geometryTypeCode != GeometryTypeCodes.LINESTRING) {
+            if(GeometryMetaData.getMetaData(bytes).sfs_geometryTypeCode != GeometryTypeCodes.LINESTRING) {
                 throw new SQLException("Provided WKB is not a LINESTRING.");
             }
             Geometry geometry = wkbReader.read(bytes);

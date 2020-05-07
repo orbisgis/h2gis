@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.utilities.GeometryTableUtils;
 
 /**
  * This table function explode Geometry Collection into multiple geometries
@@ -204,7 +205,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
             columnCount = meta.getColumnCount();
             if(spatialFieldName==null) {
                 // Find first geometry column
-                List<String> geomFields = SFSUtilities.getGeometryFields(connection,TableLocation.parse(tableName));
+                List<String> geomFields = GeometryTableUtils.getGeometryFields(connection,TableLocation.parse(tableName));
                 if(!geomFields.isEmpty()) {
                     spatialFieldName = geomFields.get(0);
                 } else {

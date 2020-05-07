@@ -57,112 +57,357 @@
 --srtext CHARACTER VARYING(2048));
 -- -- !#@ ADAPTATION END
 
+--//////////////////////////////////////////////////////////////////////////////
+--
+--------------------------------------------------------------------------------
+--
+-- Create feature tables
+--
+--------------------------------------------------------------------------------
+--
 -- Lakes
-
+--
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'POLYGON' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- CREATE TABLE lakes (
+--       fid               INTEGER NOT NULL PRIMARY KEY,
+--       name              VARCHAR(64),
+--       shore             POLYGON
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 CREATE TABLE lakes (
+       fid               INTEGER NOT NULL PRIMARY KEY,
+       name              VARCHAR(64),
+       shore             GEOMETRY(Polygon, 101)
+);
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
-fid INTEGER NOT NULL PRIMARY KEY,
-
-name CHARACTER VARYING(64),
-
-shore GEOMETRY(POLYGON));
-
+--
 -- Road Segments
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'LINESTRING' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- CREATE TABLE road_segments (
+--      fid               INTEGER NOT NULL PRIMARY KEY,
+--      name              VARCHAR(64),
+--      aliases           VARCHAR(64),
+--      num_lanes         INTEGER
+--      centerline        LINESTRING
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 
 CREATE TABLE road_segments (
+       fid               INTEGER NOT NULL PRIMARY KEY,
+       name              VARCHAR(64),
+       aliases           VARCHAR(64),
+       num_lanes         INTEGER,
+       centerline        GEOMETRY(LineString, 101)
+);
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
-fid INTEGER NOT NULL PRIMARY KEY,
-
-name CHARACTER VARYING(64),
-
-aliases CHARACTER VARYING(64),
-
-num_lanes INTEGER,
-
-centerline GEOMETRY(LINESTRING));
-
+--
 -- Divided Routes
-
+--
+--
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'MULTILINESTRING' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- CREATE TABLE divided_routes (
+--       fid               INTEGER NOT NULL PRIMARY KEY,
+--       name              VARCHAR(64),
+--       num_lanes         INTEGER
+--       centerlines       MULTILINESTRING
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 CREATE TABLE divided_routes (
+       fid               INTEGER NOT NULL PRIMARY KEY,
+       name              VARCHAR(64),
+       num_lanes         INTEGER,
+       centerlines       GEOMETRY(multilinestring, 101)
+);
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
-fid INTEGER NOT NULL PRIMARY KEY,
-
-name CHARACTER VARYING(64),
-
-num_lanes INTEGER,
-
-centerlines GEOMETRY(MULTILINESTRING));
-
+--
 -- Forests
-
+--
+--
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'MULTIPOLYGON' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- CREATE TABLE forests (
+--       fid            INTEGER NOT NULL PRIMARY KEY,
+--       name           VARCHAR(64)
+--       boundary       MULTIPOLYGON
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 CREATE TABLE forests (
+       fid            INTEGER NOT NULL PRIMARY KEY,
+       name           VARCHAR(64),
+       boundary       GEOMETRY(MultiPolygon, 101)
+);
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
-fid INTEGER NOT NULL PRIMARY KEY,
-
-name CHARACTER VARYING(64),
-
-boundary GEOMETRY(MULTIPOLYGON));
-
+--
 -- Bridges
-
+--
+--
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'POINT' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- CREATE TABLE bridges (
+--       fid           INTEGER NOT NULL PRIMARY KEY,
+--       name          VARCHAR(64)
+--       position      POINT
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 CREATE TABLE bridges (
+       fid           INTEGER NOT NULL PRIMARY KEY,
+       name          VARCHAR(64),
+       position      GEOMETRY(Point, 101)
+);
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
-fid INTEGER NOT NULL PRIMARY KEY,
-
-name CHARACTER VARYING(64),
-
-position GEOMETRY(POINT));
-
+--
 -- Streams
-
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'LINESTRING' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- CREATE TABLE streams (
+--       fid             INTEGER NOT NULL PRIMARY KEY,
+--       name            VARCHAR(64)
+--       centerline      LINESTRING
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 CREATE TABLE streams (
+       fid             INTEGER NOT NULL PRIMARY KEY,
+       name            VARCHAR(64),
+       centerline      GEOMETRY(LineString, 101)
+);
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
-fid INTEGER NOT NULL PRIMARY KEY,
-
-name CHARACTER VARYING(64),
-
-centerline GEOMETRY(LINESTRING));
-
+--
 -- Buildings
-
+--
+--*** ADAPTATION ALERT ***
+-- A view could be used to provide the below semantics without multiple geometry
+-- columns in a table. In other words, create two tables. One table would
+-- contain the POINT position and the other would create the POLYGON footprint.
+-- Then create a view with the semantics of the buildings table below.
+--
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'POINT', 'POLYGON' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- CREATE TABLE buildings (
+--     fid             INTEGER NOT NULL PRIMARY KEY,
+--     address         VARCHAR(64)
+--     position        POINT
+--     footprint       POLYGON
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 CREATE TABLE buildings (
+       fid             INTEGER NOT NULL PRIMARY KEY,
+       address         VARCHAR(64),
+       position        GEOMETRY(Point, 101),
+       footprint       GEOMETRY(Polygon, 101)
+);
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
-fid INTEGER NOT NULL PRIMARY KEY,
-
-address CHARACTER VARYING(64),
-
-position GEOMETRY(POINT),
-
-footprint GEOMETRY(POLYGON));
-
+--
 -- Ponds
+--
+--
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'MULTIPOYLGON' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- CREATE TABLE ponds (
+--       fid             INTEGER NOT NULL PRIMARY KEY,
+--       name            VARCHAR(64),
+--       type            VARCHAR(64)
+--       shores          MULTIPOYLGON
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 CREATE TABLE ponds (
+       fid             INTEGER NOT NULL PRIMARY KEY,
+       name            VARCHAR(64),
+       type            VARCHAR(64),
+       shores          GEOMETRY(MultiPolygon, 101)
+);
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
-fid INTEGER NOT NULL PRIMARY KEY,
-
-name CHARACTER VARYING(64),
-
-type CHARACTER VARYING(64),
-
-shores GEOMETRY(MULTIPOLYGON));
-
+--
 -- Named Places
+--
+--
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'POLYGON' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
 
+-- CREATE TABLE named_places (
+--       fid             INTEGER NOT NULL PRIMARY KEY,
+--       name            VARCHAR(64)
+--       boundary        POLYGON
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 CREATE TABLE named_places (
-
-fid INTEGER NOT NULL PRIMARY KEY,
-
-name CHARACTER VARYING(64),
-
-boundary GEOMETRY(POLYGON));
+       fid             INTEGER NOT NULL PRIMARY KEY,
+       name            VARCHAR(64),
+       boundary        GEOMETRY(Polygon, 101)
+);
+-- ---------------------
+-- -- END   ADAPTED  SQL
+-- ---------------------
+-- -- !#@ ADAPTATION END
 
 -- Map Neatline
-
+--
+--
+--
+--
+-- !#@ ADAPTATION BEGIN
+-- We declare the geometry column type using 'GEOMETRY'
+-- as the type with 'POLYGON' and 101 as type modifiers
+-- to enforce the geometry type and SRID.
+-- ---------------------
+-- -- BEGIN ORIGINAL SQL
+-- ---------------------
+-- CREATE TABLE map_neatlines (
+--     fid             INTEGER NOT NULL PRIMARY KEY
+--     neatline        POLYGON
+-- );
+-- ---------------------
+-- -- END   ORIGINAL SQL
+-- ---------------------
+-- ---------------------
+-- -- BEGIN ADAPTED  SQL
+-- ---------------------
 CREATE TABLE map_neatlines (
-
-fid INTEGER NOT NULL PRIMARY KEY,
-
-neatline GEOMETRY(POLYGON));
+       fid             INTEGER NOT NULL PRIMARY KEY,
+       neatline        GEOMETRY(Polygon, 101)
+);
 
 -- Spatial Reference System
 -- -- !#@ ADAPTATION BEGIN

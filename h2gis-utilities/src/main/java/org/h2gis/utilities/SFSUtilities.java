@@ -21,7 +21,6 @@ package org.h2gis.utilities;
 
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.sql.DataSource;
@@ -44,8 +43,6 @@ public class SFSUtilities {
 
     private static final Map<Integer, String> CODE_TYPE_MAP = new HashMap<>();
     private static final Map<String, Integer> TYPE_CODE_MAP = new HashMap<>();
-
-    //private static final Map<String, Integer> GEOM_TYPE_TO_SFS_CODE;
     static {
         // Cache GeometryTypeCodes into a static HashMap
         for (Field field : GeometryTypeCodes.class.getDeclaredFields()) {
@@ -89,14 +86,14 @@ public class SFSUtilities {
     public static int getGeometryType(Connection connection, TableLocation location, String fieldName)
             throws SQLException {
         if (fieldName == null || fieldName.isEmpty()) {
-            List<String> geometryFields = getGeometryFields(connection, location);
+            List<String> geometryFields = GeometryTableUtils.getGeometryFields(connection, location);
             if (geometryFields.isEmpty()) {
                 throw new SQLException("The table " + location + " does not contain a Geometry field, "
                         + "then geometry type cannot be computed");
             }
             fieldName = geometryFields.get(0);
         }
-        ResultSet geomResultSet = getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
+        ResultSet geomResultSet = GeometryTableUtils.getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
                 location.getTable());
         boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         while (geomResultSet.next()) {
@@ -128,7 +125,7 @@ public class SFSUtilities {
     public static Map<String, Integer> getGeometryTypes(Connection connection, TableLocation location)
             throws SQLException {
         Map<String, Integer> map = new HashMap<>();
-        ResultSet geomResultSet = getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
+        ResultSet geomResultSet = GeometryTableUtils.getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
                 location.getTable());
         boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
         while (geomResultSet.next()) {
@@ -188,111 +185,7 @@ public class SFSUtilities {
             return new ConnectionWrapper(connection);
         }
     }
-
-    /**
-     * Merge the bounding box of all geometries inside the provided table.
-     *
-     * @param connection Active connection (not closed by this function)
-     * @param location Location of the table
-     * @param geometryField Geometry field or empty string (take the first
-     * geometry field)
-     *
-     * @return Envelope of the table
-     *
-     * @throws SQLException If the table not exists, empty or does not contain a
-     * geometry field.
-     */
-    public static Envelope getTableEnvelope(Connection connection, TableLocation location, String geometryField)
-            throws SQLException {
-        if (geometryField == null || geometryField.isEmpty()) {
-            List<String> geometryFields = getGeometryFields(connection, location);
-            if (geometryFields.isEmpty()) {
-                throw new SQLException("The table " + location + " does not contain a Geometry field, then the extent "
-                        + "cannot be computed");
-            }
-            geometryField = geometryFields.get(0);
-        }
-        ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("
-                + TableLocation.quoteIdentifier(geometryField) + ") ext FROM " + location);
-        if (rs.next()) {
-            // Todo under postgis it is a BOX type
-            return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
-        }
-        throw new SQLException("Unable to get the table extent it may be empty");
-    }
-
-    /**
-     * Compute the 'estimated' extent of the given spatial table. Use the first
-     * geometry field In case of POSTGIS : the estimated is taken from the
-     * geometry column's statistics. In case of H2GIS : the estimated is taken
-     * from the spatial index of the geometry column. If the estimated extend is
-     * null the extent is computed.
-     *
-     * @param connection
-     * @param tableLocation
-     * @return
-     * @throws java.sql.SQLException
-     */
-    public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation) throws SQLException {
-        List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableLocation);
-        if (geometryFields.isEmpty()) {
-            throw new SQLException("Cannot find any geometry column");
-        }
-        return getEstimatedExtent(connection, tableLocation, geometryFields.get(0));
-    }
-
-    /**
-     * Compute the 'estimated' extent of the given spatial table. In case of
-     * POSTGIS : the estimated is taken from the geometry column's statistics.
-     * In case of H2GIS : the estimated is taken from the spatial index of the
-     * geometry column. If the estimated extend is null the extent is computed.
-     *
-     * @param connection
-     * @param tableLocation
-     * @param geometryField
-     * @return
-     * @throws java.sql.SQLException
-     */
-    public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation, String geometryField) throws SQLException {
-        Geometry result;
-        int srid = getSRID(connection, tableLocation, geometryField);
-        StringBuilder query = new StringBuilder("SELECT  ESTIMATED_ENVELOPE('");
-        query.append(tableLocation.getTable()).append("','").append(geometryField).append("')");
-        ResultSet rs = connection.createStatement().executeQuery(query.toString());
-        if (rs.next()) {
-            result = (Geometry) rs.getObject(1);
-            if (result != null) {
-                result.setSRID(srid);
-                return result;
-            } else {
-                query = new StringBuilder("SELECT  ENVELOPE(");
-                query.append(TableLocation.quoteIdentifier(geometryField)).append(") FROM ").append(tableLocation.getTable());
-                rs = connection.createStatement().executeQuery(query.toString());
-                if (rs.next()) {
-                    result = (Geometry) rs.getObject(1);
-                    if (result != null) {
-                        result.setSRID(srid);
-                        return result;
-                    }
-                }
-            }
-        }
-        throw new SQLException("Unable to compute the estimated extent");
-    }
-
-    /**
-     * Find geometry fields name of a table.
-     *
-     * @param connection Active connection
-     * @param location Table location
-     *
-     * @return A list of Geometry fields name
-     *
-     * @throws SQLException
-     */
-    public static List<String> getGeometryFields(Connection connection, TableLocation location) throws SQLException {
-        return getGeometryFields(connection, location.getCatalog(), location.getSchema(), location.getTable());
-    }
+    
 
     /**
      * For table containing catalog, schema and table name, this function create
@@ -375,35 +268,9 @@ public class SFSUtilities {
                 "f_table_catalog", "f_table_schema", "f_table_name");
     }
 
-    private static ResultSet getGeometryColumnsView(Connection connection, String catalog, String schema, String table)
-            throws SQLException {
-        PreparedStatement geomStatement = prepareInformationSchemaStatement(connection, catalog, schema, table,
-                "geometry_columns", "");
-        return geomStatement.executeQuery();
-    }
+    
 
-    /**
-     * Find geometry fields name of a table.
-     *
-     * @param connection Active connection
-     * @param catalog Catalog that contain schema (empty for default catalog)
-     * @param schema Schema that contain table (empty for default schema)
-     * @param table Table name (case insensitive)
-     *
-     * @return A list of Geometry fields name
-     *
-     * @throws SQLException
-     */
-    public static List<String> getGeometryFields(Connection connection, String catalog, String schema, String table)
-            throws SQLException {
-        List<String> fieldsName = new LinkedList<>();
-        ResultSet geomResultSet = getGeometryColumnsView(connection, catalog, schema, table);
-        while (geomResultSet.next()) {
-            fieldsName.add(geomResultSet.getString("f_geometry_column"));
-        }
-        geomResultSet.close();
-        return fieldsName;
-    }
+   
 
     /**
      * Find geometry fields name of a resultSet.
@@ -426,159 +293,11 @@ public class SFSUtilities {
         return fieldsName;
     }
 
-    /**
-     * Find the first geometry field name of a resultSet. Return -1 if there is
-     * no geometry column
-     *
-     * @param resultSet ResultSet to analyse
-     *
-     * @return The index of first Geometry field
-     *
-     * @throws SQLException
-     */
-    public static int getFirstGeometryFieldIndex(ResultSet resultSet) throws SQLException {
-        ResultSetMetaData meta = resultSet.getMetaData();
-        int columnCount = meta.getColumnCount();
-        for (int i = 1; i <= columnCount; i++) {
-            if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                return i;
-            }
-        }
-        return -1;
-    }
+    
 
-    /**
-     * Find the first geometry field name of a resultSet. Return -1 if there is
-     * no geometry column
-     *
-     * @param resultSet ResultSet to analyse
-     *
-     * @return The name of first geometry field
-     *
-     * @throws SQLException
-     */
-    public static String getFirstGeometryFieldName(ResultSet resultSet) throws SQLException {
-        ResultSetMetaData meta = resultSet.getMetaData();
-        int columnCount = meta.getColumnCount();
-        for (int i = 1; i <= columnCount; i++) {
-            if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                return meta.getColumnName(i);
-            }
-        }
-        throw new SQLException("The query doesn't contain any geometry field");
-    }
+   
 
-    /**
-     * Check if the ResultSet contains a geometry field
-     *
-     * @param resultSet ResultSet to analyse
-     *
-     * @return True if the ResultSet contains one geometry field
-     *
-     * @throws SQLException
-     */
-    public static boolean hasGeometryField(ResultSet resultSet) throws SQLException {
-        ResultSetMetaData meta = resultSet.getMetaData();
-        int columnCount = meta.getColumnCount();
-        for (int i = 1; i <= columnCount; i++) {
-            if (meta.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Compute the full extend of a ResultSet using the first geometry field. If
-     * the ResultSet does not contain any geometry field throw an exception
-     *
-     * @param resultSet ResultSet to analyse
-     *
-     * @return The full envelope of the ResultSet
-     *
-     * @throws SQLException
-     */
-    public static Envelope getResultSetEnvelope(ResultSet resultSet) throws SQLException {
-        List<String> geometryFields = getGeometryFields(resultSet);
-        if (geometryFields.isEmpty()) {
-            throw new SQLException("This ResultSet doesn't contain any geometry field.");
-        } else {
-            return getResultSetEnvelope(resultSet, geometryFields.get(0));
-        }
-    }
-
-    /**
-     * Compute the full extend of a ResultSet using a specified geometry field.
-     * If the ResultSet does not contain this geometry field throw an exception
-     *
-     * @param resultSet ResultSet to analyse
-     * @param fieldName Field to analyse
-     *
-     * @return The full extend of the field in the ResultSet
-     *
-     * @throws SQLException
-     */
-    public static Envelope getResultSetEnvelope(ResultSet resultSet, String fieldName) throws SQLException {
-        Envelope aggregatedEnvelope = null;
-        while (resultSet.next()) {
-            Geometry geom = (Geometry) resultSet.getObject(fieldName);
-            if (aggregatedEnvelope != null) {
-                aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
-            } else {
-                aggregatedEnvelope = geom.getEnvelopeInternal();
-            }
-        }
-        return aggregatedEnvelope;
-    }
-
-    /**
-     * Return the SRID of the first geometry column of the input table
-     *
-     * @param connection Active connection
-     * @param table Table name
-     *
-     * @return The SRID of the first geometry column
-     *
-     * @throws SQLException
-     */
-    public static int getSRID(Connection connection, TableLocation table) throws SQLException {
-        ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
-                table.getTable());
-        int srid = 0;
-        while (geomResultSet.next()) {
-            srid = geomResultSet.getInt("srid");
-            break;
-        }
-        geomResultSet.close();
-        return srid;
-    }
-
-    /**
-     * Return the srid of a table for a given field name. If the specified field
-     * isn't geometric, return 0.
-     *
-     * @param connection Active connection
-     * @param table Table name
-     * @param fieldName Field to analyse
-     *
-     * @return The SRID of the field
-     *
-     * @throws SQLException
-     */
-    public static int getSRID(Connection connection, TableLocation table, String fieldName) throws SQLException {
-        int srid;
-        try (ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
-                table.getTable())) {
-            srid = 0;
-            while (geomResultSet.next()) {
-                if (geomResultSet.getString("f_geometry_column").equals(fieldName)) {
-                    srid = geomResultSet.getInt("srid");
-                    break;
-                }
-            }
-        }
-        return srid;
-    }
+    
 
     /**
      * Return an array of two string that correspond to the authority name and
@@ -596,8 +315,8 @@ public class SFSUtilities {
     public static String[] getAuthorityAndSRID(Connection connection, TableLocation table, String fieldName)
             throws SQLException {
         int srid;
-        try (ResultSet geomResultSet = getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
-                table.getTable())) {
+        try (ResultSet geomResultSet = GeometryTableUtils.getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
+                table.getTable(),fieldName)) {
             srid = 0;
             while (geomResultSet.next()) {
                 if (geomResultSet.getString("f_geometry_column").equals(fieldName)) {

@@ -67,6 +67,11 @@ public class JDBCUtilitiesTest {
     public static void dispose() throws Exception {
         connection.close();
     }
+    
+    @Test
+    public void testIsH2() throws SQLException {
+        assertTrue(JDBCUtilities.isH2DataBase(connection));
+    }
 
     @Test
     public void testTemporaryTable() throws SQLException {

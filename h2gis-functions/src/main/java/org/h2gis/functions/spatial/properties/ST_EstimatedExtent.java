@@ -13,7 +13,7 @@ import org.locationtech.jts.geom.Geometry;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
+import org.h2gis.utilities.GeometryTableUtils;
 
 /**
  * Estimated extent function based on the internal H2 ESTIMATED_ENVELOPE
@@ -46,7 +46,7 @@ public class ST_EstimatedExtent extends AbstractFunction implements ScalarFuncti
      */
     public static Geometry computeEstimatedExtent(Connection connection,
                                       String tableName) throws SQLException{
-        return SFSUtilities.getEstimatedExtent(connection, TableLocation.parse(tableName, true));
+        return GeometryTableUtils.getEstimatedExtent(connection, TableLocation.parse(tableName, true));
     }
     
     /**
@@ -59,6 +59,6 @@ public class ST_EstimatedExtent extends AbstractFunction implements ScalarFuncti
      */
     public static Geometry computeEstimatedExtent(Connection connection,
                                       String tableName, String geometryColumn) throws SQLException{  
-        return SFSUtilities.getEstimatedExtent(connection, TableLocation.parse(tableName, true), geometryColumn);
+        return GeometryTableUtils.getEstimatedExtent(connection, TableLocation.parse(tableName, true), geometryColumn);
     }
 }

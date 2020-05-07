@@ -92,7 +92,6 @@ public class DimensionFromColumnType extends DeterministicScalarFunction {
      */
     public static int dimensionFromConnectionColumnType(Connection connection, String catalogName, String schemaName, String tableName, String columnName,String constraint) {
         try {
-            Statement st = connection.createStatement();
             // Merge column constraint and table constraint
             constraint+= ColumnSRIDFromColumnType.fetchConstraint(connection, catalogName, schemaName, tableName);
             return dimensionFromColumnType(constraint, columnName);

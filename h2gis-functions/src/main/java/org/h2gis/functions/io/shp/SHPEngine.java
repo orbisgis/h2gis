@@ -20,18 +20,11 @@
 
 package org.h2gis.functions.io.shp;
 
-import org.h2.command.Parser;
-import org.h2.command.ddl.AlterDomainAddConstraint;
-import org.h2.command.ddl.CreateDomain;
 import org.h2.command.ddl.CreateTableData;
-import org.h2.constraint.ConstraintDomain;
-import org.h2.expression.Expression;
-import org.h2.schema.Domain;
 import org.h2.table.Column;
 import org.h2.value.ExtTypeInfo;
 import org.h2.value.ExtTypeInfoGeometry;
 import org.h2.value.TypeInfo;
-import org.h2.value.Value;
 import org.h2gis.functions.io.dbf.DBFEngine;
 import org.h2gis.functions.io.file_table.FileEngine;
 import org.h2gis.functions.io.shp.internal.SHPDriver;

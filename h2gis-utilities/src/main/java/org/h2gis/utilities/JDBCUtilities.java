@@ -39,6 +39,7 @@ public class JDBCUtilities {
 
     public enum FUNCTION_TYPE { ALL, BUILT_IN, ALIAS}
     public static final String H2_DRIVER_NAME = "H2 JDBC Driver";
+    public static final String H2_DRIVER_PACKAGE_NAME = "org.h2.jdbc";
 
     private JDBCUtilities() {}
 
@@ -79,19 +80,11 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static boolean hasField(Connection connection, String tableName, String fieldName) throws SQLException {
-        final Statement statement = connection.createStatement();
-        try {
-            final ResultSet resultSet = statement.executeQuery(
-                    "SELECT * FROM " + TableLocation.parse(tableName) + " LIMIT 0;");
-            try {
-                return hasField(resultSet.getMetaData(), fieldName);
-            } finally {
-                resultSet.close();
-            }
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(
+                "SELECT * FROM " + TableLocation.parse(tableName) + " WHERE 1=0;")) {
+            return hasField(resultSet.getMetaData(), fieldName);
         } catch (SQLException ex) {
             return false;
-        } finally {
-            statement.close();
         }
     }
 
@@ -148,13 +141,10 @@ public class JDBCUtilities {
     public static List<String> getFieldNames(DatabaseMetaData meta, String table) throws SQLException {
         List<String> fieldNameList = new ArrayList<String>();
         TableLocation location = TableLocation.parse(table);
-        ResultSet rs = meta.getColumns(location.getCatalog(null), location.getSchema(null), location.getTable(), null);
-        try {
+        try (ResultSet rs = meta.getColumns(location.getCatalog(null), location.getSchema(null), location.getTable(), null)) {
             while(rs.next()) {
                 fieldNameList.add(rs.getString("COLUMN_NAME"));
             }
-        } finally {
-            rs.close();
         }
         return fieldNameList;
     }
@@ -181,13 +171,10 @@ public class JDBCUtilities {
         Statement st = connection.createStatement();
         int rowCount = 0;
         try {
-            ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", TableLocation.parse(tableReference)));
-            try {
+            try (ResultSet rs = st.executeQuery(String.format("select count(*) rowcount from %s", TableLocation.parse(tableReference)))) {
                 if(rs.next()) {
                     rowCount = rs.getInt(1);
                 }
-            } finally {
-                rs.close();
             }
         }finally {
             st.close();
@@ -251,6 +238,14 @@ public class JDBCUtilities {
     }
 
 
+    /**
+     * @param connection to the 
+     * @return True if the provided metadata is a h2 database connection.
+     * @throws SQLException
+     */
+    public static boolean isH2DataBase(Connection connection) throws SQLException {
+        return connection.getClass().getName().startsWith(H2_DRIVER_PACKAGE_NAME);
+    }
 
     /**
      * @param metaData Database meta data
@@ -322,7 +317,7 @@ public class JDBCUtilities {
      */
     public static boolean tableExists(Connection connection, String tableName) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute("SELECT * FROM " + TableLocation.parse(tableName) + " LIMIT 0;");
+            statement.execute("SELECT * FROM " + TableLocation.parse(tableName) + " WHERE 1=0;");
             return true;
         } catch (SQLException ex) {
             return false;

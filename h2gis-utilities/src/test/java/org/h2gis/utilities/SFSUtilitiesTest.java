@@ -20,19 +20,11 @@
 
 package org.h2gis.utilities;
 
-import org.h2.api.Aggregate;
-import org.h2.util.StringUtils;
-import org.h2.value.Value;
-import org.h2gis.api.AbstractFunction;
-import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Envelope;
-import org.locationtech.jts.geom.Geometry;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
@@ -43,8 +35,6 @@ import java.sql.*;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,25 +63,7 @@ public class SFSUtilitiesTest {
 
         Statement st = connection.createStatement();
 
-        String functionAlias = "_GeometryTypeFromConstraint";
-        ScalarFunction scalarFunction = new GeometryTypeFromColumnType();
-        try {
-            st.execute("DROP ALIAS IF EXISTS " + functionAlias);
-        } catch (SQLException ignored) {}
-        st.execute("CREATE FORCE ALIAS IF NOT EXISTS _GeometryTypeFromConstraint DETERMINISTIC NOBUFFER FOR \"" +
-                GeometryTypeFromColumnType.class.getName() + "." + scalarFunction.getJavaStaticMethod() + "\"");
-
-        st.execute("DROP AGGREGATE IF EXISTS " + ST_Extent.class.getSimpleName().toUpperCase());
-        st.execute("CREATE FORCE AGGREGATE IF NOT EXISTS " + ST_Extent.class.getSimpleName().toUpperCase() +
-                " FOR \"" + ST_Extent.class.getName() + "\"");
-
-        functionAlias = "_ColumnSRID";
-        scalarFunction = new ColumnSRID();
-        try {
-            st.execute("DROP ALIAS IF EXISTS " + functionAlias);
-        } catch (SQLException ignored) {}
-        st.execute("CREATE FORCE ALIAS IF NOT EXISTS _ColumnSRID DETERMINISTIC NOBUFFER FOR \"" +
-                ColumnSRID.class.getName() + "." + scalarFunction.getJavaStaticMethod() + "\"");
+        
 
         //registerGeometryType
         st = connection.createStatement();
@@ -384,50 +356,10 @@ public class SFSUtilitiesTest {
     }
 
     
-    @Test
-    public void testTableEnvelope() throws SQLException {
-        TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
-        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
-                SFSUtilities.getTableEnvelope(connection, tableLocation, ""));
-        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
-                SFSUtilities.getTableEnvelope(connection, tableLocation, "GEOM"));
-        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
-                SFSUtilities.getTableEnvelope(connection, tableLocation, "PT"));
-        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
-                SFSUtilities.getTableEnvelope(connection, tableLocation, "LINESTR"));
-        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
-                SFSUtilities.getTableEnvelope(connection, tableLocation, "PLGN"));
-        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
-                SFSUtilities.getTableEnvelope(connection, tableLocation, "MULTIPT"));
-        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
-                SFSUtilities.getTableEnvelope(connection, tableLocation, "MULTILINESTR"));
-        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
-                SFSUtilities.getTableEnvelope(connection, tableLocation, "MULTIPLGN"));
-        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0),
-                SFSUtilities.getTableEnvelope(connection, tableLocation, "GEOMCOLLECTION"));
-    }
-
-    @Test
-    public void testBadTableEnvelope() throws SQLException {
-        TableLocation tableLocation = TableLocation.parse("NOGEOM");
-        assertThrows(SQLException.class,() ->
-                SFSUtilities.getTableEnvelope(connection, tableLocation, ""));
-    }
+   
 
     // getGeometryFields(Connection connection,String catalog, String schema, String table)
-    @Test
-    public void testGeometryFields1() throws SQLException {
-        List<String> list = SFSUtilities.getGeometryFields(connection, "", "", "GEOMTABLE");
-        assertEquals(8, list.size());
-        assertTrue(list.contains("GEOM"));
-        assertTrue(list.contains("PT"));
-        assertTrue(list.contains("LINESTR"));
-        assertTrue(list.contains("PLGN"));
-        assertTrue(list.contains("MULTIPT"));
-        assertTrue(list.contains("MULTILINESTR"));
-        assertTrue(list.contains("MULTIPLGN"));
-        assertTrue(list.contains("GEOMCOLLECTION"));
-    }
+    
 
     // prepareInformationSchemaStatement(Connection connection,String catalog, String schema, String table,
     //                                String informationSchemaTable, String endQuery, String catalog_field,
@@ -450,20 +382,7 @@ public class SFSUtilitiesTest {
                 "= ? AND UPPER(f_table_schema) = ? AND UPPER(f_table_name) = ? limit 1 {1: 'CAT', 2: 'SCH', 3: 'TAB'}");
     }
 
-    // getGeometryFields(Connection connection,String catalog, String schema, String table)
-    @Test
-    public void testGeometryFields2() throws SQLException {
-        List<String> list = SFSUtilities.getGeometryFields(connection, TableLocation.parse("GEOMTABLE"));
-        assertEquals(8, list.size());
-        assertTrue(list.contains("GEOM"));
-        assertTrue(list.contains("PT"));
-        assertTrue(list.contains("LINESTR"));
-        assertTrue(list.contains("PLGN"));
-        assertTrue(list.contains("MULTIPT"));
-        assertTrue(list.contains("MULTILINESTR"));
-        assertTrue(list.contains("MULTIPLGN"));
-        assertTrue(list.contains("GEOMCOLLECTION"));
-    }
+    
 
     // getGeometryFields(ResultSet resultSet)
     @Test
@@ -488,294 +407,11 @@ public class SFSUtilitiesTest {
     @Test
     public void testGeometryFieldIndex() throws SQLException {
         ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
-        assertEquals(1, SFSUtilities.getFirstGeometryFieldIndex(rs));
+        assertEquals(1, GeometryTableUtils.getFirstGeometryFieldIndex(rs));
         rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
-        assertEquals(-1, SFSUtilities.getFirstGeometryFieldIndex(rs));
+        assertEquals(-1, GeometryTableUtils.getFirstGeometryFieldIndex(rs));
     }
-
-    // getFirstGeometryFieldName(ResultSet resultSet)
-    @Test
-    public void testFirstGeometryFieldName1() throws SQLException {
-        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
-        assertEquals("GEOM", SFSUtilities.getFirstGeometryFieldName(rs));
-    }
-
-    @Test
-    public void testFirstGeometryFieldName2() throws SQLException {
-        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
-        assertThrows(SQLException.class,() ->
-                SFSUtilities.getFirstGeometryFieldName(rs));
-    }
-
-    // hasGeometryField(ResultSet resultSet)
-    @Test
-    public void testHasGeometryField() throws SQLException {
-        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
-        assertTrue(SFSUtilities.hasGeometryField(rs));
-        rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
-        assertFalse(SFSUtilities.hasGeometryField(rs));
-    }
-
-    // getResultSetEnvelope(ResultSet resultSet)
-    @Test
-    public void testResultSetEnvelope1() throws SQLException {
-        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
-        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0), SFSUtilities.getResultSetEnvelope(rs));
-    }
-
-    @Test
-    public void testResultSetEnvelope2() throws SQLException {
-        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
-        assertThrows(SQLException.class,() ->
-                SFSUtilities.getResultSetEnvelope(rs));
-    }
-
-    // getResultSetEnvelope(ResultSet resultSet, String fieldName)
-    @Test
-    public void testResultSetEnvelope3() throws SQLException {
-        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
-        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0), SFSUtilities.getResultSetEnvelope(rs, "GEOM"));
-        rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
-        assertEquals(new Envelope(1.0, 3.0, 1.0, 3.0), SFSUtilities.getResultSetEnvelope(rs, "MULTILINESTR"));
-    }
-
-    @Test
-    public void testResultSetEnvelope4() throws SQLException {
-        ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
-        assertThrows(SQLException.class,() ->
-                SFSUtilities.getResultSetEnvelope(rs, "GEOM"));
-    }
-
-    // getSRID(Connection connection, TableLocation table)
-    @Test
-    public void testGetSRID() throws SQLException {
-        assertEquals(0, SFSUtilities.getSRID(connection, TableLocation.parse("GEOMTABLE")));
-        assertEquals(0, SFSUtilities.getSRID(connection, TableLocation.parse("NOGEOM")));
-    }
-
-    /**
-     * Function declared in test database
-     */
-    public static class GeometryTypeFromColumnType extends DeterministicScalarFunction {
-        private static final Pattern PATTERN = Pattern.compile("\"(.*)\"|GEOMETRY\\((.*)\\)");
-
-        public GeometryTypeFromColumnType() {
-            addProperty(PROP_REMARKS, "Convert H2 column type string into a OGC geometry type index.");
-            addProperty(PROP_NAME, "_GeometryTypeFromColumnType");
-        }
-
-        @Override
-        public String getJavaStaticMethod() {
-            return "geometryTypeFromColumnType";
-        }
-
-        public static int geometryTypeFromColumnType(String constraint) {
-            String type = null;
-            Matcher matcher = PATTERN.matcher(constraint);
-            while (matcher.find()) {
-                if(type == null) {
-                    type = matcher.group(1);
-                }
-                if(type == null) {
-                    type = matcher.group(2);
-                }
-            }
-            return typeToCode(type);
-        }
-
-        public static int typeToCode(String type){
-            if(type == null){
-                return GeometryTypeCodes.GEOMETRY;
-            }
-            type = type.replaceAll(" ", "");
-            switch(type){
-                case "POINT" :              return GeometryTypeCodes.POINT;
-                case "LINESTRING" :         return GeometryTypeCodes.LINESTRING;
-                case "POLYGON" :            return GeometryTypeCodes.POLYGON;
-                case "MULTIPOINT" :         return GeometryTypeCodes.MULTIPOINT;
-                case "MULTILINESTRING" :    return GeometryTypeCodes.MULTILINESTRING;
-                case "MULTIPOLYGON" :       return GeometryTypeCodes.MULTIPOLYGON;
-                case "GEOMCOLLECTION" :     return GeometryTypeCodes.GEOMCOLLECTION;
-                case "MULTICURVE" :         return GeometryTypeCodes.MULTICURVE;
-                case "MULTISURFACE" :       return GeometryTypeCodes.MULTISURFACE;
-                case "CURVE" :              return GeometryTypeCodes.CURVE;
-                case "SURFACE" :            return GeometryTypeCodes.SURFACE;
-                case "POLYHEDRALSURFACE" :  return GeometryTypeCodes.POLYHEDRALSURFACE;
-                case "TIN" :                return GeometryTypeCodes.TIN;
-                case "TRIANGLE" :           return GeometryTypeCodes.TRIANGLE;
-
-                case "POINTZ" :              return GeometryTypeCodes.POINTZ;
-                case "LINESTRINGZ" :         return GeometryTypeCodes.LINESTRINGZ;
-                case "POLYGONZ" :            return GeometryTypeCodes.POLYGONZ;
-                case "MULTIPOINTZ" :         return GeometryTypeCodes.MULTIPOINTZ;
-                case "MULTILINESTRINGZ" :    return GeometryTypeCodes.MULTILINESTRINGZ;
-                case "MULTIPOLYGONZ" :       return GeometryTypeCodes.MULTIPOLYGONZ;
-                case "GEOMCOLLECTIONZ" :     return GeometryTypeCodes.GEOMCOLLECTIONZ;
-                case "MULTICURVEZ" :         return GeometryTypeCodes.MULTICURVEZ;
-                case "MULTISURFACEZ" :       return GeometryTypeCodes.MULTISURFACEZ;
-                case "CURVEZ" :              return GeometryTypeCodes.CURVEZ;
-                case "SURFACEZ" :            return GeometryTypeCodes.SURFACEZ;
-                case "POLYHEDRALSURFACEZ" :  return GeometryTypeCodes.POLYHEDRALSURFACEZ;
-                case "TINZ" :                return GeometryTypeCodes.TINZ;
-                case "TRIANGLEZ" :           return GeometryTypeCodes.TRIANGLEZ;
-
-                case "POINTM" :             return GeometryTypeCodes.POINTM;
-                case "LINESTRINGM" :        return GeometryTypeCodes.LINESTRINGM;
-                case "POLYGONM" :           return GeometryTypeCodes.POLYGONM;
-                case "MULTIPOINTM" :        return GeometryTypeCodes.MULTIPOINTM;
-                case "MULTILINESTRINGM" :   return GeometryTypeCodes.MULTILINESTRINGM;
-                case "MULTIPOLYGONM" :      return GeometryTypeCodes.MULTIPOLYGONM;
-                case "GEOMCOLLECTIONM" :    return GeometryTypeCodes.GEOMCOLLECTIONM;
-                case "MULTICURVEM" :        return GeometryTypeCodes.MULTICURVEM;
-                case "MULTISURFACEM" :      return GeometryTypeCodes.MULTISURFACEM;
-                case "CURVEM" :             return GeometryTypeCodes.CURVEM;
-                case "SURFACEM" :           return GeometryTypeCodes.SURFACEM;
-                case "POLYHEDRALSURFACEM" : return GeometryTypeCodes.POLYHEDRALSURFACEM;
-                case "TINM" :               return GeometryTypeCodes.TINM;
-                case "TRIANGLEM" :          return GeometryTypeCodes.TRIANGLEM;
-
-                case "POINTZM" :              return GeometryTypeCodes.POINTZM;
-                case "LINESTRINGZM" :         return GeometryTypeCodes.LINESTRINGZM;
-                case "POLYGONZM" :            return GeometryTypeCodes.POLYGONZM;
-                case "MULTIPOINTZM" :         return GeometryTypeCodes.MULTIPOINTZM;
-                case "MULTILINESTRINGZM" :    return GeometryTypeCodes.MULTILINESTRINGZM;
-                case "MULTIPOLYGONZM" :       return GeometryTypeCodes.MULTIPOLYGONZM;
-                case "GEOMCOLLECTIONZM" :     return GeometryTypeCodes.GEOMCOLLECTIONZM;
-                case "MULTICURVEZM" :         return GeometryTypeCodes.MULTICURVEZM;
-                case "MULTISURFACEZM" :       return GeometryTypeCodes.MULTISURFACEZM;
-                case "CURVEZM" :              return GeometryTypeCodes.CURVEZM;
-                case "SURFACEZM" :            return GeometryTypeCodes.SURFACEZM;
-                case "POLYHEDRALSURFACEZM" :  return GeometryTypeCodes.POLYHEDRALSURFACEZM;
-                case "TINZM" :                return GeometryTypeCodes.TINZM;
-                case "TRIANGLEZM" :           return GeometryTypeCodes.TRIANGLEZM;
-
-
-                case "GEOMETRY" :
-                default :                   return GeometryTypeCodes.GEOMETRY;
-            }
-        }
-    }
-
-    /**
-     * Function declared in test database
-     */
-    public static class ST_Extent extends AbstractFunction implements Aggregate {
-        private Envelope aggregatedEnvelope = new Envelope();
-
-        public ST_Extent() {
-            addProperty(PROP_REMARKS, "Return an envelope of the aggregation of all geometries in the table.");
-        }
-
-        @Override
-        public void init(Connection connection) throws SQLException {
-            aggregatedEnvelope = new Envelope();
-        }
-
-        @Override
-        public int getInternalType(int[] inputTypes) throws SQLException {
-            if(inputTypes.length!=1) {
-                throw new SQLException(ST_Extent.class.getSimpleName()+" expect 1 argument.");
-            }
-            if(inputTypes[0]!=Value.GEOMETRY) {
-                throw new SQLException(ST_Extent.class.getSimpleName()+" expect a geometry argument");
-            }
-            return Value.GEOMETRY;
-        }
-
-        @Override
-        public void add(Object o) throws SQLException {
-            if (o instanceof Geometry) {
-                Geometry geom = (Geometry) o;
-                aggregatedEnvelope.expandToInclude(geom.getEnvelopeInternal());
-            }
-        }
-
-        @Override
-        public Geometry getResult() throws SQLException {
-            if(aggregatedEnvelope.isNull()) {
-                return null;
-            } else {
-                return new GeometryFactory().toGeometry(aggregatedEnvelope);
-        }
-        }
-    }
-
-    public static class ColumnSRID extends AbstractFunction implements ScalarFunction {
-        private static final String SRID_FUNC = "ST_SRID";
-        private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("ST_SRID\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
-
-        public ColumnSRID() {
-            addProperty(PROP_REMARKS, "Get the column SRID from constraints and data.");
-            addProperty(PROP_NAME, "_ColumnSRID");
-        }
-
-        @Override
-        public String getJavaStaticMethod() {
-            return "getSRID";
-        }
-
-        public static int getSRIDFromConstraint(String constraint, String columnName) {
-            int srid = 0;
-            Matcher matcher = SRID_CONSTRAINT_PATTERN.matcher(constraint);
-            while (matcher.find()) {
-                String extractedColumnName = matcher.group(1).replace("\"","").replace("`","");
-                int sridConstr = Integer.valueOf(matcher.group(5));
-                if (extractedColumnName.equalsIgnoreCase(columnName)) {
-                    if(srid != 0 && srid != sridConstr) {
-                        // Two srid constraint on the same column
-                        return 0;
-                    }
-                    srid = sridConstr;
-                }
-            }
-            return srid;
-        }
-
-        public static String fetchConstraint(Connection connection, String catalogName, String schemaName, String tableName) throws SQLException {
-            // Merge column constraint and table constraint
-            PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection, catalogName, schemaName,
-                    tableName, "INFORMATION_SCHEMA.CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
-            ResultSet rsConstraint = pst.executeQuery();
-            try {
-                StringBuilder constraint = new StringBuilder();
-                while (rsConstraint.next()) {
-                    String tableConstr = rsConstraint.getString("CHECK_EXPRESSION");
-                    if(tableConstr != null) {
-                        constraint.append(tableConstr);
-                    }
-                }
-                return constraint.toString();
-            } finally {
-                rsConstraint.close();
-                pst.close();
-            }
-        }
-
-        public static int getSRID(Connection connection, String catalogName, String schemaName, String tableName, String columnName,String constraint) {
-            try {
-                Statement st = connection.createStatement();
-                constraint+=fetchConstraint(connection, catalogName, schemaName,tableName);
-                if(constraint.toUpperCase().contains(SRID_FUNC)) {
-                    int srid = getSRIDFromConstraint(constraint, columnName);
-                    if(srid > 0) {
-                        return srid;
-                    }
-                }
-                ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
-                        StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)));
-                if(rs.next()) {
-                    int srid = rs.getInt(1);
-                    if(srid > 0) {
-                        return srid;
-                    }
-                }
-                rs.close();
-                return 0;
-            } catch (SQLException ex) {
-                return 0;
-            }
-        }
-    }
+    
 
     private class CustomDataSource implements DataSource {
         @Override public Connection getConnection() throws SQLException {return null;}
@@ -805,22 +441,6 @@ public class SFSUtilitiesTest {
     private class CustomConnection extends ConnectionWrapper {
         public CustomConnection(Connection connection) {super(connection);}
         @Override public boolean isWrapperFor(Class<?> var1) throws SQLException{return true;}
-    }
-    
-    @Test
-    public void testEstimatedExtentWithoutIndex() throws SQLException {
-        TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
-        assertEquals(new Envelope(1.0, 2.0, 1.0, 2.0),
-                SFSUtilities.getEstimatedExtent(connection, tableLocation, "GEOM").getEnvelopeInternal());
-    }
-    @Test
-    public void testEstimatedExtentWithIndex() throws SQLException {
-        Statement st = connection.createStatement();
-        st.execute("DROP TABLE IF EXISTS GEOMTABLE_INDEX; CREATE TABLE GEOMTABLE_INDEX (THE_GEOM GEOMETRY);");
-        st.execute("INSERT INTO GEOMTABLE_INDEX VALUES ('POLYGON ((150 360, 200 360, 200 310, 150 310, 150 360))'),('POLYGON ((195.5 279, 240 279, 240 250, 195.5 250, 195.5 279))' )");
-        st.execute("CREATE SPATIAL INDEX ON GEOMTABLE_INDEX(THE_GEOM)");
-        TableLocation tableLocation = TableLocation.parse("GEOMTABLE_INDEX");
-        assertEquals(new Envelope(150.0 , 240.0, 250.0 , 360.0),
-                SFSUtilities.getEstimatedExtent(connection, tableLocation, "THE_GEOM").getEnvelopeInternal());
-    }
+    }    
+   
 }

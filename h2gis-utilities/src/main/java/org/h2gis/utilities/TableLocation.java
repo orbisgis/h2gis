@@ -222,6 +222,7 @@ public class TableLocation {
         }
         return new TableLocation(catalog,schema,table);
     }
+    
 
     /**
      * Change case of parameters to make it more user-friendly.

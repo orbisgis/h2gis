@@ -271,7 +271,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final Statement st = connection.createStatement();
         try {
             firstFirstLastLast(st, tableName, pkColName, geomCol, tolerance);            
-            int srid = SFSUtilities.getSRID(connection, tableName, spatialFieldName);
+            int srid = GeometryTableUtils.getSRID(connection, tableName, spatialFieldName);
             makeEnvelopes(st, tolerance, isH2, srid);
             nodesTable(st, nodesName, tolerance, isH2,srid);
             edgesTable(st, nodesName, edgesName, tolerance, isH2);
@@ -313,7 +313,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                                             String spatialFieldName) throws SQLException {
         // Find the name of the first geometry column if not provided by the user.
         if (spatialFieldName == null) {
-            List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableName);
+            List<String> geomFields = GeometryTableUtils.getGeometryFields(connection, tableName);
             if (!geomFields.isEmpty()) {
                 spatialFieldName = geomFields.get(0);
             } else {

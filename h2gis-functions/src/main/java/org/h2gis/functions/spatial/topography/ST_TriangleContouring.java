@@ -39,6 +39,7 @@ import org.locationtech.jts.geom.Polygon;
 
 import java.sql.*;
 import java.util.*;
+import org.h2gis.utilities.GeometryTableUtils;
 
 /**
  * Split triangle into area within the specified range values.
@@ -229,7 +230,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
             columnCount = meta.getColumnCount();
             if(spatialFieldName.isEmpty()) {
                 // Find first geometry column
-                List<String> geomFields = SFSUtilities.getGeometryFields(connection,TableLocation.parse(tableName));
+                List<String> geomFields = GeometryTableUtils.getGeometryFields(connection,TableLocation.parse(tableName));
                 if(!geomFields.isEmpty()) {
                     spatialFieldName = geomFields.get(0);
                     spatialFieldIndex = tableQuery.findColumn(SFSUtilities.getGeometryFields(tableQuery).get(0));

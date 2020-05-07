@@ -39,6 +39,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.h2gis.utilities.GeometryTableUtils;
 
 /**
  * KML writer
@@ -75,7 +76,7 @@ public class KMLWriterDriver {
                 PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = ps.executeQuery();
                 List<String> spatialFieldNames = SFSUtilities.getGeometryFields(resultSet);
-                 if (spatialFieldNames.isEmpty()) {
+                if (spatialFieldNames.isEmpty()) {
                     throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
                 }
                 int rowCount = 0;
@@ -91,15 +92,15 @@ public class KMLWriterDriver {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
-                //Write table
-                Statement st = connection.createStatement() ;
-                ResultSet resultSet = st.executeQuery(String.format("select * from %s", tableName));
                 // Read Geometry Index and type
-                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+                List<String> spatialFieldNames = GeometryTableUtils.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
                 if (spatialFieldNames.isEmpty()) {
                     throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
                 }
-                this.tableName=tableName;
+                this.tableName=tableName;                
+                //Write table
+                Statement st = connection.createStatement() ;
+                ResultSet resultSet = st.executeQuery(String.format("select * from %s", tableName));
                 write(progress, resultSet,spatialFieldNames.get(0), fileName, encoding);
         }
     }
