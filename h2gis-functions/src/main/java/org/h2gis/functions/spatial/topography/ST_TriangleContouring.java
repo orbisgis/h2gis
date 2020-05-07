@@ -39,7 +39,9 @@ import org.locationtech.jts.geom.Polygon;
 
 import java.sql.*;
 import java.util.*;
-import org.h2gis.utilities.GeometryTableUtils;
+import org.h2gis.utilities.GeometryMetaData;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * Split triangle into area within the specified range values.
@@ -222,22 +224,19 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         public void reset() throws SQLException {
             if(tableQuery!=null && !tableQuery.isClosed()) {
                 close();
+            }            
+            if(spatialFieldName.isEmpty()) {
+                // Find first geometry column
+                Tuple<String, Integer> geomFields = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, TableLocation.parse(tableName));
+                spatialFieldName = geomFields.first();
+                spatialFieldIndex = geomFields.second();
+               
             }
             Statement st = connection.createStatement();
             tableQuery = st.executeQuery("SELECT * FROM "+tableName);
             firstRow = false;
             ResultSetMetaData meta = tableQuery.getMetaData();
             columnCount = meta.getColumnCount();
-            if(spatialFieldName.isEmpty()) {
-                // Find first geometry column
-                List<String> geomFields = GeometryTableUtils.getGeometryFields(connection,TableLocation.parse(tableName));
-                if(!geomFields.isEmpty()) {
-                    spatialFieldName = geomFields.get(0);
-                    spatialFieldIndex = tableQuery.findColumn(SFSUtilities.getGeometryFields(tableQuery).get(0));
-                } else {
-                    throw new SQLException("The table "+tableName+" does not contain a geometry field");
-                }
-            }
 
             if(useZ) {
                 triFactory = new ValueOnZ();
@@ -255,7 +254,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
             rs.addColumn(ISO_FIELD_NAME, Types.INTEGER,10,0);
             return rs;
         }

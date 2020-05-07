@@ -44,7 +44,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.utilities.GeometryTableUtils;
+import org.h2gis.utilities.GeometryTableUtilities;
 
 /**
  * Read/Write Shape files
@@ -75,7 +75,7 @@ public class SHPDriverFunction implements DriverFunction {
      */
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableReference);
@@ -89,8 +89,7 @@ public class SHPDriverFunction implements DriverFunction {
                     recordCount = resultSet.getRow();
                     resultSet.beforeFirst();
                     ProgressVisitor copyProgress = progress.subProcess(recordCount);
-                    List<String> spatialFieldNames = SFSUtilities.getGeometryFields(resultSet);
-                    int srid = doExport(tableReference, spatialFieldNames, resultSet, recordCount, fileName, progress, encoding);
+                    int srid = doExport(tableReference, resultSet, recordCount, fileName, progress, encoding);
                     String path = fileName.getAbsolutePath();
                     String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
                     PRJUtil.writePRJ(connection, srid, new File(nameWithoutExt + ".prj"));
@@ -106,14 +105,12 @@ public class SHPDriverFunction implements DriverFunction {
                 TableLocation location = TableLocation.parse(tableReference, isH2);
                 int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);
-                // Read Geometry Index and type
-                List<String> spatialFieldNames = GeometryTableUtils.getGeometryFields(connection, location);
                 Statement st = connection.createStatement();
                 ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
-                doExport(tableReference, spatialFieldNames, rs, recordCount, fileName, copyProgress, encoding);
+                int srid = doExport(tableReference, rs, recordCount, fileName, copyProgress, encoding);
                 String path = fileName.getAbsolutePath();
                 String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
-                PRJUtil.writePRJ(connection, location, spatialFieldNames.get(0), new File(nameWithoutExt + ".prj"));
+                PRJUtil.writePRJ(connection, srid, new File(nameWithoutExt + ".prj"));
                 copyProgress.endOfProgress();
 
             } else {
@@ -132,15 +129,15 @@ public class SHPDriverFunction implements DriverFunction {
      * @param encoding File encoding, null will use default encoding
      * @throws java.sql.SQLException
      */
-    private int doExport(String tableReference, List<String> spatialFieldNames, ResultSet rs, int recordCount, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
-        if (spatialFieldNames.isEmpty()) {
-            throw new SQLException(String.format("The table or the query %s does not contain a geometry field", tableReference));
-        }
+    private int doExport(String tableReference, ResultSet rs, int recordCount, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
         int srid = 0;
         ShapeType shapeType = null;
         try {
             ResultSetMetaData resultSetMetaData = rs.getMetaData();
-            int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
+            int geoFieldIndex = GeometryTableUtilities.getFirstGeometryFieldIndex(rs);
+            if (geoFieldIndex == -1) {
+                throw new SQLException(String.format("The table or the query %s does not contain a geometry field", tableReference));
+            }
             ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
             DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
             columnIndexes.add(0, geoFieldIndex);
@@ -235,7 +232,7 @@ public class SHPDriverFunction implements DriverFunction {
      */
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String forceEncoding) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         SHPDriver shpDriver = new SHPDriver();
         shpDriver.initDriverFromFile(fileName, forceEncoding);
         ProgressVisitor copyProgress = progress.subProcess((int) (shpDriver.getRowCount() / BATCH_MAX_SIZE));
@@ -294,7 +291,7 @@ public class SHPDriverFunction implements DriverFunction {
                     }
 
                     connection.setAutoCommit(true);
-                }                
+                }
                 //TODO create spatial index on the_geom ?
             } catch (Exception ex) {
                 connection.createStatement().execute("DROP TABLE IF EXISTS " + tableReference);
@@ -312,7 +309,7 @@ public class SHPDriverFunction implements DriverFunction {
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
             boolean deleteTables) throws SQLException, IOException {
         if (deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
             Statement stmt = connection.createStatement();
@@ -341,12 +338,20 @@ public class SHPDriverFunction implements DriverFunction {
             case GeometryTypeCodes.LINESTRINGZ:
                 shapeType = meta.hasZ ? ShapeType.ARCZ : ShapeType.ARC;
                 break;
+            case GeometryTypeCodes.POINTM:
+            case GeometryTypeCodes.POINTZ:
             case GeometryTypeCodes.POINT:
                 shapeType = meta.hasZ ? ShapeType.POINTZ : ShapeType.POINT;
                 break;
+            case GeometryTypeCodes.MULTIPOINTZ:
+            case GeometryTypeCodes.MULTIPOINTM:
             case GeometryTypeCodes.MULTIPOINT:
                 shapeType = meta.hasZ ? ShapeType.MULTIPOINTZ : ShapeType.MULTIPOINT;
                 break;
+            case GeometryTypeCodes.POLYGONZ:
+            case GeometryTypeCodes.MULTIPOLYGONZ:
+            case GeometryTypeCodes.POLYGONM:
+            case GeometryTypeCodes.MULTIPOLYGONM:
             case GeometryTypeCodes.POLYGON:
             case GeometryTypeCodes.MULTIPOLYGON:
                 shapeType = meta.hasZ ? ShapeType.POLYGONZ : ShapeType.POLYGON;

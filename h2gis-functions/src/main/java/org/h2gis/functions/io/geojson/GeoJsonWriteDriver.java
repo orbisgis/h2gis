@@ -37,7 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.utilities.GeometryTableUtils;
+import org.h2gis.utilities.GeometryMetaData;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * A simple GeoJSON driver to write a spatial table to a GeoJSON file.
@@ -203,16 +205,12 @@ public class GeoJsonWriteDriver {
                 FileOutputStream fos = null;
                 try {
                     fos = new FileOutputStream(fileName);
-                    final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+                    final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
                     int recordCount = JDBCUtilities.getRowCount(connection, parse);
                     if (recordCount > 0) {
                         ProgressVisitor copyProgress = progress.subProcess(recordCount);
                         // Read Geometry Index and type
-                        List<String> spatialFieldNames = GeometryTableUtils.getGeometryFields(connection, parse);
-                        if (spatialFieldNames.isEmpty()) {
-                            throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
-                        }
-
+                        Tuple<String, Integer> spatialFieldNames = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, parse);                        
                         try ( // Read table content
                             Statement st = connection.createStatement()) {
                             JsonFactory jsonFactory = new JsonFactory();
@@ -221,14 +219,14 @@ public class GeoJsonWriteDriver {
                             // header of the GeoJSON file
                             jsonGenerator.writeStartObject();
                             jsonGenerator.writeStringField("type", "FeatureCollection");
-                            writeCRS(jsonGenerator, SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.get(0)));
+                            writeCRS(jsonGenerator, SFSUtilities.getAuthorityAndSRID(connection, parse, spatialFieldNames.first()));
                             jsonGenerator.writeArrayFieldStart("features");
 
                             ResultSet rs = st.executeQuery(String.format("select * from %s", tableName));
 
                             try {
                                 ResultSetMetaData resultSetMetaData = rs.getMetaData();
-                                int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
+                                int geoFieldIndex = spatialFieldNames.second();
                                 cacheMetadata(resultSetMetaData);
                                 while (rs.next()) {
                                     writeFeature(jsonGenerator, rs, geoFieldIndex);

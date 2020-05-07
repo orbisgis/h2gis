@@ -41,7 +41,7 @@ import java.sql.Statement;
 import java.util.Map;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import org.h2gis.utilities.GeometryTableUtils;
+import org.h2gis.utilities.GeometryTableUtilities;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -247,7 +247,7 @@ public class SpatialFunctionTest {
                 + "CREATE TABLE exploded_forests as SELECT * FROM ST_Explode('forests')");
         ResultSet rs = st.executeQuery("SELECT * FROM exploded_forests");
         assertTrue(rs.next());
-        assertEquals(4326, GeometryTableUtils.getSRID(connection, TableLocation.parse("exploded_forests")));
+        assertEquals(4326, GeometryTableUtilities.getSRID(connection, TableLocation.parse("exploded_forests")));
         st.execute("drop table forests");
     }
 
@@ -297,7 +297,7 @@ public class SpatialFunctionTest {
                 + "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)),"
                 + "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154)),"
                 + "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
-        Envelope result = GeometryTableUtils.getEnvelope(connection, TableLocation.parse("PTCLOUDS"), "");
+        Envelope result = GeometryTableUtilities.getEnvelope(connection, TableLocation.parse("PTCLOUDS"));
         Envelope expected = new Envelope(-5, 99, -21, 124);
         assertEquals(expected.getMinX(), result.getMinX(), 1e-12);
         assertEquals(expected.getMaxX(), result.getMaxX(), 1e-12);

@@ -86,16 +86,16 @@ public class SFSUtilities {
     public static int getGeometryType(Connection connection, TableLocation location, String fieldName)
             throws SQLException {
         if (fieldName == null || fieldName.isEmpty()) {
-            List<String> geometryFields = GeometryTableUtils.getGeometryFields(connection, location);
+            List<Tuple<String, Integer>> geometryFields = GeometryTableUtilities.getGeometryColumnNameAndIndex(connection, location);
             if (geometryFields.isEmpty()) {
                 throw new SQLException("The table " + location + " does not contain a Geometry field, "
                         + "then geometry type cannot be computed");
             }
-            fieldName = geometryFields.get(0);
+            fieldName = geometryFields.get(0).first();
         }
-        ResultSet geomResultSet = GeometryTableUtils.getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
+        ResultSet geomResultSet = GeometryTableUtilities.getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
                 location.getTable());
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         while (geomResultSet.next()) {
             if (fieldName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(fieldName)) {
                 if (isH2) {
@@ -125,9 +125,9 @@ public class SFSUtilities {
     public static Map<String, Integer> getGeometryTypes(Connection connection, TableLocation location)
             throws SQLException {
         Map<String, Integer> map = new HashMap<>();
-        ResultSet geomResultSet = GeometryTableUtils.getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
+        ResultSet geomResultSet = GeometryTableUtilities.getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
                 location.getTable());
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         while (geomResultSet.next()) {
             String fieldName = geomResultSet.getString("F_GEOMETRY_COLUMN");
             int type;
@@ -315,7 +315,7 @@ public class SFSUtilities {
     public static String[] getAuthorityAndSRID(Connection connection, TableLocation table, String fieldName)
             throws SQLException {
         int srid;
-        try (ResultSet geomResultSet = GeometryTableUtils.getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
+        try (ResultSet geomResultSet = GeometryTableUtilities.getGeometryColumnsView(connection, table.getCatalog(), table.getSchema(),
                 table.getTable(),fieldName)) {
             srid = 0;
             while (geomResultSet.next()) {

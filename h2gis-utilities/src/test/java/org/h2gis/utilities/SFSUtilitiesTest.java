@@ -24,7 +24,6 @@ import org.h2gis.utilities.wrapper.ConnectionWrapper;
 import org.h2gis.utilities.wrapper.DataSourceWrapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.io.ParseException;
 import org.locationtech.jts.io.WKTReader;
 
@@ -407,9 +406,9 @@ public class SFSUtilitiesTest {
     @Test
     public void testGeometryFieldIndex() throws SQLException {
         ResultSet rs = connection.createStatement().executeQuery("SELECT * FROM GEOMTABLE");
-        assertEquals(1, GeometryTableUtils.getFirstGeometryFieldIndex(rs));
+        assertEquals(1, GeometryTableUtilities.getFirstGeometryFieldIndex(rs));
         rs = connection.createStatement().executeQuery("SELECT * FROM NOGEOM");
-        assertEquals(-1, GeometryTableUtils.getFirstGeometryFieldIndex(rs));
+        assertEquals(-1, GeometryTableUtilities.getFirstGeometryFieldIndex(rs));
     }
     
 

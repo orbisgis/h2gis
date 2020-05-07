@@ -34,7 +34,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
-import org.h2gis.utilities.GeometryTableUtils;
+import org.h2gis.utilities.GeometryTableUtilities;
 
 /**
  * A class to manage PRJ file
@@ -131,7 +131,7 @@ public class PRJUtil {
      * @throws FileNotFoundException 
      */   
     public static void writePRJ(Connection connection, TableLocation location, String geomField, File fileName) throws SQLException, FileNotFoundException {
-        int srid = GeometryTableUtils.getSRID(connection, location, geomField);
+        int srid = GeometryTableUtilities.getSRID(connection, location, geomField);
         writePRJ(connection, srid, fileName);
     }
     

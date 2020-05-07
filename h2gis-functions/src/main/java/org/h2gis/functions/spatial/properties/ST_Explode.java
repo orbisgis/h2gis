@@ -36,7 +36,9 @@ import java.util.List;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.h2gis.utilities.GeometryTableUtils;
+import org.h2gis.utilities.GeometryMetaData;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * This table function explode Geometry Collection into multiple geometries
@@ -88,7 +90,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
      */
     public static ResultSet explode(Connection connection, String tableName, String fieldName) throws SQLException {
         ExplodeResultSet rowSource = new ExplodeResultSet(connection,
-                TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())).toString(),fieldName);
+                TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)).toString(),fieldName);
         return rowSource.getResultSet();
     }
 
@@ -205,18 +207,10 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
             columnCount = meta.getColumnCount();
             if(spatialFieldName==null) {
                 // Find first geometry column
-                List<String> geomFields = GeometryTableUtils.getGeometryFields(connection,TableLocation.parse(tableName));
-                if(!geomFields.isEmpty()) {
-                    spatialFieldName = geomFields.get(0);
-                } else {
-                    throw new SQLException("The table "+tableName+" does not contain a geometry field");
-                }
-            }
-            for(int i=1;i<=columnCount;i++) {
-                if(meta.getColumnName(i).equalsIgnoreCase(spatialFieldName)) {
-                    spatialFieldIndex = i;
-                    break;
-                }
+                Tuple<String, Integer> geomFields = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(meta);
+                spatialFieldName = geomFields.first();
+                spatialFieldIndex = geomFields.second();
+
             }
             if(spatialFieldIndex==-1) {
                 throw new SQLException("Geometry field "+spatialFieldName+" of table "+tableName+" not found");
@@ -231,7 +225,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
             rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
             return rs;
         }

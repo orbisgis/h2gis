@@ -25,7 +25,9 @@ import org.h2.tools.SimpleResultSet;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,30 +52,15 @@ public class TableUtilities {
      *
      * @throws SQLException Error
      */
-    public static void copyFields(Connection connection, SimpleResultSet rs, TableLocation tableLocation) throws SQLException {
-        DatabaseMetaData meta = connection.getMetaData();
-        ResultSet columnsRs = meta.getColumns(tableLocation.getCatalog(null), tableLocation.getSchema(null),
-                tableLocation.getTable(), null);
-        Map<Integer, Object[]> columns = new HashMap<Integer, Object[]>();
-        int COLUMN_NAME = 0, COLUMN_TYPE = 1, COLUMN_TYPENAME = 2, COLUMN_PRECISION = 3, COLUMN_SCALE = 4;
-        try {
-            while (columnsRs.next()) {
-                Object[] columnInfoObjects = new Object[COLUMN_SCALE + 1];
-                columnInfoObjects[COLUMN_NAME] = columnsRs.getString("COLUMN_NAME");
-                columnInfoObjects[COLUMN_TYPE] = columnsRs.getInt("DATA_TYPE");
-                columnInfoObjects[COLUMN_TYPENAME] = columnsRs.getString("TYPE_NAME");
-                columnInfoObjects[COLUMN_PRECISION] = columnsRs.getInt("COLUMN_SIZE");
-                columnInfoObjects[COLUMN_SCALE] = columnsRs.getInt("DECIMAL_DIGITS");
-                columns.put(columnsRs.getInt("ORDINAL_POSITION"), columnInfoObjects);
-            }
-        } finally {
-            columnsRs.close();
+    public static void copyFields(Connection connection, SimpleResultSet rs, TableLocation tableLocation) throws SQLException  {
+        try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(
+                "SELECT * FROM " + tableLocation + " WHERE 1=0;")) {
+        ResultSetMetaData metadata = resultSet.getMetaData();
+        for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
+            rs.addColumn(metadata.getColumnName(columnId), metadata.getColumnType(columnId),
+                    metadata.getColumnTypeName(columnId), metadata.getPrecision(columnId),
+                    metadata.getScale(columnId));
         }
-        for(int i=1;i<=columns.size();i++) {
-            Object[] columnInfoObjects = columns.get(i);
-            rs.addColumn((String)columnInfoObjects[COLUMN_NAME], (Integer)columnInfoObjects[COLUMN_TYPE],
-                    (String)columnInfoObjects[COLUMN_TYPENAME], (Integer)columnInfoObjects[COLUMN_PRECISION]
-                    , (Integer)columnInfoObjects[COLUMN_SCALE]);
         }
     }
 
@@ -103,7 +90,7 @@ public class TableUtilities {
      */
     public static TableLocation parseInputTable(Connection connection,
                                                 String inputTable) throws SQLException {
-       return TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+       return TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection));
     }
     
     

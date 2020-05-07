@@ -39,7 +39,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import org.h2gis.utilities.GeometryTableUtils;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * KML writer
@@ -93,15 +94,13 @@ public class KMLWriterDriver {
             }
         } else {
                 // Read Geometry Index and type
-                List<String> spatialFieldNames = GeometryTableUtils.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
-                if (spatialFieldNames.isEmpty()) {
-                    throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
-                }
+                Tuple<String, Integer> spatialFieldNames = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
+                
                 this.tableName=tableName;                
                 //Write table
                 Statement st = connection.createStatement() ;
                 ResultSet resultSet = st.executeQuery(String.format("select * from %s", tableName));
-                write(progress, resultSet,spatialFieldNames.get(0), fileName, encoding);
+                write(progress, resultSet,spatialFieldNames.first(), fileName, encoding);
         }
     }
     

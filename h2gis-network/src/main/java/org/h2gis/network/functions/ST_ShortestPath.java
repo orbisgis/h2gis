@@ -21,7 +21,6 @@ package org.h2gis.network.functions;
 
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.api.ScalarFunction;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.alg.Dijkstra;
@@ -32,12 +31,13 @@ import org.locationtech.jts.geom.Geometry;
 
 import java.sql.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import static org.h2gis.network.functions.GraphConstants.*;
+import org.h2gis.utilities.GeometryTableUtilities;
 import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
+import org.h2gis.utilities.Tuple;
 
 /**
  * Calculates the shortest path(s) between vertices in a JGraphT graph produced
@@ -217,11 +217,8 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
      */
     protected static String getFirstGeometryField(Connection connection, TableLocation tableName)
             throws SQLException {
-        final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableName);
-        if (geometryFields.isEmpty()) {
-            return null;
-        }
-        return geometryFields.get(0);
+        final Tuple<String, Integer> geometryFields = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableName);
+        return geometryFields.first();
     }
 
     /**

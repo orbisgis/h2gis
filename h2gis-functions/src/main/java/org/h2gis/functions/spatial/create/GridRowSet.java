@@ -23,13 +23,14 @@ package org.h2gis.functions.spatial.create;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.*;
 
 import java.sql.*;
 import java.util.List;
-import org.h2gis.utilities.GeometryTableUtils;
+import org.h2gis.utilities.GeometryMetaData;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * GridRowSet is used to populate a result set with all grid cells. A cell could
@@ -198,12 +199,8 @@ public class GridRowSet implements SimpleRowSource {
      */
     private static String getFirstGeometryField(String tableName, Connection connection) throws SQLException {
         // Find first geometry column
-        List<String> geomFields = GeometryTableUtils.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
-        if (!geomFields.isEmpty()) {
-            return geomFields.get(0);
-        } else {
-            throw new SQLException("The table " + tableName + " does not contain a geometry field");
-        }
+        Tuple<String, Integer> geomFields = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
+        return geomFields.first();
     }
 
     /**

@@ -37,7 +37,7 @@ import org.locationtech.jts.io.WKTReader;
 
 import java.sql.*;
 import java.util.List;
-import org.h2gis.utilities.GeometryTableUtils;
+import org.h2gis.utilities.GeometryTableUtilities;
 
 import static org.junit.jupiter.api.Assertions.*;
 
