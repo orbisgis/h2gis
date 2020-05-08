@@ -103,7 +103,7 @@ public class TableUtilities {
      */
     public static TableLocation parseInputTable(Connection connection,
                                                 String inputTable) throws SQLException {
-       return TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+       return TableLocation.parse(inputTable, JDBCUtilities.isH2DataBase(connection));
     }
     
     

@@ -109,7 +109,7 @@ public class GeoJsonDriverFunction implements DriverFunction {
                            boolean deleteTables) throws SQLException, IOException {
 
         if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
             Statement stmt = connection.createStatement();

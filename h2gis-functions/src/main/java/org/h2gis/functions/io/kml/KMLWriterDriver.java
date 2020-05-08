@@ -95,7 +95,7 @@ public class KMLWriterDriver {
                 Statement st = connection.createStatement() ;
                 ResultSet resultSet = st.executeQuery(String.format("select * from %s", tableName));
                 // Read Geometry Index and type
-                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
                 if (spatialFieldNames.isEmpty()) {
                     throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
                 }

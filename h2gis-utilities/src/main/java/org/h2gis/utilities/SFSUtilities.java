@@ -98,7 +98,7 @@ public class SFSUtilities {
         }
         ResultSet geomResultSet = getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
                 location.getTable());
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         while (geomResultSet.next()) {
             if (fieldName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(fieldName)) {
                 if (isH2) {
@@ -130,7 +130,7 @@ public class SFSUtilities {
         Map<String, Integer> map = new HashMap<>();
         ResultSet geomResultSet = getGeometryColumnsView(connection, location.getCatalog(), location.getSchema(),
                 location.getTable());
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         while (geomResultSet.next()) {
             String fieldName = geomResultSet.getString("F_GEOMETRY_COLUMN");
             int type;

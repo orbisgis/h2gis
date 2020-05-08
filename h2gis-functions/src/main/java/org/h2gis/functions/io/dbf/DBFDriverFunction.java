@@ -101,7 +101,7 @@ public class DBFDriverFunction implements DriverFunction {
         } else {
             if (FileUtil.isExtensionWellFormated(fileName, "dbf")) {
                 int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 String tableName = TableLocation.parse(tableReference, isH2).toString(isH2);
                 // Read table content
                 Statement st = connection.createStatement();
@@ -195,7 +195,7 @@ public class DBFDriverFunction implements DriverFunction {
         if (FileUtil.isFileImportable(fileName, "dbf")) {
             DBFDriver dbfDriver = new DBFDriver();
             dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
             ProgressVisitor copyProgress = progress.subProcess((int) (dbfDriver.getRowCount() / BATCH_MAX_SIZE));
@@ -259,7 +259,7 @@ public class DBFDriverFunction implements DriverFunction {
                            boolean deleteTables) throws SQLException, IOException {
 
         if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
             Statement stmt = connection.createStatement();

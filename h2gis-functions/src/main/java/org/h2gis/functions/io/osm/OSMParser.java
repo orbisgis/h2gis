@@ -118,7 +118,7 @@ public class OSMParser extends DefaultHandler {
         this.progress = progress.subProcess(100);
         this.connection=connection;
         // Initialisation
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         boolean success = false;
         connection.setAutoCommit(false);
         TableLocation requestedTable = TableLocation.parse(tableName, isH2);

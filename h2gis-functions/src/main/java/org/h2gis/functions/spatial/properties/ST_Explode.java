@@ -87,7 +87,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
      */
     public static ResultSet explode(Connection connection, String tableName, String fieldName) throws SQLException {
         ExplodeResultSet rowSource = new ExplodeResultSet(connection,
-                TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())).toString(),fieldName);
+                TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)).toString(),fieldName);
         return rowSource.getResultSet();
     }
 
@@ -230,7 +230,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
             rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
             return rs;
         }
