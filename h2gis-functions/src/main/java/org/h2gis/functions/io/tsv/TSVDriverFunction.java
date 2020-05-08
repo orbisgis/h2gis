@@ -127,7 +127,7 @@ public class TSVDriverFunction implements DriverFunction{
             }
         } else {
             if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 TableLocation location = TableLocation.parse(tableReference, isH2);
                 try (Statement st = connection.createStatement()) {
                     JDBCUtilities.attachCancelResultSet(st, progress);
@@ -162,7 +162,7 @@ public class TSVDriverFunction implements DriverFunction{
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
         if (FileUtil.isFileImportable(fileName, "tsv")) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
             
@@ -249,7 +249,7 @@ public class TSVDriverFunction implements DriverFunction{
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
                            boolean deleteTables) throws SQLException, IOException {
         if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
             Statement stmt = connection.createStatement();

@@ -202,7 +202,7 @@ public class GeoJsonWriteDriver {
                 FileOutputStream fos = null;
                 try {
                     fos = new FileOutputStream(fileName);
-                    final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData()));
+                    final TableLocation parse = TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
                     int recordCount = JDBCUtilities.getRowCount(connection, parse);
                     if (recordCount > 0) {
                         ProgressVisitor copyProgress = progress.subProcess(recordCount);

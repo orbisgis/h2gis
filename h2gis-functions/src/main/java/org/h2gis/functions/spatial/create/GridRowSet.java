@@ -118,7 +118,7 @@ public class GridRowSet implements SimpleRowSource {
         if (isTable) {
             Statement statement = connection.createStatement();
             //Find the SRID
-            srid = SFSUtilities.getSRID(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+            srid = SFSUtilities.getSRID(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
             try (ResultSet rs = statement.executeQuery("select ST_Extent(" + getFirstGeometryField(tableName, connection) + ")  from " + tableName)) {
                 rs.next();
                 Geometry geomExtend = (Geometry) rs.getObject(1);
@@ -204,7 +204,7 @@ public class GridRowSet implements SimpleRowSource {
      */
     private static String getFirstGeometryField(String tableName, Connection connection) throws SQLException {
         // Find first geometry column
-        List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+        List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
         if (!geomFields.isEmpty()) {
             return geomFields.get(0);
         } else {
