@@ -81,7 +81,6 @@ import org.h2gis.functions.spatial.topology.ST_Graph;
 import org.h2gis.functions.spatial.topology.ST_Node;
 import org.h2gis.functions.spatial.topology.ST_Polygonize;
 import org.h2gis.functions.spatial.trigonometry.ST_Azimuth;
-import org.h2gis.functions.spatial.type.*;
 import org.h2gis.functions.string.HexToVarBinary;
 import org.h2gis.functions.system.DoubleRange;
 import org.h2gis.functions.system.H2GISversion;
@@ -93,6 +92,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
 import org.h2gis.functions.spatial.crs.ST_FindUTMSRID;
+import org.h2gis.functions.spatial.metadata.FindGeometryMetadata;
 
 /**
  * Add H2GIS features to an H2 database
@@ -117,10 +117,6 @@ public class H2GISFunctions {
     public static Function[] getBuiltInsFunctions() {
         return new Function[] {
                 new HexToVarBinary(),
-                new GeometryTypeFromConstraint(),
-                new ColumnSRID(),
-                new GeometryTypeNameFromConstraint(),
-                new DimensionFromConstraint(),
                 new ST_GeomFromText(),
                 new ST_Area(),
                 new ST_AsBinary(),
@@ -311,14 +307,11 @@ public class H2GISFunctions {
                 new ST_OrientedEnvelope(),
                 new ST_Isovist(),
                 new ST_EstimatedExtent(),
-                new ColumnSRIDFromColumnType(),
-                new DimensionFromColumnType(),
-                new GeometryTypeNameFromColumnType(),
-                new GeometryTypeFromColumnType(),
                 new ST_FindUTMSRID(),
                 new ST_GeneratePoints(),
                 new ST_GeneratePointsInGrid(),
-                new AscRead()
+                new AscRead(),
+                new FindGeometryMetadata()
         };
     }
 
@@ -354,39 +347,29 @@ public class H2GISFunctions {
         Statement st = connection.createStatement();
         st.execute("drop view if exists geometry_columns");
         st.execute(
-                "CREATE VIEW geometry_columns AS " +
-                        "SELECT TABLE_CATALOG f_table_catalog, " +
-                                "TABLE_SCHEMA f_table_schema, " +
-                                "TABLE_NAME f_table_name, " +
-                                "COLUMN_NAME f_geometry_column, " +
-                                "1 storage_type, " +
-                                "_GeometryTypeFromColumnType(COLUMN_TYPE) geometry_type, " +
-                                "_DimensionFromColumnType(" +
-                                        "TABLE_CATALOG, " +
-                                        "TABLE_SCHEMA, " +
-                                        "TABLE_NAME, " +
-                                        "COLUMN_NAME, " +
-                                        "COLUMN_TYPE) coord_dimension, " +
-                                "_ColumnSRIDFromColumnType(" +
-                                        "TABLE_CATALOG, " +
-                                        "TABLE_SCHEMA, " +
-                                        "TABLE_NAME, " +
-                                        "COLUMN_NAME, " +
-                                        "COLUMN_TYPE) srid, " +
-                                "_GeometryTypeNameFromColumnType(COLUMN_TYPE) type " +
-                        "FROM INFORMATION_SCHEMA.COLUMNS " +
-                        "WHERE TYPE_NAME = 'GEOMETRY'");
-        ResultSet rs = connection.getMetaData().getTables("","PUBLIC","SPATIAL_REF_SYS",null);
-        if(!rs.next()) {
-        	InputStreamReader reader = new InputStreamReader(
-					H2GISFunctions.class.getResourceAsStream("spatial_ref_sys.sql"));
-			RunScript.execute(connection, reader);
-				
-			try {
-				reader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+                "CREATE VIEW geometry_columns AS "
+                + "SELECT  TABLE_CATALOG f_table_catalog, "
+                + " TABLE_SCHEMA f_table_schema, "
+                + " TABLE_NAME f_table_name, "
+                + " COLUMN_NAME f_geometry_column, "
+                + "1 storage_type, "
+                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, COLUMN_TYPE)[1]:: int as geometry_type, "
+                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, COLUMN_TYPE)[2]:: int as coord_dimension, "
+                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, COLUMN_TYPE)[3]:: int as srid, "
+                + "FindGeometryMetadata(TABLE_CATALOG,TABLE_SCHEMA,TABLE_NAME, COLUMN_NAME, COLUMN_TYPE)[4]:: varchar as type "
+                + " FROM INFORMATION_SCHEMA.COLUMNS"
+                + " WHERE TYPE_NAME = 'GEOMETRY';");
+        ResultSet rs = connection.getMetaData().getTables("", "PUBLIC", "SPATIAL_REF_SYS", null);
+        if (!rs.next()) {
+            InputStreamReader reader = new InputStreamReader(
+                    H2GISFunctions.class.getResourceAsStream("spatial_ref_sys.sql"));
+            RunScript.execute(connection, reader);
+
+            try {
+                reader.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

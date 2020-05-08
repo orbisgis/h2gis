@@ -31,7 +31,7 @@ import org.locationtech.jts.geom.GeometryFactory;
 
 /**
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS (2020)
  */
 public class GeometryMetadataTest {
 
@@ -51,15 +51,15 @@ public class GeometryMetadataTest {
         assertEquals("LINESTRING", geomMetadata.geometryType);
         assertEquals(2, geomMetadata.dimension);
         assertFalse(geomMetadata.hasZ);
-        assertFalse(geomMetadata.hasM());
+        assertFalse(geomMetadata.hasM);
         geom = wKTReader.read("LINESTRINGZ(20 10 0,20 20 0)");
         geomMetadata = GeometryMetaData.getMetaData(geom);
         assertEquals("LINESTRINGZ", geomMetadata.geometryType);
         assertEquals(3, geomMetadata.dimension);
         assertTrue(geomMetadata.hasZ);
-        assertFalse(geomMetadata.hasM());
+        assertFalse(geomMetadata.hasM);
     }
-    
+
     @Test
     public void testJTSGeometryDimensionAndType() throws Exception {
         GeometryFactory gf = new GeometryFactory();
@@ -79,13 +79,69 @@ public class GeometryMetadataTest {
         assertEquals("POINTM", geomMetadata.geometryType);
         assertEquals(3, geomMetadata.dimension);
         assertFalse(geomMetadata.hasZ);
-        assertTrue(geomMetadata.hasM());
+        assertTrue(geomMetadata.hasM);
         coordinate = new CoordinateXYZM(0, 0, 0, 0);
         geom = gf.createPoint(coordinate);
         geomMetadata = GeometryMetaData.getMetaData(geom);
         assertEquals("POINTZM", geomMetadata.geometryType);
         assertEquals(4, geomMetadata.dimension);
         assertTrue(geomMetadata.hasZ);
-        assertTrue(geomMetadata.hasM());
+        assertTrue(geomMetadata.hasM);
+    }
+
+    @Test
+    public void testParseEWKT() throws Exception {
+        GeometryMetaData geomMetadata = GeometryMetaData.getMetaData("SRID=4326;POINT(0 0)");
+        assertEquals("POINT", geomMetadata.geometryType);
+        assertEquals(2, geomMetadata.dimension);
+        assertEquals(4326, geomMetadata.SRID);
+        geomMetadata = GeometryMetaData.getMetaData("SRID=4326;POINTZM(0 0 0 0)");
+        assertEquals("POINTZM", geomMetadata.geometryType);
+        assertEquals(4, geomMetadata.dimension);
+        assertEquals(4326, geomMetadata.SRID);
+        geomMetadata = GeometryMetaData.getMetaData("POINT(0 0)");
+        assertEquals("POINT", geomMetadata.geometryType);
+        assertEquals(2, geomMetadata.dimension);
+        assertEquals(0, geomMetadata.SRID);
+    }
+
+    @Test
+    public void testParseCreateTable() throws Exception {
+        GeometryMetaData geomMetadata = GeometryMetaData.getMetaData("GEOMETRY");
+        assertEquals("GEOMETRY", geomMetadata.geometryType);
+        assertEquals(2, geomMetadata.dimension);
+        assertEquals(0, geomMetadata.SRID);
+        assertFalse(geomMetadata.hasZ);
+        assertFalse(geomMetadata.hasM);
+        geomMetadata = GeometryMetaData.getMetaData("GEOMETRY(POINT)");
+        assertEquals("POINT", geomMetadata.geometryType);
+        assertEquals(2, geomMetadata.dimension);
+        assertEquals(0, geomMetadata.SRID);
+        assertFalse(geomMetadata.hasZ);
+        assertFalse(geomMetadata.hasM);
+        geomMetadata = GeometryMetaData.getMetaData("GEOMETRY(POINTZ, 4326)");
+        assertEquals("POINTZ", geomMetadata.geometryType);
+        assertEquals(3, geomMetadata.dimension);
+        assertEquals(4326, geomMetadata.SRID);
+        assertTrue(geomMetadata.hasZ);
+        assertFalse(geomMetadata.hasM);
+        geomMetadata = GeometryMetaData.getMetaData("GEOMETRY(POINT Z, 4326)");
+        assertEquals("POINTZ", geomMetadata.geometryType);
+        assertEquals(3, geomMetadata.dimension);
+        assertEquals(4326, geomMetadata.SRID);
+        assertTrue(geomMetadata.hasZ);
+        assertFalse(geomMetadata.hasM);
+        geomMetadata = GeometryMetaData.getMetaData("GEOMETRY(POINT M, 4326)");
+        assertEquals("POINTM", geomMetadata.geometryType);
+        assertEquals(3, geomMetadata.dimension);
+        assertEquals(4326, geomMetadata.SRID);
+        assertFalse(geomMetadata.hasZ);
+        assertTrue(geomMetadata.hasM);
+        geomMetadata = GeometryMetaData.getMetaData("GEOMETRY(POINTZM, 4326)");
+        assertEquals("POINTZM", geomMetadata.geometryType);
+        assertEquals(4, geomMetadata.dimension);
+        assertEquals(4326, geomMetadata.SRID);
+        assertTrue(geomMetadata.hasZ);
+        assertTrue(geomMetadata.hasM);
     }
 }
