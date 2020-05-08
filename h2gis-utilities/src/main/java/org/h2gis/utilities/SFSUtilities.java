@@ -204,19 +204,23 @@ public class SFSUtilities {
      */
     public static Envelope getTableEnvelope(Connection connection, TableLocation location, String geometryField)
             throws SQLException {
-        if (geometryField == null || geometryField.isEmpty()) {
-            List<String> geometryFields = getGeometryFields(connection, location);
-            if (geometryFields.isEmpty()) {
-                throw new SQLException("The table " + location + " does not contain a Geometry field, then the extent "
-                        + "cannot be computed");
-            }
-            geometryField = geometryFields.get(0);
+       if (geometryField == null || geometryField.isEmpty()) {
+            throw new SQLException("The table " + location + " does not contain a Geometry field, then the extent "
+                    + "cannot be computed");
         }
-        ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("
-                + TableLocation.quoteIdentifier(geometryField) + ") ext FROM " + location);
-        if (rs.next()) {
-            // Todo under postgis it is a BOX type
-            return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        if (isH2) {
+            ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("
+                    + TableLocation.quoteIdentifier(geometryField) + ") as ext FROM " + location);
+            if (rs.next()) {
+                return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
+            }
+        } else {
+            ResultSet rs = connection.createStatement().executeQuery("SELECT ST_SetSRID(ST_Extent("
+                    + TableLocation.quoteIdentifier(geometryField) + "), ST_SRID(" + TableLocation.quoteIdentifier(geometryField) + ")) as ext FROM " + location);
+            if (rs.next()) {
+                return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
+            }
         }
         throw new SQLException("Unable to get the table extent it may be empty");
     }

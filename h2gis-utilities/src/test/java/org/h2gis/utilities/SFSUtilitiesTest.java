@@ -73,25 +73,9 @@ public class SFSUtilitiesTest {
 
         Statement st = connection.createStatement();
 
-        String functionAlias = "_GeometryTypeFromConstraint";
-        ScalarFunction scalarFunction = new GeometryTypeFromColumnType();
-        try {
-            st.execute("DROP ALIAS IF EXISTS " + functionAlias);
-        } catch (SQLException ignored) {}
-        st.execute("CREATE FORCE ALIAS IF NOT EXISTS _GeometryTypeFromConstraint DETERMINISTIC NOBUFFER FOR \"" +
-                GeometryTypeFromColumnType.class.getName() + "." + scalarFunction.getJavaStaticMethod() + "\"");
-
         st.execute("DROP AGGREGATE IF EXISTS " + ST_Extent.class.getSimpleName().toUpperCase());
         st.execute("CREATE FORCE AGGREGATE IF NOT EXISTS " + ST_Extent.class.getSimpleName().toUpperCase() +
-                " FOR \"" + ST_Extent.class.getName() + "\"");
-
-        functionAlias = "_ColumnSRID";
-        scalarFunction = new ColumnSRID();
-        try {
-            st.execute("DROP ALIAS IF EXISTS " + functionAlias);
-        } catch (SQLException ignored) {}
-        st.execute("CREATE FORCE ALIAS IF NOT EXISTS _ColumnSRID DETERMINISTIC NOBUFFER FOR \"" +
-                ColumnSRID.class.getName() + "." + scalarFunction.getJavaStaticMethod() + "\"");
+                " FOR \"" + ST_Extent.class.getName() + "\"");      
 
         //registerGeometryType
         st = connection.createStatement();
@@ -553,108 +537,7 @@ public class SFSUtilitiesTest {
         assertEquals(0, SFSUtilities.getSRID(connection, TableLocation.parse("NOGEOM")));
     }
 
-    /**
-     * Function declared in test database
-     */
-    public static class GeometryTypeFromColumnType extends DeterministicScalarFunction {
-        private static final Pattern PATTERN = Pattern.compile("\"(.*)\"|GEOMETRY\\((.*)\\)");
-
-        public GeometryTypeFromColumnType() {
-            addProperty(PROP_REMARKS, "Convert H2 column type string into a OGC geometry type index.");
-            addProperty(PROP_NAME, "_GeometryTypeFromColumnType");
-        }
-
-        @Override
-        public String getJavaStaticMethod() {
-            return "geometryTypeFromColumnType";
-        }
-
-        public static int geometryTypeFromColumnType(String constraint) {
-            String type = null;
-            Matcher matcher = PATTERN.matcher(constraint);
-            while (matcher.find()) {
-                if(type == null) {
-                    type = matcher.group(1);
-                }
-                if(type == null) {
-                    type = matcher.group(2);
-                }
-            }
-            return typeToCode(type);
-        }
-
-        public static int typeToCode(String type){
-            if(type == null){
-                return GeometryTypeCodes.GEOMETRY;
-            }
-            type = type.replaceAll(" ", "");
-            switch(type){
-                case "POINT" :              return GeometryTypeCodes.POINT;
-                case "LINESTRING" :         return GeometryTypeCodes.LINESTRING;
-                case "POLYGON" :            return GeometryTypeCodes.POLYGON;
-                case "MULTIPOINT" :         return GeometryTypeCodes.MULTIPOINT;
-                case "MULTILINESTRING" :    return GeometryTypeCodes.MULTILINESTRING;
-                case "MULTIPOLYGON" :       return GeometryTypeCodes.MULTIPOLYGON;
-                case "GEOMCOLLECTION" :     return GeometryTypeCodes.GEOMCOLLECTION;
-                case "MULTICURVE" :         return GeometryTypeCodes.MULTICURVE;
-                case "MULTISURFACE" :       return GeometryTypeCodes.MULTISURFACE;
-                case "CURVE" :              return GeometryTypeCodes.CURVE;
-                case "SURFACE" :            return GeometryTypeCodes.SURFACE;
-                case "POLYHEDRALSURFACE" :  return GeometryTypeCodes.POLYHEDRALSURFACE;
-                case "TIN" :                return GeometryTypeCodes.TIN;
-                case "TRIANGLE" :           return GeometryTypeCodes.TRIANGLE;
-
-                case "POINTZ" :              return GeometryTypeCodes.POINTZ;
-                case "LINESTRINGZ" :         return GeometryTypeCodes.LINESTRINGZ;
-                case "POLYGONZ" :            return GeometryTypeCodes.POLYGONZ;
-                case "MULTIPOINTZ" :         return GeometryTypeCodes.MULTIPOINTZ;
-                case "MULTILINESTRINGZ" :    return GeometryTypeCodes.MULTILINESTRINGZ;
-                case "MULTIPOLYGONZ" :       return GeometryTypeCodes.MULTIPOLYGONZ;
-                case "GEOMCOLLECTIONZ" :     return GeometryTypeCodes.GEOMCOLLECTIONZ;
-                case "MULTICURVEZ" :         return GeometryTypeCodes.MULTICURVEZ;
-                case "MULTISURFACEZ" :       return GeometryTypeCodes.MULTISURFACEZ;
-                case "CURVEZ" :              return GeometryTypeCodes.CURVEZ;
-                case "SURFACEZ" :            return GeometryTypeCodes.SURFACEZ;
-                case "POLYHEDRALSURFACEZ" :  return GeometryTypeCodes.POLYHEDRALSURFACEZ;
-                case "TINZ" :                return GeometryTypeCodes.TINZ;
-                case "TRIANGLEZ" :           return GeometryTypeCodes.TRIANGLEZ;
-
-                case "POINTM" :             return GeometryTypeCodes.POINTM;
-                case "LINESTRINGM" :        return GeometryTypeCodes.LINESTRINGM;
-                case "POLYGONM" :           return GeometryTypeCodes.POLYGONM;
-                case "MULTIPOINTM" :        return GeometryTypeCodes.MULTIPOINTM;
-                case "MULTILINESTRINGM" :   return GeometryTypeCodes.MULTILINESTRINGM;
-                case "MULTIPOLYGONM" :      return GeometryTypeCodes.MULTIPOLYGONM;
-                case "GEOMCOLLECTIONM" :    return GeometryTypeCodes.GEOMCOLLECTIONM;
-                case "MULTICURVEM" :        return GeometryTypeCodes.MULTICURVEM;
-                case "MULTISURFACEM" :      return GeometryTypeCodes.MULTISURFACEM;
-                case "CURVEM" :             return GeometryTypeCodes.CURVEM;
-                case "SURFACEM" :           return GeometryTypeCodes.SURFACEM;
-                case "POLYHEDRALSURFACEM" : return GeometryTypeCodes.POLYHEDRALSURFACEM;
-                case "TINM" :               return GeometryTypeCodes.TINM;
-                case "TRIANGLEM" :          return GeometryTypeCodes.TRIANGLEM;
-
-                case "POINTZM" :              return GeometryTypeCodes.POINTZM;
-                case "LINESTRINGZM" :         return GeometryTypeCodes.LINESTRINGZM;
-                case "POLYGONZM" :            return GeometryTypeCodes.POLYGONZM;
-                case "MULTIPOINTZM" :         return GeometryTypeCodes.MULTIPOINTZM;
-                case "MULTILINESTRINGZM" :    return GeometryTypeCodes.MULTILINESTRINGZM;
-                case "MULTIPOLYGONZM" :       return GeometryTypeCodes.MULTIPOLYGONZM;
-                case "GEOMCOLLECTIONZM" :     return GeometryTypeCodes.GEOMCOLLECTIONZM;
-                case "MULTICURVEZM" :         return GeometryTypeCodes.MULTICURVEZM;
-                case "MULTISURFACEZM" :       return GeometryTypeCodes.MULTISURFACEZM;
-                case "CURVEZM" :              return GeometryTypeCodes.CURVEZM;
-                case "SURFACEZM" :            return GeometryTypeCodes.SURFACEZM;
-                case "POLYHEDRALSURFACEZM" :  return GeometryTypeCodes.POLYHEDRALSURFACEZM;
-                case "TINZM" :                return GeometryTypeCodes.TINZM;
-                case "TRIANGLEZM" :           return GeometryTypeCodes.TRIANGLEZM;
-
-
-                case "GEOMETRY" :
-                default :                   return GeometryTypeCodes.GEOMETRY;
-            }
-        }
-    }
+   
 
     /**
      * Function declared in test database
@@ -700,82 +583,7 @@ public class SFSUtilitiesTest {
         }
     }
 
-    public static class ColumnSRID extends AbstractFunction implements ScalarFunction {
-        private static final String SRID_FUNC = "ST_SRID";
-        private static final Pattern SRID_CONSTRAINT_PATTERN = Pattern.compile("ST_SRID\\s*\\(\\s*((([\"`][^\"`]+[\"`])|(\\w+)))\\s*\\)\\s*=\\s*(\\d+)", Pattern.CASE_INSENSITIVE);
-
-        public ColumnSRID() {
-            addProperty(PROP_REMARKS, "Get the column SRID from constraints and data.");
-            addProperty(PROP_NAME, "_ColumnSRID");
-        }
-
-        @Override
-        public String getJavaStaticMethod() {
-            return "getSRID";
-        }
-
-        public static int getSRIDFromConstraint(String constraint, String columnName) {
-            int srid = 0;
-            Matcher matcher = SRID_CONSTRAINT_PATTERN.matcher(constraint);
-            while (matcher.find()) {
-                String extractedColumnName = matcher.group(1).replace("\"","").replace("`","");
-                int sridConstr = Integer.valueOf(matcher.group(5));
-                if (extractedColumnName.equalsIgnoreCase(columnName)) {
-                    if(srid != 0 && srid != sridConstr) {
-                        // Two srid constraint on the same column
-                        return 0;
-                    }
-                    srid = sridConstr;
-                }
-            }
-            return srid;
-        }
-
-        public static String fetchConstraint(Connection connection, String catalogName, String schemaName, String tableName) throws SQLException {
-            // Merge column constraint and table constraint
-            PreparedStatement pst = SFSUtilities.prepareInformationSchemaStatement(connection, catalogName, schemaName,
-                    tableName, "INFORMATION_SCHEMA.CONSTRAINTS", "", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
-            ResultSet rsConstraint = pst.executeQuery();
-            try {
-                StringBuilder constraint = new StringBuilder();
-                while (rsConstraint.next()) {
-                    String tableConstr = rsConstraint.getString("CHECK_EXPRESSION");
-                    if(tableConstr != null) {
-                        constraint.append(tableConstr);
-                    }
-                }
-                return constraint.toString();
-            } finally {
-                rsConstraint.close();
-                pst.close();
-            }
-        }
-
-        public static int getSRID(Connection connection, String catalogName, String schemaName, String tableName, String columnName,String constraint) {
-            try {
-                Statement st = connection.createStatement();
-                constraint+=fetchConstraint(connection, catalogName, schemaName,tableName);
-                if(constraint.toUpperCase().contains(SRID_FUNC)) {
-                    int srid = getSRIDFromConstraint(constraint, columnName);
-                    if(srid > 0) {
-                        return srid;
-                    }
-                }
-                ResultSet rs = st.executeQuery(String.format("select ST_SRID(%s) from %s LIMIT 1;",
-                        StringUtils.quoteJavaString(columnName.toUpperCase()),new TableLocation(catalogName, schemaName, tableName)));
-                if(rs.next()) {
-                    int srid = rs.getInt(1);
-                    if(srid > 0) {
-                        return srid;
-                    }
-                }
-                rs.close();
-                return 0;
-            } catch (SQLException ex) {
-                return 0;
-            }
-        }
-    }
+   
 
     private class CustomDataSource implements DataSource {
         @Override public Connection getConnection() throws SQLException {return null;}

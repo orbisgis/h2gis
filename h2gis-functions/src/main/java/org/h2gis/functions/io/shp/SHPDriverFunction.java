@@ -346,12 +346,20 @@ public class SHPDriverFunction implements DriverFunction {
             case GeometryTypeCodes.LINESTRINGZ:
                 shapeType = meta.hasZ ? ShapeType.ARCZ : ShapeType.ARC;
                 break;
+            case GeometryTypeCodes.POINTM:
+            case GeometryTypeCodes.POINTZ:
             case GeometryTypeCodes.POINT:
-                shapeType = meta.hasZ ? ShapeType.POINTZ  : ShapeType.POINT;
+                shapeType = meta.hasZ ? ShapeType.POINTZ : ShapeType.POINT;
                 break;
+            case GeometryTypeCodes.MULTIPOINTZ:
+            case GeometryTypeCodes.MULTIPOINTM:
             case GeometryTypeCodes.MULTIPOINT:
                 shapeType = meta.hasZ ? ShapeType.MULTIPOINTZ : ShapeType.MULTIPOINT;
                 break;
+            case GeometryTypeCodes.POLYGONZ:
+            case GeometryTypeCodes.MULTIPOLYGONZ:
+            case GeometryTypeCodes.POLYGONM:
+            case GeometryTypeCodes.MULTIPOLYGONM:
             case GeometryTypeCodes.POLYGON:
             case GeometryTypeCodes.MULTIPOLYGON:
                 shapeType = meta.hasZ ? ShapeType.POLYGONZ : ShapeType.POLYGON;
