@@ -238,7 +238,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
         final TableLocation nodesName = TableUtilities.suffixTableLocation(tableName, NODES_SUFFIX);
         final TableLocation edgesName = TableUtilities.suffixTableLocation(tableName, EDGES_SUFFIX); 
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         if(deleteTables){            
             try (Statement stmt = connection.createStatement()) {
                 StringBuilder sb = new StringBuilder("drop table if exists ");

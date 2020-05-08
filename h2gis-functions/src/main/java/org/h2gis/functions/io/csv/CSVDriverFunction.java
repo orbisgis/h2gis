@@ -112,7 +112,7 @@ public class CSVDriverFunction implements DriverFunction{
 
         } else {
             if (FileUtil.isExtensionWellFormated(fileName, "csv")) {
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 TableLocation location = TableLocation.parse(tableReference, isH2);
                 try (Statement st = connection.createStatement()) {
                     JDBCUtilities.attachCancelResultSet(st, progress);
@@ -148,7 +148,7 @@ public class CSVDriverFunction implements DriverFunction{
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
                            String csvOptions) throws SQLException, IOException {
         if (FileUtil.isFileImportable(fileName, "csv")) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
             FileInputStream fis = new FileInputStream(fileName);
@@ -233,7 +233,7 @@ public class CSVDriverFunction implements DriverFunction{
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
                            boolean deleteTables) throws SQLException, IOException {
         if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
             Statement stmt = connection.createStatement();

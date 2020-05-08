@@ -73,7 +73,7 @@ public class SHPDriverFunction implements DriverFunction {
      */
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableReference);
@@ -233,7 +233,7 @@ public class SHPDriverFunction implements DriverFunction {
      */
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceEncoding) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         SHPDriver shpDriver = new SHPDriver();
         shpDriver.initDriverFromFile(fileName, forceEncoding);
         ProgressVisitor copyProgress = progress.subProcess((int)(shpDriver.getRowCount() / BATCH_MAX_SIZE));
@@ -318,7 +318,7 @@ public class SHPDriverFunction implements DriverFunction {
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
                            boolean deleteTables) throws SQLException, IOException {
         if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
             Statement stmt = connection.createStatement();

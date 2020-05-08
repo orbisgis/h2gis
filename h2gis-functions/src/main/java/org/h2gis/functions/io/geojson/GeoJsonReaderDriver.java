@@ -110,7 +110,7 @@ public class GeoJsonReaderDriver {
      */
     public void read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
         if (FileUtil.isFileImportable(fileName, "geojson")) {
-            this.isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             this.tableLocation = TableLocation.parse(tableReference, isH2);
             if (fileName.length() > 0) {
                 parseGeoJson(progress);

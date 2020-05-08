@@ -254,7 +254,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
             rs.addColumn(ISO_FIELD_NAME, Types.INTEGER,10,0);
             return rs;
         }

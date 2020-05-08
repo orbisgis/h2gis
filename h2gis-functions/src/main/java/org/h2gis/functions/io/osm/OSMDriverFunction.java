@@ -111,7 +111,7 @@ public class OSMDriverFunction implements DriverFunction {
             throw new IOException(new IllegalArgumentException("This driver handle only .osm, .osm.gz and .osm.bz2 files"));
         }
         if(deleteTables){
-            OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection.getMetaData()), tableReference);
+            OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection), tableReference);
         }
         OSMParser osmp = new OSMParser();
         osmp.read(connection, tableReference, fileName, progress);
