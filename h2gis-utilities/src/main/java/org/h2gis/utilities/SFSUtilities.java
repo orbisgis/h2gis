@@ -208,7 +208,7 @@ public class SFSUtilities {
             throw new SQLException("The table " + location + " does not contain a Geometry field, then the extent "
                     + "cannot be computed");
         }
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         if (isH2) {
             ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("
                     + TableLocation.quoteIdentifier(geometryField) + ") as ext FROM " + location);
