@@ -28,6 +28,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -98,14 +99,14 @@ public class JDBCUtilitiesTest {
         st.execute("CREATE TABLE ATEMPSCHEMA.TEMPTABLE(id integer)");
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
         st.execute("CREATE TABLE TEMPTABLE(id integer primary key)");
-        assertEquals(1, JDBCUtilities.getIntegerPrimaryKey(connection, "TEMPTABLE"));
+        assertEquals(1, JDBCUtilities.getIntegerPrimaryKey(connection, TableLocation.parse("TEMPTABLE")));
         st.execute("DROP SCHEMA IF EXISTS SCHEM");
         st.execute("CREATE SCHEMA SCHEM");
         st.execute("DROP TABLE IF EXISTS SCHEM.TEMPTABLE");
         st.execute("CREATE TABLE SCHEM.TEMPTABLE(id integer primary key)");
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
         st.execute("CREATE TABLE TEMPTABLE(id varchar primary key)");
-        assertEquals(0, JDBCUtilities.getIntegerPrimaryKey(connection, "TEMPTABLE"));
+        assertEquals(0, JDBCUtilities.getIntegerPrimaryKey(connection, TableLocation.parse("TEMPTABLE")));
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
     }
 
@@ -113,12 +114,7 @@ public class JDBCUtilitiesTest {
     public void testPrimaryKeyExtractOnNonexistantTable() throws SQLException {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
         assertThrows(SQLException.class, () -> {
-            try {
-                JDBCUtilities.getIntegerPrimaryKey(connection, "TEMPTABLE");
-            } catch (SQLException e) {
-                assertTrue(e.getMessage().contains("Table TEMPTABLE not found"));
-                throw e;
-            }
+                JDBCUtilities.getIntegerPrimaryKey(connection, TableLocation.parse("TEMPTABLE"));           
         });
     }
 
@@ -126,8 +122,8 @@ public class JDBCUtilitiesTest {
     public void testGetFieldNameFromIndex() throws SQLException {
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
         st.execute("CREATE TABLE TEMPTABLE(id integer, name varchar)");
-        assertEquals("ID", JDBCUtilities.getFieldName(connection.getMetaData(), "TEMPTABLE", 1));
-        assertEquals("NAME", JDBCUtilities.getFieldName(connection.getMetaData(), "TEMPTABLE", 2));
+        assertEquals("ID", JDBCUtilities.getColumnName(connection, TableLocation.parse("TEMPTABLE"), 1));
+        assertEquals("NAME", JDBCUtilities.getColumnName(connection, TableLocation.parse("TEMPTABLE"), 2));
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
     }
 
@@ -136,29 +132,42 @@ public class JDBCUtilitiesTest {
         // Don't use quotes
         st.execute("DROP TABLE IF EXISTS temptable");
         st.execute("CREATE TABLE temptable(id integer, name varchar)");
-        assertTrue(JDBCUtilities.tableExists(connection, "TEMPTABLE"));
-        assertFalse(JDBCUtilities.tableExists(connection, "temptable"));
-        assertFalse(JDBCUtilities.tableExists(connection, "teMpTAbLE"));
-        assertFalse(JDBCUtilities.tableExists(connection, "\"teMpTAbLE\""));
+        assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("TEMPTABLE")));
+        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
+        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
+        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("\"teMpTAbLE\"")));
         st.execute("DROP TABLE IF EXISTS teMpTAbLE");
         st.execute("CREATE TABLE teMpTAbLE(id integer, name varchar)");
-        assertTrue(JDBCUtilities.tableExists(connection, "TEMPTABLE"));
-        assertFalse(JDBCUtilities.tableExists(connection, "temptable"));
-        assertFalse(JDBCUtilities.tableExists(connection, "teMpTAbLE"));
-        assertFalse(JDBCUtilities.tableExists(connection, "\"teMpTAbLE\""));
+        assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("TEMPTABLE")));
+        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
+        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
+        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("\"teMpTAbLE\"")));
         // Use quotes
         st.execute("DROP TABLE IF EXISTS TEMPTABLE");
         st.execute("DROP TABLE IF EXISTS \"teMpTAbLE\"");
         st.execute("CREATE TABLE \"teMpTAbLE\"(id integer, name varchar)");
-        assertTrue(JDBCUtilities.tableExists(connection, "\"teMpTAbLE\""));
-        assertTrue(JDBCUtilities.tableExists(connection, "teMpTAbLE"));
-        assertFalse(JDBCUtilities.tableExists(connection, "temptable"));
-        assertFalse(JDBCUtilities.tableExists(connection, "TEMPTABLE"));
+        assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("\"teMpTAbLE\"")));
+        assertTrue(JDBCUtilities.tableExists(connection, TableLocation.parse("teMpTAbLE")));
+        assertFalse(JDBCUtilities.tableExists(connection, TableLocation.parse("temptable")));
+        assertFalse(JDBCUtilities.tableExists(connection,TableLocation.parse( "TEMPTABLE")));
     }
 
     @Test
     public void isH2() throws SQLException {
         assertTrue(JDBCUtilities.isH2DataBase(connection));
+    }
+    
+    @Test
+    public void testGetColumnNamesAndIndexes() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS TEMPTABLE");
+        st.execute("CREATE TABLE TEMPTABLE(id integer, name varchar)");
+        List<Tuple<String, Integer>> fields = JDBCUtilities.getColumnNamesAndIndexes(connection, TableLocation.parse("TEMPTABLE"));
+        assertEquals(2, fields.size());
+        assertNotNull(fields.stream()
+                .filter(tuple -> ("ID".equals(tuple.first()) || "NAME".equals(tuple.first())))
+                .findAny()
+                .orElse(null));
+        st.execute("DROP TABLE IF EXISTS TEMPTABLE");
     }
 
     @Test
@@ -253,7 +262,7 @@ public class JDBCUtilitiesTest {
         ArrayList<String> expecteds = new ArrayList<>();
         expecteds.add("ID");
         expecteds.add("NAME");
-        assertEquals(expecteds, JDBCUtilities.getFieldNames(md));
+        assertEquals(expecteds, JDBCUtilities.getColumnNames(md));
     }
     
     @Test

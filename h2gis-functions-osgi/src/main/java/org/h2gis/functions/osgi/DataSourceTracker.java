@@ -29,6 +29,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.SQLException;
+import org.h2gis.utilities.TableLocation;
 
 /**
  * When a new data source is registered this tracker add spatial features to the linked database.
@@ -60,7 +61,7 @@ public class DataSourceTracker implements ServiceTrackerCustomizer<DataSource,Fu
                     return null;
                 }
                 // Check if the database has been properly initialised by the DataSource service provider
-                if (!JDBCUtilities.tableExists(connection, "PUBLIC.GEOMETRY_COLUMNS")) {
+                if (!JDBCUtilities.tableExists(connection, TableLocation.parse("PUBLIC.GEOMETRY_COLUMNS", true))) {
                     return null;
                 }
             }
