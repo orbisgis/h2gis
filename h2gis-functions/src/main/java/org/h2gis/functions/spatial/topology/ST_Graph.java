@@ -255,12 +255,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         PTS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_PTS", isH2).toString();
         COORDS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_COORDS", isH2).toString();
         // Check for a primary key
-        final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableName);
-        if (pkIndex == 0) {
+        final Tuple<String, Integer> pkIndex = JDBCUtilities.getIntegerPrimaryKeyNameAndIndex(connection, tableName);
+        if (pkIndex==null) {
             throw new IllegalStateException("Table " + tableName.getTable()
                     + " must contain a single integer primary key.");
         }
-        final String pkColName = JDBCUtilities.getColumnName(connection, tableName, pkIndex);
         // Check the geometry column type;
         final Object[] spatialFieldIndexAndName = getSpatialFieldIndexAndName(connection, tableName, spatialFieldName);
         int spatialFieldIndex = (int) spatialFieldIndexAndName[1];
@@ -269,7 +268,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         final String geomCol = JDBCUtilities.getColumnName(connection, tableName, spatialFieldIndex);
         final Statement st = connection.createStatement();
         try {
-            firstFirstLastLast(st, tableName, pkColName, geomCol, tolerance);            
+            firstFirstLastLast(st, tableName, pkIndex.first(), geomCol, tolerance);            
             int srid = SFSUtilities.getSRID(connection, tableName, spatialFieldName);
             makeEnvelopes(st, tolerance, isH2, srid);
             nodesTable(st, nodesName, tolerance, isH2,srid);

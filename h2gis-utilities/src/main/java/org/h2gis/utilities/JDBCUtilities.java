@@ -372,6 +372,59 @@ public class JDBCUtilities {
         }
         return 0;
     }
+    
+    /**
+     * Method to fetch an integer primary key (name + index).
+     * Return null otherwise
+     * @param connection Connection
+     * @param tableLocation table identifier
+     * @return The name and the index of an integer primary key used for
+     * edition[1-n]; 0 if the source is closed or if the table has no primary
+     * key or more than one column as primary key
+     * @throws java.sql.SQLException
+     */
+    public static Tuple<String, Integer> getIntegerPrimaryKeyNameAndIndex(Connection connection, TableLocation tableLocation) throws SQLException {
+        if (!tableExists(connection, tableLocation)) {
+            throw new SQLException("Table " + tableLocation + " not found.");
+        }
+        final DatabaseMetaData meta = connection.getMetaData();
+        String columnNamePK = null;
+        ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(null), tableLocation.getSchema(null),
+                tableLocation.getTable());
+        try {
+            while (rs.next()) {
+                // If the schema is not specified, public must be the schema
+                if (!tableLocation.getSchema().isEmpty() || "public".equalsIgnoreCase(rs.getString("TABLE_SCHEM"))) {
+                    if (columnNamePK == null) {
+                        columnNamePK = rs.getString("COLUMN_NAME");
+                    } else {
+                        // Multi-column PK is not supported
+                        columnNamePK = null;
+                        break;
+                    }
+                }
+            }
+        } finally {
+            rs.close();
+        }
+        if (columnNamePK != null) {
+            rs = meta.getColumns(tableLocation.getCatalog(null), tableLocation.getSchema(null),
+                    tableLocation.getTable(), columnNamePK);
+            try {
+                while (rs.next()) {
+                    if (!tableLocation.getSchema().isEmpty() || "public".equalsIgnoreCase(rs.getString("TABLE_SCHEM"))) {
+                        int dataType = rs.getInt("DATA_TYPE");
+                        if (dataType == Types.BIGINT || dataType == Types.INTEGER || dataType == Types.ROWID) {
+                            return new Tuple<>(columnNamePK, rs.getInt("ORDINAL_POSITION"));
+                        }
+                    }
+                }
+            } finally {
+                rs.close();
+            }
+        }
+        return null;
+    }
 
     /**
      * Return true if the table exists.
