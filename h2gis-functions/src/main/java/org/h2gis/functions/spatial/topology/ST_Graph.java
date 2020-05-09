@@ -247,27 +247,26 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             }
         }
         // Check if ST_Graph has already been run on this table.
-        else if (JDBCUtilities.tableExists(connection, nodesName.getTable()) ||
-                JDBCUtilities.tableExists(connection, edgesName.getTable())) {
+        else if (JDBCUtilities.tableExists(connection, nodesName) ||
+                JDBCUtilities.tableExists(connection, edgesName)) {
             throw new IllegalArgumentException(ALREADY_RUN_ERROR + tableName.getTable());
         }
         //Tables used to store intermediate data
         PTS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_PTS", isH2).toString();
         COORDS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_COORDS", isH2).toString();
         // Check for a primary key
-        final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableName.getTable());
+        final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableName);
         if (pkIndex == 0) {
             throw new IllegalStateException("Table " + tableName.getTable()
                     + " must contain a single integer primary key.");
         }
-        final DatabaseMetaData md = connection.getMetaData();
-        final String pkColName = JDBCUtilities.getFieldName(md, tableName.getTable(), pkIndex);
+        final String pkColName = JDBCUtilities.getColumnName(connection, tableName, pkIndex);
         // Check the geometry column type;
         final Object[] spatialFieldIndexAndName = getSpatialFieldIndexAndName(connection, tableName, spatialFieldName);
         int spatialFieldIndex = (int) spatialFieldIndexAndName[1];
         spatialFieldName = (String) spatialFieldIndexAndName[0];
         checkGeometryType(connection, tableName, spatialFieldIndex);
-        final String geomCol = JDBCUtilities.getFieldName(md, tableName.getTable(), spatialFieldIndex);
+        final String geomCol = JDBCUtilities.getColumnName(connection, tableName, spatialFieldIndex);
         final Statement st = connection.createStatement();
         try {
             firstFirstLastLast(st, tableName, pkColName, geomCol, tolerance);            
@@ -290,7 +289,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
             TableLocation tableName,
             int spatialFieldIndex) throws SQLException {
         final String fieldName
-                = JDBCUtilities.getFieldName(connection.getMetaData(), tableName.getTable(), spatialFieldIndex);
+                = JDBCUtilities.getColumnName(connection, tableName, spatialFieldIndex);
         int geomType = SFSUtilities.getGeometryType(connection, tableName, fieldName);
         if (geomType != GeometryTypeCodes.LINESTRING && geomType != GeometryTypeCodes.LINESTRINGZ) {
             throw new IllegalArgumentException(TYPE_ERROR

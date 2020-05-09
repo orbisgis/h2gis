@@ -36,8 +36,7 @@ import java.util.List;
  * @author Adam Gouge
  */
 public class JDBCUtilities {
-    
-    
+
     public static final String H2_DRIVER_PACKAGE_NAME = "org.h2.jdbc";
 
     public enum FUNCTION_TYPE {
@@ -123,45 +122,96 @@ public class JDBCUtilities {
     }
 
     /**
-     * @param meta DataBase meta data
-     * @param table Table identifier [[catalog.]schema.]table
-     * @param fieldIndex Field ordinal position [1-n]
-     * @return The field name, empty if the field position or table is not found
-     * @throws SQLException If jdbc throws an error
+     * Check column name from its index
+     *
+     * @param resultSetMetaData Active result set meta data.
+     * @param columnIndex Column index
+     * @return The column name
+     * @throws SQLException
      */
-    public static String getFieldName(DatabaseMetaData meta, String table, int fieldIndex) throws SQLException {
-        TableLocation location = TableLocation.parse(table);
-        ResultSet rs = meta.getColumns(location.getCatalog(null), location.getSchema(null), location.getTable(), null);
-        try {
-            while (rs.next()) {
-                if (rs.getInt("ORDINAL_POSITION") == fieldIndex) {
-                    return rs.getString("COLUMN_NAME");
-                }
+    public static String getColumnName(ResultSetMetaData resultSetMetaData, Integer columnIndex) throws SQLException {
+        for (int columnId = 1; columnId <= resultSetMetaData.getColumnCount(); columnId++) {
+            if (columnId == columnIndex) {
+                return resultSetMetaData.getColumnName(columnId);
             }
-        } finally {
-            rs.close();
         }
-        return "";
+        return null;
     }
 
     /**
-     * Returns the list of all the field name of a table.
+     * @param connection Active connection to the database
+     * @param tableLocation Table identifier [[catalog.]schema.]table
+     * @param columnIndex Field ordinal position [1-n]
+     * @return The field name, empty if the field position or table is not found
+     * @throws SQLException If jdbc throws an error
+     */
+    public static String getColumnName(Connection connection, TableLocation tableLocation, int columnIndex) throws SQLException {
+        final Statement statement = connection.createStatement();
+        try {
+            final ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + tableLocation + " LIMIT 0;");
+            try {
+                return getColumnName(resultSet.getMetaData(), columnIndex);
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            statement.close();
+        }
+    }
+    
+    /**
+     * Returns the list of all the column names of a table.
      *
-     * @param meta DataBase meta data
-     * @param table Table identifier [[catalog.]schema.]table
+     * @param connection Active connection to the database
+     * @param tableLocation Table identifier [[catalog.]schema.]table
      * @return The list of field name.
      * @throws SQLException If jdbc throws an error
      */
-    public static List<String> getFieldNames(DatabaseMetaData meta, String table) throws SQLException {
-        List<String> fieldNameList = new ArrayList<String>();
-        TableLocation location = TableLocation.parse(table);
-        ResultSet rs = meta.getColumns(location.getCatalog(null), location.getSchema(null), location.getTable(), null);
+    public static List<String> getColumnNames(Connection connection, TableLocation tableLocation) throws SQLException {
+        List<String> fieldNameList = new ArrayList<>();
+        final Statement statement = connection.createStatement();
         try {
-            while (rs.next()) {
-                fieldNameList.add(rs.getString("COLUMN_NAME"));
+            final ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + tableLocation + " LIMIT 0;");
+            try {
+                ResultSetMetaData metadata = resultSet.getMetaData();
+                for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
+                    fieldNameList.add(metadata.getColumnName(columnId));
+                }
+            } finally {
+                resultSet.close();
             }
         } finally {
-            rs.close();
+            statement.close();
+        }
+        return fieldNameList;
+    }
+
+    /**
+     * Returns the list of all the column names and indexes of a table.
+     *
+     * @param connection Active connection to the database
+     * @param tableLocation Table identifier [[catalog.]schema.]table
+     * @return The list of field name.
+     * @throws SQLException If jdbc throws an error
+     */
+    public static List<Tuple<String, Integer>> getColumnNamesAndIndexes(Connection connection, TableLocation tableLocation) throws SQLException {
+        List<Tuple<String, Integer>> fieldNameList = new ArrayList<>();
+        final Statement statement = connection.createStatement();
+        try {
+            final ResultSet resultSet = statement.executeQuery(
+                    "SELECT * FROM " + tableLocation + " LIMIT 0;");
+            try {
+                ResultSetMetaData metadata = resultSet.getMetaData();
+                for (int columnId = 1; columnId <= metadata.getColumnCount(); columnId++) {
+                    fieldNameList.add(new Tuple<>(metadata.getColumnName(columnId),columnId));
+                }
+            } finally {
+                resultSet.close();
+            }
+        } finally {
+            statement.close();
         }
         return fieldNameList;
     }
@@ -274,17 +324,17 @@ public class JDBCUtilities {
 
     /**
      * @param connection Connection
-     * @param tableReference table identifier
+     * @param tableLocation table identifier
      * @return The integer primary key used for edition[1-n]; 0 if the source is
      * closed or if the table has no primary key or more than one column as
      * primary key
+     * @throws java.sql.SQLException
      */
-    public static int getIntegerPrimaryKey(Connection connection, String tableReference) throws SQLException {
-        if (!tableExists(connection, tableReference)) {
-            throw new SQLException("Table " + tableReference + " not found.");
+    public static int getIntegerPrimaryKey(Connection connection, TableLocation tableLocation) throws SQLException {
+        if (!tableExists(connection, tableLocation)) {
+            throw new SQLException("Table " + tableLocation + " not found.");
         }
         final DatabaseMetaData meta = connection.getMetaData();
-        TableLocation tableLocation = TableLocation.parse(tableReference);
         String columnNamePK = null;
         ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(null), tableLocation.getSchema(null),
                 tableLocation.getTable());
@@ -327,13 +377,13 @@ public class JDBCUtilities {
      * Return true if the table exists.
      *
      * @param connection Connection
-     * @param tableName Table name
+     * @param tableLocation Table name
      * @return true if the table exists
      * @throws java.sql.SQLException
      */
-    public static boolean tableExists(Connection connection, String tableName) throws SQLException {
+    public static boolean tableExists(Connection connection, TableLocation tableLocation) throws SQLException {
         try (Statement statement = connection.createStatement()) {
-            statement.execute("SELECT * FROM " + TableLocation.parse(tableName) + " LIMIT 0;");
+            statement.execute("SELECT * FROM " + tableLocation + " LIMIT 0;");
             return true;
         } catch (SQLException ex) {
             return false;
@@ -388,8 +438,12 @@ public class JDBCUtilities {
         List<String> fieldValues = new ArrayList<String>();
         try {
             ResultSet result = statement.executeQuery("SELECT DISTINCT " + TableLocation.quoteIdentifier(fieldName) + " FROM " + TableLocation.parse(tableName));
+            try {
             while (result.next()) {
                 fieldValues.add(result.getString(1));
+            }   
+            } finally {
+                result.close();
             }
         } finally {
             statement.close();
@@ -417,7 +471,7 @@ public class JDBCUtilities {
      * @return An array with all column names
      * @throws SQLException
      */
-    public static List<String> getFieldNames(ResultSetMetaData resultSetMetaData) throws SQLException {
+    public static List<String> getColumnNames(ResultSetMetaData resultSetMetaData) throws SQLException {
         List<String> columnNames = new ArrayList<>();
         int cols = resultSetMetaData.getColumnCount();
         for (int i = 1; i <= cols; i++) {
@@ -438,6 +492,7 @@ public class JDBCUtilities {
         PropertyChangeListener propertyChangeListener = new CancelResultSet(st);
         progressVisitor.addPropertyChangeListener(ProgressVisitor.PROPERTY_CANCELED, propertyChangeListener);
         return propertyChangeListener;
+
     }
 
     /**
