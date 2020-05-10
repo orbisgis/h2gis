@@ -37,6 +37,8 @@ import org.locationtech.jts.io.WKTReader;
 
 import java.sql.*;
 import java.util.List;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -153,25 +155,16 @@ public class BasicTest {
 
         }
 
-    @Test
-    public void testSFSUtilities() throws Exception {
-        String catalog = connection.getCatalog();
-        st.execute("drop schema if exists blah");
-        st.execute("create schema blah");
-        st.execute("create table blah.testSFSUtilities(id integer, the_geom GEOMETRY(point))");
-        List<String> geomFields = SFSUtilities.getGeometryFields(connection, new TableLocation(catalog, "blah", "testSFSUtilities"));
-        assertEquals(1, geomFields.size());
-        assertEquals("THE_GEOM", geomFields.get(0));
-    }
-
+    
     @Test
     public void testSFSUtilitiesFirstGeometryFieldName1() throws Exception {
         st.execute("DROP TABLE IF EXISTS POINT3D");
         st.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
         st.execute("INSERT INTO POINT3D (gid, the_geom) VALUES(1, ST_GeomFromText('POINT(0 12)', 27582))");
         ResultSet rs = st.executeQuery("SELECT * from POINT3D;");
-        String geomField = SFSUtilities.getFirstGeometryFieldName(rs);
-        assertEquals("THE_GEOM", geomField);
+        Tuple<String, Integer> geomField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs);
+        assertEquals("THE_GEOM", geomField.first());
+        assertEquals(2, geomField.second());
     }
     
     @Test
@@ -182,7 +175,7 @@ public class BasicTest {
                 st.execute("CREATE TABLE POINT3D (gid int )");
                 st.execute("INSERT INTO POINT3D (gid) VALUES(1)");
                 ResultSet rs = st.executeQuery("SELECT * from POINT3D;");
-                SFSUtilities.getFirstGeometryFieldName(rs);
+                GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(rs);
             } catch (JdbcSQLException e) {
                 throw e.getCause();
             }

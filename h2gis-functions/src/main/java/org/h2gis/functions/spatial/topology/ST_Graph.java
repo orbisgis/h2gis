@@ -293,51 +293,9 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
 
     private static void checkGeometryType(int geomType) throws SQLException {
         if (geomType != GeometryTypeCodes.LINESTRING && geomType != GeometryTypeCodes.LINESTRINGZ) {
-            throw new IllegalArgumentException(TYPE_ERROR
-                    + SFSUtilities.getGeometryTypeNameFromCode(geomType));
+            throw new IllegalArgumentException(TYPE_ERROR);
         }
-    }
-
-    /**
-     * Get the column index of the given spatial field, or the first one found
-     * if none is given (specified by null).
-     * 
-     * Return the first geometry field if the spatialFieldName name is null.
-     *
-     * @param spatialFieldName Spatial field name
-     * @return Spatial field index and its name
-     * @throws SQLException
-     */
-    private static Object[] getSpatialFieldIndexAndName(Connection connection,
-                                            TableLocation tableName,
-                                            String spatialFieldName) throws SQLException {
-        // Find the name of the first geometry column if not provided by the user.
-        if (spatialFieldName == null) {
-            List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableName);
-            if (!geomFields.isEmpty()) {
-                spatialFieldName = geomFields.get(0);
-            } else {
-                throw new SQLException("Table " + tableName + " does not contain a geometry field.");
-            }
-        }
-        // Set up tables
-        final ResultSet columns = connection.getMetaData()
-                .getColumns(tableName.getCatalog(null), tableName.getSchema(null), tableName.getTable(), null);
-        int spatialFieldIndex = -1;
-        try {
-            while (columns.next()) {
-                if (columns.getString("COLUMN_NAME").equalsIgnoreCase(spatialFieldName)) {
-                    spatialFieldIndex = columns.getRow();
-                }
-            }
-        } finally {
-            columns.close();
-        }
-        if (spatialFieldIndex == -1) {
-            throw new SQLException("Geometry field " + spatialFieldName + " of table " + tableName + " not found");
-        }
-        return new Object[]{spatialFieldName,spatialFieldIndex};
-    }
+    }   
 
     private static String expand(String geom, double tol) {
         return "ST_Expand(" + geom + ", " + tol + ")";

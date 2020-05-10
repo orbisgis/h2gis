@@ -36,6 +36,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.UUID;
+import org.h2gis.utilities.GeometryTableUtilities;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -251,7 +252,7 @@ public class SHPEngineTest {
         Statement st = connection.createStatement();
         st.execute("drop table if exists shptable");
         st.execute("CALL FILE_TABLE('"+SHPEngineTest.class.getResource("waternetwork.shp").getPath()+"', 'SHPTABLE');");
-        assertEquals(GeometryTypeCodes.MULTILINESTRING, SFSUtilities.getGeometryType(connection, TableLocation.parse("SHPTABLE"), ""));
+        assertEquals(GeometryTypeCodes.MULTILINESTRING, GeometryTableUtilities.getMetaData(connection, TableLocation.parse("SHPTABLE"), "THE_GEOM").geometryTypeCode);
         st.execute("drop table shptable");
     }
 

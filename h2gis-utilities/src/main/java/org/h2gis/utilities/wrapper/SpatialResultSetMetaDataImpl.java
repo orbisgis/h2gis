@@ -26,6 +26,7 @@ import org.h2gis.utilities.TableLocation;
 
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import org.h2gis.utilities.GeometryTableUtilities;
 
 /**
  * @author Nicolas Fortin
@@ -61,9 +62,9 @@ public class SpatialResultSetMetaDataImpl extends ResultSetMetaDataWrapper imple
 
     @Override
     public int getGeometryType(int column) throws SQLException {
-        return SFSUtilities.getGeometryType(statement.getConnection(),
+        return GeometryTableUtilities.getMetaData(statement.getConnection(),
                 new TableLocation(getCatalogName(column), getSchemaName(column), getTableName(column)),
-                getColumnName(column));
+                getColumnName(column)).geometryTypeCode;
     }
 
     @Override

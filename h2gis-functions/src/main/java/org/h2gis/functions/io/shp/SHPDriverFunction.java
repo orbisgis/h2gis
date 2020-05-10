@@ -45,6 +45,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * Read/Write Shape files
@@ -87,8 +89,8 @@ public class SHPDriverFunction implements DriverFunction {
                     recordCount = resultSet.getRow();
                     resultSet.beforeFirst();
                     ProgressVisitor copyProgress = progress.subProcess(recordCount);
-                    List<String> spatialFieldNames = SFSUtilities.getGeometryFields(resultSet);
-                    int srid = doExport(tableReference, spatialFieldNames, resultSet, recordCount, fileName, progress, encoding);                    
+                    Tuple<String, Integer> spatialFieldNameAndIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);
+                    int srid = doExport(spatialFieldNameAndIndex.second(), resultSet, recordCount, fileName, progress, encoding);                    
                     String path = fileName.getAbsolutePath();
                     String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
                     PRJUtil.writePRJ(connection, srid,  new File(nameWithoutExt + ".prj"));                
@@ -105,13 +107,13 @@ public class SHPDriverFunction implements DriverFunction {
                 int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);
                 // Read Geometry Index and type
-                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableReference, isH2));
+                Tuple<String, Integer> spatialFieldNameAndIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, TableLocation.parse(tableReference, isH2));
                 Statement st = connection.createStatement();
                 ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
-                doExport(tableReference, spatialFieldNames, rs, recordCount, fileName, copyProgress, encoding);
+                doExport(spatialFieldNameAndIndex.second(), rs, recordCount, fileName, copyProgress, encoding);
                 String path = fileName.getAbsolutePath();
                 String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
-                PRJUtil.writePRJ(connection, location, spatialFieldNames.get(0), new File(nameWithoutExt + ".prj"));
+                PRJUtil.writePRJ(connection, location, spatialFieldNameAndIndex.first(), new File(nameWithoutExt + ".prj"));
                 copyProgress.endOfProgress();
                 
             } else {
@@ -129,18 +131,14 @@ public class SHPDriverFunction implements DriverFunction {
      * @param encoding File encoding, null will use default encoding
      * @throws java.sql.SQLException 
      */
-    private int doExport(String tableReference, List<String> spatialFieldNames, ResultSet rs, int recordCount, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
-        if (spatialFieldNames.isEmpty()) {
-            throw new SQLException(String.format("The table or the query %s does not contain a geometry field", tableReference));
-        }
+    private int doExport(Integer spatialFieldIndex, ResultSet rs, int recordCount, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
         int srid =0;
         ShapeType shapeType = null;
         try {
             ResultSetMetaData resultSetMetaData = rs.getMetaData();
-            int geoFieldIndex = JDBCUtilities.getFieldIndex(resultSetMetaData, spatialFieldNames.get(0));
             ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
             DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
-            columnIndexes.add(0, geoFieldIndex);
+            columnIndexes.add(0, spatialFieldIndex);
             if (encoding != null) {
                 header.setEncoding(encoding);
             }
@@ -154,7 +152,7 @@ public class SHPDriverFunction implements DriverFunction {
                 }
                 if (shpDriver == null) {
                     // If there is not shape type constraint read the first geometry and use the same type
-                    byte[] wkb = rs.getBytes(geoFieldIndex);
+                    byte[] wkb = rs.getBytes(spatialFieldIndex);
                     if (wkb != null) {
                         GeometryMetaData gm = GeometryMetaData.getMetaData(wkb);                        
                         if (srid == 0) {
@@ -296,11 +294,7 @@ public class SHPDriverFunction implements DriverFunction {
                     }
                     
                     connection.setAutoCommit(true);
-                }
-                //Alter table to set the SRID constraint
-                if(isH2){
-                    SFSUtilities.addTableSRIDConstraint(connection, parse, srid);
-                }                
+                }               
                 //TODO create spatial index on the_geom ?
             } catch (Exception ex) {
                 connection.createStatement().execute("DROP TABLE IF EXISTS " + tableReference);

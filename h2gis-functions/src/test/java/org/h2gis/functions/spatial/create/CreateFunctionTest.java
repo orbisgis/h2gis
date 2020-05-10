@@ -36,6 +36,7 @@ import java.sql.Statement;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import org.h2gis.utilities.GeometryTableUtilities;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -529,7 +530,7 @@ public class CreateFunctionTest {
                 + "INSERT INTO input_table VALUES"
                 + "(ST_GeomFromText('POLYGON((0 0, 2 0, 2 2, 0 0))', 4326));");
         st.execute("CREATE TABLE grid AS SELECT * FROM st_makegrid('input_table', 1, 1);");
-        assertEquals(4326,SFSUtilities.getSRID(connection, TableLocation.parse("GRID")));
+        assertEquals(4326,GeometryTableUtilities.getSRID(connection, TableLocation.parse("GRID")));
         ResultSet rs = st.executeQuery("select count(*) from grid;");
         rs.next();
         assertEquals(rs.getInt(1), 4);
