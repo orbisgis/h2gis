@@ -37,6 +37,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.h2gis.network.functions.GraphConstants.*;
+import org.h2gis.utilities.GeometryTableUtilities;
 import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 
 /**
@@ -121,8 +122,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
                                       int source,
                                       int destination) throws SQLException {
         final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
-        final String firstGeometryField =
-                getFirstGeometryField(connection, tableName);
+        final String firstGeometryField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableName).first();
         final boolean containsGeomField = firstGeometryField != null;
         final SimpleResultSet output = prepareResultSet(containsGeomField);
         if (isColumnListConnection(connection)) {
@@ -206,23 +206,7 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
            }
         }
     }
-
-    /**
-     * Return the first geometry field of tableName or null if it contains none.
-     *
-     * @param connection Connection
-     * @param tableName  TableLocation
-     * @return The first geometry field of tableName or null if it contains none
-     * @throws SQLException
-     */
-    protected static String getFirstGeometryField(Connection connection, TableLocation tableName)
-            throws SQLException {
-        final List<String> geometryFields = SFSUtilities.getGeometryFields(connection, tableName);
-        if (geometryFields.isEmpty()) {
-            return null;
-        }
-        return geometryFields.get(0);
-    }
+    
 
     /**
      * Return a map of edge ids to edge geometries, or null if the input table

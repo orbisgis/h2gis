@@ -38,6 +38,7 @@ import java.sql.Types;
 import java.util.Map;
 
 import static org.h2gis.network.functions.GraphConstants.*;
+import org.h2gis.utilities.GeometryTableUtilities;
 import static org.h2gis.utilities.TableUtilities.isColumnListConnection;
 
 /**
@@ -154,8 +155,7 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
                                       int source,
                                       double radius) throws SQLException {
         final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
-        final String firstGeometryField =
-                ST_ShortestPath.getFirstGeometryField(connection, tableName);
+        final String firstGeometryField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableName).first();
         final boolean containsGeomField = firstGeometryField != null;
         final SimpleResultSet output = prepareResultSet(containsGeomField);
         if (isColumnListConnection(connection)) {
