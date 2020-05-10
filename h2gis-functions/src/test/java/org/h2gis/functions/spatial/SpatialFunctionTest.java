@@ -41,6 +41,7 @@ import java.sql.Statement;
 import java.util.Map;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import org.h2gis.utilities.GeometryTableUtilities;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -295,7 +296,7 @@ public class SpatialFunctionTest {
                 + "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)),"
                 + "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154)),"
                 + "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
-        Envelope result = SFSUtilities.getTableEnvelope(connection, TableLocation.parse("PTCLOUDS"), "THE_GEOM");
+        Envelope result = GeometryTableUtilities.getEnvelope(connection, TableLocation.parse("PTCLOUDS"), "THE_GEOM");
         Envelope expected = new Envelope(-5, 99, -21, 124);
         assertEquals(expected.getMinX(), result.getMinX(), 1e-12);
         assertEquals(expected.getMaxX(), result.getMaxX(), 1e-12);
