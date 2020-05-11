@@ -148,8 +148,8 @@ public class GeometryTableUtilsTest {
         assertEquals(4326, rs.getInt("srid"));
         assertEquals("LINESTRINGZM", rs.getString("type"));
     }
-    
-     @Test
+
+    @Test
     public void testGeometryMetadataUtils() throws Exception {
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY)");
         GeometryMetaData geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
@@ -176,7 +176,8 @@ public class GeometryTableUtilsTest {
         assertTrue(geomMetadata.hasZ);
         assertTrue(geomMetadata.hasM);
     }
-     @Test
+
+    @Test
     public void testGeometryMetadataUtils2() throws Exception {
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY, geom GEOMETRY(POINT Z,4326))");
         LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"));
@@ -201,10 +202,10 @@ public class GeometryTableUtilsTest {
         assertFalse(geomMetadata.hasM);
         st.execute("ALTER TABLE GEO_POINT ALTER COLUMN THE_GEOM type geometry(POINTZM)");
         geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"));
-        elements = geomMetadatas.entrySet();        
+        elements = geomMetadatas.entrySet();
         geomMetWithField = elements.iterator().next();
         assertEquals("THE_GEOM", geomMetWithField.getKey());
-        geomMetadata = geomMetWithField.getValue();        
+        geomMetadata = geomMetWithField.getValue();
         assertEquals("POINTZM", geomMetadata.geometryType);
         assertEquals("POINT", geomMetadata.sfs_geometryType);
         assertEquals(4, geomMetadata.dimension);
@@ -212,6 +213,7 @@ public class GeometryTableUtilsTest {
         assertTrue(geomMetadata.hasZ);
         assertTrue(geomMetadata.hasM);
     }
+
     @Test
     public void testFirstGeometryFieldName1() throws Exception {
         st.execute("DROP TABLE IF EXISTS POINT3D");
@@ -297,7 +299,7 @@ public class GeometryTableUtilsTest {
                 .findAny()
                 .orElse(null));
     }
-    
+
     @Test
     public void testGeometryFields3() throws SQLException {
         ArrayList geomColumns = new ArrayList();
@@ -316,14 +318,14 @@ public class GeometryTableUtilsTest {
                 .findAny()
                 .orElse(null));
     }
-    
-     @Test
+
+    @Test
     public void testGeometryFields4() throws SQLException {
         ArrayList geomColumns = new ArrayList();
         geomColumns.add("GEOM");
         geomColumns.add(("PT"));
         geomColumns.add("MULTIPLGN");
-        ResultSet rs = st.executeQuery("SELECT GEOM, PT,  MULTIPLGN FROM GEOMTABLE");        
+        ResultSet rs = st.executeQuery("SELECT GEOM, PT,  MULTIPLGN FROM GEOMTABLE");
         List<String> geomFieldNameIndex = GeometryTableUtilities.getGeometryColumnNames(rs.getMetaData());
         assertEquals(8, geomFieldNameIndex.size());
         assertNotNull(geomFieldNameIndex.stream()
@@ -442,7 +444,7 @@ public class GeometryTableUtilsTest {
         LinkedHashMap<String, Integer> geomFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, new TableLocation(catalog, "blah", "testSFSUtilities"));
         assertEquals(1, geomFields.size());
         Map.Entry<String, Integer> entry = geomFields.entrySet().iterator().next();
-        assertEquals("THE_GEOM",entry.getKey() );
+        assertEquals("THE_GEOM", entry.getKey());
         assertEquals(1, entry.getValue());
     }
 
@@ -493,7 +495,7 @@ public class GeometryTableUtilsTest {
         assertEquals(new Envelope(150.0, 240.0, 250.0, 360.0),
                 GeometryTableUtilities.getEstimatedExtent(connection, tableLocation, "THE_GEOM").getEnvelopeInternal());
     }
-    
+
     @Test
     public void testGeometryType() throws SQLException {
         TableLocation tableLocation = TableLocation.parse("GEOMTABLE");
@@ -504,7 +506,7 @@ public class GeometryTableUtilsTest {
         assertEquals(GeometryTypeCodes.LINESTRING,
                 GeometryTableUtilities.getMetaData(connection, tableLocation, "linestr").geometryTypeCode);
         assertEquals(GeometryTypeCodes.POLYGON,
-               GeometryTableUtilities.getMetaData(connection, tableLocation, "plgn").geometryTypeCode);
+                GeometryTableUtilities.getMetaData(connection, tableLocation, "plgn").geometryTypeCode);
         assertEquals(GeometryTypeCodes.MULTIPOINT,
                 GeometryTableUtilities.getMetaData(connection, tableLocation, "multipt").geometryTypeCode);
         assertEquals(GeometryTypeCodes.MULTILINESTRING,
@@ -514,39 +516,95 @@ public class GeometryTableUtilsTest {
         assertEquals(GeometryTypeCodes.GEOMCOLLECTION,
                 GeometryTableUtilities.getMetaData(connection, tableLocation, "geomcollection").geometryTypeCode);
     }
-    
+
     @Test
     public void testGeometryTypeNoGeomTableEmptyField() {
-        assertThrows(SQLException.class,() ->
-                GeometryTableUtilities.getMetaData(connection, TableLocation.parse("NOGEOM"), ""));
+        assertThrows(SQLException.class, ()
+                -> GeometryTableUtilities.getMetaData(connection, TableLocation.parse("NOGEOM"), ""));
     }
 
     @Test
     public void testGeometryTypeNoGeomTable() {
-        assertThrows(SQLException.class,() ->
-                GeometryTableUtilities.getMetaData(connection, TableLocation.parse("NOGEOM"), "id"));
+        assertThrows(SQLException.class, ()
+                -> GeometryTableUtilities.getMetaData(connection, TableLocation.parse("NOGEOM"), "id"));
     }
 
     @Test
     public void testGeometryTypeNotValidField() {
-        assertThrows(SQLException.class,() ->
-                GeometryTableUtilities.getMetaData(connection, TableLocation.parse("NOGEOM"), "notAField"));
+        assertThrows(SQLException.class, ()
+                -> GeometryTableUtilities.getMetaData(connection, TableLocation.parse("NOGEOM"), "notAField"));
     }
-    
+
     @Test
     public void testPrepareInformationSchemaStatement() throws SQLException {
         PreparedStatement ps = GeometryTableUtilities.prepareInformationSchemaStatement(connection, "cat", "sch", "tab",
-                "INFORMATION_SCHEMA.CONSTRAINTS", "limit 1", "TABLE_CATALOG", "TABLE_SCHEMA","TABLE_NAME");
-        assertEquals(ps.toString().substring(ps.toString().indexOf(": ")+2), "SELECT * from INFORMATION_SCHEMA.CONSTRAINTS where UPPER(TABLE_CATALOG) " +
-                "= ? AND UPPER(TABLE_SCHEMA) = ? AND UPPER(TABLE_NAME) = ? limit 1 {1: 'CAT', 2: 'SCH', 3: 'TAB'}");
+                "INFORMATION_SCHEMA.CONSTRAINTS", "limit 1", "TABLE_CATALOG", "TABLE_SCHEMA", "TABLE_NAME");
+        assertEquals(ps.toString().substring(ps.toString().indexOf(": ") + 2), "SELECT * from INFORMATION_SCHEMA.CONSTRAINTS where UPPER(TABLE_CATALOG) "
+                + "= ? AND UPPER(TABLE_SCHEMA) = ? AND UPPER(TABLE_NAME) = ? limit 1 {1: 'CAT', 2: 'SCH', 3: 'TAB'}");
     }
 
     @Test
     public void testPrepareInformationSchemaStatement2() throws SQLException {
         PreparedStatement ps = GeometryTableUtilities.prepareInformationSchemaStatement(connection, "cat", "sch", "tab",
                 "geometry_columns", "limit 1");
-        assertEquals(ps.toString().substring(ps.toString().indexOf(": ")+2), "SELECT * from geometry_columns where UPPER(f_table_catalog) " +
-                "= ? AND UPPER(f_table_schema) = ? AND UPPER(f_table_name) = ? limit 1 {1: 'CAT', 2: 'SCH', 3: 'TAB'}");
+        assertEquals(ps.toString().substring(ps.toString().indexOf(": ") + 2), "SELECT * from geometry_columns where UPPER(f_table_catalog) "
+                + "= ? AND UPPER(f_table_schema) = ? AND UPPER(f_table_name) = ? limit 1 {1: 'CAT', 2: 'SCH', 3: 'TAB'}");
     }
-  
+
+    @Test
+    public void testGetMetadataFromResulset() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS POINT3D");
+        st.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY(POINTZ, 4326))");
+        st.execute("insert into POINT3D VALUES(1, 'SRID=4326;POINTZ(0, 0, 0)')");
+        Tuple<String, GeometryMetaData> metadata = GeometryTableUtilities.getFirstColumnMetaData(st.executeQuery("select * from POINT3D"));
+        assertEquals("THE_GEOM", metadata.first());
+        GeometryMetaData geomMet = metadata.second();
+        assertEquals(0, geomMet.SRID);
+        assertEquals(3, geomMet.dimension);
+        assertFalse(geomMet.hasM);
+        assertTrue(geomMet.hasZ);
+        assertEquals("POINTZ", geomMet.geometryType);
+        assertEquals(GeometryTypeCodes.POINTZ, geomMet.geometryTypeCode);
+        st.execute("DROP TABLE IF EXISTS POINT3D");
+        st.execute("CREATE TABLE POINT3D (gid int , the_geom GEOMETRY)");
+        st.execute("insert into POINT3D VALUES(1, 'SRID=4326;POINTZ(0, 0, 0)')");
+        metadata = GeometryTableUtilities.getFirstColumnMetaData(st.executeQuery("select * from POINT3D"));
+        assertEquals("THE_GEOM", metadata.first());
+        geomMet = metadata.second();
+        assertEquals(0, geomMet.SRID);
+        assertEquals(2, geomMet.dimension);
+        assertFalse(geomMet.hasM);
+        assertFalse(geomMet.hasZ);
+        assertEquals("GEOMETRY", geomMet.geometryType);
+        assertEquals(GeometryTypeCodes.GEOMETRY, geomMet.geometryTypeCode);
+    }
+    
+    @Test
+    public void testGetMetadatasFromResulset() throws SQLException {
+        st.execute("DROP TABLE IF EXISTS POINT3D");
+        st.execute("CREATE TABLE POINT3D (gid int , geom GEOMETRY(POINTZ, 4326), the_geom GEOMETRY)");
+        st.execute("insert into POINT3D VALUES(1, 'SRID=4326;POINTZ(0, 0, 0)', 'SRID=4326;POINTZ(0, 0, 0)')");
+        LinkedHashMap<String, GeometryMetaData> metadata = GeometryTableUtilities.getMetaData(st.executeQuery("select * from POINT3D"));
+        Set<Map.Entry<String, GeometryMetaData>> entries = metadata.entrySet();
+        assertEquals(2, metadata.size());
+        Map.Entry<String, GeometryMetaData> entry = entries.iterator().next();
+        assertEquals("GEOM", entry.getKey());
+        GeometryMetaData geomMet = entry.getValue();
+        assertEquals(0, geomMet.SRID);
+        assertEquals(3, geomMet.dimension);
+        assertFalse(geomMet.hasM);
+        assertTrue(geomMet.hasZ);
+        assertEquals("POINTZ", geomMet.geometryType);
+        assertEquals(GeometryTypeCodes.POINTZ, geomMet.geometryTypeCode);
+        entry = entries.iterator().next();
+        assertEquals("THE_GEOM", entry.getKey());
+        geomMet = entry.getValue();
+        assertEquals(0, geomMet.SRID);
+        assertEquals(2, geomMet.dimension);
+        assertFalse(geomMet.hasM);
+        assertFalse(geomMet.hasZ);
+        assertEquals("GEOMETRY", geomMet.geometryType);
+        assertEquals(GeometryTypeCodes.GEOMETRY, geomMet.geometryTypeCode);
+    }
+
 }
