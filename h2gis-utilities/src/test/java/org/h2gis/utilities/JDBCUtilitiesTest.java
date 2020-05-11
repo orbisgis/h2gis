@@ -26,9 +26,14 @@ import org.junit.jupiter.api.*;
 
 import java.beans.PropertyChangeListener;
 import java.io.File;
+import java.io.PrintWriter;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
+import javax.sql.DataSource;
+import org.h2gis.utilities.wrapper.ConnectionWrapper;
+import org.h2gis.utilities.wrapper.DataSourceWrapper;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -277,4 +282,52 @@ public class JDBCUtilitiesTest {
         assertEquals(12, res.getObject("temperature", Integer.class));
         st.execute("DROP TABLE mytable");
     }
+    
+    // wrapSpatialDataSource(DataSource dataSource)
+    @Test
+    public void testWrapSpatialDataSource(){
+        assertTrue(JDBCUtilities.wrapSpatialDataSource(new CustomDataSource()) instanceof CustomDataSource);
+        assertTrue(JDBCUtilities.wrapSpatialDataSource(new CustomDataSource1()) instanceof DataSourceWrapper);
+        assertTrue(JDBCUtilities.wrapSpatialDataSource(new CustomDataSource2()) instanceof DataSourceWrapper);
+    }
+
+    // wrapConnection(Connection connection)
+    @Test
+    public void testWrapConnection(){
+        assertTrue(JDBCUtilities.wrapConnection(connection) instanceof ConnectionWrapper);
+        assertTrue(JDBCUtilities.wrapConnection(new CustomConnection1(connection)) instanceof ConnectionWrapper);
+        assertTrue(JDBCUtilities.wrapConnection(new CustomConnection(connection)) instanceof ConnectionWrapper);
+    }
+
+    private class CustomDataSource implements DataSource {
+        @Override public Connection getConnection() throws SQLException {return null;}
+        @Override public Connection getConnection(String s, String s1) throws SQLException {return null;}
+        @Override public <T> T unwrap(Class<T> aClass) throws SQLException {return null;}
+        @Override public boolean isWrapperFor(Class<?> aClass) throws SQLException {return true;}
+        @Override public PrintWriter getLogWriter() throws SQLException {return null;}
+        @Override public void setLogWriter(PrintWriter printWriter) throws SQLException {}
+        @Override public void setLoginTimeout(int i) throws SQLException {}
+        @Override public int getLoginTimeout() throws SQLException {return 0;}
+        @Override public Logger getParentLogger() throws SQLFeatureNotSupportedException {return null;}
+    }
+
+    private class CustomDataSource1 extends CustomDataSource {
+        @Override public boolean isWrapperFor(Class<?> aClass) throws SQLException {throw new SQLException();}
+    }
+
+    private class CustomDataSource2 extends CustomDataSource {
+        @Override public boolean isWrapperFor(Class<?> aClass) throws SQLException {return false;}
+    }
+
+    private class CustomConnection1 extends ConnectionWrapper {
+        public CustomConnection1(Connection connection) {super(connection);}
+        @Override public boolean isWrapperFor(Class<?> var1) throws SQLException{throw new SQLException();}
+    }
+
+    private class CustomConnection extends ConnectionWrapper {
+        public CustomConnection(Connection connection) {super(connection);}
+        @Override public boolean isWrapperFor(Class<?> var1) throws SQLException{return true;}
+    }
+   
+   
 }

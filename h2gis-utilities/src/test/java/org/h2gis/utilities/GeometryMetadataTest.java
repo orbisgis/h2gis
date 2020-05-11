@@ -143,5 +143,6 @@ public class GeometryMetadataTest {
         assertEquals(4326, geomMetadata.SRID);
         assertTrue(geomMetadata.hasZ);
         assertTrue(geomMetadata.hasM);
-    }
+    }    
+   
 }

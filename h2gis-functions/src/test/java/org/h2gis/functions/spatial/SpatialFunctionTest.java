@@ -27,8 +27,6 @@ import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.spatial.affine_transformations.ST_Translate;
-import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;
@@ -38,9 +36,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Map;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import org.h2gis.utilities.GeometryTableUtilities;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -245,7 +243,7 @@ public class SpatialFunctionTest {
         st.execute("Drop table if exists exploded_forests; CREATE TABLE exploded_forests as SELECT * FROM ST_Explode('forests')");
         ResultSet rs = st.executeQuery("SELECT * FROM exploded_forests");
         assertTrue(rs.next());
-        assertEquals(4326, SFSUtilities.getSRID(connection, TableLocation.parse("exploded_forests")));
+        assertEquals(4326, GeometryTableUtilities.getSRID(connection, TableLocation.parse("exploded_forests")));
         st.execute("drop table forests");
     }
 
@@ -295,7 +293,7 @@ public class SpatialFunctionTest {
                 + "insert into ptClouds(the_geom) VALUES (ST_MPointFromText('MULTIPOINT(5 5, 1 2, 3 4, 99 3)',2154)),"
                 + "(ST_MPointFromText('MULTIPOINT(-5 12, 11 22, 34 41, 65 124)',2154)),"
                 + "(ST_MPointFromText('MULTIPOINT(1 12, 5 -21, 9 41, 32 124)',2154));");
-        Envelope result = SFSUtilities.getTableEnvelope(connection, TableLocation.parse("PTCLOUDS"), "THE_GEOM");
+        Envelope result = GeometryTableUtilities.getEnvelope(connection, TableLocation.parse("PTCLOUDS"), "THE_GEOM");
         Envelope expected = new Envelope(-5, 99, -21, 124);
         assertEquals(expected.getMinX(), result.getMinX(), 1e-12);
         assertEquals(expected.getMaxX(), result.getMaxX(), 1e-12);
@@ -2273,37 +2271,7 @@ public class SpatialFunctionTest {
         assertNull(rs.getObject(1));
         rs.close();
     }
-
-    @Test
-    public void testGetGeometryTypes() throws SQLException {
-        st.execute("DROP SCHEMA IF EXISTS testschema");
-        st.execute("CREATE SCHEMA testschema");
-        st.execute("DROP TABLE IF EXISTS testschema.testRowCount");
-        st.execute("CREATE TABLE testschema.testRowCount(id integer primary key, geometry_field GEOMETRY," +
-                " point_field GEOMETRY(POINT), linestring_field GEOMETRY(LINESTRING), polygon_field GEOMETRY(POLYGON), multipoint_field GEOMETRY(MULTIPOINT)," +
-                "multilinestring_field GEOMETRY(MULTILINESTRING), multipolygon_field GEOMETRY(MULTIPOLYGON)," +
-                " geomcollection_field GEOMETRY(GEOMETRYCOLLECTION))");
-        TableLocation location = new TableLocation("testschema", "testRowCount");
-        Map<String, Integer> resultMap = SFSUtilities.getGeometryTypes(connection, location);
-        assertNotNull(resultMap);
-        assertTrue(resultMap.containsKey("GEOMETRY_FIELD"));
-        assertEquals(GeometryTypeCodes.GEOMETRY, (int)resultMap.get("GEOMETRY_FIELD"));
-        assertTrue(resultMap.containsKey("POINT_FIELD"));
-        assertEquals(GeometryTypeCodes.POINT, (int) resultMap.get("POINT_FIELD"));
-        assertTrue(resultMap.containsKey("LINESTRING_FIELD"));
-        assertEquals(GeometryTypeCodes.LINESTRING, (int) resultMap.get("LINESTRING_FIELD"));
-        assertTrue(resultMap.containsKey("POLYGON_FIELD"));
-        assertEquals(GeometryTypeCodes.POLYGON, (int) resultMap.get("POLYGON_FIELD"));
-        assertTrue(resultMap.containsKey("MULTIPOINT_FIELD"));
-        assertEquals(GeometryTypeCodes.MULTIPOINT, (int) resultMap.get("MULTIPOINT_FIELD"));
-        assertTrue(resultMap.containsKey("MULTILINESTRING_FIELD"));
-        assertEquals(GeometryTypeCodes.MULTILINESTRING, (int) resultMap.get("MULTILINESTRING_FIELD"));
-        assertTrue(resultMap.containsKey("MULTIPOLYGON_FIELD"));
-        assertEquals(GeometryTypeCodes.MULTIPOLYGON, (int) resultMap.get("MULTIPOLYGON_FIELD"));
-        assertTrue(resultMap.containsKey("GEOMCOLLECTION_FIELD"));
-        assertEquals(GeometryTypeCodes.GEOMCOLLECTION, (int) resultMap.get("GEOMCOLLECTION_FIELD"));
-        assertFalse(resultMap.containsKey("ID"));
-    }
+   
     
     @Test
     public void test_ST_PointOnSurfaceSRID() throws Exception {

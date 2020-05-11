@@ -26,6 +26,9 @@ import java.beans.PropertyChangeListener;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
+import org.h2gis.utilities.wrapper.ConnectionWrapper;
+import org.h2gis.utilities.wrapper.DataSourceWrapper;
 
 /**
  * DBMS should follow standard but it is not always the case, this class do some
@@ -372,6 +375,59 @@ public class JDBCUtilities {
         }
         return 0;
     }
+    
+    /**
+     * Method to fetch an integer primary key (name + index).
+     * Return null otherwise
+     * @param connection Connection
+     * @param tableLocation table identifier
+     * @return The name and the index of an integer primary key used for
+     * edition[1-n]; 0 if the source is closed or if the table has no primary
+     * key or more than one column as primary key
+     * @throws java.sql.SQLException
+     */
+    public static Tuple<String, Integer> getIntegerPrimaryKeyNameAndIndex(Connection connection, TableLocation tableLocation) throws SQLException {
+        if (!tableExists(connection, tableLocation)) {
+            throw new SQLException("Table " + tableLocation + " not found.");
+        }
+        final DatabaseMetaData meta = connection.getMetaData();
+        String columnNamePK = null;
+        ResultSet rs = meta.getPrimaryKeys(tableLocation.getCatalog(null), tableLocation.getSchema(null),
+                tableLocation.getTable());
+        try {
+            while (rs.next()) {
+                // If the schema is not specified, public must be the schema
+                if (!tableLocation.getSchema().isEmpty() || "public".equalsIgnoreCase(rs.getString("TABLE_SCHEM"))) {
+                    if (columnNamePK == null) {
+                        columnNamePK = rs.getString("COLUMN_NAME");
+                    } else {
+                        // Multi-column PK is not supported
+                        columnNamePK = null;
+                        break;
+                    }
+                }
+            }
+        } finally {
+            rs.close();
+        }
+        if (columnNamePK != null) {
+            rs = meta.getColumns(tableLocation.getCatalog(null), tableLocation.getSchema(null),
+                    tableLocation.getTable(), columnNamePK);
+            try {
+                while (rs.next()) {
+                    if (!tableLocation.getSchema().isEmpty() || "public".equalsIgnoreCase(rs.getString("TABLE_SCHEM"))) {
+                        int dataType = rs.getInt("DATA_TYPE");
+                        if (dataType == Types.BIGINT || dataType == Types.INTEGER || dataType == Types.ROWID) {
+                            return new Tuple<>(columnNamePK, rs.getInt("ORDINAL_POSITION"));
+                        }
+                    }
+                }
+            } finally {
+                rs.close();
+            }
+        }
+        return null;
+    }
 
     /**
      * Return true if the table exists.
@@ -479,6 +535,52 @@ public class JDBCUtilities {
         }
         return columnNames;
     }
+    
+    
+    /**
+     * In order to be able to use {@link ResultSet#unwrap(Class)} and
+     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get
+     * {@link SpatialResultSet} and {@link SpatialResultSetMetaData} this method
+     * wrap the provided dataSource.
+     *
+     * @param dataSource H2 or PostGIS DataSource
+     *
+     * @return Wrapped DataSource, with spatial methods
+     */
+    public static DataSource wrapSpatialDataSource(DataSource dataSource) {
+        try {
+            if (dataSource.isWrapperFor(DataSourceWrapper.class)) {
+                return dataSource;
+            } else {
+                return new DataSourceWrapper(dataSource);
+            }
+        } catch (SQLException ex) {
+            return new DataSourceWrapper(dataSource);
+        }
+    }
+
+    /**
+     * Use this only if DataSource is not available. In order to be able to use
+     * {@link ResultSet#unwrap(Class)} and
+     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get
+     * {@link SpatialResultSet} and {@link SpatialResultSetMetaData} this method
+     * wrap the provided connection.
+     *
+     * @param connection H2 or PostGIS Connection
+     *
+     * @return Wrapped DataSource, with spatial methods
+     */
+    public static Connection wrapConnection(Connection connection) {
+        try {
+            if (connection.isWrapperFor(ConnectionWrapper.class)) {
+                return connection;
+            } else {
+                return new ConnectionWrapper(connection);
+            }
+        } catch (SQLException ex) {
+            return new ConnectionWrapper(connection);
+        }
+    }
 
     /**
      *
@@ -492,7 +594,6 @@ public class JDBCUtilities {
         PropertyChangeListener propertyChangeListener = new CancelResultSet(st);
         progressVisitor.addPropertyChangeListener(ProgressVisitor.PROPERTY_CANCELED, propertyChangeListener);
         return propertyChangeListener;
-
     }
 
     /**

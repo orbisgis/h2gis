@@ -228,7 +228,7 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
      */
     public static boolean createGraph(Connection connection,
                                       String inputTable,
-                                      String spatialFieldName,
+                                      final String spatialFieldName,
                                       double tolerance,
                                       boolean orientBySlope,
                                       boolean deleteTables) throws SQLException {
@@ -255,22 +255,28 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         PTS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_PTS", isH2).toString();
         COORDS_TABLE = TableLocation.parse(System.currentTimeMillis()+"_COORDS", isH2).toString();
         // Check for a primary key
-        final int pkIndex = JDBCUtilities.getIntegerPrimaryKey(connection, tableName);
-        if (pkIndex == 0) {
+        final Tuple<String, Integer> pkIndex = JDBCUtilities.getIntegerPrimaryKeyNameAndIndex(connection, tableName);
+        if (pkIndex==null) {
             throw new IllegalStateException("Table " + tableName.getTable()
                     + " must contain a single integer primary key.");
         }
-        final String pkColName = JDBCUtilities.getColumnName(connection, tableName, pkIndex);
         // Check the geometry column type;
-        final Object[] spatialFieldIndexAndName = getSpatialFieldIndexAndName(connection, tableName, spatialFieldName);
-        int spatialFieldIndex = (int) spatialFieldIndexAndName[1];
-        spatialFieldName = (String) spatialFieldIndexAndName[0];
-        checkGeometryType(connection, tableName, spatialFieldIndex);
-        final String geomCol = JDBCUtilities.getColumnName(connection, tableName, spatialFieldIndex);
+        List<Tuple<String, GeometryMetaData>> geomMetadatas = GeometryTableUtilities.getMetaData(connection, tableName);
+        Tuple<String, GeometryMetaData> geometryMetada = geomMetadatas.get(0);
+        if(spatialFieldName!=null && !spatialFieldName.isEmpty()){
+            Tuple<String, GeometryMetaData> result = geomMetadatas.stream()
+                    .filter(tuple -> spatialFieldName.equalsIgnoreCase(tuple.first()))
+                    .findAny()
+                    .orElse(null);
+            if(result!=null){
+                geometryMetada=result;
+            }
+        }
+        checkGeometryType(geometryMetada.second().geometryTypeCode);
         final Statement st = connection.createStatement();
         try {
-            firstFirstLastLast(st, tableName, pkColName, geomCol, tolerance);            
-            int srid = SFSUtilities.getSRID(connection, tableName, spatialFieldName);
+            firstFirstLastLast(st, tableName, pkIndex.first(), geometryMetada.first(), tolerance);            
+            int srid = geometryMetada.second().SRID;
             makeEnvelopes(st, tolerance, isH2, srid);
             nodesTable(st, nodesName, tolerance, isH2,srid);
             edgesTable(st, nodesName, edgesName, tolerance, isH2);
@@ -285,58 +291,11 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
         return true;
     }
 
-    private static void checkGeometryType(Connection connection,
-            TableLocation tableName,
-            int spatialFieldIndex) throws SQLException {
-        final String fieldName
-                = JDBCUtilities.getColumnName(connection, tableName, spatialFieldIndex);
-        int geomType = SFSUtilities.getGeometryType(connection, tableName, fieldName);
+    private static void checkGeometryType(int geomType) throws SQLException {
         if (geomType != GeometryTypeCodes.LINESTRING && geomType != GeometryTypeCodes.LINESTRINGZ) {
-            throw new IllegalArgumentException(TYPE_ERROR
-                    + SFSUtilities.getGeometryTypeNameFromCode(geomType));
+            throw new IllegalArgumentException(TYPE_ERROR);
         }
-    }
-
-    /**
-     * Get the column index of the given spatial field, or the first one found
-     * if none is given (specified by null).
-     * 
-     * Return the first geometry field if the spatialFieldName name is null.
-     *
-     * @param spatialFieldName Spatial field name
-     * @return Spatial field index and its name
-     * @throws SQLException
-     */
-    private static Object[] getSpatialFieldIndexAndName(Connection connection,
-                                            TableLocation tableName,
-                                            String spatialFieldName) throws SQLException {
-        // Find the name of the first geometry column if not provided by the user.
-        if (spatialFieldName == null) {
-            List<String> geomFields = SFSUtilities.getGeometryFields(connection, tableName);
-            if (!geomFields.isEmpty()) {
-                spatialFieldName = geomFields.get(0);
-            } else {
-                throw new SQLException("Table " + tableName + " does not contain a geometry field.");
-            }
-        }
-        // Set up tables
-        final ResultSet columns = connection.getMetaData()
-                .getColumns(tableName.getCatalog(null), tableName.getSchema(null), tableName.getTable(), null);
-        int spatialFieldIndex = -1;
-        try {
-            while (columns.next()) {
-                if (columns.getString("COLUMN_NAME").equalsIgnoreCase(spatialFieldName)) {
-                    spatialFieldIndex = columns.getRow();
-                }
-            }
-        } finally {
-            columns.close();
-        }
-        if (spatialFieldIndex == -1) {
-            throw new SQLException("Geometry field " + spatialFieldName + " of table " + tableName + " not found");
-        }
-        return new Object[]{spatialFieldName,spatialFieldIndex};
-    }
+    }   
 
     private static String expand(String geom, double tol) {
         return "ST_Expand(" + geom + ", " + tol + ")";

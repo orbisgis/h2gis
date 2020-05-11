@@ -137,6 +137,7 @@ public class GeometryMetaData {
      *
      */
     public void initGeometryType() {
+        if(sfs_geometryTypeCode!=0){
         geometryType = TYPES[sfs_geometryTypeCode - 1];
         sfs_geometryType = geometryType;
         if (hasM && hasZ) {
@@ -146,7 +147,7 @@ public class GeometryMetaData {
         } else if (hasM) {
             geometryType += "M";
         }
-
+        }
     }
 
     /**

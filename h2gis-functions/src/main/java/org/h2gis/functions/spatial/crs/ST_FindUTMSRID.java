@@ -22,7 +22,7 @@ package org.h2gis.functions.spatial.crs;
 import java.sql.Connection;
 import java.sql.SQLException;
 import org.h2gis.api.DeterministicScalarFunction;
-import org.h2gis.utilities.SFSUtilities;
+import org.h2gis.utilities.GeographyUtilities;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 
@@ -55,7 +55,7 @@ public class ST_FindUTMSRID extends DeterministicScalarFunction {
             return -1;
         }        
         Point coord = geometry.getCentroid();
-        return SFSUtilities.getSRID(connection,(float)coord.getY(), (float)coord.getX());
+        return GeographyUtilities.getSRID(connection,(float)coord.getY(), (float)coord.getX());
     }
     
 }
