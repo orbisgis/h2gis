@@ -26,6 +26,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -83,10 +84,10 @@ public class GeometryTableUtilities {
      * @return Geometry MetaData
      * @throws java.sql.SQLException
      */
-    public static List<Tuple<String, GeometryMetaData>> getMetaData(Connection connection, TableLocation geometryTable) throws SQLException {
+    public static LinkedHashMap<String, GeometryMetaData> getMetaData(Connection connection, TableLocation geometryTable) throws SQLException {
         try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema(),
                 geometryTable.getTable())) {
-            ArrayList<Tuple<String, GeometryMetaData>> geometryMetaDatas = new ArrayList<>();
+            LinkedHashMap<String, GeometryMetaData> geometryMetaDatas = new LinkedHashMap<>();
             boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             while (geomResultSet.next()) {
                 String geometryColumnName = geomResultSet.getString("F_GEOMETRY_COLUMN");
@@ -100,9 +101,9 @@ public class GeometryTableUtilities {
                         geometryMetaData.setSRID(srid_);
                         geometryMetaData.initDimension();
                         geometryMetaData.initGeometryType();
-                        geometryMetaDatas.add(new Tuple<>(geometryColumnName, geometryMetaData));
+                        geometryMetaDatas.put(geometryColumnName, geometryMetaData);
                     } else {//POSTGIS case                    
-                        geometryMetaDatas.add(new Tuple<>(geometryColumnName, createMetadataFromPostGIS(geomResultSet.getString("type"), dimension_, srid_)));
+                        geometryMetaDatas.put(geometryColumnName, createMetadataFromPostGIS(geomResultSet.getString("type"), dimension_, srid_));
                     }
                 }
             }
@@ -586,12 +587,12 @@ public class GeometryTableUtilities {
      * @throws java.sql.SQLException
      */
     public static Geometry getEstimatedExtent(Connection connection, TableLocation tableLocation) throws SQLException {
-        List<Tuple<String, Integer>> geometryFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, tableLocation);
+        LinkedHashMap<String, Integer> geometryFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, tableLocation);
         if (geometryFields.isEmpty()) {
             throw new SQLException("Cannot find any geometry column");
         }
 
-        return getEstimatedExtent(connection, tableLocation, geometryFields.get(0).first());
+        return getEstimatedExtent(connection, tableLocation, geometryFields.keySet().iterator().next());
     }
 
     /**
@@ -692,7 +693,7 @@ public class GeometryTableUtilities {
      *
      * @throws SQLException
      */
-    public static List<Tuple<String, Integer>> getGeometryColumnNamesAndIndexes(Connection connection, TableLocation tableLocation) throws SQLException {
+    public static LinkedHashMap<String, Integer> getGeometryColumnNamesAndIndexes(Connection connection, TableLocation tableLocation) throws SQLException {
         try (ResultSet resultSet = connection.createStatement().executeQuery(
                 "SELECT * FROM " + tableLocation + " WHERE 1=0;")) {
             return getGeometryColumnNamesAndIndexes(resultSet.getMetaData());
@@ -707,12 +708,49 @@ public class GeometryTableUtilities {
      *
      * @throws SQLException
      */
-    public static List<Tuple<String, Integer>> getGeometryColumnNamesAndIndexes(ResultSetMetaData metadata) throws SQLException {
-        ArrayList<Tuple<String, Integer>> namesWithIndexes = new ArrayList<>();
+    public static LinkedHashMap<String, Integer> getGeometryColumnNamesAndIndexes(ResultSetMetaData metadata) throws SQLException {
+        LinkedHashMap<String, Integer> namesWithIndexes = new LinkedHashMap<>();
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
             if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                namesWithIndexes.add(new Tuple<>(metadata.getColumnName(i), i));
+                namesWithIndexes.put(metadata.getColumnName(i), i);
+            }
+        }
+        return namesWithIndexes;
+    }
+    
+    
+     /**
+     * Find geometry column names
+     *
+     * @param connection Active connection
+     * @param tableLocation Table location
+     *
+     * @return A list of Geometry column names and indexes
+     *
+     * @throws SQLException
+     */
+    public static List<String> getGeometryColumnNames(Connection connection, TableLocation tableLocation) throws SQLException {
+        try (ResultSet resultSet = connection.createStatement().executeQuery(
+                "SELECT * FROM " + tableLocation + " WHERE 1=0;")) {
+            return getGeometryColumnNames(resultSet.getMetaData());
+        }
+    }
+    
+     /**
+     *  Find geometry column names from a resulset
+     *
+     * @param metadata metadata of a resulset
+     * @return A list of Geometry column names
+     *
+     * @throws SQLException
+     */
+    public static List<String> getGeometryColumnNames(ResultSetMetaData metadata) throws SQLException {
+        ArrayList<String> namesWithIndexes = new ArrayList<>();
+        int columnCount = metadata.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                namesWithIndexes.add(metadata.getColumnName(i));
             }
         }
         return namesWithIndexes;
@@ -843,12 +881,12 @@ public class GeometryTableUtilities {
      */
     public static Envelope getEnvelope(Connection connection, TableLocation location)
             throws SQLException {
-        List<Tuple<String, Integer>> geometryFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, location);
+        LinkedHashMap<String, Integer> geometryFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, location);
         if (geometryFields.isEmpty()) {
             throw new SQLException("The table " + location + " does not contain a Geometry field, then the extent "
                     + "cannot be computed");
         }
-        return getEnvelope(connection, location, geometryFields.get(0).first());
+        return getEnvelope(connection, location, geometryFields.keySet().stream().findFirst().get());
     }
     
      /**

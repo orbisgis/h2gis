@@ -226,19 +226,19 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
             if(tableQuery!=null && !tableQuery.isClosed()) {
                 close();
             }            
-            List<Tuple<String, Integer>> geomNamesAndIndexes = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, tableLocation);
-            Tuple<String, Integer> firstGeomNameAndIndex = geomNamesAndIndexes.iterator().next();
+            LinkedHashMap<String, Integer> geomNamesAndIndexes = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, tableLocation);
+            Map.Entry<String, Integer> firstGeomNameAndIndex = geomNamesAndIndexes.entrySet().iterator().next();
             if (spatialFieldName != null && !spatialFieldName.isEmpty()) {
-                Tuple<String, Integer> result = geomNamesAndIndexes.stream()
-                        .filter(tuple -> spatialFieldName.equalsIgnoreCase(tuple.first()))
+                Map.Entry<String, Integer> result = geomNamesAndIndexes.entrySet().stream()
+                        .filter(tuple -> spatialFieldName.equalsIgnoreCase(tuple.getKey()))
                         .findAny()
                         .orElse(null);
                 if (result != null) {
                     firstGeomNameAndIndex = result;
                 }
             }            
-            spatialFieldName = firstGeomNameAndIndex.first();
-            spatialFieldIndex = firstGeomNameAndIndex.second();
+            spatialFieldName = firstGeomNameAndIndex.getKey();
+            spatialFieldIndex = firstGeomNameAndIndex.getValue();
             
             Statement st = connection.createStatement();
             tableQuery = st.executeQuery("SELECT * FROM "+tableName);

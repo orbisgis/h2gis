@@ -30,8 +30,10 @@ import org.h2gis.utilities.TableUtilities;
 import org.locationtech.jts.geom.*;
 
 import java.sql.*;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -200,21 +202,20 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
         public void reset() throws SQLException {
             if(tableQuery!=null && !tableQuery.isClosed()) {
                 close();
-            }          
-            
-            List<Tuple<String, Integer>> geomNamesAndIndexes = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, tableLocation);
-            Tuple<String, Integer> firstGeomNameAndIndex = geomNamesAndIndexes.iterator().next();
+            } 
+            LinkedHashMap<String, Integer> geomNamesAndIndexes = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, tableLocation);
+            Map.Entry<String, Integer> firstGeomNameAndIndex = geomNamesAndIndexes.entrySet().iterator().next();
             if (spatialFieldName != null && !spatialFieldName.isEmpty()) {
-                Tuple<String, Integer> result = geomNamesAndIndexes.stream()
-                        .filter(tuple -> spatialFieldName.equalsIgnoreCase(tuple.first()))
+                Map.Entry<String, Integer> result = geomNamesAndIndexes.entrySet().stream()
+                        .filter(tuple -> spatialFieldName.equalsIgnoreCase(tuple.getKey()))
                         .findAny()
                         .orElse(null);
                 if (result != null) {
                     firstGeomNameAndIndex = result;
                 }
             }            
-            spatialFieldName = firstGeomNameAndIndex.first();
-            spatialFieldIndex = firstGeomNameAndIndex.second();
+            spatialFieldName = firstGeomNameAndIndex.getKey();
+            spatialFieldIndex = firstGeomNameAndIndex.getValue();
             Statement st = connection.createStatement();
             tableQuery = st.executeQuery("SELECT * FROM "+tableLocation);
             firstRow = false;

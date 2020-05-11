@@ -27,7 +27,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Assigns integer node and edge ids to LINESTRING or MULTILINESTRING
@@ -261,22 +263,22 @@ public class ST_Graph extends AbstractFunction implements ScalarFunction {
                     + " must contain a single integer primary key.");
         }
         // Check the geometry column type;
-        List<Tuple<String, GeometryMetaData>> geomMetadatas = GeometryTableUtilities.getMetaData(connection, tableName);
-        Tuple<String, GeometryMetaData> geometryMetada = geomMetadatas.get(0);
+        LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, tableName);
+        Map.Entry<String, GeometryMetaData> geometryMetada = geomMetadatas.entrySet().iterator().next();
         if(spatialFieldName!=null && !spatialFieldName.isEmpty()){
-            Tuple<String, GeometryMetaData> result = geomMetadatas.stream()
-                    .filter(tuple -> spatialFieldName.equalsIgnoreCase(tuple.first()))
+            Map.Entry<String, GeometryMetaData> result = geomMetadatas.entrySet().stream()
+                    .filter(columnName -> spatialFieldName.equalsIgnoreCase(columnName.getKey()))
                     .findAny()
                     .orElse(null);
             if(result!=null){
                 geometryMetada=result;
             }
         }
-        checkGeometryType(geometryMetada.second().geometryTypeCode);
+        checkGeometryType(geometryMetada.getValue().geometryTypeCode);
         final Statement st = connection.createStatement();
         try {
-            firstFirstLastLast(st, tableName, pkIndex.first(), geometryMetada.first(), tolerance);            
-            int srid = geometryMetada.second().SRID;
+            firstFirstLastLast(st, tableName, pkIndex.first(), geometryMetada.getKey(), tolerance);            
+            int srid = geometryMetada.getValue().SRID;
             makeEnvelopes(st, tolerance, isH2, srid);
             nodesTable(st, nodesName, tolerance, isH2,srid);
             edgesTable(st, nodesName, edgesName, tolerance, isH2);
