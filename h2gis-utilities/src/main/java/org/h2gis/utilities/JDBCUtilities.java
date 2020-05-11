@@ -26,6 +26,9 @@ import java.beans.PropertyChangeListener;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.sql.DataSource;
+import org.h2gis.utilities.wrapper.ConnectionWrapper;
+import org.h2gis.utilities.wrapper.DataSourceWrapper;
 
 /**
  * DBMS should follow standard but it is not always the case, this class do some
@@ -532,6 +535,52 @@ public class JDBCUtilities {
         }
         return columnNames;
     }
+    
+    
+    /**
+     * In order to be able to use {@link ResultSet#unwrap(Class)} and
+     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get
+     * {@link SpatialResultSet} and {@link SpatialResultSetMetaData} this method
+     * wrap the provided dataSource.
+     *
+     * @param dataSource H2 or PostGIS DataSource
+     *
+     * @return Wrapped DataSource, with spatial methods
+     */
+    public static DataSource wrapSpatialDataSource(DataSource dataSource) {
+        try {
+            if (dataSource.isWrapperFor(DataSourceWrapper.class)) {
+                return dataSource;
+            } else {
+                return new DataSourceWrapper(dataSource);
+            }
+        } catch (SQLException ex) {
+            return new DataSourceWrapper(dataSource);
+        }
+    }
+
+    /**
+     * Use this only if DataSource is not available. In order to be able to use
+     * {@link ResultSet#unwrap(Class)} and
+     * {@link java.sql.ResultSetMetaData#unwrap(Class)} to get
+     * {@link SpatialResultSet} and {@link SpatialResultSetMetaData} this method
+     * wrap the provided connection.
+     *
+     * @param connection H2 or PostGIS Connection
+     *
+     * @return Wrapped DataSource, with spatial methods
+     */
+    public static Connection wrapConnection(Connection connection) {
+        try {
+            if (connection.isWrapperFor(ConnectionWrapper.class)) {
+                return connection;
+            } else {
+                return new ConnectionWrapper(connection);
+            }
+        } catch (SQLException ex) {
+            return new ConnectionWrapper(connection);
+        }
+    }
 
     /**
      *
@@ -545,7 +594,6 @@ public class JDBCUtilities {
         PropertyChangeListener propertyChangeListener = new CancelResultSet(st);
         progressVisitor.addPropertyChangeListener(ProgressVisitor.PROPERTY_CANCELED, propertyChangeListener);
         return propertyChangeListener;
-
     }
 
     /**

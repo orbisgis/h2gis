@@ -207,7 +207,7 @@ public class H2MVTable extends MVTable {
 
     @Override
     public void removeRow(Session session, Row row) {
-        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"removeRow in Shape files");
+        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"removeRow in this driver file");
     }
 
     @Override
@@ -219,12 +219,12 @@ public class H2MVTable extends MVTable {
 
     @Override
     public void addRow(Session session, Row row) {
-        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"addRow in Shape files");
+        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"addRow in this driver file");
     }
 
     @Override
     public void checkSupportAlter() {
-        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"addRow in Shape files");
+        throw DbException.get(ErrorCode.FEATURE_NOT_SUPPORTED_1,"addRow in this driver file");
     }
 
     @Override

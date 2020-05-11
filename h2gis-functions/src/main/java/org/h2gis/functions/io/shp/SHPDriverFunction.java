@@ -34,7 +34,6 @@ import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.functions.io.utility.PRJUtil;
 import org.h2gis.utilities.GeometryTypeCodes;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.GeometryMetaData;
 

@@ -24,7 +24,6 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;

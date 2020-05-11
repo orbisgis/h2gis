@@ -23,7 +23,6 @@ package org.h2gis.functions.spatial.crs;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2gis.functions.factory.H2GISDBFactory;
-import org.h2gis.utilities.SFSUtilities;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
@@ -36,6 +35,8 @@ import org.h2.value.ValueGeometry;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryBarelyEquals;
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
+import org.h2gis.utilities.JDBCUtilities;
+import org.h2gis.utilities.GeographyUtilities;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -51,7 +52,7 @@ public class CRSFunctionTest {
     @BeforeAll
     public static void tearUp() throws Exception {
         // Keep a connection alive to not close the DataBase on each unit test
-        connection = SFSUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
+        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(DB_NAME));
     }
 
     @BeforeEach
@@ -256,11 +257,11 @@ public class CRSFunctionTest {
     
     @Test
     public void testGetSRIDLatitudeLongitude() throws SQLException {
-        assertEquals(32632, SFSUtilities.getSRID(connection,59.04f, 3.68f));
-        assertEquals(32717, SFSUtilities.getSRID(connection,-10.8469f, -81.0351f));
-        assertEquals(32634, SFSUtilities.getSRID(connection,68.948f, 20.939f));
-        assertEquals(4038, SFSUtilities.getSRID(connection,66.682f, 32.2119f));
-        assertEquals(32736, SFSUtilities.getSRID(connection,-66.682f,32.2119f));
+        assertEquals(32632, GeographyUtilities.getSRID(connection,59.04f, 3.68f));
+        assertEquals(32717, GeographyUtilities.getSRID(connection,-10.8469f, -81.0351f));
+        assertEquals(32634, GeographyUtilities.getSRID(connection,68.948f, 20.939f));
+        assertEquals(4038, GeographyUtilities.getSRID(connection,66.682f, 32.2119f));
+        assertEquals(32736, GeographyUtilities.getSRID(connection,-66.682f,32.2119f));
     }
     
     

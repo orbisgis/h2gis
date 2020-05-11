@@ -25,7 +25,6 @@ import org.h2.tools.SimpleRowSource;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
 import org.locationtech.jts.geom.*;

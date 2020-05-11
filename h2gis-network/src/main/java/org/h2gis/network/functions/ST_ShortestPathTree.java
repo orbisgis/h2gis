@@ -155,7 +155,11 @@ public class ST_ShortestPathTree extends GraphFunction implements ScalarFunction
                                       int source,
                                       double radius) throws SQLException {
         final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
-        final String firstGeometryField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableName).first();
+        String firstGeometryField = null;
+        try {
+            firstGeometryField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableName).first();
+        } catch (SQLException ex) {
+        }
         final boolean containsGeomField = firstGeometryField != null;
         final SimpleResultSet output = prepareResultSet(containsGeomField);
         if (isColumnListConnection(connection)) {

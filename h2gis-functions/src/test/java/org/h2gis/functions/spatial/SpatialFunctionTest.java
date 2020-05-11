@@ -27,8 +27,6 @@ import org.h2.jdbc.JdbcSQLNonTransientException;
 import org.h2.value.ValueGeometry;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.spatial.affine_transformations.ST_Translate;
-import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.*;
@@ -38,14 +36,9 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import static org.h2gis.unitTest.GeometryAsserts.assertGeometryEquals;
-import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
-import org.h2gis.utilities.Tuple;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**

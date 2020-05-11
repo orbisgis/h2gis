@@ -32,9 +32,11 @@ import org.locationtech.jts.geom.Geometry;
 
 /**
  *
- * Utilities to get geometry metadata from table(s)
+ * Utilities to get geometry metadata from a table that contains 
+ * at least one geometry column
+ * 
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS (2020)
  */
 public class GeometryTableUtilities {
 

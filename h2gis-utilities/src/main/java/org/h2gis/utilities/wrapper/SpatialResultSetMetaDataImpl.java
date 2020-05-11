@@ -19,8 +19,6 @@
  */
 
 package org.h2gis.utilities.wrapper;
-
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.SpatialResultSetMetaData;
 import org.h2gis.utilities.TableLocation;
 

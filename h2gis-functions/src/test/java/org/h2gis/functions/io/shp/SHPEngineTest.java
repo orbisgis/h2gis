@@ -25,7 +25,6 @@ import org.h2.util.StringUtils;
 import org.h2gis.functions.factory.H2GISDBFactory;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.junit.jupiter.api.*;
 import org.locationtech.jts.geom.Geometry;

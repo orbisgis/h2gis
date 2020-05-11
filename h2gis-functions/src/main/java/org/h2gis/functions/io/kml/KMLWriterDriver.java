@@ -22,9 +22,6 @@ package org.h2gis.functions.io.kml;
 
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -33,7 +30,6 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
 import java.sql.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

@@ -33,7 +33,6 @@ import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
 import org.h2gis.utilities.GeometryTypeCodes;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.Tuple;
 

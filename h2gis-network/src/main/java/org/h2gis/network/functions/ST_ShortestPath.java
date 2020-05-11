@@ -21,7 +21,6 @@ package org.h2gis.network.functions;
 
 import org.h2.tools.SimpleResultSet;
 import org.h2gis.api.ScalarFunction;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
 import org.javanetworkanalyzer.alg.Dijkstra;
@@ -32,7 +31,6 @@ import org.locationtech.jts.geom.Geometry;
 
 import java.sql.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -122,7 +120,11 @@ public class ST_ShortestPath extends GraphFunction implements ScalarFunction {
                                       int source,
                                       int destination) throws SQLException {
         final TableLocation tableName = TableUtilities.parseInputTable(connection, inputTable);
-        final String firstGeometryField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableName).first();
+        String firstGeometryField = null;
+        try {
+            firstGeometryField = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, tableName).first();
+        } catch (SQLException ex) {
+        }
         final boolean containsGeomField = firstGeometryField != null;
         final SimpleResultSet output = prepareResultSet(containsGeomField);
         if (isColumnListConnection(connection)) {
