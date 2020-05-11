@@ -108,7 +108,7 @@ public class GPXDriverFunction implements DriverFunction {
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
                            boolean deleteTables) throws SQLException, IOException {
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         if (fileName.length() == 0) {
             JDBCUtilities.createEmptyTable(connection, TableLocation.parse(tableReference, isH2).toString());
         } else {
