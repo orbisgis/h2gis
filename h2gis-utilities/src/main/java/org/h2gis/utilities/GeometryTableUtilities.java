@@ -33,9 +33,9 @@ import org.locationtech.jts.geom.Geometry;
 
 /**
  *
- * Utilities to get geometry metadata from a table that contains 
- * at least one geometry column
- * 
+ * Utilities to get geometry metadata from a table that contains at least one
+ * geometry column
+ *
  *
  * @author Erwan Bocher, CNRS (2020)
  */
@@ -43,7 +43,7 @@ public class GeometryTableUtilities {
 
     /**
      * Read the geometry metadata of the first geometry column
-     * GeometryMetaData object
+     *
      *
      * @param connection
      * @param geometryTable
@@ -74,6 +74,46 @@ public class GeometryTableUtilities {
             }
         }
         throw new SQLException(String.format("The table %s does not contain a geometry field", geometryTable));
+    }
+
+    /**
+     * Read the geometry metadata of the first geometry column
+     *
+     *
+     * @param resultSet
+     * @return Geometry MetaData
+     * @throws java.sql.SQLException
+     */
+    public static Tuple<String, GeometryMetaData> getFirstColumnMetaData(ResultSet resultSet) throws SQLException {
+        ResultSetMetaData metadata = resultSet.getMetaData();
+        int columnCount = metadata.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                GeometryMetaData geometryMetaData = GeometryMetaData.getMetaData(metadata.getColumnTypeName(i));
+                return new Tuple<>(metadata.getColumnName(i), geometryMetaData);
+            }
+        }
+        throw new SQLException(String.format("The query does not contain a geometry field"));
+    }
+     /**
+     * Read the geometry metadata for a resulset
+     *
+     *
+     * @param resultSet
+     * @return Geometry MetaData
+     * @throws java.sql.SQLException
+     */
+    public static LinkedHashMap<String, GeometryMetaData> getMetaData(ResultSet resultSet) throws SQLException {
+            LinkedHashMap<String, GeometryMetaData> geometryMetaDatas = new LinkedHashMap<>();           
+        ResultSetMetaData metadata = resultSet.getMetaData();
+        int columnCount = metadata.getColumnCount();
+        for (int i = 1; i <= columnCount; i++) {
+            if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
+                GeometryMetaData geometryMetaData = GeometryMetaData.getMetaData(metadata.getColumnTypeName(i));
+                geometryMetaDatas.put(metadata.getColumnName(i), geometryMetaData);
+            }
+        }
+        return geometryMetaDatas;
     }
 
     /**
@@ -492,11 +532,10 @@ public class GeometryTableUtilities {
         preparedStatement.setString(tableIndex, table.toUpperCase());
         return preparedStatement;
     }
-   
 
     /**
      * Find the first geometry column name and its index of a resultSet.
-     * 
+     *
      *
      * @param resultSet ResultSet to analyse
      *
@@ -612,14 +651,14 @@ public class GeometryTableUtilities {
         int srid = getSRID(connection, tableLocation, geometryColumnName);
         StringBuilder query = new StringBuilder("SELECT  ESTIMATED_ENVELOPE('");
         query.append(tableLocation.getTable()).append("','").append(geometryColumnName).append("')");
-        try (ResultSet rs = connection.createStatement().executeQuery(query.toString())){
-        if (rs.next()) {
-            result = (Geometry) rs.getObject(1);
-            if (result != null) {
-                result.setSRID(srid);
-                return result;
+        try (ResultSet rs = connection.createStatement().executeQuery(query.toString())) {
+            if (rs.next()) {
+                result = (Geometry) rs.getObject(1);
+                if (result != null) {
+                    result.setSRID(srid);
+                    return result;
+                }
             }
-        }
         }
         query = new StringBuilder("SELECT  ENVELOPE(");
         query.append(TableLocation.quoteIdentifier(geometryColumnName)).append(") FROM ").append(tableLocation.getTable());
@@ -632,7 +671,7 @@ public class GeometryTableUtilities {
                 }
             }
         }
-        
+
         throw new SQLException("Unable to compute the estimated extent");
     }
 
@@ -700,8 +739,8 @@ public class GeometryTableUtilities {
         }
     }
 
-     /**
-     *  Find geometry column names and indexes from a resulset
+    /**
+     * Find geometry column names and indexes from a resulset
      *
      * @param metadata metadata of a resulset
      * @return A list of Geometry column names and indexes
@@ -718,9 +757,8 @@ public class GeometryTableUtilities {
         }
         return namesWithIndexes;
     }
-    
-    
-     /**
+
+    /**
      * Find geometry column names
      *
      * @param connection Active connection
@@ -736,9 +774,9 @@ public class GeometryTableUtilities {
             return getGeometryColumnNames(resultSet.getMetaData());
         }
     }
-    
-     /**
-     *  Find geometry column names from a resulset
+
+    /**
+     * Find geometry column names from a resulset
      *
      * @param metadata metadata of a resulset
      * @return A list of Geometry column names
@@ -809,7 +847,7 @@ public class GeometryTableUtilities {
 
     /**
      * Return a resulset of the geometry column view properties from
-     * 
+     *
      * @param connection
      * @param catalog
      * @param schema
@@ -850,17 +888,17 @@ public class GeometryTableUtilities {
         boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         if (isH2) {
             try (ResultSet rs = connection.createStatement().executeQuery("SELECT ST_Extent("
-                    + TableLocation.quoteIdentifier(geometryField) + ") as ext FROM " + location)){
-            if (rs.next()) {
-                return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
-            }
+                    + TableLocation.quoteIdentifier(geometryField) + ") as ext FROM " + location)) {
+                if (rs.next()) {
+                    return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
+                }
             }
         } else {
             try (ResultSet rs = connection.createStatement().executeQuery("SELECT ST_SetSRID(ST_Extent("
-                    + TableLocation.quoteIdentifier(geometryField) + "), ST_SRID(" + TableLocation.quoteIdentifier(geometryField) + ")) as ext FROM " + location)){
-            if (rs.next()) {
-                return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
-            }
+                    + TableLocation.quoteIdentifier(geometryField) + "), ST_SRID(" + TableLocation.quoteIdentifier(geometryField) + ")) as ext FROM " + location)) {
+                if (rs.next()) {
+                    return ((Geometry) rs.getObject(1)).getEnvelopeInternal();
+                }
             }
         }
         throw new SQLException("Unable to get the table extent it may be empty");
@@ -888,8 +926,8 @@ public class GeometryTableUtilities {
         }
         return getEnvelope(connection, location, geometryFields.keySet().stream().findFirst().get());
     }
-    
-     /**
+
+    /**
      * Return an array of two string that correspond to the authority name and
      * its SRID code. If the SRID does not exist return the array {null, null}
      *

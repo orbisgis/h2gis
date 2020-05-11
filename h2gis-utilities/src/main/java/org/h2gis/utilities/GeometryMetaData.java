@@ -116,10 +116,12 @@ public class GeometryMetaData {
             case 1:
                 dimension = 3;
                 hasZ = true;
+                hasM = false;
                 break;
             case 2:
                 dimension = 3;
                 hasM = true;
+                hasZ=false;
                 break;
             case 3:
                 dimension = 4;
@@ -268,7 +270,10 @@ public class GeometryMetaData {
      * Read the metadata from its string representation The folowing signatures
      * are allowed :
      *
-     * SRID=4326, POINT(0 0) POINT(0 0) GEOMETRY GEOMETRY(POINTZ, 4326)
+     * SRID=4326, POINT(0 0) 
+     * POINT(0 0)
+     * GEOMETRY
+     * GEOMETRY(POINTZ, 4326)
      *
      * @param geometry string representation
      *
@@ -341,97 +346,119 @@ public class GeometryMetaData {
                 geometry_code = GeometryTypeCodes.POINT;
                 sfs_geometry_type = "POINT";
                 geometry_type = "POINT";
+                hasz_ = false;
+                hasm_ = false;
                 break;
             case "LINESTRING":
                 dimension_ = 2;
                 geometry_code = GeometryTypeCodes.LINESTRING;
                 sfs_geometry_type = "LINESTRING";
-                geometry_type = "LINESTRING";
+                geometry_type = "LINESTRING";                
+                hasz_ = false;
+                hasm_ = false;
                 break;
             case "POLYGON":
                 dimension_ = 2;
                 geometry_code = GeometryTypeCodes.POLYGON;
                 sfs_geometry_type = "POLYGON";
-                geometry_type = "POLYGON";
+                geometry_type = "POLYGON";                
+                hasz_ = false;
+                hasm_ = false;
                 break;
             case "MULTIPOINT":
                 dimension_ = 2;
                 geometry_code = GeometryTypeCodes.MULTIPOINT;
                 sfs_geometry_type = "MULTIPOINT";
                 geometry_type = "MULTIPOINT";
+                hasz_ = false;
+                hasm_ = false;
                 break;
             case "MULTILINESTRING":
                 dimension_ = 2;
                 geometry_code = GeometryTypeCodes.MULTILINESTRING;
                 sfs_geometry_type = "MULTILINESTRING";
                 geometry_type = "MULTILINESTRING";
+                hasz_ = false;
+                hasm_ = false;
                 break;
             case "MULTIPOLYGON":
                 dimension_ = 2;
                 geometry_code = GeometryTypeCodes.MULTIPOLYGON;
                 sfs_geometry_type = "MULTIPOLYGON";
                 geometry_type = "MULTIPOLYGON";
+                hasz_ = false;
+                hasm_ = false;
                 break;
             case "GEOMETRYCOLLECTION":
                 dimension_ = 2;
                 geometry_code = GeometryTypeCodes.GEOMCOLLECTION;
                 sfs_geometry_type = "GEOMCOLLECTION";
                 geometry_type = "GEOMCOLLECTION";
+                hasz_ = false;
+                hasm_ = false;
                 break;
             case "POINTZ":
                 dimension_ = 3;
                 geometry_code = GeometryTypeCodes.POINTZ;
                 sfs_geometry_type = "POINTZ";
                 geometry_type = "POINTZ";
-                hasz_ = true;
+                hasz_ = true; 
+                hasm_ = false;
                 break;
             case "LINESTRINGZ":
                 dimension_ = 3;
                 geometry_code = GeometryTypeCodes.LINESTRINGZ;
                 sfs_geometry_type = "LINESTRINGZ";
-                geometry_type = "LINESTRINGZ";
-                hasz_ = true;
+                geometry_type = "LINESTRINGZ";                
+                hasz_ = true; 
+                hasm_ = false;
                 break;
             case "POLYGONZ":
                 dimension_ = 3;
                 geometry_code = GeometryTypeCodes.POLYGONZ;
                 sfs_geometry_type = "POLYGONZ";
                 geometry_type = "POLYGONZ";
-                hasz_ = true;
+                hasz_ = true; 
+                hasm_ = false;;
                 break;
             case "MULTIPOINTZ":
                 dimension_ = 3;
                 geometry_code = GeometryTypeCodes.MULTIPOINTZ;
                 sfs_geometry_type = "MULTIPOINTZ";
                 geometry_type = "MULTIPOINTZ";
-                hasz_ = true;
+                hasz_ = true; 
+                hasm_ = false;
                 break;
             case "MULTILINESTRINGZ":
                 dimension_ = 3;
                 geometry_code = GeometryTypeCodes.MULTILINESTRINGZ;
                 sfs_geometry_type = "MULTILINESTRINGZ";
                 geometry_type = "MULTILINESTRINGZ";
-                hasz_ = true;
+                hasz_ = true; 
+                hasm_ = false;
                 break;
             case "MULTIPOLYGONZ":
                 dimension_ = 3;
                 geometry_code = GeometryTypeCodes.MULTIPOLYGONZ;
                 sfs_geometry_type = "MULTIPOLYGONZ";
                 geometry_type = "MULTIPOLYGONZ";
-                hasz_ = true;
+                hasz_ = true; 
+                hasm_ = false;
                 break;
             case "GEOMETRYCOLLECTIONZ":
                 dimension_ = 3;
                 geometry_code = GeometryTypeCodes.GEOMCOLLECTIONZ;
                 sfs_geometry_type = "GEOMETRYCOLLECTIONZ";
                 geometry_type = "GEOMETRYCOLLECTIONZ";
-                hasz_ = true;
+                hasz_ = true; 
+                hasm_ = false;
                 break;
             case "POINTM":
                 dimension_ = 3;
                 geometry_code = GeometryTypeCodes.POINTM;
                 sfs_geometry_type = "POINTM";
                 geometry_type = "POINTM";
+                hasz_ = false; 
                 hasm_ = true;
                 break;
             case "LINESTRINGM":
@@ -446,6 +473,7 @@ public class GeometryMetaData {
                 geometry_code = GeometryTypeCodes.POLYGONM;
                 sfs_geometry_type = "POLYGONM";
                 geometry_type = "POLYGONM";
+                hasz_ = false; 
                 hasm_ = true;
                 break;
             case "MULTIPOINTM":
@@ -453,6 +481,7 @@ public class GeometryMetaData {
                 geometry_code = GeometryTypeCodes.MULTIPOINTM;
                 sfs_geometry_type = "MULTIPOINTM";
                 geometry_type = "MULTIPOINTM";
+                hasz_ = false; 
                 hasm_ = true;
                 break;
             case "MULTILINESTRINGM":
@@ -460,6 +489,7 @@ public class GeometryMetaData {
                 geometry_code = GeometryTypeCodes.MULTILINESTRINGM;
                 sfs_geometry_type = "MULTILINESTRINGM";
                 geometry_type = "MULTILINESTRINGM";
+                hasz_ = false; 
                 hasm_ = true;
                 break;
             case "MULTIPOLYGONM":
@@ -467,6 +497,7 @@ public class GeometryMetaData {
                 geometry_code = GeometryTypeCodes.MULTIPOLYGONM;
                 sfs_geometry_type = "MULTIPOLYGONM";
                 geometry_type = "MULTIPOLYGONM";
+                hasz_ = false; 
                 hasm_ = true;
                 break;
             case "GEOMETRYCOLLECTIONM":
@@ -474,6 +505,7 @@ public class GeometryMetaData {
                 geometry_code = GeometryTypeCodes.GEOMCOLLECTIONM;
                 sfs_geometry_type = "GEOMETRYCOLLECTIONM";
                 geometry_type = "GEOMETRYCOLLECTIONM";
+                hasz_ = false; 
                 hasm_ = true;
                 break;
             case "POINTZM":
@@ -533,7 +565,7 @@ public class GeometryMetaData {
                 hasm_ = true;
                 break;
             case "GEOMETRY":
-            default:
+            default:                
         }
         geometryMetaData.setDimension(dimension_);
         geometryMetaData.setGeometryTypeCode(geometry_code);
