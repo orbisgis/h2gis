@@ -28,7 +28,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import org.h2.jdbc.JdbcSQLException;
 import org.h2gis.utilities.GeometryMetaData;
 import org.h2gis.utilities.GeometryTableUtilities;
@@ -176,19 +179,20 @@ public class GeometryTableUtilsTest {
      @Test
     public void testGeometryMetadataUtils2() throws Exception {
         st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY, geom GEOMETRY(POINT Z,4326))");
-        List<Tuple<String, GeometryMetaData>> geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"));
-        Tuple<String, GeometryMetaData> geomMetWithField = geomMetadatas.get(0);
-        assertEquals("THE_GEOM", geomMetWithField.first());
-        GeometryMetaData geomMetadata = geomMetWithField.second();
+        LinkedHashMap<String, GeometryMetaData> geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"));
+        Set<Map.Entry<String, GeometryMetaData>> elements = geomMetadatas.entrySet();
+        Map.Entry<String, GeometryMetaData> geomMetWithField = elements.iterator().next();
+        assertEquals("THE_GEOM", geomMetWithField.getKey());
+        GeometryMetaData geomMetadata = geomMetWithField.getValue();
         assertEquals("GEOMETRY", geomMetadata.geometryType);
         assertEquals("GEOMETRY", geomMetadata.sfs_geometryType);
         assertEquals(2, geomMetadata.dimension);
         assertEquals(0, geomMetadata.SRID);
         assertFalse(geomMetadata.hasZ);
         assertFalse(geomMetadata.hasM);
-        geomMetWithField = geomMetadatas.get(1);
-        assertEquals("GEOM", geomMetWithField.first());
-        geomMetadata = geomMetWithField.second();
+        geomMetWithField = elements.iterator().next();
+        assertEquals("GEOM", geomMetWithField.getKey());
+        geomMetadata = geomMetWithField.getValue();
         assertEquals("POINTZ", geomMetadata.geometryType);
         assertEquals("POINT", geomMetadata.sfs_geometryType);
         assertEquals(3, geomMetadata.dimension);
@@ -197,9 +201,10 @@ public class GeometryTableUtilsTest {
         assertFalse(geomMetadata.hasM);
         st.execute("ALTER TABLE GEO_POINT ALTER COLUMN THE_GEOM type geometry(POINTZM)");
         geomMetadatas = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"));
-        geomMetWithField = geomMetadatas.get(0);
-        assertEquals("THE_GEOM", geomMetWithField.first());
-        geomMetadata = geomMetWithField.second();        
+        elements = geomMetadatas.entrySet();        
+        geomMetWithField = elements.iterator().next();
+        assertEquals("THE_GEOM", geomMetWithField.getKey());
+        geomMetadata = geomMetWithField.getValue();        
         assertEquals("POINTZM", geomMetadata.geometryType);
         assertEquals("POINT", geomMetadata.sfs_geometryType);
         assertEquals(4, geomMetadata.dimension);
@@ -285,10 +290,44 @@ public class GeometryTableUtilsTest {
         geomColumns.add("MULTILINESTR");
         geomColumns.add("MULTIPLGN");
         geomColumns.add("GEOMCOLLECTION");
-        List<Tuple<String, Integer>> geomFieldNameIndex = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, TableLocation.parse("GEOMTABLE"));
+        LinkedHashMap<String, Integer> geomFieldNameIndex = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, TableLocation.parse("GEOMTABLE"));
+        assertEquals(8, geomFieldNameIndex.size());
+        assertNotNull(geomFieldNameIndex.keySet().stream()
+                .filter(columName -> geomColumns.contains(columName))
+                .findAny()
+                .orElse(null));
+    }
+    
+    @Test
+    public void testGeometryFields3() throws SQLException {
+        ArrayList geomColumns = new ArrayList();
+        geomColumns.add("GEOM");
+        geomColumns.add(("PT"));
+        geomColumns.add("LINESTR");
+        geomColumns.add("PLGN");
+        geomColumns.add("MULTIPT");
+        geomColumns.add("MULTILINESTR");
+        geomColumns.add("MULTIPLGN");
+        geomColumns.add("GEOMCOLLECTION");
+        List<String> geomFieldNameIndex = GeometryTableUtilities.getGeometryColumnNames(connection, TableLocation.parse("GEOMTABLE"));
         assertEquals(8, geomFieldNameIndex.size());
         assertNotNull(geomFieldNameIndex.stream()
-                .filter(tuple -> geomColumns.contains(tuple.first()))
+                .filter(columName -> geomColumns.contains(columName))
+                .findAny()
+                .orElse(null));
+    }
+    
+     @Test
+    public void testGeometryFields4() throws SQLException {
+        ArrayList geomColumns = new ArrayList();
+        geomColumns.add("GEOM");
+        geomColumns.add(("PT"));
+        geomColumns.add("MULTIPLGN");
+        ResultSet rs = st.executeQuery("SELECT GEOM, PT,  MULTIPLGN FROM GEOMTABLE");        
+        List<String> geomFieldNameIndex = GeometryTableUtilities.getGeometryColumnNames(rs.getMetaData());
+        assertEquals(8, geomFieldNameIndex.size());
+        assertNotNull(geomFieldNameIndex.stream()
+                .filter(columName -> geomColumns.contains(columName))
                 .findAny()
                 .orElse(null));
     }
@@ -400,10 +439,11 @@ public class GeometryTableUtilsTest {
         st.execute("drop schema if exists blah");
         st.execute("create schema blah");
         st.execute("create table blah.testSFSUtilities(id integer, the_geom GEOMETRY(point))");
-        List<Tuple<String, Integer>> geomFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, new TableLocation(catalog, "blah", "testSFSUtilities"));
+        LinkedHashMap<String, Integer> geomFields = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, new TableLocation(catalog, "blah", "testSFSUtilities"));
         assertEquals(1, geomFields.size());
-        assertEquals("THE_GEOM", geomFields.get(0).first());
-        assertEquals(1, geomFields.get(0).second());
+        Map.Entry<String, Integer> entry = geomFields.entrySet().iterator().next();
+        assertEquals("THE_GEOM",entry.getKey() );
+        assertEquals(1, entry.getValue());
     }
 
     @Test
