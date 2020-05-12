@@ -682,16 +682,14 @@ public class GeoJsonReaderDriver {
                         break;
                     case VALUE_TRUE:
                     case VALUE_FALSE:
-                        if (!hasField) {
+                        if (!hasField|| dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.BOOLEAN);
-                        } else if (dataType == Types.NULL) {
-                            cachedColumnNames.put(fieldName, Types.BOOLEAN);
-                        } else if (hasField && dataType != Types.BOOLEAN) {
+                        }  else if (hasField && dataType != Types.BOOLEAN) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         break;
                     case VALUE_NUMBER_FLOAT:
-                        if (!hasField) {
+                        if (!hasField || dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.DOUBLE);
                         } else if (hasField) {
                             if (dataType == Types.BIGINT) {
@@ -702,25 +700,22 @@ public class GeoJsonReaderDriver {
                         }
                         break;
                     case VALUE_NUMBER_INT:
-                        if (!hasField) {
-                            cachedColumnNames.put(fieldName, Types.BIGINT);
-                        } else if (dataType == Types.NULL) {
+                        if (!hasField|| dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.BIGINT);
                         } else if (hasField && dataType != Types.BIGINT) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         break;
                     case START_ARRAY:
-                        if (!hasField) {
+                        if (!hasField|| dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.ARRAY);
                         } else if (hasField && dataType != Types.ARRAY) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
-
                         }
                         parseArrayMetadata(jp);
                         break;
                     case START_OBJECT:
-                        if (!hasField) {
+                        if (!hasField || dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         parseObjectMetadata(jp);
