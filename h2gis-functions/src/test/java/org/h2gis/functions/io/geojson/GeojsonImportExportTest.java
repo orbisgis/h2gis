@@ -959,9 +959,19 @@ public class GeojsonImportExportTest {
         Statement stat = connection.createStatement();
         stat.execute("CALL GeoJsonRead(" + StringUtils.quoteStringSQL(GeojsonImportExportTest.class.getResource("startNull.geojson").getPath()) + ")");
         ResultSet res = stat.executeQuery("SELECT * FROM startNull;");
-        res.next();
-        res.close();
-        stat.execute("DROP TABLE IF EXISTS startNull");
+        ResultSetMetaData metaData = res.getMetaData();
+        assertEquals("org.locationtech.jts.geom.Geometry", metaData.getColumnClassName(1));
+        assertEquals("java.lang.Long", metaData.getColumnClassName(2));
+        assertEquals("java.lang.String", metaData.getColumnClassName(3));
+        assertEquals("java.lang.Long", metaData.getColumnClassName(4));
+        assertEquals("java.lang.Long", metaData.getColumnClassName(5));
+        assertEquals("java.lang.Long", metaData.getColumnClassName(6));
+        assertEquals("java.lang.String", metaData.getColumnClassName(7));
+        assertEquals("java.lang.String", metaData.getColumnClassName(8));
+        assertEquals("java.lang.Long", metaData.getColumnClassName(9));
+        assertEquals("java.lang.String", metaData.getColumnClassName(10));
+        assertEquals("java.lang.Long", metaData.getColumnClassName(11));
+        assertEquals("java.lang.Double", metaData.getColumnClassName(12));
     }
 }
 
