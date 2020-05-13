@@ -160,6 +160,7 @@ public class JDBCUtilitiesTest {
     @Test
     public void isH2() throws SQLException {
         assertTrue(JDBCUtilities.isH2DataBase(connection));
+        assertTrue(JDBCUtilities.isH2DataBase(new ConnectionWrapper(connection)));
     }
     
     @Test
