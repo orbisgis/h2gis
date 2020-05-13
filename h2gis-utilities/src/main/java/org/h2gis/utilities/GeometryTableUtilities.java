@@ -960,5 +960,36 @@ public class GeometryTableUtilities {
         }
         return new String[]{authority, sridCode};
     }
+    
+    
+    /**
+     * Change the SRID of the table 
+     * 
+     * @param connection Active connection
+     * @param tableLocation Table name 
+     * @param geometryColumnName geometry column name
+     * @param srid to force
+     * @return true if query is well executed
+     * @throws SQLException 
+     */
+     public static boolean alterSRID(Connection connection,TableLocation tableLocation, String geometryColumnName, int srid) throws SQLException {
+        if (srid >= 0) {
+            String tableName = tableLocation.toString(JDBCUtilities.isH2DataBase(connection));
+            if(tableName.isEmpty()){
+                throw new SQLException("The table name cannot be empty");
+            }
+            GeometryMetaData metadata = GeometryTableUtilities.getMetaData(connection, tableLocation, geometryColumnName);
+            if (metadata != null) {
+                StringBuilder geometrySignature = new StringBuilder("GEOMETRY");
+                geometrySignature.append("(").append(metadata.geometryTypeCode);
+                geometrySignature.append(",").append(srid).append(")");
+
+                StringBuilder query = new StringBuilder("ALTER TABLE ").append(tableName).append(" ALTER COLUMN ").append(geometryColumnName);
+                query.append(" TYPE ").append(geometrySignature.toString()).append(" USING ST_SetSRID(").append(geometryColumnName).append(",").append(srid).append(")");
+                return connection.createStatement().execute(query.toString());
+            }
+        }
+        throw new SQLException("The SRID value must be greater or equal than 0");
+    }
 
 }

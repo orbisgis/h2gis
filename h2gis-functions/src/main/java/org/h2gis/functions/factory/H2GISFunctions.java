@@ -92,6 +92,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.sql.*;
 import org.h2gis.functions.spatial.crs.ST_FindUTMSRID;
+import org.h2gis.functions.spatial.crs.UpdateGeometrySRID;
 import org.h2gis.functions.spatial.metadata.FindGeometryMetadata;
 
 /**
@@ -311,7 +312,8 @@ public class H2GISFunctions {
                 new ST_GeneratePoints(),
                 new ST_GeneratePointsInGrid(),
                 new AscRead(),
-                new FindGeometryMetadata()
+                new FindGeometryMetadata(),
+                new UpdateGeometrySRID()
         };
     }
 
