@@ -25,17 +25,21 @@ import org.h2.tools.SimpleRowSource;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.ScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
 import org.locationtech.jts.geom.*;
 
 import java.sql.*;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.h2gis.utilities.GeometryMetaData;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * This table function explode Geometry Collection into multiple geometries
@@ -87,7 +91,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
      */
     public static ResultSet explode(Connection connection, String tableName, String fieldName) throws SQLException {
         ExplodeResultSet rowSource = new ExplodeResultSet(connection,
-                TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())).toString(),fieldName);
+                TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)).toString(),fieldName);
         return rowSource.getResultSet();
     }
 
@@ -105,9 +109,11 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
         public Queue<Geometry> sourceRowGeometries = new LinkedList<Geometry>();
         public int explodeId = 1;
         public Connection connection;
+        private final TableLocation tableLocation;
         
-        public ExplodeResultSet(Connection connection, String tableName, String spatialFieldName) {
+        public ExplodeResultSet(Connection connection, String tableName, String spatialFieldName) throws SQLException {
             this.tableName = tableName;
+            this.tableLocation=TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
             this.spatialFieldName = spatialFieldName;
             this.connection = connection;
         }
@@ -196,30 +202,26 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
         public void reset() throws SQLException {
             if(tableQuery!=null && !tableQuery.isClosed()) {
                 close();
-            }
+            } 
+            LinkedHashMap<String, Integer> geomNamesAndIndexes = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, tableLocation);
+            Map.Entry<String, Integer> firstGeomNameAndIndex = geomNamesAndIndexes.entrySet().iterator().next();
+            if (spatialFieldName != null && !spatialFieldName.isEmpty()) {
+                Map.Entry<String, Integer> result = geomNamesAndIndexes.entrySet().stream()
+                        .filter(tuple -> spatialFieldName.equalsIgnoreCase(tuple.getKey()))
+                        .findAny()
+                        .orElse(null);
+                if (result != null) {
+                    firstGeomNameAndIndex = result;
+                }
+            }            
+            spatialFieldName = firstGeomNameAndIndex.getKey();
+            spatialFieldIndex = firstGeomNameAndIndex.getValue();
             Statement st = connection.createStatement();
-            tableQuery = st.executeQuery("SELECT * FROM "+tableName);
+            tableQuery = st.executeQuery("SELECT * FROM "+tableLocation);
             firstRow = false;
             ResultSetMetaData meta = tableQuery.getMetaData();  
             columnCount = meta.getColumnCount();
-            if(spatialFieldName==null) {
-                // Find first geometry column
-                List<String> geomFields = SFSUtilities.getGeometryFields(connection,TableLocation.parse(tableName));
-                if(!geomFields.isEmpty()) {
-                    spatialFieldName = geomFields.get(0);
-                } else {
-                    throw new SQLException("The table "+tableName+" does not contain a geometry field");
-                }
-            }
-            for(int i=1;i<=columnCount;i++) {
-                if(meta.getColumnName(i).equalsIgnoreCase(spatialFieldName)) {
-                    spatialFieldIndex = i;
-                    break;
-                }
-            }
-            if(spatialFieldIndex==-1) {
-                throw new SQLException("Geometry field "+spatialFieldName+" of table "+tableName+" not found");
-            }
+           
         }
 
         /**
@@ -230,7 +232,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+            TableUtilities.copyFields(connection, rs, tableLocation);
             rs.addColumn(EXPLODE_FIELD, Types.INTEGER,10,0);
             return rs;
         }
@@ -242,7 +244,7 @@ public class ST_Explode extends AbstractFunction implements ScalarFunction {
      */
     public static class ExplodeResultSetQuery extends ExplodeResultSet {
 
-        public ExplodeResultSetQuery(Connection connection, String tableName, String spatialFieldName) {
+        public ExplodeResultSetQuery(Connection connection, String tableName, String spatialFieldName) throws SQLException {
             super(connection, tableName, spatialFieldName);
         }
 

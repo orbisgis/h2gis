@@ -3,21 +3,20 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
- * you can redistribute it and/or modify it under the terms of the GNU
- * Lesser General Public License as published by the Free Software Foundation;
- * version 3.0 of the License.
+ * This code is part of the H2GIS project. H2GIS is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation; version 3.0 of
+ * the License.
  *
- * H2GIS is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details <http://www.gnu.org/licenses/>.
  *
  *
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
 package org.h2gis.functions.spatial.topology;
 
 import org.h2.jdbc.JdbcSQLException;
@@ -86,8 +85,8 @@ public class ST_GraphTest {
     public void test_ST_Graph() throws Exception {
         // Prepare the input table.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES "
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
                 + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', DEFAULT),"
                 + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', DEFAULT),"
@@ -100,7 +99,7 @@ public class ST_GraphTest {
             assertTrue(rs.next());
             assertTrue(rs.getBoolean(1));
             assertFalse(rs.next());
-            
+
             // Test nodes table.
             ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
             assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
@@ -113,7 +112,7 @@ public class ST_GraphTest {
             checkNode(nodesResult, 7, "POINT (8 4)");
             assertFalse(nodesResult.next());
             nodesResult.close();
-            
+
             // Test edges table.
             ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
             // This is a copy of the original table with three columns added.
@@ -132,8 +131,8 @@ public class ST_GraphTest {
     @Test
     public void test_ST_Graph_GeometryColumnDetection() throws Exception {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, way GEOMETRY(LINESTRING), id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES "
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, way GEOMETRY(LINESTRING), id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 'road1', 'LINESTRING (1 1, 2 2, 3 1)', DEFAULT),"
                 + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', 'LINESTRING (3 1, 2 0, 1 1)', DEFAULT),"
                 + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', 'LINESTRING (1 1, 2 1)', DEFAULT),"
@@ -192,8 +191,8 @@ public class ST_GraphTest {
         // other are considered to be a single node.
         // Note, however, that edge geometries are left untouched.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES "
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 0)', 'road1', DEFAULT),"
                 + "('LINESTRING (1.05 0, 2 0)', 'road2', DEFAULT),"
                 + "('LINESTRING (2.05 0, 3 0)', 'road3', DEFAULT),"
@@ -231,8 +230,8 @@ public class ST_GraphTest {
         // only _nodes_ within a given tolerance of each other are snapped
         // together.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES "
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
                 + "('LINESTRING (0 1, 1 1, 1 0)', 'road1', DEFAULT),"
                 + "('LINESTRING (1.05 1, 2 1)', 'road2', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.05)");
@@ -258,8 +257,8 @@ public class ST_GraphTest {
         // This test shows that geometry intersections are not automatically
         // considered to be potential nodes.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES "
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
                 + "('LINESTRING (0 1, 2 1)', 'road1', DEFAULT),"
                 + "('LINESTRING (2 1, 1 0, 1 2)', 'road2', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.05)");
@@ -287,8 +286,8 @@ public class ST_GraphTest {
         // This test shows that the results from using a large tolerance value
         // (1.1 rather than 0.1) can be very different.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES "
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
                 + "('LINESTRING (1 2, 2 3, 4 3)', 'road2', DEFAULT),"
                 + "('LINESTRING (4 3, 4 4, 1 4, 1 2)', 'road3', DEFAULT),"
@@ -328,9 +327,9 @@ public class ST_GraphTest {
 
         // Case 1.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING Z), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES " +
-                "('LINESTRING (0 0 0, 1 0 0)', 'road1', DEFAULT);");
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING Z), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
+                + "('LINESTRING (0 0 0, 1 0 0)', 'road1', DEFAULT);");
         ResultSet rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -351,9 +350,9 @@ public class ST_GraphTest {
 
         // Case 2.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING Z), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES " +
-                "('LINESTRING (0 0 1, 1 0 0)', 'road1', DEFAULT);");
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING Z), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
+                + "('LINESTRING (0 0 1, 1 0 0)', 'road1', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -378,9 +377,9 @@ public class ST_GraphTest {
 
         // Case 3.
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING Z), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES " +
-                "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);");
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING Z), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
+                + "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);");
         rs = st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.0, true)");
         assertTrue(rs.next());
         assertTrue(rs.getBoolean(1));
@@ -413,25 +412,20 @@ public class ST_GraphTest {
 
     @Test
     public void test_ST_GraphCaseError() {
-        assertThrows(SQLException.class, ()-> {
+        assertThrows(SQLException.class, () -> {
             multiTestPrep();
-            try {
-                st.executeQuery("SELECT ST_Graph('\"TeST\"')");
-            } catch (JdbcSQLException e) {
-                assertTrue(e.getMessage().contains("Table TeST not found"));
-                throw e.getCause();
-            }
+            st.executeQuery("SELECT ST_Graph('\"TeST\"')");
         });
     }
 
     private void multiTestPrep() throws SQLException {
         st.execute("DROP TABLE IF EXISTS test; DROP TABLE IF EXISTS test_nodes; DROP TABLE IF EXISTS test_edges");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR NOT NULL, " +
-                "id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES " +
-                "('LINESTRING (0 0, 0 2)', 'road1', DEFAULT)," +
-                "('LINESTRING (1 0, 1 2)', 'road2', DEFAULT)," +
-                "('LINESTRING (2 0, 2 2)', 'road3', DEFAULT);");
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR NOT NULL, "
+                + "id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
+                + "('LINESTRING (0 0, 0 2)', 'road1', DEFAULT),"
+                + "('LINESTRING (1 0, 1 2)', 'road2', DEFAULT),"
+                + "('LINESTRING (2 0, 2 2)', 'road3', DEFAULT);");
     }
 
     private void checkMultiTest(ResultSet rs) throws SQLException {
@@ -464,11 +458,11 @@ public class ST_GraphTest {
 
     @Test
     public void test_ST_Graph_ErrorWithNoLINESTRINGOrMULTILINESTRING() {
-        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
             // Prepare the input table.
             st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-            st.execute("CREATE TABLE test(road POINT, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                    "INSERT INTO test VALUES "
+            st.execute("CREATE TABLE test(road POINT, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                    + "INSERT INTO test VALUES "
                     + "('POINT (0 0)', 'road1', DEFAULT);");
             try {
                 st.executeQuery("SELECT ST_Graph('TEST')");
@@ -481,12 +475,12 @@ public class ST_GraphTest {
     }
 
     public void test_ST_Graph_ErrorWithNegativeTolerance() {
-        assertThrows(JdbcSQLIntegrityConstraintViolationException.class, ()-> {
+        assertThrows(JdbcSQLIntegrityConstraintViolationException.class, () -> {
             // Prepare the input table.
             st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-            st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                    "INSERT INTO test VALUES " +
-                    "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);");
+            st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                    + "INSERT INTO test VALUES "
+                    + "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);");
             try {
                 st.executeQuery("SELECT ST_Graph('TEST', 'road', -1.0)");
             } catch (JdbcSQLException e) {
@@ -497,12 +491,12 @@ public class ST_GraphTest {
     }
 
     public void test_ST_Graph_ErrorWithNoPrimaryKey() {
-        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
             // Prepare the input table.
             st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-            st.execute("CREATE TABLE test(road LINESTRINGZ, description VARCHAR);" +
-                    "INSERT INTO test VALUES " +
-                    "('LINESTRING (0 0 0, 1 0 1)', 'road1');");
+            st.execute("CREATE TABLE test(road LINESTRINGZ, description VARCHAR);"
+                    + "INSERT INTO test VALUES "
+                    + "('LINESTRING (0 0 0, 1 0 1)', 'road1');");
             try {
                 st.executeQuery("SELECT ST_Graph('TEST')");
             } catch (JdbcSQLException e) {
@@ -514,14 +508,14 @@ public class ST_GraphTest {
 
     @Test
     public void test_ST_Graph_ErrorWithCompositePrimaryKey() {
-        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
             // Prepare the input table.
             st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-            st.execute("CREATE TABLE test(road LINESTRINGZ, description VARCHAR NOT NULL, " +
-                    "id INT AUTO_INCREMENT);" +
-                    "INSERT INTO test VALUES " +
-                    "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);" +
-                    "CREATE PRIMARY KEY ON TEST(DESCRIPTION, ID);");
+            st.execute("CREATE TABLE test(road LINESTRINGZ, description VARCHAR NOT NULL, "
+                    + "id INT AUTO_INCREMENT);"
+                    + "INSERT INTO test VALUES "
+                    + "('LINESTRING (0 0 0, 1 0 1)', 'road1', DEFAULT);"
+                    + "CREATE PRIMARY KEY ON TEST(DESCRIPTION, ID);");
             try {
                 st.executeQuery("SELECT ST_Graph('TEST')");
             } catch (JdbcSQLException e) {
@@ -530,19 +524,18 @@ public class ST_GraphTest {
             }
         });
     }
-    
 
     @Test
     public void test_ST_Graph_ErrorWithNullEdgeEndpoints() {
-        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
             // Prepare the input table.
             st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-            st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR NOT NULL, " +
-                    "id INT AUTO_INCREMENT PRIMARY KEY);" +
-                    "INSERT INTO test VALUES " +
-                    "('LINESTRING (0 0, 0 2)', 'road1', DEFAULT)," +
-                    "('LINESTRING (1 0, 1 2)', 'road2', DEFAULT)," +
-                    "('LINESTRING (2 0, 2 2)', 'road3', DEFAULT);");
+            st.execute("CREATE TABLE test(road LINESTRING, description VARCHAR NOT NULL, "
+                    + "id INT AUTO_INCREMENT PRIMARY KEY);"
+                    + "INSERT INTO test VALUES "
+                    + "('LINESTRING (0 0, 0 2)', 'road1', DEFAULT),"
+                    + "('LINESTRING (1 0, 1 2)', 'road2', DEFAULT),"
+                    + "('LINESTRING (2 0, 2 2)', 'road3', DEFAULT);");
             try {
                 st.executeQuery("SELECT ST_Graph('TEST', 'road', 0.5)");
             } catch (JdbcSQLException e) {
@@ -554,10 +547,10 @@ public class ST_GraphTest {
 
     @Test
     public void test_ST_GraphMixedLINESTRINGSandMULTILINESTRINGS() {
-        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
             st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-            st.execute("CREATE TABLE test(road GEOMETRY, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                    "INSERT INTO test VALUES "
+            st.execute("CREATE TABLE test(road GEOMETRY, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                    + "INSERT INTO test VALUES "
                     + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
                     + "('MULTILINESTRING((1 2, 2 3, 4 3))', 'road2', DEFAULT);");
             try {
@@ -572,11 +565,11 @@ public class ST_GraphTest {
 
     @Test
     public void test_ST_GraphErrorWithNonLINESTRINGSandMULTILINESTRINGS() {
-        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
             // Prepare the input table.
             st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-            st.execute("CREATE TABLE test(road GEOMETRY, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                    "INSERT INTO test VALUES "
+            st.execute("CREATE TABLE test(road GEOMETRY, description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                    + "INSERT INTO test VALUES "
                     + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
                     + "('MULTILINESTRING((1 2, 2 3, 4 3))', 'road2', DEFAULT),"
                     + "('POINT(4 3)', 'road3', DEFAULT);");
@@ -594,7 +587,7 @@ public class ST_GraphTest {
 
     @Test
     public void test_ST_GraphErrorWhenCalledTwice() {
-        assertThrows(JdbcSQLNonTransientException.class, ()-> {
+        assertThrows(JdbcSQLNonTransientException.class, () -> {
             // Prepare the input table.
             multiTestPrep();
             try {
@@ -606,14 +599,13 @@ public class ST_GraphTest {
                 throw originalCause;
             }
         });
-    }  
-    
-    
+    }
+
     @Test
     public void test_ST_Graph_DeleteTables() throws Throwable {
         st.execute("DROP TABLE IF EXISTS TEST; DROP TABLE IF EXISTS TEST_NODES; DROP TABLE IF EXISTS TEST_EDGES");
-        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);" +
-                "INSERT INTO test VALUES "
+        st.execute("CREATE TABLE test(road GEOMETRY(LINESTRING), description VARCHAR, id INT AUTO_INCREMENT PRIMARY KEY);"
+                + "INSERT INTO test VALUES "
                 + "('LINESTRING (0 0, 1 2)', 'road1', DEFAULT),"
                 + "('LINESTRING(1 2, 2 3, 4 3)', 'road2', DEFAULT);");
         st.execute("SELECT ST_Graph('TEST', 'road', 0.1, false)");
@@ -621,7 +613,7 @@ public class ST_GraphTest {
             assertTrue(rs.next());
             assertTrue(rs.getBoolean(1));
             assertFalse(rs.next());
-            
+
             // Test nodes table.
             ResultSet nodesResult = st.executeQuery("SELECT * FROM TEST_NODES");
             assertEquals(NUMBER_OF_NODE_COLS, nodesResult.getMetaData().getColumnCount());
@@ -630,7 +622,7 @@ public class ST_GraphTest {
             checkNode(nodesResult, 3, "POINT (4 3)");
             assertFalse(nodesResult.next());
             nodesResult.close();
-            
+
             // Test edges table.
             ResultSet edgesResult = st.executeQuery("SELECT * FROM TEST_EDGES");
             // This is a copy of the original table with three columns added.
@@ -641,6 +633,5 @@ public class ST_GraphTest {
             edgesResult.close();
         }
     }
-    
-    
+
 }

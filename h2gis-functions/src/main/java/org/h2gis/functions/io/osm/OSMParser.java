@@ -118,7 +118,7 @@ public class OSMParser extends DefaultHandler {
         this.progress = progress.subProcess(100);
         this.connection=connection;
         // Initialisation
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         boolean success = false;
         connection.setAutoCommit(false);
         TableLocation requestedTable = TableLocation.parse(tableName, isH2);
@@ -213,7 +213,7 @@ public class OSMParser extends DefaultHandler {
             OSMTablesFactory.WAY_TAG, OSMTablesFactory.RELATION, OSMTablesFactory.RELATION_TAG, OSMTablesFactory.NODE_MEMBER, OSMTablesFactory.WAY_MEMBER, OSMTablesFactory.RELATION_MEMBER};
         for (String omsTableSuffix : omsTables) {
             String osmTable = TableUtilities.caseIdentifier(requestedTable, osmTableName + omsTableSuffix, isH2);
-            if (JDBCUtilities.tableExists(connection, osmTable)) {
+            if (JDBCUtilities.tableExists(connection, TableLocation.parse(osmTable, isH2))) {
                 throw new SQLException("The table " + osmTable + " already exists.");
             }
         }

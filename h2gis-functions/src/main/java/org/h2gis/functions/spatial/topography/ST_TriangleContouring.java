@@ -27,7 +27,6 @@ import org.h2.value.ValueArray;
 import org.h2.value.ValueVarchar;
 import org.h2gis.api.DeterministicScalarFunction;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.h2gis.utilities.TableUtilities;
 import org.h2gis.utilities.jts_utils.Contouring;
@@ -39,6 +38,8 @@ import org.locationtech.jts.geom.Polygon;
 
 import java.sql.*;
 import java.util.*;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * Split triangle into area within the specified range values.
@@ -135,9 +136,11 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         private TriMarkersFactory triFactory;
         private List<Double> isoLvls;
         private GeometryFactory factory = new GeometryFactory();
+        private TableLocation tableLocation;
 
-        private ExplodeResultSet(Connection connection, String tableName, String isoField1,String isoField2,String isoField3, List<Double> isoLvls) {
-            this.tableName = tableName;
+        private ExplodeResultSet(Connection connection, String tableName, String isoField1,String isoField2,String isoField3, List<Double> isoLvls) throws SQLException {
+            this.tableName = tableName;                      
+            this.tableLocation=TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
             this.spatialFieldName = "";
             this.connection = connection;
             useZ = false;
@@ -147,8 +150,9 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
             this.isoLvls = isoLvls;
         }
 
-        private ExplodeResultSet(Connection connection, String tableName, List<Double> isoLvls) {
-            this.tableName = tableName;
+        private ExplodeResultSet(Connection connection, String tableName, List<Double> isoLvls) throws SQLException {
+            this.tableName = tableName;            
+            this.tableLocation=TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection));
             this.spatialFieldName = "";
             this.connection = connection;
             useZ = true;
@@ -221,22 +225,26 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         public void reset() throws SQLException {
             if(tableQuery!=null && !tableQuery.isClosed()) {
                 close();
-            }
+            }            
+            LinkedHashMap<String, Integer> geomNamesAndIndexes = GeometryTableUtilities.getGeometryColumnNamesAndIndexes(connection, tableLocation);
+            Map.Entry<String, Integer> firstGeomNameAndIndex = geomNamesAndIndexes.entrySet().iterator().next();
+            if (spatialFieldName != null && !spatialFieldName.isEmpty()) {
+                Map.Entry<String, Integer> result = geomNamesAndIndexes.entrySet().stream()
+                        .filter(tuple -> spatialFieldName.equalsIgnoreCase(tuple.getKey()))
+                        .findAny()
+                        .orElse(null);
+                if (result != null) {
+                    firstGeomNameAndIndex = result;
+                }
+            }            
+            spatialFieldName = firstGeomNameAndIndex.getKey();
+            spatialFieldIndex = firstGeomNameAndIndex.getValue();
+            
             Statement st = connection.createStatement();
             tableQuery = st.executeQuery("SELECT * FROM "+tableName);
             firstRow = false;
             ResultSetMetaData meta = tableQuery.getMetaData();
             columnCount = meta.getColumnCount();
-            if(spatialFieldName.isEmpty()) {
-                // Find first geometry column
-                List<String> geomFields = SFSUtilities.getGeometryFields(connection,TableLocation.parse(tableName));
-                if(!geomFields.isEmpty()) {
-                    spatialFieldName = geomFields.get(0);
-                    spatialFieldIndex = tableQuery.findColumn(SFSUtilities.getGeometryFields(tableQuery).get(0));
-                } else {
-                    throw new SQLException("The table "+tableName+" does not contain a geometry field");
-                }
-            }
 
             if(useZ) {
                 triFactory = new ValueOnZ();
@@ -254,7 +262,7 @@ public class ST_TriangleContouring extends DeterministicScalarFunction {
         public ResultSet getResultSet() throws SQLException {
             SimpleResultSet rs = new SimpleResultSet(this);
             // Feed with fields
-            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
+            TableUtilities.copyFields(connection, rs, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
             rs.addColumn(ISO_FIELD_NAME, Types.INTEGER,10,0);
             return rs;
         }

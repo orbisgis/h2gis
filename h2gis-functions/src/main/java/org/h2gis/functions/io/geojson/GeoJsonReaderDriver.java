@@ -73,8 +73,8 @@ public class GeoJsonReaderDriver {
     private int parsedSRID = 0;
     private boolean isH2;
     private TableLocation tableLocation;
-    private Map<String, Integer> cachedColumnNames;
-    private Map<String, Integer> cachedColumnIndex;
+    private LinkedHashMap<String, Integer> cachedColumnNames;
+    private LinkedHashMap<String, Integer> cachedColumnIndex;
     private static final int BATCH_MAX_SIZE = 100;
 
     static {
@@ -110,7 +110,7 @@ public class GeoJsonReaderDriver {
      */
     public void read(ProgressVisitor progress, String tableReference) throws SQLException, IOException {
         if (FileUtil.isFileImportable(fileName, "geojson")) {
-            this.isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+            this.isH2 = JDBCUtilities.isH2DataBase(connection);
             this.tableLocation = TableLocation.parse(tableReference, isH2);
             if (fileName.length() > 0) {
                 parseGeoJson(progress);
@@ -177,7 +177,7 @@ public class GeoJsonReaderDriver {
             // Skip how many nodes in order to update progression at a step of 1%
             readFileSizeEachNode = Math.max(1, (this.fileSize / AVERAGE_NODE_SIZE) / 100);
             nodeCountProgress = 0;
-            cachedColumnNames = new LinkedHashMap<String, Integer>();
+            cachedColumnNames = new LinkedHashMap<>();
             finalGeometryTypes = new HashSet<String>();
 
             try (JsonParser jp = jsFactory.createParser(fis)) {
@@ -215,7 +215,7 @@ public class GeoJsonReaderDriver {
             //Add the geometry column
             createTable.append("THE_GEOM GEOMETRY(geometry,").append(parsedSRID).append(")");
 
-            cachedColumnIndex = new HashMap<String, Integer>();
+            cachedColumnIndex = new LinkedHashMap<>();
             StringBuilder insertTable = new StringBuilder("INSERT INTO ");
             insertTable.append(tableLocation).append(" VALUES(?");
             int i = 1;
@@ -674,54 +674,57 @@ public class GeoJsonReaderDriver {
             String fieldName = TableLocation.quoteIdentifier(jp.getText().toUpperCase(), isH2); //FIELD_NAME columnName 
             JsonToken value = jp.nextToken();
             if (null != value) {
+                Integer dataType = cachedColumnNames.get(fieldName);
+                boolean hasField = cachedColumnNames.containsKey(fieldName);
                 switch (value) {
                     case VALUE_STRING:
                         cachedColumnNames.put(fieldName, Types.VARCHAR);
                         break;
                     case VALUE_TRUE:
                     case VALUE_FALSE:
-                        if(cachedColumnNames.containsKey(fieldName)&& cachedColumnNames.get(fieldName)!=Types.BOOLEAN){
-                            cachedColumnNames.put(fieldName, Types.VARCHAR);
-                        }else {
+                        if (!hasField|| dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.BOOLEAN);
+                        }  else if (hasField && dataType != Types.BOOLEAN) {
+                            cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         break;
                     case VALUE_NUMBER_FLOAT:
-                        if(cachedColumnNames.containsKey(fieldName)){
-                            Integer dataType = cachedColumnNames.get(fieldName);
-                             if(dataType==Types.BIGINT){
+                        if (!hasField || dataType == Types.NULL) {
+                            cachedColumnNames.put(fieldName, Types.DOUBLE);
+                        } else if (hasField) {
+                            if (dataType == Types.BIGINT) {
                                 cachedColumnNames.put(fieldName, Types.DOUBLE);
-                            }else if (dataType!=Types.DOUBLE) {
+                            } else if (dataType != Types.DOUBLE) {
                                 cachedColumnNames.put(fieldName, Types.VARCHAR);
                             }
-                        }else {
-                            cachedColumnNames.put(fieldName, Types.DOUBLE);
                         }
                         break;
                     case VALUE_NUMBER_INT:
-                        if(cachedColumnNames.containsKey(fieldName)&& cachedColumnNames.get(fieldName)!=Types.BIGINT){
-                            cachedColumnNames.put(fieldName, Types.VARCHAR);
-                        }else {
+                        if (!hasField|| dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.BIGINT);
+                        } else if (hasField && dataType != Types.BIGINT) {
+                            cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         break;
                     case START_ARRAY:
-                        if(cachedColumnNames.containsKey(fieldName)&& cachedColumnNames.get(fieldName)!=Types.ARRAY){
-                            cachedColumnNames.put(fieldName, Types.VARCHAR);
-                        }else {
+                        if (!hasField|| dataType == Types.NULL) {
                             cachedColumnNames.put(fieldName, Types.ARRAY);
+                        } else if (hasField && dataType != Types.ARRAY) {
+                            cachedColumnNames.put(fieldName, Types.VARCHAR);
                         }
                         parseArrayMetadata(jp);
                         break;
                     case START_OBJECT:
-                        cachedColumnNames.put(fieldName, Types.VARCHAR);
+                        if (!hasField || dataType == Types.NULL) {
+                            cachedColumnNames.put(fieldName, Types.VARCHAR);
+                        }
                         parseObjectMetadata(jp);
                         break;
                     case VALUE_NULL:
-                        if(!cachedColumnNames.containsKey(fieldName)){
-                            cachedColumnNames.put(fieldName, Types.VARCHAR);
+                        if (!hasField) {
+                            cachedColumnNames.put(fieldName, Types.NULL);
                         }
-                        //ignore other value
+                    //ignore other value
                     default:
                         break;
                 }
@@ -1464,21 +1467,23 @@ public class GeoJsonReaderDriver {
     }
 
     /**
-     * Return a SQL representation of the SQL  type
+     * Return a SQL representation of the SQL type
+     *
      * @param sqlType
      * @return
      * @throws SQLException
      */
     private static String getSQLTypeName(int sqlType) throws SQLException {
         switch (sqlType) {
+            case Types.NULL:
             case Types.VARCHAR:
                 return "VARCHAR";
             case Types.BOOLEAN:
-                return"BOOLEAN";
+                return "BOOLEAN";
             case Types.DOUBLE:
-                return"DOUBLE PRECISION";
+                return "DOUBLE PRECISION";
             case Types.BIGINT:
-                return"BIGINT";
+                return "BIGINT";
             case Types.ARRAY:
                 return "ARRAY";
             default:

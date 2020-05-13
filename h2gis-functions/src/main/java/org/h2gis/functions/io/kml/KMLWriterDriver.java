@@ -22,9 +22,6 @@ package org.h2gis.functions.io.kml;
 
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.utility.FileUtil;
-import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
-import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Geometry;
 
 import javax.xml.stream.XMLOutputFactory;
@@ -33,12 +30,13 @@ import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
 import java.sql.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * KML writer
@@ -74,10 +72,7 @@ public class KMLWriterDriver {
             if (tableName.startsWith("(") && tableName.endsWith(")")) {
                 PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = ps.executeQuery();
-                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(resultSet);
-                 if (spatialFieldNames.isEmpty()) {
-                    throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
-                }
+                Tuple<String, Integer> spatialFieldName = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);                
                 int rowCount = 0;
                 int type = resultSet.getType();
                 if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
@@ -86,7 +81,7 @@ public class KMLWriterDriver {
                     resultSet.beforeFirst();
                 }  
                 this.tableName =  "QUERY_"+System.currentTimeMillis();
-                write(progress.subProcess(rowCount), resultSet, spatialFieldNames.get(0), fileName, encoding);
+                write(progress.subProcess(rowCount), resultSet, spatialFieldName.first(), fileName, encoding);
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
@@ -95,12 +90,9 @@ public class KMLWriterDriver {
                 Statement st = connection.createStatement() ;
                 ResultSet resultSet = st.executeQuery(String.format("select * from %s", tableName));
                 // Read Geometry Index and type
-                List<String> spatialFieldNames = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
-                if (spatialFieldNames.isEmpty()) {
-                    throw new SQLException(String.format("The table %s does not contain a geometry field", tableName));
-                }
+                Tuple<String, Integer> spatialFieldName = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);
                 this.tableName=tableName;
-                write(progress, resultSet,spatialFieldNames.get(0), fileName, encoding);
+                write(progress, resultSet,spatialFieldName.first(), fileName, encoding);
         }
     }
     

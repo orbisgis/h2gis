@@ -65,7 +65,7 @@ public class TableUtilitiesTest {
         SimpleResultSet rs = new SimpleResultSet();
         // Feed with fields
         TableUtilities.copyFields(connection, rs, TableLocation.parse("TATA",
-                JDBCUtilities.isH2DataBase(connection.getMetaData())));
+                JDBCUtilities.isH2DataBase(connection)));
         assertEquals(2, rs.getColumnCount());
         assertEquals(1, rs.findColumn("id"));
         assertEquals(2, rs.findColumn("str"));
@@ -79,12 +79,12 @@ public class TableUtilitiesTest {
     @Test
     public void columnParseInputTableTest() throws Exception {
         assertEquals("TATA", TableUtilities.parseInputTable(connection, "TATA")
-                .toString(JDBCUtilities.isH2DataBase(connection.getMetaData())));
+                .toString(JDBCUtilities.isH2DataBase(connection)));
     }
 
     @Test
     public void suffixTableLocationTest() throws Exception {
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection.getMetaData());
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         TableLocation tableLocation = TableLocation.parse("TATA", isH2);
         assertEquals("TATA_SUFF", TableUtilities.suffixTableLocation(tableLocation, "_SUFF").toString(isH2));
     }

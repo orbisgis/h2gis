@@ -17,8 +17,12 @@
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-package org.h2gis.utilities.jts_utils;
+package org.h2gis.utilities;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import org.cts.util.UTMUtils;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Envelope;
@@ -28,7 +32,7 @@ import org.locationtech.jts.geom.Envelope;
  * 
  * @author Erwan Bocher
  */
-public class GeographyUtils {
+public class GeographyUtilities {
     
      /**
      * The approximate radius of earth as defined for WGS84 
@@ -123,6 +127,30 @@ public class GeographyUtils {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double d = RADIUS_OF_EARTH_IN_METERS * c;
         return d;
-    }   
+    }  
+    
+    /**
+     * Return a SRID code from latitude and longitude coordinates
+     *
+     * @param connection to the database
+     * @param latitude
+     * @param longitude
+     * @return a SRID code
+     * @throws SQLException
+     */
+    public static int getSRID(Connection connection, float latitude, float longitude)
+            throws SQLException {
+        int srid = -1;
+        PreparedStatement ps = connection.prepareStatement("select SRID from PUBLIC.SPATIAL_REF_SYS where PROJ4TEXT = ?");
+        ps.setString(1, UTMUtils.getProj(latitude, longitude));
+        try (ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                srid = rs.getInt(1);
+            }
+        } finally {
+            ps.close();
+        }
+        return srid;
+    }
     
 }

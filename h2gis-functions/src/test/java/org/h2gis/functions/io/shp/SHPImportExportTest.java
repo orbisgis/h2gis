@@ -508,7 +508,7 @@ public class SHPImportExportTest {
     public void exportTableWithPRJ() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(the_geom GEOMETRY CHECK ST_SRID(THE_GEOM) = 4326, idarea int primary key)");
+        stat.execute("create table area(the_geom GEOMETRY(POLYGON, 4326), idarea int primary key)");
         stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 4326), 1)");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export8.shp', 'AREA')");
@@ -519,7 +519,7 @@ public class SHPImportExportTest {
     public void exportImportTableWithOGCPRJ() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS AREA, AREA_READ");
-        stat.execute("create table area(the_geom GEOMETRY CHECK ST_SRID(THE_GEOM) = 4326, idarea int primary key)");
+        stat.execute("create table area(the_geom GEOMETRY(POLYGON, 4326), idarea int primary key)");
         stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 4326), 1)");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export9.shp', 'AREA')");
@@ -534,7 +534,7 @@ public class SHPImportExportTest {
     public void exportUnknownhSRIDPRJ() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS AREA");
-        stat.execute("create table area(the_geom GEOMETRY CHECK ST_SRID(THE_GEOM) = 9999, idarea int primary key)");
+        stat.execute("create table area(the_geom GEOMETRY(POLYGON, 9999), idarea int primary key)");
         stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 9999), 1)");
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export10.shp', 'AREA')");
@@ -645,7 +645,7 @@ public class SHPImportExportTest {
     public void exportAndReadFileWithOGCPRJ() throws SQLException, IOException {
         Statement stat = connection.createStatement();
         stat.execute("DROP TABLE IF EXISTS AREA, AREA_READ");
-        stat.execute("create table area(the_geom GEOMETRY CHECK ST_SRID(THE_GEOM) = 4326, idarea int primary key)");
+        stat.execute("create table area(the_geom GEOMETRY(POLYGON, 4326), idarea int primary key)");
         stat.execute("insert into area values(ST_GEOMFROMTEXT('POLYGON ((-10 109, 90 109, 90 9, -10 9, -10 109))', 4326), 1)"); 
         // Create a shape file using table area
         stat.execute("CALL SHPWrite('target/area_export_srid.shp', 'AREA')");

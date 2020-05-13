@@ -23,12 +23,13 @@ package org.h2gis.functions.spatial.create;
 import org.h2.tools.SimpleResultSet;
 import org.h2.tools.SimpleRowSource;
 import org.h2gis.utilities.JDBCUtilities;
-import org.h2gis.utilities.SFSUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.*;
 
 import java.sql.*;
-import java.util.List;
+import org.h2gis.utilities.GeometryMetaData;
+import org.h2gis.utilities.GeometryTableUtilities;
+import org.h2gis.utilities.Tuple;
 
 /**
  * GridRowSet is used to populate a result set with all grid cells. A cell could
@@ -118,8 +119,9 @@ public class GridRowSet implements SimpleRowSource {
         if (isTable) {
             Statement statement = connection.createStatement();
             //Find the SRID
-            srid = SFSUtilities.getSRID(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
-            try (ResultSet rs = statement.executeQuery("select ST_Extent(" + getFirstGeometryField(tableName, connection) + ")  from " + tableName)) {
+            Tuple<String, GeometryMetaData> geomMetadata = GeometryTableUtilities.getFirstColumnMetaData(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection)));
+            srid = geomMetadata.second().SRID;
+             try (ResultSet rs = statement.executeQuery("select ST_Extent(" + geomMetadata.first() + ")  from " + tableName)) {
                 rs.next();
                 Geometry geomExtend = (Geometry) rs.getObject(1);
                 if (geomExtend == null) {
@@ -193,24 +195,7 @@ public class GridRowSet implements SimpleRowSource {
     public void setCenterCell(boolean isCenterCell) {
         this.isCenterCell = isCenterCell;
     }
-
-    /**
-     * Return the first spatial geometry field name
-     *
-     * @param tableName
-     * @param connection
-     * @return the name of the first geometry column
-     * @throws SQLException
-     */
-    private static String getFirstGeometryField(String tableName, Connection connection) throws SQLException {
-        // Find first geometry column
-        List<String> geomFields = SFSUtilities.getGeometryFields(connection, TableLocation.parse(tableName, JDBCUtilities.isH2DataBase(connection.getMetaData())));
-        if (!geomFields.isEmpty()) {
-            return geomFields.get(0);
-        } else {
-            throw new SQLException("The table " + tableName + " does not contain a geometry field");
-        }
-    }
+   
 
     /**
      * Compute the parameters need to create each cells
