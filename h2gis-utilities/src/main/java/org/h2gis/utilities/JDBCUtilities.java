@@ -322,7 +322,13 @@ public class JDBCUtilities {
      * @throws SQLException
      */
     public static boolean isH2DataBase(Connection connection) throws SQLException {
-        return connection.getClass().getName().startsWith(H2_DRIVER_PACKAGE_NAME);
+        if(connection.getClass().getName().startsWith(H2_DRIVER_PACKAGE_NAME) ||
+                connection.getClass().equals(ConnectionWrapper.class)){
+            return true;
+        }
+        else{
+            return connection.getMetaData().getDriverName().equals("H2 JDBC Driver");
+        }
     }
 
     /**
