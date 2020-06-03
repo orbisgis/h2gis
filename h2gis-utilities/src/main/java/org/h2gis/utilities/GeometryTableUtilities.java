@@ -78,11 +78,13 @@ public class GeometryTableUtilities {
     }
 
     /**
-     * Read the geometry metadata of the first geometry column
+     * The geometry metadata of a resulset is getting from the first row
+     * Because a resulset can mixed geometry types and SRID we are not able to return all geometry metadatas
      *
+     * Use this method only to instantiate a GeometryMetaData object
      *
      * @param resultSet
-     * @return Geometry MetaData
+     * @return Partial geometry metaData
      * @throws java.sql.SQLException
      */
     public static Tuple<String, GeometryMetaData> getFirstColumnMetaData(ResultSet resultSet) throws SQLException {
@@ -90,8 +92,7 @@ public class GeometryTableUtilities {
         int columnCount = metadata.getColumnCount();
         for (int i = 1; i <= columnCount; i++) {
             if (metadata.getColumnTypeName(i).equalsIgnoreCase("geometry")) {
-                GeometryMetaData geometryMetaData = GeometryMetaData.getMetaData(metadata.getColumnTypeName(i));
-                return new Tuple<>(metadata.getColumnName(i), geometryMetaData);
+                return new Tuple<>(metadata.getColumnName(i), new GeometryMetaData());
             }
         }
         throw new SQLException(String.format("The query does not contain a geometry field"));
@@ -163,9 +164,9 @@ public class GeometryTableUtilities {
      */
     public static GeometryMetaData getMetaData(Connection connection, TableLocation geometryTable, String geometryColumnName) throws SQLException {
         GeometryMetaData geometryMetaData = null;
+        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         try (ResultSet geomResultSet = getGeometryColumnsView(connection, geometryTable.getCatalog(), geometryTable.getSchema(),
-                geometryTable.getTable(), geometryColumnName)) {
-            boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                geometryTable.getTable(), TableLocation.quoteIdentifier(geometryColumnName, isH2))) {
             while (geomResultSet.next()) {
                 if (geometryColumnName.isEmpty() || geomResultSet.getString("F_GEOMETRY_COLUMN").equalsIgnoreCase(geometryColumnName)) {
                     int dimension_ = geomResultSet.getInt("COORD_DIMENSION");
@@ -598,7 +599,7 @@ public class GeometryTableUtilities {
      * @param resultSet ResultSet to analyse
      * @param geometryColumnName Field to analyse
      *
-     * @return A geometry that represents the full extend of a geometry column in the ResultSet
+     * @return The full extend of the geometry column name in the ResultSet
      *
      * @throws SQLException
      */
@@ -1016,7 +1017,7 @@ public class GeometryTableUtilities {
             GeometryMetaData metadata = GeometryTableUtilities.getMetaData(connection, tableLocation, geometryColumnName);
             if (metadata != null) {
                 StringBuilder geometrySignature = new StringBuilder("GEOMETRY");
-                geometrySignature.append("(").append(metadata.geometryTypeCode);
+                geometrySignature.append("(").append(metadata.geometryType);
                 geometrySignature.append(",").append(srid).append(")");
 
                 StringBuilder query = new StringBuilder("ALTER TABLE ").append(tableName).append(" ALTER COLUMN ").append(geometryColumnName);
