@@ -31,8 +31,10 @@ import org.h2gis.functions.io.dbf.DBFRead;
 import org.h2gis.functions.io.dbf.DBFWrite;
 import org.h2gis.functions.io.file_table.H2TableIndex;
 import org.h2gis.functions.io.shp.internal.SHPDriver;
+import org.h2gis.postgis_jts_osgi.DataSourceFactoryImpl;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
@@ -44,7 +46,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Properties;
+
 import org.h2gis.unitTest.GeometryAsserts;
+import org.osgi.service.jdbc.DataSourceFactory;
+
+import javax.sql.DataSource;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -748,6 +755,40 @@ public class SHPImportExportTest {
             res.close();
             stat.execute("DROP TABLE IF EXISTS TABLE_LINESTRINGS_READ");
         }
+    }
+
+
+    @Disabled
+    @Test
+    public void exportImportPointPostGIS() throws SQLException, IOException {
+        String url = "jdbc:postgresql://host:port/dbname";
+        Properties props = new Properties();
+        props.setProperty("user", "");
+        props.setProperty("password", "");
+        props.setProperty("url", url);
+        DataSourceFactory dataSourceFactory = new DataSourceFactoryImpl();
+        DataSource ds = dataSourceFactory.createDataSource(props);
+        Connection con = ds.getConnection();
+        Statement stat = con.createStatement();
+        File shpFile = new File("target/punctual_export_postgis.shp");
+        stat.execute("DROP TABLE IF EXISTS PUNCTUAL");
+        stat.execute("create table punctual(idarea int primary key, the_geom GEOMETRY(POINTZ))");
+        stat.execute("insert into punctual values(1, 'POINT(-10 109 5)')");
+        // Create a shape file using table area
+        SHPDriverFunction driver = new SHPDriverFunction();
+        driver.exportTable(con,"punctual", shpFile,new EmptyProgressVisitor());
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
+        driver.importFile(con,  "IMPORT_PUNCTUAL", shpFile, new EmptyProgressVisitor(),
+        true);
+        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_PUNCTUAL;");
+        res.next();
+        Geometry geom = (Geometry) res.getObject(1);
+        Coordinate coord = geom.getCoordinate();
+        assertEquals(coord.z, 5, 10E-1);
+        stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
+        res.close();
     }
     
 }
