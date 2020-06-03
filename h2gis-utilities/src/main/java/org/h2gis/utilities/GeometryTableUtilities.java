@@ -667,7 +667,7 @@ public class GeometryTableUtilities {
         boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         if (!isH2) {
             StringBuilder query = new StringBuilder("SELECT  ST_EstimatedExtent(");
-            if(tableLocation.getSchema()!=null){
+            if(!tableLocation.getSchema().isEmpty()){
                 query.append("'").append(tableLocation.getSchema()).append("',");
             }
             query.append("'").append(tableLocation.getTable()).append("','").append(geometryColumnName).append("') :: geometry");
