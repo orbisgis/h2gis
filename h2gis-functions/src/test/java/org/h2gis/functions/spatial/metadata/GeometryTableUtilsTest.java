@@ -62,9 +62,9 @@ public class GeometryTableUtilsTest {
         connection.createStatement().execute("INSERT INTO POINTTABLE VALUES ('POINT(1 1)')");
 
         connection.createStatement().execute("DROP TABLE IF EXISTS GEOMTABLE");
-        connection.createStatement().execute("CREATE TABLE GEOMTABLE (geom GEOMETRY, pt GEOMETRY(  POINTZM    ), linestr LINESTRING, "
-                + "plgn POLYGON, multipt MULTIPOINT, multilinestr MULTILINESTRING, multiplgn MULTIPOLYGON, "
-                + "geomcollection GEOMCOLLECTION)");
+        connection.createStatement().execute("CREATE TABLE GEOMTABLE (geom GEOMETRY, pt GEOMETRY(POINTZM), linestr GEOMETRY(LINESTRING), "
+                + "plgn GEOMETRY(POLYGON), multipt GEOMETRY(MULTIPOINT), multilinestr GEOMETRY(MULTILINESTRING), multiplgn GEOMETRY(MULTIPOLYGON), "
+                + "geomcollection GEOMETRY(GEOMETRYCOLLECTION))");
         connection.createStatement().execute("INSERT INTO GEOMTABLE VALUES ('POINT(1 1)', 'POINT(1 1 0 0)',"
                 + " 'LINESTRING(1 1, 2 2)', 'POLYGON((1 1, 1 2, 2 2, 2 1, 1 1))', 'MULTIPOINT((1 1))',"
                 + " 'MULTILINESTRING((1 1, 2 2))', 'MULTIPOLYGON(((1 1, 1 2, 2 2, 2 1, 1 1)))',"
@@ -623,8 +623,8 @@ public class GeometryTableUtilsTest {
     
     @Test
     public void testAlterSRID() throws Exception {
-        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY)");
-        st.execute("insert into geo_point VALUES('SRID=0;POINT(0, 0, 0)'");
+        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY(POINT))");
+        st.execute("insert into geo_point VALUES('POINT(0 0)')");
         GeometryMetaData geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals(0, geomMetadata.getSRID());       
         GeometryTableUtilities.alterSRID(connection, TableLocation.parse("GEO_POINT"), "the_geom", 4326);
@@ -650,7 +650,7 @@ public class GeometryTableUtilsTest {
     
     @Test
     public void testUpdateSRIDFunction() throws Exception {
-        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY)");
+        st.execute("drop table if exists geo_point; CREATE TABLE geo_point (the_geom GEOMETRY(POINT))");
         st.execute("insert into geo_point VALUES('SRID=0;POINT(0, 0, 0)'");
         GeometryMetaData geomMetadata = GeometryTableUtilities.getMetaData(connection, TableLocation.parse("GEO_POINT"), "THE_GEOM");
         assertEquals(0, geomMetadata.getSRID());
