@@ -21,6 +21,7 @@
 package org.h2gis.functions.io.shp;
 
 import org.h2.table.Column;
+import org.h2.value.Value;
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
 import org.h2gis.functions.io.dbf.DBFDriverFunction;
@@ -123,8 +124,6 @@ public class SHPDriverFunction implements DriverFunction {
 
      /**
      * Method to export a resulset into a shapefile
-     * @param connection Active connection, do not close this connection.
-     * @param selectQuery the select query to export
      * @param fileName File path to write, if exists it may be replaced
      * @param progress to display the IO progress
      * @param encoding File encoding, null will use default encoding
@@ -273,9 +272,9 @@ public class SHPDriverFunction implements DriverFunction {
                 try (PreparedStatement preparedStatement = connection.prepareStatement(lastSql)) {
                     long batchSize = 0;
                     for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
-                        Object[] values = shpDriver.getRow(rowId);
+                        Value[]  values = shpDriver.getRow(rowId);
                         for (int columnId = 0; columnId < values.length; columnId++) {
-                            preparedStatement.setObject(columnId + 1, values[columnId]);
+                            preparedStatement.setObject(columnId + 1, values[columnId].getObject());
                         }
                         preparedStatement.addBatch();
                         batchSize++;
