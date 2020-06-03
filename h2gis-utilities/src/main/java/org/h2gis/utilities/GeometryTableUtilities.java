@@ -596,7 +596,7 @@ public class GeometryTableUtilities {
      * @param resultSet ResultSet to analyse
      * @param geometryColumnName Field to analyse
      *
-     * @return The full extend of the field in the ResultSet
+     * @return The full extend of the geometry column name in the ResultSet
      *
      * @throws SQLException
      */
