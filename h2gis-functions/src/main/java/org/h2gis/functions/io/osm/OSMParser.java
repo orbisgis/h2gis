@@ -60,7 +60,10 @@ import java.util.zip.GZIPInputStream;
  */
 public class OSMParser extends DefaultHandler {
 
-    
+
+    private final File fileName;
+    private final String encoding;
+    private final boolean deleteTable;
     // Set the same batch size as OSMOSIS
     private static final int BATCH_SIZE = 8000;
     private PreparedStatement nodePreparedStmt;
@@ -100,35 +103,42 @@ public class OSMParser extends DefaultHandler {
     private static String TAG_DUPLICATE_EXCEPTION = String.valueOf(ErrorCode.DUPLICATE_KEY_1);
     private Connection connection;
 
-    public OSMParser() {
-
+    public OSMParser(Connection connection, File fileName, String encoding, boolean deleteTable) {
+        this.connection=connection;
+        this.fileName=fileName;
+        this.encoding=encoding;
+        this.deleteTable=deleteTable;
     }
 
     /**
      * Read the OSM file and create its corresponding tables.
      *
-     * @param inputFile
      * @param tableName
-     * @param connection
      * @param progress
      * @return
      * @throws SQLException
      */
-    public boolean read(Connection connection, String tableName, File inputFile, ProgressVisitor progress) throws SQLException {
+    public boolean read(String tableName, ProgressVisitor progress) throws SQLException {
+        if(fileName == null || !(fileName.getName().endsWith(".osm") || fileName.getName().endsWith("osm.gz") || fileName.getName().endsWith("osm.bz2"))) {
+            throw new SQLException(new IllegalArgumentException("This driver handle only .osm, .osm.gz and .osm.bz2 files"));
+        }
+
         this.progress = progress.subProcess(100);
-        this.connection=connection;
         // Initialisation
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         boolean success = false;
         connection.setAutoCommit(false);
         TableLocation requestedTable = TableLocation.parse(tableName, isH2);
+        if(deleteTable){
+            OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection), requestedTable.toString());
+        }
         String osmTableName = requestedTable.getTable();
         checkOSMTables(connection, isH2, requestedTable, osmTableName);
         createOSMDatabaseModel(connection, isH2, requestedTable, osmTableName);
 
         FileInputStream fs = null;
         try {
-            fs = new FileInputStream(inputFile);
+            fs = new FileInputStream(fileName);
             this.fc = fs.getChannel();
             this.fileSize = fc.size();
             if (fileSize > 0) {
@@ -139,12 +149,24 @@ public class OSMParser extends DefaultHandler {
                 XMLReader parser = XMLReaderFactory.createXMLReader();
                 parser.setErrorHandler(this);
                 parser.setContentHandler(this);
-                if (inputFile.getName().endsWith(".osm")) {
-                    parser.parse(new InputSource(fs));
-                } else if (inputFile.getName().endsWith(".osm.gz")) {
-                    parser.parse(new InputSource(new GZIPInputStream(fs)));
-                } else if (inputFile.getName().endsWith(".osm.bz2")) {
-                    parser.parse(new InputSource(new BZip2CompressorInputStream(fs)));
+                if (fileName.getName().endsWith(".osm")) {
+                    InputSource is = new InputSource(fs);
+                    if(encoding!=null && !encoding.isEmpty()){
+                        is.setEncoding(encoding);
+                    }
+                    parser.parse(is);
+                } else if (fileName.getName().endsWith(".osm.gz")) {
+                    InputSource is = new InputSource(new GZIPInputStream(fs));
+                    if(encoding!=null && !encoding.isEmpty()){
+                        is.setEncoding(encoding);
+                    }
+                    parser.parse(is);
+                } else if (fileName.getName().endsWith(".osm.bz2")) {
+                    InputSource is = new InputSource(new BZip2CompressorInputStream(fs));
+                    if(encoding!=null && !encoding.isEmpty()){
+                        is.setEncoding(encoding);
+                    }
+                    parser.parse(is);
                 } else {
                     throw new SQLException("Supported formats are .osm, .osm.gz, .osm.bz2");
                 }
@@ -153,14 +175,14 @@ public class OSMParser extends DefaultHandler {
         } catch (SAXException ex) {
             throw new SQLException(ex);
         } catch (IOException ex) {
-            throw new SQLException("Cannot parse the file " + inputFile.getAbsolutePath(), ex);
+            throw new SQLException("Cannot parse the file " + fileName.getAbsolutePath(), ex);
         } finally {
             try {
                 if (fs != null) {
                     fs.close();
                 }
             } catch (IOException ex) {
-                throw new SQLException("Cannot close the file " + inputFile.getAbsolutePath(), ex);
+                throw new SQLException("Cannot close the file " + fileName.getAbsolutePath(), ex);
             }
             // When the reading ends, close() method has to be called
             if (nodePreparedStmt != null) {

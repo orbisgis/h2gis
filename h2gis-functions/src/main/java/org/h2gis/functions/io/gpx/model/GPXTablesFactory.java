@@ -307,17 +307,16 @@ public class GPXTablesFactory {
      * @param tablePrefix
      * @throws SQLException
      */
-    public static void dropOSMTables(Connection connection, boolean isH2, String tablePrefix) throws SQLException {
-        TableLocation requestedTable = TableLocation.parse(tablePrefix, isH2);
-        String gpxTableName = requestedTable.getTable();        
+    public static void dropOSMTables(Connection connection, boolean isH2, TableLocation tablePrefix) throws SQLException {
+        String gpxTableName = tablePrefix.toString();
         String[] gpxTables = new String[]{WAYPOINT,ROUTE,ROUTEPOINT, TRACK, TRACKPOINT, TRACKSEGMENT};
         StringBuilder sb =  new StringBuilder("drop table if exists ");     
         String gpxTableSuffix = gpxTables[0];
-        String gpxTable = TableUtilities.caseIdentifier(requestedTable, gpxTableName + gpxTableSuffix, isH2);           
+        String gpxTable = TableUtilities.caseIdentifier(tablePrefix, gpxTableName + gpxTableSuffix, isH2);
         sb.append(gpxTable);
         for (int i = 1; i < gpxTables.length; i++) {
             gpxTableSuffix = gpxTables[i];
-            gpxTable = TableUtilities.caseIdentifier(requestedTable, gpxTableName + gpxTableSuffix, isH2);
+            gpxTable = TableUtilities.caseIdentifier(tablePrefix, gpxTableName + gpxTableSuffix, isH2);
             sb.append(",").append(gpxTable);
         }        
         try (Statement stmt = connection.createStatement()) {

@@ -32,12 +32,13 @@ import java.sql.SQLException;
 /**
  * SQL Function to export a spatial table to a KML file.
  *
- * @author Erwan Bocher
+ * @author Erwan Bocher, CNRS
  */
 public class KMLWrite extends AbstractFunction implements ScalarFunction {
 
     public KMLWrite() {
-        addProperty(PROP_REMARKS, "Export a spatial table to a KML or KMZ file.");
+        addProperty(PROP_REMARKS, "Export a spatial table to a KML or KMZ file.\n" +
+                "As optional arguments encoding value is supported and delete output file.");
     }
 
     @Override
@@ -54,7 +55,18 @@ public class KMLWrite extends AbstractFunction implements ScalarFunction {
      * @throws IOException 
      */
     public static void writeKML(Connection connection, String fileName, String tableReference) throws SQLException, IOException {
+        writeKML( connection,  fileName,  tableReference,  null,  false);
+    }
+
+    public static void writeKML(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFile) throws SQLException, IOException {
         KMLDriverFunction kMLDriverFunction = new KMLDriverFunction();
-        kMLDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
+        kMLDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName),encoding,deleteFile, new EmptyProgressVisitor());
+    }
+    public static void writeKML(Connection connection, String fileName, String tableReference,String encoding) throws SQLException, IOException {
+        writeKML( connection,  fileName,  tableReference,  encoding,  false);
+    }
+
+    public static void writeKML(Connection connection, String fileName, String tableReference,boolean deleteFile) throws SQLException, IOException {
+        writeKML( connection,  fileName,  tableReference,  null,  deleteFile);
     }
 }

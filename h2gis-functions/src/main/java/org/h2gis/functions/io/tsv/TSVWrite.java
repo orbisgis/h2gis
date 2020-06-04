@@ -55,9 +55,13 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
      * @throws IOException
      */
     public static void writeTSV(Connection connection, String fileName, String tableReference) throws SQLException, IOException {
-        writeTSV(connection, fileName, tableReference, null);
+        writeTSV( connection,  fileName,  tableReference,  null, false);
     }
-    
+
+    public static void writeTSV(Connection connection, String fileName, String tableReference, boolean deleteFile) throws SQLException, IOException {
+        writeTSV( connection,  fileName,  tableReference,  null, deleteFile);
+    }
+
     /**
      * Export a table into a Tab-separated values file
      *
@@ -68,9 +72,20 @@ public class TSVWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      * @throws IOException
      */
-    public static void writeTSV(Connection connection, String fileName, String tableReference, String encoding) throws SQLException, IOException {       
-        TSVDriverFunction tSVDriverFunction = new TSVDriverFunction();
-        tSVDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
+    public static void writeTSV(Connection connection, String fileName, String tableReference, String encoding) throws SQLException, IOException {
+        writeTSV( connection,  fileName,  tableReference,  encoding, false);
     }
 
+    /**
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param encoding
+     * @throws SQLException
+     * @throws IOException
+     */
+    public static void writeTSV(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFile) throws SQLException, IOException {
+        TSVDriverFunction tSVDriverFunction = new TSVDriverFunction();
+        tSVDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteFile, new EmptyProgressVisitor());
+    }
 }

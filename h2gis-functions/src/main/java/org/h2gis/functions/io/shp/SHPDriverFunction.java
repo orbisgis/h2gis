@@ -40,6 +40,7 @@ import org.h2gis.utilities.GeometryMetaData;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -60,29 +61,36 @@ public class SHPDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, progress, null);
+        exportTable(connection, tableReference, fileName, null, progress);
     }
 
-    /**
-     * Save a table or a query to a shpfile
-     * @param connection Active connection, do not close this connection.
-     * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path to write, if exists it may be replaced
-     * @param progress to display the IO progress
-     * @param encoding File encoding, null will use default encoding
-     * @throws SQLException
-     * @throws IOException
-     */
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
-        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        String regex = ".*(?i)\\b(select|from)\\b.*";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(tableReference);
-        if (matcher.find()) {
-            if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
-                if (FileUtil.isExtensionWellFormated(fileName, "shp")) {
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable( connection,  tableReference,  fileName, null, deleteFiles,  progress);
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName,  String options, boolean deleteFiles,ProgressVisitor progress) throws SQLException, IOException {
+        if (!FileUtil.isExtensionWellFormated(fileName, "shp")) {
+            throw new SQLException("Only .shp extension is supported");
+        }
+            if(deleteFiles){
+                //Delete all shapeFile extensions
+                String path = fileName.getAbsolutePath();
+                String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
+                Files.deleteIfExists(fileName.toPath());
+                Files.deleteIfExists(new File(nameWithoutExt+".dbf").toPath());
+                Files.deleteIfExists(new File(nameWithoutExt+".shx").toPath());
+                Files.deleteIfExists(new File(nameWithoutExt+".prj").toPath());
+            }
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            String regex = ".*(?i)\\b(select|from)\\b.*";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(tableReference);
+            if (matcher.find()) {
+                if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
                     PreparedStatement ps = connection.prepareStatement(tableReference, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    JDBCUtilities.attachCancelResultSet(ps, progress);
                     ResultSet resultSet = ps.executeQuery();
                     int recordCount = 0;
                     resultSet.last();
@@ -90,36 +98,45 @@ public class SHPDriverFunction implements DriverFunction {
                     resultSet.beforeFirst();
                     ProgressVisitor copyProgress = progress.subProcess(recordCount);
                     Tuple<String, Integer> spatialFieldNameAndIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);
-                    int srid = doExport(spatialFieldNameAndIndex.second(), resultSet, recordCount, fileName, progress, encoding);                    
+                    int srid = doExport(spatialFieldNameAndIndex.second(), resultSet, recordCount, fileName, progress, options);
                     String path = fileName.getAbsolutePath();
                     String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
-                    PRJUtil.writePRJ(connection, srid,  new File(nameWithoutExt + ".prj"));                
+                    PRJUtil.writePRJ(connection, srid,  new File(nameWithoutExt + ".prj"));
                     copyProgress.endOfProgress();
                 } else {
-                    throw new SQLException("Only .shp extension is supported");
+                    throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
                 }
             } else {
-                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
-            }
-        } else {
-            if (FileUtil.isExtensionWellFormated(fileName, "shp")) {
                 TableLocation location = TableLocation.parse(tableReference, isH2);
                 int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
                 ProgressVisitor copyProgress = progress.subProcess(recordCount);
                 // Read Geometry Index and type
                 Tuple<String, Integer> spatialFieldNameAndIndex = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(connection, TableLocation.parse(tableReference, isH2));
                 Statement st = connection.createStatement();
+                JDBCUtilities.attachCancelResultSet(st, progress);
                 ResultSet rs = st.executeQuery(String.format("select * from %s", location.toString()));
-                doExport(spatialFieldNameAndIndex.second(), rs, recordCount, fileName, copyProgress, encoding);
+                doExport(spatialFieldNameAndIndex.second(), rs, recordCount, fileName, copyProgress, options);
                 String path = fileName.getAbsolutePath();
                 String nameWithoutExt = path.substring(0, path.lastIndexOf('.'));
                 PRJUtil.writePRJ(connection, location, spatialFieldNameAndIndex.first(), new File(nameWithoutExt + ".prj"));
                 copyProgress.endOfProgress();
-                
-            } else {
-                throw new SQLException("Only .shp extension is supported");
             }
-        }
+
+    }
+
+    /**
+     * Save a table or a query to a shpfile
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path to write, if exists it may be replaced
+     * @param encoding File encoding, null will use default encoding
+     * @param progress to display the IO progress
+     * @throws SQLException
+     * @throws IOException
+     */
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName,  String encoding,ProgressVisitor progress) throws SQLException, IOException {
+        exportTable( connection,  tableReference,  fileName, encoding, false,  progress);
     }
 
      /**
@@ -137,7 +154,7 @@ public class SHPDriverFunction implements DriverFunction {
             ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
             DbaseFileHeader header = DBFDriverFunction.dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
             columnIndexes.add(0, spatialFieldIndex);
-            if (encoding != null) {
+            if (encoding != null && !encoding.isEmpty()) {
                 header.setEncoding(encoding);
             }
             header.setNumRecords(recordCount);
@@ -178,9 +195,7 @@ public class SHPDriverFunction implements DriverFunction {
             rs.close();
         }
         return srid;
-
     }
-
 
 
     @Override
@@ -214,7 +229,7 @@ public class SHPDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress, null);
+        importFile(connection, tableReference, fileName,  null, progress);
     }
 
     /**
@@ -222,16 +237,35 @@ public class SHPDriverFunction implements DriverFunction {
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
-     * @param progress
      * @param forceEncoding If defined use this encoding instead of the one defined in dbf header.
+     * @param progress
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceEncoding) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, String forceEncoding, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, null, false, progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName,  boolean deleteTables,ProgressVisitor progress
+                          ) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, null, deleteTables, progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName,  String options, boolean deleteTables,ProgressVisitor progress) throws SQLException, IOException {
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+        if (FileUtil.isFileImportable(fileName, "shp")) {
+        if(deleteTables) {
+            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            String table = requestedTable.getTable();
+            Statement stmt = connection.createStatement();
+            stmt.execute("DROP TABLE IF EXISTS " + table);
+            stmt.close();
+        }
         SHPDriver shpDriver = new SHPDriver();
-        shpDriver.initDriverFromFile(fileName, forceEncoding);
+        shpDriver.initDriverFromFile(fileName, options);
         ProgressVisitor copyProgress = progress.subProcess((int)(shpDriver.getRowCount() / BATCH_MAX_SIZE));
         // PostGIS does not show sql
         String lastSql = "";
@@ -240,9 +274,9 @@ public class SHPDriverFunction implements DriverFunction {
             ShapefileHeader shpHeader = shpDriver.getShapeFileHeader();
             final TableLocation parse;
             int srid;
-            try ( 
-                // Build CREATE TABLE sql request
-                Statement st = connection.createStatement()) {
+            try (
+                    // Build CREATE TABLE sql request
+                    Statement st = connection.createStatement()) {
                 String types = DBFDriverFunction.getSQLColumnTypes(dbfHeader, isH2);
                 if(!types.isEmpty()) {
                     types = ", " + types;
@@ -266,9 +300,9 @@ public class SHPDriverFunction implements DriverFunction {
                 }
             }
             try {
-                        lastSql = String.format("INSERT INTO %s VALUES (DEFAULT, %s )", parse,
-                                DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));                        
-                        connection.setAutoCommit(false);
+                lastSql = String.format("INSERT INTO %s VALUES (DEFAULT, %s )", parse,
+                        DBFDriverFunction.getQuestionMark(dbfHeader.getNumFields() + 1));
+                connection.setAutoCommit(false);
                 try (PreparedStatement preparedStatement = connection.prepareStatement(lastSql)) {
                     long batchSize = 0;
                     for (int rowId = 0; rowId < shpDriver.getRowCount(); rowId++) {
@@ -287,13 +321,12 @@ public class SHPDriverFunction implements DriverFunction {
                         }
                     }
                     if(batchSize > 0) {
-                        preparedStatement.executeBatch();                        
+                        preparedStatement.executeBatch();
                         connection.commit();
                     }
-                    
+
                     connection.setAutoCommit(true);
-                }               
-                //TODO create spatial index on the_geom ?
+                }
             } catch (Exception ex) {
                 connection.createStatement().execute("DROP TABLE IF EXISTS " + tableReference);
                 throw new SQLException(ex.getLocalizedMessage(), ex);
@@ -304,21 +337,7 @@ public class SHPDriverFunction implements DriverFunction {
             shpDriver.close();
             copyProgress.endOfProgress();
         }
-    }
-
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
-        if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String table = requestedTable.getTable();
-            Statement stmt = connection.createStatement();
-            stmt.execute("DROP TABLE IF EXISTS " + table);
-            stmt.close();
         }
-
-        importFile(connection, tableReference, fileName, progress);
     }
 
     /**

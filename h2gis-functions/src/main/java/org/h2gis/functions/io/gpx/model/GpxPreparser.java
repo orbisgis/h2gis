@@ -72,13 +72,17 @@ public final class GpxPreparser extends DefaultHandler {
      * @throws SAXException
      * @throws IOException
      */
-    public boolean read(File inputFile) throws SAXException, IOException {
+    public boolean read(File inputFile, String encoding) throws SAXException, IOException {
         boolean success = false;
         try (FileInputStream fs = new FileInputStream(inputFile)) {
             XMLReader parser = XMLReaderFactory.createXMLReader();
             parser.setErrorHandler(this);
             parser.setContentHandler(this);
-            parser.parse(new InputSource(fs));
+            InputSource is = new InputSource(fs);
+            if(encoding!=null && !encoding.isEmpty()) {
+                is.setEncoding(encoding);
+            }
+            parser.parse(is);
             success = true;
         }
         return success;

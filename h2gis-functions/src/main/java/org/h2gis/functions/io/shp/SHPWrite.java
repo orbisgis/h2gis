@@ -32,16 +32,18 @@ import java.sql.SQLException;
 /**
  * SQL Function to read a table and write it into a shape file.
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
 public class SHPWrite extends AbstractFunction implements ScalarFunction {    
 
     public SHPWrite() {
-        addProperty(PROP_REMARKS, "Transfer the content of a table into a new shape file\nCALL SHPWRITE('FILENAME', 'TABLE'[,'ENCODING'])");
+        addProperty(PROP_REMARKS, "Transfer the content of a table into a new shape file\nCALL SHPWRITE('FILENAME', 'TABLE'[,'ENCODING', true " +
+                "\n(to delete output file if exists)])");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "exportTable";  //To change body of implemented methods use File | Settings | File Templates.
+        return "exportTable";
     }
 
     /**
@@ -53,7 +55,7 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        exportTable(connection, fileName, tableReference, null);
+        exportTable(connection, fileName, tableReference, null, false);
     }
 
     /**
@@ -67,8 +69,16 @@ public class SHPWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void exportTable(Connection connection, String fileName, String tableReference, String encoding) throws IOException, SQLException {
-        SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-        shpDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), encoding);
+        exportTable( connection,  fileName,  tableReference,  encoding,  false);
     }
 
-}
+    public static void exportTable(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFiles) throws IOException, SQLException {
+        SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
+        shpDriverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteFiles, new EmptyProgressVisitor());
+    }
+
+    public static void exportTable(Connection connection, String fileName, String tableReference, boolean deleteFiles) throws IOException, SQLException {
+        exportTable( connection,  fileName,  tableReference,  null,  deleteFiles);
+    }
+
+    }

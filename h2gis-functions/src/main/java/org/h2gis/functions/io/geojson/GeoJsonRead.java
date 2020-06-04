@@ -57,7 +57,24 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readGeoJson(connection, fileName, tableName);
+            readGeoJson(connection, fileName, tableName,null, false);
+        } else {
+            throw new SQLException("The file name contains unsupported characters");
+        }
+    }
+
+    /**
+     *
+     * @param connection
+     * @param fileName
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void readGeoJson(Connection connection, String fileName, boolean deleteTable) throws IOException, SQLException {
+        final String name = URIUtilities.fileFromString(fileName).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            readGeoJson(connection, fileName, tableName,null, deleteTable);
         } else {
             throw new SQLException("The file name contains unsupported characters");
         }
@@ -73,7 +90,15 @@ public class GeoJsonRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException 
      */
     public static void readGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
+        readGeoJson(connection,fileName, tableReference, null, false);
+    }
+
+    public static void readGeoJson(Connection connection, String fileName, String tableReference,String encoding) throws IOException, SQLException {
+        readGeoJson(connection,fileName, tableReference, encoding, false);
+    }
+
+    public static void readGeoJson(Connection connection, String fileName, String tableReference,String encoding, boolean deleteTable ) throws IOException, SQLException {
         GeoJsonDriverFunction gjdf = new GeoJsonDriverFunction();
-        gjdf.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
+        gjdf.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteTable, new EmptyProgressVisitor());
     }
 }

@@ -58,11 +58,26 @@ public class TSVRead  extends AbstractFunction implements ScalarFunction{
      * @throws IOException 
      */
     public static void readTSV(Connection connection, String fileName, String tableReference) throws SQLException, FileNotFoundException, IOException {
-        File file = URIUtilities.fileFromString(fileName);
-        if (FileUtil.isFileImportable(file, "tsv")) {
-            TSVDriverFunction tsvDriver = new TSVDriverFunction();
-            tsvDriver.importFile(connection, tableReference, file, new EmptyProgressVisitor());
-        }
+        readTSV( connection,  fileName,  tableReference,null,  false);
+    }
+
+    public static void readTSV(Connection connection, String fileName, String tableReference, String encoding) throws SQLException, FileNotFoundException, IOException {
+        readTSV( connection,  fileName,  tableReference,encoding,  false);
+    }
+    /**
+     *
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param encoding
+     * @param deleteTable
+     * @throws SQLException
+     * @throws FileNotFoundException
+     * @throws IOException
+     */
+    public static void readTSV(Connection connection, String fileName, String tableReference, String encoding, boolean deleteTable) throws SQLException, FileNotFoundException, IOException {
+        TSVDriverFunction tsvDriver = new TSVDriverFunction();
+        tsvDriver.importFile(connection, tableReference, URIUtilities.fileFromString(fileName),encoding,deleteTable, new EmptyProgressVisitor());
     }
 
     /**
@@ -76,7 +91,25 @@ public class TSVRead  extends AbstractFunction implements ScalarFunction{
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readTSV(connection, fileName, tableName);
+            readTSV(connection, fileName, tableName, null, false);
+        } else {
+            throw new SQLException("The file name contains unsupported characters");
+        }
+    }
+
+    /**
+     *
+     * @param connection
+     * @param fileName
+     * @param deleteTable
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void readTSV(Connection connection, String fileName, boolean deleteTable) throws IOException, SQLException {
+        final String name = URIUtilities.fileFromString(fileName).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            readTSV(connection, fileName, tableName, null, deleteTable);
         } else {
             throw new SQLException("The file name contains unsupported characters");
         }

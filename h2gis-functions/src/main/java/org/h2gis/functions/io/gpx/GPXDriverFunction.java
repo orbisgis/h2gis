@@ -78,21 +78,38 @@ public class GPXDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                            String options) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String options,ProgressVisitor progress
+                            ) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String encoding, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        GpxParser gpd = new GpxParser(connection, fileName, encoding, deleteTables);
+        gpd.read(tableReference, progress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress, false);
+        importFile( connection,  tableReference,  fileName, null, false,  progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           String options) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress);
+    public void importFile(Connection connection, String tableReference, File fileName, String options,ProgressVisitor progress
+                       ) throws SQLException, IOException {
+        importFile( connection,  tableReference,  fileName, options, false,  progress);
     }
 
     /**
@@ -106,17 +123,8 @@ public class GPXDriverFunction implements DriverFunction {
      * @throws IOException File read error
      */
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
-        boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-        if (fileName.length() == 0) {
-            JDBCUtilities.createEmptyTable(connection, TableLocation.parse(tableReference, isH2).toString());
-        } else {
-            if (deleteTables) {
-                GPXTablesFactory.dropOSMTables(connection, isH2, tableReference);
-            }
-            GpxParser gpd = new GpxParser();
-            gpd.read(fileName, tableReference, connection);
-        }
+    public void importFile(Connection connection, String tableReference, File fileName, boolean deleteTables,ProgressVisitor progress
+                           ) throws SQLException, IOException {
+        importFile( connection,  tableReference,  fileName, null, deleteTables,  progress);
     }
 }

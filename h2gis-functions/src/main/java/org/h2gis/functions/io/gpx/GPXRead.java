@@ -50,24 +50,10 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
     }
     
     
-    /**
-     * Copy data from GPX File into a new table in specified connection.
-     *
-     * @param connection Active connection
-     * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path of the SHP file
-     * @param deleteTables  true to delete the existing tables
-     * @throws java.io.IOException
-     * @throws java.sql.SQLException
-     */
+
     public static void readGPX(Connection connection, String fileName, String tableReference, boolean deleteTables) throws IOException, SQLException {
-        File file = URIUtilities.fileFromString(fileName);
-        if (FileUtil.isFileImportable(file, "gpx")) {
-            GPXDriverFunction gpxdf = new GPXDriverFunction();
-            gpxdf.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), deleteTables);
-        }
+        readGPX( connection,  fileName,  tableReference, null,  deleteTables);
     }
-    
 
     /**
      * Copy data from GPX File into a new table in specified connection.
@@ -75,11 +61,28 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path of the SHP file
+     * @param encoding  charset encoding
+     * @param deleteTables  true to delete the existing tables
      * @throws java.io.IOException
      * @throws java.sql.SQLException
      */
+    public static void readGPX(Connection connection, String fileName, String tableReference, String encoding, boolean deleteTables) throws IOException, SQLException {
+        GPXDriverFunction gpxdf = new GPXDriverFunction();
+        gpxdf.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteTables, new EmptyProgressVisitor());
+    }
+
+
+        /**
+         * Copy data from GPX File into a new table in specified connection.
+         *
+         * @param connection Active connection
+         * @param tableReference [[catalog.]schema.]table reference
+         * @param fileName File path of the SHP file
+         * @throws java.io.IOException
+         * @throws java.sql.SQLException
+         */
     public static void readGPX(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        readGPX(connection, fileName, tableReference, false);
+        readGPX( connection,  fileName,  tableReference, null,  false);
     }
 
     /**
@@ -95,7 +98,17 @@ public class GPXRead extends AbstractFunction implements ScalarFunction {
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readGPX(connection, fileName, tableName);
+            readGPX( connection,  fileName,  tableName, null,  false);
+        } else {
+            throw new SQLException("The file name contains unsupported characters");
+        }
+    }
+
+    public static void readGPX(Connection connection, String fileName, boolean deleteTable) throws IOException, SQLException {
+        final String name = URIUtilities.fileFromString(fileName).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            readGPX( connection,  fileName,  tableName, null,  deleteTable);
         } else {
             throw new SQLException("The file name contains unsupported characters");
         }

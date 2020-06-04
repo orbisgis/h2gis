@@ -75,7 +75,17 @@ public class AscDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException{
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName,  String encoding,ProgressVisitor progress) throws SQLException, IOException{
         // Import only driver
     }
 
@@ -102,14 +112,14 @@ public class AscDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           String options) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName,   String options, ProgressVisitor progress
+                         ) throws SQLException, IOException {
         importFile(connection, tableReference, fileName, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName,  boolean deleteTables, ProgressVisitor progress
+                          ) throws SQLException, IOException {
 
         if(deleteTables) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
@@ -120,5 +130,10 @@ public class AscDriverFunction implements DriverFunction {
         }
 
         importFile(connection, tableReference, fileName, progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+
     }
 }

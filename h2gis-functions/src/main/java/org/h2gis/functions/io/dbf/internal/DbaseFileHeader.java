@@ -457,7 +457,7 @@ public class DbaseFileHeader {
 	 *             If errors occur while reading.
 	 */
 	public void readHeader(FileChannel channel,String forceEncoding) throws IOException {
-        if(forceEncoding != null) {
+        if(forceEncoding != null && !forceEncoding.isEmpty()) {
             fileEncoding = forceEncoding;
         }
 		// we'll read in chunks of 1K

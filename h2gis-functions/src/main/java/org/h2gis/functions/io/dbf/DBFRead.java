@@ -51,6 +51,15 @@ public class DBFRead  extends AbstractFunction implements ScalarFunction {
             throw new SQLException("The file name contains unsupported characters");
         }
     }
+    public static void read(Connection connection, String fileName, boolean deleteTable) throws IOException, SQLException {
+        final String name = URIUtilities.fileFromString(fileName).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            read(connection, fileName, tableName, null, deleteTable);
+        } else {
+            throw new SQLException("The file name contains unsupported characters");
+        }
+    }
 
     public static void read(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();
@@ -59,6 +68,11 @@ public class DBFRead  extends AbstractFunction implements ScalarFunction {
 
     public static void read(Connection connection, String fileName, String tableReference, String fileEncoding) throws IOException, SQLException {
         DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();
-        dbfDriverFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), fileEncoding);
+        dbfDriverFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName),  fileEncoding, new EmptyProgressVisitor());
+    }
+
+    public static void read(Connection connection, String fileName, String tableReference, String fileEncoding, boolean deleteTable) throws IOException, SQLException {
+        DBFDriverFunction dbfDriverFunction = new DBFDriverFunction();
+        dbfDriverFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName),  fileEncoding,deleteTable, new EmptyProgressVisitor());
     }
 }

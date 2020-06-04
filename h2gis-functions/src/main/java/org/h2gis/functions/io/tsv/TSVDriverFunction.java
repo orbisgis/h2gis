@@ -31,6 +31,7 @@ import org.h2gis.utilities.TableLocation;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -58,7 +59,7 @@ import java.util.regex.Pattern;
 public class TSVDriverFunction implements DriverFunction{
 
     public static String DESCRIPTION = "TSV file (Tab Separated Values)";
-    private static final int BATCH_MAX_SIZE = 100;
+    private static final int BATCH_MAX_SIZE = 200;
    
     
     @Override
@@ -92,9 +93,53 @@ public class TSVDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, progress, null);
+        exportTable( connection,  tableReference,  fileName, null, false,  progress);
     }
-    
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable( connection,  tableReference,  fileName, null, deleteFiles,  progress);
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        String regex = ".*(?i)\\b(select|from)\\b.*";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tableReference);
+        if (matcher.find()) {
+            if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
+                if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
+                    if(deleteFiles){
+                        Files.deleteIfExists(fileName.toPath());
+                    }
+                    try (Statement st = connection.createStatement()) {
+                        JDBCUtilities.attachCancelResultSet(st, progress);
+                        exportFromResultSet(connection, st.executeQuery(tableReference), fileName, encoding, new EmptyProgressVisitor());
+                    }
+                } else {
+                    throw new SQLException("Only .tsv extension is supported");
+                }
+
+            } else {
+                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
+            }
+        } else {
+            if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
+                if(deleteFiles){
+                    Files.deleteIfExists(fileName.toPath());
+                }
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                TableLocation location = TableLocation.parse(tableReference, isH2);
+                try (Statement st = connection.createStatement()) {
+                    JDBCUtilities.attachCancelResultSet(st, progress);
+                    exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), fileName,encoding,new EmptyProgressVisitor());
+                }
+            } else {
+                throw new SQLException("Only .tsv extension is supported");
+            }
+        }
+    }
+
     /**
      * Export a table or a query to as TSV file
      * 
@@ -107,36 +152,8 @@ public class TSVDriverFunction implements DriverFunction{
      * @throws IOException 
      */
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
-        String regex = ".*(?i)\\b(select|from)\\b.*";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(tableReference);
-        if (matcher.find()) {
-            if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
-                if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
-                    try (Statement st = connection.createStatement()) {
-                        JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery(tableReference), fileName, new EmptyProgressVisitor(), encoding);
-                    }
-                } else {
-                    throw new SQLException("Only .tsv extension is supported");
-                }
-
-            } else {
-                throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
-            }
-        } else {
-            if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                TableLocation location = TableLocation.parse(tableReference, isH2);
-                try (Statement st = connection.createStatement()) {
-                    JDBCUtilities.attachCancelResultSet(st, progress);
-                    exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), fileName,new EmptyProgressVisitor(),encoding);
-                }
-            } else {
-                throw new SQLException("Only .tsv extension is supported");
-            }
-        }        
+    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable( connection,  tableReference,  fileName, encoding, false,  progress);
     }
     
     /**
@@ -149,7 +166,7 @@ public class TSVDriverFunction implements DriverFunction{
      * @param encoding
      * @throws java.sql.SQLException
      */
-    public void exportFromResultSet(Connection connection, ResultSet res, File fileName, ProgressVisitor progress, String encoding) throws SQLException {
+    public void exportFromResultSet(Connection connection, ResultSet res, File fileName, String encoding, ProgressVisitor progress) throws SQLException {
         Csv csv = new Csv();
         String csvOptions = "charset=UTF-8 fieldSeparator=\t fieldDelimiter=\t";
         if (encoding != null) {
@@ -161,20 +178,42 @@ public class TSVDriverFunction implements DriverFunction{
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
+        importFile( connection,  tableReference,  fileName,  null,  false,  progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName,
+                           String options, ProgressVisitor progress) throws SQLException, IOException {
+        importFile( connection,  tableReference,  fileName,  options,  false,  progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName,
+                           boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        importFile( connection,  tableReference,  fileName,  null,  deleteTables,  progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         if (FileUtil.isFileImportable(fileName, "tsv")) {
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+            if(deleteTables){
+                Statement stmt = connection.createStatement();
+                stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
+                stmt.close();
+            }
             String table = requestedTable.getTable();
-            
+
             int AVERAGE_NODE_SIZE = 500;
             FileInputStream fis = new FileInputStream(fileName);
             FileChannel fc = fis.getChannel();
             long fileSize = fc.size();
             // Given the file size and an average node file size.
             // Skip how many nodes in order to update progression at a step of 1%
-            long readFileSizeEachNode = Math.max(1, (fileSize / AVERAGE_NODE_SIZE) / 100);            
+            long readFileSizeEachNode = Math.max(1, (fileSize / AVERAGE_NODE_SIZE) / 100);
             int average_row_size = 0;
-            
+
             Csv csv = new Csv();
             csv.setFieldDelimiter('\t');
             csv.setFieldSeparatorRead('\t');
@@ -209,7 +248,7 @@ public class TSVDriverFunction implements DriverFunction{
                     if (progress.isCanceled()) {
                         throw new SQLException("Canceled by user");
                     }
-                    
+
                     for (int i = 0; i < columnCount; i++) {
                         pst.setString(i + 1, reader.getString(i + 1));
                     }
@@ -220,7 +259,7 @@ public class TSVDriverFunction implements DriverFunction{
                         pst.clearBatch();
                         batchSize = 0;
                     }
-                    
+
                     if (average_row_size++ % readFileSizeEachNode == 0) {
                         // Update Progress
                         try {
@@ -237,26 +276,5 @@ public class TSVDriverFunction implements DriverFunction{
                 pst.close();
             }
         }
-    }
-
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           String options) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress);
-    }
-
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
-        if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String table = requestedTable.getTable();
-            Statement stmt = connection.createStatement();
-            stmt.execute("DROP TABLE IF EXISTS " + table);
-            stmt.close();
-        }
-
-        importFile(connection, tableReference, fileName, progress);
     }
 }

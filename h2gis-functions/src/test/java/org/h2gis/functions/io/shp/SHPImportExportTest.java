@@ -757,7 +757,6 @@ public class SHPImportExportTest {
         }
     }
 
-
     @Disabled
     @Test
     public void exportImportPointPostGIS() throws SQLException, IOException {
@@ -780,8 +779,7 @@ public class SHPImportExportTest {
         // Read this shape file to check values
         assertTrue(shpFile.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
-        driver.importFile(con,  "IMPORT_PUNCTUAL", shpFile, new EmptyProgressVisitor(),
-        true);
+        driver.importFile(con,  "IMPORT_PUNCTUAL", shpFile, true, new EmptyProgressVisitor());
         ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_PUNCTUAL;");
         res.next();
         Geometry geom = (Geometry) res.getObject(1);

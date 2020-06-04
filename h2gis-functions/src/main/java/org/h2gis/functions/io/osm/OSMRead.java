@@ -71,16 +71,7 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException 
      */
     public static void readOSM(Connection connection, String fileName, String tableReference, boolean deleteTables) throws FileNotFoundException, SQLException, IOException {
-        if (deleteTables) {
-            OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection), tableReference);
-        }
-        File file = URIUtilities.fileFromString(fileName);
-        if (!file.exists()) {
-            throw new FileNotFoundException("The following file does not exists:\n" + fileName);
-        }
-        OSMDriverFunction osmdf = new OSMDriverFunction();
-        osmdf.importFile(connection, tableReference, file, new EmptyProgressVisitor(), deleteTables);
- 
+        readOSM(connection, fileName, tableReference, null, deleteTables);
     }
 
     /**
@@ -92,7 +83,23 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException 
      */
     public static void readOSM(Connection connection, String fileName, String tableReference) throws FileNotFoundException, SQLException, IOException {
-        readOSM(connection, fileName, tableReference, false);
+        readOSM(connection, fileName, tableReference, null, false);
+    }
+
+    /**
+     *
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param encoding
+     * @param deleteTables
+     * @throws FileNotFoundException
+     * @throws SQLException
+     * @throws IOException
+     */
+    public static void readOSM(Connection connection, String fileName, String tableReference, String encoding, boolean deleteTables) throws FileNotFoundException, SQLException, IOException {
+        OSMDriverFunction osmdf = new OSMDriverFunction();
+        osmdf.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), encoding, deleteTables,new EmptyProgressVisitor());
     }
 
     /**
@@ -106,7 +113,24 @@ public class OSMRead extends AbstractFunction implements ScalarFunction {
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readOSM(connection, fileName, tableName);
+            readOSM(connection, fileName, tableName, null,false);
+        } else {
+            throw new SQLException("The file name contains unsupported characters");
+        }
+    }
+
+    /**
+     *
+     * @param connection
+     * @param fileName
+     * @throws FileNotFoundException
+     * @throws SQLException
+     */
+    public static void readOSM(Connection connection, String fileName, boolean deleteTable) throws FileNotFoundException, SQLException, IOException {
+        final String name = URIUtilities.fileFromString(fileName).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            readOSM(connection, fileName, tableName, null,deleteTable);
         } else {
             throw new SQLException("The file name contains unsupported characters");
         }

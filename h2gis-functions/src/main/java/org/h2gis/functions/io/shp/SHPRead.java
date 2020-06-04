@@ -35,6 +35,7 @@ import java.sql.SQLException;
 /**
  * SQL Function to copy Shape File data into a Table.
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
 public class SHPRead  extends AbstractFunction implements ScalarFunction {
     public SHPRead() {
@@ -50,18 +51,30 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * Copy data from Shape File into a new table in specified connection.
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path of the SHP file or URI
      * @param forceEncoding Use this encoding instead of DBF file header encoding property.
+     * @param fileName File path of the SHP file or URI
      * @throws java.io.IOException
      * @throws java.sql.SQLException
      */
     public static void readShape(Connection connection, String fileName, String tableReference,String forceEncoding) throws IOException, SQLException {
+        readShape(connection, fileName, tableReference, forceEncoding, false);
+    }
+
+    /**
+     * Copy data from Shape File into a new table in specified connection.
+     * @param connection Active connection
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param forceEncoding Use this encoding instead of DBF file header encoding property.
+     * @param fileName File path of the SHP file or URI
+     * @param deleteTables delete existing tables
+     * @throws java.io.IOException
+     * @throws java.sql.SQLException
+     */
+    public static void readShape(Connection connection, String fileName, String tableReference,String forceEncoding, boolean deleteTables) throws IOException, SQLException {
         File file = URIUtilities.fileFromString(fileName);
-        if (FileUtil.isFileImportable(file, "shp")) {
-            SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-            shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(true),
-                    file, new EmptyProgressVisitor(), forceEncoding);
-        }
+        SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
+        shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(true),
+                file,  forceEncoding,deleteTables, new EmptyProgressVisitor());
     }
 
     /**
@@ -73,7 +86,21 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * @throws java.sql.SQLException
      */
     public static void readShape(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        readShape(connection, fileName, tableReference, null);
+        readShape(connection, fileName, tableReference, null, false);
+    }
+
+    public static void readShape(Connection connection, String fileName, String tableReference, boolean deleteTable) throws IOException, SQLException {
+        readShape(connection, fileName, tableReference, null, deleteTable);
+    }
+
+    public static void readShape(Connection connection, String fileName, boolean deleteTable) throws IOException, SQLException {
+        final String name = URIUtilities.fileFromString(fileName).getName();
+        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+            readShape(connection, fileName, tableName, null, deleteTable);
+        } else {
+            throw new SQLException("The file name contains unsupported characters");
+        }
     }
 
     /**
@@ -91,7 +118,7 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readShape(connection, fileName, tableName);
+            readShape(connection, fileName, tableName, null, false);
         } else {
             throw new SQLException("The file name contains unsupported characters");
         }

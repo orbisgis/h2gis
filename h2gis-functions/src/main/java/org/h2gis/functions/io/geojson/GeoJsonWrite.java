@@ -38,7 +38,8 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
 
     
     public GeoJsonWrite(){
-        addProperty(PROP_REMARKS, "Export a spatial table to a GeoJSON 1.0 file.\n As optional argument an encoding value is supported.");
+        addProperty(PROP_REMARKS, "Export a spatial table to a GeoJSON 1.0 file.\n " +
+                "As optional arguments encoding value is supported and delete output file.");
     }
     
     @Override
@@ -57,8 +58,12 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void writeGeoJson(Connection connection, String fileName, String tableReference, String encoding) throws IOException, SQLException {
+        writeGeoJson(connection,tableReference, fileName, encoding,false);
+    }
+
+    public static void writeGeoJson(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFile) throws IOException, SQLException {
         GeoJsonDriverFunction geoJsonDriver = new GeoJsonDriverFunction();
-        geoJsonDriver.exportTable(connection,tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(),encoding);
+        geoJsonDriver.exportTable(connection,tableReference, URIUtilities.fileFromString(fileName), encoding,deleteFile,new EmptyProgressVisitor());
     }
 
     /**
@@ -71,6 +76,10 @@ public class GeoJsonWrite extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void writeGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        writeGeoJson(connection, fileName, tableReference, null);
+        writeGeoJson(connection, fileName, tableReference, null, false);
+    }
+
+    public static void writeGeoJson(Connection connection, String fileName, String tableReference, boolean deleteTable) throws IOException, SQLException {
+        writeGeoJson(connection, fileName, tableReference, null, deleteTable);
     }
 }

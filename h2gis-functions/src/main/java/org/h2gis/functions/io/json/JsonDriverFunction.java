@@ -65,9 +65,20 @@ public class  JsonDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection,tableReference, fileName, progress,null);
+        exportTable( connection,  tableReference,  fileName,  null, false,progress);
     }
-    
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable( connection,  tableReference,  fileName,  null, deleteFiles,progress);
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        JsonWriteDriver jsonDriver = new JsonWriteDriver(connection, deleteFiles);
+        jsonDriver.write(progress,tableReference, fileName, options);
+    }
+
     /**
      * Save a table or a query to JSON file
      * @param connection
@@ -79,9 +90,8 @@ public class  JsonDriverFunction implements DriverFunction{
      * @throws IOException 
      */
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException {
-        JsonWriteDriver jsonDriver = new JsonWriteDriver(connection);
-        jsonDriver.write(progress,tableReference, fileName, encoding);
+    public void exportTable(Connection connection, String tableReference, File fileName, String encoding,ProgressVisitor progress) throws SQLException, IOException {
+        exportTable( connection,  tableReference,  fileName,  encoding, false,progress);
     }
 
     @Override
@@ -91,14 +101,19 @@ public class  JsonDriverFunction implements DriverFunction{
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           String options) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName, String options,ProgressVisitor progress
+                           ) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName,  boolean deleteTables,ProgressVisitor progress
+                          ) throws SQLException, IOException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

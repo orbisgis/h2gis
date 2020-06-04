@@ -36,7 +36,8 @@ import java.sql.SQLException;
 public class JsonWrite extends AbstractFunction implements ScalarFunction{
 
     public JsonWrite(){
-         addProperty(PROP_REMARKS, "Export a table to a JSON file.\n As optional argument an encoding value is supported.");
+         addProperty(PROP_REMARKS, "Export a table to a JSON file." +
+                 "\n As optional arguments  encoding value is supported and delete output file.");
     }
     
     @Override
@@ -55,8 +56,22 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction{
      * @throws SQLException
      */
     public static void writeGeoJson(Connection connection, String fileName, String tableReference, String encoding) throws IOException, SQLException {
-            JsonDriverFunction jsonDriver = new JsonDriverFunction();
-            jsonDriver.exportTable(connection,tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(),encoding);
+        writeGeoJson( connection,  fileName,  tableReference,  encoding, false);
+    }
+
+    /**
+     *
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param encoding
+     * @param deleteFile
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void writeGeoJson(Connection connection, String fileName, String tableReference, String encoding, boolean deleteFile) throws IOException, SQLException {
+        JsonDriverFunction jsonDriver = new JsonDriverFunction();
+        jsonDriver.exportTable(connection,tableReference, URIUtilities.fileFromString(fileName),encoding, deleteFile, new EmptyProgressVisitor());
     }
     
      /**
@@ -69,7 +84,20 @@ public class JsonWrite extends AbstractFunction implements ScalarFunction{
      * @throws SQLException
      */
     public static void writeGeoJson(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-          writeGeoJson(connection, fileName, tableReference,null);
+        writeGeoJson( connection,  fileName,  tableReference,  null, false);
+    }
+
+    /**
+     *
+     * @param connection
+     * @param fileName
+     * @param tableReference
+     * @param deleteFile
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void writeGeoJson(Connection connection, String fileName, String tableReference, boolean deleteFile) throws IOException, SQLException {
+        writeGeoJson( connection,  fileName,  tableReference,  null, deleteFile);
     }
     
 }

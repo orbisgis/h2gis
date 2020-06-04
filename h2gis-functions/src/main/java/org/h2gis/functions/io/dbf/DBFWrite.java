@@ -32,26 +32,37 @@ import java.sql.SQLException;
 
 /**
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
 public class DBFWrite  extends AbstractFunction implements ScalarFunction {
 
     public DBFWrite() {
         addProperty(PROP_REMARKS, "Transfer the content of a table into a DBF\n" +
-                "CALL DBFWRITE('FILENAME', 'TABLE'[,'ENCODING']) or CALL DBFWRITE('FILENAME', '(SELECT * FROM TABLE)'[,'ENCODING'])");
+                "CALL DBFWRITE('FILENAME', 'TABLE'[,'ENCODING', true \n(to delete output file if exists)]) or " +
+                "CALL DBFWRITE('FILENAME', '(SELECT * FROM TABLE)'[,'ENCODING', true \n(to delete output file if exists)])");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "exportTable";  //To change body of implemented methods use File | Settings | File Templates.
+        return "exportTable";
     }
 
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
         DBFDriverFunction driverFunction = new DBFDriverFunction();
         driverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
     }
+    public static void exportTable(Connection connection, String fileName, String tableReference, boolean deleteFile) throws IOException, SQLException {
+        DBFDriverFunction driverFunction = new DBFDriverFunction();
+        driverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName),null, deleteFile, new EmptyProgressVisitor());
+    }
 
     public static void exportTable(Connection connection, String fileName, String tableReference,String encoding) throws IOException, SQLException {
         DBFDriverFunction driverFunction = new DBFDriverFunction();
-        driverFunction.exportTable(connection, tableReference, new File(fileName), new EmptyProgressVisitor(), encoding);
+        driverFunction.exportTable(connection, tableReference, new File(fileName), encoding, new EmptyProgressVisitor());
+    }
+
+    public static void exportTable(Connection connection, String fileName, String tableReference,String encoding, boolean deleteFile) throws IOException, SQLException {
+        DBFDriverFunction driverFunction = new DBFDriverFunction();
+        driverFunction.exportTable(connection, tableReference, new File(fileName), encoding, deleteFile,new EmptyProgressVisitor());
     }
 }

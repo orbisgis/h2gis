@@ -92,7 +92,37 @@ public interface DriverFunction {
      */
     void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException;
+    
+      /**
+     * Export the specified table from the specified connection into the specified file.
+     *
+     * @param connection     Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference.
+     * @param fileName       File path to write, if exists it may be replaced.
+     * @param deleteFiles     True to delete the files if exist
+     * @param progress       Progress visitor following the execution.
+     * @throws SQLException Table read error.
+     * @throws IOException  File write error.
+     */
+    void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress)
+            throws SQLException, IOException;
 
+    /**
+     * Export the specified table from the specified connection into the specified file.
+     *
+     * @param connection     Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference.
+     * @param fileName       File path to write, if exists it may be replaced.
+     * @param options        Options to use for the export like encoding, separator ...
+     *                       The options are different from a format to another.
+     * @param deleteFiles     True to delete the files if exist
+     * @param progress       Progress visitor following the execution.
+     * @throws SQLException Table read error.
+     * @throws IOException  File write error.
+     */
+    void exportTable(Connection connection, String tableReference, File fileName,
+                     String options,boolean deleteFiles,ProgressVisitor progress) throws SQLException, IOException;
+    
     /**
      * Export the specified table from the specified connection into the specified file.
      *
@@ -105,8 +135,8 @@ public interface DriverFunction {
      * @throws SQLException Table read error.
      * @throws IOException  File write error.
      */
-    void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                     String options) throws SQLException, IOException;
+    void exportTable(Connection connection, String tableReference, File fileName,
+                     String options,ProgressVisitor progress) throws SQLException, IOException;
 
     /**
      * Import the specified file into the specified table in the specified connection.
@@ -127,14 +157,14 @@ public interface DriverFunction {
      * @param connection     Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference.
      * @param fileName       File path to read.
-     * @param progress       Progress visitor following the execution.
      * @param options        Options to use for the export like encoding, separator ...
      *                       The options are different from a format to another.
+     * @param progress       Progress visitor following the execution.
      * @throws SQLException Table write error.
      * @throws IOException  File read error.
      */
-    void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                    String options) throws SQLException, IOException;
+    void importFile(Connection connection, String tableReference, File fileName, String options, ProgressVisitor progress)
+                     throws SQLException, IOException;
 
     /**
      * Import the specified file into the specified table in the specified connection.
@@ -142,11 +172,29 @@ public interface DriverFunction {
      * @param connection     Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference.
      * @param fileName       File path to read.
-     * @param progress       Progress visitor following the execution.
      * @param deleteTables   True if the existing table used for the import should be deleted, false otherwise.
+     * @param progress       Progress visitor following the execution.
      * @throws SQLException Table write error.
      * @throws IOException  File read error.
      */
-    void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                    boolean deleteTables) throws SQLException, IOException;
+    void importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress
+                    ) throws SQLException, IOException;
+    
+    /**
+     * Import the specified file into the specified table in the specified connection.
+     *
+     * @param connection     Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference.
+     * @param fileName       File path to read.
+     * @param options        Options to use for the export like encoding, separator ...
+     *                       The options are different from a format to another.
+     * @param deleteTables   True if the existing table used for the import should be deleted, false otherwise.
+     * @param progress       Progress visitor following the execution.
+     * @throws SQLException Table write error.
+     * @throws IOException  File read error.
+     */
+    void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress
+                    ) throws SQLException, IOException;
+    
+    
 }

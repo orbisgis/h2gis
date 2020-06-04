@@ -19,6 +19,7 @@
  */
 package org.h2gis.functions.io.geojson;
 
+import com.fasterxml.jackson.core.JsonEncoding;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -31,10 +32,7 @@ import org.locationtech.jts.geom.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.*;
 import java.nio.channels.FileChannel;
 import java.sql.*;
 import java.util.*;
@@ -58,6 +56,8 @@ public class GeoJsonReaderDriver {
     private final File fileName;
     private final Connection connection;
     private static GeometryFactory GF;
+    private final String encoding;
+    private final boolean deleteTable;
     private PreparedStatement preparedStatement = null;
     private JsonFactory jsFactory;
     private int featureCounter = 1;
@@ -88,6 +88,7 @@ public class GeoJsonReaderDriver {
 
     }
     private Set finalGeometryTypes;
+    private JsonEncoding jsonEncoding;
 
     /**
      * Driver to import a GeoJSON file into a spatial table.
@@ -95,9 +96,11 @@ public class GeoJsonReaderDriver {
      * @param connection
      * @param fileName
      */
-    public GeoJsonReaderDriver(Connection connection, File fileName) {
+    public GeoJsonReaderDriver(Connection connection, File fileName, String encoding, boolean deleteTable) {
         this.connection = connection;
         this.fileName = fileName;
+        this.encoding=encoding;
+        this.deleteTable=deleteTable;
     }
 
     /**
@@ -112,6 +115,11 @@ public class GeoJsonReaderDriver {
         if (FileUtil.isFileImportable(fileName, "geojson")) {
             this.isH2 = JDBCUtilities.isH2DataBase(connection);
             this.tableLocation = TableLocation.parse(tableReference, isH2);
+            if(deleteTable){
+                Statement stmt = connection.createStatement();
+                stmt.execute("DROP TABLE IF EXISTS " + tableLocation);
+                stmt.close();
+            }
             if (fileName.length() > 0) {
                 parseGeoJson(progress);
             } else {
@@ -179,8 +187,7 @@ public class GeoJsonReaderDriver {
             nodeCountProgress = 0;
             cachedColumnNames = new LinkedHashMap<>();
             finalGeometryTypes = new HashSet<String>();
-
-            try (JsonParser jp = jsFactory.createParser(fis)) {
+            try (JsonParser jp = jsFactory.createParser( new InputStreamReader(fis, jsonEncoding.getJavaName()))) {
                 jp.nextToken();//START_OBJECT
                 jp.nextToken(); // field_name (type)
                 jp.nextToken(); // value_string (FeatureCollection)
@@ -735,7 +742,15 @@ public class GeoJsonReaderDriver {
     /**
      * Creates the JsonFactory.
      */
-    private void init() {
+    private void init() throws SQLException {
+        jsonEncoding = JsonEncoding.UTF8;
+        if (encoding != null && !encoding.isEmpty()) {
+            try {
+                jsonEncoding = JsonEncoding.valueOf(encoding);
+            } catch (IllegalArgumentException ex) {
+                throw new SQLException("Only UTF-8, UTF-16BE, UTF-16LE, UTF-32BE, UTF-32LE encoding is supported");
+            }
+        }
         jsFactory = new JsonFactory();
         jsFactory.configure(JsonParser.Feature.ALLOW_COMMENTS, true);
         jsFactory.configure(JsonParser.Feature.ALLOW_SINGLE_QUOTES, true);
@@ -1262,7 +1277,7 @@ public class GeoJsonReaderDriver {
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(fileName);
-            try (JsonParser jp = jsFactory.createParser(fis)) {
+            try (JsonParser jp = jsFactory.createParser(new InputStreamReader(fis, jsonEncoding.getJavaName()))) {
                 jp.nextToken();//START_OBJECT
                 jp.nextToken(); // field_name (type)
                 jp.nextToken(); // value_string (FeatureCollection)

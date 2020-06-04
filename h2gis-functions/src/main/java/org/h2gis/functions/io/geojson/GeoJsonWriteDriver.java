@@ -30,6 +30,7 @@ import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.*;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.sql.*;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -82,7 +83,7 @@ public class GeoJsonWriteDriver {
      * @throws IOException
      */
     public void write(ProgressVisitor progress, ResultSet resultSet, File file) throws SQLException, IOException {
-        write(progress, resultSet, file, null);
+        write(progress, resultSet, file, null, false);
     }
 
     
@@ -93,14 +94,18 @@ public class GeoJsonWriteDriver {
      * @param rs input resulset
      * @param fileName the output file
      * @param encoding
+     * @param deleteFile
      * @throws SQLException
      * @throws java.io.IOException
      */
-    public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding) throws SQLException, IOException {
+    public void write(ProgressVisitor progress, ResultSet rs, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
         if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
+            if(deleteFile){
+                Files.deleteIfExists(fileName.toPath());
+            }
             FileOutputStream fos = null;
             JsonEncoding jsonEncoding = JsonEncoding.UTF8;
-            if (encoding != null) {
+            if (encoding != null && !encoding.isEmpty()) {
                 try {
                     jsonEncoding = JsonEncoding.valueOf(encoding);
                 } catch (IllegalArgumentException ex) {
@@ -170,7 +175,7 @@ public class GeoJsonWriteDriver {
      * @throws SQLException
      * @throws java.io.IOException
      */
-    public void write(ProgressVisitor progress, String tableName, File fileName, String encoding) throws SQLException, IOException {
+    public void write(ProgressVisitor progress, String tableName, File fileName, String encoding, boolean deleteFile) throws SQLException, IOException {
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableName);
@@ -178,12 +183,15 @@ public class GeoJsonWriteDriver {
             if (tableName.startsWith("(") && tableName.endsWith(")")) {
                 PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
                 ResultSet resultSet = ps.executeQuery();
-                write(progress, resultSet, fileName, encoding);
+                write(progress, resultSet, fileName, encoding, deleteFile);
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
             if (FileUtil.isExtensionWellFormated(fileName, "geojson")) {
+                if(deleteFile){
+                    Files.deleteIfExists(fileName.toPath());
+                }
                 JsonEncoding jsonEncoding =  JsonEncoding.UTF8;
                 if (encoding != null) {
                     try {

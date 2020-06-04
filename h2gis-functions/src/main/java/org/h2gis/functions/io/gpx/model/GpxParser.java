@@ -25,6 +25,9 @@ import org.locationtech.jts.geom.Point;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
+import java.io.File;
+import java.sql.Connection;
+
 /**
  * Default parser. This class parses GPX 1.1 files and saves them in a
  * file. It set a contentHandler by default which is able to save general
@@ -53,7 +56,8 @@ public class GpxParser extends AbstractGpxParserDefault {
      * Create a new GPX parser and specify what kind of data must be parsed in
      * the GPX file
      */
-    public GpxParser() {
+    public GpxParser(Connection connection, File fileName, String encoding, boolean deleteTable) {
+        super( connection,  fileName,  encoding,  deleteTable);
     }
 
     /**

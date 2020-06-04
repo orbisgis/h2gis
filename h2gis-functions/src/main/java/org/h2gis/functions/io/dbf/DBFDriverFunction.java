@@ -36,6 +36,7 @@ import org.h2gis.utilities.TableLocation;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,22 +51,33 @@ import java.util.regex.Pattern;
 public class DBFDriverFunction implements DriverFunction {
 
     public static String DESCRIPTION = "dBase III format";
-    private static final int BATCH_MAX_SIZE = 100;
+    private static final int BATCH_MAX_SIZE = 200;
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable(connection, tableReference, fileName, progress, null);
+        exportTable(connection, tableReference, fileName,  null,false,progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String encoding) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName,  null, deleteFiles,progress);
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        if (!FileUtil.isExtensionWellFormated(fileName, "dbf")) {
+            throw new SQLException("Only .dbf extension is supported");
+        }
+        if(deleteFiles){
+            Files.deleteIfExists(fileName.toPath());
+        }
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableReference);
         if (matcher.find()) {
             if (tableReference.startsWith("(") && tableReference.endsWith(")")) {
-                if (FileUtil.isExtensionWellFormated(fileName, "dbf")) {
                     PreparedStatement ps = connection.prepareStatement(tableReference, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    JDBCUtilities.attachCancelResultSet(ps, progress);
                     ResultSet rs = ps.executeQuery();
                     int recordCount = 0;
                     rs.last();
@@ -75,8 +87,8 @@ public class DBFDriverFunction implements DriverFunction {
                     ResultSetMetaData resultSetMetaData = rs.getMetaData();
                     ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
                     DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
-                    if (encoding != null) {
-                        header.setEncoding(encoding);
+                    if (options != null && !options.isEmpty()) {
+                        header.setEncoding(options);
                     }
                     header.setNumRecords(recordCount);
                     DBFDriver dbfDriver = new DBFDriver();
@@ -93,19 +105,18 @@ public class DBFDriverFunction implements DriverFunction {
                         }
                     }
                     dbfDriver.close();
-                }
 
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
 
         } else {
-            if (FileUtil.isExtensionWellFormated(fileName, "dbf")) {
-                int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
+               int recordCount = JDBCUtilities.getRowCount(connection, tableReference);
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
                 String tableName = TableLocation.parse(tableReference, isH2).toString(isH2);
                 // Read table content
                 Statement st = connection.createStatement();
+                JDBCUtilities.attachCancelResultSet(st, progress);
                 ProgressVisitor lineProgress = null;
                 if (!(progress instanceof EmptyProgressVisitor)) {
                     try (ResultSet rs = st.executeQuery(String.format("select count(*) from %s", tableName))) {
@@ -119,8 +130,8 @@ public class DBFDriverFunction implements DriverFunction {
                         ResultSetMetaData resultSetMetaData = rs.getMetaData();
                         ArrayList<Integer> columnIndexes = new ArrayList<Integer>();
                         DbaseFileHeader header = dBaseHeaderFromMetaData(resultSetMetaData, columnIndexes);
-                        if (encoding != null) {
-                            header.setEncoding(encoding);
+                        if (options != null&& !options.isEmpty()) {
+                            header.setEncoding(options);
                         }
                         header.setNumRecords(recordCount);
                         DBFDriver dbfDriver = new DBFDriver();
@@ -141,11 +152,12 @@ public class DBFDriverFunction implements DriverFunction {
                 } finally {
                     st.close();
                 }
-            } else {
-                throw new SQLException("Only .dbf extension is supported");
-            }
         }
+    }
 
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName,String encoding, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection, tableReference, fileName,  encoding, false,progress);
     }
 
     @Override
@@ -179,23 +191,42 @@ public class DBFDriverFunction implements DriverFunction {
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress, null);
+        importFile(connection, tableReference, fileName, null, progress);
     }
 
     /**
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
-     * @param progress monitor
      * @param forceFileEncoding File encoding to use, null will use the provided file encoding in file header.
+     * @param progress monitor
      * @throws SQLException Table write error
      * @throws IOException File read error
      */
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,String forceFileEncoding) throws SQLException, IOException {
-        if (FileUtil.isFileImportable(fileName, "dbf")) {
+    public void importFile(Connection connection, String tableReference, File fileName,String forceFileEncoding, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName,forceFileEncoding, false, progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName,
+                           boolean deleteTables,ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName,null, false, progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        if (!FileUtil.isFileImportable(fileName, "dbf")) {
+            if (deleteTables) {
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+                String table = requestedTable.getTable();
+                Statement stmt = connection.createStatement();
+                stmt.execute("DROP TABLE IF EXISTS " + table);
+                stmt.close();
+            }
             DBFDriver dbfDriver = new DBFDriver();
-            dbfDriver.initDriverFromFile(fileName, forceFileEncoding);
+            dbfDriver.initDriverFromFile(fileName, options);
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             String parsedTable = TableLocation.parse(tableReference, isH2).toString(isH2);
             DbaseFileHeader dbfHeader = dbfDriver.getDbaseFileHeader();
@@ -205,7 +236,7 @@ public class DBFDriverFunction implements DriverFunction {
             } else {
                 try {
                     try ( // Build CREATE TABLE sql request
-                        Statement st = connection.createStatement()) {
+                          Statement st = connection.createStatement()) {
                         List<Column> otherCols = new ArrayList<Column>(dbfHeader.getNumFields() + 1);
                         for (int idColumn = 0; idColumn < dbfHeader.getNumFields(); idColumn++) {
                             otherCols.add(new Column(dbfHeader.getFieldName(idColumn), 0));
@@ -219,6 +250,7 @@ public class DBFDriverFunction implements DriverFunction {
                         try (PreparedStatement preparedStatement = connection.prepareStatement(
                                 String.format("INSERT INTO %s VALUES ( %s )", parsedTable,
                                         getQuestionMark(dbfHeader.getNumFields() + 1)))) {
+                            JDBCUtilities.attachCancelResultSet(preparedStatement, progress);
                             long batchSize = 0;
                             for (int rowId = 0; rowId < dbfDriver.getRowCount(); rowId++) {
                                 preparedStatement.setObject(1, rowId + 1);
@@ -253,22 +285,6 @@ public class DBFDriverFunction implements DriverFunction {
                 }
             }
         }
-    }
-
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
-
-        if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String table = requestedTable.getTable();
-            Statement stmt = connection.createStatement();
-            stmt.execute("DROP TABLE IF EXISTS " + table);
-            stmt.close();
-        }
-
-        importFile(connection, tableReference, fileName, progress);
     }
 
     private static class DBFType {

@@ -27,6 +27,7 @@ import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 
 import java.io.*;
+import java.nio.file.Files;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -39,14 +40,16 @@ import java.util.regex.Pattern;
 public class JsonWriteDriver {
     
     private final Connection connection;
+    private final boolean deleteFile;
 
     /**
      * A JSON driver to write a  table to a JSON file.
      *
      * @param connection
      */
-    public JsonWriteDriver(Connection connection) {
+    public JsonWriteDriver(Connection connection, boolean deleteFile) {
         this.connection = connection;
+        this.deleteFile=deleteFile;
     }
     
     /**
@@ -261,6 +264,9 @@ public class JsonWriteDriver {
             }        
         } else {
         if (FileUtil.isExtensionWellFormated(fileName, "json")) {
+            if(deleteFile){
+                Files.deleteIfExists(fileName.toPath());
+            }
         FileOutputStream fos = null;
         try {
             JsonEncoding jsonEncoding = JsonEncoding.UTF8;
