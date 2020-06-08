@@ -3,22 +3,20 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
- * you can redistribute it and/or modify it under the terms of the GNU
- * Lesser General Public License as published by the Free Software Foundation;
- * version 3.0 of the License.
+ * This code is part of the H2GIS project. H2GIS is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation; version 3.0 of
+ * the License.
  *
- * H2GIS is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details <http://www.gnu.org/licenses/>.
  *
  *
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
-
 package org.h2gis.functions.io.tsv;
 
 import org.h2.tools.Csv;
@@ -59,15 +57,14 @@ import java.util.zip.ZipOutputStream;
  * @author Erwan Bocher
  * @author Sylvain PALOMINOS (UBS 2019)
  */
-public class TSVDriverFunction implements DriverFunction{
+public class TSVDriverFunction implements DriverFunction {
 
     public static String DESCRIPTION = "TSV file (Tab Separated Values)";
     private static final int BATCH_MAX_SIZE = 200;
-   
-    
+
     @Override
     public IMPORT_DRIVER_TYPE getImportDriverType() {
-            return IMPORT_DRIVER_TYPE.COPY;
+        return IMPORT_DRIVER_TYPE.COPY;
     }
 
     @Override
@@ -96,12 +93,12 @@ public class TSVDriverFunction implements DriverFunction{
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName, null, false,  progress);
+        exportTable(connection, tableReference, fileName, null, false, progress);
     }
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName, null, deleteFiles,  progress);
+        exportTable(connection, tableReference, fileName, null, deleteFiles, progress);
     }
 
     @Override
@@ -121,43 +118,42 @@ public class TSVDriverFunction implements DriverFunction{
                             exportFromResultSet(connection, st.executeQuery(tableReference), bw, encoding, new EmptyProgressVisitor());
                         }
                     }
-                }else if(FileUtil.isExtensionWellFormated(fileName, "gz")) {
-                        if(deleteFiles){
-                            Files.deleteIfExists(fileName.toPath());
-                        }
-                        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                        TableLocation location = TableLocation.parse(tableReference, isH2);
-                        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                                new GZIPOutputStream(new FileOutputStream(fileName))))) {
-                            try (Statement st = connection.createStatement()) {
-                                JDBCUtilities.attachCancelResultSet(st, progress);
-                                exportFromResultSet(connection, st.executeQuery(tableReference), bw,encoding,new EmptyProgressVisitor());
-                            }
-                        }
-                    }else if(FileUtil.isExtensionWellFormated(fileName, "zip")) {
-                        if(deleteFiles){
-                            Files.deleteIfExists(fileName.toPath());
-                        }
-                        final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                        TableLocation location = TableLocation.parse(tableReference, isH2);
-                        try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
-                                new ZipOutputStream(new FileOutputStream(fileName))))) {
-                            try (Statement st = connection.createStatement()) {
-                                JDBCUtilities.attachCancelResultSet(st, progress);
-                                exportFromResultSet(connection, st.executeQuery(tableReference), bw,encoding,new EmptyProgressVisitor());
-                            }
+                } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+                    if (deleteFiles) {
+                        Files.deleteIfExists(fileName.toPath());
+                    }
+                    final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                    TableLocation location = TableLocation.parse(tableReference, isH2);
+                    try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                            new GZIPOutputStream(new FileOutputStream(fileName))))) {
+                        try (Statement st = connection.createStatement()) {
+                            JDBCUtilities.attachCancelResultSet(st, progress);
+                            exportFromResultSet(connection, st.executeQuery(tableReference), bw, encoding, new EmptyProgressVisitor());
                         }
                     }
-                    else  {
-                        throw new SQLException("Only .tsv, .gz or .zip extensions are supported");
+                } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
+                    if (deleteFiles) {
+                        Files.deleteIfExists(fileName.toPath());
                     }
+                    final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                    TableLocation location = TableLocation.parse(tableReference, isH2);
+                    try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(
+                            new ZipOutputStream(new FileOutputStream(fileName))))) {
+                        try (Statement st = connection.createStatement()) {
+                            JDBCUtilities.attachCancelResultSet(st, progress);
+                            exportFromResultSet(connection, st.executeQuery(tableReference), bw, encoding, new EmptyProgressVisitor());
+                        }
+                    }
+                } else {
+                    throw new SQLException("Only .tsv, .gz or .zip extensions are supported");
+                }
 
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
         } else {
             if (FileUtil.isExtensionWellFormated(fileName, "tsv")) {
-                if(deleteFiles){
+                if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
                 }
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
@@ -168,9 +164,8 @@ public class TSVDriverFunction implements DriverFunction{
                         exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw, encoding, new EmptyProgressVisitor());
                     }
                 }
-            }
-            else if(FileUtil.isExtensionWellFormated(fileName, "gz")) {
-                if(deleteFiles){
+            } else if (FileUtil.isExtensionWellFormated(fileName, "gz")) {
+                if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
                 }
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
@@ -179,11 +174,11 @@ public class TSVDriverFunction implements DriverFunction{
                         new GZIPOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw,encoding,new EmptyProgressVisitor());
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw, encoding, new EmptyProgressVisitor());
                     }
                 }
-            }else if(FileUtil.isExtensionWellFormated(fileName, "zip")) {
-                if(deleteFiles){
+            } else if (FileUtil.isExtensionWellFormated(fileName, "zip")) {
+                if (deleteFiles) {
                     Files.deleteIfExists(fileName.toPath());
                 }
                 final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
@@ -192,11 +187,10 @@ public class TSVDriverFunction implements DriverFunction{
                         new ZipOutputStream(new FileOutputStream(fileName))))) {
                     try (Statement st = connection.createStatement()) {
                         JDBCUtilities.attachCancelResultSet(st, progress);
-                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw,encoding,new EmptyProgressVisitor());
+                        exportFromResultSet(connection, st.executeQuery("SELECT * FROM " + location.toString()), bw, encoding, new EmptyProgressVisitor());
                     }
                 }
-            }
-            else  {
+            } else {
                 throw new SQLException("Only .tsv, .gz or .zip extensions are supported");
             }
         }
@@ -204,20 +198,20 @@ public class TSVDriverFunction implements DriverFunction{
 
     /**
      * Export a table or a query to as TSV file
-     * 
+     *
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
      * @param progress
      * @param encoding
      * @throws SQLException
-     * @throws IOException 
+     * @throws IOException
      */
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException {
-        exportTable( connection,  tableReference,  fileName, encoding, false,  progress);
+        exportTable(connection, tableReference, fileName, encoding, false, progress);
     }
-    
+
     /**
      * Export a resultset to a TSV file
      *
@@ -240,30 +234,30 @@ public class TSVDriverFunction implements DriverFunction{
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException {
-        importFile( connection,  tableReference,  fileName,  null,  false,  progress);
+        importFile(connection, tableReference, fileName, null, false, progress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName,
-                           String options, ProgressVisitor progress) throws SQLException, IOException {
-        importFile( connection,  tableReference,  fileName,  options,  false,  progress);
+            String options, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, options, false, progress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName,
-                           boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
-        importFile( connection,  tableReference,  fileName,  null,  deleteTables,  progress);
+            boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, null, deleteTables, progress);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
         TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-        if (fileName!=null && fileName.getName().toLowerCase().endsWith(".tsv")) {
-            if(!fileName.exists()){
+        if (fileName != null && fileName.getName().toLowerCase().endsWith(".tsv")) {
+            if (!fileName.exists()) {
                 throw new SQLException("The file " + requestedTable + " doesn't exist ");
             }
-            if(deleteTables){
+            if (deleteTables) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
                 stmt.close();
@@ -340,12 +334,11 @@ public class TSVDriverFunction implements DriverFunction{
             } finally {
                 pst.close();
             }
-        }
-        else if (fileName!=null && fileName.getName().toLowerCase().endsWith(".gz")) {
-            if(!fileName.exists()){
+        } else if (fileName != null && fileName.getName().toLowerCase().endsWith(".gz")) {
+            if (!fileName.exists()) {
                 throw new SQLException("The file " + requestedTable + " doesn't exist ");
             }
-            if(deleteTables){
+            if (deleteTables) {
                 Statement stmt = connection.createStatement();
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
                 stmt.close();
@@ -405,8 +398,7 @@ public class TSVDriverFunction implements DriverFunction{
                     pst.close();
                 }
             }
-        }
-        else{
+        } else {
             throw new SQLException("The TSV read driver supports only tsv or gz extensions");
         }
     }
