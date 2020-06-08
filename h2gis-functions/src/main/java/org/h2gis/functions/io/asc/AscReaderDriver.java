@@ -3,26 +3,24 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software;
- * you can redistribute it and/or modify it under the terms of the GNU
- * Lesser General Public License as published by the Free Software Foundation;
- * version 3.0 of the License.
+ * This code is part of the H2GIS project. H2GIS is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation; version 3.0 of
+ * the License.
  *
- * H2GIS is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details <http://www.gnu.org/licenses/>.
  *
  *
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
 package org.h2gis.functions.io.asc;
 
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ProgressVisitor;
-import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 import org.locationtech.jts.geom.Coordinate;
@@ -36,7 +34,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.sql.Types;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 import java.util.zip.GZIPInputStream;
@@ -46,26 +43,27 @@ import java.util.zip.GZIPInputStream;
  *
  * This class is written to directly access the ESRI ascii grid format.
  *
- *  The ASCII grid data file format comprises a few lines of header data followed
- *  by lists of cell values. The header data includes the following keywords and
- *  values:
+ * The ASCII grid data file format comprises a few lines of header data followed
+ * by lists of cell values. The header data includes the following keywords and
+ * values:
  *
- *  ncols : number of columns in the data set.
+ * ncols : number of columns in the data set.
  *
- *  nrows : number of rows in the data set.
+ * nrows : number of rows in the data set.
  *
- *  xllcorner : x-coordinate of the west border of the LowerLeft corner.
+ * xllcorner : x-coordinate of the west border of the LowerLeft corner.
  *
- *  yllcorner : y-coordinate of the south border of the LowerLeft corner.
+ * yllcorner : y-coordinate of the south border of the LowerLeft corner.
  *
- *  cellsize : size of the square cell of the data set.
+ * cellsize : size of the square cell of the data set.
  *
- *  NODATA_value : arbitrary value assigned to unknown cells.
+ * NODATA_value : arbitrary value assigned to unknown cells.
  *
  * @author Nicolas Fortin (Université Gustave Eiffel 2020)
  * @author Erwan Bocher, CNRS, 2020
  */
 public class AscReaderDriver {
+
     private static final int BATCH_MAX_SIZE = 100;
     private static final int BUFFER_SIZE = 16384;
     private boolean as3DPoint = true;
@@ -82,18 +80,20 @@ public class AscReaderDriver {
     private double noData;
     private int zType = 1;
     private boolean deleteTable = false;
-    private String encoding ="UTF-8";
-    private boolean importNodata=false;
+    private String encoding = "UTF-8";
+    private boolean importNodata = false;
 
     /**
-     * @return If true ASC is imported as 3D points cloud, Raster is imported in pixel polygons otherwise.
+     * @return If true ASC is imported as 3D points cloud, Raster is imported in
+     * pixel polygons otherwise.
      */
     public boolean isAs3DPoint() {
         return as3DPoint;
     }
 
     /**
-     * @param as3DPoint If true ASC is imported as 3D points cloud, Raster is imported in pixel polygons otherwise.
+     * @param as3DPoint If true ASC is imported as 3D points cloud, Raster is
+     * imported in pixel polygons otherwise.
      */
     public void setAs3DPoint(boolean as3DPoint) {
         this.as3DPoint = as3DPoint;
@@ -107,21 +107,24 @@ public class AscReaderDriver {
     }
 
     /**
-     * @param extractEnvelope Imported geometries are filtered using this optional envelope. Set Null object for no filtering.
+     * @param extractEnvelope Imported geometries are filtered using this
+     * optional envelope. Set Null object for no filtering.
      */
     public void setExtractEnvelope(Envelope extractEnvelope) {
         this.extractEnvelope = extractEnvelope;
     }
 
     /**
-     * @return Coefficient used for exporting less cells (1 all cells, 2 for size / 2)
+     * @return Coefficient used for exporting less cells (1 all cells, 2 for
+     * size / 2)
      */
     public int getDownScale() {
         return downScale;
     }
 
     /**
-     * @param downScale Coefficient used for exporting less cells (1 all cells, 2 for size / 2)
+     * @param downScale Coefficient used for exporting less cells (1 all cells,
+     * 2 for size / 2)
      */
     public void setDownScale(int downScale) {
         this.downScale = downScale;
@@ -195,10 +198,11 @@ public class AscReaderDriver {
             readFirst = true;
             // XXX
             lastWord = scanner.next();
-            noData= Double.parseDouble(lastWord);
+            noData = Double.parseDouble(lastWord);
 
         }
     }
+
     /**
      * Read asc file
      *
@@ -211,8 +215,8 @@ public class AscReaderDriver {
      * @throws IOException
      */
     public void read(Connection connection, File fileName, ProgressVisitor progress, String tableReference,
-                     int srid) throws SQLException, IOException {
-        if (fileName!=null && fileName.getName().toLowerCase().endsWith(".asc")) {
+            int srid) throws SQLException, IOException {
+        if (fileName != null && fileName.getName().toLowerCase().endsWith(".asc")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
@@ -223,11 +227,10 @@ public class AscReaderDriver {
                 stmt.execute("DROP TABLE IF EXISTS " + requestedTable.toString(isH2));
                 stmt.close();
             }
-            try(FileInputStream inputStream = new FileInputStream(fileName)) {
+            try (FileInputStream inputStream = new FileInputStream(fileName)) {
                 readAsc(connection, inputStream, progress, requestedTable, isH2, srid);
             }
-        }
-        else if (fileName!=null && fileName.getName().toLowerCase().endsWith(".gz")) {
+        } else if (fileName != null && fileName.getName().toLowerCase().endsWith(".gz")) {
             if (!fileName.exists()) {
                 throw new SQLException("The file " + tableReference + " doesn't exist ");
             }
@@ -240,14 +243,14 @@ public class AscReaderDriver {
             }
             FileInputStream fis = new FileInputStream(fileName);
             readAsc(connection, new GZIPInputStream(fis), progress, requestedTable, isH2, srid);
-        }
-        else{
+        } else {
             throw new SQLException("The asc read driver supports only asc or gz extensions");
         }
     }
 
     /**
      * Read the ascii file from inpustream
+     *
      * @param connection
      * @param inputStream
      * @param progress
@@ -257,9 +260,9 @@ public class AscReaderDriver {
      * @throws UnsupportedEncodingException
      * @throws SQLException
      */
-    private void readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, TableLocation requestedTable,boolean isH2,
-                    int srid) throws UnsupportedEncodingException, SQLException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream,BUFFER_SIZE), encoding));
+    private void readAsc(Connection connection, InputStream inputStream, ProgressVisitor progress, TableLocation requestedTable, boolean isH2,
+            int srid) throws UnsupportedEncodingException, SQLException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(new BufferedInputStream(inputStream, BUFFER_SIZE), encoding));
         try {
             Scanner scanner = new Scanner(reader);
             // Read HEADER
@@ -269,12 +272,12 @@ public class AscReaderDriver {
             PreparedStatement preparedStatement;
             if (as3DPoint) {
                 if (zType == 1) {
-                    st.execute("CREATE TABLE " + requestedTable.toString(isH2)+"(PK SERIAL NOT NULL, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer," + " CONSTRAINT ASC_PK PRIMARY KEY (PK))");
+                    st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL NOT NULL, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z integer," + " CONSTRAINT ASC_PK PRIMARY KEY (PK))");
                 } else {
                     st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL NOT NULL, THE_GEOM GEOMETRY(POINTZ, " + srid + "), Z double precision," + " CONSTRAINT ASC_PK PRIMARY KEY (PK))");
                 }
-                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(isH2) +
-                        "(the_geom, Z) VALUES (?, ?)");
+                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(isH2)
+                        + "(the_geom, Z) VALUES (?, ?)");
             } else {
                 if (zType == 1) {
                     st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL NOT NULL, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z integer, " + " CONSTRAINT ASC_PK PRIMARY KEY (PK))");
@@ -282,8 +285,8 @@ public class AscReaderDriver {
                 } else {
                     st.execute("CREATE TABLE " + requestedTable.toString(isH2) + "(PK SERIAL NOT NULL, THE_GEOM GEOMETRY(POLYGONZ, " + srid + "),Z double precision, " + " CONSTRAINT ASC_PK PRIMARY KEY (PK))");
                 }
-                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(isH2) +
-                        "(the_geom, Z) VALUES (?, ?)");
+                preparedStatement = connection.prepareStatement("INSERT INTO " + requestedTable.toString(isH2)
+                        + "(the_geom, Z) VALUES (?, ?)");
             }
             // Read data
             GeometryFactory factory = new GeometryFactory();
@@ -318,12 +321,12 @@ public class AscReaderDriver {
                         if (as3DPoint) {
                             Point cell = factory.createPoint(new Coordinate(x + cellSize / 2, y - cellSize / 2, z));
                             cell.setSRID(srid);
-                            if (Math.abs(noData - z)!=0) {
+                            if (Math.abs(noData - z) != 0) {
                                 preparedStatement.setObject(1, cell);
                                 preparedStatement.setObject(2, z);
                                 preparedStatement.addBatch();
                                 batchSize++;
-                            } else if(importNodata) {
+                            } else if (importNodata) {
                                 preparedStatement.setObject(1, cell);
                                 preparedStatement.setObject(2, noData);
                                 preparedStatement.addBatch();
@@ -332,12 +335,12 @@ public class AscReaderDriver {
                         } else {
                             Polygon cell = factory.createPolygon(new Coordinate[]{new Coordinate(x, y, z), new Coordinate(x, y - cellSize * downScale, z), new Coordinate(x + cellSize * downScale, y - cellSize * downScale, z), new Coordinate(x + cellSize * downScale, y, z), new Coordinate(x, y, z)});
                             cell.setSRID(srid);
-                            if (Math.abs(noData - z)!=0) {
+                            if (Math.abs(noData - z) != 0) {
                                 preparedStatement.setObject(1, cell);
                                 preparedStatement.setObject(2, z);
                                 preparedStatement.addBatch();
                                 batchSize++;
-                            } else if(importNodata){
+                            } else if (importNodata) {
                                 preparedStatement.setObject(1, cell);
                                 preparedStatement.setObject(2, noData);
                                 preparedStatement.addBatch();
@@ -365,17 +368,17 @@ public class AscReaderDriver {
     }
 
     /**
-     * Use to set the z conversion type
-     * 1 = integer
-     * 2 = double
+     * Use to set the z conversion type 1 = integer 2 = double
+     *
      * @param zType
      */
     public void setZType(int zType) {
-        this.zType =zType;
+        this.zType = zType;
     }
 
     /**
      * Set true to delete the input table if exists
+     *
      * @param deleteTable
      */
     public void setDeleteTable(boolean deleteTable) {
@@ -384,18 +387,19 @@ public class AscReaderDriver {
 
     /**
      * Set encoding
+     *
      * @param encoding
      */
     public void setEncoding(String encoding) {
-        this.encoding=encoding;
+        this.encoding = encoding;
     }
 
     /**
-     * Set to true if nodata must be imported.
-     * Default is false
+     * Set to true if nodata must be imported. Default is false
+     *
      * @param importNodata
      */
     public void setImportNodata(boolean importNodata) {
-        this.importNodata=importNodata;
+        this.importNodata = importNodata;
     }
 }

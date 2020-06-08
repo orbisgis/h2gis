@@ -3,22 +3,20 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software;
- * you can redistribute it and/or modify it under the terms of the GNU
- * Lesser General Public License as published by the Free Software Foundation;
- * version 3.0 of the License.
+ * This code is part of the H2GIS project. H2GIS is free software; you can
+ * redistribute it and/or modify it under the terms of the GNU Lesser General
+ * Public License as published by the Free Software Foundation; version 3.0 of
+ * the License.
  *
- * H2GIS is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE. See the GNU Lesser General Public License
- * for more details <http://www.gnu.org/licenses/>.
+ * H2GIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU Lesser General Public License for more
+ * details <http://www.gnu.org/licenses/>.
  *
  *
  * For more information, please consult: <http://www.h2gis.org/>
  * or contact directly: info_at_h2gis.org
  */
-
-
 package org.h2gis.functions.io.asc;
 
 import org.h2.value.*;
@@ -33,41 +31,40 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * SQL function to import ESRI ASCII Raster file as polygons
- * table.
+ * SQL function to import ESRI ASCII Raster file as polygons table.
  *
  * @author Nicolas Fortin (Université Gustave Eiffel 2020)
  */
 public class AscRead extends AbstractFunction implements ScalarFunction {
 
     public AscRead() {
-        addProperty(PROP_REMARKS, "Import ESRI ASCII Raster file as point geometries\n" +
-                "Pixels are converted into PointZ with Z as the pixel value\n"+
-                "CALL ASCREAD('dem.asc');\n" +
-                "CALL ASCREAD('dem.asc',TYPE);\n" +
-                "TYPE of z data 1 for integer, 2 for double (default 2)\n"+
-                "CALL ASCREAD('dem.asc', 'MYTABLE');\n" +
-                "CALL ASCREAD('dem.asc', 'MYTABLE', TYPE);\n" +
-                "TYPE of z data 1 for integer, 2 for double (default 2)"+
-                "CALL ASCREAD('dem.asc', 'MYTABLE', GEOM_FILTER, DOWNSCALE_INT, AS_POINTS);\n" +
-                "GEOM_FILTER - Extract only pixels that intersects the provided geometry envelope, null to disable filter\n" +
-                "DOWNSCALE_INT - Coefficient used for exporting less cells (1 all cells, 2 for size / 2)\n" +
-                "AS_POINTS - If true pixels are converted to polygons. (default false return points)\n" +
-                "CALL ASCREAD('dem.asc', 'MYTABLE', GEOM_FILTER, DOWNSCALE_INT, AS_POINTS);\n");
+        addProperty(PROP_REMARKS, "Import ESRI ASCII Raster file as point geometries\n"
+                + "Pixels are converted into PointZ with Z as the pixel value\n"
+                + "CALL ASCREAD('dem.asc');\n"
+                + "CALL ASCREAD('dem.asc',TYPE);\n"
+                + "TYPE of z data 1 for integer, 2 for double (default 2)\n"
+                + "CALL ASCREAD('dem.asc', 'MYTABLE');\n"
+                + "CALL ASCREAD('dem.asc', 'MYTABLE', TYPE);\n"
+                + "TYPE of z data 1 for integer, 2 for double (default 2)"
+                + "CALL ASCREAD('dem.asc', 'MYTABLE', GEOM_FILTER, DOWNSCALE_INT, AS_POINTS);\n"
+                + "GEOM_FILTER - Extract only pixels that intersects the provided geometry envelope, null to disable filter\n"
+                + "DOWNSCALE_INT - Coefficient used for exporting less cells (1 all cells, 2 for size / 2)\n"
+                + "AS_POINTS - If true pixels are converted to polygons. (default false return points)\n"
+                + "CALL ASCREAD('dem.asc', 'MYTABLE', GEOM_FILTER, DOWNSCALE_INT, AS_POINTS);\n");
     }
 
     @Override
     public String getJavaStaticMethod() {
         return "readAscii";
     }
-    
+
     /**
      * Read the ASCII file.
      *
      * @param connection
      * @param fileName
      * @throws IOException
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static void readAscii(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
@@ -81,50 +78,50 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
 
     /**
      * Read the ASCII file.
-     * 
+     *
      * @param connection
      * @param fileName
      * @param option
      * @throws IOException
-     * @throws SQLException 
+     * @throws SQLException
      */
     public static void readAscii(Connection connection, String fileName, Value option) throws IOException, SQLException {
-        int zType =2;
-        String tableReference =  null;
-        boolean deletTable =  false;
-        Geometry envelope=null;
-        if(option instanceof ValueInteger){
+        int zType = 2;
+        String tableReference = null;
+        boolean deletTable = false;
+        Geometry envelope = null;
+        if (option instanceof ValueInteger) {
             zType = option.getInt();
-            if(zType!=1 || zType!=2){
+            if (zType != 1 || zType != 2) {
                 throw new SQLException("Please use 1 for integer or 2 for double conversion");
             }
-        }else if (option instanceof ValueVarchar){
+        } else if (option instanceof ValueVarchar) {
             tableReference = option.getString();
-        } else if (option instanceof ValueBoolean){
+        } else if (option instanceof ValueBoolean) {
             deletTable = option.getBoolean();
-        }else if (option instanceof ValueGeometry){
+        } else if (option instanceof ValueGeometry) {
             envelope = ((ValueGeometry) option).getGeometry();
-        }
-        else if (!(option instanceof ValueNull)){
+        } else if (!(option instanceof ValueNull)) {
             throw new SQLException("Supported optional parameter is integer for z type or varchar for table name");
         }
-        if(tableReference==null){
-        final String name = URIUtilities.fileFromString(fileName).getName();
-        String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
-        if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            tableReference = tableName;
-        } else {
-            throw new SQLException("The file name contains unsupported characters");
-        }}
+        if (tableReference == null) {
+            final String name = URIUtilities.fileFromString(fileName).getName();
+            String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
+            if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
+                tableReference = tableName;
+            } else {
+                throw new SQLException("The file name contains unsupported characters");
+            }
+        }
         AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
-        if(envelope != null && !envelope.isEmpty()) {
+        if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
         }
 
         ascReaderDriver.setZType(zType);
         ascReaderDriver.setDeleteTable(deletTable);
-        ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(),ascReaderDriver);
+        ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
     }
 
     /**
@@ -138,80 +135,87 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
      * @throws SQLException
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
-        int zType =2;
-        boolean deletTable =  false;
-        Geometry envelope=null;
-        if(option instanceof ValueInteger){
+        int zType = 2;
+        boolean deletTable = false;
+        Geometry envelope = null;
+        if (option instanceof ValueInteger) {
             zType = option.getInt();
-            if(zType!=1 || zType!=2){
+            if (zType != 1 || zType != 2) {
                 throw new SQLException("Please use 1 for integer or 2 for double conversion");
             }
-        } else if (option instanceof ValueBoolean){
+        } else if (option instanceof ValueBoolean) {
             deletTable = option.getBoolean();
-        }else if (option instanceof ValueGeometry){
+        } else if (option instanceof ValueGeometry) {
             envelope = ((ValueGeometry) option).getGeometry();
-        }
-        else if (!(option instanceof ValueNull)){
+        } else if (!(option instanceof ValueNull)) {
             throw new SQLException("Supported optional parameter is integer for z type or varchar for table name");
         }
         AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
-        if(envelope != null && !envelope.isEmpty()) {
+        if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
         }
         ascReaderDriver.setAs3DPoint(true);
         ascReaderDriver.setZType(zType);
         ascReaderDriver.setDeleteTable(deletTable);
-        ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(),ascReaderDriver);
+        ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
     }
 
     /**
      * Import a small subset of ASC file.
+     *
      * @param connection
      * @param fileName
      * @param tableReference
-     * @param envelope Extract only pixels that intersects the provided geometry envelope, null to disable filter
-     * @param downScale Coefficient used for exporting less cells (1 all cells, 2 for size / 2)
-     * @param extractAsPolygons If true pixels are converted to polygon. (default false)
+     * @param envelope Extract only pixels that intersects the provided geometry
+     * envelope, null to disable filter
+     * @param downScale Coefficient used for exporting less cells (1 all cells,
+     * 2 for size / 2)
+     * @param extractAsPolygons If true pixels are converted to polygon.
+     * (default false)
      * @throws IOException
      * @throws SQLException
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons) throws IOException, SQLException {
         AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
-        if(envelope != null && !envelope.isEmpty()) {
+        if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
         }
-        if(downScale > 1) {
+        if (downScale > 1) {
             ascReaderDriver.setDownScale(downScale);
         }
-        if(!extractAsPolygons){
-        ascReaderDriver.setAs3DPoint(extractAsPolygons);
+        if (!extractAsPolygons) {
+            ascReaderDriver.setAs3DPoint(extractAsPolygons);
         }
         ascReaderFunction.importFile(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor(), ascReaderDriver);
     }
 
     /**
      * Import a small subset of ASC file.
+     *
      * @param connection
      * @param fileName
      * @param tableReference
-     * @param envelope Extract only pixels that intersects the provided geometry envelope, null to disable filter
-     * @param downScale Coefficient used for exporting less cells (1 all cells, 2 for size / 2)
-     * @param extractAsPolygons If true pixels are converted to polygon. (default false)
+     * @param envelope Extract only pixels that intersects the provided geometry
+     * envelope, null to disable filter
+     * @param downScale Coefficient used for exporting less cells (1 all cells,
+     * 2 for size / 2)
+     * @param extractAsPolygons If true pixels are converted to polygon.
+     * (default false)
      * @throws IOException
      * @throws SQLException
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons, boolean deleteTable) throws IOException, SQLException {
         AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
-        if(envelope != null && !envelope.isEmpty()) {
+        if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
         }
-        if(downScale > 1) {
+        if (downScale > 1) {
             ascReaderDriver.setDownScale(downScale);
         }
-        if(!extractAsPolygons){
+        if (!extractAsPolygons) {
             ascReaderDriver.setAs3DPoint(extractAsPolygons);
         }
         ascReaderDriver.setDeleteTable(deleteTable);
@@ -221,25 +225,29 @@ public class AscRead extends AbstractFunction implements ScalarFunction {
 
     /**
      * Import a small subset of ASC file.
+     *
      * @param connection
      * @param fileName
      * @param tableReference
-     * @param envelope Extract only pixels that intersects the provided geometry envelope, null to disable filter
-     * @param downScale Coefficient used for exporting less cells (1 all cells, 2 for size / 2)
-     * @param extractAsPolygons If true pixels are converted to polygon. (default false)
+     * @param envelope Extract only pixels that intersects the provided geometry
+     * envelope, null to disable filter
+     * @param downScale Coefficient used for exporting less cells (1 all cells,
+     * 2 for size / 2)
+     * @param extractAsPolygons If true pixels are converted to polygon.
+     * (default false)
      * @throws IOException
      * @throws SQLException
      */
     public static void readAscii(Connection connection, String fileName, String tableReference, Geometry envelope, int downScale, boolean extractAsPolygons, boolean deleteTable, String encoding, int zType) throws IOException, SQLException {
         AscDriverFunction ascReaderFunction = new AscDriverFunction();
         AscReaderDriver ascReaderDriver = new AscReaderDriver();
-        if(envelope != null && !envelope.isEmpty()) {
+        if (envelope != null && !envelope.isEmpty()) {
             ascReaderDriver.setExtractEnvelope(envelope.getEnvelopeInternal());
         }
-        if(downScale > 1) {
+        if (downScale > 1) {
             ascReaderDriver.setDownScale(downScale);
         }
-        if(!extractAsPolygons){
+        if (!extractAsPolygons) {
             ascReaderDriver.setAs3DPoint(extractAsPolygons);
         }
         ascReaderDriver.setEncoding(encoding);
