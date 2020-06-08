@@ -453,6 +453,28 @@ public class SHPImportExportTest {
     }
 
     @Test
+    public void exportImportOptions() throws SQLException, IOException {
+        Statement stat = connection.createStatement();
+        File shpFile = new File("target/lineal_export.shp");
+        stat.execute("DROP TABLE IF EXISTS LINEAL");
+        stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING Z))");
+        stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 6 0)')");
+        // Create a shape file using table area
+        stat.execute("CALL SHPWrite('target/lineal_export.shp', 'LINEAL', true)");
+        // Read this shape file to check values
+        assertTrue(shpFile.exists());
+        stat.execute("CALL SHPRead('target/lineal_export.shp', 'IMPORT_LINEAL', true)");
+        ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_LINEAL;");
+        res.next();
+        Geometry geom = (Geometry) res.getObject(1);
+        Coordinate[] coords = geom.getCoordinates();
+        assertEquals(coords[0].z, 5, 10E-1);
+        //Since the 'NaN' DOUBLE values for Z coordinates is invalid in a shapefile, it is converted to '0.0'.
+        assertEquals(coords[1].z, 0, 10E-1);
+        res.close();
+    }
+
+    @Test
     public void exportTableWithBadExtensionName() throws SQLException, IOException {
         assertThrows(SQLException.class, ()-> {
             Statement stat = connection.createStatement();
@@ -757,7 +779,6 @@ public class SHPImportExportTest {
         }
     }
 
-
     @Disabled
     @Test
     public void exportImportPointPostGIS() throws SQLException, IOException {
@@ -780,8 +801,7 @@ public class SHPImportExportTest {
         // Read this shape file to check values
         assertTrue(shpFile.exists());
         stat.execute("DROP TABLE IF EXISTS IMPORT_PUNCTUAL;");
-        driver.importFile(con,  "IMPORT_PUNCTUAL", shpFile, new EmptyProgressVisitor(),
-        true);
+        driver.importFile(con,  "IMPORT_PUNCTUAL", shpFile, true, new EmptyProgressVisitor());
         ResultSet res = stat.executeQuery("SELECT THE_GEOM FROM IMPORT_PUNCTUAL;");
         res.next();
         Geometry geom = (Geometry) res.getObject(1);

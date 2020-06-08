@@ -3,7 +3,7 @@
  * <http://www.h2database.com>. H2GIS is developed by CNRS
  * <http://www.cnrs.fr/>.
  *
- * This code is part of the H2GIS project. H2GIS is free software; 
+ * This code is part of the H2GIS project. H2GIS is free software;
  * you can redistribute it and/or modify it under the terms of the GNU
  * Lesser General Public License as published by the Free Software Foundation;
  * version 3.0 of the License.
@@ -28,6 +28,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import java.io.*;
+import java.nio.file.Files;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,48 +41,77 @@ import org.h2gis.utilities.Tuple;
 
 /**
  * KML writer
- * 
+ *
  * @author Erwan Bocher
  */
 public class KMLWriterDriver {
-    
+
     private final Connection connection;
+    private final File fileName;
+    private final String encoding;
+    private final boolean deleteFile;
     private HashMap<Integer, String> kmlFields;
     private int columnCount = -1;
     private String tableName;
 
-    public KMLWriterDriver(Connection connection) {
+    public KMLWriterDriver(Connection connection, File fileName, String encoding, boolean deleteFile) {
         this.connection = connection;
+        this.fileName = fileName;
+        this.encoding=encoding;
+        this.deleteFile=deleteFile;
     }
 
     /**
      * Write spatial table or sql query to kml or kmz file format.
      *
+     * @param tableName the name of table or a select query
      * @param progress progress monitor
-     * @param tableName the name of table or a select query 
-     * @param fileName
-     * @param encoding
      * @throws SQLException
      * @throws java.io.IOException
      */
-    public void write(ProgressVisitor progress, String tableName, File fileName, String encoding) throws SQLException, IOException {        
+    public void write( String tableName, ProgressVisitor progress) throws SQLException, IOException {
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableName);
         if (matcher.find()) {
             if (tableName.startsWith("(") && tableName.endsWith(")")) {
-                PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
-                ResultSet resultSet = ps.executeQuery();
-                Tuple<String, Integer> spatialFieldName = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);                
-                int rowCount = 0;
-                int type = resultSet.getType();
-                if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
-                    resultSet.last();
-                    rowCount = resultSet.getRow();
-                    resultSet.beforeFirst();
-                }  
-                this.tableName =  "QUERY_"+System.currentTimeMillis();
-                write(progress.subProcess(rowCount), resultSet, spatialFieldName.first(), fileName, encoding);
+                if (FileUtil.isExtensionWellFormated(fileName, "kml")) {
+                    if(deleteFile){
+                        Files.deleteIfExists(fileName.toPath());
+                    }
+                    PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet resultSet = ps.executeQuery();
+                    Tuple<String, Integer> spatialFieldName = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);
+                    int rowCount = 0;
+                    int type = resultSet.getType();
+                    if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
+                        resultSet.last();
+                        rowCount = resultSet.getRow();
+                        resultSet.beforeFirst();
+                    }
+                    this.tableName =  "QUERY_"+System.currentTimeMillis();
+                    writeKML(progress.subProcess(rowCount), fileName,resultSet,  spatialFieldName.first(),  encoding);
+                }else if (FileUtil.isExtensionWellFormated(fileName, "kmz")) {
+                    if(deleteFile){
+                        Files.deleteIfExists(fileName.toPath());
+                    }
+                    PreparedStatement ps = connection.prepareStatement(tableName, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                    ResultSet resultSet = ps.executeQuery();
+                    Tuple<String, Integer> spatialFieldName = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);
+                    int rowCount = 0;
+                    int type = resultSet.getType();
+                    if (type == ResultSet.TYPE_SCROLL_INSENSITIVE || type == ResultSet.TYPE_SCROLL_SENSITIVE) {
+                        resultSet.last();
+                        rowCount = resultSet.getRow();
+                        resultSet.beforeFirst();
+                    }
+                    this.tableName =  "QUERY_"+System.currentTimeMillis();
+                    String name = fileName.getName();
+                    int pos = name.lastIndexOf(".");
+                    writeKMZ(progress.subProcess(rowCount), fileName, name.substring(0, pos) + ".kmz", resultSet,  spatialFieldName.first(),encoding);
+                } else {
+                    throw new SQLException("Please use the extensions .kml or kmz.");
+                }
             } else {
                 throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
             }
@@ -92,32 +122,25 @@ public class KMLWriterDriver {
                 // Read Geometry Index and type
                 Tuple<String, Integer> spatialFieldName = GeometryTableUtilities.getFirstGeometryColumnNameAndIndex(resultSet);
                 this.tableName=tableName;
-                write(progress, resultSet,spatialFieldName.first(), fileName, encoding);
+            if (FileUtil.isExtensionWellFormated(fileName, "kml")) {
+                if(deleteFile){
+                    Files.deleteIfExists(fileName.toPath());
+                }
+                writeKML(progress, fileName,resultSet,  spatialFieldName.first(),  encoding);
+            }else if (FileUtil.isExtensionWellFormated(fileName, "kmz")) {
+                if(deleteFile){
+                    Files.deleteIfExists(fileName.toPath());
+                }
+                String name = fileName.getName();
+                int pos = name.lastIndexOf(".");
+                writeKMZ(progress, fileName, name.substring(0, pos) + ".kmz", resultSet,  spatialFieldName.first(),encoding);
+            }else {
+            throw new SQLException("The select query must be enclosed in parenthesis: '(SELECT * FROM ORDERS)'.");
+            }
+
         }
     }
-    
-    /**
-     * Write a resulset to a kml file
-     *
-     * @param progress
-     * @param rs input resulset
-     * @param geomField
-     * @param fileName the output file
-     * @param encoding
-     * @throws SQLException
-     * @throws java.io.IOException
-     */
-    public void write(ProgressVisitor progress, ResultSet rs, String geomField, File fileName, String encoding) throws SQLException, IOException {
-        if (FileUtil.isExtensionWellFormated(fileName, "kml")) {
-            writeKML(progress, fileName,rs, geomField,  encoding);
-        } else if (FileUtil.isExtensionWellFormated(fileName, "kmz")) {
-            String name = fileName.getName();
-            int pos = name.lastIndexOf(".");
-            writeKMZ(progress, fileName, name.substring(0, pos) + ".kml", rs, geomField,encoding);
-        } else {
-            throw new SQLException("Please use the extensions .kml or kmz.");
-        }
-    }
+
 
     /**
      * Write the spatial table to a KML format
@@ -190,7 +213,7 @@ public class KMLWriterDriver {
      * @param outputStream
      * @throws SQLException
      */
-    private void writeKMLDocument(ProgressVisitor progress, OutputStream outputStream, ResultSet rs, String geomField,  String encoding) throws SQLException {       
+    private void writeKMLDocument(ProgressVisitor progress, OutputStream outputStream, ResultSet rs, String geomField,  String encoding) throws SQLException {
         try {
             final XMLOutputFactory streamWriterFactory = XMLOutputFactory.newFactory();
             streamWriterFactory.setProperty("escapeCharacters", false);
@@ -211,7 +234,7 @@ public class KMLWriterDriver {
             xmlOut.writeStartElement("Document");
 
              try {
-                ResultSetMetaData resultSetMetaData = rs.getMetaData();               
+                ResultSetMetaData resultSetMetaData = rs.getMetaData();
                 writeSchema(xmlOut, resultSetMetaData);
                 xmlOut.writeStartElement("Folder");
                 xmlOut.writeStartElement("name");
@@ -250,7 +273,7 @@ public class KMLWriterDriver {
      * </Schema>
      *
      * @param xmlOut
-     * @param tableName
+     * @param metaData
      */
     private void writeSchema(XMLStreamWriter xmlOut, ResultSetMetaData metaData) throws XMLStreamException, SQLException {
         columnCount = metaData.getColumnCount();

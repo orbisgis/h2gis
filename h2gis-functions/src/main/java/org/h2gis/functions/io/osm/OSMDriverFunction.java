@@ -78,21 +78,31 @@ public class OSMDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                            String options) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName,
+                            String options, ProgressVisitor progress) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress, false);
+        importFile(connection, tableReference, fileName, false, progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           String options) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress, false);
+    public void importFile(Connection connection, String tableReference, File fileName,String options, ProgressVisitor progress
+                           ) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName,false, progress);
     }
 
     /**
@@ -106,16 +116,15 @@ public class OSMDriverFunction implements DriverFunction {
      * @throws IOException File read error
      */
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress, boolean deleteTables) throws SQLException, IOException {
-        if(fileName == null || !(fileName.getName().endsWith(".osm") || fileName.getName().endsWith("osm.gz") || fileName.getName().endsWith("osm.bz2"))) {
-            throw new IOException(new IllegalArgumentException("This driver handle only .osm, .osm.gz and .osm.bz2 files"));
-        }
-        if(deleteTables){
-            OSMTablesFactory.dropOSMTables(connection, JDBCUtilities.isH2DataBase(connection), tableReference);
-        }
-        OSMParser osmp = new OSMParser();
-        osmp.read(connection, tableReference, fileName, progress);
-        }
+    public void importFile(Connection connection, String tableReference, File fileName, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        importFile( connection,  tableReference,  fileName,  null,  deleteTables,  progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        OSMParser osmp = new OSMParser(connection, fileName, options, deleteTables);
+        osmp.read(tableReference, progress);
+    }
 
     @Override
     public String[] getImportFormats() {

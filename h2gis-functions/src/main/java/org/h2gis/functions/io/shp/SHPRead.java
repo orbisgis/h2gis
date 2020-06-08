@@ -20,6 +20,10 @@
 
 package org.h2gis.functions.io.shp;
 
+import org.h2.value.Value;
+import org.h2.value.ValueBoolean;
+import org.h2.value.ValueNull;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
@@ -35,45 +39,86 @@ import java.sql.SQLException;
 /**
  * SQL Function to copy Shape File data into a Table.
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
 public class SHPRead  extends AbstractFunction implements ScalarFunction {
     public SHPRead() {
-        addProperty(PROP_REMARKS, "Read a shape file and copy the content in the specified table.");
+        addProperty(PROP_REMARKS, "Read a shape file and copy the content in the specified table."+
+                "\n SHPRead(..."+
+                "\n Supported arguments :" +
+                "\n path of the file" +
+                "\n path of the file, table name"+
+                "\n path of the file, true for delete the table with the same file name"+
+                "\n path of the file, table name, true to delete the table name"+
+                "\n path of the file, table name, true to delete the table name"+
+                "\n path of the file, table name, encoding chartset"+
+                "\n path of the file, table name, encoding chartset, true to delete the table name");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "readShape";
+        return "importTable";
     }
 
     /**
      * Copy data from Shape File into a new table in specified connection.
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
+     * @param option Could be string file encoding charset or boolean value to delete the existing table
      * @param fileName File path of the SHP file or URI
-     * @param forceEncoding Use this encoding instead of DBF file header encoding property.
      * @throws java.io.IOException
      * @throws java.sql.SQLException
      */
-    public static void readShape(Connection connection, String fileName, String tableReference,String forceEncoding) throws IOException, SQLException {
-        File file = URIUtilities.fileFromString(fileName);
-        if (FileUtil.isFileImportable(file, "shp")) {
-            SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
-            shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(true),
-                    file, new EmptyProgressVisitor(), forceEncoding);
+    public static void importTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
+        String encoding =null;
+        boolean deleteTable =  false;
+        if(option instanceof ValueBoolean){
+            deleteTable = option.getBoolean();
+        }else if (option instanceof ValueVarchar){
+            encoding = option.getString();
+        }else if (!(option instanceof ValueNull)){
+            throw new SQLException("Supported optional parameter is boolean or varchar");
         }
+        importTable(connection, fileName, tableReference, encoding, deleteTable);
     }
 
     /**
      * Copy data from Shape File into a new table in specified connection.
      * @param connection Active connection
      * @param tableReference [[catalog.]schema.]table reference
+     * @param forceEncoding Use this encoding instead of DBF file header encoding property.
      * @param fileName File path of the SHP file or URI
+     * @param deleteTables delete existing tables
      * @throws java.io.IOException
      * @throws java.sql.SQLException
      */
-    public static void readShape(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
-        readShape(connection, fileName, tableReference, null);
+    public static void importTable(Connection connection, String fileName, String tableReference,String forceEncoding, boolean deleteTables) throws IOException, SQLException {
+        File file = URIUtilities.fileFromString(fileName);
+        SHPDriverFunction shpDriverFunction = new SHPDriverFunction();
+        shpDriverFunction.importFile(connection, TableLocation.parse(tableReference, true).toString(true),
+                file,  forceEncoding,deleteTables, new EmptyProgressVisitor());
+    }
+
+
+    /**
+     * Copy data from Shape File into a new table in specified connection.
+     * @param connection Active connection
+     * @param fileName File path of the SHP file or URI
+     * @param option [[catalog.]schema.]table reference
+     * @throws java.io.IOException
+     * @throws java.sql.SQLException
+     */
+    public static void importTable(Connection connection, String fileName, Value option) throws IOException, SQLException {
+        String tableReference =null;
+        boolean deleteTable =  false;
+        if(option instanceof ValueBoolean){
+            deleteTable = option.getBoolean();
+        }else if (option instanceof ValueVarchar){
+            tableReference = option.getString();
+        }else if (!(option instanceof ValueNull)){
+            throw new SQLException("Supported optional parameter is boolean or varchar");
+        }
+        importTable(connection, fileName, tableReference, null, false);
     }
 
     /**
@@ -87,11 +132,11 @@ public class SHPRead  extends AbstractFunction implements ScalarFunction {
      * @throws java.io.IOException
      * @throws java.sql.SQLException
      */
-    public static void readShape(Connection connection, String fileName) throws IOException, SQLException {
+    public static void importTable(Connection connection, String fileName) throws IOException, SQLException {
         final String name = URIUtilities.fileFromString(fileName).getName();
         String tableName = name.substring(0, name.lastIndexOf(".")).toUpperCase();
         if (tableName.matches("^[a-zA-Z][a-zA-Z0-9_]*$")) {
-            readShape(connection, fileName, tableName);
+            importTable(connection, fileName, tableName, null, false);
         } else {
             throw new SQLException("The file name contains unsupported characters");
         }

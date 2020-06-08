@@ -588,6 +588,7 @@ public class JDBCUtilities {
         }
     }
 
+
     /**
      *
      * @param st Statement to cancel

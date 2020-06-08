@@ -20,6 +20,10 @@
 
 package org.h2gis.functions.io.dbf;
 
+import org.h2.value.Value;
+import org.h2.value.ValueBoolean;
+import org.h2.value.ValueNull;
+import org.h2.value.ValueVarchar;
 import org.h2gis.api.AbstractFunction;
 import org.h2gis.api.EmptyProgressVisitor;
 import org.h2gis.api.ScalarFunction;
@@ -32,17 +36,23 @@ import java.sql.SQLException;
 
 /**
  * @author Nicolas Fortin
+ * @author Erwan Bocher, CNRS
  */
 public class DBFWrite  extends AbstractFunction implements ScalarFunction {
 
     public DBFWrite() {
         addProperty(PROP_REMARKS, "Transfer the content of a table into a DBF\n" +
-                "CALL DBFWRITE('FILENAME', 'TABLE'[,'ENCODING']) or CALL DBFWRITE('FILENAME', '(SELECT * FROM TABLE)'[,'ENCODING'])");
+                "\n DBFWrite(..."+
+                "\n Supported arguments :" +
+                "\n path of the file, table name"+
+                "\n path of the file, table name, true to delete the file if exists"+
+                "\n path of the file, table name, encoding chartset"+
+                "\n path of the file, table name, encoding chartset, true to delete the file if exists");
     }
 
     @Override
     public String getJavaStaticMethod() {
-        return "exportTable";  //To change body of implemented methods use File | Settings | File Templates.
+        return "exportTable";
     }
 
     public static void exportTable(Connection connection, String fileName, String tableReference) throws IOException, SQLException {
@@ -50,8 +60,42 @@ public class DBFWrite  extends AbstractFunction implements ScalarFunction {
         driverFunction.exportTable(connection, tableReference, URIUtilities.fileFromString(fileName), new EmptyProgressVisitor());
     }
 
-    public static void exportTable(Connection connection, String fileName, String tableReference,String encoding) throws IOException, SQLException {
+    /**
+     * Read a table and write it into a dbf file.
+     * @param connection Active connection
+     * @param fileName Shape file name or URI
+     * @param tableReference Table name or select query
+     * Note : The select query must be enclosed in parenthesis
+     * @param encoding charset encoding
+     * @param deleteFile true to delete output file
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void exportTable(Connection connection, String fileName, String tableReference,String encoding, boolean deleteFile) throws IOException, SQLException {
         DBFDriverFunction driverFunction = new DBFDriverFunction();
-        driverFunction.exportTable(connection, tableReference, new File(fileName), new EmptyProgressVisitor(), encoding);
+        driverFunction.exportTable(connection, tableReference, new File(fileName), encoding, deleteFile,new EmptyProgressVisitor());
+    }
+
+    /**
+     * Read a table and write it into a dbf file.
+     * @param connection Active connection
+     * @param fileName Shape file name or URI
+     * @param tableReference Table name or select query
+     * Note : The select query must be enclosed in parenthesis
+     * @param option Could be string file encoding charset or boolean value to delete the existing file
+     * @throws IOException
+     * @throws SQLException
+     */
+    public static void exportTable(Connection connection, String fileName, String tableReference, Value option) throws IOException, SQLException {
+        String encoding = null;
+        boolean deleteFiles = false;
+        if(option instanceof ValueBoolean){
+            deleteFiles = option.getBoolean();
+        }else if (option instanceof ValueVarchar){
+            encoding = option.getString();
+        }else if (!(option instanceof ValueNull)){
+            throw new SQLException("Supported optional parameter is boolean or varchar");
+        }
+        exportTable( connection,  fileName,  tableReference,  encoding,  deleteFiles);
     }
 }

@@ -22,6 +22,7 @@ package org.h2gis.functions.io.geojson;
 
 import org.h2gis.api.DriverFunction;
 import org.h2gis.api.ProgressVisitor;
+import org.h2gis.functions.io.utility.FileUtil;
 import org.h2gis.utilities.JDBCUtilities;
 import org.h2gis.utilities.TableLocation;
 
@@ -71,52 +72,49 @@ public class GeoJsonDriverFunction implements DriverFunction {
 
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress) throws SQLException, IOException{
-        exportTable(connection,tableReference, fileName,progress, null);
+        exportTable(connection,tableReference, fileName, null, false, progress);
     }
-    
-    /**
-     * Export a table or a query to a geojson file
-     * 
-     * @param connection
-     * @param tableReference
-     * @param fileName
-     * @param progress
-     * @param encoding
-     * @throws SQLException
-     * @throws IOException 
-     */
+
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String encoding) throws SQLException, IOException{
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable(connection,tableReference, fileName, null, deleteFiles, progress);
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
         GeoJsonWriteDriver geoJsonDriver = new GeoJsonWriteDriver(connection);
-        geoJsonDriver.write(progress,tableReference, fileName, encoding);
+        geoJsonDriver.write(progress,tableReference, fileName, encoding, deleteFiles);
+    }
+
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String encoding, ProgressVisitor progress) throws SQLException, IOException{
+        exportTable(connection,tableReference, fileName, encoding, false, progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, fileName, options, deleteTables);
+        geoJsonReaderDriver.read(progress, tableReference);
     }
 
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        GeoJsonReaderDriver geoJsonReaderDriver = new GeoJsonReaderDriver(connection, fileName);
-        geoJsonReaderDriver.read(progress, tableReference);
+        importFile(connection,  tableReference,  fileName, null, false,  progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           String options) throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress);
+    public void importFile(Connection connection, String tableReference, File fileName,  String options,ProgressVisitor progress
+                          ) throws SQLException, IOException {
+        importFile(connection,  tableReference,  fileName, options, false,  progress);
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
-
-        if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String table = requestedTable.getTable();
-            Statement stmt = connection.createStatement();
-            stmt.execute("DROP TABLE IF EXISTS " + table);
-            stmt.close();
-        }
-
-        importFile(connection, tableReference, fileName, progress);
+    public void importFile(Connection connection, String tableReference, File fileName,
+                           boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection,  tableReference,  fileName, null, deleteTables,  progress);
     }
+
+
 }

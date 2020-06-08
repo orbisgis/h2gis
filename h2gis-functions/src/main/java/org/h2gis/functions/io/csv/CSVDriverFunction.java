@@ -29,6 +29,7 @@ import org.h2gis.utilities.TableLocation;
 
 import java.io.*;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
 import java.sql.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,7 +43,7 @@ import java.util.regex.Pattern;
 public class CSVDriverFunction implements DriverFunction{
 
     public static String DESCRIPTION = "CSV file (Comma Separated Values)";
-    private static final int BATCH_MAX_SIZE = 100;
+    private static final int BATCH_MAX_SIZE = 200;
     private static final int AVERAGE_NODE_SIZE = 500;
     
     @Override
@@ -77,22 +78,22 @@ public class CSVDriverFunction implements DriverFunction{
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
              throws SQLException, IOException {
-         exportTable(connection, tableReference, fileName, progress, null);
+        exportTable( connection,  tableReference,  fileName,  null,  false,  progress);
     }
 
-    /**
-     * Export a table or a query to a CSV file
-     * 
-     * @param connection Active connection, do not close this connection.
-     * @param tableReference [[catalog.]schema.]table reference
-     * @param fileName File path to read
-     * @param progress
-     * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
-     * @throws SQLException
-     * @throws IOException 
-     */
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress, String csvOptions) throws SQLException, IOException {
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+            exportTable( connection,  tableReference,  fileName,  null,  deleteFiles,  progress);
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        if (!FileUtil.isExtensionWellFormated(fileName, "csv")) {
+            throw new SQLException("Only .csv extension is supported");
+        }
+        if(deleteFiles){
+            Files.deleteIfExists(fileName.toPath());
+        }
         String regex = ".*(?i)\\b(select|from)\\b.*";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tableReference);
@@ -111,27 +112,39 @@ public class CSVDriverFunction implements DriverFunction{
             }
 
         } else {
-            if (FileUtil.isExtensionWellFormated(fileName, "csv")) {
-                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-                TableLocation location = TableLocation.parse(tableReference, isH2);
-                try (Statement st = connection.createStatement()) {
-                    JDBCUtilities.attachCancelResultSet(st, progress);
-                    Csv csv = new Csv();
-                    if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
-                        csv.setOptions(csvOptions);
-                    }
-                    csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
+            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+            TableLocation location = TableLocation.parse(tableReference, isH2);
+            try (Statement st = connection.createStatement()) {
+                JDBCUtilities.attachCancelResultSet(st, progress);
+                Csv csv = new Csv();
+                if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
+                    csv.setOptions(csvOptions);
                 }
-            } else {
-                throw new SQLException("Only .csv extension is supported");
+                csv.write(fileName.getPath(), st.executeQuery("SELECT * FROM " + location.toString()), null);
             }
         }
+    }
+
+    /**
+     * Export a table or a query to a CSV file
+     * 
+     * @param connection Active connection, do not close this connection.
+     * @param tableReference [[catalog.]schema.]table reference
+     * @param fileName File path to read
+     * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
+     * @param progress
+     * @throws SQLException
+     * @throws IOException 
+     */
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String csvOptions, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable( connection,  tableReference,  fileName,  csvOptions,  false,  progress);
     }
     
     @Override
     public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        importFile(connection, tableReference, fileName, progress, null);
+        importFile(connection, tableReference, fileName, null, false,progress);
     }
 
     /**
@@ -139,15 +152,33 @@ public class CSVDriverFunction implements DriverFunction{
      * @param connection Active connection, do not close this connection.
      * @param tableReference [[catalog.]schema.]table reference
      * @param fileName File path to read
-     * @param progress
      * @param csvOptions  the CSV options ie "charset=UTF-8 fieldSeparator=| fieldDelimiter=,"
+     * @param progress
      * @throws SQLException
      * @throws IOException 
      */
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           String csvOptions) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName,
+                           String csvOptions, ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, csvOptions, false,progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName,
+                           boolean deleteTables,ProgressVisitor progress) throws SQLException, IOException {
+        importFile(connection, tableReference, fileName, null, deleteTables,progress);
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String csvOptions, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
         if (FileUtil.isFileImportable(fileName, "csv")) {
+            if(deleteTables) {
+                final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
+                TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
+                Statement stmt = connection.createStatement();
+                stmt.execute("DROP TABLE IF EXISTS " + requestedTable);
+                stmt.close();
+            }
             final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
             TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
             String table = requestedTable.getTable();
@@ -156,13 +187,13 @@ public class CSVDriverFunction implements DriverFunction{
             long fileSize = fc.size();
             // Given the file size and an average node file size.
             // Skip how many nodes in order to update progression at a step of 1%
-            long readFileSizeEachNode = Math.max(1, (fileSize / AVERAGE_NODE_SIZE) / 100);            
+            long readFileSizeEachNode = Math.max(1, (fileSize / AVERAGE_NODE_SIZE) / 100);
             int average_row_size = 0;
             connection.setAutoCommit(false);
             Csv csv = new Csv();
             if (csvOptions != null && csvOptions.indexOf('=') >= 0) {
                 csv.setOptions(csvOptions);
-            }            
+            }
             ResultSet reader = csv.read(new BufferedReader(new InputStreamReader(fis)), null);
             ResultSetMetaData metadata = reader.getMetaData();
             int columnCount = metadata.getColumnCount();
@@ -187,7 +218,6 @@ public class CSVDriverFunction implements DriverFunction{
             try (Statement stmt = connection.createStatement()) {
                 stmt.execute(createTable.toString());
             }
-
             PreparedStatement pst = connection.prepareStatement(insertTable.toString());
             long batchSize = 0;
             try {
@@ -223,24 +253,9 @@ public class CSVDriverFunction implements DriverFunction{
                 }
 
             } finally {
-                pst.close();                
+                pst.close();
                 connection.setAutoCommit(true);
             }
         }
-    }
-
-    @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
-        if(deleteTables) {
-            final boolean isH2 = JDBCUtilities.isH2DataBase(connection);
-            TableLocation requestedTable = TableLocation.parse(tableReference, isH2);
-            String table = requestedTable.getTable();
-            Statement stmt = connection.createStatement();
-            stmt.execute("DROP TABLE IF EXISTS " + table);
-            stmt.close();
-        }
-
-        importFile(connection, tableReference, fileName, progress);
     }
 }

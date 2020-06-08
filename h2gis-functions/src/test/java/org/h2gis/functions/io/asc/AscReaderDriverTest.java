@@ -29,6 +29,7 @@ import org.locationtech.jts.geom.Envelope;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -43,10 +44,10 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AscReaderDriverTest {
 
     private Connection connection;
-
+    private static final String DB_NAME = "ASCRead_db";
     @BeforeEach
     public void tearUp() throws Exception {
-        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase(AscReaderDriverTest.class.getSimpleName(), true, ""));
+        connection = JDBCUtilities.wrapConnection(H2GISDBFactory.createSpatialDataBase("/tmp/dbgis;AUTO_SERVER=TRUE", true, ""));
     }
 
     @AfterEach
@@ -58,74 +59,127 @@ public class AscReaderDriverTest {
 
     @Test
     public void testReadPrecip() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS PRECIP30MIN");
         AscReaderDriver reader = new AscReaderDriver();
-        try(InputStream inputStream = AscReaderDriverTest.class.getResourceAsStream("precip30min.asc")) {
-            reader.read(connection, inputStream, new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
-        }
-
-        // Check database content
+        reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
 
         // Check first read cell
-        Statement st = connection.createStatement();
-        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-179.74,-80.18), 4326))")) {
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-179.75,-80.25), 4326))")) {
             assertTrue(rs.next());
             assertEquals(234, rs.getInt("Z"));
         }
 
         // Check last read cell
         st = connection.createStatement();
-        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-172.604,-89.867), 4326))")) {
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-172.75, -89.75), 4326))")) {
+            assertTrue(rs.next());
+            assertEquals(114, rs.getInt("Z"));
+        }
+        // Check nodata cell
+        st = connection.createStatement();
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  ST_SETSRID(ST_MAKEPOINT(-177.25, -84.25), 4326))")) {
+            assertFalse(rs.next());
+        }
+    }
+
+    @Test
+    public void testReadPrecipDouble() throws IOException, SQLException {
+        Statement st = connection.createStatement();
+        st.execute("DROP TABLE IF EXISTS PRECIP30MIN");
+        AscReaderDriver reader = new AscReaderDriver();
+        reader.setZType(2);
+        reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
+
+        // Check first read cell
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-179.75,-80.25), 4326))")) {
+            assertTrue(rs.next());
+            assertEquals(234.0, rs.getDouble("Z"), 0.00001);
+        }
+
+        // Check last read cell
+        st = connection.createStatement();
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-172.75, -89.75), 4326))")) {
+            assertTrue(rs.next());
+            assertEquals(114, rs.getDouble("Z"), 0.00001);
+        }
+        // Check nodata cell
+        st = connection.createStatement();
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  ST_SETSRID(ST_MAKEPOINT(-177.25, -84.25), 4326))")) {
+            assertFalse(rs.next());
+        }
+    }
+
+    @Test
+    public void testReadPrecipCenterNodata() throws IOException, SQLException {
+        AscReaderDriver reader = new AscReaderDriver();
+        reader.setDeleteTable(true);
+        reader.setImportNodata(true);
+        reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min_center.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
+
+        // Check database content
+        // Check first read cell
+        Statement st = connection.createStatement();
+
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-180, -80.50), 4326))")) {
+            assertTrue(rs.next());
+            assertEquals(234, rs.getInt("Z"));
+        }
+
+        // Check last read cell
+        st = connection.createStatement();
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-173, -90), 4326))")) {
             assertTrue(rs.next());
             assertEquals(114, rs.getInt("Z"));
         }
 
+        st.execute("CALL SHPWRITE('/tmp/grid.shp', 'PRECIP30MIN')");
+        //st.execute("CALL SHPWRITE('/tmp/grid_nodata.shp', '(SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM,  st_buffer(ST_SETSRID(ST_MAKEPOINT(-179.5,-80.25), 4326), 0.1)))')");
+
         // Check nodata cell
         st = connection.createStatement();
-        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-177.438, -84.077), 4326))")) {
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-177.50, -84.5), 4326))")) {
             assertTrue(rs.next());
-            assertNull(rs.getObject("Z"));
+            assertEquals(-9999, rs.getInt("Z"));
         }
     }
-
-
 
     @Test
     public void testReadPrecipCenter() throws IOException, SQLException {
         AscReaderDriver reader = new AscReaderDriver();
-        try(InputStream inputStream = AscReaderDriverTest.class.getResourceAsStream("precip30min_center.asc")) {
-            reader.read(connection, inputStream, new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
-        }
+        reader.setDeleteTable(true);
+        reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min_center.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
 
         // Check database content
 
         // Check first read cell
         Statement st = connection.createStatement();
-        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-180.1454, -80.303), 4326))")) {
+
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-180, -80.50), 4326))")) {
             assertTrue(rs.next());
             assertEquals(234, rs.getInt("Z"));
         }
 
         // Check last read cell
         st = connection.createStatement();
-        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-173.213, -89.771), 4326))")) {
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-173, -90), 4326))")) {
             assertTrue(rs.next());
             assertEquals(114, rs.getInt("Z"));
         }
 
         // Check nodata cell
         st = connection.createStatement();
-        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-177.3831, -84.5793), 4326))")) {
-            assertTrue(rs.next());
-            assertNull(rs.getObject("Z"));
+        try(ResultSet rs = st.executeQuery("SELECT * FROM PRECIP30MIN WHERE ST_INTERSECTS(THE_GEOM, ST_SETSRID(ST_MAKEPOINT(-177.50, -84.5), 4326))")) {
+            assertFalse(rs.next());
         }
     }
     @Test
     public void testReadPrecipPoint() throws IOException, SQLException {
         AscReaderDriver reader = new AscReaderDriver();
         reader.setAs3DPoint(true);
-        try(InputStream inputStream = AscReaderDriverTest.class.getResourceAsStream("precip30min.asc")) {
-            reader.read(connection, inputStream, new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
-        }
+        reader.setDeleteTable(true);
+        reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
+
 
         // Check database content
 
@@ -154,12 +208,10 @@ public class AscReaderDriverTest {
     @Test
     public void testReadPrecipEnvelope() throws IOException, SQLException {
         AscReaderDriver reader = new AscReaderDriver();
-
         reader.setExtractEnvelope(new Envelope(-178.242, -174.775, -89.707, -85.205));
+        reader.setDeleteTable(true);
+        reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
 
-        try(InputStream inputStream = AscReaderDriverTest.class.getResourceAsStream("precip30min.asc")) {
-            reader.read(connection, inputStream, new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
-        }
 
         // Check database content
 
@@ -176,10 +228,9 @@ public class AscReaderDriverTest {
     public void testReadPrecipDownscale() throws IOException, SQLException {
         AscReaderDriver reader = new AscReaderDriver();
         reader.setDownScale(5);
+        reader.setDeleteTable(true);
+        reader.read(connection, new File(AscReaderDriverTest.class.getResource("precip30min.asc").getPath()), new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
 
-        try(InputStream inputStream = AscReaderDriverTest.class.getResourceAsStream("precip30min.asc")) {
-            reader.read(connection, inputStream, new EmptyProgressVisitor(), "PRECIP30MIN", 4326);
-        }
 
         // Check database content
 
@@ -195,6 +246,7 @@ public class AscReaderDriverTest {
     @Test
     public void testASCRead() throws IOException, SQLException {
         Statement st = connection.createStatement();
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
         st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
 
         // Check number of extracted cells
@@ -234,6 +286,7 @@ public class AscReaderDriverTest {
     @Test
     public void testASCReadPoints() throws IOException, SQLException {
         Statement st = connection.createStatement();
+        st.execute("DROP TABLE PRECIP30MIN IF EXISTS");
         st.execute(String.format("CALL ASCREAD('%s')",AscReaderDriverTest.class.getResource("precip30min.asc").getFile()));
         try(ResultSet rs = st.executeQuery("SELECT the_geom  FROM PRECIP30MIN limit 1")) {
             assertTrue(rs.next());

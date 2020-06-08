@@ -65,15 +65,24 @@ public class KMLDriverFunction implements DriverFunction {
     @Override
     public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress)
             throws SQLException, IOException {
-        KMLWriterDriver kMLWriter = new KMLWriterDriver(connection);
-        kMLWriter.write(progress,tableReference, fileName,null);
+        exportTable( connection,  tableReference,  fileName, null,  false,  progress);
     }
 
     @Override
-    public void exportTable(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-            String encoding) throws SQLException, IOException {
-        KMLWriterDriver kMLWriter = new KMLWriterDriver(connection);
-        kMLWriter.write(progress, tableReference, fileName, encoding);
+    public void exportTable(Connection connection, String tableReference, File fileName, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        exportTable( connection,  tableReference,  fileName, null,  deleteFiles,  progress);
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName, String options, boolean deleteFiles, ProgressVisitor progress) throws SQLException, IOException {
+        KMLWriterDriver kMLWriter = new KMLWriterDriver(connection, fileName, options, deleteFiles);
+        kMLWriter.write(tableReference, progress);
+    }
+
+    @Override
+    public void exportTable(Connection connection, String tableReference, File fileName,   String encoding, ProgressVisitor progress
+          ) throws SQLException, IOException {
+        exportTable( connection,  tableReference,  fileName, encoding,  false,  progress);
     }
 
     @Override
@@ -83,15 +92,20 @@ public class KMLDriverFunction implements DriverFunction {
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           String options) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName,  String options,ProgressVisitor progress
+                          ) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
-    public void importFile(Connection connection, String tableReference, File fileName, ProgressVisitor progress,
-                           boolean deleteTables) throws SQLException, IOException {
+    public void importFile(Connection connection, String tableReference, File fileName,boolean deleteTables, ProgressVisitor progress
+                           ) throws SQLException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void importFile(Connection connection, String tableReference, File fileName, String options, boolean deleteTables, ProgressVisitor progress) throws SQLException, IOException {
+
     }
 
     @Override
