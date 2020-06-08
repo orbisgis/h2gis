@@ -880,7 +880,7 @@ public class GeojsonImportExportTest {
         stat.execute("DROP TABLE IF EXISTS IMPORT_LINEAL;");
         stat.execute("CALL GeoJSONRead('target/lineal_export.geojson', 'IMPORT_LINEAL', true)");
 
-        try (ResultSet res = stat.executeQuery("SELECT COUNT(*) FROM LINEAL_EXPORT;")) {
+        try (ResultSet res = stat.executeQuery("SELECT COUNT(*) FROM IMPORT_LINEAL;")) {
             res.next();
             assertEquals(1, res.getInt(1));
         }
@@ -889,7 +889,7 @@ public class GeojsonImportExportTest {
     @Test
     public void exportQueryImportFileGZOption() throws SQLException, IOException {
         Statement stat = connection.createStatement();
-        File fileOut = new File("target/lineal_export.geojson");
+        File fileOut = new File("target/lineal_export.gz");
         stat.execute("DROP TABLE IF EXISTS LINEAL");
         stat.execute("create table lineal(idarea int primary key, the_geom GEOMETRY(LINESTRING Z))");
         stat.execute("insert into lineal values(1, 'LINESTRING(-10 109 5, 12 2 6)'),(2, 'LINESTRING(-15 109 5, 120 2 6)')");

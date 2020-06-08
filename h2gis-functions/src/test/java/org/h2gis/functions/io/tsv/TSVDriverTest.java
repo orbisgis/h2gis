@@ -116,7 +116,7 @@ public class TSVDriverTest {
         stat.execute("insert into myTSV values('POLYGON ((90 109, 190 109, 190 9, 90 9, 90 109))', 2)");
         stat.execute("CALL TSVWrite('target/mytsv_export.gz', 'myTSV')");
         assertTrue(tsvFile.exists());
-        stat.execute("CALL TSVRead('target/mytsv_export.gz', 'TSV_IMPORT');");
+        stat.execute("CALL TSVRead('target/mytsv_export.gz', 'TSV_IMPORT', true);");
         try (ResultSet rs = stat.executeQuery("select SUM(ST_AREA(the_geom::GEOMETRY)) from TSV_IMPORT")) {
             assertTrue(rs.next());
             assertEquals(20000, rs.getDouble(1), 1e-6);
